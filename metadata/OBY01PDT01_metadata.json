@@ -1,0 +1,62 @@
+{
+    "dataset_name": "Počet obyvatel",
+    "dimensions": {
+        "Kumulace čtvrtletí": {
+            "type": "time",
+            "values": [
+                "Q1-Q3 2024"
+            ],
+            "is_temporal": true,
+            "is_geographical": false,
+            "is_metric_description": false
+        },
+        "ČR, kraje": {
+            "type": "geo",
+            "values": [
+                "Česko",
+                "Hlavní město Praha",
+                "Středočeský kraj",
+                "Jihočeský kraj",
+                "Plzeňský kraj",
+                "Karlovarský kraj",
+                "Ústecký kraj",
+                "Liberecký kraj",
+                "Královéhradecký kraj",
+                "Pardubický kraj",
+                "Kraj Vysočina",
+                "Jihomoravský kraj",
+                "Olomoucký kraj",
+                "Zlínský kraj",
+                "Moravskoslezský kraj"
+            ],
+            "is_temporal": false,
+            "is_geographical": true,
+            "is_metric_description": false
+        },
+        "Ukazatel": {
+            "type": "metric",
+            "values": [
+                "Počet obyvatel na počátku období - celkem",
+                "Počet obyvatel na počátku období - muži",
+                "Počet obyvatel na počátku období - ženy",
+                "Střední stav obyvatel - celkem",
+                "Střední stav obyvatel - muži",
+                "Střední stav obyvatel - ženy",
+                "Počet obyvatel na konci období - celkem",
+                "Počet obyvatel na konci období - muži",
+                "Počet obyvatel na konci období - ženy"
+            ],
+            "is_temporal": false,
+            "is_geographical": false,
+            "is_metric_description": true
+        }
+    },
+    "value_column": {
+        "name": "value",
+        "unit": {
+            "decimals": 0,
+            "symbol": ""
+        }
+    },
+    "last_updated": "2025-04-06T17:59:42.267132Z"
+}
