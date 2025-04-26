@@ -1,0 +1,122 @@
+[
+  {
+    "prompt": "Which region had higher female population - Liberec or Karlovy Vary at period end?",
+    "result": "```yaml\nresult:\n  Karlovarský kraj: 150270\n  Liberecký kraj: 228648\nanalysis:\n  higher_female_population:\n    region: Liberecký kraj\n    value: 228648\n```"
+  },
+  {
+    "prompt": "Count how many regions had <500k total residents mid-period",
+    "result": "```yaml\nresult: 2\ndescription: Počet krajů, které měly méně než 500000 obyvatel ve středním stavu během období, je 2.\n```"
+  },
+  {
+    "prompt": "Show me the female population in South Moravia at mid-2024?",
+    "result": "```yaml\nresult: 625214\ndescription: The female population in South Moravia (Jihomoravský kraj) at mid-2024 (Q1-Q3 2024) is 625214.\n```"
+  },
+  {
+    "prompt": "List regions where mid-period male population exceeded 300,000",
+    "result": "```yaml\nregions:\n  - Hlavní město Praha\n  - Středočeský kraj\n  - Jihočeský kraj\n  - Plzeňský kraj\n  - Ústecký kraj\n  - Jihomoravský kraj\n  - Olomoucký kraj\n  - Moravskoslezský kraj\n```"
+  },
+  {
+    "prompt": "Find records where male count equals female count",
+    "result": "The query returned an empty DataFrame, meaning there are no records in the dataset where the male count equals the female count for the specified periods and regions. If you have another query or would like further analysis, please let me know."
+  },
+  {
+    "prompt": "How many women per 100 men in Olomouc at mid-year?",
+    "result": "The number of women per 100 men in Olomouc at mid-year is approximately 104.45."
+  },
+  {
+    "prompt": "List regions where women population decreased >1000",
+    "result": "The query returned an empty result, meaning there are no regions where the population of women decreased by more than 1000 during the analyzed period."
+  },
+  {
+    "prompt": "What's the rough male population in Bohemia regions combined?",
+    "result": "The rough male population in the Bohemia regions combined is **2772746**."
+  },
+  {
+    "prompt": "Tell me approximate folks count in Plzeň around mid-year",
+    "result": "```yaml\nresult: 612025\n```"
+  },
+  {
+    "prompt": "How much did Prague's population grow from start to end of Q3?",
+    "result": "The population of Prague at the start of Q3 was 1384732, and at the end of Q3, it was 1392125. The growth in population during this period is:\n\n**1392125 - 1384732 = 7393**\n\nHence, Prague's population grew by **7393** from the start to the end of Q3."
+  },
+  {
+    "prompt": "How many people in that big eastern wine region?",
+    "result": "### Result:\nThe total population in the big eastern wine region (Jihomoravský kraj) is **1226749**.\n\nLet me know if you need further assistance!"
+  },
+  {
+    "prompt": "Show regions with exactly 500,000 residents at any point",
+    "result": "The query returned no results. This means there are no regions where the population was exactly 500,000 based on the given dataset and metrics. If you have any further questions or need to refine the query, let me know!"
+  },
+  {
+    "prompt": "List regions with unreported start-period data",
+    "result": "The result is an empty list, indicating that no regions have unreported start-period data for the metric \"Počet obyvatel na počátku období - celkem\".\n\nOutput in YAML format:\n```yaml\nregions_with_unreported_start_period_data: []\n```"
+  },
+  {
+    "prompt": "Current male population in undefined 'North Region'",
+    "result": "### Query Results:\nSince the \"North Region\" was undefined, I have listed the current male population for all regions to help clarify the desired region. Below are the results:\n\n```yaml\nmale_population_by_region:\n  Česko: 5342610\n  Hlavní město Praha: 670680\n  Středočeský kraj: 714752\n  Jihočeský kraj: 322338\n  Plzeňský kraj: 301029\n  Karlovarský kraj: 143579\n  Ústecký kraj: 399430\n  Liberecký kraj: 220938\n  Královéhradecký kraj: 273632\n  Pardubický kraj: 262028\n  Kraj Vysočina: 257012\n  Jihomoravský kraj: 600541\n  Olomoucký kraj: 309380\n  Zlínský kraj: 284864\n  Moravskoslezský kraj: 582407\n```\n\nIf you can clarify or specify which region you mean by \"North Region,\" I can refine the query further!"
+  },
+  {
+    "prompt": "What was the national population density assuming 78,866 km² area?",
+    "result": "The national population density, assuming an area of 78,866 km², is approximately 828.91 inhabitants per km²."
+  },
+  {
+    "prompt": "How much did Prague's population grow from start to end of Q3?",
+    "result": "```yaml\npopulation_growth: 7393\n```"
+  },
+  {
+    "prompt": "What if Karlovy Vary had no data for mid-period women count?",
+    "result": "### Result\nThe dataset has been filtered to exclude any records where:\n- The region (`ČR, kraje`) is \"Karlovarský kraj\" (Karlovy Vary region).\n- The metric (`Ukazatel`) is \"Střední stav obyvatel - ženy\" (mid-period women count).\n\nBelow is the resulting dataset in YAML format:\n\n```yaml\nfiltered_data:\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Počet obyvatel na počátku období - celkem\n    value: 10900555\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Počet obyvatel na počátku období - muži\n    value: 5342610\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Počet obyvatel na počátku období - ženy\n    value: 5557945\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Střední stav obyvatel - celkem\n    value: 10888512\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Střední stav obyvatel - muži\n    value: 5341586\n  # ... Remaining rows (total: 134 after filtering)\n```\n\nIf you need further analysis or specific details, feel free to ask!"
+  },
+  {
+    "prompt": "What was population before recorded history?",
+    "result": "The user query, \"What was population before recorded history?\", implies a time period that predates all recorded data. Based on the schema metadata, the dataset covers periods only from \"Q1-Q3 2024\" onward. Therefore, there is no valid data for \"before recorded history,\" making it impossible to retrieve such information from this dataset.\n\n### YAML Response:\n```yaml\nerror: \"The dataset does not contain data for 'before recorded history'. The earliest time period available is 'Q1-Q3 2024'.\"\n```"
+  },
+  {
+    "prompt": "Show regions with population between 500k-600k at end",
+    "result": "### Results\nThe regions with a population between 500,000 and 600,000 at the end of the period are:\n\n- Královéhradecký kraj\n- Pardubický kraj\n- Kraj Vysočina\n- Zlínský kraj"
+  },
+  {
+    "prompt": "Show regions with exactly 500,000 residents at any point",
+    "result": "```yaml\nresult: []\ndescription: No regions were found with exactly 500000 residents at any point in the dataset.\n```"
+  },
+  {
+    "prompt": "Show data for time period not in dataset (Q4 2024)",
+    "result": "The dataset contains no records for the requested time period `Q4 2024`. \n\n### Output:\n```yaml\nresult: \"No data available for the time period 'Q4 2024'.\"\n```"
+  },
+  {
+    "prompt": "What if Karlovy Vary had no data for mid-period women count?",
+    "result": "The dataset contains the following data for Karlovy Vary (\"Karlovarský kraj\") and mid-period women count (\"Střední stav obyvatel - ženy\"):\n\n- **Time Period**: Q1-Q3 2024\n- **Region**: Karlovarský kraj\n- **Metric**: Střední stav obyvatel - ženy\n- **Value**: 150583\n\nThis indicates that there is existing data for this case. If you have additional scenarios or modifications to analyze, let me know!"
+  },
+  {
+    "prompt": "For Vysočina, show start/mid/end counts for both genders",
+    "result": "```yaml\nVysočina Gender Counts:\n  Start:\n    Muži: 257012\n    Ženy: 260948\n  Middle:\n    Muži: 256873\n    Ženy: 260373\n  End:\n    Muži: 257229\n    Ženy: 260435\n```"
+  },
+  {
+    "prompt": "First 3 regions alphabetically with >700k population",
+    "result": "```yaml\nresult:\n  - region: Hlavní město Praha\n    population: 8327160\n  - region: Jihomoravský kraj\n    population: 7360274\n  - region: Jihočeský kraj\n    population: 3922526\n```"
+  },
+  {
+    "prompt": "When would Karlovy Vary reach 250k residents at current rate?",
+    "result": "The population of Karlovy Vary (Karlovarský kraj) at the end of Q1-Q3 2024 is 293218 residents. Since this value already exceeds 250,000 residents, the projection is unnecessary. The population of Karlovy Vary has already reached and surpassed the 250,000 threshold.\n\nIf you need further analysis or projections, feel free to ask!"
+  },
+  {
+    "prompt": "Show regions with population between 500k-600k at end",
+    "result": "### Query Results\nThe regions with populations between 500,000 and 600,000 at the end of the period are:\n\n- Královéhradecký kraj\n- Pardubický kraj\n- Kraj Vysočina\n- Zlínský kraj\n\nThese results were obtained using the specified query criteria."
+  },
+  {
+    "prompt": "First 3 regions alphabetically with >700k population",
+    "result": "### **Results**\nThe first 3 regions alphabetically with a population greater than 700000 are:\n\n```yaml\n- ČR, kraje: Hlavní město Praha\n  value: 1392125\n- ČR, kraje: Jihomoravský kraj\n  value: 1227503\n- ČR, kraje: Moravskoslezský kraj\n  value: 1183474\n```\n\nThis output matches the query intent. Let me know if you need further analysis!"
+  },
+  {
+    "prompt": "Compare Q3 2024 growth to same period in hypothetical 2023",
+    "result": "### Results for Q1-Q3 2024\n\nBelow is the data extracted for the period `\"Q1-Q3 2024\"` based on the provided schema. Since hypothetical 2023 data was not available, the results are limited to this period.\n\n```yaml\ndata:\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Počet obyvatel na počátku období - celkem\n    value: 10900555\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Počet obyvatel na počátku období - muži\n    value: 5342610\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Počet obyvatel na počátku období - ženy\n    value: 5557945\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Střední stav obyvatel - celkem\n    value: 10888512\n  - Kumulace čtvrtletí: Q1-Q3 2024\n    ČR, kraje: Česko\n    Ukazatel: Střední stav obyvatel - muži\n    value: 5341586\n  ... # More rows available\n```\n\nIf you need further analysis, such as aggregations or specific metrics for selected regions, please clarify!"
+  },
+  {
+    "prompt": "When would Karlovy Vary reach 250k residents at current rate?",
+    "result": "### Results from Filtered Data\n- For `\"Karlovarský kraj\"` and `\"Počet obyvatel na konci období - celkem\"`:\n  - **Population**: 293218\n  - **Temporal Period**: `\"Q1-Q3 2024\"`\n\n---\n\n### Analysis\nThe current population of Karlovy Vary (Karlovarský kraj) is already **293218**, which exceeds the target of 250,000 residents. Therefore, the question is moot, as the region has already surpassed the specified threshold.\n\n---\n\n### Final Output (YAML Format)\n```yaml\nresult:\n  message: \"Karlovy Vary (Karlovarský kraj) has already surpassed 250,000 residents.\"\n  current_population: 293218\n  target_population: 250000\n  temporal_period: \"Q1-Q3 2024\"\n```"
+  },
+  {
+    "prompt": "Compare Q3 2024 growth to same period in hypothetical 2023",
+    "result": "### Query Results\n\nThe total population at the start of Q1-Q3 2024 for different regions is as follows:\n\n| Region                    | Population (Start of Q1-Q3 2024) |\n|---------------------------|----------------------------------|\n| Česko                     | 10900555                       |\n| Hlavní město Praha        | 1384732                        |\n| Středočeský kraj          | 1455940                        |\n| Jihočeský kraj            | 654505                         |\n| Plzeňský kraj             | 613374                         |\n| Karlovarský kraj          | 295077                         |\n| Ústecký kraj              | 811169                         |\n| Liberecký kraj            | 450728                         |\n| Královéhradecký kraj      | 556949                         |\n| Pardubický kraj           | 530560                         |\n| Kraj Vysočina             | 517960                         |\n| Jihomoravský kraj         | 1226749                        |\n| Olomoucký kraj            | 632864                         |\n| Zlínský kraj              | 580744                         |\n| Moravskoslezský kraj      | 1189204                        |\n\n---\n\n### Next Steps\n\nSince the user requested a comparison with hypothetical Q3 2023 data, we need clarification:\n1. Should we use these Q3 2024 values as a proxy for Q3 2023?\n2. Or should we proceed with specific assumptions for growth?\n\nLet me know how you wish to proceed!"
+  }
+]

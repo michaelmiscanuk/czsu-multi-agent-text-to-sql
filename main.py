@@ -1,47 +1,69 @@
 import os
+import uuid
+import argparse
+import json
 from dotenv import load_dotenv
+from utils.instrument import instrument, Framework
 
 # Load environment variables
 load_dotenv()
 
-# Setup Phoenix tracing as shown in the documentation
-from phoenix.otel import register
-
-# Configure Phoenix tracer
-print("Initializing Phoenix tracing...")
-try:
-    tracer_provider = register(
-        project_name="LangGraph_Prototype4",
-        auto_instrument=True
-    )
-    print("✅ Phoenix tracing initialized")
-except Exception as e:
-    print(f"⚠️ Phoenix tracing initialization failed: {str(e)}")
-
-# Import after tracing is configured
+# Import after setting up environment
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
 
-def main():
-    """Main entry point for the application."""
+def main(prompt=None):
+    """Main entry point for the application.
+    
+    Args:
+        prompt (str, optional): The analysis prompt to process. If None and script is run
+                               directly, will attempt to get from command line args.
+    """
+    # If no prompt provided and script is run directly, parse command line arguments
+    if prompt is None and __name__ == "__main__":
+        parser = argparse.ArgumentParser(description='Run data analysis with LangGraph')
+        parser.add_argument('prompt_pos', nargs='?', type=str, 
+                            help='The analysis prompt as positional argument')
+        parser.add_argument('--prompt', type=str, 
+                            help='The analysis prompt with flag')
+        args = parser.parse_args()
+        
+        # Prioritize flag over positional argument
+        prompt = args.prompt or args.prompt_pos
+    
+    # Use default if prompt is still None
+    if prompt is None:
+        prompt = "What is the amount of men in Prague at the end of Q3 2024?"
+        
+    # Initialize tracing
+    instrument(project_name="LangGraph_Prototype4", framework=Framework.LANGGRAPH)
+    
     # Create the graph
     graph = create_graph()
     
-    # Set the query from environment variables or use default
-    query = os.getenv("ANALYSIS_PROMPT", "What is the amount of men in Prague at the end of Q3 2024?")
-    print(f"Query: {query}")
+    print(f"Prompt: {prompt}")
     
-    # Create an empty initial state
-    initial_state = DataAnalysisState()
+    # Create initial state
+    initial_state = DataAnalysisState(prompt=prompt)
+    
+    # Create a unique thread ID for this analysis run
+    thread_id = f"data_analysis_{uuid.uuid4().hex[:8]}"
     
     # Run the graph with checkpoint configuration
     result = graph.invoke(
-        initial_state, 
-        config={"configurable": {"thread_id": "data_analysis_thread"}}
+        initial_state,
+        config={"configurable": {"thread_id": thread_id}}
     )
     
-    # Print the result - properly accessing the dictionary-like object
-    print(f"Result: {result['result']}")
+    # Ensure the result is JSON serializable
+    serializable_result = {
+        "prompt": prompt,
+        "result": result['result'],
+        "thread_id": thread_id
+    }
+    
+    print(f"Result: {serializable_result['result']}")
+    return serializable_result
 
 if __name__ == "__main__":
     main()

@@ -3,7 +3,7 @@ from enum import Enum
 from dotenv import load_dotenv
 from opentelemetry import trace
 
-# Load environment variables
+# Load environment variables for API keys
 load_dotenv()
 
 class Framework(Enum):
@@ -12,28 +12,25 @@ class Framework(Enum):
     CUSTOM = "custom"
 
 def instrument(project_name="LangGraph_Prototype4", framework=Framework.LANGGRAPH):
-    """Configure Phoenix instrumentation based on the framework."""
+    """Configure Phoenix instrumentation."""
     print(f"Initializing Phoenix tracing for {framework.value}...")
     
+    # Try to import phoenix and configure tracing
     try:
-        from arize.phoenix.opentelemetry import configure_opentelemetry
+        # Using the phoenix.otel package
+        from phoenix.otel import register
         
-        # Configure OpenTelemetry with Phoenix
-        configure_opentelemetry(
-            service_name=project_name,
-            collector_endpoint=os.getenv("PHOENIX_COLLECTOR_ENDPOINT", "https://app.phoenix.arize.com"),
-            headers={"api_key": os.getenv("PHOENIX_API_KEY")}
+        # Register with phoenix - using batch=True to use BatchSpanProcessor
+        # This is the correct parameter according to the documentation
+        register(
+            project_name=project_name,
+            auto_instrument=True,
+            batch=True,  # Use BatchSpanProcessor instead of SimpleSpanProcessor
+            verbose=True
         )
-        
-        # Framework-specific instrumentation
-        if framework == Framework.LANGCHAIN:
-            from langchain.callbacks.opentelemetry_callback import OpenTelemetryCallback
-            os.environ["LANGCHAIN_TRACING_V2"] = "true"
-            return OpenTelemetryCallback()
-        
-        print("✅ Phoenix tracing initialized")
-        return trace.get_tracer(__name__)
-        
+        print("✅ Phoenix tracing initialized with BatchSpanProcessor")
+            
     except ImportError as e:
-        print(f"⚠️ Phoenix tracing not available: {str(e)}. Using default tracer.")
-        return trace.get_tracer(__name__)
+        print(f"⚠️ Phoenix tracing not available: {str(e)}")
+    
+    return trace.get_tracer(__name__)
