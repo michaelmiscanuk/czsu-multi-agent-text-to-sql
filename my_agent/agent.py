@@ -1,74 +1,105 @@
-import os
+"""Agent graph workflow definition module.
+
+This module defines the data analysis workflow using LangGraph. It implements a 
+multi-step process that:
+
+1. Retrieves database schema information
+2. Generates a pandas query from natural language
+3. Validates and corrects the query
+4. Executes the query against the dataset
+5. Formats and returns the results
+
+The workflow includes error handling, retry mechanisms, and a controlled execution
+flow that prevents common failure modes in LLM-based systems.
+"""
+
+#==============================================================================
+# IMPORTS
+#==============================================================================
 from dotenv import load_dotenv
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.agents import AgentExecutor, create_openai_functions_agent
-from langchain_openai import AzureChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from langgraph.checkpoint.memory import MemorySaver
 
-from .utils import DataAnalysisState, PandasQueryTool, initialize_state, process_query, save_result
+from .utils import DataAnalysisState, save_result
+from .utils.nodes import (
+    get_schema_node,
+    query_gen_node,
+    model_check_query_node,
+    execute_query_node,
+    submit_final_answer_node,
+    should_continue,
+)
 
-# Load environment variables - still needed for API keys
+# Load environment variables
 load_dotenv()
 
-def create_agent():
-    """Create and return the agent with tools."""
-    # Initialize tools
-    tools = [PandasQueryTool()]
-    
-    # Initialize the LLM with hardcoded defaults
-    llm = AzureChatOpenAI(
-        deployment_name='gpt-4o__test1',
-        model_name='gpt-4o',
-        openai_api_version='2024-05-01-preview',
-        temperature=0.7,
-        azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
-        api_key=os.getenv('AZURE_OPENAI_API_KEY')
-    )
-    
-    system_prompt = """
-You are a Bilingual Data Query Specialist proficient in both Czech and English,
-specializing in converting natural language queries into pandas operations.
-
-Your goal is to convert user queries (in Czech or English) into pandas operations by:
-- Understanding queries in both Czech and English
-- Mapping between Czech/English terms and schema metadata
-- Handling bilingual data values and column names
-- Constructing accurate pandas queries regardless of input language
-
-IMPORTANT: When presenting any numeric results, always output numbers as plain digits with NO thousands separators, commas, spaces, or formatting (e.g., use '716056' not '716,056' or '716 056').
-    """
-    
-    # Create prompt template
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "{input}"),
-        MessagesPlaceholder(variable_name="agent_scratchpad"),
-    ])
-    
-    # Create agent with tools
-    agent = create_openai_functions_agent(llm, tools, prompt)
-    
-    return AgentExecutor(agent=agent, tools=tools, verbose=True)
-
+#==============================================================================
+# GRAPH CREATION
+#==============================================================================
 def create_graph():
-    """Create the workflow graph for data analysis."""
-    # Initialize the agent
-    agent_executor = create_agent()
+    """Create the workflow graph for data analysis.
     
-    # Create the workflow graph
+    This function constructs a directed graph representing the workflow for
+    data analysis tasks. The graph design follows several important principles:
+    
+    1. Clear separation of concerns between nodes
+    2. Explicit error handling and recovery paths
+    3. Controlled iteration with cycle prevention
+    4. Checkpointing for execution resumption
+    
+    The resulting graph manages the complete process from natural language understanding
+    to query execution and result formatting, with built-in safeguards against
+    common failure modes.
+    
+    Returns:
+        A compiled StateGraph ready for execution
+    """
+    # Initialize with our custom state type to track conversation and results
     workflow = StateGraph(DataAnalysisState)
+
+    #--------------------------------------------------------------------------
+    # Add nodes - each handling a specific step in the process
+    #--------------------------------------------------------------------------
+    # Schema retrieval provides context about available data
+    workflow.add_node("get_schema", get_schema_node)
     
-    # Add nodes
-    workflow.add_node("initialize", initialize_state)
-    workflow.add_node("process", lambda state: process_query(state, agent_executor))
+    # Query generation converts natural language to executable code
+    workflow.add_node("query_gen", query_gen_node)
+    
+    # Query correction handles validation and fixes common errors
+    workflow.add_node("correct_query", model_check_query_node)
+    
+    # Query execution runs the generated code against the dataset
+    workflow.add_node("execute_query", execute_query_node)
+    
+    # Final answer formatting creates user-friendly responses
+    workflow.add_node("submit_final_answer", submit_final_answer_node)
+    
+    # Result persistence ensures we don't lose completed analyses
     workflow.add_node("save", save_result)
-    
-    # Define edges - simple linear flow
-    workflow.add_edge(START, "initialize")
-    workflow.add_edge("initialize", "process")
-    workflow.add_edge("process", "save")
+
+    #--------------------------------------------------------------------------
+    # Define the workflow execution path
+    #--------------------------------------------------------------------------
+    # Start by loading the schema to understand available data
+    workflow.add_edge(START, "get_schema")
+    workflow.add_edge("get_schema", "query_gen")
+
+    # After generating a query, decide whether to execute it or get more info
+    # This conditional routing is crucial for handling complex queries
+    workflow.add_conditional_edges("query_gen", should_continue)
+
+    # After correction, always proceed to execution
+    workflow.add_edge("correct_query", "execute_query")
+
+    # After execution, either submit the answer or fix errors
+    # This creates a correction loop with built-in cycle prevention
+    workflow.add_conditional_edges("execute_query", should_continue)
+
+    # Final steps to save the result and complete the workflow
+    workflow.add_edge("submit_final_answer", "save")
     workflow.add_edge("save", END)
-    
-    # Compile the graph with memory saver
+
+    # Compile with memory-based checkpointing for execution persistence
+    # This enables resuming interrupted runs and improves reliability
     return workflow.compile(checkpointer=MemorySaver())
