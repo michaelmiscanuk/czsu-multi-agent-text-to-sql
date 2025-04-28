@@ -11,12 +11,9 @@ correctly answer the test questions, with substring matching as a fallback metho
 #==============================================================================
 # IMPORTS
 #==============================================================================
-import asyncio
 import os
-import re
 import sys
 import time
-import uuid
 from pathlib import Path
 
 # Apply nest_asyncio at the very top before any other async operations
@@ -24,15 +21,11 @@ import nest_asyncio
 nest_asyncio.apply()
 
 import pandas as pd
-from phoenix.evals import TOOL_CALLING_PROMPT_TEMPLATE
 from phoenix.evals import OpenAIModel, QA_PROMPT_TEMPLATE, QA_PROMPT_RAILS_MAP, llm_classify
-from phoenix.experiments import evaluate_experiment, run_experiment
-from phoenix.experiments.evaluators import create_evaluator
-from phoenix.experiments.types import Example, EvaluationResult
+from phoenix.experiments import run_experiment
+from phoenix.experiments.types import EvaluationResult
 from phoenix.session.client import Client
-from phoenix.trace import SpanEvaluations
-from phoenix.trace.dsl import SpanQuery
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, List
 
 # -------------------------------------------------------------------
 # Ensure prototype4 root (parent of Evaluations) is on sys.path
@@ -52,7 +45,7 @@ from main import main
 # Prepare test data
 agent_ground_truth = {
     # Basic Retrieval
-    "What is the amount of men in Prague at the end of Q3 2024?": "676069",
+    # "What is the amount of men in Prague at the end of Q3 2024?": "676069",
 #     "What is the amount of women in Prague at the end of Q3 2024?": "716056",
 #     "What is the amount of women in Zlin region at the end of Q3 2024?": "294996",    
 #     "What was the total population of Czech Republic at the start of Q1-Q3 2024?": "10900555",
@@ -83,19 +76,19 @@ agent_ground_truth = {
 #     "Which region had the most balanced gender ratio at period end?": "Vysočina (50.7% female)",
 #     "How many women per 100 men in Olomouc at mid-year?": "104.4",
     
-#     # Complex Joins/Logic
-#     "Compare Prague's start vs end population for men and women": "Men: +5389, Women: +2004",
-#     "Rank regions by population growth rate from start to end": "1. Prague (+0.53%), 2. Central Bohemia (+0.46%)...",
-#     "List regions where women population decreased >1000": "Ústí (-1466), Moravian-Silesia (-3299)",
-#     "Show regions where mid-period population was < start but > end": "None (no such cases)",
+    # Complex Joins/Logic
+    "Compare Prague's start vs end population for men and women": "Men: +5389, Women: +2004",
+    "Rank regions by population growth rate from start to end": "1. Prague (+0.53%), 2. Central Bohemia (+0.46%)...",
+    "List regions where women population decreased >1000": "Ústí (-1466), Moravian-Silesia (-3299)",
+    "Show regions where mid-period population was < start but > end": "None (no such cases)",
     
-#     # Edge Cases
-#     "What if Karlovy Vary had no data for mid-period women count?": "NULL",
-#     "Show regions with exactly 500,000 residents at any point": "None",
-#     "Find records where male count equals female count": "None",
-#     "List regions with unreported start-period data": "None (all reported)",
-#     "What was Brno's population?": "[Brno not listed as separate region]",
-#     "Current male population in undefined 'North Region'": "[Region doesn't exist]",
+    # Edge Cases
+    "What if Karlovy Vary had no data for mid-period women count?": "NULL",
+    "Show regions with exactly 500,000 residents at any point": "There are no such regions",
+    "Find records where male count equals female count": "None",
+    "List regions with unreported start-period data": "None (all reported)",
+    "What was Brno's population?": "[Brno not listed as separate region]",
+    "Current male population in undefined 'North Region'": "[Region doesn't exist]",
     
 #     # Negative/Inverse Queries
 #     "Which regions did NOT experience population decline?": "Prague, Central Bohemia, South Moravia",
@@ -306,7 +299,7 @@ def run_evaluation():
 
     # Convert to DataFrame with correct column names for Phoenix QA eval
     new_data_df = pd.DataFrame(agent_ground_truth.items(), columns=["question", "context"])
-    dataset_name = "agent_output_evaluation_langchain7"
+    dataset_name = "agent_output_evaluation_langchain10"
 
     # Get or create dataset with updated input/output keys
     dataset = get_or_create_dataset(

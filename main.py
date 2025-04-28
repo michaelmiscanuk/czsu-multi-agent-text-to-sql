@@ -27,7 +27,7 @@ from my_agent.utils.state import DataAnalysisState
 # CONSTANTS & CONFIGURATION
 #==============================================================================
 # Default prompt if none provided
-DEFAULT_PROMPT = "What is the amount of men in Prague at the end of Q3 2024?"
+DEFAULT_PROMPT = "Sum all regional end-period populations - does it match Česko?"
 
 #==============================================================================
 # MAIN FUNCTION

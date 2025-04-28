@@ -2342,3 +2342,70 @@ Result: Based on your question 'What is the amount of women in Prague at the end
 Prompt: What is the amount of women in Zlin region at the end of Q3 2024?
 Result: Based on your question 'What is the amount of women in Zlin region at the end of Q3 2024?', the answer is: 294996
 ----------------------------------------------------------------------------
+Prompt: What is the amount of men in Prague at the end of Q3 2024?
+Result: Based on your question 'What is the amount of men in Prague at the end of Q3 2024?', the answer is: 676069
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: What is the amount of men in Prague at the end of Q3 2024?
+Result: Based on your question 'What is the amount of men in Prague at the end of Q3 2024?', the answer is: 676069
+----------------------------------------------------------------------------
+Prompt: What is the amount of men in Prague at the end of Q3 2024?
+Result: Based on your question 'What is the amount of men in Prague at the end of Q3 2024?', the answer is: 676069
+----------------------------------------------------------------------------
+Prompt: Sum all regional end-period populations - does it match Česko?
+Result: Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Compare Prague's start vs end population for men and women
+Result: Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value
+Počet obyvatel na počátku období - muži 670680
+Počet obyvatel na počátku období - ženy 714052
+  Počet obyvatel na konci období - muži 676069
+  Počet obyvatel na konci období - ženy 716056
+----------------------------------------------------------------------------
+Prompt: Rank regions by population growth rate from start to end
+Result: Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)
+----------------------------------------------------------------------------
+Prompt: List regions where women population decreased >1000
+Result: Based on your question 'List regions where women population decreased >1000', the answer is: Česko
+       Plzeňský kraj
+    Karlovarský kraj
+        Ústecký kraj
+      Liberecký kraj
+Moravskoslezský kraj
+----------------------------------------------------------------------------
+Prompt: What if Karlovy Vary had no data for mid-period women count?
+Result: Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False
+----------------------------------------------------------------------------
+Prompt: Find records where male count equals female count
+Result: Based on your question 'Find records where male count equals female count', the answer is: Empty DataFrame
+Columns: [Kumulace čtvrtletí, ČR, kraje, Ukazatel, value]
+Index: []
+----------------------------------------------------------------------------
+Prompt: List regions with unreported start-period data
+Result: Based on your question 'List regions with unreported start-period data', the answer is: []
+----------------------------------------------------------------------------
+Prompt: What was Brno's population?
+Result: Based on your question 'What was Brno's population?', the answer is: 1227503
+----------------------------------------------------------------------------
+Prompt: Current male population in undefined 'North Region'
+Result: Error: 20: Query error: 'column_name'
+----------------------------------------------------------------------------

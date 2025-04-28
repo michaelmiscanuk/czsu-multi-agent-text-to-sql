@@ -78,31 +78,6 @@ def load_schema():
 #==============================================================================
 # NODE FUNCTIONS
 #==============================================================================
-def save_result(state: DataAnalysisState) -> DataAnalysisState:
-    """Save the result to a file."""
-    result_path = BASE_DIR / "analysis_results.txt"
-    result_obj = {
-        "prompt": state.prompt,
-        "result": state.result
-    }
-    with result_path.open("a", encoding='utf-8') as f:
-        f.write(f"Prompt: {state.prompt}\n")
-        f.write(f"Result: {state.result}\n")
-        f.write(f"----------------------------------------------------------------------------\n")
-    json_result_path = BASE_DIR / "analysis_results.json"
-    existing_results = []
-    if json_result_path.exists():
-        try:
-            with json_result_path.open("r", encoding='utf-8') as f:
-                existing_results = json.load(f)
-        except json.JSONDecodeError:
-            existing_results = []
-    existing_results.append(result_obj)
-    with json_result_path.open("w", encoding='utf-8') as f:
-        json.dump(existing_results, f, ensure_ascii=False, indent=2)
-    debug_print(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}")
-    return state
-
 def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Get schema details for relevant columns."""
     debug_print(f"{GET_SCHEMA_ID}: Enter get_schema_node")
@@ -159,9 +134,9 @@ No markdown fences, no comments, no extra prose.
     debug_print(f"{QUERY_GEN_ID}: Query generated and appended")
     return state
 
-def model_check_query_node(state: DataAnalysisState) -> DataAnalysisState:
+def check_query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Double-check the pandas query for common mistakes."""
-    debug_print(f"{CHECK_QUERY_ID}: Enter model_check_query_node")
+    debug_print(f"{CHECK_QUERY_ID}: Enter check_query_node")
     llm = get_azure_llm(temperature=0.0)
     
     #--------------------------------------------------------------------------
@@ -276,9 +251,36 @@ def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     debug_print(f"{SUBMIT_FINAL_ID}: Final answer prepared")
     return state
 
+def save_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Save the result to a file."""
+    debug_print(f"{SAVE_RESULT_ID}: Enter save_node")
+    result_path = BASE_DIR / "analysis_results.txt"
+    result_obj = {
+        "prompt": state.prompt,
+        "result": state.result
+    }
+    with result_path.open("a", encoding='utf-8') as f:
+        f.write(f"Prompt: {state.prompt}\n")
+        f.write(f"Result: {state.result}\n")
+        f.write(f"----------------------------------------------------------------------------\n")
+    json_result_path = BASE_DIR / "analysis_results.json"
+    existing_results = []
+    if json_result_path.exists():
+        try:
+            with json_result_path.open("r", encoding='utf-8') as f:
+                existing_results = json.load(f)
+        except json.JSONDecodeError:
+            existing_results = []
+    existing_results.append(result_obj)
+    with json_result_path.open("w", encoding='utf-8') as f:
+        json.dump(existing_results, f, ensure_ascii=False, indent=2)
+    debug_print(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}")
+    return state
+
 #==============================================================================
 # FLOW CONTROL FUNCTIONS
 #==============================================================================
+
 def should_continue(state: DataAnalysisState) -> Literal["submit_final_answer", "correct_query"]:
     """Decide whether to continue the workflow or submit the final answer.
     
@@ -308,8 +310,8 @@ def should_continue(state: DataAnalysisState) -> Literal["submit_final_answer", 
         state.result = f"Max iterations reached. Last message: {state.messages[-1].content}"
         return "submit_final_answer"
     
-    # Check for successful query execution by looking for result marker
-    # This allows short-circuiting the correction loop when we have what we need
+    # Check if the last message contains "Query result:" prefix, indicating successful execution
+    # This determines if we can proceed to final answer or need another correction cycle
     if "Query result:" in state.messages[-1].content:
         debug_print(f"{SHOULD_CONTINUE_ID}: Query result detected, submitting final answer")
         return "submit_final_answer"

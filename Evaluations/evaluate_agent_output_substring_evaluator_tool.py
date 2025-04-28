@@ -12,22 +12,13 @@ includes the answer but may format it differently or add additional context.
 # IMPORTS
 #==============================================================================
 import asyncio
-import os
 import re
 import sys
-import time
-import uuid
 from pathlib import Path
 
-import nest_asyncio
 import pandas as pd
-from phoenix.evals import TOOL_CALLING_PROMPT_TEMPLATE, OpenAIModel, llm_classify
-from phoenix.experiments import evaluate_experiment, run_experiment
-from phoenix.experiments.evaluators import create_evaluator
-from phoenix.experiments.types import Example
+from phoenix.experiments import run_experiment
 from phoenix.session.client import Client
-from phoenix.trace import SpanEvaluations
-from phoenix.trace.dsl import SpanQuery
 
 # -------------------------------------------------------------------
 # Ensure prototype4 root (parent of Evaluations) is on sys.path
