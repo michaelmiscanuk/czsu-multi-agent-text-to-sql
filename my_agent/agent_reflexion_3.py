@@ -17,11 +17,11 @@ flow that prevents common failure modes in LLM-based systems.
 # IMPORTS
 #==============================================================================
 from dotenv import load_dotenv
-from langgraph.graph import END, START, StateGraph
+from langgraph.graph import END, START, StateGraph, MessageGraph
 from langgraph.checkpoint.memory import MemorySaver
 
 from .utils import DataAnalysisState, save_node
-from .utils.nodes import (
+from .utils.nodes_3 import (
     get_schema_node,
     query_gen_node,
     execute_query_node,
