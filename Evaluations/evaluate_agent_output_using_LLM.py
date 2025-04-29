@@ -299,7 +299,7 @@ def run_evaluation():
 
     # Convert to DataFrame with correct column names for Phoenix QA eval
     new_data_df = pd.DataFrame(agent_ground_truth.items(), columns=["question", "context"])
-    dataset_name = "agent_output_evaluation_langchain10"
+    dataset_name = "agent_output_evaluation_langchain7"
 
     # Get or create dataset with updated input/output keys
     dataset = get_or_create_dataset(

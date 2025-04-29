@@ -18,7 +18,6 @@ import ast  # used for syntax validation of generated pandas expressions
 
 from .state import DataAnalysisState
 from .tools import PandasQueryTool, DEBUG_MODE
-from .models import get_azure_llm
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -47,6 +46,24 @@ def debug_print(msg: str) -> None:
     """
     if DEBUG_MODE:
         print(msg)
+
+def get_azure_llm(temperature=0.0):
+    """Get an instance of Azure OpenAI LLM with standard configuration.
+    
+    Args:
+        temperature (float): Temperature setting for generation randomness
+        
+    Returns:
+        AzureChatOpenAI: Configured LLM instance
+    """
+    return AzureChatOpenAI(
+        deployment_name='gpt-4o__test1',
+        model_name='gpt-4o',
+        openai_api_version='2024-05-01-preview',
+        temperature=temperature,
+        azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
+        api_key=os.getenv('AZURE_OPENAI_API_KEY')
+    )
 
 def load_schema():
     """Load the schema metadata from the JSON file.

@@ -326,5 +326,469 @@
   {
     "prompt": "Sum all regional end-period populations - does it match Česko?",
     "result": "Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True"
+  },
+  {
+    "prompt": "Sum all regional end-period populations - does it match Česko?",
+    "result": "Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True"
+  },
+  {
+    "prompt": "What is the amount of men in Prague at the end of Q3 2024?",
+    "result": "Based on your question 'What is the amount of men in Prague at the end of Q3 2024?', the answer is: 676069"
+  },
+  {
+    "prompt": "What is the amount of women in Prague at the end of Q3 2024?",
+    "result": "Based on your question 'What is the amount of women in Prague at the end of Q3 2024?', the answer is: 716056"
+  },
+  {
+    "prompt": "What is the amount of women in Zlin region at the end of Q3 2024?",
+    "result": "Based on your question 'What is the amount of women in Zlin region at the end of Q3 2024?', the answer is: 294996"
+  },
+  {
+    "prompt": "What was the total population of Czech Republic at the start of Q1-Q3 2024?",
+    "result": "Based on your question 'What was the total population of Czech Republic at the start of Q1-Q3 2024?', the answer is: 10900555"
+  },
+  {
+    "prompt": "Show me the female population in South Moravia at mid-2024?",
+    "result": "Based on your question 'Show me the female population in South Moravia at mid-2024?', the answer is: 625214"
+  },
+  {
+    "prompt": "What was the middle-period population count for Zlín Region?",
+    "result": "Based on your question 'What was the middle-period population count for Zlín Region?', the answer is: 579562"
+  },
+  {
+    "prompt": "Did Prague have more residents than Central Bohemia at the start of 2024?",
+    "result": "Based on your question 'Did Prague have more residents than Central Bohemia at the start of 2024?', the answer is: ČR, kraje   value\nHlavní město Praha 1384732\n  Středočeský kraj 1455940"
+  },
+  {
+    "prompt": "Which region had higher female population - Liberec or Karlovy Vary at period end?",
+    "result": "Based on your question 'Which region had higher female population - Liberec or Karlovy Vary at period end?', the answer is: ČR, kraje  value\nKarlovarský kraj 150270\n  Liberecký kraj 228648"
+  },
+  {
+    "prompt": "List regions where mid-period male population exceeded 300,000",
+    "result": "Based on your question 'List regions where mid-period male population exceeded 300,000', the answer is: Hlavní město Praha\n    Středočeský kraj\n      Jihočeský kraj\n       Plzeňský kraj\n        Ústecký kraj\n   Jihomoravský kraj\n      Olomoucký kraj\nMoravskoslezský kraj"
+  },
+  {
+    "prompt": "Was there any quarter where Plzeň's women outnumbered men by >15,000?",
+    "result": "Based on your question 'Was there any quarter where Plzeň's women outnumbered men by >15,000?', the answer is: False"
+  },
+  {
+    "prompt": "What was the average male population across all regions at period end?",
+    "result": "Based on your question 'What was the average male population across all regions at period end?', the answer is: 381994.5"
+  },
+  {
+    "prompt": "Which region had the lowest total population at the end of Q3?",
+    "result": "Based on your question 'Which region had the lowest total population at the end of Q3?', the answer is: Karlovarský kraj\n          293218"
+  },
+  {
+    "prompt": "Count how many regions had <500k total residents mid-period",
+    "result": "Based on your question 'Count how many regions had <500k total residents mid-period', the answer is: 2"
+  },
+  {
+    "prompt": "What was the maximum female population recorded in any region?",
+    "result": "Based on your question 'What was the maximum female population recorded in any region?', the answer is: 741188"
+  },
+  {
+    "prompt": "How much did Prague's population grow from start to end of Q3?",
+    "result": "Based on your question 'How much did Prague's population grow from start to end of Q3?', the answer is: 7393"
+  },
+  {
+    "prompt": "Calculate percentage change in Ústí's male population (start vs end)",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Which region had the steepest population decline?",
+    "result": "Based on your question 'Which region had the steepest population decline?', the answer is: Moravskoslezský kraj"
+  },
+  {
+    "prompt": "What was South Bohemia's population change rate per month?",
+    "result": "Based on your question 'What was South Bohemia's population change rate per month?', the answer is: 128.77777777777777"
+  },
+  {
+    "prompt": "What percentage of Pardubice region was female at mid-period?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "What was the male:female ratio in Vysočina at period start?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Which region had the most balanced gender ratio at period end?",
+    "result": "Based on your question 'Which region had the most balanced gender ratio at period end?', the answer is: Kraj Vysočina"
+  },
+  {
+    "prompt": "How many women per 100 men in Olomouc at mid-year?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Compare Prague's start vs end population for men and women",
+    "result": "Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value\nPočet obyvatel na počátku období - muži 670680\nPočet obyvatel na počátku období - ženy 714052\n  Počet obyvatel na konci období - muži 676069\n  Počet obyvatel na konci období - ženy 716056"
+  },
+  {
+    "prompt": "Rank regions by population growth rate from start to end",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "List regions where women population decreased >1000",
+    "result": "Based on your question 'List regions where women population decreased >1000', the answer is: Česko\n       Plzeňský kraj\n    Karlovarský kraj\n        Ústecký kraj\n      Liberecký kraj\nMoravskoslezský kraj"
+  },
+  {
+    "prompt": "Show regions where mid-period population was < start but > end",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "What if Karlovy Vary had no data for mid-period women count?",
+    "result": "Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False"
+  },
+  {
+    "prompt": "Show regions with exactly 500,000 residents at any point",
+    "result": "Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame\nColumns: [ČR, kraje]\nIndex: []"
+  },
+  {
+    "prompt": "Find records where male count equals female count",
+    "result": "Error: 20: Query error: Can only compare identically-labeled Series objects"
+  },
+  {
+    "prompt": "List regions with unreported start-period data",
+    "result": "Based on your question 'List regions with unreported start-period data', the answer is: Series([], )"
+  },
+  {
+    "prompt": "What was Brno's population?",
+    "result": "Based on your question 'What was Brno's population?', the answer is: 1227503"
+  },
+  {
+    "prompt": "Current male population in undefined 'North Region'",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Which regions did NOT experience population decline?",
+    "result": "Based on your question 'Which regions did NOT experience population decline?', the answer is: ['Hlavní město Praha' 'Středočeský kraj' 'Jihočeský kraj' 'Plzeňský kraj'\n 'Karlovarský kraj' 'Ústecký kraj' 'Liberecký kraj' 'Královéhradecký kraj'\n 'Pardubický kraj' 'Kraj Vysočina' 'Jihomoravský kraj' 'Olomoucký kraj'\n 'Zlínský kraj' 'Moravskoslezský kraj']"
+  },
+  {
+    "prompt": "Were there any quarters where no region had growing population?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "List regions where women count never exceeded men count",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Tell me approximate folks count in Plzeň around mid-year",
+    "result": "Based on your question 'Tell me approximate folks count in Plzeň around mid-year', the answer is: 612025"
+  },
+  {
+    "prompt": "What's the rough male population in Bohemia regions combined?",
+    "result": "Based on your question 'What's the rough male population in Bohemia regions combined?', the answer is: 2637726"
+  },
+  {
+    "prompt": "How many people in that big eastern wine region?",
+    "result": "Based on your question 'How many people in that big eastern wine region?', the answer is: 1226749"
+  },
+  {
+    "prompt": "Show regions with population between 500k-600k at end",
+    "result": "Based on your question 'Show regions with population between 500k-600k at end', the answer is: ČR, kraje  value\nKrálovéhradecký kraj 555850\n     Pardubický kraj 530000\n       Kraj Vysočina 517664\n        Zlínský kraj 579180"
+  },
+  {
+    "prompt": "Which region's population is closest to 400k?",
+    "result": "Based on your question 'Which region's population is closest to 400k?', the answer is: ČR, kraje  value\nLiberecký kraj 449261"
+  },
+  {
+    "prompt": "First 3 regions alphabetically with >700k population",
+    "result": "Based on your question 'First 3 regions alphabetically with >700k population', the answer is: Hlavní město Praha\n   Jihomoravský kraj\nMoravskoslezský kraj"
+  },
+  {
+    "prompt": "What was the national population density assuming 78,866 km² area?",
+    "result": "Based on your question 'What was the national population density assuming 78,866 km² area?', the answer is: 138.06344939517663"
+  },
+  {
+    "prompt": "Calculate gender imbalance index (|M-F|/total) for Zlín at end",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Sum all regional end-period populations - does it match Česko?",
+    "result": "Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True"
+  },
+  {
+    "prompt": "Project annual growth if Q1-Q3 trend continues for Prague",
+    "result": "Based on your question 'Project annual growth if Q1-Q3 trend continues for Prague', the answer is: 1856166.6666666667"
+  },
+  {
+    "prompt": "When would Karlovy Vary reach 250k residents at current rate?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Compare Q3 2024 growth to same period in hypothetical 2023",
+    "result": "Based on your question 'Compare Q3 2024 growth to same period in hypothetical 2023', the answer is: 10897237"
+  },
+  {
+    "prompt": "Query population for non-existent 'West Bohemia' region",
+    "result": "Based on your question 'Query population for non-existent 'West Bohemia' region', the answer is: Series([], )"
+  },
+  {
+    "prompt": "Show data for time period not in dataset (Q4 2024)",
+    "result": "Error: Invalid pandas expression received: unterminated string literal (detected at line 1) (<unknown>, line 1)"
+  },
+  {
+    "prompt": "What was population before recorded history?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "For Vysočina, show start/mid/end counts for both genders",
+    "result": "Based on your question 'For Vysočina, show start/mid/end counts for both genders', the answer is: Ukazatel  value\nPočet obyvatel na počátku období - muži 257012\nPočet obyvatel na počátku období - ženy 260948\n           Střední stav obyvatel - muži 256873\n           Střední stav obyvatel - ženy 260373\n  Počet obyvatel na konci období - muži 257229\n  Počet obyvatel na konci období - ženy 260435"
+  },
+  {
+    "prompt": "Compare Prague and Brno demographics",
+    "result": "Based on your question 'Compare Prague and Brno demographics', the answer is: ČR, kraje                                  Ukazatel   value\nHlavní město Praha Počet obyvatel na počátku období - celkem 1384732\nHlavní město Praha   Počet obyvatel na počátku období - muži  670680\nHlavní město Praha   Počet obyvatel na počátku období - ženy  714052\nHlavní město Praha            Střední stav obyvatel - celkem 1386723\nHlavní město Praha              Střední stav obyvatel - muži  672752\nHlavní město Praha              Střední stav obyvatel - ženy  713971\nHlavní město Praha   Počet obyvatel na konci období - celkem 1392125\nHlavní město Praha     Počet obyvatel na konci období - muži  676069\nHlavní město Praha     Počet obyvatel na konci období - ženy  716056\n Jihomoravský kraj Počet obyvatel na počátku období - celkem 1226749\n Jihomoravský kraj   Počet obyvatel na počátku období - muži  600541\n Jihomoravský kraj   Počet obyvatel na počátku období - ženy  626208\n Jihomoravský kraj            Střední stav obyvatel - celkem 1225885\n Jihomoravský kraj              Střední stav obyvatel - muži  600671\n Jihomoravský kraj              Střední stav obyvatel - ženy  625214\n Jihomoravský kraj   Počet obyvatel na konci období - celkem 1227503\n Jihomoravský kraj     Počet obyvatel na konci období - muži  601600\n Jihomoravský kraj     Počet obyvatel na konci období - ženy  625903"
+  },
+  {
+    "prompt": "What is the amount of men in Prague at the end of Q3 2024?",
+    "result": "Based on your question 'What is the amount of men in Prague at the end of Q3 2024?', the answer is: 676069"
+  },
+  {
+    "prompt": "What is the amount of women in Prague at the end of Q3 2024?",
+    "result": "Based on your question 'What is the amount of women in Prague at the end of Q3 2024?', the answer is: 716056"
+  },
+  {
+    "prompt": "What is the amount of women in Zlin region at the end of Q3 2024?",
+    "result": "Based on your question 'What is the amount of women in Zlin region at the end of Q3 2024?', the answer is: 294996"
+  },
+  {
+    "prompt": "What was the total population of Czech Republic at the start of Q1-Q3 2024?",
+    "result": "Based on your question 'What was the total population of Czech Republic at the start of Q1-Q3 2024?', the answer is: 10900555"
+  },
+  {
+    "prompt": "Show me the female population in South Moravia at mid-2024?",
+    "result": "Based on your question 'Show me the female population in South Moravia at mid-2024?', the answer is: 625214"
+  },
+  {
+    "prompt": "What was the middle-period population count for Zlín Region?",
+    "result": "Based on your question 'What was the middle-period population count for Zlín Region?', the answer is: 579562"
+  },
+  {
+    "prompt": "Did Prague have more residents than Central Bohemia at the start of 2024?",
+    "result": "Based on your question 'Did Prague have more residents than Central Bohemia at the start of 2024?', the answer is: ČR, kraje   value\nHlavní město Praha 1384732\n  Středočeský kraj 1455940"
+  },
+  {
+    "prompt": "Which region had higher female population - Liberec or Karlovy Vary at period end?",
+    "result": "Based on your question 'Which region had higher female population - Liberec or Karlovy Vary at period end?', the answer is: ČR, kraje  value\nKarlovarský kraj 150270\n  Liberecký kraj 228648"
+  },
+  {
+    "prompt": "List regions where mid-period male population exceeded 300,000",
+    "result": "Based on your question 'List regions where mid-period male population exceeded 300,000', the answer is: Hlavní město Praha\n    Středočeský kraj\n      Jihočeský kraj\n       Plzeňský kraj\n        Ústecký kraj\n   Jihomoravský kraj\n      Olomoucký kraj\nMoravskoslezský kraj"
+  },
+  {
+    "prompt": "Was there any quarter where Plzeň's women outnumbered men by >15,000?",
+    "result": "Based on your question 'Was there any quarter where Plzeň's women outnumbered men by >15,000?', the answer is: False"
+  },
+  {
+    "prompt": "What was the average male population across all regions at period end?",
+    "result": "Based on your question 'What was the average male population across all regions at period end?', the answer is: 381994.5"
+  },
+  {
+    "prompt": "Which region had the lowest total population at the end of Q3?",
+    "result": "Based on your question 'Which region had the lowest total population at the end of Q3?', the answer is: Karlovarský kraj\n          293218"
+  },
+  {
+    "prompt": "Count how many regions had <500k total residents mid-period",
+    "result": "Based on your question 'Count how many regions had <500k total residents mid-period', the answer is: 2"
+  },
+  {
+    "prompt": "What was the maximum female population recorded in any region?",
+    "result": "Based on your question 'What was the maximum female population recorded in any region?', the answer is: 741188"
+  },
+  {
+    "prompt": "How much did Prague's population grow from start to end of Q3?",
+    "result": "Based on your question 'How much did Prague's population grow from start to end of Q3?', the answer is: 7393"
+  },
+  {
+    "prompt": "Calculate percentage change in Ústí's male population (start vs end)",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Which region had the steepest population decline?",
+    "result": "Based on your question 'Which region had the steepest population decline?', the answer is: Moravskoslezský kraj\n               -5730"
+  },
+  {
+    "prompt": "What was South Bohemia's population change rate per month?",
+    "result": "Based on your question 'What was South Bohemia's population change rate per month?', the answer is: 654505"
+  },
+  {
+    "prompt": "What percentage of Pardubice region was female at mid-period?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "What was the male:female ratio in Vysočina at period start?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Which region had the most balanced gender ratio at period end?",
+    "result": "Based on your question 'Which region had the most balanced gender ratio at period end?', the answer is: Kraj Vysočina"
+  },
+  {
+    "prompt": "How many women per 100 men in Olomouc at mid-year?",
+    "result": "Based on your question 'How many women per 100 men in Olomouc at mid-year?', the answer is: 104.44624927600007"
+  },
+  {
+    "prompt": "Compare Prague's start vs end population for men and women",
+    "result": "Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value\nPočet obyvatel na počátku období - muži 670680\nPočet obyvatel na počátku období - ženy 714052\n  Počet obyvatel na konci období - muži 676069\n  Počet obyvatel na konci období - ženy 716056"
+  },
+  {
+    "prompt": "Rank regions by population growth rate from start to end",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "List regions where women population decreased >1000",
+    "result": "Based on your question 'List regions where women population decreased >1000', the answer is: Česko\n       Plzeňský kraj\n    Karlovarský kraj\n        Ústecký kraj\n      Liberecký kraj\nMoravskoslezský kraj"
+  },
+  {
+    "prompt": "Show regions where mid-period population was < start but > end",
+    "result": "Error: 20: Query error: ('Lengths must match to compare', (135,), (15,))"
+  },
+  {
+    "prompt": "What if Karlovy Vary had no data for mid-period women count?",
+    "result": "Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False"
+  },
+  {
+    "prompt": "Show regions with exactly 500,000 residents at any point",
+    "result": "Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame\nColumns: [ČR, kraje]\nIndex: []"
+  },
+  {
+    "prompt": "Find records where male count equals female count",
+    "result": "Error: 20: Query error: Can only compare identically-labeled Series objects"
+  },
+  {
+    "prompt": "List regions with unreported start-period data",
+    "result": "Based on your question 'List regions with unreported start-period data', the answer is: Series([], )"
+  },
+  {
+    "prompt": "What was Brno's population?",
+    "result": "Based on your question 'What was Brno's population?', the answer is: 1227503"
+  },
+  {
+    "prompt": "Current male population in undefined 'North Region'",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Which regions did NOT experience population decline?",
+    "result": "Based on your question 'Which regions did NOT experience population decline?', the answer is: ['Hlavní město Praha' 'Středočeský kraj' 'Jihomoravský kraj']"
+  },
+  {
+    "prompt": "Were there any quarters where no region had growing population?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "List regions where women count never exceeded men count",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Tell me approximate folks count in Plzeň around mid-year",
+    "result": "Based on your question 'Tell me approximate folks count in Plzeň around mid-year', the answer is: 612025"
+  },
+  {
+    "prompt": "What's the rough male population in Bohemia regions combined?",
+    "result": "Based on your question 'What's the rough male population in Bohemia regions combined?', the answer is: 2637726"
+  },
+  {
+    "prompt": "How many people in that big eastern wine region?",
+    "result": "Based on your question 'How many people in that big eastern wine region?', the answer is: 1226749"
+  },
+  {
+    "prompt": "Show regions with population between 500k-600k at end",
+    "result": "Based on your question 'Show regions with population between 500k-600k at end', the answer is: ČR, kraje  value\nKrálovéhradecký kraj 555850\n     Pardubický kraj 530000\n       Kraj Vysočina 517664\n        Zlínský kraj 579180"
+  },
+  {
+    "prompt": "Which region's population is closest to 400k?",
+    "result": "Based on your question 'Which region's population is closest to 400k?', the answer is: ČR, kraje  value\nLiberecký kraj 449261"
+  },
+  {
+    "prompt": "First 3 regions alphabetically with >700k population",
+    "result": "Based on your question 'First 3 regions alphabetically with >700k population', the answer is: ČR, kraje\n  Hlavní město Praha\n   Jihomoravský kraj\nMoravskoslezský kraj"
+  },
+  {
+    "prompt": "What was the national population density assuming 78,866 km² area?",
+    "result": "Based on your question 'What was the national population density assuming 78,866 km² area?', the answer is: 138.06344939517663"
+  },
+  {
+    "prompt": "Calculate gender imbalance index (|M-F|/total) for Zlín at end",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Sum all regional end-period populations - does it match Česko?",
+    "result": "Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True"
+  },
+  {
+    "prompt": "Project annual growth if Q1-Q3 trend continues for Prague",
+    "result": "Based on your question 'Project annual growth if Q1-Q3 trend continues for Prague', the answer is: 1856166.6666666667"
+  },
+  {
+    "prompt": "When would Karlovy Vary reach 250k residents at current rate?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Compare Q3 2024 growth to same period in hypothetical 2023",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "Query population for non-existent 'West Bohemia' region",
+    "result": "Based on your question 'Query population for non-existent 'West Bohemia' region', the answer is: Series([], )"
+  },
+  {
+    "prompt": "Show data for time period not in dataset (Q4 2024)",
+    "result": "Error: Invalid pandas expression received: unterminated string literal (detected at line 1) (<unknown>, line 1)"
+  },
+  {
+    "prompt": "What was population before recorded history?",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "For Vysočina, show start/mid/end counts for both genders",
+    "result": "Based on your question 'For Vysočina, show start/mid/end counts for both genders', the answer is: Ukazatel  value\nPočet obyvatel na počátku období - muži 257012\nPočet obyvatel na počátku období - ženy 260948\n           Střední stav obyvatel - muži 256873\n           Střední stav obyvatel - ženy 260373\n  Počet obyvatel na konci období - muži 257229\n  Počet obyvatel na konci období - ženy 260435"
+  },
+  {
+    "prompt": "Compare Prague and Brno demographics",
+    "result": "Based on your question 'Compare Prague and Brno demographics', the answer is: ČR, kraje                                  Ukazatel   value\nHlavní město Praha Počet obyvatel na počátku období - celkem 1384732\nHlavní město Praha   Počet obyvatel na počátku období - muži  670680\nHlavní město Praha   Počet obyvatel na počátku období - ženy  714052\nHlavní město Praha            Střední stav obyvatel - celkem 1386723\nHlavní město Praha              Střední stav obyvatel - muži  672752\nHlavní město Praha              Střední stav obyvatel - ženy  713971\nHlavní město Praha   Počet obyvatel na konci období - celkem 1392125\nHlavní město Praha     Počet obyvatel na konci období - muži  676069\nHlavní město Praha     Počet obyvatel na konci období - ženy  716056\n Jihomoravský kraj Počet obyvatel na počátku období - celkem 1226749\n Jihomoravský kraj   Počet obyvatel na počátku období - muži  600541\n Jihomoravský kraj   Počet obyvatel na počátku období - ženy  626208\n Jihomoravský kraj            Střední stav obyvatel - celkem 1225885\n Jihomoravský kraj              Střední stav obyvatel - muži  600671\n Jihomoravský kraj              Střední stav obyvatel - ženy  625214\n Jihomoravský kraj   Počet obyvatel na konci období - celkem 1227503\n Jihomoravský kraj     Počet obyvatel na konci období - muži  601600\n Jihomoravský kraj     Počet obyvatel na konci období - ženy  625903"
+  },
+  {
+    "prompt": "Sum all regional end-period populations - does it match Česko?",
+    "result": "Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True"
+  },
+  {
+    "prompt": "Show regions with exactly 500,000 residents at any point",
+    "result": "Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame\nColumns: [ČR, kraje]\nIndex: []"
+  },
+  {
+    "prompt": "Compare Prague's start vs end population for men and women",
+    "result": "Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value\nPočet obyvatel na počátku období - muži 670680\nPočet obyvatel na počátku období - ženy 714052\n  Počet obyvatel na konci období - muži 676069\n  Počet obyvatel na konci období - ženy 716056"
+  },
+  {
+    "prompt": "Rank regions by population growth rate from start to end",
+    "result": "Based on your question 'Rank regions by population growth rate from start to end', the answer is: ČR, kraje\n 0.005339\n 0.004583\n 0.000615\n-0.000432\n-0.000571\n-0.001055\n-0.001771\n-0.001858\n-0.001973\n-0.002693\n-0.003255\n-0.003652\n-0.004818\n-0.006300"
+  },
+  {
+    "prompt": "List regions where women population decreased >1000",
+    "result": "Based on your question 'List regions where women population decreased >1000', the answer is: Česko\n       Plzeňský kraj\n    Karlovarský kraj\n        Ústecký kraj\n      Liberecký kraj\nMoravskoslezský kraj"
+  },
+  {
+    "prompt": "Show regions where mid-period population was < start but > end",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
+  },
+  {
+    "prompt": "What if Karlovy Vary had no data for mid-period women count?",
+    "result": "Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False"
+  },
+  {
+    "prompt": "Find records where male count equals female count",
+    "result": "Error: 20: Query error: Can only compare identically-labeled Series objects"
+  },
+  {
+    "prompt": "List regions with unreported start-period data",
+    "result": "Based on your question 'List regions with unreported start-period data', the answer is: []"
+  },
+  {
+    "prompt": "What was Brno's population?",
+    "result": "Based on your question 'What was Brno's population?', the answer is: 1227503"
+  },
+  {
+    "prompt": "Current male population in undefined 'North Region'",
+    "result": "Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)"
   }
 ]
