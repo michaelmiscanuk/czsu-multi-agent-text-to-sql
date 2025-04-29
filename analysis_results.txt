@@ -2409,3 +2409,276 @@ Result: Based on your question 'What was Brno's population?', the answer is: 122
 Prompt: Current male population in undefined 'North Region'
 Result: Error: 20: Query error: 'column_name'
 ----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Compare Prague's start vs end population for men and women
+Result: Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value
+Počet obyvatel na počátku období - muži 670680
+Počet obyvatel na počátku období - ženy 714052
+  Počet obyvatel na konci období - muži 676069
+  Počet obyvatel na konci období - ženy 716056
+----------------------------------------------------------------------------
+Prompt: Rank regions by population growth rate from start to end
+Result: Based on your question 'Rank regions by population growth rate from start to end', the answer is: ČR, kraje  GrowthRate
+  Hlavní město Praha    0.005339
+    Středočeský kraj    0.004583
+   Jihomoravský kraj    0.000615
+       Plzeňský kraj   -0.000432
+       Kraj Vysočina   -0.000571
+     Pardubický kraj   -0.001055
+      Jihočeský kraj   -0.001771
+      Olomoucký kraj   -0.001858
+Královéhradecký kraj   -0.001973
+        Zlínský kraj   -0.002693
+      Liberecký kraj   -0.003255
+        Ústecký kraj   -0.003652
+Moravskoslezský kraj   -0.004818
+    Karlovarský kraj   -0.006300
+----------------------------------------------------------------------------
+Prompt: List regions where women population decreased >1000
+Result: Based on your question 'List regions where women population decreased >1000', the answer is: Česko
+       Plzeňský kraj
+    Karlovarský kraj
+        Ústecký kraj
+      Liberecký kraj
+Moravskoslezský kraj
+----------------------------------------------------------------------------
+Prompt: Show regions where mid-period population was < start but > end
+Result: Error: 20: Query error: name 'df_pivot' is not defined
+----------------------------------------------------------------------------
+Prompt: What if Karlovy Vary had no data for mid-period women count?
+Result: Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False
+----------------------------------------------------------------------------
+Prompt: Find records where male count equals female count
+Result: Based on your question 'Find records where male count equals female count', the answer is: Empty DataFrame
+Columns: [Kumulace čtvrtletí, ČR, kraje, Ukazatel, value]
+Index: []
+----------------------------------------------------------------------------
+Prompt: List regions with unreported start-period data
+Result: Based on your question 'List regions with unreported start-period data', the answer is: []
+----------------------------------------------------------------------------
+Prompt: What was Brno's population?
+Result: Based on your question 'What was Brno's population?', the answer is: 1227503
+----------------------------------------------------------------------------
+Prompt: Current male population in undefined 'North Region'
+Result: Error: 20: Query error: 'column_name'
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Compare Prague's start vs end population for men and women
+Result: Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value
+Počet obyvatel na počátku období - muži 670680
+Počet obyvatel na počátku období - ženy 714052
+  Počet obyvatel na konci období - muži 676069
+  Počet obyvatel na konci období - ženy 716056
+----------------------------------------------------------------------------
+Prompt: Rank regions by population growth rate from start to end
+Result: Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)
+----------------------------------------------------------------------------
+Prompt: List regions where women population decreased >1000
+Result: Based on your question 'List regions where women population decreased >1000', the answer is: -2004
+-2420
+  887
+ 1073
+ 1228
+ 1466
+ 1142
+  815
+  651
+  513
+  305
+  792
+  884
+ 3299
+----------------------------------------------------------------------------
+Prompt: Show regions where mid-period population was < start but > end
+Result: Based on your question 'Show regions where mid-period population was < start but > end', the answer is: Series([], )
+----------------------------------------------------------------------------
+Prompt: What if Karlovy Vary had no data for mid-period women count?
+Result: Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False
+----------------------------------------------------------------------------
+Prompt: Find records where male count equals female count
+Result: Based on your question 'Find records where male count equals female count', the answer is: Empty DataFrame
+Columns: [Kumulace čtvrtletí, ČR, kraje, Ukazatel, value]
+Index: []
+----------------------------------------------------------------------------
+Prompt: List regions with unreported start-period data
+Result: Based on your question 'List regions with unreported start-period data', the answer is: []
+----------------------------------------------------------------------------
+Prompt: What was Brno's population?
+Result: Based on your question 'What was Brno's population?', the answer is: 1227503
+----------------------------------------------------------------------------
+Prompt: Current male population in undefined 'North Region'
+Result: Error: 20: Query error: 'column_name'
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Compare Prague's start vs end population for men and women
+Result: Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value
+Počet obyvatel na počátku období - muži 670680
+Počet obyvatel na počátku období - ženy 714052
+  Počet obyvatel na konci období - muži 676069
+  Počet obyvatel na konci období - ženy 716056
+----------------------------------------------------------------------------
+Prompt: Rank regions by population growth rate from start to end
+Result: Based on your question 'Rank regions by population growth rate from start to end', the answer is: ČR, kraje  GrowthRate
+  Hlavní město Praha    0.005339
+    Středočeský kraj    0.004583
+   Jihomoravský kraj    0.000615
+       Plzeňský kraj   -0.000432
+       Kraj Vysočina   -0.000571
+     Pardubický kraj   -0.001055
+      Jihočeský kraj   -0.001771
+      Olomoucký kraj   -0.001858
+Královéhradecký kraj   -0.001973
+        Zlínský kraj   -0.002693
+      Liberecký kraj   -0.003255
+        Ústecký kraj   -0.003652
+Moravskoslezský kraj   -0.004818
+    Karlovarský kraj   -0.006300
+----------------------------------------------------------------------------
+Prompt: List regions where women population decreased >1000
+Result: Based on your question 'List regions where women population decreased >1000', the answer is: Česko
+       Plzeňský kraj
+    Karlovarský kraj
+        Ústecký kraj
+      Liberecký kraj
+Moravskoslezský kraj
+----------------------------------------------------------------------------
+Prompt: Show regions where mid-period population was < start but > end
+Result: Based on your question 'Show regions where mid-period population was < start but > end', the answer is: []
+----------------------------------------------------------------------------
+Prompt: What if Karlovy Vary had no data for mid-period women count?
+Result: Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False
+----------------------------------------------------------------------------
+Prompt: Find records where male count equals female count
+Result: Based on your question 'Find records where male count equals female count', the answer is: Empty DataFrame
+Columns: [Kumulace čtvrtletí, ČR, kraje, Ukazatel, value]
+Index: []
+----------------------------------------------------------------------------
+Prompt: List regions with unreported start-period data
+Result: Based on your question 'List regions with unreported start-period data', the answer is: Series([], )
+----------------------------------------------------------------------------
+Prompt: What was Brno's population?
+Result: Based on your question 'What was Brno's population?', the answer is: 1227503
+----------------------------------------------------------------------------
+Prompt: Current male population in undefined 'North Region'
+Result: Error: 20: Query error: 'column_name'
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Compare Prague's start vs end population for men and women
+Result: Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value
+Počet obyvatel na počátku období - muži 670680
+Počet obyvatel na počátku období - ženy 714052
+  Počet obyvatel na konci období - muži 676069
+  Počet obyvatel na konci období - ženy 716056
+----------------------------------------------------------------------------
+Prompt: Rank regions by population growth rate from start to end
+Result: Based on your question 'Rank regions by population growth rate from start to end', the answer is: ČR, kraje  GrowthRate
+  Hlavní město Praha    0.005339
+    Středočeský kraj    0.004583
+   Jihomoravský kraj    0.000615
+       Plzeňský kraj   -0.000432
+       Kraj Vysočina   -0.000571
+     Pardubický kraj   -0.001055
+      Jihočeský kraj   -0.001771
+      Olomoucký kraj   -0.001858
+Královéhradecký kraj   -0.001973
+        Zlínský kraj   -0.002693
+      Liberecký kraj   -0.003255
+        Ústecký kraj   -0.003652
+Moravskoslezský kraj   -0.004818
+    Karlovarský kraj   -0.006300
+----------------------------------------------------------------------------
+Prompt: List regions where women population decreased >1000
+Result: Based on your question 'List regions where women population decreased >1000', the answer is: -2004
+-2420
+  887
+ 1073
+ 1228
+ 1466
+ 1142
+  815
+  651
+  513
+  305
+  792
+  884
+ 3299
+----------------------------------------------------------------------------
+Prompt: Show regions where mid-period population was < start but > end
+Result: Based on your question 'Show regions where mid-period population was < start but > end', the answer is: Series([], )
+----------------------------------------------------------------------------
+Prompt: What if Karlovy Vary had no data for mid-period women count?
+Result: Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False
+----------------------------------------------------------------------------
+Prompt: Find records where male count equals female count
+Result: Based on your question 'Find records where male count equals female count', the answer is: Empty DataFrame
+Columns: [Kumulace čtvrtletí, ČR, kraje, Ukazatel, value]
+Index: []
+----------------------------------------------------------------------------
+Prompt: List regions with unreported start-period data
+Result: Based on your question 'List regions with unreported start-period data', the answer is: Series([], )
+----------------------------------------------------------------------------
+Prompt: What was Brno's population?
+Result: Based on your question 'What was Brno's population?', the answer is: 1227503
+----------------------------------------------------------------------------
+Prompt: Current male population in undefined 'North Region'
+Result: Error: 20: Query error: 'column_name'
+----------------------------------------------------------------------------
+Prompt: Show regions with exactly 500,000 residents at any point
+Result: Based on your question 'Show regions with exactly 500,000 residents at any point', the answer is: Empty DataFrame
+Columns: [ČR, kraje]
+Index: []
+----------------------------------------------------------------------------
+Prompt: Compare Prague's start vs end population for men and women
+Result: Based on your question 'Compare Prague's start vs end population for men and women', the answer is: Ukazatel  value
+Počet obyvatel na počátku období - muži 670680
+Počet obyvatel na počátku období - ženy 714052
+  Počet obyvatel na konci období - muži 676069
+  Počet obyvatel na konci období - ženy 716056
+----------------------------------------------------------------------------
+Prompt: Rank regions by population growth rate from start to end
+Result: Error: Invalid pandas expression received: invalid syntax (<unknown>, line 1)
+----------------------------------------------------------------------------
+Prompt: List regions where women population decreased >1000
+Result: Based on your question 'List regions where women population decreased >1000', the answer is: Česko
+       Plzeňský kraj
+    Karlovarský kraj
+        Ústecký kraj
+      Liberecký kraj
+Moravskoslezský kraj
+----------------------------------------------------------------------------
+Prompt: What if Karlovy Vary had no data for mid-period women count?
+Result: Based on your question 'What if Karlovy Vary had no data for mid-period women count?', the answer is: False
+----------------------------------------------------------------------------
+Prompt: Find records where male count equals female count
+Result: Based on your question 'Find records where male count equals female count', the answer is: Empty DataFrame
+Columns: [Kumulace čtvrtletí, ČR, kraje, Ukazatel, value]
+Index: []
+----------------------------------------------------------------------------
+Prompt: List regions with unreported start-period data
+Result: Based on your question 'List regions with unreported start-period data', the answer is: []
+----------------------------------------------------------------------------
+Prompt: What was Brno's population?
+Result: Based on your question 'What was Brno's population?', the answer is: 1227503
+----------------------------------------------------------------------------
+Prompt: Current male population in undefined 'North Region'
+Result: Error: 20: Query error: 'column_name'
+----------------------------------------------------------------------------
+Prompt: Sum all regional end-period populations - does it match Česko?
+Result: Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True
+----------------------------------------------------------------------------
