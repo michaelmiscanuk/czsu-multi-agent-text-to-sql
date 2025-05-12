@@ -2682,3 +2682,17 @@ Result: Error: 20: Query error: 'column_name'
 Prompt: Sum all regional end-period populations - does it match Česko?
 Result: Based on your question 'Sum all regional end-period populations - does it match Česko?', the answer is: True
 ----------------------------------------------------------------------------
+Prompt: Sum all regional end-period populations - does it match Česko?
+Result: df[df["ČR, kraje"] != "Česko"][df["Ukazatel"] == "Počet obyvatel na konci období - celkem"]["value"].sum() == df[(df["ČR, kraje"] == "Česko") & (df["Ukazatel"] == "Počet obyvatel na konci období - celkem")]["value"].iloc[0]
+----------------------------------------------------------------------------
+Prompt: Sum all regional end-period populations - does it match Česko?
+Result: df[df["ČR, kraje"] != "Česko"][df["Ukazatel"] == "Počet obyvatel na konci období - celkem"]["value"].sum() == df[(df["ČR, kraje"] == "Česko") & (df["Ukazatel"] == "Počet obyvatel na konci období - celkem")]["value"].iloc[0]
+----------------------------------------------------------------------------
+Prompt: Sum all regional end-period populations - does it match Česko?
+Result: Error: ToolException('20: Query error: invalid syntax (<string>, line 1)')
+ Please fix your mistakes.
+----------------------------------------------------------------------------
+Prompt: Sum all regional end-period populations - does it match Česko?
+Result: Error: ToolException('20: Query error: invalid syntax (<string>, line 1)')
+ Please fix your mistakes.
+----------------------------------------------------------------------------

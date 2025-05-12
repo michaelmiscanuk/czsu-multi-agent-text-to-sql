@@ -64,7 +64,7 @@ def main(prompt=None):
         
     # Initialize tracing for debugging and performance monitoring
     # This is crucial for production deployments to track execution paths
-    instrument(project_name="LangGraph_Prototype4", framework=Framework.LANGGRAPH)
+    # instrument(project_name="LangGraph_Prototype4", framework=Framework.LANGGRAPH)
     
     # Create the LangGraph execution graph - this defines our workflow steps
     graph = create_graph()
