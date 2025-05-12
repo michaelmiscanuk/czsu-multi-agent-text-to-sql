@@ -17,21 +17,29 @@ flow that prevents common failure modes in LLM-based systems.
 # IMPORTS
 #==============================================================================
 from dotenv import load_dotenv
-from langgraph.graph import END, START, StateGraph
+from langgraph.graph import END, START, StateGraph, MessageGraph
 from langgraph.checkpoint.memory import MemorySaver
 
 from .utils import DataAnalysisState, save_node
-from .utils.nodes import (
+from .utils.nodes_3 import (
     get_schema_node,
     query_gen_node,
-    check_query_node,
     execute_query_node,
     submit_final_answer_node,
-    should_continue,
 )
 
 # Load environment variables
 load_dotenv()
+
+#==============================================================================
+# NODE CONSTANTS
+#==============================================================================
+GET_SCHEMA = "get_schema"
+QUERY_GEN = "query_gen"
+CORRECT_QUERY = "correct_query"
+EXECUTE_QUERY = "execute_query"
+SUBMIT_FINAL_ANSWER = "submit_final_answer"
+SAVE = "save"
 
 #==============================================================================
 # GRAPH CREATION
@@ -61,44 +69,30 @@ def create_graph():
     # Add nodes - each handling a specific step in the process
     #--------------------------------------------------------------------------
     # Schema retrieval provides context about available data
-    graph.add_node("get_schema", get_schema_node)
+    graph.add_node(GET_SCHEMA, get_schema_node)
     
     # Query generation converts natural language to executable code
-    graph.add_node("query_gen", query_gen_node)
-    
-    # Query correction handles validation and fixes common errors
-    graph.add_node("correct_query", check_query_node)
-    
+    graph.add_node(QUERY_GEN, query_gen_node)
+       
     # Query execution runs the generated code against the dataset
-    graph.add_node("execute_query", execute_query_node)
+    graph.add_node(EXECUTE_QUERY, execute_query_node)
     
     # Final answer formatting creates user-friendly responses
-    graph.add_node("submit_final_answer", submit_final_answer_node)
+    graph.add_node(SUBMIT_FINAL_ANSWER, submit_final_answer_node)
     
     # Result persistence ensures we don't lose completed analyses
-    graph.add_node("save", save_node)
+    graph.add_node(SAVE, save_node)
 
     #--------------------------------------------------------------------------
-    # Define the graph execution path
+    # Define the graph execution path - simplified linear flow
     #--------------------------------------------------------------------------
-    # Start by loading the schema to understand available data
-    graph.add_edge(START, "get_schema")
-    graph.add_edge("get_schema", "query_gen")
-
-    # After generating a query, decide whether to execute it or get more info
-    # This conditional routing is crucial for handling complex queries
-    graph.add_conditional_edges("query_gen", should_continue)
-
-    # After correction, always proceed to execution
-    graph.add_edge("correct_query", "execute_query")
-
-    # After execution, either submit the answer or fix errors
-    # This creates a correction loop with built-in cycle prevention
-    graph.add_conditional_edges("execute_query", should_continue)
-
-    # Final steps to save the result and complete the graph
-    graph.add_edge("submit_final_answer", "save")
-    graph.add_edge("save", END)
+    # Create a simple linear flow between all nodes
+    graph.add_edge(START, GET_SCHEMA)
+    graph.add_edge(GET_SCHEMA, QUERY_GEN)
+    graph.add_edge(QUERY_GEN, EXECUTE_QUERY)
+    graph.add_edge(EXECUTE_QUERY, SUBMIT_FINAL_ANSWER)
+    graph.add_edge(SUBMIT_FINAL_ANSWER, SAVE)
+    graph.add_edge(SAVE, END)
 
     # Compile with memory-based checkpointing for execution persistence
     # This enables resuming interrupted runs and improves reliability
