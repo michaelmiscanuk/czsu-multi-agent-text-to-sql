@@ -1,11 +1,11 @@
 # CHANGE here which type of agent is used. Specify agent type here.
-agent_type = "basic1"  # Options: "initial", "basic1"
+agent_type = "initial"  # Options: "initial"
 
 # Import based on selected agent type
-if agent_type == "basic_reflection":
+if agent_type == "initial":
     from .agent_basic2 import create_graph
-elif agent_type == "basic1":
-    from .agent_basic1 import create_graph
+# elif agent_type == "basic1":
+#     from .agent_basic1 import create_graph
 else:
     raise ValueError(f"Unknown agent type: {agent_type}. Valid options are: 'basic_reflection', 'initial'")
 

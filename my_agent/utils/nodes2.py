@@ -18,6 +18,7 @@ import ast  # used for syntax validation of generated pandas expressions
 
 from .state import DataAnalysisState
 from .tools import PandasQueryTool, DEBUG_MODE
+from .models import get_azure_llm
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -46,24 +47,6 @@ def debug_print(msg: str) -> None:
     """
     if DEBUG_MODE:
         print(msg)
-
-def get_azure_llm(temperature=0.0):
-    """Get an instance of Azure OpenAI LLM with standard configuration.
-    
-    Args:
-        temperature (float): Temperature setting for generation randomness
-        
-    Returns:
-        AzureChatOpenAI: Configured LLM instance
-    """
-    return AzureChatOpenAI(
-        deployment_name='gpt-4o__test1',
-        model_name='gpt-4o',
-        openai_api_version='2024-05-01-preview',
-        temperature=temperature,
-        azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
-        api_key=os.getenv('AZURE_OPENAI_API_KEY')
-    )
 
 def load_schema():
     """Load the schema metadata from the JSON file.
@@ -96,29 +79,41 @@ def query_gen_node(state: DataAnalysisState) -> DataAnalysisState:
     # Prompt template
     #--------------------------------------------------------------------------
     system_prompt = """
-You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in pandas.
-Your task is to translate the user's natural‑language question into an exact pandas expression,
-execute it (via the pandas_query tool), and deliver the numerical answer.
+You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in pandas. Your task is to translate the user's natural-language question into an exact pandas expression.
 
-1. Understand the prompt and the provided schema (Czech column names & values).
-2. Map Czech/English terms, handle diacritics, and beware of "total / region" rows.
-3. Build a pandas query using the exact column names and matching data values.
-4. Execute & validate: if errors arise, refine the query until it works.
-5. Always answer in the language of the prompt and preserve Czech characters.
-6. Numeric outputs must be plain digits with NO thousands separators.
+1. Read and analyze the provided inputs:
+- User prompt (in Czech or English)
+- Schema metadata (containing Czech column names and values)
+
+2. Process the prompt by:
+- Identifying key terms in either language
+- Matching terms to their Czech equivalents in the schema
+- Handling Czech diacritics and special characters
+- Converting geographical names between languages and similar concepts
+
+3. Create a pandas query by:
+- Using exact column names from the schema (can be Czech or English)
+- Matching user prompt terms to correct data values (the schema contains a list of unique values in specific columns)
+- Ensuring proper string matching for Czech characters
+- Carefully examining dimensional unique values in the schema, especially for columns that may contain both totals and detailed records (e.g., "CZ, Region" may include "Czech Republic" and "Regions")
+
+<examples>
+df[df["Column1"] == "Value1"]["value"]
+df[df["Column1"].isin(["Value1", "Value2"])]["value"].sum()
+df[(df["Column1"] == "Value1") & (df["Column2"] == "Value2")]["value"].mean()
+df.groupby("Column1")["value"].sum()
+</examples>
+
+4. Always answer in the language of the prompt and preserve Czech characters.
+5. Numeric outputs must be plain digits with NO thousands separators.
 
 When generating the query:
 - Return ONLY the pandas expression that answers the question.
-- Limit to at most 5 rows unless the user asked otherwise.
-- Never select all columns, only those needed.
-- If the result is an aggregation (sum, mean …) use the proper pandas function.
+- Limit the output to at most 5 rows unless the user specifies otherwise.
+- Select only the necessary columns, never all columns.
+- Use the appropriate pandas function for aggregation results (e.g., sum, mean).
 - Do NOT modify the CSV file.
-- NEVER invent data that is not in the dataset.
-
-=== IMPORTANT RULE ===
-If you call the tool (check_query) the *content* of your assistant message MUST be
-just the pandas expression (e.g. df[(df["col"]=="val")]["value"]).  
-No markdown fences, no comments, no extra prose.
+- NEVER invent data that is not present in the dataset.
 """
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -152,9 +147,8 @@ You are a pandas expert. Double check the pandas query for common mistakes, incl
 If there are mistakes, rewrite the query. If not, just reproduce the original query.
 
 === IMPORTANT RULE ===
-Return ONLY the final pandas expression that should be executed, with
-nothing else around it. Do NOT wrap it in ```python``` fences and do
-NOT add explanations.
+Return ONLY the final pandas expression that should be executed, with nothing else around it.
+Do NOT wrap it in any code fences and do NOT add explanations.
 """
     last_query = state.messages[-1].content
     prompt = ChatPromptTemplate.from_messages([
