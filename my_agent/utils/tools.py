@@ -193,8 +193,6 @@ class PandasQueryTool(BaseTool):
         check_query_safety(query)
         
         try:
-            # Log query execution for debugging and audit purposes
-            print(f"Executing query: {query}")
             
             # Create a strictly limited execution environment
             # Only the dataframe and pandas module are available

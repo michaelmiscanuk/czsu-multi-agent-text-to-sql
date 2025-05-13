@@ -2,6 +2,8 @@
 
 This module defines all the node functions used in the LangGraph workflow,
 including schema loading, query generation, execution, and result formatting.
+All nodes are implemented as asynchronous functions to support non-blocking
+operations and improved scalability.
 """
 
 #==============================================================================
@@ -48,8 +50,11 @@ def debug_print(msg: str) -> None:
     if DEBUG_MODE:
         print(msg)
 
-def load_schema():
-    """Load the schema metadata from the JSON file.
+async def load_schema():
+    """Load the schema metadata from the JSON file asynchronously.
+    
+    While file operations are synchronous, this function provides an async
+    interface for consistency with the async workflow.
     
     Returns:
         dict: The schema metadata
@@ -61,16 +66,16 @@ def load_schema():
 #==============================================================================
 # NODE FUNCTIONS
 #==============================================================================
-def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
+async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Get schema details for relevant columns."""
     debug_print(f"{GET_SCHEMA_ID}: Enter get_schema_node")
-    schema = load_schema()
+    schema = await load_schema()
     msg = AIMessage(content=f"Schema details: {json.dumps(schema, ensure_ascii=False, indent=2)}")
     state.messages.append(msg)
     debug_print(f"{GET_SCHEMA_ID}: Schema details appended")
     return state
 
-def query_gen_node(state: DataAnalysisState) -> DataAnalysisState:
+async def query_gen_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Generate pandas query based on question and schema."""
     debug_print(f"{QUERY_GEN_ID}: Enter query_gen_node")
     llm = get_azure_llm(temperature=0.0)
@@ -114,6 +119,10 @@ When generating the query:
 - Use the appropriate pandas function for aggregation results (e.g., sum, mean).
 - Do NOT modify the CSV file.
 - NEVER invent data that is not present in the dataset.
+
+=== IMPORTANT RULE ===
+Return ONLY the final pandas expression that should be executed, with nothing else around it.
+Do NOT wrap it in ```python``` fences and do NOT add explanations.
 """
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -123,13 +132,14 @@ When generating the query:
     #--------------------------------------------------------------------------
     # Generate query with LLM
     #--------------------------------------------------------------------------
-    schema = load_schema()
-    result = llm.invoke(prompt.format_messages(prompt=state.prompt, schema=json.dumps(schema, ensure_ascii=False, indent=2)))
+    schema = await load_schema()
+    result = await llm.ainvoke(prompt.format_messages(prompt=state.prompt, schema=json.dumps(schema, ensure_ascii=False, indent=2)))
     state.messages.append(AIMessage(content=result.content, tool_calls=[{"name": "check_query", "args": {"query": result.content}, "id": "tool_query_check"}]))
     debug_print(f"{QUERY_GEN_ID}: Query generated and appended")
+    debug_print(f"{QUERY_GEN_ID}: Query generated: {result.content}")
     return state
 
-def check_query_node(state: DataAnalysisState) -> DataAnalysisState:
+async def check_query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Double-check the pandas query for common mistakes."""
     debug_print(f"{CHECK_QUERY_ID}: Enter check_query_node")
     llm = get_azure_llm(temperature=0.0)
@@ -148,7 +158,7 @@ If there are mistakes, rewrite the query. If not, just reproduce the original qu
 
 === IMPORTANT RULE ===
 Return ONLY the final pandas expression that should be executed, with nothing else around it.
-Do NOT wrap it in any code fences and do NOT add explanations.
+Do NOT wrap it in ```python``` fences and do NOT add explanations.
 """
     last_query = state.messages[-1].content
     prompt = ChatPromptTemplate.from_messages([
@@ -159,13 +169,13 @@ Do NOT wrap it in any code fences and do NOT add explanations.
     #--------------------------------------------------------------------------
     # Check query with LLM
     #--------------------------------------------------------------------------
-    result = llm.invoke(prompt.format_messages())
+    result = await llm.ainvoke(prompt.format_messages())
     state.messages.append(AIMessage(content=result.content, tool_calls=[{"name": "execute_query", "args": {"query": result.content}, "id": "tool_execute_query"}]))
     debug_print(f"{CHECK_QUERY_ID}: Checked query appended")
+    debug_print(f"{CHECK_QUERY_ID}: Checked query: {result.content}")
     return state
 
-
-def execute_query_node(state: DataAnalysisState) -> DataAnalysisState:
+async def execute_query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Execute the pandas query and return the result.
     
     This node is responsible for safely executing the generated pandas query against 
@@ -209,7 +219,7 @@ def execute_query_node(state: DataAnalysisState) -> DataAnalysisState:
     try:
         # Execution happens in the PandasQueryTool which provides sandboxing
         # for better security and consistent error handling
-        query_result = pandas_tool._run(query_expression)
+        query_result = await pandas_tool.arun(query_expression)  # Note: PandasQueryTool needs to be updated to support async
         state.messages.append(AIMessage(content=f"Query result: {query_result}"))
         debug_print(f"{EXECUTE_QUERY_ID}: Query succeeded")
     except Exception as execution_error:
@@ -218,7 +228,7 @@ def execute_query_node(state: DataAnalysisState) -> DataAnalysisState:
         debug_print(f"{EXECUTE_QUERY_ID}: Query failed – {execution_error}")
     return state
 
-def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
+async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Submit the final answer to the user."""
     debug_print(f"{SUBMIT_FINAL_ID}: Enter submit_final_answer_node")
     
@@ -245,7 +255,7 @@ def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     debug_print(f"{SUBMIT_FINAL_ID}: Final answer prepared")
     return state
 
-def save_node(state: DataAnalysisState) -> DataAnalysisState:
+async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Save the result to a file."""
     debug_print(f"{SAVE_RESULT_ID}: Enter save_node")
     result_path = BASE_DIR / "analysis_results.txt"
@@ -275,7 +285,7 @@ def save_node(state: DataAnalysisState) -> DataAnalysisState:
 # FLOW CONTROL FUNCTIONS
 #==============================================================================
 
-def should_continue(state: DataAnalysisState) -> Literal["submit_final_answer", "correct_query"]:
+async def should_continue(state: DataAnalysisState) -> Literal["submit_final_answer", "correct_query"]:
     """Decide whether to continue the workflow or submit the final answer.
     
     This function serves as a critical decision point in the workflow that prevents

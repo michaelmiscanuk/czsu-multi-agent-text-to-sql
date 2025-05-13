@@ -12,6 +12,7 @@ different deployment scenarios.
 # IMPORTS
 #==============================================================================
 import uuid
+import asyncio
 import argparse
 from pathlib import Path
 from dotenv import load_dotenv
@@ -28,15 +29,15 @@ from my_agent.utils.state import DataAnalysisState
 # CONSTANTS & CONFIGURATION
 #==============================================================================
 # Default prompt if none provided
-DEFAULT_PROMPT = "Sum all regional end-period populations - does it match Česko?"
+DEFAULT_PROMPT = "What was the average male population across all regions at period end?"
 
 #==============================================================================
 # MAIN FUNCTION
 #==============================================================================
-def main(prompt=None):
+async def main(prompt=None):
     """Main entry point for the application.
     
-    This function serves as the central coordinator for the data analysis process.
+    This async function serves as the central coordinator for the data analysis process.
     It handles prompt acquisition from different sources (function parameter,
     command line, or default), initializes tracing for observability, and
     executes the LangGraph workflow. A thread ID is generated to allow
@@ -80,9 +81,9 @@ def main(prompt=None):
     # This is important for concurrent executions and audit trails
     thread_id = f"data_analysis_{uuid.uuid4().hex[:8]}"
     
-    # Execute the graph with checkpoint configuration
+    # Execute the graph with checkpoint configuration asynchronously
     # Checkpoints allow resuming execution if interrupted
-    result = graph.invoke(
+    result = await graph.ainvoke(
         initial_state,
         config={"configurable": {"thread_id": thread_id}}
     )
@@ -102,4 +103,4 @@ def main(prompt=None):
 # SCRIPT ENTRY POINT
 #==============================================================================
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
