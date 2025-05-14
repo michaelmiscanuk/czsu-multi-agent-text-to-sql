@@ -29,7 +29,7 @@ from my_agent.utils.state import DataAnalysisState
 # CONSTANTS & CONFIGURATION
 #==============================================================================
 # Default prompt if none provided
-DEFAULT_PROMPT = "What was the average male population across all regions at period end?"
+DEFAULT_PROMPT = "Did Prague have more residents than Central Bohemia at the start of 2024?"
 
 #==============================================================================
 # MAIN FUNCTION
@@ -88,15 +88,20 @@ async def main(prompt=None):
         config={"configurable": {"thread_id": thread_id}}
     )
     
-    # Convert the result to a JSON-serializable format for API responses
-    # This ensures consistent output structure regardless of internal processing
+    # Extract values from the graph result dictionary
+    messages = result["messages"]
+    queries_and_results = result["queries_and_results"]
+    final_answer = messages[-1].content if messages else ""
+    
+    # Convert the result to a JSON-serializable format
     serializable_result = {
         "prompt": prompt,
-        "result": result['result'],
+        "result": final_answer,
+        "queries_and_results": queries_and_results,
         "thread_id": thread_id
     }
     
-    print(f"Result: {serializable_result['result']}")
+    print(f"Result: {final_answer}")
     return serializable_result
 
 #==============================================================================

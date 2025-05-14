@@ -10,9 +10,15 @@ operations with proper error handling and result formatting.
 import os
 from pathlib import Path
 import pandas as pd
-from typing import Optional
+from typing import Optional, Type, ClassVar
+from pydantic import BaseModel, Field
 from langchain.tools import BaseTool
+from langchain.callbacks.manager import (
+    AsyncCallbackManagerForToolRun,
+    CallbackManagerForToolRun,
+)
 from langchain_core.tools import ToolException
+import json  # Import json for structured result formatting
 
 #===============================================================================
 # CONSTANTS & CONFIGURATION
@@ -22,6 +28,11 @@ DEBUG_MODE = os.getenv("MY_AGENT_DEBUG", "1").lower() in ("1", "true", "yes")
 
 # Constants
 TOOL_ID = 20  # Static ID for PandasQueryTool
+
+# Load data once at module level
+base_dir = Path(__file__).resolve().parents[2]
+data_path = base_dir / "data" / "OBY01PDT01.csv"
+df = pd.read_csv(data_path)
 
 #===============================================================================
 # HELPER FUNCTIONS
@@ -81,137 +92,65 @@ def check_query_safety(query: str):
             debug_print(f"{TOOL_ID}: {error_msg}")
             raise ToolException(error_msg)
 
-def format_result(result):
-    """Format a pandas result into a string representation.
-    
-    This function handles the complexity of converting different pandas result types
-    into consistent, human-readable string formats. It implements special handling for:
-    
-    1. Single-value Series - returned as plain scalars without index
-    2. Single-cell DataFrames - collapsed to scalar values
-    3. Multi-row/column results - formatted as tables without index columns
-    
-    This consistent formatting is important for providing clear, predictable responses
-    to the user regardless of the internal data structures used.
-    
-    Args:
-        result: The pandas result object (DataFrame, Series, or other value)
-        
-    Returns:
-        str: A consistently formatted string representation of the result
-    """
-    if isinstance(result, pd.Series):
-        # Return scalar directly for single-item Series
-        # This provides cleaner output for common aggregation operations
-        if len(result) == 1:
-            return str(result.iloc[0])
-        result_str = result.to_string(index=False)
-    elif isinstance(result, pd.DataFrame):
-        # Collapse to scalar for 1×1 DataFrames
-        # This simplifies results for queries that return a single value
-        if result.shape == (1, 1):
-            return str(result.iat[0, 0])
-        result_str = result.to_string(index=False)
-    else:
-        # For non-pandas types, just use string conversion
-        result_str = str(result)
-    
-    return result_str
-
 #===============================================================================
 # TOOL CLASSES
 #===============================================================================
+
+class PandasQueryInput(BaseModel):
+    """Schema for pandas query input."""
+    query: str = Field(description="pandas query to execute on the dataframe named 'df'")
+
 class PandasQueryTool(BaseTool):
-    """Tool for executing pandas queries against a dataframe.
+    """Tool for executing pandas queries against a dataframe."""
+    name: ClassVar[str] = "pandas_query"
+    description: ClassVar[str] = "Execute pandas query on the dataframe named 'df'"
+    args_schema: Type[BaseModel] = PandasQueryInput
     
-    This tool provides a controlled environment for executing pandas expressions
-    against a pre-loaded dataset. It implements several important safety features:
-    
-    1. Path validation to prevent directory traversal
-    2. Query safety checking to block dangerous operations
-    3. Restricted execution environment with limited globals
-    4. Consistent error handling and reporting
-    5. Standardized result formatting
-    
-    These protections create a sandboxed environment that balances flexibility
-    (allowing arbitrary pandas expressions) with security (preventing system access).
-    """
-    
-    name: str = "pandas_query"
-    description: str = "Execute pandas query on the dataframe named 'df'"
-    
-    def __init__(self, data_path: Optional[str] = None):
-        """Initialize the PandasQueryTool.
-        
-        Args:
-            data_path: Path to CSV file, defaults to OBY01PDT01.csv in data directory
-        """
-        super().__init__()
-        if data_path is None:
-            base_dir = Path(__file__).resolve().parents[2]
-            data_path = base_dir / "data" / "OBY01PDT01.csv"
-
-        # Verify file exists and is readable
-        data_file_path = Path(data_path)
-        validate_path_safety(data_file_path)
-            
-        debug_print(f"{TOOL_ID}: Loading data from: {data_file_path}")
+    def _run(
+        self, 
+        query: str, 
+        run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
         try:
-            self._df = pd.read_csv(data_file_path)
-            debug_print(f"{TOOL_ID}: Data loaded, shape: {self._df.shape}")
-        except Exception as load_error:
-            error_msg = f"Failed to load CSV data: {str(load_error)}"
-            debug_print(f"{TOOL_ID}: {error_msg}")
-            raise ValueError(error_msg) from load_error
-        
-    def _run(self, query: str) -> str:
-        """Execute the pandas query on the loaded dataframe.
-        
-        This method is the core of the tool, handling the actual query execution
-        in a controlled environment. The execution follows a careful sequence:
-        
-        1. Log the incoming query for debugging and audit
-        2. Check for potentially unsafe operations before execution
-        3. Create a restricted execution environment with only necessary globals
-        4. Format the result for consistent output structure
-        5. Handle and report any execution errors
-        
-        This approach balances power and flexibility with appropriate safeguards.
-        
-        Args:
-            query: A pandas query string to be executed
+            check_query_safety(query)
             
-        Returns:
-            String representation of the query result
+            # Debug print query
+            debug_print(f"{TOOL_ID}: =====================================")
+            debug_print(f"{TOOL_ID}: Executing query:")
+            debug_print(f"{TOOL_ID}: {query}")
+            debug_print(f"{TOOL_ID}: =====================================")
             
-        Raises:
-            ToolException: If the query fails security checks or execution
-        """
-        debug_print(f"{TOOL_ID}: _run called with query: {query}")
-        
-        # Security check before execution - critical for preventing code injection
-        check_query_safety(query)
-        
-        try:
+            # Execute query
+            result = eval(query, {'df': df, 'pd': pd}, {})
             
-            # Create a strictly limited execution environment
-            # Only the dataframe and pandas module are available
-            # This is crucial for security - prevents access to system modules
-            query_result = eval(query, {'df': self._df, 'pd': pd}, {})
+            # Format the result
+            if isinstance(result, pd.Series) and len(result) == 1:
+                result_value = str(result.iloc[0])
+            elif isinstance(result, pd.DataFrame) and result.shape == (1, 1):
+                result_value = str(result.iat[0, 0])
+            elif isinstance(result, (pd.Series, pd.DataFrame)):
+                result_value = result.to_string(index=False)
+            else:
+                result_value = str(result)
             
-            # Format the result for consistent output structure
-            # This ensures users get predictable response formats
-            formatted_result = format_result(query_result)
+            # Debug print result
+            debug_print(f"{TOOL_ID}: Query result:")
+            debug_print(f"{TOOL_ID}: {result_value}")
+            debug_print(f"{TOOL_ID}: =====================================")
+            
+            # Return both query and result for state tracking
+            return json.dumps({
+                "query": query,
+                "result": result_value
+            }, ensure_ascii=False)
+            
+        except Exception as e:
+            raise ToolException(f"Query error: {str(e)}")
 
-            debug_print(f"{TOOL_ID}: Query result (truncated): {formatted_result[:100]}...")
-            return formatted_result
-        except Exception as execution_error:
-            # Provide clear error information for debugging
-            # This helps the calling code understand what went wrong
-            error_msg = f"{TOOL_ID}: Query error: {str(execution_error)}"
-            debug_print(error_msg)
-            raise ToolException(error_msg)
-    
-    async def _arun(self, query: str) -> str:
-        """Async version of the _run method."""
-        return self._run(query)
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Execute the pandas query asynchronously."""
+        return self._run(query, run_manager)

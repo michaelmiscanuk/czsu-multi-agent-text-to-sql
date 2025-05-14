@@ -7,7 +7,7 @@ in the LangGraph-based data analysis application.
 #==============================================================================
 # IMPORTS
 #==============================================================================
-from typing import List
+from typing import List, Dict
 from langchain_core.messages import BaseMessage
 from pydantic import BaseModel, Field
 
@@ -22,6 +22,9 @@ class DataAnalysisState(BaseModel):
     and iteration counter for loop prevention.
     """
     prompt: str = Field(default="", description="User query to analyze")
-    messages: List[BaseMessage] = Field(default_factory=list, description="Messages in the conversation")
-    result: str = Field(default="", description="Result of the data analysis")
+    messages: List[BaseMessage] = Field(default_factory=list, description="Conversation history")
     iteration: int = Field(default=0, description="Iteration counter for workflow loop prevention")
+    queries_and_results: List[Dict[str, str]] = Field(
+        default_factory=list, 
+        description="Collection of executed queries and their corresponding results"
+    )
