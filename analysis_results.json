@@ -2005,5 +2005,350 @@
         "result": "0.0"
       }
     ]
+  },
+  {
+    "prompt": "What was the maximum female population recorded in any region?",
+    "result": "The maximum female population recorded in any region is **5,557,945**, and this value corresponds to the region **Česko** (the entire Czech Republic). This indicates that the highest female population is observed at the national level rather than in any individual sub-region.",
+    "queries_and_results": [
+      {
+        "query": "SELECT MAX(value) AS max_female_population, \"ČR, kraje\" AS region FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - ženy' GROUP BY \"ČR, kraje\" ORDER BY max_female_population DESC LIMIT 1",
+        "result": "[(5557945, 'Česko')]"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the amount of men in Prague at the end of Q3 2024?",
+    "result": "At the end of Q3 2024, the number of men in Prague (\"Hlavní město Praha\") is **676,069**. This value represents the population of men at the end of the specified period, based on the query result.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"ČR, kraje\" = 'Hlavní město Praha' AND \"Ukazatel\" = 'Počet obyvatel na konci období - muži' LIMIT 5",
+        "result": "676069"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the amount of women in Prague at the end of Q3 2024?",
+    "result": "At the end of Q3 2024, the number of women in Prague (\"Hlavní město Praha\") is **716,056**. This figure represents the population of women at the conclusion of the first three quarters of 2024, as specified in the dataset.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Hlavní město Praha' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na konci období - ženy' LIMIT 5",
+        "result": "716056"
+      }
+    ]
+  },
+  {
+    "prompt": "Rank regions by population growth rate from start to end",
+    "result": "The query results provide the population growth rates for various regions in the Czech Republic, ranked from highest to lowest. Below is the analysis:\n\n1. **Hlavní město Praha** has the highest population growth rate at **0.0053389392315624975** (approximately 0.53%). This indicates that Prague experienced the most significant relative population increase among the regions analyzed.\n\n2. **Středočeský kraj** follows with a growth rate of **0.004582606426088987** (approximately 0.46%). This region also saw a notable population increase, though slightly less than Prague.\n\n3. **Jihomoravský kraj** is third with a growth rate of **0.0006146326591666266** (approximately 0.06%). While positive, the growth here is much smaller compared to the top two regions.\n\n4. **Česko** (the entire Czech Republic) has a slight population decline, with a growth rate of **-0.0003043881710610148** (approximately -0.03%). This indicates that, overall, the country's population decreased slightly during the period analyzed.\n\n5. **Plzeňský kraj** has the lowest growth rate in this ranking, at **-0.00043203657148819483** (approximately -0.04%). This region experienced a small population decline.\n\n### Summary:\n- The regions with positive growth rates are **Hlavní město Praha**, **Středočeský kraj**, and **Jihomoravský kraj**.\n- The regions with negative growth rates are **Česko** (overall) and **Plzeňský kraj**.\n- **Hlavní město Praha** leads in population growth, while **Plzeňský kraj** shows the most significant decline among the listed regions.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", (SUM(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value ELSE 0 END) - SUM(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value ELSE 0 END)) * 1.0 / SUM(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value ELSE 0 END) AS growth_rate FROM OBY01PDT01 WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem') GROUP BY \"ČR, kraje\" ORDER BY growth_rate DESC LIMIT 5",
+        "result": "[('Hlavní město Praha', 0.0053389392315624975), ('Středočeský kraj', 0.004582606426088987), ('Jihomoravský kraj', 0.0006146326591666266), ('Česko', -0.0003043881710610148), ('Plzeňský kraj', -0.00043203657148819483)]"
+      }
+    ]
+  },
+  {
+    "prompt": "What was South Bohemia's population change rate per month?",
+    "result": "The question asks for the population change rate per month for South Bohemia (Jihočeský kraj) based on the data provided.\n\n1. **Query 1** analyzed the population at the beginning of the period (\"Počet obyvatel na počátku období - celkem\") for the first three quarters of 2024 (Q1-Q3 2024). The result shows that the monthly change rate is **0.0**.\n\n2. **Query 2** analyzed the population at the end of the period (\"Počet obyvatel na konci období - celkem\") for the same timeframe (Q1-Q3 2024). The result also shows that the monthly change rate is **0.0**.\n\n### Conclusion:\nBased on both queries, the population of South Bohemia (Jihočeský kraj) did not change during the analyzed period (Q1-Q3 2024). The monthly population change rate is **0.0** in both cases, indicating stability in the population numbers over this timeframe.",
+    "queries_and_results": [
+      {
+        "query": "SELECT (MAX(value) - MIN(value)) / 9.0 AS monthly_change_rate FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Jihočeský kraj' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024'",
+        "result": "0.0"
+      },
+      {
+        "query": "SELECT (MAX(value) - MIN(value)) / 9.0 AS monthly_change_rate FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Jihočeský kraj' AND \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024'",
+        "result": "0.0"
+      }
+    ]
+  },
+  {
+    "prompt": "Which region had the most balanced gender ratio at period end?",
+    "result": "The query results indicate that the region with the most balanced gender ratio at the end of the period is **Kraj Vysočina**. The absolute difference between the number of men and women in this region is **3,206**, which is the smallest difference among all regions. This minimal gender difference suggests that Kraj Vysočina has the most balanced population in terms of gender distribution compared to other regions.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", ABS(SUM(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - muži' THEN value ELSE 0 END) - SUM(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - ženy' THEN value ELSE 0 END)) AS gender_difference FROM OBY01PDT01 GROUP BY \"ČR, kraje\" ORDER BY gender_difference ASC LIMIT 1;",
+        "result": "[('Kraj Vysočina', 3206)]"
+      }
+    ]
+  },
+  {
+    "prompt": "Show regions with exactly 500,000 residents at any point",
+    "result": "Based on the query results, there are no regions (\"ČR, kraje\") in the dataset where the population is exactly 500,000 at any point. The query returned no results, indicating that no region meets this specific criterion.",
+    "queries_and_results": [
+      {
+        "query": "SELECT DISTINCT \"ČR, kraje\" FROM OBY01PDT01 WHERE value = 500000 LIMIT 5",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "Show regions where mid-period population was < start but > end",
+    "result": "The query aimed to identify regions where the mid-period population (\"Střední stav obyvatel - celkem\") was less than the population at the start of the period (\"Počet obyvatel na počátku období - celkem\") but greater than the population at the end of the period (\"Počet obyvatel na konci období - celkem\"). However, the query returned **no results**.\n\n### Analysis:\n1. **No Matching Regions**: There are no regions in the dataset where the mid-period population satisfies the condition of being less than the start-of-period population but greater than the end-of-period population.\n2. **Implication**: This suggests that for all regions in the dataset, the mid-period population either:\n   - Is not less than the start-of-period population, or\n   - Is not greater than the end-of-period population, or\n   - Both conditions are not simultaneously true.\n\n### Conclusion:\nThe dataset does not contain any regions meeting the specified criteria. This could indicate a consistent trend where population changes (if any) do not follow the specified pattern.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem' AND \"value\" < (SELECT \"value\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND OBY01PDT01.\"ČR, kraje\" = \"ČR, kraje\") AND \"value\" > (SELECT \"value\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' AND OBY01PDT01.\"ČR, kraje\" = \"ČR, kraje\") LIMIT 5",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "Was there any quarter where Plzeň's women outnumbered men by >15,000?",
+    "result": "Based on the query results, there was no quarter in which the number of women in the Plzeňský kraj exceeded the number of men by more than 15,000. The query specifically checked for quarters where the population of women was at least 15,001 higher than the population of men, and no such instances were found in the dataset.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Kumulace čtvrtletí\", \"value\" FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Plzeňský kraj' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - ženy' AND \"Kumulace čtvrtletí\" IN (SELECT \"Kumulace čtvrtletí\" FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Plzeňský kraj' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - muži' AND \"value\" + 15000 <= (SELECT \"value\" FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Plzeňský kraj' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - ženy' AND OBY01PDT01.\"Kumulace čtvrtletí\" = OBY01PDT01.\"Kumulace čtvrtletí\")) LIMIT 5",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "What was the average male population across all regions at period end?",
+    "result": "The average male population across all regions at the end of the period was **713,056.4**. This value represents the mean number of males across all regions based on the dataset analyzed.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_male_population FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Počet obyvatel na konci období - muži'",
+        "result": "713056.4"
+      }
+    ]
+  },
+  {
+    "prompt": "List regions where mid-period male population exceeded 300,000",
+    "result": "Based on the query results, the regions where the mid-period male population exceeded 300,000 are as follows:\n\n1. **Česko** (Czech Republic as a whole)\n2. **Hlavní město Praha** (Capital City of Prague)\n3. **Středočeský kraj** (Central Bohemian Region)\n4. **Jihočeský kraj** (South Bohemian Region)\n5. **Plzeňský kraj** (Pilsen Region)\n6. **Ústecký kraj** (Ústí nad Labem Region)\n7. **Jihomoravský kraj** (South Moravian Region)\n8. **Olomoucký kraj** (Olomouc Region)\n9. **Moravskoslezský kraj** (Moravian-Silesian Region)\n\n### Analysis:\n- The query results indicate that a total of **9 regions** had a mid-period male population exceeding 300,000.\n- The first query identified 5 regions, while the second query added 4 more regions to the list.\n- These regions include both the capital city and several other key regions across the Czech Republic.\n\nThis provides a comprehensive list of regions meeting the specified population criterion.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Střední stav obyvatel - muži' AND \"value\" > 300000 LIMIT 5",
+        "result": "[('Česko',), ('Hlavní město Praha',), ('Středočeský kraj',), ('Jihočeský kraj',), ('Plzeňský kraj',)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Střední stav obyvatel - muži' AND \"value\" > 300000 AND \"ČR, kraje\" NOT IN ('Česko', 'Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj') LIMIT 5",
+        "result": "[('Ústecký kraj',), ('Jihomoravský kraj',), ('Olomoucký kraj',), ('Moravskoslezský kraj',)]"
+      }
+    ]
+  },
+  {
+    "prompt": "How much did Prague's population grow from start to end of Q3?",
+    "result": "The query result indicates that Prague's population grew by **7,393 people** from the start to the end of Q3 in 2024. This value represents the net increase in the total population during this period. \n\nIf you need further breakdowns or comparisons, feel free to ask!",
+    "queries_and_results": [
+      {
+        "query": "SELECT (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Hlavní město Praha' AND \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024') - (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Hlavní město Praha' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024') AS population_growth",
+        "result": "7393"
+      }
+    ]
+  },
+  {
+    "prompt": "Which region had the steepest population decline?",
+    "result": "Based on the query results, the region with the steepest population decline during the period Q1-Q3 2024 is **Moravskoslezský kraj**, with a total decline of **5,730 people**. This value represents the difference between the population at the beginning of the period and the population at the end of the period. \n\nNo other regions were mentioned in the results, so it can be concluded that Moravskoslezský kraj experienced the most significant population decrease among all regions analyzed.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", (MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) - MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END)) AS decline FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' GROUP BY \"ČR, kraje\" ORDER BY decline DESC LIMIT 1",
+        "result": "[('Moravskoslezský kraj', 5730)]"
+      }
+    ]
+  },
+  {
+    "prompt": "Which region had the lowest total population at the end of Q3?",
+    "result": "Based on the query results, the region with the lowest total population at the end of Q3 2024 is **Karlovarský kraj**, with a population of **293,218**. This value was determined by identifying the minimum population among all regions in the Czech Republic for the specified period and indicator.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", MIN(value) AS min_population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' GROUP BY \"ČR, kraje\" ORDER BY min_population ASC LIMIT 1;",
+        "result": "[('Karlovarský kraj', 293218)]"
+      }
+    ]
+  },
+  {
+    "prompt": "What if Karlovy Vary had no data for mid-period women count?",
+    "result": "The question asks about the implications if Karlovy Vary (Karlovarský kraj) had no data for the mid-period women count (\"Střední stav obyvatel - ženy\") for Q1-Q3 2024. Let us analyze the provided data:\n\n### Data Summary:\n1. **Mid-period women count (\"Střední stav obyvatel - ženy\")**:\n   - Value: **150,583** (from Query 1).\n\n2. **Mid-period total population (\"Střední stav obyvatel - celkem\")**:\n   - Value: **293,714** (from Query 2).\n\n3. **Mid-period men count (\"Střední stav obyvatel - muži\")**:\n   - Value: **143,131** (from Query 3).\n\n### Analysis:\nIf the data for women were missing, we could estimate it using the total population and the men count. The formula would be:\n\n\\[\n\\text{Women count} = \\text{Total population} - \\text{Men count}\n\\]\n\nSubstituting the known values:\n\\[\n\\text{Women count} = 293,714 - 143,131 = 150,583\n\\]\n\nThis calculated value matches the provided value for women (150,583). Therefore, even if the women count data were missing, it could be accurately derived from the total population and men count.\n\n### Conclusion:\nIf Karlovy Vary had no data for the mid-period women count, it would not pose a significant issue because the women count can be precisely calculated using the total population and men count. The consistency of the data ensures that the derived value (150,583) aligns with the recorded value.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", \"Ukazatel\", \"value\" FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Karlovarský kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - ženy' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5",
+        "result": "[('Karlovarský kraj', 'Střední stav obyvatel - ženy', 150583)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", \"Ukazatel\", \"value\" FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Karlovarský kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5",
+        "result": "[('Karlovarský kraj', 'Střední stav obyvatel - celkem', 293714)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", \"Ukazatel\", \"value\" FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Karlovarský kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - muži' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5",
+        "result": "[('Karlovarský kraj', 'Střední stav obyvatel - muži', 143131)]"
+      }
+    ]
+  },
+  {
+    "prompt": "Count how many regions had <500k total residents mid-period",
+    "result": "Based on the query results, **2 regions** in the dataset had a total mid-period population (\"Střední stav obyvatel - celkem\") of less than 500,000 residents for the cumulative period of Q1-Q3 2024 (\"Kumulace čtvrtletí\" = 'Q1-Q3 2024'). \n\nThis count is derived from distinct regions (\"ČR, kraje\") meeting the specified criteria.",
+    "queries_and_results": [
+      {
+        "query": "SELECT COUNT(DISTINCT \"ČR, kraje\") AS region_count FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND value < 500000;",
+        "result": "2"
+      }
+    ]
+  },
+  {
+    "prompt": "What was the total population of Czech Republic at the start of Q1-Q3 2024?",
+    "result": "The total population of the Czech Republic at the start of Q1-Q3 2024 was **10,900,555**. This figure represents the sum of the population at the beginning of each quarter (Q1, Q2, and Q3) for the specified period, as indicated in the dataset.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"ČR, kraje\" = 'Česko' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' LIMIT 5;",
+        "result": "10900555"
+      }
+    ]
+  },
+  {
+    "prompt": "What was the middle-period population count for Zlín Region?",
+    "result": "The middle-period population count (střední stav obyvatel) for the Zlín Region (Zlínský kraj) during the first three quarters of 2024 (Q1-Q3 2024) is as follows:\n\n1. **Total population**: 579,562\n2. **Male population**: 284,394\n\nFrom these results, we can infer that the female population can be calculated by subtracting the male population from the total population:\n\n\\[\n\\text{Female population} = \\text{Total population} - \\text{Male population} = 579,562 - 284,394 = 295,168\n\\]\n\nThus:\n- **Female population**: 295,168\n\nIn summary:\n- Total population: **579,562**\n- Male population: **284,394**\n- Female population: **295,168**",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Zlínský kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5;",
+        "result": "579562"
+      },
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Zlínský kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - muži' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5;",
+        "result": "284394"
+      }
+    ]
+  },
+  {
+    "prompt": "Which region had higher female population - Liberec or Karlovy Vary at period end?",
+    "result": "Based on the query results, the female population at the end of the period was as follows:\n\n- **Karlovarský kraj**: 150,270\n- **Liberecký kraj**: 228,648\n\nWhen comparing the two regions, **Liberecký kraj** had a significantly higher female population than **Karlovarský kraj**. Specifically, the female population in Liberecký kraj exceeded that of Karlovarský kraj by **78,378** (228,648 - 150,270). \n\nThus, **Liberecký kraj** had the higher female population at the end of the period.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", \"value\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Počet obyvatel na konci období - ženy' AND \"ČR, kraje\" IN ('Liberecký kraj', 'Karlovarský kraj') LIMIT 5",
+        "result": "[('Karlovarský kraj', 150270), ('Liberecký kraj', 228648)]"
+      }
+    ]
+  },
+  {
+    "prompt": "List regions with unreported start-period data",
+    "result": "Based on the query results, there are no regions (\"ČR, kraje\") with unreported start-period population data (\"Počet obyvatel na počátku období - celkem\") in the dataset. This indicates that all regions have reported values for this indicator.",
+    "queries_and_results": [
+      {
+        "query": "SELECT DISTINCT \"ČR, kraje\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND value IS NULL",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "What was the male:female ratio in Vysočina at period start?",
+    "result": "The male-to-female ratio in the Vysočina region at the start of the period (Q1-Q3 2024) is **0.9849165350951148**, as calculated in Query 1. This means there were approximately 0.985 males for every female in the region.\n\nTo break this down further using the data from Query 2:\n- The number of males at the start of the period was **257,012**.\n- The number of females at the start of the period was **260,948**.\n\nThe ratio is derived by dividing the male population by the female population:\n\\[\n\\text{Male-to-Female Ratio} = \\frac{257,012}{260,948} \\approx 0.9849165350951148\n\\]\n\nThis confirms the result from Query 1. In summary, the male population was slightly smaller than the female population in Vysočina at the start of the period.",
+    "queries_and_results": [
+      {
+        "query": "SELECT (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Kraj Vysočina' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - muži' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024') * 1.0 / (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Kraj Vysočina' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - ženy' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024') AS male_female_ratio",
+        "result": "0.9849165350951148"
+      },
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Kraj Vysočina' AND \"Ukazatel\" IN ('Počet obyvatel na počátku období - muži', 'Počet obyvatel na počátku období - ženy') AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024'",
+        "result": "[(257012,), (260948,)]"
+      }
+    ]
+  },
+  {
+    "prompt": "Did Prague have more residents than Central Bohemia at the start of 2024?",
+    "result": "At the start of 2024, the population of **Central Bohemia (Středočeský kraj)** was **1,455,940**, while the population of **Prague (Hlavní město Praha)** was **1,384,732**. \n\nThis means that Central Bohemia had **71,208 more residents** than Prague at that time. Therefore, Prague did not have more residents than Central Bohemia at the start of 2024.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", value FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" IN ('Hlavní město Praha', 'Středočeský kraj')",
+        "result": "[('Hlavní město Praha', 1384732), ('Středočeský kraj', 1455940)]"
+      }
+    ]
+  },
+  {
+    "prompt": "How many women per 100 men in Olomouc at mid-year?",
+    "result": "Based on the query results, we can determine the number of women per 100 men in the Olomouc region (Olomoucký kraj) at mid-year (Q1-Q3 2024):\n\n1. **Women per 100 men**:\n   - Query 1 directly calculates the ratio of women to men, resulting in **104.44624927600009 women per 100 men**.\n\n2. **Total population breakdown**:\n   - Query 2 provides the total number of women and men:\n     - Total women: **322,788**\n     - Total men: **309,047**\n\n3. **Verification of the ratio**:\n   - Using the totals from Query 2, we can independently verify the ratio:\n     \\[\n     \\text{Women per 100 men} = \\left(\\frac{\\text{Total women}}{\\text{Total men}}\\right) \\times 100 = \\left(\\frac{322,788}{309,047}\\right) \\times 100 = 104.44624927600009\n     \\]\n   - This matches the result from Query 1, confirming its accuracy.\n\n4. **Additional data**:\n   - Query 3 confirms the individual values for men and women, consistent with Query 2:\n     - Men: **309,047**\n     - Women: **322,788**\n\n### Final Answer:\nAt mid-year (Q1-Q3 2024), there are **104.44624927600009 women per 100 men** in the Olomouc region. This means there are approximately 4.45% more women than men in the population.",
+    "queries_and_results": [
+      {
+        "query": "SELECT (SUM(CASE WHEN \"Ukazatel\" = 'Střední stav obyvatel - ženy' THEN value ELSE 0 END) * 100.0 / SUM(CASE WHEN \"Ukazatel\" = 'Střední stav obyvatel - muži' THEN value ELSE 0 END)) AS women_per_100_men FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Olomoucký kraj' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024'",
+        "result": "104.44624927600009"
+      },
+      {
+        "query": "SELECT SUM(CASE WHEN \"Ukazatel\" = 'Střední stav obyvatel - ženy' THEN value ELSE 0 END) AS total_women, SUM(CASE WHEN \"Ukazatel\" = 'Střední stav obyvatel - muži' THEN value ELSE 0 END) AS total_men FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Olomoucký kraj' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024'",
+        "result": "[(322788, 309047)]"
+      },
+      {
+        "query": "SELECT \"Ukazatel\", value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Olomoucký kraj' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" IN ('Střední stav obyvatel - ženy', 'Střední stav obyvatel - muži') LIMIT 5",
+        "result": "[('Střední stav obyvatel - muži', 309047), ('Střední stav obyvatel - ženy', 322788)]"
+      }
+    ]
+  },
+  {
+    "prompt": "Compare Prague's start vs end population for men and women",
+    "result": "The query results provide the population of men and women in Prague at the start and end of the observed period. Here's the analysis:\n\n1. **Men**:\n   - Population at the start of the period: **670,680**\n   - Population at the end of the period: **676,069**\n   - **Change**: The male population increased by **5,389** (676,069 - 670,680).\n\n2. **Women**:\n   - Population at the start of the period: **714,052**\n   - Population at the end of the period: **716,056**\n   - **Change**: The female population increased by **2,004** (716,056 - 714,052).\n\n3. **Comparison**:\n   - Both men and women experienced population growth during the period.\n   - The increase in the male population (**5,389**) was more than double the increase in the female population (**2,004**).\n\nIn summary, while both genders saw population growth in Prague, the growth was more pronounced among men compared to women.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Ukazatel\", \"value\" FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Hlavní město Praha' AND \"Ukazatel\" IN ('Počet obyvatel na počátku období - muži', 'Počet obyvatel na počátku období - ženy', 'Počet obyvatel na konci období - muži', 'Počet obyvatel na konci období - ženy') LIMIT 5",
+        "result": "[('Počet obyvatel na počátku období - muži', 670680), ('Počet obyvatel na počátku období - ženy', 714052), ('Počet obyvatel na konci období - muži', 676069), ('Počet obyvatel na konci období - ženy', 716056)]"
+      }
+    ]
+  },
+  {
+    "prompt": "What percentage of Pardubice region was female at mid-period?",
+    "result": "The query results indicate that during the mid-period (Q1-Q3 2024), **50.564334511901144%** of the population in the Pardubice region (\"Pardubický kraj\") was female. This percentage was calculated by dividing the \"Střední stav obyvatel - ženy\" (mid-period female population) by the \"Střední stav obyvatel - celkem\" (mid-period total population) and multiplying by 100. \n\nThis means that slightly more than half of the population in the Pardubice region during this period consisted of women.",
+    "queries_and_results": [
+      {
+        "query": "SELECT (100.0 * (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Pardubický kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - ženy' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024') / (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Pardubický kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - celkem' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024')) AS percentage_female",
+        "result": "50.564334511901144"
+      }
+    ]
+  },
+  {
+    "prompt": "Calculate percentage change in Ústí's male population (start vs end)",
+    "result": "The query calculates the percentage change in the male population of the Ústecký kraj (Ústí Region) between the start and the end of the observed period. The result of the calculation is **-0.37453371053751594%**.\n\n### Analysis:\n- The negative percentage indicates a **decrease** in the male population over the period.\n- The decrease is very small, approximately **0.37%** when rounded to two decimal places.\n- This means that the male population in Ústí experienced a slight decline from the start to the end of the period.\n\nIf further context or specific population numbers are needed, additional queries would be required to retrieve the exact starting and ending male population values.",
+    "queries_and_results": [
+      {
+        "query": "SELECT (CAST((end_male - start_male) AS FLOAT) / start_male) * 100 AS percentage_change FROM (SELECT (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Ústecký kraj' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - muži') AS start_male, (SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Ústecký kraj' AND \"Ukazatel\" = 'Počet obyvatel na konci období - muži') AS end_male)",
+        "result": "-0.37453371053751594"
+      }
+    ]
+  },
+  {
+    "prompt": "List regions where women population decreased >1000",
+    "result": "Based on the query results, the regions where the female population decreased by more than 1,000 during the period Q1-Q3 2024 are as follows:\n\n1. **Česko** (Czech Republic as a whole)\n2. **Plzeňský kraj** (Plzeň Region)\n3. **Karlovarský kraj** (Karlovy Vary Region)\n4. **Ústecký kraj** (Ústí nad Labem Region)\n5. **Liberecký kraj** (Liberec Region)\n\nThis indicates that these regions experienced a significant decline in the female population during the specified period. The decrease was calculated by comparing the female population at the beginning of the period to the population at the end of the period, and only regions with a decrease greater than 1,000 were included in the results.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\" FROM OBY01PDT01 WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - ženy' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND (SELECT value FROM OBY01PDT01 AS end_data WHERE end_data.\"Ukazatel\" = 'Počet obyvatel na konci období - ženy' AND end_data.\"ČR, kraje\" = OBY01PDT01.\"ČR, kraje\" AND end_data.\"Kumulace čtvrtletí\" = 'Q1-Q3 2024') - value < -1000 LIMIT 5",
+        "result": "[('Česko',), ('Plzeňský kraj',), ('Karlovarský kraj',), ('Ústecký kraj',), ('Liberecký kraj',)]"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the amount of women in Zlin region at the end of Q3 2024?",
+    "result": "At the end of Q3 2024, the number of women in the Zlín region (\"Zlínský kraj\") is **294,996**. This value represents the population of women at the end of the specified period, based on the provided query result.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Zlínský kraj' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na konci období - ženy' LIMIT 5",
+        "result": "294996"
+      }
+    ]
+  },
+  {
+    "prompt": "Find records where male count equals female count",
+    "result": "The query aimed to identify records where the male population count equals the female population count at the beginning of the period. However, the result indicates that **no such records exist** in the dataset. This means there are no instances where the male and female population counts are exactly equal in the queried data.\n\n**Czech Translation:**\n\nDotaz měl za cíl najít záznamy, kde je počet mužů na počátku období roven počtu žen na počátku období. Výsledek však ukazuje, že **v datasetu takové záznamy neexistují**. To znamená, že neexistují žádné případy, kdy by počet mužů a žen byl přesně stejný.",
+    "queries_and_results": [
+      {
+        "query": "SELECT * FROM OBY01PDT01 WHERE \"Počet obyvatel na počátku období - muži\" = \"Počet obyvatel na počátku období - ženy\" LIMIT 5",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "Show me the female population in South Moravia at mid-2024?",
+    "result": "The question asks for the female population in South Moravia (Jihomoravský kraj) at mid-2024. Based on the query results:\n\n1. **Result 1 and Result 2** both provide the value **625,214**, which corresponds to the \"Střední stav obyvatel - ženy\" (mid-year population of females) for the cumulative period Q1-Q3 2024. This value is consistent across both queries.\n\n2. **Result 3** provides the value **626,208**, which corresponds to the \"Počet obyvatel na počátku období - ženy\" (female population at the beginning of the period) for the same cumulative period Q1-Q3 2024. This value is slightly higher than the mid-year population.\n\n### Analysis:\n- The mid-year population of females in South Moravia for 2024 is **625,214**.\n- The population at the beginning of the period (Q1-Q3 2024) is **626,208**, which is **994 higher** than the mid-year population. This difference could reflect demographic changes such as migration, births, or deaths during the period.\n\n### Conclusion:\nThe female population in South Moravia at mid-2024 is **625,214**.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Jihomoravský kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - ženy' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5",
+        "result": "625214"
+      },
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Jihomoravský kraj' AND \"Ukazatel\" = 'Střední stav obyvatel - ženy' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5",
+        "result": "625214"
+      },
+      {
+        "query": "SELECT value FROM OBY01PDT01 WHERE \"ČR, kraje\" = 'Jihomoravský kraj' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - ženy' AND \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' LIMIT 5",
+        "result": "626208"
+      }
+    ]
+  },
+  {
+    "prompt": "Tell me a joke",
+    "result": "Since no query results are available, I cannot analyze or retrieve a joke from external sources. However, here's a bilingual joke for you:\n\n**English:** Why don't skeletons fight each other?  \nBecause they don't have the guts!\n\n**Czech:** Proč se kostlivci mezi sebou neperou?  \nProtože na to nemají žaludek!",
+    "queries_and_results": []
   }
 ]

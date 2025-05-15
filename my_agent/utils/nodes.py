@@ -37,7 +37,7 @@ try:
     BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
-MAX_ITERATIONS = 3  # prevent infinite correction loops
+MAX_ITERATIONS = 2  # Reduced from 3 to prevent excessive looping
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 ROUTE_DECISION_ID = 11  # ID for routing decision function
 
@@ -298,21 +298,50 @@ Your response should:
 async def route_after_query(state: DataAnalysisState) -> Literal["query_again", "format_answer"]:
     """Determine whether to run another query or proceed to formatting the answer.
     
-    This routing function uses an LLM to analyze the current query results and 
-    determine if more queries are needed to fully answer the user's question.
+    This routing function makes decisions about workflow progression by:
+    1. Tracking iteration counts to prevent infinite loops
+    2. Detecting non-data queries (like jokes) for immediate formatting
+    3. Using LLM analysis of current results to determine if more queries are needed
+    4. Handling error cases gracefully with safe defaults
+    
+    The function implements several safeguards:
+    - Hard limit on iterations (MAX_ITERATIONS)
+    - Recognition of non-data queries
+    - Error handling defaulting to format_answer
+    - Intelligent analysis of query completeness
     
     Args:
-        state: The current workflow state
-        
+        state: The current workflow state containing:
+            - prompt: Original user question
+            - iteration: Current iteration count
+            - queries_and_results: Previous query results
+            
     Returns:
-        str: Either "query_again" to execute another query or "format_answer" to proceed
+        Literal["query_again", "format_answer"]: Routing decision where:
+            - "query_again": More queries needed to answer the question
+            - "format_answer": Sufficient data collected, proceed to formatting
     """
     debug_print(f"{ROUTE_DECISION_ID}: Enter route_after_query")
     
-    # Hard limit on number of queries to prevent infinite loops
-    if len(state.queries_and_results) >= 3:
-        debug_print(f"{ROUTE_DECISION_ID}: Query limit reached, proceeding to format answer")
+    # Increment iteration counter
+    state.iteration += 1
+    debug_print(f"{ROUTE_DECISION_ID}: Iteration {state.iteration}")
+    
+    # Check iteration limit
+    if state.iteration >= MAX_ITERATIONS:
+        debug_print(f"{ROUTE_DECISION_ID}: Max iterations ({MAX_ITERATIONS}) reached, proceeding to format answer")
         return "format_answer"
+    
+    # If the prompt is asking for non-data info (like jokes), go straight to format_answer
+    non_data_keywords = ["joke", "funny", "tell me a story", "hello", "hi"]
+    if any(keyword in state.prompt.lower() for keyword in non_data_keywords):
+        debug_print(f"{ROUTE_DECISION_ID}: Non-data query detected, proceeding to format answer")
+        return "format_answer"
+    
+    # if no successful queries yet, try one more time
+    if not state.queries_and_results:
+        debug_print(f"{ROUTE_DECISION_ID}: No successful queries yet, trying one more time")
+        return "query_again"
     
     llm = get_azure_llm(temperature=0.0)
     
@@ -343,7 +372,7 @@ CRITICAL INSTRUCTION: Answer ONLY with "query_again" or "format_answer", nothing
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
-        ("human", "Original question: {question}\n\nCurrent queries and results:\n{results}\n\nDo we need another query to fully answer the original question? Answer 'query_again' or 'format_answer'.")
+        ("human", "Original question: {question}\n\nCurrent queries and results:\n{results}\n\nDo we need another query to fully answer the original question based on the current query results? Answer 'query_again' or 'format_answer'.")
     ])
     
     # Get decision from the LLM
