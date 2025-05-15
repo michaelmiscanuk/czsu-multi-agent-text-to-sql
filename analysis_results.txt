@@ -2988,3 +2988,7 @@ Prompt: Did Prague have more residents than Central Bohemia at the start of 2024
 Result: Bez výsledků dotazů není možné určit, zda měla Praha na začátku roku 2024 více obyvatel než Středočeský kraj. Pro zodpovězení otázky by bylo nutné získat aktuální údaje o počtu obyvatel obou regionů.
 Queries and Results:
 ----------------------------------------------------------------------------
+Prompt: Did Prague have more residents than Central Bohemia at the start of 2024?
+Result: Bez výsledků dotazů nelze určit, zda měla Praha na začátku roku 2024 více obyvatel než Středočeský kraj. Pro přesnou odpověď by bylo nutné získat aktuální údaje o počtu obyvatel obou regionů.
+Queries and Results:
+----------------------------------------------------------------------------

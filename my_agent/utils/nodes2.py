@@ -35,7 +35,10 @@ SAVE_RESULT_ID = 8
 SHOULD_CONTINUE_ID = 9
 
 # Constants
-BASE_DIR = Path(__file__).resolve().parents[2]
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:
+    BASE_DIR = Path(os.getcwd()).parents[0]
 MAX_ITERATIONS = 3  # prevent infinite correction loops
 
 #==============================================================================

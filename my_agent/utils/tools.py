@@ -30,8 +30,12 @@ DEBUG_MODE = os.getenv("MY_AGENT_DEBUG", "1").lower() in ("1", "true", "yes")
 TOOL_ID = 20  # Static ID for PandasQueryTool
 
 # Load data once at module level
-base_dir = Path(__file__).resolve().parents[2]
-data_path = base_dir / "data" / "OBY01PDT01.csv"
+   
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:
+    BASE_DIR = Path(os.getcwd()).parents[0]
+data_path = BASE_DIR / "data" / "OBY01PDT01.csv"
 df = pd.read_csv(data_path)
 
 #===============================================================================

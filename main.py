@@ -16,7 +16,7 @@ import asyncio
 import argparse
 from pathlib import Path
 from dotenv import load_dotenv
-from my_agent.utils.instrument import instrument, Framework
+# from my_agent.utils.instrument import instrument, Framework
 
 
 # Load environment variables
