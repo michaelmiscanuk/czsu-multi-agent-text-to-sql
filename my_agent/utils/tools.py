@@ -142,11 +142,8 @@ class PandasQueryTool(BaseTool):
             debug_print(f"{TOOL_ID}: {result_value}")
             debug_print(f"{TOOL_ID}: =====================================")
             
-            # Return both query and result for state tracking
-            return json.dumps({
-                "query": query,
-                "result": result_value
-            }, ensure_ascii=False)
+            # Return just the string result
+            return result_value
             
         except Exception as e:
             raise ToolException(f"Query error: {str(e)}")

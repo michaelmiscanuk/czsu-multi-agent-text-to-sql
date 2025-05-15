@@ -7,7 +7,7 @@ in the LangGraph-based data analysis application.
 #==============================================================================
 # IMPORTS
 #==============================================================================
-from typing import List, Dict
+from typing import List, Tuple
 from langchain_core.messages import BaseMessage
 from pydantic import BaseModel, Field
 
@@ -24,7 +24,7 @@ class DataAnalysisState(BaseModel):
     prompt: str = Field(default="", description="User query to analyze")
     messages: List[BaseMessage] = Field(default_factory=list, description="Conversation history")
     iteration: int = Field(default=0, description="Iteration counter for workflow loop prevention")
-    queries_and_results: List[Dict[str, str]] = Field(
+    queries_and_results: List[Tuple[str, str]] = Field(
         default_factory=list, 
-        description="Collection of executed queries and their corresponding results"
+        description="Collection of executed queries and their corresponding results as (query, result) tuples"
     )

@@ -19,15 +19,17 @@ flow that prevents common failure modes in LLM-based systems.
 from dotenv import load_dotenv
 from langgraph.graph import END, START, StateGraph
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.prebuilt import ToolNode
+from typing import Literal
 
 from .utils import DataAnalysisState
-from .utils.nodes1 import (
+from .utils.nodes1_multiple_queries import (
     get_schema_node,
     query_node,
     format_answer_node,
     submit_final_answer_node,
-    save_node
+    save_node,
+    route_after_query
 )
 from .utils.tools import PandasQueryTool
 
@@ -67,9 +69,6 @@ def create_graph():
     # Query generation converts natural language to executable code
     graph.add_node("query_gen", query_node)
     
-    # Tool node for executing pandas queries
-    graph.add_node("tools", ToolNode(tools=[PandasQueryTool()]))
-    
     # Natural language formatting of query results
     graph.add_node("format_answer", format_answer_node)
     
@@ -86,16 +85,17 @@ def create_graph():
     graph.add_edge(START, "get_schema")
     graph.add_edge("get_schema", "query_gen")
     
-    # Tool execution routing
+    # Add conditional routing after query generation
+    # This enables intelligent decision on whether additional queries are needed
     graph.add_conditional_edges(
         "query_gen",
-        tools_condition,
+        route_after_query,
         {
-            "tools": "tools",
-            None: "format_answer"
+            "query_again": "query_gen",  # Run another query if needed
+            "format_answer": "format_answer"  # Proceed to formatting when done
         }
     )
-    graph.add_edge("tools", "format_answer")
+    
     graph.add_edge("format_answer", "submit_final_answer")
     graph.add_edge("submit_final_answer", "save")
     graph.add_edge("save", END)
