@@ -1,11 +1,9 @@
 # CHANGE here which type of agent is used. Specify agent type here.
-agent_type = "basic1"  # Options: "basic1", "basic2",
+agent_type = "basic1"  # Options: "basic1_multiple_queries", "basic2",
 
 # Import based on selected agent type
-if agent_type == "basic1_multiple_queries":
-    from .agent_basic1_multiple_queries import create_graph
-elif agent_type == "basic2":
-    from .agent_basic2 import create_graph
+if agent_type == "basic1":
+    from .agent import create_graph
 else:
     raise ValueError(f"Unknown agent type: {agent_type}. Valid options are: 'basic_reflection', 'initial'")
 
