@@ -17,7 +17,7 @@ from typing import Literal
 import ast  # used for syntax validation of generated pandas expressions
 
 from .state import DataAnalysisState
-from .tools import DEBUG_MODE, PandasQueryTool
+from .tools import DEBUG_MODE, PandasQueryTool, SQLiteQueryTool
 from langgraph.prebuilt import ToolNode, tools_condition
 
 #==============================================================================
@@ -103,11 +103,11 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     llm = get_azure_llm(temperature=0.0)
     
     # Create fresh tool instance
-    pandas_tool = PandasQueryTool()
-    llm_with_tools = llm.bind_tools([pandas_tool])
+    sqlite_tool = SQLiteQueryTool()
+    llm_with_tools = llm.bind_tools([sqlite_tool])
     
     system_prompt = """
-You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in pandas. Your task is to translate the user's natural-language question into a pandas query and execute it using the pandas_query tool.
+You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. Your task is to translate the user's natural-language question into a SQL query and execute it using the sqlite_query tool.
 
 To accomplish this:
 1. Read and analyze the provided inputs:
@@ -121,30 +121,31 @@ To accomplish this:
 - Handling Czech diacritics and special characters
 - Converting geographical names between languages and similar concepts
 
-3. Construct an appropriate pandas query by:
+3. Construct an appropriate SQL query by:
 - Using exact column names from the schema (can be Czech or English)
-- Matching user prompt terms to correct data values (the schema contains a list of unique values in specific columns)
+- Matching user prompt terms to correct data values
 - Ensuring proper string matching for Czech characters
-- Carefully examining dimensional unique values in the schema, especially for columns that may contain both totals and detailed records (e.g., "CZ, Region" may include "Czech Republic" and "Regions")
 - GENERATING A NEW QUERY THAT PROVIDES ADDITIONAL INFORMATION that is not already present in the previously executed queries
 
-4. Use the pandas_query tool to execute the query.
+4. Use the sqlite_query tool to execute the query.
 
 5. Always answer in the language of the prompt and preserve Czech characters.
 6. Numeric outputs must be plain digits with NO thousands separators.
 
 When generating the query:
-- Return ONLY the pandas expression that answers the question.
-- Limit the output to at most 5 rows unless the user specifies otherwise.
+- Return ONLY the SQL expression that answers the question.
+- Limit the output to at most 5 rows using LIMIT unless the user specifies otherwise.
 - Select only the necessary columns, never all columns.
-- Use the appropriate pandas function for aggregation results (e.g., sum, mean).
-- Do NOT modify the CSV file.
+- Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
+- Do NOT modify the database.
 - NEVER invent data that is not present in the dataset.
 
-IMPORTANT: You must use the pandas_query tool to execute queries. Direct query execution is not allowed. Always format your response as a tool call using the pandas_query tool.
+IMPORTANT: You must use the sqlite_query tool to execute queries. Direct query execution is not allowed. Always format your response as a tool call using the sqlite_query tool.
 
 === IMPORTANT RULE ===
-Return ONLY the final pandas expression that should be executed, with nothing else around it. Do NOT wrap it in ```python``` fences and do NOT add explanations.
+Return ONLY the final SQL query that should be executed, with nothing else around it. Do NOT wrap it in ```sql``` fences and do NOT add explanations.
+
+USE only one TABLE in FROM clause called 'OBY01PDT01'
 """
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -171,13 +172,13 @@ Return ONLY the final pandas expression that should be executed, with nothing el
     if hasattr(result, 'additional_kwargs') and 'tool_calls' in result.additional_kwargs:
         tool_calls = result.additional_kwargs['tool_calls']
         for tool_call in tool_calls:
-            if tool_call['type'] == 'function' and tool_call['function']['name'] == 'pandas_query':
+            if tool_call['type'] == 'function' and tool_call['function']['name'] == 'sqlite_query':
                 tool_args = json.loads(tool_call['function']['arguments'])
                 query = tool_args['query']
                 
                 try:
-                    # Execute the query directly using the tool and get the string result
-                    tool_result = pandas_tool._run(query)
+                    # Execute the query using the SQLite tool
+                    tool_result = sqlite_tool._run(query)
                     debug_print(f"{QUERY_GEN_ID}: Successfully executed query: {query}")
                     debug_print(f"{QUERY_GEN_ID}: Query result: {tool_result}")
                     # Store the query and its string result

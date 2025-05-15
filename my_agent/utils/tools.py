@@ -8,6 +8,7 @@ operations with proper error handling and result formatting.
 # IMPORTS
 #===============================================================================
 import os
+import sqlite3
 from pathlib import Path
 import pandas as pd
 from typing import Optional, Type, ClassVar
@@ -28,6 +29,7 @@ DEBUG_MODE = os.getenv("MY_AGENT_DEBUG", "1").lower() in ("1", "true", "yes")
 
 # Constants
 TOOL_ID = 20  # Static ID for PandasQueryTool
+SQLITE_TOOL_ID = 21  # Static ID for SQLiteQueryTool
 
 # Load data once at module level
    
@@ -36,6 +38,7 @@ try:
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 data_path = BASE_DIR / "data" / "OBY01PDT01.csv"
+db_path = BASE_DIR / "data" / "czsu_data.db"
 df = pd.read_csv(data_path)
 
 #===============================================================================
@@ -154,4 +157,61 @@ class PandasQueryTool(BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         """Execute the pandas query asynchronously."""
+        return self._run(query, run_manager)
+
+class SQLiteQueryInput(BaseModel):
+    """Schema for SQLite query input."""
+    query: str = Field(description="SQL query to execute against the database")
+
+class SQLiteQueryTool(BaseTool):
+    """Tool for executing SQL queries against a SQLite database."""
+    name: ClassVar[str] = "sqlite_query"
+    description: ClassVar[str] = "Execute SQL query on the SQLite database"
+    args_schema: Type[BaseModel] = SQLiteQueryInput
+    
+    def _run(
+        self, 
+        query: str, 
+        run_manager: Optional[CallbackManagerForToolRun] = None
+    ) -> str:
+        try:
+            check_query_safety(query)
+            
+            # Debug print query
+            debug_print(f"{SQLITE_TOOL_ID}: =====================================")
+            debug_print(f"{SQLITE_TOOL_ID}: Executing query:")
+            debug_print(f"{SQLITE_TOOL_ID}: {query}")
+            debug_print(f"{SQLITE_TOOL_ID}: =====================================")
+            
+            # Execute SQL query
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute(query)
+                result = cursor.fetchall()
+                
+            # Format the result
+            if not result:
+                result_value = "No results found"
+            elif len(result) == 1 and len(result[0]) == 1:
+                result_value = str(result[0][0])
+            else:
+                result_value = str(result)
+            
+            # Debug print result
+            debug_print(f"{SQLITE_TOOL_ID}: Query result:")
+            debug_print(f"{SQLITE_TOOL_ID}: {result_value}")
+            debug_print(f"{SQLITE_TOOL_ID}: =====================================")
+            
+            # Return just the string result (matching PandasQueryTool structure)
+            return result_value
+            
+        except Exception as e:
+            raise ToolException(f"Query error: {str(e)}")
+
+    async def _arun(
+        self,
+        query: str,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> str:
+        """Execute the SQL query asynchronously."""
         return self._run(query, run_manager)

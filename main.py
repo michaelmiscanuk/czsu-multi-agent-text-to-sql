@@ -30,7 +30,11 @@ from my_agent.utils.state import DataAnalysisState
 #==============================================================================
 # Default prompt if none provided
 # DEFAULT_PROMPT = "Did Prague have more residents than Central Bohemia at the start of 2024?"
-DEFAULT_PROMPT = "Can you compare number of man and number of woman in prague and in plzen? Create me a bar chart with this data."
+# DEFAULT_PROMPT = "Can you compare number of man and number of woman in prague and in plzen? Create me a bar chart with this data."
+# DEFAULT_PROMPT = "How much did Prague's population grow from start to end of Q3?"
+# DEFAULT_PROMPT = "What was South Bohemia's population change rate per month?"
+DEFAULT_PROMPT = "Tell me a joke"
+# DEFAULT_PROMPT = "Is there some very interesting trend in my data?"
 
 #==============================================================================
 # MAIN FUNCTION
