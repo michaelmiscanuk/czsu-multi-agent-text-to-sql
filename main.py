@@ -16,6 +16,8 @@ import asyncio
 import argparse
 from pathlib import Path
 from dotenv import load_dotenv
+from typing import List
+from langchain_core.messages import BaseMessage
 # from my_agent.utils.instrument import instrument, Framework
 
 
@@ -33,8 +35,9 @@ from my_agent.utils.state import DataAnalysisState
 # DEFAULT_PROMPT = "Can you compare number of man and number of woman in prague and in plzen? Create me a bar chart with this data."
 # DEFAULT_PROMPT = "How much did Prague's population grow from start to end of Q3?"
 # DEFAULT_PROMPT = "What was South Bohemia's population change rate per month?"
-DEFAULT_PROMPT = "Tell me a joke"
+# DEFAULT_PROMPT = "Tell me a joke"
 # DEFAULT_PROMPT = "Is there some very interesting trend in my data?"
+DEFAULT_PROMPT = "tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech."
 
 #==============================================================================
 # MAIN FUNCTION
@@ -79,8 +82,12 @@ async def main(prompt=None):
     print(f"Processing prompt: {prompt}")
     
     # Create initial state with the user's prompt
-    # The DataAnalysisState holds all contextual information during processing
-    initial_state = DataAnalysisState(prompt=prompt)
+    initial_state: DataAnalysisState = {
+        "prompt": prompt,
+        "messages": [],
+        "iteration": 0,
+        "queries_and_results": []
+    }
     
     # Generate a unique thread ID to track this specific analysis run
     # This is important for concurrent executions and audit trails

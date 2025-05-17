@@ -1,30 +1,34 @@
 """State definitions for the data analysis workflow.
 
-This module defines the Pydantic models used to represent state
+This module defines the state schema used to represent state
 in the LangGraph-based data analysis application.
 """
 
 #==============================================================================
 # IMPORTS
 #==============================================================================
-from typing import List, Tuple
+from typing import List, Tuple, TypedDict, Annotated
+from operator import add
 from langchain_core.messages import BaseMessage
-from pydantic import BaseModel, Field
 
 #==============================================================================
 # STATE CLASSES
 #==============================================================================
-class DataAnalysisState(BaseModel):
+class DataAnalysisState(TypedDict):
     """State for the data analysis graph.
     
     This model tracks the state of the data analysis workflow,
     including the user prompt, conversation messages, results,
     and iteration counter for loop prevention.
+    
+    The state uses Annotated types with reducers to properly handle
+    state updates:
+    - messages: Uses add reducer to append new messages
+    - queries_and_results: Uses add reducer to append new query results
+    - iteration: Uses default override behavior
+    - prompt: Uses default override behavior
     """
-    prompt: str = Field(default="", description="User query to analyze")
-    messages: List[BaseMessage] = Field(default_factory=list, description="Conversation history")
-    iteration: int = Field(default=0, description="Iteration counter for workflow loop prevention")
-    queries_and_results: List[Tuple[str, str]] = Field(
-        default_factory=list, 
-        description="Collection of executed queries and their corresponding results as (query, result) tuples"
-    )
+    prompt: str  # User query to analyze
+    messages: Annotated[List[BaseMessage], add]  # Conversation history with add reducer
+    iteration: int  # Iteration counter for workflow loop prevention
+    queries_and_results: Annotated[List[Tuple[str, str]], add]  # Collection of executed queries and their results with add reducer

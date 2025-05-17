@@ -13,7 +13,7 @@ from pathlib import Path
 from langchain_core.messages import AIMessage
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from typing import Literal
+from typing import Literal, TypedDict
 import ast  # used for syntax validation of generated pandas expressions
 
 from .state import DataAnalysisState
@@ -89,13 +89,10 @@ async def load_schema():
 #==============================================================================
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Get schema details for relevant columns."""
-    print("AAAAAAAAAAAAAA")
     debug_print(f"{GET_SCHEMA_ID}: Enter get_schema_node")
     schema = await load_schema()
     msg = AIMessage(content=f"Schema details: {json.dumps(schema, ensure_ascii=False, indent=2)}")
-    state.messages.append(msg)
-    debug_print(f"{GET_SCHEMA_ID}: Schema details appended")
-    return state
+    return {"messages": [msg]}  # Reducer will append this to existing messages
 
 async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Generate pandas query based on question and schema."""
@@ -153,22 +150,25 @@ USE only one TABLE in FROM clause called 'OBY01PDT01'
     ])
     
     # Format current queries for context
-    if state.queries_and_results:
+    if state["queries_and_results"]:
         current_queries = "\n\n".join([
             f"Query {i+1}:\n{q}\n\nResult {i+1}:\n{r}" 
-            for i, (q, r) in enumerate(state.queries_and_results)
+            for i, (q, r) in enumerate(state["queries_and_results"])
         ])
     else:
         current_queries = "No queries have been executed yet."
     
     schema = await load_schema()
     result = await llm_with_tools.ainvoke(prompt.format_messages(
-        prompt=state.prompt,
+        prompt=state["prompt"],
         schema=json.dumps(schema, ensure_ascii=False, indent=2),
         current_queries=current_queries
     ))
     
     # Execute tool and store results
+    new_messages = []
+    new_queries = []
+    
     if hasattr(result, 'additional_kwargs') and 'tool_calls' in result.additional_kwargs:
         tool_calls = result.additional_kwargs['tool_calls']
         for tool_call in tool_calls:
@@ -182,25 +182,26 @@ USE only one TABLE in FROM clause called 'OBY01PDT01'
                     debug_print(f"{QUERY_GEN_ID}: Successfully executed query: {query}")
                     debug_print(f"{QUERY_GEN_ID}: Query result: {tool_result}")
                     # Store the query and its string result
-                    state.queries_and_results.append((query, tool_result))
+                    new_queries.append((query, tool_result))
                 except Exception as e:
-                    debug_print(f"{QUERY_GEN_ID}: Error executing query: {str(e)}")
+                    error_msg = f"Error executing query: {str(e)}"
+                    debug_print(f"{QUERY_GEN_ID}: {error_msg}")
                     # Store the query with error message
-                    state.queries_and_results.append((query, f"Error: {str(e)}"))
+                    new_queries.append((query, f"Error: {str(e)}"))
+                    # Add error message to state
+                    new_messages.append(AIMessage(content=error_msg))
     
-    state.messages.append(result)
-    debug_print(f"{QUERY_GEN_ID}: Current state of queries_and_results: {state.queries_and_results}")
-    return state
+    new_messages.append(result)
+    debug_print(f"{QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}")
+    
+    return {
+        "messages": new_messages,
+        "queries_and_results": new_queries
+    }
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Submit the final answer to the user."""
     debug_print(f"{SUBMIT_FINAL_ID}: Enter submit_final_answer_node")
-    
-    # Get the formatted answer from the last message
-    last_message_content = state.messages[-1].content
-    
-    # Add the final answer to the messages
-    state.messages.append(AIMessage(content=last_message_content))
     debug_print(f"{SUBMIT_FINAL_ID}: Final answer prepared")
     return state
 
@@ -209,20 +210,20 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     debug_print(f"{SAVE_RESULT_ID}: Enter save_node")
     
     # Get the final answer from the last message
-    final_answer = state.messages[-1].content
+    final_answer = state["messages"][-1].content
     
     result_path = BASE_DIR / "analysis_results.txt"
     result_obj = {
-        "prompt": state.prompt,
+        "prompt": state["prompt"],
         "result": final_answer,
-        "queries_and_results": [{"query": q, "result": r} for q, r in state.queries_and_results]
+        "queries_and_results": [{"query": q, "result": r} for q, r in state["queries_and_results"]]
     }
     
     with result_path.open("a", encoding='utf-8') as f:
-        f.write(f"Prompt: {state.prompt}\n")
+        f.write(f"Prompt: {state['prompt']}\n")
         f.write(f"Result: {final_answer}\n")
         f.write("Queries and Results:\n")
-        for query, result in state.queries_and_results:
+        for query, result in state["queries_and_results"]:
             f.write(f"  Query: {query}\n")
             f.write(f"  Result: {result}\n")
         f.write("----------------------------------------------------------------------------\n")
@@ -248,10 +249,10 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     debug_print(f"{FORMAT_ANSWER_ID}: Enter format_answer_node")
     
     # Debug print current state of queries_and_results
-    debug_print(f"{FORMAT_ANSWER_ID}: Number of queries and results: {len(state.queries_and_results)}")
+    debug_print(f"{FORMAT_ANSWER_ID}: Number of queries and results: {len(state['queries_and_results'])}")
     
     # Debug print current state of queries_and_results
-    debug_print(f"{FORMAT_ANSWER_ID}: queries and results: {(state.queries_and_results)}")
+    debug_print(f"{FORMAT_ANSWER_ID}: queries and results: {(state['queries_and_results'])}")
     
     llm = get_azure_llm(temperature=0.1)
     
@@ -270,13 +271,13 @@ Your response should:
     
     # Format results for better readability
     queries_results_text = "No query results available."
-    if state.queries_and_results:
+    if state["queries_and_results"]:
         queries_results_text = "\n\n".join(
             f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
-            for i, (query, result) in enumerate(state.queries_and_results)
+            for i, (query, result) in enumerate(state["queries_and_results"])
         )
     
-    formatted_prompt = f"Question: {state.prompt}\n\nQueries and Results:\n{queries_results_text}\n\nPlease provide a complete analysis."
+    formatted_prompt = f"Question: {state['prompt']}\n\nQueries and Results:\n{queries_results_text}\n\nPlease provide a complete analysis."
     
     chain = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -289,57 +290,38 @@ Your response should:
     
     debug_print(f"{FORMAT_ANSWER_ID}: Analysis completed")
     debug_print(f"{FORMAT_ANSWER_ID}: Formatted input sent to LLM:")
-    debug_print(f"{FORMAT_ANSWER_ID}: Question: {state.prompt}")
+    debug_print(f"{FORMAT_ANSWER_ID}: Question: {state['prompt']}")
     debug_print(f"{FORMAT_ANSWER_ID}: Results provided:\n{queries_results_text}")
     
-    state.messages.append(result)
-    return state
+    return {"messages": [result]}
+
+async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Increment the iteration counter and return updated state."""
+    debug_print(f"{ROUTE_DECISION_ID}: Incrementing iteration counter")
+    return {"iteration": state["iteration"] + 1}
 
 async def route_after_query(state: DataAnalysisState) -> Literal["query_again", "format_answer"]:
     """Determine whether to run another query or proceed to formatting the answer.
     
-    This routing function makes decisions about workflow progression by:
-    1. Tracking iteration counts to prevent infinite loops
-    2. Detecting non-data queries (like jokes) for immediate formatting
-    3. Using LLM analysis of current results to determine if more queries are needed
-    4. Handling error cases gracefully with safe defaults
-    
-    The function implements several safeguards:
-    - Hard limit on iterations (MAX_ITERATIONS)
-    - Recognition of non-data queries
-    - Error handling defaulting to format_answer
-    - Intelligent analysis of query completeness
-    
-    Args:
-        state: The current workflow state containing:
-            - prompt: Original user question
-            - iteration: Current iteration count
-            - queries_and_results: Previous query results
-            
-    Returns:
-        Literal["query_again", "format_answer"]: Routing decision where:
-            - "query_again": More queries needed to answer the question
-            - "format_answer": Sufficient data collected, proceed to formatting
+    This is a pure routing function that only makes decisions based on state,
+    without modifying the state itself.
     """
     debug_print(f"{ROUTE_DECISION_ID}: Enter route_after_query")
-    
-    # Increment iteration counter
-    state.iteration += 1
-    debug_print(f"{ROUTE_DECISION_ID}: Iteration {state.iteration}")
+    debug_print(f"{ROUTE_DECISION_ID}: Current iteration: {state['iteration']}")
     
     # Check iteration limit
-    if state.iteration >= MAX_ITERATIONS:
+    if state["iteration"] >= MAX_ITERATIONS:
         debug_print(f"{ROUTE_DECISION_ID}: Max iterations ({MAX_ITERATIONS}) reached, proceeding to format answer")
         return "format_answer"
     
     # If the prompt is asking for non-data info (like jokes), go straight to format_answer
     non_data_keywords = ["joke", "funny", "tell me a story", "hello", "hi"]
-    if any(keyword in state.prompt.lower() for keyword in non_data_keywords):
+    if any(keyword in state["prompt"].lower() for keyword in non_data_keywords):
         debug_print(f"{ROUTE_DECISION_ID}: Non-data query detected, proceeding to format answer")
         return "format_answer"
     
     # if no successful queries yet, try one more time
-    if not state.queries_and_results:
+    if not state["queries_and_results"]:
         debug_print(f"{ROUTE_DECISION_ID}: No successful queries yet, trying one more time")
         return "query_again"
     
@@ -348,7 +330,7 @@ async def route_after_query(state: DataAnalysisState) -> Literal["query_again", 
     # Format current queries and results for the LLM
     queries_results_text = "\n\n".join(
         f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
-        for i, (query, result) in enumerate(state.queries_and_results)
+        for i, (query, result) in enumerate(state["queries_and_results"])
     )
     
     # Prepare the decision prompt
@@ -379,7 +361,7 @@ CRITICAL INSTRUCTION: Answer ONLY with "query_again" or "format_answer", nothing
     try:
         result = await llm.ainvoke(
             prompt.format_messages(
-                question=state.prompt,
+                question=state["prompt"],
                 results=queries_results_text
             )
         )

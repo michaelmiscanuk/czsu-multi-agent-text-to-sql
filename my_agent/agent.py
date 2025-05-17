@@ -22,14 +22,15 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import ToolNode
 from typing import Literal
 
-from .utils import DataAnalysisState
+from .utils.state import DataAnalysisState
 from .utils.nodes import (
     get_schema_node,
     query_node,
     format_answer_node,
     submit_final_answer_node,
     save_node,
-    route_after_query
+    route_after_query,
+    increment_iteration_node
 )
 from .utils.tools import PandasQueryTool
 
@@ -69,6 +70,9 @@ def create_graph():
     # Query generation converts natural language to executable code
     graph.add_node("query_gen", query_node)
     
+    # Iteration management
+    graph.add_node("increment_iteration", increment_iteration_node)
+    
     # Natural language formatting of query results
     graph.add_node("format_answer", format_answer_node)
     
@@ -89,12 +93,15 @@ def create_graph():
     # This enables intelligent decision on whether additional queries are needed
     graph.add_conditional_edges(
         "query_gen",
-        route_after_query,
+        route_after_query,  # Pure routing function
         {
-            "query_again": "query_gen",  # Run another query if needed
+            "query_again": "increment_iteration",  # First increment iteration
             "format_answer": "format_answer"  # Proceed to formatting when done
         }
     )
+    
+    # After incrementing iteration, go back to query generation
+    graph.add_edge("increment_iteration", "query_gen")
     
     graph.add_edge("format_answer", "submit_final_answer")
     graph.add_edge("submit_final_answer", "save")

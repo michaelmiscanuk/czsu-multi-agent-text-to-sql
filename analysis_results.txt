@@ -5307,3 +5307,496 @@ Because they don't have the guts!
 Protože na to nemají žaludek!
 Queries and Results:
 ----------------------------------------------------------------------------
+Prompt: Tell me a joke
+Result: Since no query results are available, I will provide a joke directly:
+
+**English:** Why don’t skeletons fight each other? They don’t have the guts.  
+**Czech:** Proč se kostlivci mezi sebou neperou? Nemají na to odvahu.
+Queries and Results:
+----------------------------------------------------------------------------
+Prompt: What is the population of Prague?
+Result: The population of Prague ("Hlavní město Praha") at the end of the observed period is **1,392,125**. This value represents the total number of inhabitants in the city.
+Queries and Results:
+  Query: SELECT value FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Ukazatel" = 'Počet obyvatel na konci období - celkem' LIMIT 5
+  Result: 1392125
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024?
+Result: Based on the query results, we have data regarding the population of Prague (Hlavní město Praha) for the year 2024, specifically for the first three quarters (Q1-Q3 2024):
+
+1. **Population at the beginning of the period (Q1 2024):**
+   - Total: **1,384,732**
+   - Men: **670,680**
+   - Women: **714,052**
+
+2. **Average population during the period (Q1-Q3 2024):**
+   - Total: **1,386,723**
+   - Men: **672,752**
+
+### Analysis:
+- The population of Prague at the beginning of 2024 was **1,384,732** people, with slightly more women (**714,052**) than men (**670,680**).
+- The average population during the first three quarters of 2024 was slightly higher, at **1,386,723**, indicating a small increase in population over the period.
+
+This data provides a snapshot of Prague's population dynamics for the specified timeframe in 2024.
+Queries and Results:
+  Query: SELECT "Ukazatel", value FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' LIMIT 5
+  Result: [('Počet obyvatel na počátku období - celkem', 1384732), ('Počet obyvatel na počátku období - muži', 670680), ('Počet obyvatel na počátku období - ženy', 714052), ('Střední stav obyvatel - celkem', 1386723), ('Střední stav obyvatel - muži', 672752)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data?
+Result: In 2024, the population data for the Czech Republic and its capital, Prague, is as follows:
+
+- **Prague (Hlavní město Praha):** 1,384,732 people
+- **Czech Republic (Česko):** 10,900,555 people
+
+### Comparison:
+The population of Prague represents approximately **12.7%** of the total population of the Czech Republic. This is calculated as:
+
+\[
+\frac{1,384,732}{10,900,555} \times 100 \approx 12.7\%
+\]
+
+Thus, while Prague is the most populous city in the country, it accounts for a relatively small proportion of the overall population of the Czech Republic.
+Queries and Results:
+  Query: SELECT "ČR, kraje", SUM(value) AS total_population FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' AND "ČR, kraje" IN ('Česko', 'Hlavní město Praha') GROUP BY "ČR, kraje";
+  Result: [('Hlavní město Praha', 1384732), ('Česko', 10900555)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.
+Result: ### Analysis of Population Data for Prague and the Czech Republic in 2024
+
+#### Population in Prague vs. the Czech Republic
+- **Prague**: At the beginning of 2024 (Q1-Q3), the population of Prague was **1,384,732**.
+- **Czech Republic (Česko)**: The total population of the Czech Republic during the same period was **10,900,555**.
+
+To compare:
+- Prague's population represents approximately **12.7%** of the total population of the Czech Republic. This is calculated as:
+  \[
+  \frac{1,384,732}{10,900,555} \times 100 \approx 12.7\%
+  \]
+
+#### Distribution of Population by Region (in Percentages)
+The population distribution across regions of the Czech Republic, expressed as percentages of the total population, is as follows:
+
+1. **Česko (aggregate)**: 50.0% (this value likely represents the total population and is not specific to a single region).
+2. **Středočeský kraj**: **6.6783%**
+3. **Hlavní město Praha (Prague)**: **6.3517%**
+4. **Jihomoravský kraj**: **5.6270%**
+5. **Moravskoslezský kraj**: **5.4548%**
+6. **Ústecký kraj**: **3.7208%**
+7. **Jihočeský kraj**: **3.0022%**
+8. **Olomoucký kraj**: **2.9029%**
+9. **Plzeňský kraj**: **2.8135%**
+10. **Zlínský kraj**: **2.6638%**
+11. **Královéhradecký kraj**: **2.5547%**
+12. **Pardubický kraj**: **2.4336%**
+13. **Kraj Vysočina**: **2.3758%**
+14. **Liberecký kraj**: **2.0675%**
+15. **Karlovarský kraj**: **1.3535%**
+
+#### Key Observations
+- Prague is the third most populous region in terms of percentage, contributing **6.3517%** of the total population.
+- The **Středočeský kraj** has the highest regional percentage at **6.6783%**, slightly higher than Prague.
+- The **Karlovarský kraj** has the smallest share of the population at **1.3535%**.
+
+### Summary
+Prague's population in 2024 was **1,384,732**, which is **12.7%** of the total population of the Czech Republic (**10,900,555**). In terms of regional distribution, Prague accounted for **6.3517%** of the total population, making it one of the most populous regions, though slightly behind the **Středočeský kraj**. The population distribution across all regions shows significant variation, with the **Karlovarský kraj** having the smallest share.
+Queries and Results:
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.
+Result: ### Analysis of Population Data for Prague and the Czech Republic in 2024
+
+#### 1. Population of Prague vs. the Czech Republic
+- **Prague (Hlavní město Praha):** The population at the beginning of 2024 (Q1-Q3) was **1,384,732**.
+- **Czech Republic (Česko):** The total population at the same time was **10,900,555**.
+
+**Comparison:**  
+Prague's population represents approximately **12.7%** of the total population of the Czech Republic. This is calculated as:
+\[
+\frac{1,384,732}{10,900,555} \times 100 \approx 12.7\%
+\]
+
+#### 2. Distribution of Population by Region (in Percentages)
+The population distribution across regions (kraje) in the Czech Republic, expressed as percentages of the total population, is as follows:
+
+| Region (ČR, kraje)         | Percentage (%)       |
+|----------------------------|----------------------|
+| Česko (entire country)     | 50.0 (aggregate)    |
+| Středočeský kraj           | 6.6783              |
+| **Hlavní město Praha**     | **6.3517**          |
+| Jihomoravský kraj          | 5.6270              |
+| Moravskoslezský kraj       | 5.4548              |
+| Ústecký kraj               | 3.7208              |
+| Jihočeský kraj             | 3.0022              |
+| Olomoucký kraj             | 2.9029              |
+| Plzeňský kraj              | 2.8135              |
+| Zlínský kraj               | 2.6638              |
+| Královéhradecký kraj       | 2.5547              |
+| Pardubický kraj            | 2.4336              |
+| Kraj Vysočina              | 2.3758              |
+| Liberecký kraj             | 2.0675              |
+| Karlovarský kraj           | 1.3535              |
+
+#### 3. Observations
+- **Prague's Share:** Prague accounts for **6.3517%** of the total population when compared to all regions individually. This is slightly lower than Středočeský kraj, which has the highest share among individual regions at **6.6783%**.
+- **Largest Regions by Population:** The top four regions by population percentage are:
+  1. Středočeský kraj (6.6783%)
+  2. Hlavní město Praha (6.3517%)
+  3. Jihomoravský kraj (5.6270%)
+  4. Moravskoslezský kraj (5.4548%)
+- **Smallest Region:** Karlovarský kraj has the smallest share of the population at **1.3535%**.
+
+#### 4. Total Population by Region
+For reference, the total population of each region (in absolute numbers) is as follows:
+
+| Region (ČR, kraje)         | Total Population    |
+|----------------------------|---------------------|
+| Česko (entire country)     | 10,900,555         |
+| Středočeský kraj           | 1,455,940          |
+| **Hlavní město Praha**     | **1,384,732**      |
+| Jihomoravský kraj          | 1,226,749          |
+| Moravskoslezský kraj       | 1,189,204          |
+| Ústecký kraj               | 811,169            |
+| Jihočeský kraj             | 654,505            |
+| Olomoucký kraj             | 632,864            |
+| Plzeňský kraj              | 613,374            |
+| Zlínský kraj               | 580,744            |
+| Královéhradecký kraj       | 556,949            |
+| Pardubický kraj            | 530,560            |
+| Kraj Vysočina              | 517,960            |
+| Liberecký kraj             | 450,728            |
+| Karlovarský kraj           | 295,077            |
+
+### Summary
+- Prague's population in 2024 was **1,384,732**, which is **12.7%** of the total Czech Republic population.
+- In terms of regional distribution, Prague accounts for **6.3517%** of the total population when compared to other regions.
+- Středočeský kraj has the highest population share among regions, while Karlovarský kraj has the smallest.
+Queries and Results:
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+  Query: SELECT "ČR, kraje", SUM("value") AS "total_population" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "total_population" DESC
+  Result: [('Česko', 10900555), ('Středočeský kraj', 1455940), ('Hlavní město Praha', 1384732), ('Jihomoravský kraj', 1226749), ('Moravskoslezský kraj', 1189204), ('Ústecký kraj', 811169), ('Jihočeský kraj', 654505), ('Olomoucký kraj', 632864), ('Plzeňský kraj', 613374), ('Zlínský kraj', 580744), ('Královéhradecký kraj', 556949), ('Pardubický kraj', 530560), ('Kraj Vysočina', 517960), ('Liberecký kraj', 450728), ('Karlovarský kraj', 295077)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.
+Result: ### Analysis of Population Data for Prague and the Czech Republic in 2024
+
+1. **Population of Prague vs. the Czech Republic**:
+   - The population of **Prague** at the beginning of 2024 (Q1-Q3) was **1,384,732**.
+   - The population of the **entire Czech Republic** at the same time was **10,900,555**.
+   - **Comparison**: Prague's population accounted for approximately **12.7%** of the total population of the Czech Republic.
+
+2. **Population Distribution by Region (Percentage)**:
+   Below is the percentage distribution of the population across regions in the Czech Republic for Q1-Q3 2024:
+
+   - **Česko (Total)**: 50.0% (This value represents the entire dataset and is not a specific region.)
+   - **Středočeský kraj**: 6.6783%
+   - **Hlavní město Praha (Prague)**: 6.3517%
+   - **Jihomoravský kraj**: 5.6270%
+   - **Moravskoslezský kraj**: 5.4548%
+   - **Ústecký kraj**: 3.7208%
+   - **Jihočeský kraj**: 3.0022%
+   - **Olomoucký kraj**: 2.9029%
+   - **Plzeňský kraj**: 2.8135%
+   - **Zlínský kraj**: 2.6638%
+   - **Královéhradecký kraj**: 2.5547%
+   - **Pardubický kraj**: 2.4336%
+   - **Kraj Vysočina**: 2.3758%
+   - **Liberecký kraj**: 2.0675%
+   - **Karlovarský kraj**: 1.3535%
+
+### Key Observations:
+- Prague is the third most populous region in terms of percentage, contributing **6.35%** to the total population.
+- The **Středočeský kraj** has the highest percentage among individual regions, with **6.68%**.
+- The **Karlovarský kraj** has the smallest share of the population, with **1.35%**.
+
+This analysis provides a clear view of Prague's population in the context of the entire Czech Republic and the relative population distribution across all regions.
+Queries and Results:
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "procento" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "procento" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "procento" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "procento" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.
+Result: ### Analysis of Population Data for Prague and the Czech Republic in 2024
+
+#### 1. Population in Prague vs. the Czech Republic
+- **Prague**: The population at the beginning of 2024 (Q1-Q3) was **1,384,732**.
+- **Czech Republic (Česko)**: The total population at the same time was **10,900,555**.
+
+When comparing these values:
+- Prague's population represents approximately **12.7%** of the total population of the Czech Republic.
+
+#### 2. Distribution of Population by Region (in Percentages)
+The population distribution across regions (as a percentage of the total population of the Czech Republic) is as follows:
+
+1. **Česko (Total)**: 50.0% (This value represents the entire dataset and is not a specific region.)
+2. **Středočeský kraj**: **6.6783%**
+3. **Hlavní město Praha (Prague)**: **6.3517%**
+4. **Jihomoravský kraj**: **5.6270%**
+5. **Moravskoslezský kraj**: **5.4548%**
+6. **Ústecký kraj**: **3.7208%**
+7. **Jihočeský kraj**: **3.0022%**
+8. **Olomoucký kraj**: **2.9029%**
+9. **Plzeňský kraj**: **2.8135%**
+10. **Zlínský kraj**: **2.6638%**
+11. **Královéhradecký kraj**: **2.5547%**
+12. **Pardubický kraj**: **2.4336%**
+13. **Kraj Vysočina**: **2.3758%**
+14. **Liberecký kraj**: **2.0675%**
+15. **Karlovarský kraj**: **1.3535%**
+
+#### 3. Observations
+- **Prague** is the third most populous region in terms of percentage, following **Středočeský kraj**.
+- The **Středočeský kraj** has the highest population percentage among individual regions, slightly higher than Prague.
+- The **Karlovarský kraj** has the smallest share of the population, with only **1.3535%** of the total.
+
+#### 4. Total Population by Region
+For reference, here is the total population of each region in absolute numbers:
+
+1. **Česko (Total)**: 10,900,555
+2. **Středočeský kraj**: 1,455,940
+3. **Hlavní město Praha (Prague)**: 1,384,732
+4. **Jihomoravský kraj**: 1,226,749
+5. **Moravskoslezský kraj**: 1,189,204
+6. **Ústecký kraj**: 811,169
+7. **Jihočeský kraj**: 654,505
+8. **Olomoucký kraj**: 632,864
+9. **Plzeňský kraj**: 613,374
+10. **Zlínský kraj**: 580,744
+11. **Královéhradecký kraj**: 556,949
+12. **Pardubický kraj**: 530,560
+13. **Kraj Vysočina**: 517,960
+14. **Liberecký kraj**: 450,728
+15. **Karlovarský kraj**: 295,077
+
+### Summary
+- Prague's population in 2024 was **1,384,732**, which is **12.7%** of the total Czech Republic population of **10,900,555**.
+- In terms of percentage distribution, Prague accounts for **6.3517%** of the total population, making it the third most populous region after **Středočeský kraj** (**6.6783%**).
+- The smallest region by population share is **Karlovarský kraj** with **1.3535%**.
+Queries and Results:
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+  Query: SELECT "ČR, kraje", SUM("value") AS "total_population" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "total_population" DESC
+  Result: [('Česko', 10900555), ('Středočeský kraj', 1455940), ('Hlavní město Praha', 1384732), ('Jihomoravský kraj', 1226749), ('Moravskoslezský kraj', 1189204), ('Ústecký kraj', 811169), ('Jihočeský kraj', 654505), ('Olomoucký kraj', 632864), ('Plzeňský kraj', 613374), ('Zlínský kraj', 580744), ('Královéhradecký kraj', 556949), ('Pardubický kraj', 530560), ('Kraj Vysočina', 517960), ('Liberecký kraj', 450728), ('Karlovarský kraj', 295077)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.
+Result: ### Analysis of Population Data for Prague and the Czech Republic in 2024
+
+1. **Population in Prague vs. the Czech Republic (2024)**:
+   - The population of **Prague** at the beginning of 2024 (Q1-Q3) was **1,384,732**.
+   - The population of the **entire Czech Republic** at the same time was **10,900,555**.
+   - **Comparison**: Prague's population accounted for approximately **12.7%** of the total population of the Czech Republic. This is calculated as:
+     \[
+     \frac{1,384,732}{10,900,555} \times 100 \approx 12.7\%
+     \]
+
+2. **Population Distribution by Region (in Percentages)**:
+   The distribution of the population across regions in the Czech Republic (Q1-Q3 2024) is as follows:
+
+   - **Česko (entire country)**: 50.0% (this value represents the total population and is not region-specific)
+   - **Středočeský kraj**: 6.6783%
+   - **Hlavní město Praha (Prague)**: 6.3517%
+   - **Jihomoravský kraj**: 5.6270%
+   - **Moravskoslezský kraj**: 5.4548%
+   - **Ústecký kraj**: 3.7208%
+   - **Jihočeský kraj**: 3.0022%
+   - **Olomoucký kraj**: 2.9029%
+   - **Plzeňský kraj**: 2.8135%
+   - **Zlínský kraj**: 2.6638%
+   - **Královéhradecký kraj**: 2.5547%
+   - **Pardubický kraj**: 2.4336%
+   - **Kraj Vysočina**: 2.3758%
+   - **Liberecký kraj**: 2.0675%
+   - **Karlovarský kraj**: 1.3535%
+
+### Key Observations:
+- Prague is the third most populous region in terms of percentage distribution, contributing **6.3517%** of the total population.
+- The **Středočeský kraj** has the highest regional percentage at **6.6783%**, slightly higher than Prague.
+- The **Karlovarský kraj** has the smallest share of the population, at **1.3535%**.
+
+This analysis provides a clear view of Prague's population in the context of the entire Czech Republic and the relative distribution of population across all regions.
+Queries and Results:
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.
+Result: ### Analysis of Population Data for Prague and the Czech Republic in 2024
+
+#### 1. Population of Prague vs. the Czech Republic
+- **Prague (Hlavní město Praha)**: The population at the beginning of 2024 (Q1-Q3) was **1,384,732**.
+- **Czech Republic (Česko)**: The total population at the same time was **10,900,555**.
+
+**Comparison**: Prague's population represents approximately **12.7%** of the total population of the Czech Republic. This is calculated as:
+\[
+\frac{1,384,732}{10,900,555} \times 100 \approx 12.7\%
+\]
+
+#### 2. Distribution of Population Across Regions (in Percentages)
+The population distribution across all regions of the Czech Republic, expressed as percentages of the total population, is as follows:
+
+1. **Česko (Total)**: 50.0% (This value is likely an aggregation placeholder and not a specific region.)
+2. **Středočeský kraj**: **6.6783%**
+3. **Hlavní město Praha**: **6.3517%**
+4. **Jihomoravský kraj**: **5.6270%**
+5. **Moravskoslezský kraj**: **5.4548%**
+6. **Ústecký kraj**: **3.7208%**
+7. **Jihočeský kraj**: **3.0022%**
+8. **Olomoucký kraj**: **2.9029%**
+9. **Plzeňský kraj**: **2.8135%**
+10. **Zlínský kraj**: **2.6638%**
+11. **Královéhradecký kraj**: **2.5547%**
+12. **Pardubický kraj**: **2.4336%**
+13. **Kraj Vysočina**: **2.3758%**
+14. **Liberecký kraj**: **2.0675%**
+15. **Karlovarský kraj**: **1.3535%**
+
+#### 3. Observations
+- **Prague's Share**: Prague accounts for **6.3517%** of the total population when compared to other regions individually. This is slightly lower than Středočeský kraj, which has the highest regional percentage at **6.6783%**.
+- **Smallest Region**: Karlovarský kraj has the smallest share of the population, at **1.3535%**.
+
+#### 4. Total Population by Region
+For additional context, here is the total population of each region in absolute numbers:
+
+1. **Česko (Total)**: 10,900,555
+2. **Středočeský kraj**: 1,455,940
+3. **Hlavní město Praha**: 1,384,732
+4. **Jihomoravský kraj**: 1,226,749
+5. **Moravskoslezský kraj**: 1,189,204
+6. **Ústecký kraj**: 811,169
+7. **Jihočeský kraj**: 654,505
+8. **Olomoucký kraj**: 632,864
+9. **Plzeňský kraj**: 613,374
+10. **Zlínský kraj**: 580,744
+11. **Královéhradecký kraj**: 556,949
+12. **Pardubický kraj**: 530,560
+13. **Kraj Vysočina**: 517,960
+14. **Liberecký kraj**: 450,728
+15. **Karlovarský kraj**: 295,077
+
+### Summary
+- Prague's population in 2024 was **1,384,732**, which is **12.7%** of the total Czech Republic population.
+- In terms of regional distribution, Prague accounts for **6.3517%** of the total population, slightly less than Středočeský kraj (**6.6783%**).
+- The smallest region by population is Karlovarský kraj, with only **1.3535%** of the total population.
+Queries and Results:
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+  Query: SELECT "ČR, kraje", SUM("value") AS "total_population" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "total_population" DESC
+  Result: [('Česko', 10900555), ('Středočeský kraj', 1455940), ('Hlavní město Praha', 1384732), ('Jihomoravský kraj', 1226749), ('Moravskoslezský kraj', 1189204), ('Ústecký kraj', 811169), ('Jihočeský kraj', 654505), ('Olomoucký kraj', 632864), ('Plzeňský kraj', 613374), ('Zlínský kraj', 580744), ('Královéhradecký kraj', 556949), ('Pardubický kraj', 530560), ('Kraj Vysočina', 517960), ('Liberecký kraj', 450728), ('Karlovarský kraj', 295077)]
+----------------------------------------------------------------------------
+Prompt: tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.
+Result: ### Analysis of Population Data for 2024
+
+#### 1. Population in Prague vs. the Czech Republic
+- **Population of Prague**: 1,384,732
+- **Population of the Czech Republic**: 10,900,555
+
+Prague's population accounts for approximately **12.7%** of the total population of the Czech Republic. This is calculated as:
+
+\[
+\frac{1,384,732}{10,900,555} \times 100 \approx 12.7\%
+\]
+
+#### 2. Distribution of Population by Region (in Percentages)
+The population distribution across regions, expressed as a percentage of the total population of the Czech Republic, is as follows:
+
+| Region                  | Percentage (%)         |
+|-------------------------|------------------------|
+| Česko (Total)           | 50.0                  |
+| Středočeský kraj        | 6.678283812154519     |
+| Hlavní město Praha      | 6.351658241254689     |
+| Jihomoravský kraj       | 5.627002478314178     |
+| Moravskoslezský kraj    | 5.4547864764684       |
+| Ústecký kraj            | 3.720769263583368     |
+| Jihočeský kraj          | 3.002163651300324     |
+| Olomoucký kraj          | 2.9028980634472283    |
+| Plzeňský kraj           | 2.8134989456958843    |
+| Zlínský kraj            | 2.663827667490325     |
+| Královéhradecký kraj    | 2.5546818487682508    |
+| Pardubický kraj         | 2.433637553317239     |
+| Kraj Vysočina           | 2.375842330963882     |
+| Liberecký kraj          | 2.0674543635622222    |
+| Karlovarský kraj        | 1.3534953036794914    |
+
+#### 3. Observations
+- The **Středočeský kraj** has the highest population percentage (6.68%) after Prague (6.35%).
+- The **Karlovarský kraj** has the smallest share of the population, contributing only 1.35%.
+- Prague, despite being a single city, has a population share comparable to entire regions like the Středočeský kraj.
+
+#### 4. Total Population by Region
+For reference, here is the total population of each region:
+
+| Region                  | Total Population       |
+|-------------------------|------------------------|
+| Česko (Total)           | 10,900,555            |
+| Středočeský kraj        | 1,455,940             |
+| Hlavní město Praha      | 1,384,732             |
+| Jihomoravský kraj       | 1,226,749             |
+| Moravskoslezský kraj    | 1,189,204             |
+| Ústecký kraj            | 811,169               |
+| Jihočeský kraj          | 654,505               |
+| Olomoucký kraj          | 632,864               |
+| Plzeňský kraj           | 613,374               |
+| Zlínský kraj            | 580,744               |
+| Královéhradecký kraj    | 556,949               |
+| Pardubický kraj         | 530,560               |
+| Kraj Vysočina           | 517,960               |
+| Liberecký kraj          | 450,728               |
+| Karlovarský kraj        | 295,077               |
+
+### Summary
+Prague's population in 2024 was 1,384,732, making up 12.7% of the Czech Republic's total population of 10,900,555. The population distribution shows that Prague and the Středočeský kraj are the most populous regions, while the Karlovarský kraj has the smallest population share.
+Queries and Results:
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+  Query: SELECT "ČR, kraje", SUM("value") AS "total_population" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "total_population" DESC
+  Result: [('Česko', 10900555), ('Středočeský kraj', 1455940), ('Hlavní město Praha', 1384732), ('Jihomoravský kraj', 1226749), ('Moravskoslezský kraj', 1189204), ('Ústecký kraj', 811169), ('Jihočeský kraj', 654505), ('Olomoucký kraj', 632864), ('Plzeňský kraj', 613374), ('Zlínský kraj', 580744), ('Královéhradecký kraj', 556949), ('Pardubický kraj', 530560), ('Kraj Vysočina', 517960), ('Liberecký kraj', 450728), ('Karlovarský kraj', 295077)]
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 1384732
+  Query: SELECT "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Česko' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' LIMIT 1
+  Result: 10900555
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC LIMIT 5
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684)]
+  Query: SELECT "ČR, kraje", (SUM("value") * 100.0 / (SELECT SUM("value") FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem')) AS "percentage" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "percentage" DESC
+  Result: [('Česko', 50.0), ('Středočeský kraj', 6.678283812154519), ('Hlavní město Praha', 6.351658241254689), ('Jihomoravský kraj', 5.627002478314178), ('Moravskoslezský kraj', 5.4547864764684), ('Ústecký kraj', 3.720769263583368), ('Jihočeský kraj', 3.002163651300324), ('Olomoucký kraj', 2.9028980634472283), ('Plzeňský kraj', 2.8134989456958843), ('Zlínský kraj', 2.663827667490325), ('Královéhradecký kraj', 2.5546818487682508), ('Pardubický kraj', 2.433637553317239), ('Kraj Vysočina', 2.375842330963882), ('Liberecký kraj', 2.0674543635622222), ('Karlovarský kraj', 1.3534953036794914)]
+  Query: SELECT "ČR, kraje", SUM("value") AS "total_population" FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' GROUP BY "ČR, kraje" ORDER BY "total_population" DESC
+  Result: [('Česko', 10900555), ('Středočeský kraj', 1455940), ('Hlavní město Praha', 1384732), ('Jihomoravský kraj', 1226749), ('Moravskoslezský kraj', 1189204), ('Ústecký kraj', 811169), ('Jihočeský kraj', 654505), ('Olomoucký kraj', 632864), ('Plzeňský kraj', 613374), ('Zlínský kraj', 580744), ('Královéhradecký kraj', 556949), ('Pardubický kraj', 530560), ('Kraj Vysočina', 517960), ('Liberecký kraj', 450728), ('Karlovarský kraj', 295077)]
+----------------------------------------------------------------------------
