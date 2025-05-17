@@ -97,10 +97,8 @@ def create_graph():
     def route_after_query(state: DataAnalysisState) -> Literal["reflect", "format_answer"]:
         print(f"Routing decision, iteration={state.get('iteration', 0)}")
         if state.get("iteration", 0) >= MAX_ITERATIONS:
-            print("Routing to format_answer")
             return "format_answer"
         else:
-            print("Routing to reflect")
             return "reflect"
 
     

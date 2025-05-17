@@ -3021,5 +3021,135 @@
         "result": "[('Česko',), ('Plzeňský kraj',), ('Karlovarský kraj',), ('Ústecký kraj',), ('Liberecký kraj',)]"
       }
     ]
+  },
+  {
+    "prompt": "tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.",
+    "result": "V roce 2024 byla populace v Praze (Hlavní město Praha) na počátku období 1 384 732 obyvatel, zatímco celková populace České republiky činila 10 900 555 obyvatel. Praha tak tvořila **6,35 %** celkové populace Česka.\n\n### Distribuce populace podle regionů v procentech:\nZ celkové populace Česka (bez zahrnutí celkového součtu \"Česko\") je distribuce jednotlivých regionů následující:\n\n1. **Středočeský kraj**: 6,68 %\n2. **Hlavní město Praha**: 6,35 %\n3. **Jihomoravský kraj**: 5,63 %\n4. **Moravskoslezský kraj**: 5,45 %\n5. **Ústecký kraj**: 3,72 %\n6. **Jihočeský kraj**: 3,00 %\n7. **Olomoucký kraj**: 2,90 %\n8. **Plzeňský kraj**: 2,81 %\n9. **Zlínský kraj**: 2,66 %\n10. **Královéhradecký kraj**: 2,55 %\n11. **Pardubický kraj**: 2,43 %\n12. **Kraj Vysočina**: 2,38 %\n13. **Liberecký kraj**: 2,07 %\n14. **Karlovarský kraj**: 1,35 %\n\n### Srovnání:\n- Praha tvoří 6,35 % populace Česka, což je méně než Středočeský kraj (6,68 %), ale více než všechny ostatní regiony.\n- Nejmenší podíl na populaci má Karlovarský kraj s 1,35 %.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) as total_population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" IN ('Česko', 'Hlavní město Praha') GROUP BY \"ČR, kraje\"",
+        "result": "[('Hlavní město Praha', 1384732), ('Česko', 10900555)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'), 2) as percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC LIMIT 5",
+        "result": "[('Česko', 50.0), ('Středočeský kraj', 6.68), ('Hlavní město Praha', 6.35), ('Jihomoravský kraj', 5.63), ('Moravskoslezský kraj', 5.45)]"
+      },
+      {
+        "query": "SELECT ROUND((SUM(value) FILTER (WHERE \"ČR, kraje\" = 'Hlavní město Praha') * 100.0) / SUM(value), 2) AS prague_percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'",
+        "result": "6.35"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'), 2) as percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC LIMIT 5",
+        "result": "[('Středočeský kraj', 6.68), ('Hlavní město Praha', 6.35), ('Jihomoravský kraj', 5.63), ('Moravskoslezský kraj', 5.45), ('Ústecký kraj', 3.72)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'), 2) as percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 6.68), ('Hlavní město Praha', 6.35), ('Jihomoravský kraj', 5.63), ('Moravskoslezský kraj', 5.45), ('Ústecký kraj', 3.72), ('Jihočeský kraj', 3.0), ('Olomoucký kraj', 2.9), ('Plzeňský kraj', 2.81), ('Zlínský kraj', 2.66), ('Královéhradecký kraj', 2.55), ('Pardubický kraj', 2.43), ('Kraj Vysočina', 2.38), ('Liberecký kraj', 2.07), ('Karlovarský kraj', 1.35)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) as total_population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" IN ('Česko', 'Hlavní město Praha') GROUP BY \"ČR, kraje\"",
+        "result": "[('Hlavní město Praha', 1384732), ('Česko', 10900555)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'), 2) as percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC LIMIT 5",
+        "result": "[('Česko', 50.0), ('Středočeský kraj', 6.68), ('Hlavní město Praha', 6.35), ('Jihomoravský kraj', 5.63), ('Moravskoslezský kraj', 5.45)]"
+      },
+      {
+        "query": "SELECT ROUND((SUM(value) FILTER (WHERE \"ČR, kraje\" = 'Hlavní město Praha') * 100.0) / SUM(value), 2) AS prague_percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'",
+        "result": "6.35"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'), 2) as percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC LIMIT 5",
+        "result": "[('Středočeský kraj', 6.68), ('Hlavní město Praha', 6.35), ('Jihomoravský kraj', 5.63), ('Moravskoslezský kraj', 5.45), ('Ústecký kraj', 3.72)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'), 2) as percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 6.68), ('Hlavní město Praha', 6.35), ('Jihomoravský kraj', 5.63), ('Moravskoslezský kraj', 5.45), ('Ústecký kraj', 3.72), ('Jihočeský kraj', 3.0), ('Olomoucký kraj', 2.9), ('Plzeňský kraj', 2.81), ('Zlínský kraj', 2.66), ('Královéhradecký kraj', 2.55), ('Pardubický kraj', 2.43), ('Kraj Vysočina', 2.38), ('Liberecký kraj', 2.07), ('Karlovarský kraj', 1.35)]"
+      }
+    ]
+  },
+  {
+    "prompt": "tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.",
+    "result": "V roce 2024 měla Česká republika na počátku období celkovou populaci 10,900,555 obyvatel, zatímco Hlavní město Praha mělo 1,384,732 obyvatel. Praha tedy tvořila přibližně **12.70 %** celkové populace Česka.\n\n### Distribuce populace podle regionů (v procentech):\nNásledující hodnoty ukazují procentuální podíl jednotlivých krajů na celkové populaci regionů (bez zahrnutí celkového součtu za Česko):\n\n1. **Středočeský kraj**: 13.36 %\n2. **Hlavní město Praha**: 12.70 %\n3. **Jihomoravský kraj**: 11.25 %\n4. **Moravskoslezský kraj**: 10.91 %\n5. **Ústecký kraj**: 7.44 %\n6. **Jihočeský kraj**: 6.00 %\n7. **Olomoucký kraj**: 5.81 %\n8. **Plzeňský kraj**: 5.63 %\n9. **Zlínský kraj**: 5.33 %\n10. **Královéhradecký kraj**: 5.11 %\n11. **Pardubický kraj**: 4.87 %\n12. **Kraj Vysočina**: 4.75 %\n13. **Liberecký kraj**: 4.13 %\n14. **Karlovarský kraj**: 2.71 %\n\n### Srovnání:\n- Praha tvoří **12.70 %** populace Česka, což odpovídá jejímu podílu na celkové populaci regionů.\n- Největší podíl má Středočeský kraj s **13.36 %**, zatímco nejmenší podíl má Karlovarský kraj s **2.71 %**.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) as total_population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" IN ('Česko', 'Hlavní město Praha') GROUP BY \"ČR, kraje\"",
+        "result": "[('Hlavní město Praha', 1384732), ('Česko', 10900555)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC LIMIT 5",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736)]"
+      },
+      {
+        "query": "SELECT SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" = 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" = 'Hlavní město Praha'",
+        "result": "12.703316482509377"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736), ('Jihočeský kraj', 6.004327302600648), ('Olomoucký kraj', 5.805796126894457), ('Plzeňský kraj', 5.626997891391769), ('Zlínský kraj', 5.32765533498065), ('Královéhradecký kraj', 5.1093636975365015), ('Pardubický kraj', 4.867275106634478), ('Kraj Vysočina', 4.751684661927764), ('Liberecký kraj', 4.1349087271244445), ('Karlovarský kraj', 2.706990607358983)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736), ('Jihočeský kraj', 6.004327302600648), ('Olomoucký kraj', 5.805796126894457), ('Plzeňský kraj', 5.626997891391769), ('Zlínský kraj', 5.32765533498065), ('Královéhradecký kraj', 5.1093636975365015), ('Pardubický kraj', 4.867275106634478), ('Kraj Vysočina', 4.751684661927764), ('Liberecký kraj', 4.1349087271244445), ('Karlovarský kraj', 2.706990607358983)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko'), 2) AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.36), ('Hlavní město Praha', 12.7), ('Jihomoravský kraj', 11.25), ('Moravskoslezský kraj', 10.91), ('Ústecký kraj', 7.44), ('Jihočeský kraj', 6.0), ('Olomoucký kraj', 5.81), ('Plzeňský kraj', 5.63), ('Zlínský kraj', 5.33), ('Královéhradecký kraj', 5.11), ('Pardubický kraj', 4.87), ('Kraj Vysočina', 4.75), ('Liberecký kraj', 4.13), ('Karlovarský kraj', 2.71)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) as total_population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" IN ('Česko', 'Hlavní město Praha') GROUP BY \"ČR, kraje\"",
+        "result": "[('Hlavní město Praha', 1384732), ('Česko', 10900555)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC LIMIT 5",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736)]"
+      },
+      {
+        "query": "SELECT SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" = 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" = 'Hlavní město Praha'",
+        "result": "12.703316482509377"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736), ('Jihočeský kraj', 6.004327302600648), ('Olomoucký kraj', 5.805796126894457), ('Plzeňský kraj', 5.626997891391769), ('Zlínský kraj', 5.32765533498065), ('Královéhradecký kraj', 5.1093636975365015), ('Pardubický kraj', 4.867275106634478), ('Kraj Vysočina', 4.751684661927764), ('Liberecký kraj', 4.1349087271244445), ('Karlovarský kraj', 2.706990607358983)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko') AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736), ('Jihočeský kraj', 6.004327302600648), ('Olomoucký kraj', 5.805796126894457), ('Plzeňský kraj', 5.626997891391769), ('Zlínský kraj', 5.32765533498065), ('Královéhradecký kraj', 5.1093636975365015), ('Pardubický kraj', 4.867275106634478), ('Kraj Vysočina', 4.751684661927764), ('Liberecký kraj', 4.1349087271244445), ('Karlovarský kraj', 2.706990607358983)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko'), 2) AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.36), ('Hlavní město Praha', 12.7), ('Jihomoravský kraj', 11.25), ('Moravskoslezský kraj', 10.91), ('Ústecký kraj', 7.44), ('Jihočeský kraj', 6.0), ('Olomoucký kraj', 5.81), ('Plzeňský kraj', 5.63), ('Zlínský kraj', 5.33), ('Královéhradecký kraj', 5.11), ('Pardubický kraj', 4.87), ('Kraj Vysočina', 4.75), ('Liberecký kraj', 4.13), ('Karlovarský kraj', 2.71)]"
+      }
+    ]
+  },
+  {
+    "prompt": "tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech.",
+    "result": "V roce 2024 byla populace v Praze (Hlavní město Praha) na počátku období 1 384 732 obyvatel, zatímco celková populace České republiky činila 10 900 555 obyvatel. Podíl Prahy na celkové populaci ČR byl 12,7033 %.\n\n### Distribuce populace podle regionů v procentech:\n1. **Středočeský kraj**: 13,3566 %\n2. **Hlavní město Praha**: 12,7033 %\n3. **Jihomoravský kraj**: 11,2540 %\n4. **Moravskoslezský kraj**: 10,9096 %\n5. **Ústecký kraj**: 7,4415 %\n6. **Jihočeský kraj**: 6,0043 %\n7. **Olomoucký kraj**: 5,8058 %\n8. **Plzeňský kraj**: 5,6270 %\n9. **Zlínský kraj**: 5,3277 %\n10. **Královéhradecký kraj**: 5,1094 %\n11. **Pardubický kraj**: 4,8673 %\n12. **Kraj Vysočina**: 4,7517 %\n13. **Liberecký kraj**: 4,1349 %\n14. **Karlovarský kraj**: 2,7070 %\n\nPraha je druhým nejlidnatějším regionem v ČR, s podílem 12,7033 %, těsně za Středočeským krajem, který má nejvyšší podíl 13,3566 %.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) as total_population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" IN ('Česko', 'Hlavní město Praha') GROUP BY \"ČR, kraje\"",
+        "result": "[('Hlavní město Praha', 1384732), ('Česko', 10900555)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", (SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko')) AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC LIMIT 5",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736)]"
+      },
+      {
+        "query": "SELECT (SUM(CASE WHEN \"ČR, kraje\" = 'Hlavní město Praha' THEN value ELSE 0 END) * 100.0 / SUM(CASE WHEN \"ČR, kraje\" = 'Česko' THEN value ELSE 0 END)) AS prague_percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'",
+        "result": "12.703316482509377"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", (SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko')) AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736), ('Jihočeský kraj', 6.004327302600648), ('Olomoucký kraj', 5.805796126894457), ('Plzeňský kraj', 5.626997891391769), ('Zlínský kraj', 5.32765533498065), ('Královéhradecký kraj', 5.1093636975365015), ('Pardubický kraj', 4.867275106634478), ('Kraj Vysočina', 4.751684661927764), ('Liberecký kraj', 4.1349087271244445), ('Karlovarský kraj', 2.706990607358983)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) AS population FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" IN ('Česko', 'Hlavní město Praha') GROUP BY \"ČR, kraje\"",
+        "result": "[('Hlavní město Praha', 1384732), ('Česko', 10900555)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", (SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko')) AS percentage FROM OBY01PDT01 WHERE \"Kumulace čtvrtletí\" = 'Q1-Q3 2024' AND \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' AND \"ČR, kraje\" != 'Česko' GROUP BY \"ČR, kraje\" ORDER BY percentage DESC",
+        "result": "[('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736), ('Jihočeský kraj', 6.004327302600648), ('Olomoucký kraj', 5.805796126894457), ('Plzeňský kraj', 5.626997891391769), ('Zlínský kraj', 5.32765533498065), ('Královéhradecký kraj', 5.1093636975365015), ('Pardubický kraj', 4.867275106634478), ('Kraj Vysočina', 4.751684661927764), ('Liberecký kraj', 4.1349087271244445), ('Karlovarský kraj', 2.706990607358983)]"
+      }
+    ]
   }
 ]
