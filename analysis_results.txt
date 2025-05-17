@@ -6320,3 +6320,92 @@ Queries and Results:
   Query: SELECT "ČR, kraje", (SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' AND "ČR, kraje" != 'Česko')) AS percentage FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" = 'Počet obyvatel na počátku období - celkem' AND "ČR, kraje" != 'Česko' GROUP BY "ČR, kraje" ORDER BY percentage DESC
   Result: [('Středočeský kraj', 13.356567624309038), ('Hlavní město Praha', 12.703316482509377), ('Jihomoravský kraj', 11.254004956628355), ('Moravskoslezský kraj', 10.9095729529368), ('Ústecký kraj', 7.441538527166736), ('Jihočeský kraj', 6.004327302600648), ('Olomoucký kraj', 5.805796126894457), ('Plzeňský kraj', 5.626997891391769), ('Zlínský kraj', 5.32765533498065), ('Královéhradecký kraj', 5.1093636975365015), ('Pardubický kraj', 4.867275106634478), ('Kraj Vysočina', 4.751684661927764), ('Liberecký kraj', 4.1349087271244445), ('Karlovarský kraj', 2.706990607358983)]
 ----------------------------------------------------------------------------
+Prompt: tell me about people in prague, compare, contrast, what is interesting, provide trends.
+Result: Na základě poskytnutých výsledků dotazů lze analyzovat demografické údaje o obyvatelích Prahy a porovnat je s jinými kraji v České republice. Zde je kompletní analýza:
+
+### 1. **Počet obyvatel v Praze**
+- Na počátku období Q1-Q3 2024 měla Praha celkem **1 384 732 obyvatel**, z toho **670 680 mužů** a **714 052 žen**.
+- Na konci stejného období vzrostl počet obyvatel na **1 392 125**, což představuje nárůst o **7 393 obyvatel**. Tento růst byl rovnoměrně rozdělen mezi muže (**676 069**) a ženy (**716 056**).
+
+### 2. **Střední stav obyvatel**
+- Střední stav obyvatel v Praze (průměrný počet obyvatel během období) byl **1 386 723**, z toho **672 752 mužů** a **713 971 žen**.
+- Praha má tedy mírně vyšší podíl žen než mužů, což je trend, který se odráží i v dalších ukazatelích.
+
+### 3. **Porovnání s jinými kraji**
+- **Jihočeský kraj**:
+  - Střední stav obyvatel byl **653 412**, což je méně než polovina středního stavu obyvatel Prahy.
+  - Počet mužů v Jihočeském kraji byl **322 004**, což je méně než polovina mužů v Praze (**672 752**).
+- Praha má tedy výrazně vyšší počet obyvatel než Jihočeský kraj, což odpovídá jejímu postavení hlavního města a centra ekonomické aktivity.
+
+### 4. **Trendy a zajímavosti**
+- **Růst populace v Praze**: Během období Q1-Q3 2024 došlo k nárůstu počtu obyvatel o **7 393 osob**, což naznačuje pokračující trend růstu populace v hlavním městě.
+- **Vyšší podíl žen**: Ve všech ukazatelích (počet obyvatel na počátku a konci období, střední stav obyvatel) je patrný vyšší podíl žen oproti mužům. Tento trend může být způsoben delší střední délkou života žen nebo jinými demografickými faktory.
+- **Významné rozdíly oproti menším krajům**: Praha má více než dvojnásobný počet obyvatel oproti Jihočeskému kraji, což zdůrazňuje její roli jako nejlidnatějšího regionu v ČR.
+
+### 5. **Závěr**
+Praha je demograficky nejvýznamnějším regionem v České republice s rostoucí populací a vyšším podílem žen. Ve srovnání s menšími kraji, jako je Jihočeský kraj, má Praha výrazně vyšší počet obyvatel, což odpovídá jejímu postavení hlavního města. Trend růstu populace naznačuje, že Praha zůstává atraktivním místem pro život a práci.
+Queries and Results:
+  Query: SELECT "Ukazatel", "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' LIMIT 5;
+  Result: [('Počet obyvatel na počátku období - celkem', 1384732), ('Počet obyvatel na počátku období - muži', 670680), ('Počet obyvatel na počátku období - ženy', 714052), ('Střední stav obyvatel - celkem', 1386723), ('Střední stav obyvatel - muži', 672752)]
+  Query: SELECT "ČR, kraje", "Ukazatel", AVG(value) AS prumerna_hodnota FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "ČR, kraje" IN ('Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj', 'Karlovarský kraj', 'Ústecký kraj', 'Liberecký kraj', 'Královéhradecký kraj', 'Pardubický kraj', 'Kraj Vysočina', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj') AND "Ukazatel" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na počátku období - muži', 'Počet obyvatel na počátku období - ženy', 'Střední stav obyvatel - celkem', 'Střední stav obyvatel - muži', 'Střední stav obyvatel - ženy', 'Počet obyvatel na konci období - celkem', 'Počet obyvatel na konci období - muži', 'Počet obyvatel na konci období - ženy') GROUP BY "ČR, kraje", "Ukazatel" ORDER BY "ČR, kraje" ASC, "Ukazatel" ASC LIMIT 5
+  Result: [('Hlavní město Praha', 'Počet obyvatel na konci období - celkem', 1392125.0), ('Hlavní město Praha', 'Počet obyvatel na konci období - muži', 676069.0), ('Hlavní město Praha', 'Počet obyvatel na konci období - ženy', 716056.0), ('Hlavní město Praha', 'Počet obyvatel na počátku období - celkem', 1384732.0), ('Hlavní město Praha', 'Počet obyvatel na počátku období - muži', 670680.0)]
+  Query: SELECT "ČR, kraje", "Ukazatel", AVG(value) AS prumerna_hodnota FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "ČR, kraje" IN ('Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj', 'Karlovarský kraj') AND "Ukazatel" IN ('Střední stav obyvatel - celkem', 'Střední stav obyvatel - muži', 'Střední stav obyvatel - ženy') GROUP BY "ČR, kraje", "Ukazatel" LIMIT 5
+  Result: [('Hlavní město Praha', 'Střední stav obyvatel - celkem', 1386723.0), ('Hlavní město Praha', 'Střední stav obyvatel - muži', 672752.0), ('Hlavní město Praha', 'Střední stav obyvatel - ženy', 713971.0), ('Jihočeský kraj', 'Střední stav obyvatel - celkem', 653412.0), ('Jihočeský kraj', 'Střední stav obyvatel - muži', 322004.0)]
+  Query: SELECT "Ukazatel", "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' LIMIT 5;
+  Result: [('Počet obyvatel na počátku období - celkem', 1384732), ('Počet obyvatel na počátku období - muži', 670680), ('Počet obyvatel na počátku období - ženy', 714052), ('Střední stav obyvatel - celkem', 1386723), ('Střední stav obyvatel - muži', 672752)]
+  Query: SELECT "ČR, kraje", "Ukazatel", AVG(value) AS prumerna_hodnota FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "ČR, kraje" IN ('Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj', 'Karlovarský kraj', 'Ústecký kraj', 'Liberecký kraj', 'Královéhradecký kraj', 'Pardubický kraj', 'Kraj Vysočina', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj') AND "Ukazatel" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na počátku období - muži', 'Počet obyvatel na počátku období - ženy', 'Střední stav obyvatel - celkem', 'Střední stav obyvatel - muži', 'Střední stav obyvatel - ženy', 'Počet obyvatel na konci období - celkem', 'Počet obyvatel na konci období - muži', 'Počet obyvatel na konci období - ženy') GROUP BY "ČR, kraje", "Ukazatel" ORDER BY "ČR, kraje" ASC, "Ukazatel" ASC LIMIT 5
+  Result: [('Hlavní město Praha', 'Počet obyvatel na konci období - celkem', 1392125.0), ('Hlavní město Praha', 'Počet obyvatel na konci období - muži', 676069.0), ('Hlavní město Praha', 'Počet obyvatel na konci období - ženy', 716056.0), ('Hlavní město Praha', 'Počet obyvatel na počátku období - celkem', 1384732.0), ('Hlavní město Praha', 'Počet obyvatel na počátku období - muži', 670680.0)]
+  Query: SELECT "ČR, kraje", "Ukazatel", AVG(value) AS prumerna_hodnota FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "ČR, kraje" IN ('Hlavní město Praha', 'Středočeský kraj', 'Jihočeský kraj', 'Plzeňský kraj', 'Karlovarský kraj') AND "Ukazatel" IN ('Střední stav obyvatel - celkem', 'Střední stav obyvatel - muži', 'Střední stav obyvatel - ženy') GROUP BY "ČR, kraje", "Ukazatel" LIMIT 5
+  Result: [('Hlavní město Praha', 'Střední stav obyvatel - celkem', 1386723.0), ('Hlavní město Praha', 'Střední stav obyvatel - muži', 672752.0), ('Hlavní město Praha', 'Střední stav obyvatel - ženy', 713971.0), ('Jihočeský kraj', 'Střední stav obyvatel - celkem', 653412.0), ('Jihočeský kraj', 'Střední stav obyvatel - muži', 322004.0)]
+----------------------------------------------------------------------------
+Prompt: tell me about people in prague, compare, contrast, what is interesting, provide trends.
+Result: V Praze, hlavním městě České republiky, lze na základě poskytnutých dat pozorovat následující demografické trendy a zajímavosti:
+
+### Počet obyvatel a struktura
+1. **Celkový počet obyvatel**:
+   - Na počátku období Q1-Q3 2024 činil počet obyvatel Prahy 1,384,732, zatímco střední stav obyvatel byl o něco vyšší, a to 1,386,723. Na konci období se počet obyvatel zvýšil na 1,392,125, což naznačuje mírný růst populace během sledovaného období.
+
+2. **Rozdělení podle pohlaví**:
+   - Na počátku období bylo v Praze 670,680 mužů a 714,052 žen, což ukazuje, že ženy tvoří větší část populace (přibližně 51.6 % žen oproti 48.4 % mužů). Tento trend je potvrzen i na konci období, kdy počet žen dosáhl 716,056.
+
+### Srovnání s ostatními regiony a celou ČR
+1. **Celkový počet obyvatel**:
+   - Praha je druhým nejlidnatějším regionem v ČR po Středočeském kraji, který měl střední stav obyvatel 1,458,238 a počet obyvatel na počátku období 1,455,940. Celkově má Česká republika na počátku období 10,900,555 obyvatel, což znamená, že Praha představuje přibližně 12.7 % celkové populace ČR.
+
+2. **Rozdělení podle pohlaví v ČR**:
+   - V celé ČR bylo na počátku období 5,557,945 žen a 5,342,610 mužů, což potvrzuje obecný trend, že ženy tvoří větší část populace. Tento trend je patrný i v Praze, kde ženy tvoří větší podíl než muži.
+
+### Zajímavé trendy
+1. **Růst populace v Praze**:
+   - Během sledovaného období (Q1-Q3 2024) došlo k nárůstu počtu obyvatel v Praze o 7,393 osob (z 1,384,732 na 1,392,125). Tento růst může být způsoben přirozeným přírůstkem, migrací nebo jinými faktory.
+
+2. **Vyšší podíl žen**:
+   - V Praze je podíl žen vyšší než mužů, což odpovídá celorepublikovému trendu. Tento rozdíl je však v Praze výraznější než v některých jiných regionech, například ve Středočeském kraji.
+
+3. **Stabilní střední stav obyvatel**:
+   - Střední stav obyvatel v Praze (1,386,723) je velmi blízký počtu obyvatel na počátku období (1,384,732), což naznačuje relativní stabilitu populace během sledovaného období.
+
+### Závěr
+Praha je dynamickým regionem s mírným růstem populace a vyšším podílem žen než mužů. Ve srovnání s ostatními regiony ČR je druhým nejlidnatějším regionem po Středočeském kraji. Zajímavým trendem je stabilita středního stavu obyvatel a mírný nárůst populace během sledovaného období. Tyto demografické charakteristiky odrážejí význam Prahy jako hlavního města a centra ekonomického, kulturního a společenského života v České republice.
+Queries and Results:
+  Query: SELECT "Ukazatel", "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' LIMIT 5;
+  Result: [('Počet obyvatel na počátku období - celkem', 1384732), ('Počet obyvatel na počátku období - muži', 670680), ('Počet obyvatel na počátku období - ženy', 714052), ('Střední stav obyvatel - celkem', 1386723), ('Střední stav obyvatel - muži', 672752)]
+  Query: SELECT "ČR, kraje", "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" IN ('Počet obyvatel na počátku období - celkem', 'Střední stav obyvatel - celkem') GROUP BY "ČR, kraje", "Ukazatel" ORDER BY total_value DESC LIMIT 5;
+  Result: [('Česko', 'Počet obyvatel na počátku období - celkem', 10900555), ('Česko', 'Střední stav obyvatel - celkem', 10888512), ('Středočeský kraj', 'Střední stav obyvatel - celkem', 1458238), ('Středočeský kraj', 'Počet obyvatel na počátku období - celkem', 1455940), ('Hlavní město Praha', 'Střední stav obyvatel - celkem', 1386723)]
+  Query: SELECT "Kumulace čtvrtletí", "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Ukazatel" IN ('Počet obyvatel na počátku období - celkem', 'Střední stav obyvatel - celkem') GROUP BY "Kumulace čtvrtletí", "Ukazatel" ORDER BY "Kumulace čtvrtletí" DESC LIMIT 5;
+  Result: [('Q1-Q3 2024', 'Počet obyvatel na počátku období - celkem', 1384732), ('Q1-Q3 2024', 'Střední stav obyvatel - celkem', 1386723)]
+  Query: SELECT "ČR, kraje", "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" IN ('Počet obyvatel na počátku období - muži', 'Počet obyvatel na počátku období - ženy') GROUP BY "ČR, kraje", "Ukazatel" ORDER BY total_value DESC LIMIT 5;
+  Result: [('Česko', 'Počet obyvatel na počátku období - ženy', 5557945), ('Česko', 'Počet obyvatel na počátku období - muži', 5342610), ('Středočeský kraj', 'Počet obyvatel na počátku období - ženy', 741188), ('Středočeský kraj', 'Počet obyvatel na počátku období - muži', 714752), ('Hlavní město Praha', 'Počet obyvatel na počátku období - ženy', 714052)]
+  Query: SELECT "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' GROUP BY "Ukazatel" ORDER BY total_value DESC LIMIT 5;
+  Result: [('Počet obyvatel na konci období - celkem', 1392125), ('Střední stav obyvatel - celkem', 1386723), ('Počet obyvatel na počátku období - celkem', 1384732), ('Počet obyvatel na konci období - ženy', 716056), ('Počet obyvatel na počátku období - ženy', 714052)]
+  Query: SELECT "Ukazatel", "value" FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' LIMIT 5;
+  Result: [('Počet obyvatel na počátku období - celkem', 1384732), ('Počet obyvatel na počátku období - muži', 670680), ('Počet obyvatel na počátku období - ženy', 714052), ('Střední stav obyvatel - celkem', 1386723), ('Střední stav obyvatel - muži', 672752)]
+  Query: SELECT "ČR, kraje", "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" IN ('Počet obyvatel na počátku období - celkem', 'Střední stav obyvatel - celkem') GROUP BY "ČR, kraje", "Ukazatel" ORDER BY total_value DESC LIMIT 5;
+  Result: [('Česko', 'Počet obyvatel na počátku období - celkem', 10900555), ('Česko', 'Střední stav obyvatel - celkem', 10888512), ('Středočeský kraj', 'Střední stav obyvatel - celkem', 1458238), ('Středočeský kraj', 'Počet obyvatel na počátku období - celkem', 1455940), ('Hlavní město Praha', 'Střední stav obyvatel - celkem', 1386723)]
+  Query: SELECT "Kumulace čtvrtletí", "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Ukazatel" IN ('Počet obyvatel na počátku období - celkem', 'Střední stav obyvatel - celkem') GROUP BY "Kumulace čtvrtletí", "Ukazatel" ORDER BY "Kumulace čtvrtletí" DESC LIMIT 5;
+  Result: [('Q1-Q3 2024', 'Počet obyvatel na počátku období - celkem', 1384732), ('Q1-Q3 2024', 'Střední stav obyvatel - celkem', 1386723)]
+  Query: SELECT "ČR, kraje", "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "Kumulace čtvrtletí" = 'Q1-Q3 2024' AND "Ukazatel" IN ('Počet obyvatel na počátku období - muži', 'Počet obyvatel na počátku období - ženy') GROUP BY "ČR, kraje", "Ukazatel" ORDER BY total_value DESC LIMIT 5;
+  Result: [('Česko', 'Počet obyvatel na počátku období - ženy', 5557945), ('Česko', 'Počet obyvatel na počátku období - muži', 5342610), ('Středočeský kraj', 'Počet obyvatel na počátku období - ženy', 741188), ('Středočeský kraj', 'Počet obyvatel na počátku období - muži', 714752), ('Hlavní město Praha', 'Počet obyvatel na počátku období - ženy', 714052)]
+  Query: SELECT "Ukazatel", SUM(value) as total_value FROM OBY01PDT01 WHERE "ČR, kraje" = 'Hlavní město Praha' AND "Kumulace čtvrtletí" = 'Q1-Q3 2024' GROUP BY "Ukazatel" ORDER BY total_value DESC LIMIT 5;
+  Result: [('Počet obyvatel na konci období - celkem', 1392125), ('Střední stav obyvatel - celkem', 1386723), ('Počet obyvatel na počátku období - celkem', 1384732), ('Počet obyvatel na konci období - ženy', 716056), ('Počet obyvatel na počátku období - ženy', 714052)]
+----------------------------------------------------------------------------

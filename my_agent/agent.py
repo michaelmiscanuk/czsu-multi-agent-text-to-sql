@@ -101,7 +101,6 @@ def create_graph():
         else:
             return "reflect"
 
-    
     graph.add_conditional_edges(
         "query_gen",
         route_after_query,
@@ -111,11 +110,27 @@ def create_graph():
         }
     )
 
-    
-    # After reflection, always increment iteration and go back to query generation
-    graph.add_edge("reflect", "increment_iteration")
+    # After reflection, decide whether to continue iterating or format the answer
+    def route_after_reflect(state: DataAnalysisState) -> Literal["increment_iteration", "format_answer"]:
+        # The reflect_node now returns a 'reflection_decision' key
+        decision = state.get("reflection_decision", "improve")
+        if decision == "answer":
+            return "format_answer"
+        else:
+            return "increment_iteration"
+
+    graph.add_conditional_edges(
+        "reflect",
+        route_after_reflect,
+        {
+            "increment_iteration": "increment_iteration",
+            "format_answer": "format_answer"
+        }
+    )
+
+    # Ensure increment_iteration always leads to query_gen
     graph.add_edge("increment_iteration", "query_gen")
-    
+
     # Continue with final answer formatting
     graph.add_edge("format_answer", "submit_final_answer")
     graph.add_edge("submit_final_answer", "save")

@@ -147,7 +147,7 @@ Always calculate using only the relevant data and separate pieces, ensuring accu
 
 When generating the query:
 - Return ONLY the SQL expression that answers the question.
-- Limit the output to at most 5 rows using LIMIT unless the user specifies otherwise.
+- Limit the output to at most 5 rows using LIMIT unless the user specifies otherwise - but first think if you dont need to group it somehow so it returns reasonable 5 rows.
 - Select only the necessary columns, never all columns.
 - Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
 - Do NOT modify the database.
@@ -216,11 +216,12 @@ Return ONLY the final SQL query that should be executed, with nothing else aroun
     }
 
 async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Reflect on the current state and provide feedback for next query.
+    """Node: Reflect on the current state and provide feedback for next query or decide to answer.
     
     This node analyzes the current state of messages and queries to provide detailed
     feedback about what information is missing or what needs to be adjusted.
-    It always returns to query_gen for another iteration.
+    It can now decide to either continue iterating ("improve") or proceed to answer formatting ("answer").
+    The decision is stored in the 'reflection_decision' field of the state.
     """
     debug_print(f"{ROUTE_DECISION_ID}: Enter reflect_node")
     
@@ -239,27 +240,39 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     )
     
     system_prompt = """
-You are a data analysis reflection agent. Your task is to analyze the current state and provide
-detailed feedback to guide the next query. You should:
+You are a data analysis reflection agent.
+Your task is to analyze the current state and provide detailed feedback to guide the next query.
 
-1. Review the original question and all messages in the conversation
-2. Analyze all executed queries and their results
-3. Provide detailed feedback about:
-   - What specific information is still missing
-   - What kind of query would help get this information
-   - How to adjust the query approach
-   - Any patterns or insights that could be useful
+You must also decide if there is now enough information to answer the user's question.
 
-For comparison questions, ensure we have data for all entities being compared.
-For trend analysis, ensure we have data across all relevant time periods.
-For distribution questions, ensure we have complete coverage of all categories.
+If you believe the current queries and results are sufficient to answer the user's question,
+return a line at the END of your response exactly as:
+    DECISION: answer
+If you believe more queries or improvements are needed,
+return a line at the END of your response exactly as:
+    DECISION: improve
+
+Your process:
+  1. Review the original question and all messages in the conversation.
+  2. Analyze all executed queries and their results.
+  3. Provide detailed feedback about:
+      - What specific information is still missing
+      - What kind of query would help get this information
+      - How to adjust the query approach
+      - Any patterns or insights that could be useful
+
+Guidelines:
+  - For comparison questions, ensure we have data for all entities being compared.
+  - For trend analysis, ensure we have data across all relevant time periods.
+  - For distribution questions, ensure we have complete coverage of all categories.
 
 Your response should be detailed and specific, helping guide the next query.
+Remember: Always end your response with either 'DECISION: answer' or 'DECISION: improve' on its own line.
 """
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
-        ("human", "Original question: {question}\n\nConversation history:\n{messages}\n\nCurrent queries and results:\n{results}\n\nWhat feedback can you provide to guide the next query?")
+        ("human", "Original question: {question}\n\nConversation history:\n{messages}\n\nCurrent queries and results:\n{results}\n\nWhat feedback can you provide to guide the next query? Should we answer now or improve further?")
     ])
     
     result = await llm.ainvoke(
@@ -270,8 +283,15 @@ Your response should be detailed and specific, helping guide the next query.
         )
     )
     
-    # Add reflection to messages
-    return {"messages": [result]}
+    # Parse the LLM's response for the decision marker
+    content = result.content if hasattr(result, 'content') else str(result)
+    if "DECISION: answer" in content:
+        reflection_decision = "answer"
+    else:
+        reflection_decision = "improve"
+    
+    # Add reflection to messages and set the decision in state
+    return {"messages": [result], "reflection_decision": reflection_decision}
 
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Format the query result into a natural language answer.

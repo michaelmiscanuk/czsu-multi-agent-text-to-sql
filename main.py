@@ -37,7 +37,8 @@ from my_agent.utils.state import DataAnalysisState
 # DEFAULT_PROMPT = "What was South Bohemia's population change rate per month?"
 # DEFAULT_PROMPT = "Tell me a joke"
 # DEFAULT_PROMPT = "Is there some very interesting trend in my data?"
-DEFAULT_PROMPT = "tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech."
+# DEFAULT_PROMPT = "tell me about how many people were in prague at 2024 and compare it with whole republic data? Pak mi dej distribuci kazdeho regionu, v procentech."
+DEFAULT_PROMPT = "tell me about people in prague, compare, contrast, what is interesting, provide trends."
 
 #==============================================================================
 # MAIN FUNCTION

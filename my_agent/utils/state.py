@@ -27,8 +27,10 @@ class DataAnalysisState(TypedDict):
     - queries_and_results: Uses add reducer to append new query results
     - iteration: Uses default override behavior
     - prompt: Uses default override behavior
+    - reflection_decision: Stores the last decision from the reflection node ("improve" or "answer")
     """
     prompt: str  # User query to analyze
     messages: Annotated[List[BaseMessage], add]  # Conversation history with add reducer
     iteration: int  # Iteration counter for workflow loop prevention
     queries_and_results: Annotated[List[Tuple[str, str]], add]  # Collection of executed queries and their results with add reducer
+    reflection_decision: str  # Last decision from the reflection node: "improve" or "answer"
