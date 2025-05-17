@@ -94,9 +94,68 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     msg = AIMessage(content=f"Schema details: {json.dumps(schema, ensure_ascii=False, indent=2)}")
     return {"messages": [msg]}  # Reducer will append this to existing messages
 
+async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Reflect on the current state and provide feedback for next query.
+    
+    This node analyzes the current state of messages and queries to provide detailed
+    feedback about what information is missing or what needs to be adjusted.
+    It always returns to query_gen for another iteration.
+    """
+    debug_print(f"{ROUTE_DECISION_ID}: Enter reflect_node")
+    
+    llm = get_azure_llm(temperature=0.0)
+    
+    # Format messages for context
+    messages_text = "\n\n".join([
+        f"{msg.type}: {msg.content}" 
+        for msg in state["messages"]
+    ])
+    
+    # Format queries and results
+    queries_results_text = "\n\n".join(
+        f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
+        for i, (query, result) in enumerate(state["queries_and_results"])
+    )
+    
+    system_prompt = """
+You are a data analysis reflection agent. Your task is to analyze the current state and provide
+detailed feedback to guide the next query. You should:
+
+1. Review the original question and all messages in the conversation
+2. Analyze all executed queries and their results
+3. Provide detailed feedback about:
+   - What specific information is still missing
+   - What kind of query would help get this information
+   - How to adjust the query approach
+   - Any patterns or insights that could be useful
+
+For comparison questions, ensure we have data for all entities being compared.
+For trend analysis, ensure we have data across all relevant time periods.
+For distribution questions, ensure we have complete coverage of all categories.
+
+Your response should be detailed and specific, helping guide the next query.
+"""
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "Original question: {question}\n\nConversation history:\n{messages}\n\nCurrent queries and results:\n{results}\n\nWhat feedback can you provide to guide the next query?")
+    ])
+    
+    result = await llm.ainvoke(
+        prompt.format_messages(
+            question=state["prompt"],
+            messages=messages_text,
+            results=queries_results_text
+        )
+    )
+    
+    # Add reflection to messages
+    return {"messages": [result]}
+
 async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Generate pandas query based on question and schema."""
     debug_print(f"{QUERY_GEN_ID}: Enter query_node")
+    
     llm = get_azure_llm(temperature=0.0)
     
     # Create fresh tool instance
@@ -110,7 +169,8 @@ To accomplish this:
 1. Read and analyze the provided inputs:
 - User prompt (in Czech or English)
 - Schema metadata (containing Czech column names and values)
-- Previously executed queries and their results
+- Previous messages in the conversation
+- Any feedback from the reflection agent
 
 2. Process the prompt by:
 - Identifying key terms in either language
@@ -144,25 +204,23 @@ Return ONLY the final SQL query that should be executed, with nothing else aroun
 
 USE only one TABLE in FROM clause called 'OBY01PDT01'
 """
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "User question: {prompt}\nSchema: {schema}\nPreviously executed queries and results:\n{current_queries}")
+    
+    # Format messages for context
+    messages_text = "\n\n".join([
+        f"{msg.type}: {msg.content}" 
+        for msg in state["messages"]
     ])
     
-    # Format current queries for context
-    if state["queries_and_results"]:
-        current_queries = "\n\n".join([
-            f"Query {i+1}:\n{q}\n\nResult {i+1}:\n{r}" 
-            for i, (q, r) in enumerate(state["queries_and_results"])
-        ])
-    else:
-        current_queries = "No queries have been executed yet."
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "User question: {prompt}\nSchema: {schema}\nPrevious messages:\n{messages}")
+    ])
     
     schema = await load_schema()
     result = await llm_with_tools.ainvoke(prompt.format_messages(
         prompt=state["prompt"],
         schema=json.dumps(schema, ensure_ascii=False, indent=2),
-        current_queries=current_queries
+        messages=messages_text
     ))
     
     # Execute tool and store results
@@ -194,8 +252,11 @@ USE only one TABLE in FROM clause called 'OBY01PDT01'
     new_messages.append(result)
     debug_print(f"{QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}")
     
+    # Return updated state without routing decision
     return {
+        "prompt": state["prompt"],
         "messages": new_messages,
+        "iteration": state["iteration"],
         "queries_and_results": new_queries
     }
 
@@ -245,37 +306,31 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     return state
 
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Format the query result into a natural language answer."""
+    """Node: Format the query result into a natural language answer.
+    
+    This node works only with queries_and_results to generate the final analysis.
+    """
     debug_print(f"{FORMAT_ANSWER_ID}: Enter format_answer_node")
-    
-    # Debug print current state of queries_and_results
-    debug_print(f"{FORMAT_ANSWER_ID}: Number of queries and results: {len(state['queries_and_results'])}")
-    
-    # Debug print current state of queries_and_results
-    debug_print(f"{FORMAT_ANSWER_ID}: queries and results: {(state['queries_and_results'])}")
     
     llm = get_azure_llm(temperature=0.1)
     
+    # Format results for better readability
+    queries_results_text = "\n\n".join(
+        f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
+        for i, (query, result) in enumerate(state["queries_and_results"])
+    )
+    
     system_prompt = """
-You are a bilingual (Czech/English) data analysis assistant. Your task is to analyze the query results and provide a complete answer.
-You will receive:
-1. The original question
-2. A list of executed queries and their results
+You are a bilingual (Czech/English) data analysis assistant. Your task is to analyze the query results 
+and provide a complete answer based ONLY on the provided query results.
 
 Your response should:
 1. Consider all query results as part of the complete answer
 2. Make clear comparisons when values are being compared
 3. Maintain numeric precision from all results
 4. Be concise but complete
+5. Answer in the same language as the original question
 """
-    
-    # Format results for better readability
-    queries_results_text = "No query results available."
-    if state["queries_and_results"]:
-        queries_results_text = "\n\n".join(
-            f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
-            for i, (query, result) in enumerate(state["queries_and_results"])
-        )
     
     formatted_prompt = f"Question: {state['prompt']}\n\nQueries and Results:\n{queries_results_text}\n\nPlease provide a complete analysis."
     
@@ -289,97 +344,10 @@ Your response should:
     )
     
     debug_print(f"{FORMAT_ANSWER_ID}: Analysis completed")
-    debug_print(f"{FORMAT_ANSWER_ID}: Formatted input sent to LLM:")
-    debug_print(f"{FORMAT_ANSWER_ID}: Question: {state['prompt']}")
-    debug_print(f"{FORMAT_ANSWER_ID}: Results provided:\n{queries_results_text}")
     
     return {"messages": [result]}
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Increment the iteration counter and return updated state."""
     debug_print(f"{ROUTE_DECISION_ID}: Incrementing iteration counter")
-    return {"iteration": state["iteration"] + 1}
-
-async def route_after_query(state: DataAnalysisState) -> Literal["query_again", "format_answer"]:
-    """Determine whether to run another query or proceed to formatting the answer.
-    
-    This is a pure routing function that only makes decisions based on state,
-    without modifying the state itself.
-    """
-    debug_print(f"{ROUTE_DECISION_ID}: Enter route_after_query")
-    debug_print(f"{ROUTE_DECISION_ID}: Current iteration: {state['iteration']}")
-    
-    # Check iteration limit
-    if state["iteration"] >= MAX_ITERATIONS:
-        debug_print(f"{ROUTE_DECISION_ID}: Max iterations ({MAX_ITERATIONS}) reached, proceeding to format answer")
-        return "format_answer"
-    
-    # If the prompt is asking for non-data info (like jokes), go straight to format_answer
-    non_data_keywords = ["joke", "funny", "tell me a story", "hello", "hi"]
-    if any(keyword in state["prompt"].lower() for keyword in non_data_keywords):
-        debug_print(f"{ROUTE_DECISION_ID}: Non-data query detected, proceeding to format answer")
-        return "format_answer"
-    
-    # if no successful queries yet, try one more time
-    if not state["queries_and_results"]:
-        debug_print(f"{ROUTE_DECISION_ID}: No successful queries yet, trying one more time")
-        return "query_again"
-    
-    llm = get_azure_llm(temperature=0.0)
-    
-    # Format current queries and results for the LLM
-    queries_results_text = "\n\n".join(
-        f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
-        for i, (query, result) in enumerate(state["queries_and_results"])
-    )
-    
-    # Prepare the decision prompt
-    system_prompt = """
-You are a data analysis advisor. Your task is to determine whether additional queries 
-are needed to fully answer a user's question based on the current query results.
-
-You should answer "query_again" if:
-1. The current results are incomplete or insufficient to answer the original question
-2. For comparison questions, you need data about all entities being compared
-3. The original question has multiple parts that haven't all been addressed
-4. The data is from the wrong time period or geographical area
-
-You should answer "format_answer" if:
-1. All necessary data to answer the question has been collected
-2. For comparison questions, you have data for all entities being compared
-3. Additional queries would be redundant or unnecessary
-
-CRITICAL INSTRUCTION: Answer ONLY with "query_again" or "format_answer", nothing else.
-"""
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "Original question: {question}\n\nCurrent queries and results:\n{results}\n\nDo we need another query to fully answer the original question based on the current query results? Answer 'query_again' or 'format_answer'.")
-    ])
-    
-    # Get decision from the LLM
-    try:
-        result = await llm.ainvoke(
-            prompt.format_messages(
-                question=state["prompt"],
-                results=queries_results_text
-            )
-        )
-        
-        # Extract decision from the LLM's response
-        decision = result.content.lower().strip()
-        
-        debug_print(f"{ROUTE_DECISION_ID}: LLM decision: '{decision}'")
-        
-        # Default to format_answer if anything unexpected is returned
-        if "query_again" in decision:
-            debug_print(f"{ROUTE_DECISION_ID}: Routing to generate another query")
-            return "query_again"
-        else:
-            debug_print(f"{ROUTE_DECISION_ID}: Routing to format final answer")
-            return "format_answer"
-        
-    except Exception as e:
-        debug_print(f"{ROUTE_DECISION_ID}: Error in decision making: {e}")
-        # Default to format_answer on error to avoid getting stuck
-        return "format_answer"
+    return {"iteration": state.get("iteration", 0) + 1}

@@ -5,9 +5,9 @@ multi-step process that:
 
 1. Retrieves database schema information
 2. Generates a pandas query from natural language
-3. Validates and corrects the query
-4. Executes the query against the dataset
-5. Formats and returns the results
+3. Reflects on whether we have enough information
+4. Either generates more queries or formats the answer
+5. Returns the final analysis
 
 The graph includes error handling, retry mechanisms, and a controlled execution
 flow that prevents common failure modes in LLM-based systems.
@@ -29,8 +29,9 @@ from .utils.nodes import (
     format_answer_node,
     submit_final_answer_node,
     save_node,
-    route_after_query,
-    increment_iteration_node
+    reflect_node,
+    increment_iteration_node,
+    MAX_ITERATIONS
 )
 from .utils.tools import PandasQueryTool
 
@@ -70,6 +71,9 @@ def create_graph():
     # Query generation converts natural language to executable code
     graph.add_node("query_gen", query_node)
     
+    # Reflection on current state and feedback
+    graph.add_node("reflect", reflect_node)
+    
     # Iteration management
     graph.add_node("increment_iteration", increment_iteration_node)
     
@@ -89,20 +93,32 @@ def create_graph():
     graph.add_edge(START, "get_schema")
     graph.add_edge("get_schema", "query_gen")
     
-    # Add conditional routing after query generation
-    # This enables intelligent decision on whether additional queries are needed
+    # After query generation, decide whether to reflect or format answer
+    def route_after_query(state: DataAnalysisState) -> Literal["reflect", "format_answer"]:
+        print(f"Routing decision, iteration={state.get('iteration', 0)}")
+        if state.get("iteration", 0) >= MAX_ITERATIONS:
+            print("Routing to format_answer")
+            return "format_answer"
+        else:
+            print("Routing to reflect")
+            return "reflect"
+
+    
     graph.add_conditional_edges(
         "query_gen",
-        route_after_query,  # Pure routing function
+        route_after_query,
         {
-            "query_again": "increment_iteration",  # First increment iteration
-            "format_answer": "format_answer"  # Proceed to formatting when done
+            "reflect": "reflect",
+            "format_answer": "format_answer"
         }
     )
+
     
-    # After incrementing iteration, go back to query generation
+    # After reflection, always increment iteration and go back to query generation
+    graph.add_edge("reflect", "increment_iteration")
     graph.add_edge("increment_iteration", "query_gen")
     
+    # Continue with final answer formatting
     graph.add_edge("format_answer", "submit_final_answer")
     graph.add_edge("submit_final_answer", "save")
     graph.add_edge("save", END)
