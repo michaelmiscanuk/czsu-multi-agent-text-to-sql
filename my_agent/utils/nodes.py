@@ -17,8 +17,12 @@ from typing import Literal, TypedDict
 import ast  # used for syntax validation of generated pandas expressions
 
 from .state import DataAnalysisState
-from .tools import DEBUG_MODE, PandasQueryTool, SQLiteQueryTool
+from .tools import PandasQueryTool, SQLiteQueryTool
 from langgraph.prebuilt import ToolNode, tools_condition
+import os
+
+# Get debug mode from environment variable
+DEBUG_MODE = os.environ.get('MY_AGENT_DEBUG', '0') == '1'
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -50,7 +54,8 @@ def debug_print(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    if DEBUG_MODE:
+    # Always check environment variable directly to respect runtime changes
+    if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
         print(msg)
 
 def get_azure_llm(temperature=0.0):
@@ -106,21 +111,23 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     llm_with_tools = llm.bind_tools([sqlite_tool])
     
     system_prompt = """
-You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. Your task is to translate the user's natural-language question into a SQL query and execute it using the sqlite_query tool.
+You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
+Your task is to translate the user's natural-language question into a SQL query and execute it using the sqlite_query tool.
 
 To accomplish this, follow these steps:
 
 1. Read and analyze the provided inputs:
-- User prompt (in Czech or English)
-- Schema metadata (containing Czech column names and values)
+- User prompt (can be in Czech or English)
+- Read schema carefully to you can understand how the data are laid, 
+    layout can be non standard, but you have a loot of information there.
 - Previous messages in the conversation
-- Any feedback from the reflection agent
+- Any feedback from the reflection agent, if any.
 
 2. Process the prompt by:
 - Identifying key terms in either language
 - Matching terms to their Czech equivalents in the schema
 - Handling Czech diacritics and special characters
-- Converting geographical names between languages and similar concepts
+- Converting concepts between languages
 
 3. Construct an appropriate SQL query by:
 - Using exact column names from the schema (can be Czech or English)
@@ -130,9 +137,19 @@ To accomplish this, follow these steps:
 
 4. Use the sqlite_query tool to execute the query.
 
-5. Always answer in the language of the prompt and preserve Czech characters.
-
 6. Numeric outputs must be plain digits with NO thousands separators.
+
+Important Schema Details:
+- "dimensions" key contains several other keys, which are columns in the table.
+-- Each of them contains "values" key with list of distinct values in that column.
+-- If there is a column of type "metric", it means that it is a column that contains names of metrics, not values - it can be used in WHERE clause to filter.
+- Then there is key "value_column" with name of the column that contains the values for metric names, they can be used in aggregations, like sum, etc.
+
+HERE IS THE MOST IMPORTANT PART:
+Always read carefully all distinct values of dimensions, 
+and do some thinking to choose the best ones to fit our question. 
+Your can use LIKE and regex to filter them, if it is necessary by our question. 
+For example, if user asks about "female", but dimensional value are "start_period_female" and "end_period_female", just filter for %female%, if it makes sense.
 
 IMPORTANT note about total records: 
 The dataset contains statistical records that include total rows for certain dimension values. 
@@ -151,12 +168,12 @@ When generating the query:
 - Select only the necessary columns, never all columns.
 - Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
 - Do NOT modify the database.
-- NEVER invent data that is not present in the dataset.
 
 USE only one TABLE in FROM clause called 'OBY01PDT01'.
 
 === IMPORTANT RULE ===
-Return ONLY the final SQL query that should be executed, with nothing else around it. Do NOT wrap it in code fences and do NOT add explanations.
+Return ONLY the final SQL query that should be executed, with nothing else around it. 
+Do NOT wrap it in code fences and do NOT add explanations.
 
 """
     
@@ -257,8 +274,7 @@ Your process:
   2. Analyze all executed queries and their results.
   3. Provide detailed feedback about:
       - What specific information is still missing
-      - What kind of query would help get this information
-      - How to adjust the query approach
+      - What kind of SQL query would help get this information
       - Any patterns or insights that could be useful
 
 Guidelines:
@@ -267,7 +283,12 @@ Guidelines:
   - For distribution questions, ensure we have complete coverage of all categories.
 
 Your response should be detailed and specific, helping guide the next query.
-Remember: Always end your response with either 'DECISION: answer' or 'DECISION: improve' on its own line.
+
+MOST IMPORTANT: 
+If improvement will be needed - Imagine it is a chatbot and you are now playing a role of a HUMAN giving instructions to the LLM about 
+how to improve the SQL QUERY - so phrase it like instructions.
+
+REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: improve' on its own line.
 """
     
     prompt = ChatPromptTemplate.from_messages([
@@ -309,18 +330,31 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     )
     
     system_prompt = """
-You are a bilingual (Czech/English) data analysis assistant. Your task is to analyze the query results 
-and provide a complete answer based ONLY on the provided query results.
+You are a bilingual (Czech/English) data analyst. Respond strictly using provided SQL results:
 
-Your response should:
-1. Consider all query results as part of the complete answer
-2. Make clear comparisons when values are being compared
-3. Maintain numeric precision from all results
-4. Be concise but complete
-5. Answer in the same language as the original question
+1. **Data Rules**:
+   - Use ONLY provided data (no external knowledge)
+   - Preserve exact numbers (no rounding/formatting)
+   
+2. **Response Rules**:
+   - Match question's language
+   - Synthesize all data into one direct answer
+   - Compare values when relevant
+   - Highlight patterns if asked
+   - Note contradictions if found
+
+3. **Style Rules**:
+   - No query/results references
+   - No filler phrases
+   - No unsupported commentary
+   - Logical structure (e.g., highest-to-lowest)
+
+Good: "X is 1234567 while Y is 7654321"
+Bad: "The query shows X is 1,234,567"
 """
     
-    formatted_prompt = f"Question: {state['prompt']}\n\nQueries and Results:\n{queries_results_text}\n\nPlease provide a complete analysis."
+    # formatted_prompt = f"Question: {state['prompt']}\n\nQueries and Results:\n{queries_results_text}\n\nPlease answer the question based on the queries and results."
+    formatted_prompt = f"Question: {state['prompt']}\n\nContext: \n{state['messages']}\n\nPlease answer the question based on the queries and results."
     
     chain = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -337,13 +371,12 @@ Your response should:
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Increment the iteration counter and return updated state."""
-    debug_print(f"{ROUTE_DECISION_ID}: Incrementing iteration counter")
+    debug_print(f"{ROUTE_DECISION_ID}: Enter increment_iteration_node")
     return {"iteration": state.get("iteration", 0) + 1}
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Submit the final answer to the user."""
     debug_print(f"{SUBMIT_FINAL_ID}: Enter submit_final_answer_node")
-    debug_print(f"{SUBMIT_FINAL_ID}: Final answer prepared")
     return state
 
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:

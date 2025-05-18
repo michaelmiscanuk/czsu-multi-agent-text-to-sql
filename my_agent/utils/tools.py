@@ -25,8 +25,7 @@ import json  # Import json for structured result formatting
 # CONSTANTS & CONFIGURATION
 #===============================================================================
 # Debug configuration - module level export
-DEBUG_MODE = os.getenv("MY_AGENT_DEBUG", "1").lower() in ("1", "true", "yes")
-
+# We don't cache this as a constant so it can be changed at runtime
 # Constants
 TOOL_ID = 20  # Static ID for PandasQueryTool
 SQLITE_TOOL_ID = 21  # Static ID for SQLiteQueryTool
@@ -50,7 +49,8 @@ def debug_print(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    if DEBUG_MODE:
+    # Always check environment variable directly to respect runtime changes
+    if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
         print(msg)
 
 def validate_path_safety(data_path: Path):
