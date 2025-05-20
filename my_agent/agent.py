@@ -30,7 +30,6 @@ from .utils.nodes import (
     submit_final_answer_node,
     save_node,
     reflect_node,
-    increment_iteration_node,
     MAX_ITERATIONS
 )
 from .utils.tools import PandasQueryTool
@@ -74,9 +73,6 @@ def create_graph():
     # Reflection on current state and feedback
     graph.add_node("reflect", reflect_node)
     
-    # Iteration management
-    graph.add_node("increment_iteration", increment_iteration_node)
-    
     # Natural language formatting of query results
     graph.add_node("format_answer", format_answer_node)
     
@@ -111,25 +107,22 @@ def create_graph():
     )
 
     # After reflection, decide whether to continue iterating or format the answer
-    def route_after_reflect(state: DataAnalysisState) -> Literal["increment_iteration", "format_answer"]:
+    def route_after_reflect(state: DataAnalysisState) -> Literal["query_gen", "format_answer"]:
         # The reflect_node now returns a 'reflection_decision' key
         decision = state.get("reflection_decision", "improve")
         if decision == "answer":
             return "format_answer"
         else:
-            return "increment_iteration"
+            return "query_gen"
 
     graph.add_conditional_edges(
         "reflect",
         route_after_reflect,
         {
-            "increment_iteration": "increment_iteration",
+            "query_gen": "query_gen",
             "format_answer": "format_answer"
         }
     )
-
-    # Ensure increment_iteration always leads to query_gen
-    graph.add_edge("increment_iteration", "query_gen")
 
     # Continue with final answer formatting
     graph.add_edge("format_answer", "submit_final_answer")

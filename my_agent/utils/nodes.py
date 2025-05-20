@@ -248,6 +248,7 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     feedback about what information is missing or what needs to be adjusted.
     It can now decide to either continue iterating ("improve") or proceed to answer formatting ("answer").
     The decision is stored in the 'reflection_decision' field of the state.
+    Also increments the iteration counter when continuing.
     """
     debug_print(f"{ROUTE_DECISION_ID}: Enter reflect_node")
     
@@ -319,9 +320,11 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
         reflection_decision = "answer"
     else:
         reflection_decision = "improve"
+        # Increment iteration counter when continuing
+        state["iteration"] = state.get("iteration", 0) + 1
     
     # Add reflection to messages and set the decision in state
-    return {"messages": [result], "reflection_decision": reflection_decision}
+    return {"messages": [result], "reflection_decision": reflection_decision, "iteration": state.get("iteration", 0)}
 
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Format the query result into a natural language answer.
