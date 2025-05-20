@@ -6,5 +6,8 @@
     "dependencies": {
         "python_version": ">=3.9,<3.12",
         "requirements_file": "requirements.txt"
+    },
+    "graphs": {
+        "agent": "my_agent.agent:create_graph"
     }
 }
