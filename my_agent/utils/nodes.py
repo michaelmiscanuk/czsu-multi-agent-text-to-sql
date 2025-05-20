@@ -20,6 +20,7 @@ from .state import DataAnalysisState
 from .tools import PandasQueryTool, SQLiteQueryTool
 from langgraph.prebuilt import ToolNode, tools_condition
 import os
+from .mcp_server import create_mcp_server
 
 # Get debug mode from environment variable
 DEBUG_MODE = os.environ.get('MY_AGENT_DEBUG', '0') == '1'
@@ -89,6 +90,13 @@ async def load_schema():
     with schema_path.open('r', encoding='utf-8') as f:
         return json.load(f)
 
+def format_sql_query(query: str) -> str:
+    """Format SQL query for better readability."""
+    # Split the query into lines and remove extra whitespace
+    lines = [line.strip() for line in query.split('\n')]
+    # Join with proper indentation
+    return '\n'.join('    ' + line for line in lines)
+
 #==============================================================================
 # NODE FUNCTIONS
 #==============================================================================
@@ -106,9 +114,15 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     
     llm = get_azure_llm(temperature=0.0)
     
-    # Create fresh tool instance
-    sqlite_tool = SQLiteQueryTool()
-    llm_with_tools = llm.bind_tools([sqlite_tool])
+    # Create MCP server instance and get tools
+    tools = await create_mcp_server()
+    sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
+    
+    # Format messages for context
+    messages_text = "\n\n".join([
+        f"{msg.type}: {msg.content}" 
+        for msg in state["messages"]
+    ])
     
     system_prompt = """
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
@@ -138,6 +152,8 @@ To accomplish this, follow these steps:
 4. Use the sqlite_query tool to execute the query.
 
 6. Numeric outputs must be plain digits with NO thousands separators.
+
+7. Be mindful about technical statistical terms - for example if someone asks about momentum, result should be some kind of rate of change.
 
 Important Schema Details:
 - "dimensions" key contains several other keys, which are columns in the table.
@@ -174,14 +190,7 @@ USE only one TABLE in FROM clause called 'OBY01PDT01'.
 === IMPORTANT RULE ===
 Return ONLY the final SQL query that should be executed, with nothing else around it. 
 Do NOT wrap it in code fences and do NOT add explanations.
-
 """
-    
-    # Format messages for context
-    messages_text = "\n\n".join([
-        f"{msg.type}: {msg.content}" 
-        for msg in state["messages"]
-    ])
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -189,7 +198,7 @@ Do NOT wrap it in code fences and do NOT add explanations.
     ])
     
     schema = await load_schema()
-    result = await llm_with_tools.ainvoke(prompt.format_messages(
+    result = await llm.ainvoke(prompt.format_messages(
         prompt=state["prompt"],
         schema=json.dumps(schema, ensure_ascii=False, indent=2),
         messages=messages_text
@@ -199,27 +208,27 @@ Do NOT wrap it in code fences and do NOT add explanations.
     new_messages = []
     new_queries = []
     
-    if hasattr(result, 'additional_kwargs') and 'tool_calls' in result.additional_kwargs:
-        tool_calls = result.additional_kwargs['tool_calls']
-        for tool_call in tool_calls:
-            if tool_call['type'] == 'function' and tool_call['function']['name'] == 'sqlite_query':
-                tool_args = json.loads(tool_call['function']['arguments'])
-                query = tool_args['query']
-                
-                try:
-                    # Execute the query using the SQLite tool
-                    tool_result = sqlite_tool._run(query)
-                    debug_print(f"{QUERY_GEN_ID}: Successfully executed query: {query}")
-                    debug_print(f"{QUERY_GEN_ID}: Query result: {tool_result}")
-                    # Store the query and its string result
-                    new_queries.append((query, tool_result))
-                except Exception as e:
-                    error_msg = f"Error executing query: {str(e)}"
-                    debug_print(f"{QUERY_GEN_ID}: {error_msg}")
-                    # Store the query with error message
-                    new_queries.append((query, f"Error: {str(e)}"))
-                    # Add error message to state
-                    new_messages.append(AIMessage(content=error_msg))
+    # Extract the SQL query from the LLM response
+    query = result.content.strip()
+    
+    try:
+        # Execute the query using the tool
+        tool_result = await sqlite_tool.ainvoke({"query": query})
+        
+        if isinstance(tool_result, Exception):
+            error_msg = f"Error executing query: {str(tool_result)}"
+            debug_print(f"{QUERY_GEN_ID}: {error_msg}")
+            new_queries.append((query, f"Error: {str(tool_result)}"))
+            new_messages.append(AIMessage(content=error_msg))
+        else:
+            debug_print(f"{QUERY_GEN_ID}: Successfully executed query: {query}")
+            debug_print(f"{QUERY_GEN_ID}: Query result: {tool_result}")
+            new_queries.append((query, tool_result))
+    except Exception as e:
+        error_msg = f"Error executing query: {str(e)}"
+        debug_print(f"{QUERY_GEN_ID}: {error_msg}")
+        new_queries.append((query, f"Error: {str(e)}"))
+        new_messages.append(AIMessage(content=error_msg))
     
     new_messages.append(result)
     debug_print(f"{QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}")
@@ -334,7 +343,8 @@ You are a bilingual (Czech/English) data analyst. Respond strictly using provide
 
 1. **Data Rules**:
    - Use ONLY provided data (no external knowledge)
-   - Preserve exact numbers (no rounding/formatting)
+   - Always read in details the QUERY and match it again with user question - if it does make sense.
+   - Never format any numbers, use plain digits, no separators, no markdown etc.
    
 2. **Response Rules**:
    - Match question's language
@@ -354,7 +364,7 @@ Bad: "The query shows X is 1,234,567"
 """
     
     # formatted_prompt = f"Question: {state['prompt']}\n\nQueries and Results:\n{queries_results_text}\n\nPlease answer the question based on the queries and results."
-    formatted_prompt = f"Question: {state['prompt']}\n\nContext: \n{state['messages']}\n\nPlease answer the question based on the queries and results."
+    formatted_prompt = f"Question: {state['prompt']}\n\nContext: \n{state['queries_and_results']}\n\nPlease answer the question based on the queries and results."
     
     chain = ChatPromptTemplate.from_messages([
         ("system", system_prompt),

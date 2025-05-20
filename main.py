@@ -41,7 +41,7 @@ from my_agent.utils.state import DataAnalysisState
 # DEFAULT_PROMPT = "tell me about people in prague, compare, contrast, what is interesting, provide trends."
 # DEFAULT_PROMPT = "What was the maximum female population recorded in any region?"
 # DEFAULT_PROMPT = "List regions where the absolute difference between male and female population changes was greater than 3000, and indicate whether men or women changed more"
-DEFAULT_PROMPT = "What is the average population momentum for regions with more than 1 million residents?"
+DEFAULT_PROMPT = "What is the average population rate of change for regions with more than 1 million residents?"
 
 
 #==============================================================================

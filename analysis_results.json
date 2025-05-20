@@ -5265,5 +5265,271 @@
         "result": "[(713971, 672752)]"
       }
     ]
+  },
+  {
+    "prompt": "What is the average population momentum for regions with more than 1 million residents?",
+    "result": "The average population momentum for regions with more than 1 million residents cannot be determined because no data was retrieved due to repeated technical errors during query execution. Additionally, the definition of \"population momentum\" remains unclear, and no calculation or metric for it was provided in the dataset.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "Error: 'FastMCP' object has no attribute 'execute_tool'"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "Error: 'FastMCP' object has no attribute 'execute_tool'"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "Error: 'FastMCP' object has no attribute 'execute_tool'"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "Error: 'FastMCP' object has no attribute 'execute_tool'"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "Error: 'FastMCP' object has no attribute 'execute_tool'"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "Error: 'FastMCP' object has no attribute 'execute_tool'"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population momentum for regions with more than 1 million residents?",
+    "result": "The average population momentum for regions with more than 1 million residents is **1314121.75**.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "[(1386723.0,), (1225885.0,), (1185641.0,), (1458238.0,)]"
+      },
+      {
+        "query": "SELECT AVG(region_avg) AS overall_average_population_momentum\nFROM (\n    SELECT AVG(value) AS region_avg\n    FROM OBY01PDT01\n    WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n      AND \"ČR, kraje\" != 'Česko'\n    GROUP BY \"ČR, kraje\"\n    HAVING SUM(value) > 1000000\n) AS subquery;",
+        "result": "1314121.75"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "[(1386723.0,), (1225885.0,), (1185641.0,), (1458238.0,)]"
+      },
+      {
+        "query": "SELECT AVG(region_avg) AS overall_average_population_momentum\nFROM (\n    SELECT AVG(value) AS region_avg\n    FROM OBY01PDT01\n    WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n      AND \"ČR, kraje\" != 'Česko'\n    GROUP BY \"ČR, kraje\"\n    HAVING SUM(value) > 1000000\n) AS subquery;",
+        "result": "1314121.75"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population momentum for regions with more than 1 million residents?",
+    "result": "The average population momentum for regions with more than 1 million residents is not explicitly calculated in the provided results. However, the average population momentum for individual regions with more than 1 million residents is as follows:\n\n- Hlavní město Praha: 1,386,723\n- Jihomoravský kraj: 1,225,885\n- Moravskoslezský kraj: 1,185,641\n- Středočeský kraj: 1,458,238\n\nTo calculate the overall average population momentum across these regions, the arithmetic mean of these values would need to be computed.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value ELSE 0 END) > 1000000;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND \"ČR, kraje\" IN (\n    SELECT \"ČR, kraje\"\n    FROM OBY01PDT01\n    WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'\n    GROUP BY \"ČR, kraje\"\n    HAVING SUM(value) > 1000000\n  )\nGROUP BY \"ČR, kraje\"\nLIMIT 5;",
+        "result": "[('Hlavní město Praha', 1386723.0), ('Jihomoravský kraj', 1225885.0), ('Moravskoslezský kraj', 1185641.0), ('Středočeský kraj', 1458238.0)]"
+      },
+      {
+        "query": "SELECT AVG(avg_population_momentum) AS overall_average_population_momentum\nFROM (\n  SELECT \"ČR, kraje\", AVG(value) AS avg_population_momentum\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n    AND \"ČR, kraje\" != 'Česko'\n    AND \"ČR, kraje\" IN (\n      SELECT \"ČR, kraje\"\n      FROM OBY01PDT01\n      WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'\n      GROUP BY \"ČR, kraje\"\n      HAVING SUM(value) > 1000000\n    )\n  GROUP BY \"ČR, kraje\"\n) subquery;",
+        "result": "1314121.75"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value ELSE 0 END) > 1000000;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND \"ČR, kraje\" IN (\n    SELECT \"ČR, kraje\"\n    FROM OBY01PDT01\n    WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'\n    GROUP BY \"ČR, kraje\"\n    HAVING SUM(value) > 1000000\n  )\nGROUP BY \"ČR, kraje\"\nLIMIT 5;",
+        "result": "[('Hlavní město Praha', 1386723.0), ('Jihomoravský kraj', 1225885.0), ('Moravskoslezský kraj', 1185641.0), ('Středočeský kraj', 1458238.0)]"
+      },
+      {
+        "query": "SELECT AVG(avg_population_momentum) AS overall_average_population_momentum\nFROM (\n  SELECT \"ČR, kraje\", AVG(value) AS avg_population_momentum\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n    AND \"ČR, kraje\" != 'Česko'\n    AND \"ČR, kraje\" IN (\n      SELECT \"ČR, kraje\"\n      FROM OBY01PDT01\n      WHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'\n      GROUP BY \"ČR, kraje\"\n      HAVING SUM(value) > 1000000\n    )\n  GROUP BY \"ČR, kraje\"\n) subquery;",
+        "result": "1314121.75"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population momentum for regions with more than 1 million residents?",
+    "result": "The average population size for regions with more than 1 million residents, based on the metric \"Počet obyvatel na počátku období - celkem,\" is **not provided in the results**. The queries executed calculate average population sizes using different metrics, but none directly address \"population momentum.\" Further clarification or additional data is required to calculate population momentum.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND value > 1000000;",
+        "result": "1314121.75"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Počet obyvatel na konci období - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND value > 1000000;",
+        "result": "1316428.5"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND value > 1000000;",
+        "result": "1314156.25"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND value > 1000000;",
+        "result": "1314121.75"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Počet obyvatel na konci období - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND value > 1000000;",
+        "result": "1316428.5"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem'\n  AND \"ČR, kraje\" != 'Česko'\n  AND value > 1000000;",
+        "result": "1314156.25"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population momentum for regions with more than 1 million residents?",
+    "result": "The average population momentum for regions with more than 1 million residents is **1,314,121.75**.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "[(1386723.0,), (1225885.0,), (1185641.0,), (1458238.0,)]"
+      },
+      {
+        "query": "SELECT AVG(region_avg) AS overall_average_population_momentum\nFROM (\n  SELECT AVG(value) AS region_avg\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n    AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING SUM(value) > 1000000\n) AS subquery;",
+        "result": "1314121.75"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "[(1386723.0,), (1225885.0,), (1185641.0,), (1458238.0,)]"
+      },
+      {
+        "query": "SELECT AVG(region_avg) AS overall_average_population_momentum\nFROM (\n  SELECT AVG(value) AS region_avg\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n    AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING SUM(value) > 1000000\n) AS subquery;",
+        "result": "1314121.75"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population momentum for regions with more than 1 million residents?",
+    "result": "The average population momentum for regions with more than 1 million residents is 1314121.75.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "[(1386723.0,), (1225885.0,), (1185641.0,), (1458238.0,)]"
+      },
+      {
+        "query": "SELECT AVG(region_avg) AS overall_average_population_momentum\nFROM (\n    SELECT AVG(value) AS region_avg\n    FROM OBY01PDT01\n    WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n      AND \"ČR, kraje\" != 'Česko'\n    GROUP BY \"ČR, kraje\"\n    HAVING SUM(value) > 1000000\n) subquery;",
+        "result": "1314121.75"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_population_momentum\nFROM OBY01PDT01\nWHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n  AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nHAVING SUM(value) > 1000000;",
+        "result": "[(1386723.0,), (1225885.0,), (1185641.0,), (1458238.0,)]"
+      },
+      {
+        "query": "SELECT AVG(region_avg) AS overall_average_population_momentum\nFROM (\n    SELECT AVG(value) AS region_avg\n    FROM OBY01PDT01\n    WHERE \"Ukazatel\" = 'Střední stav obyvatel - celkem'\n      AND \"ČR, kraje\" != 'Česko'\n    GROUP BY \"ČR, kraje\"\n    HAVING SUM(value) > 1000000\n) subquery;",
+        "result": "1314121.75"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population rate of change for regions with more than 1 million residents?",
+    "result": "The average population rate of change for regions with more than 1 million residents is 0.0010826882130391291.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_population_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_population_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\", \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0010826882130391291"
+      },
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_population_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_population_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\", \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0010826882130391291"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population rate of change for regions with more than 1 million residents?",
+    "result": "The average population rate of change for regions with more than 1 million residents is 0.0014294573090641652.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND region != 'Česko'\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\", \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0014294573090641652"
+      },
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND region != 'Česko'\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\", \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0014294573090641652"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population rate of change for regions with more than 1 million residents?",
+    "result": "The average population rate of change for regions with more than 1 million residents is 0.0010826882130391291.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_population_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_population_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\" AS region, \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0010826882130391291"
+      },
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_population_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_population_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\" AS region, \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0010826882130391291"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population rate of change for regions with more than 1 million residents?",
+    "result": "The average population rate of change for regions with more than 1 million residents is 0.0014294573090641652.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND region != 'Česko'\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\", \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0014294573090641652"
+      },
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND region != 'Česko'\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\", \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n    AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0014294573090641652"
+      }
+    ]
+  },
+  {
+    "prompt": "What is the average population rate of change for regions with more than 1 million residents?",
+    "result": "The average population rate of change for regions with more than 1 million residents is 0.0014294573090641652.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_population_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_population_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\" AS region, \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0014294573090641652"
+      },
+      {
+        "query": "SELECT AVG((end_population.value - start_population.value) * 1.0 / start_population.value) AS avg_population_rate_of_change\nFROM (\n  SELECT region, \n         MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN metric = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE metric IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  GROUP BY region\n  HAVING MAX(CASE WHEN metric = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "Error: Query error: no such column: region"
+      },
+      {
+        "query": "SELECT AVG((end_population - start_population) * 1.0 / start_population) AS avg_population_rate_of_change\nFROM (\n  SELECT \"ČR, kraje\" AS region, \n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) AS start_population,\n         MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na konci období - celkem' THEN value END) AS end_population\n  FROM OBY01PDT01\n  WHERE \"Ukazatel\" IN ('Počet obyvatel na počátku období - celkem', 'Počet obyvatel na konci období - celkem')\n  AND \"ČR, kraje\" != 'Česko'\n  GROUP BY \"ČR, kraje\"\n  HAVING MAX(CASE WHEN \"Ukazatel\" = 'Počet obyvatel na počátku období - celkem' THEN value END) > 1000000\n) AS population_data;",
+        "result": "0.0014294573090641652"
+      }
+    ]
   }
 ]
