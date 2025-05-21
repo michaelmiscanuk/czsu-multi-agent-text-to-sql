@@ -11,6 +11,12 @@ import json
 csv_dir = Path("data/CSVs")
 csv_dir.mkdir(parents=True, exist_ok=True)
 
+# Configuration
+PROCESS_ALL_DATASETS = 1  # Set to 1 to process all datasets, 0 to process specific dataset
+SPECIFIC_DATASET_ID = "OBY01PD"  # Only used when PROCESS_ALL_DATASETS is 0
+PROCESS_ALL_SELECTIONS = 1  # Set to 1 to process all selections, 0 to process specific selection
+SPECIFIC_SELECTION_ID = "OBY01PDT01"  # Only used when PROCESS_ALL_SELECTIONS is 0
+
 def fetch_json(url):
     """Helper function to fetch JSON data with error handling and rate limiting"""
     try:
@@ -34,6 +40,17 @@ def save_to_csv(df, filename):
         return False
 
 def main():
+    # Print configuration
+    if PROCESS_ALL_DATASETS:
+        print("Processing all available datasets")
+    else:
+        print(f"Processing only dataset: {SPECIFIC_DATASET_ID}")
+        
+    if PROCESS_ALL_SELECTIONS:
+        print("Processing all available selections")
+    else:
+        print(f"Processing only selection: {SPECIFIC_SELECTION_ID}")
+
     # 1. Get list of all datasets
     print("Fetching list of datasets...")
     datasets_url = "https://data.csu.gov.cz/api/katalog/v1/sady"
@@ -42,11 +59,6 @@ def main():
     if not datasets:
         print("Failed to fetch datasets list")
         return
-
-    # Let's examine the structure of the first dataset
-    if datasets:
-        print("\nExample dataset structure:")
-        print(json.dumps(datasets[0], indent=2, ensure_ascii=False))
 
     print(f"\nFound {len(datasets)} datasets to process")
     successful_saves = 0
@@ -58,6 +70,10 @@ def main():
         dataset_id = dataset.get('kod')  # Using 'kod' instead of 'id'
         if not dataset_id:
             print(f"Warning: Could not find kod in dataset: {dataset}")
+            continue
+            
+        # Skip if not processing all datasets and this isn't the specific dataset
+        if not PROCESS_ALL_DATASETS and dataset_id != SPECIFIC_DATASET_ID:
             continue
 
         # 2. Get dataset details
@@ -76,19 +92,16 @@ def main():
             failed_datasets.append(dataset_id)
             continue
 
-        # Let's examine the structure of the first selection
-        if selections:
-            print(f"\nExample selection structure for dataset {dataset_id}:")
-            print(json.dumps(selections[0], indent=2, ensure_ascii=False))
-
-        print(f"\nProcessing {len(selections)} selections for dataset {dataset_id}")
-
         # 4. Process each selection with nested progress bar
         for selection in tqdm(selections, desc=f"Processing selections for {dataset_id}", 
                             leave=False, unit="selection"):
             selection_id = selection.get('kod')  # Using 'kod' instead of 'id'
             if not selection_id:
                 print(f"Warning: Could not find kod in selection: {selection}")
+                continue
+            
+            # Skip if not processing all selections and this isn't the specific selection
+            if not PROCESS_ALL_SELECTIONS and selection_id != SPECIFIC_SELECTION_ID:
                 continue
             
             # Fetch the actual data
@@ -100,7 +113,7 @@ def main():
                 continue
 
             try:
-                # Convert JSON-stat to pandas DataFrame
+                # Convert JSON-stat to pandas DataFrame - using the same approach as data2.py
                 df = pyjstat.from_json_stat(data)[0]
                 
                 if df.empty:
