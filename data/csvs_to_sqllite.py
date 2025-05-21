@@ -65,7 +65,7 @@ def import_all_csv_to_sqlite(folder_path: str = None) -> None:
 # Example usage
 if __name__ == "__main__":
     # Option 1: Import from script's directory
-    import_all_csv_to_sqlite()
+    # import_all_csv_to_sqlite()
     
     # Option 2: Import from specific folder
-    # import_all_csv_to_sqlite("path/to/csv/folder")
+    import_all_csv_to_sqlite("data/CSVs")

@@ -99,6 +99,7 @@ def main():
                 failed_selections.append(selection_id)
                 continue
 
+            try:
                 # Convert JSON-stat to pandas DataFrame
                 df = pyjstat.from_json_stat(data)[0]
                 
