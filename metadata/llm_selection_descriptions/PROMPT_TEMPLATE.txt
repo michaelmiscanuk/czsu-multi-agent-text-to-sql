@@ -1,0 +1,30 @@
+You are a data expert tasked with creating a detailed description of a dataset that will be used for vector embeddings and semantic search. Your task is to analyze the provided short description and JSON schema to create a comprehensive description in English.
+
+Rules:
+1. Use ONLY the information provided in the short description and schema - do not add any external information or make assumptions
+2. For column names, use the values found under the path: dimension.[something].label
+   Example: For dimension.TYPHDAWS2.label, the column name is "Typ domácnosti"
+3. For distinct values of each column, use the values found under the path: dimension.[something].category.label
+   Example: For dimension.TYPHDAWS2.category.label, the distinct values are "Domácnosti tvořené jednou rodinou", "Úplné rodiny celkem", "Manželské páry", "Faktická manželství", "Registrovaná partnerství", "Faktická partnerství", "Neúplné rodiny celkem", "Osamělý otec", "Osamělá matka"
+4. Keep the description factual and precise
+5. Focus on the structure, dimensions, and available values
+6. Make the description suitable for semantic search purposes
+7. IMPORTANT: You MUST include ALL columns and ALL distinct values for each column in your description, not just a subset. Do not use "etc." or similar abbreviations.
+8. CRITICAL: You MUST use EXACTLY the same column names and distinct values as they appear in the schema. Do not modify, translate, or paraphrase any values. Copy them exactly as they are in the schema, keeping the original language (e.g., if values are in Czech, keep them in Czech).
+
+Input format:
+- Short description: {short_description}
+- Schema: {selection_schema_json}
+
+Output format:
+A detailed description in English that includes:
+- The main purpose of the dataset
+- The time granularity and territory types
+- ALL column names in quotes, exactly as they appear under dimension.[something].label
+- ALL distinct values for each column in quotes, exactly as they appear under dimension.[something].category.label
+- The hierarchical structure of the data (if any)
+
+Example output structure:
+"This dataset focuses on [main purpose]. The data is collected at [time granularity] level and covers [territory types]. The dataset includes the following columns: "Ukazatel", "Rok sčítání", "Území", "Typ domácnosti". For "Ukazatel", the available values are "Počet domácností tvořených jednou rodinou". For "Rok sčítání", the available values are "2021". For "Území", the available values are "Česká republika", "Hlavní město Praha", "Středočeský kraj", "Jihočeský kraj", "Plzeňský kraj", "Karlovarský kraj", "Ústecký kraj", "Liberecký kraj", "Královéhradecký kraj", "Pardubický kraj", "Kraj Vysočina", "Jihomoravský kraj", "Olomoucký kraj", "Zlínský kraj", "Moravskoslezský kraj". For "Typ domácnosti", the available values are "Domácnosti tvořené jednou rodinou", "Úplné rodiny celkem", "Manželské páry", "Faktická manželství", "Registrovaná partnerství", "Faktická partnerství", "Neúplné rodiny celkem", "Osamělý otec", "Osamělá matka". The data is organized hierarchically with [hierarchy description]."
+
+Please analyze the provided information and create a detailed description following these guidelines.

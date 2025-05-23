@@ -1,0 +1,191 @@
+selection_code;short_description;selection_schema_json;extended_description
+SLD034CT01;Employed by place of work and by regions. Time granularity: Census Year. Territory types: State, Region;{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD034CT01",
+    "label": "Zaměstnaní podle místa pracoviště a podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-23T19:53:17.431668Z",
+    "id": [
+        "IndicatorType",
+        "CenRoky1",
+        "EKONAKTIVWS",
+        "UzCrKr_H",
+        "MISTOPSWS1"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        15,
+        9
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162": 0
+                },
+                "label": {
+                    "U_3162": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "EKONAKTIVWS": {
+            "label": "Ekonomická aktivita",
+            "category": {
+                "index": {
+                    "51": 0
+                },
+                "label": {
+                    "51": "Zaměstnaní"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3018": 1,
+                    "3026": 2,
+                    "3034": 3,
+                    "3042": 4,
+                    "3051": 5,
+                    "3069": 6,
+                    "3077": 7,
+                    "3085": 8,
+                    "3093": 9,
+                    "3107": 10,
+                    "3115": 11,
+                    "3123": 12,
+                    "3131": 13,
+                    "3140": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3018",
+                        "3026",
+                        "3034",
+                        "3042",
+                        "3051",
+                        "3069",
+                        "3077",
+                        "3085",
+                        "3093",
+                        "3107",
+                        "3115",
+                        "3123",
+                        "3131",
+                        "3140"
+                    ]
+                }
+            }
+        },
+        "MISTOPSWS1": {
+            "label": "Místo pracoviště",
+            "category": {
+                "index": {
+                    "T": 0,
+                    "11": 1,
+                    "57": 2,
+                    "2": 3,
+                    "51": 4,
+                    "55": 5,
+                    "54": 6,
+                    "8": 7,
+                    "99": 8
+                },
+                "label": {
+                    "T": "Zaměstnaní celkem",
+                    "11": "Na adrese obvyklého pobytu",
+                    "57": "Na jiné adrese v obci obvyklého pobytu",
+                    "2": "V jiné obci okresu",
+                    "51": "V jiném okrese kraje",
+                    "55": "V jiném kraji",
+                    "54": "V zahraničí",
+                    "8": "Bez stálého pracoviště",
+                    "99": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+};"This dataset focuses on the employment of individuals by their place of work and by regions. The data is collected at the "Census Year" level and covers the territory types "State" and "Region". The dataset includes the following columns: "Ukazatel", "Rok sčítání", "Ekonomická aktivita", "Území", and "Místo pracoviště". 
+
+For "Ukazatel", the available value is "Počet obyvatel (obvyklý pobyt)".  
+For "Rok sčítání", the available value is "2021".  
+For "Ekonomická aktivita", the available value is "Zaměstnaní".  
+For "Území", the available values are "Česká republika", "Hlavní město Praha", "Středočeský kraj", "Jihočeský kraj", "Plzeňský kraj", "Karlovarský kraj", "Ústecký kraj", "Liberecký kraj", "Královéhradecký kraj", "Pardubický kraj", "Kraj Vysočina", "Jihomoravský kraj", "Olomoucký kraj", "Zlínský kraj", "Moravskoslezský kraj". The data for "Území" is organized hierarchically, with "Česká republika" as the parent region encompassing all other regions.  
+For "Místo pracoviště", the available values are "Zaměstnaní celkem", "Na adrese obvyklého pobytu", "Na jiné adrese v obci obvyklého pobytu", "V jiné obci okresu", "V jiném okrese kraje", "V jiném kraji", "V zahraničí", "Bez stálého pracoviště", "Nezjištěno".  
+
+This dataset provides a structured view of employment data, enabling semantic search and analysis based on the specified dimensions and their respective categories."
+
+====================================================================================================
+====================================================================================================
+====================================================================================================

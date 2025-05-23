@@ -25,6 +25,7 @@ def extract_metadata(input_file, output_file):
         json.dump(metadata, f, ensure_ascii=False, indent=4)
 
 # Example usage
+# https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01PDT01 
 input_file = "metadata/4_https__data.csu.gov.cz_api_dotaz_v1_data_vybery_CRU01ROBCET1.json"
 output_file = "metadata/CRU01ROBCET1_metadata_.json"
 
