@@ -10,4 +10,4 @@ htmlcov/
 data/CSVs/
 *.db
 data/czsu_data.db
-data/czsu_chromadb/
+metadata/czsu_chromadb/

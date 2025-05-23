@@ -1,3 +1,6 @@
+#==============================================================================
+# IMPORTS
+#==============================================================================
 import chromadb
 from uuid import uuid4
 import os
@@ -11,10 +14,25 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
-CHROMA_DB_PATH = BASE_DIR / "data" / "czsu_chromadb"
+CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
 
+#==============================================================================
+# CONSTANTS & CONFIGURATION
+#==============================================================================
 from my_agent.utils.models import get_azure_embedding_model
 
+CREATE_CHROMADB_ID = 30
+
+#==============================================================================
+# HELPER FUNCTIONS
+#==============================================================================
+def debug_print(msg: str) -> None:
+    if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
+        print(f"{CREATE_CHROMADB_ID}: {msg}")
+
+#==============================================================================
+# MAIN LOGIC
+#==============================================================================
 def upsert_documents_to_chromadb(document_tuples, deployment="text-embedding-3-large__test1", collection_name="aaaaaaaaaab"):
     """
     Add new documents to a ChromaDB collection using UUIDs as IDs. Checks for existence by document text.
@@ -33,13 +51,21 @@ def upsert_documents_to_chromadb(document_tuples, deployment="text-embedding-3-l
     client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
     collection = client.get_or_create_collection(name=collection_name)
 
-    # Get all existing documents in the collection
-    existing = collection.get(include=["documents"])
-    existing_docs = set(existing["documents"][0]) if existing and "documents" in existing and existing["documents"] else set()
+    # Get all existing documents in the collection (fetch all, not just first page)
+    existing = collection.get(include=["documents"], limit=10000)
+    existing_docs = set()
+    if existing and "documents" in existing and existing["documents"]:
+        for doc_list in existing["documents"]:
+            if isinstance(doc_list, str):
+                existing_docs.add(doc_list)
+            else:
+                existing_docs.update(doc_list)
+    debug_print(f"Existing docs in collection: {existing_docs}")
 
-    # Prepare new documents to add (skip if already present)
+    # Only add documents whose text is not already present
     new_tuples = [t for t in document_tuples if t[0] not in existing_docs]
     new_texts = [t[0] for t in new_tuples]
+    debug_print(f"New texts to add: {new_texts}")
     new_selections = [t[1] for t in new_tuples]
     new_ids = [str(uuid4()) for _ in new_texts]
     new_metadatas = [{"selection": sel} for sel in new_selections]
@@ -64,6 +90,9 @@ def upsert_documents_to_chromadb(document_tuples, deployment="text-embedding-3-l
     print(f"Added {len(new_texts)} new documents.")
     return collection
 
+#==============================================================================
+# SCRIPT ENTRY POINT (EXAMPLE USAGE)
+#==============================================================================
 if __name__ == "__main__":
     # Example usage: tuples of (text, selection)
     DOCUMENTS = [
@@ -77,7 +106,7 @@ if __name__ == "__main__":
 
     # --- Usage Example: Similarity Search ---
     embedding_client = get_azure_embedding_model()
-    QUERY = "What programming languages are popular?"
+    QUERY = "ChromaDB enables vector search for embeddings.."
     query_embedding = embedding_client.embeddings.create(
         input=[QUERY],
         model="text-embedding-3-large__test1"
