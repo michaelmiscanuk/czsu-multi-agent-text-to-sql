@@ -88,7 +88,7 @@ class ConfigurationError(Exception):
     pass
 
 class ProcessingError(Exception):
-    """Raised when processing fails."""
+    """Raised when processing fails.""" 
     pass
 
 #===============================================================================
@@ -106,7 +106,7 @@ for var in ['AZURE_OPENAI_ENDPOINT', 'AZURE_OPENAI_API_KEY']:
 
 # Consolidated constants
 CONFIG = {
-    'MAX_WORKERS': 3,
+    'MAX_WORKERS': 30,
     'REQUESTS_PER_MINUTE': {
         'DEFAULT': 60,
         'MIN': 1,
@@ -115,6 +115,9 @@ CONFIG = {
     'CSV_SEPARATOR': ';',  # Semicolon separator for CSV files
     'PROMPT_TEMPLATE': ""  # Will be loaded from file
 }
+
+# Track missing metadata files
+missing_metadata_files = []
 
 #===============================================================================
 # HELPER FUNCTIONS
@@ -193,10 +196,15 @@ def load_json_schema(selection_code: str) -> str:
     """
     try:
         schema_path = BASE_DIR / "metadata" / "schemas" / f"{selection_code}_schema.json"
+        if not schema_path.exists():
+            missing_metadata_files.append(selection_code)
+            return ""  # Return empty string for missing schemas
         with open(schema_path, 'r', encoding='utf-8') as f:
             return f.read()
     except Exception as e:
-        raise ConfigurationError(f"Failed to load JSON schema for {selection_code}: {e}")
+        missing_metadata_files.append(selection_code)
+        logger.warning(f"Failed to load JSON schema for {selection_code}: {e}")
+        return ""  # Return empty string for failed loads
 
 def format_system_prompt(**kwargs: Dict[str, Any]) -> str:
     """Format the prompt template using DataFrame column values.
@@ -378,19 +386,112 @@ def get_azure_llm_response(**kwargs: Dict[str, Any]) -> str:
     formatted_prompt = format_system_prompt(**kwargs)  # Format prompt before try block
     
     try:
+        print(f"\nInitializing LLM connection...")
         # Use the get_azure_llm function with default temperature
         llm = get_azure_llm()
         
         # Format the message for LangChain
         messages = [{"role": "user", "content": formatted_prompt}]
         
+        print(f"\nMaking API call...")
         # Get response using LangChain's invoke method
         response = llm.invoke(messages)
+        print(f"\nReceived response from API")
         return response.content
     except Exception as e:
         logger.error(f"Error in LLM request {request_id}: {str(e)}")
         logger.error(f"Attempting retry with prompt: {formatted_prompt[:200]}...")  # Log first 200 chars of prompt
         raise  # Re-raise the exception for the retry decorator to handle
+
+def check_selection_code_exists(selection_code: str, db_name: str = "selection_descriptions.db") -> bool:
+    """Check if a selection code already exists in the database.
+
+    Args:
+        selection_code (str): The selection code to check.
+        db_name (str): The name of the SQLite database file.
+
+    Returns:
+        bool: True if the selection code exists, False otherwise.
+    """
+    try:
+        db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / db_name
+        conn = sqlite3.connect(str(db_path))
+        cursor = conn.cursor()
+        
+        # Check if table exists
+        cursor.execute("""
+            SELECT name FROM sqlite_master 
+            WHERE type='table' AND name='selection_descriptions'
+        """)
+        if not cursor.fetchone():
+            conn.close()
+            return False
+            
+        # Check if selection code exists and has a non-empty extended_description
+        cursor.execute("""
+            SELECT 1 FROM selection_descriptions 
+            WHERE selection_code = ? AND extended_description IS NOT NULL AND extended_description != ''
+        """, (selection_code,))
+        
+        exists = cursor.fetchone() is not None
+        conn.close()
+        return exists
+    except Exception as e:
+        logger.error(f"Error checking selection code in database: {e}")
+        return False
+
+def save_single_record_to_csv(row: pd.Series, filename: str, is_first_record: bool = False):
+    """Save a single record to CSV file.
+
+    Args:
+        row (pd.Series): The row to save.
+        filename (str): The filename to save to.
+        is_first_record (bool): Whether this is the first record being saved.
+    """
+    try:
+        # Use BASE_DIR with metadata folder
+        metadata_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / filename
+        mode = 'w' if is_first_record else 'a'
+        
+        with open(metadata_path, mode, encoding='utf-8', newline='') as f:
+            if is_first_record:
+                # Write header
+                f.write(CONFIG['CSV_SEPARATOR'].join(row.index) + '\n')  
+            
+            # Write row with separator
+            f.write(CONFIG['CSV_SEPARATOR'].join(str(val) for val in row) + '\n')
+            f.write('\n' + '=' * 100 + '\n' + '=' * 100 + '\n' + '=' * 100 + '\n')
+            
+    except Exception as e:
+        logger.error(f"Error saving single record to CSV: {e}")
+        raise
+
+def save_single_record_to_sqlite(row: pd.Series, db_name: str = "selection_descriptions.db"):
+    """Save a single record to SQLite database.
+
+    Args:
+        row (pd.Series): The row to save.
+        db_name (str): The name of the SQLite database file.
+    """
+    try:
+        # Use BASE_DIR with metadata folder
+        db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / db_name
+        conn = sqlite3.connect(str(db_path))
+        
+        # Add timestamp
+        row_dict = row.to_dict()
+        row_dict['processed_at'] = datetime.now().isoformat()
+        
+        # Create DataFrame from single row
+        df = pd.DataFrame([row_dict])
+        
+        # Save to database
+        df.to_sql('selection_descriptions', conn, if_exists='append', index=False)
+        conn.close()
+        
+    except Exception as e:
+        logger.error(f"Error saving single record to SQLite: {e}")
+        raise
 
 def process_dataframe_parallel(
     df: pd.DataFrame, 
@@ -413,8 +514,37 @@ def process_dataframe_parallel(
     start_time = time.time()
     
     try:
+        print("\nStarting initial check of records...")
+        # First, check which records need processing
+        records_to_process = []
+        skipped_count = 0
+        
+        for index, row in df.iterrows():
+            selection_code = row.get('selection_code')
+            if not selection_code:
+                print(f"Warning: Row {index + 1} has no selection_code, skipping")
+                continue
+                
+            if check_selection_code_exists(selection_code):
+                print(f"Skipping already processed selection code: {selection_code}")
+                skipped_count += 1
+                continue
+                
+            records_to_process.append((index, row))
+        
+        print(f"\nProcessing Summary:")
+        print(f"- Total records: {len(df)}")
+        print(f"- Already processed: {skipped_count}")
+        print(f"- To process: {len(records_to_process)}")
+        
+        if not records_to_process:
+            print("\nNo new records to process!")
+            return df
+            
+        print("\nStarting processing of new records...")
         results = [None] * len(df)
         delay_between_requests = 60 / requests_per_minute
+        processed_count = 0
         
         def process_row(index: int, row: pd.Series):
             """Process a single row of the DataFrame.
@@ -427,55 +557,85 @@ def process_dataframe_parallel(
                 Tuple[int, Optional[str]]: The index of the row and the result, or None if an error occurred.
             """
             try:
-                time.sleep(index * delay_between_requests)
+                selection_code = row.get('selection_code')
+                print(f"\n{'=' * 100}")
+                print(f"Starting processing for selection code: {selection_code}")
+                print(f"{'=' * 100}\n")
+                
+                # Add delay between requests
+                if index > 0:
+                    print(f"\nWaiting {delay_between_requests:.2f} seconds before processing {selection_code}...")
+                    time.sleep(delay_between_requests)
+                
                 row_dict = row.to_dict()
                 if output_column in row_dict:
                     del row_dict[output_column]
                 
-                print(f"\nProcessing row {index + 1}/{len(df)}")
-                print(f"Selection code: {row_dict.get('selection_code', 'N/A')}")
-                
+                print(f"\nCalling LLM for {selection_code}...")
                 result = get_azure_llm_response(**row_dict)
-                print(f"Successfully processed row {index + 1}")
+                print(f"\nSuccessfully got response for {selection_code}")
                 return index, result
                 
             except Exception as e:
-                error_msg = f"Error processing row {index + 1}: {str(e)}"
+                error_msg = f"Error processing selection code {selection_code}: {str(e)}"
                 print(f"\n{error_msg}")
                 logger.error(error_msg)
                 logger.error(f"Row data: {row_dict}")
                 return index, None
         
+        print(f"\nInitializing ThreadPoolExecutor with {max_workers} workers...")
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            print("\nSubmitting tasks to executor...")
             futures = {
                 executor.submit(process_row, index, row): index
-                for index, row in df.iterrows()
+                for index, row in records_to_process
             }
             
-            with get_progress_bar(total=len(df), desc="Processing", iterable=as_completed(futures)) as pbar:
+            print("\nStarting progress tracking...")
+            with get_progress_bar(total=len(records_to_process), desc="Processing", iterable=as_completed(futures)) as pbar:
                 for future in pbar:
                     try:
-                        index, result = future.result()
+                        print("\nWaiting for next result...")
+                        index, result = future.result(timeout=300)  # 5-minute timeout per record
                         results[index] = result
-                        metrics.processed_rows += 1
-                        if result is None:
+                        
+                        if result is not None:
+                            metrics.processed_rows += 1
+                            processed_count += 1
+                            
+                            # Update the DataFrame with the result
+                            df.at[index, output_column] = result
+                            
+                            # Save the processed row immediately
+                            row_to_save = df.iloc[index]
+                            print(f"\nSaving record {processed_count} to CSV and database...")
+                            save_single_record_to_csv(row_to_save, "output.csv", is_first_record=(processed_count == 1))
+                            save_single_record_to_sqlite(row_to_save)
+                            
+                            print(f"\nSuccessfully saved record {processed_count}")
+                        else:
                             metrics.failed_rows += 1
-                            print(f"\nFailed to process row {index + 1}")
+                            print(f"\nFailed to process selection code: {df.iloc[index]['selection_code']}")
+                            
+                    except TimeoutError:
+                        print(f"\nTimeout while processing selection code: {df.iloc[index]['selection_code']}")
+                        metrics.failed_rows += 1
                     except Exception as e:
                         print(f"\nUnexpected error in future: {str(e)}")
                         metrics.failed_rows += 1
         
-        df[output_column] = results
         end_time = time.time()
         metrics.total_processing_time = end_time - start_time
         
         print(f"\nProcessing completed in {metrics.total_processing_time:.2f} seconds:")
-        print(f"- Rows processed: {metrics.processed_rows}")
-        print(f"- Rows failed: {metrics.failed_rows}")
-        print(f"- Average time per row: {metrics.total_processing_time/max(1,metrics.processed_rows):.2f} seconds")
+        print(f"- Total records: {len(df)}")
+        print(f"- Already processed: {skipped_count}")
+        print(f"- Newly processed: {processed_count}")
+        print(f"- Failed: {metrics.failed_rows}")
+        print(f"- Average time per new record: {metrics.total_processing_time/max(1,processed_count):.2f} seconds")
         
         if metrics.failed_rows > 0:
-            print("\nWARNING: Some rows failed to process. Check the logs above for details.")
+            print("\nWARNING: Some records failed to process. Check the logs above for details.")
         
         return df
         
@@ -499,22 +659,19 @@ if __name__ == "__main__":
         print("Starting parallel DataFrame processing...")
         processed_df = process_dataframe_parallel(
             test_df,
-            output_column="extended_description",  # Using the desired column name
+            output_column="extended_description",
             max_workers=3,
             requests_per_minute=30
         )
         
-        # Save results to CSV
-        csv_path = "output.csv"
-        save_to_csv(processed_df, csv_path)
-        
-        # Save results to SQLite
-        db_name = "selection_descriptions.db"
-        save_to_sqlite(processed_df, db_name)
-        
-        print("\nResults saved to:")
-        print("- CSV:", get_absolute_path(csv_path))
-        print("- SQLite:", get_absolute_path(db_name))
+        # Print missing metadata files if any
+        if missing_metadata_files:
+            print("\nMissing metadata files:")
+            print("=" * 50)
+            for code in sorted(missing_metadata_files):
+                print(f"- {code}")
+            print("=" * 50)
+            print(f"Total missing files: {len(missing_metadata_files)}")
         
     except Exception as e:
         print(f"Application error: {e}")
