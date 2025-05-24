@@ -1,18 +1,120 @@
+module_description = r"""Metadata Schema Extraction for Selection Descriptions
+
+This module provides functionality to extract and save metadata schemas for selection descriptions
+from the CSU data catalog API, with support for parallel processing and robust error handling.
+
+Key Features:
+-------------
+1. Parallel Processing: Uses ThreadPoolExecutor for concurrent API calls with configurable workers.
+2. Rate Limiting: Implements request rate limiting to respect API constraints.
+3. Error Handling: 
+   - Comprehensive error handling with detailed logging
+   - Both console and file logging
+   - Error type categorization
+   - Graceful continuation on individual failures
+4. Progress Tracking: 
+   - Real-time progress bar
+   - Detailed processing statistics
+   - Success/failure rate calculation
+5. Retry Logic: Implements exponential backoff for failed requests
+6. Result Tracking: Maintains detailed processing results in CSV format
+
+Processing Flow:
+--------------
+1. Initialization:
+   - Sets up logging (both file and console)
+   - Validates configuration parameters
+   - Creates output directories
+   - Initializes metrics tracking
+
+2. Dataset Collection:
+   - Fetches all datasets from CSU API
+   - Validates dataset responses
+   - Collects selection codes for each dataset
+   - Handles API errors gracefully
+
+3. Processing Preparation:
+   - Creates list of selections to process
+   - Calculates rate limiting parameters
+   - Prepares for parallel processing
+   - Initializes progress tracking
+
+4. Parallel Processing:
+   - Uses ThreadPoolExecutor for concurrent processing
+   - Implements rate limiting between requests
+   - Processes each selection:
+     a. Checks if schema already exists
+     b. Fetches metadata from API
+     c. Extracts and validates metadata
+     d. Saves to JSON file
+   - Implements timeout handling
+
+5. Result Storage:
+   - Saves each processed schema to JSON file
+   - Maintains UTF-8 encoding
+   - Handles file system errors
+   - Tracks processing status
+
+6. Completion:
+   - Calculates and displays processing statistics:
+     - Total selections processed
+     - Success/failure counts
+     - Skipped (already existing) counts
+     - Success rate percentage
+   - Reports error distribution
+   - Saves detailed results to CSV
+   - Lists failed selections
+
+Usage Example:
+-------------
+# Run the metadata extraction process
+python get_metadata_schemas_all_selections.py
+
+Required Environment:
+-------------------
+- Python 3.7+
+- Internet connection to CSU API
+- Write permissions for output directory
+
+Output Files:
+------------
+1. metadata/schemas/*_schema.json: Individual schema files
+2. metadata_extraction_results.csv: Detailed processing results
+3. metadata_extraction.log: Detailed processing log with timestamps
+
+Error Handling:
+-------------
+- Individual selection failures don't stop processing
+- All errors are logged to both console and file
+- Failed selections are tracked in results
+- API errors are handled with retry logic
+- File system errors are handled gracefully
+- Network timeouts are handled with configurable timeout"""
+
+#===============================================================================
+# IMPORTS
+#===============================================================================
+# Standard library imports
 import json
 import requests
 import time
 from pathlib import Path
-from tqdm import tqdm
 from typing import Optional, Dict, Any, List, Tuple
 import logging
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, RetryError
-import pandas as pd
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
-import os
 from datetime import datetime
+import os
 import sys
 
+# Third-party imports
+import pandas as pd
+from tqdm import tqdm
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type, RetryError
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
+
+#===============================================================================
+# CONFIGURATION AND SETUP
+#===============================================================================
 # Set up logging with more detailed format
 logging.basicConfig(
     level=logging.INFO,
@@ -28,8 +130,21 @@ logger = logging.getLogger(__name__)
 # Configuration
 @dataclass
 class Config:
-    """Configuration class for processing."""
-    max_workers: int = 10
+    """Configuration class for metadata extraction process.
+    
+    This class defines the configuration parameters for the metadata extraction process,
+    including parallel processing settings, rate limiting, and retry behavior.
+    
+    Attributes:
+        max_workers (int): Number of parallel processing threads
+        requests_per_minute (int): Maximum API requests per minute
+        retry_attempts (int): Number of retry attempts for failed requests
+        retry_min_wait (int): Minimum wait time between retries in seconds
+        retry_max_wait (int): Maximum wait time between retries in seconds
+        timeout (int): Request timeout in seconds
+        selection_batch_size (int): Number of selections to process in each batch
+    """
+    max_workers: int = 30
     requests_per_minute: int = 60
     retry_attempts: int = 2
     retry_min_wait: int = 1
@@ -38,14 +153,25 @@ class Config:
     selection_batch_size: int = 50
     
     def __post_init__(self):
-        """Validate configuration parameters."""
+        """Validate configuration parameters.
+        
+        Raises:
+            ValueError: If any configuration parameter is invalid.
+        """
         if self.max_workers < 1:
             raise ValueError("max_workers must be at least 1")
         if self.requests_per_minute < 1:
             raise ValueError("requests_per_minute must be at least 1")
+        if self.retry_attempts < 1:
+            raise ValueError("retry_attempts must be at least 1")
+        if self.timeout < 1:
+            raise ValueError("timeout must be at least 1 second")
 
 CONFIG = Config()
 
+#===============================================================================
+# CORE FUNCTIONS
+#===============================================================================
 @retry(
     stop=stop_after_attempt(CONFIG.retry_attempts),
     wait=wait_exponential(multiplier=1, min=CONFIG.retry_min_wait, max=CONFIG.retry_max_wait),
@@ -53,7 +179,21 @@ CONFIG = Config()
     before_sleep=lambda retry_state: logger.warning(f"Retrying after error. Attempt {retry_state.attempt_number} of {CONFIG.retry_attempts}")
 )
 def fetch_json(url: str) -> Optional[Dict[str, Any]]:
-    """Fetch JSON data with retry logic and better error handling."""
+    """Fetch JSON data from URL with retry logic and error handling.
+    
+    This function implements retry logic with exponential backoff for failed requests.
+    It handles various types of errors and provides detailed logging.
+    
+    Args:
+        url (str): The URL to fetch JSON data from.
+        
+    Returns:
+        Optional[Dict[str, Any]]: The JSON data if successful, None otherwise.
+        
+    Raises:
+        requests.exceptions.RequestException: If the request fails after all retries.
+        json.JSONDecodeError: If the response is not valid JSON.
+    """
     try:
         logger.debug(f"Fetching URL: {url}")
         response = requests.get(url, timeout=CONFIG.timeout)
@@ -71,7 +211,20 @@ def fetch_json(url: str) -> Optional[Dict[str, Any]]:
         return None
 
 def safe_fetch_json(url: str) -> Tuple[Optional[Dict[str, Any]], Optional[str], Optional[str]]:
-    """Wrapper around fetch_json that handles RetryError gracefully."""
+    """Wrapper around fetch_json that handles all types of errors gracefully.
+    
+    This function provides a safe way to fetch JSON data by handling all possible
+    error types and returning them in a structured way.
+    
+    Args:
+        url (str): The URL to fetch JSON data from.
+        
+    Returns:
+        Tuple[Optional[Dict[str, Any]], Optional[str], Optional[str]]: A tuple containing:
+            - The JSON data if successful, None otherwise
+            - The error type if an error occurred, None otherwise
+            - The error message if an error occurred, None otherwise
+    """
     try:
         return fetch_json(url), None, None
     except RetryError as e:
@@ -84,7 +237,17 @@ def safe_fetch_json(url: str) -> Tuple[Optional[Dict[str, Any]], Optional[str], 
         return None, "UnexpectedError", str(e)
 
 def extract_metadata(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Extract metadata schema from the data with validation."""
+    """Extract and validate metadata schema from the data.
+    
+    This function extracts metadata from the API response and validates
+    that all required fields are present and non-empty.
+    
+    Args:
+        data (Dict[str, Any]): The data to extract metadata from.
+        
+    Returns:
+        Optional[Dict[str, Any]]: The extracted metadata if valid, None otherwise.
+    """
     try:
         # Define required fields
         required_fields = ["version", "class", "href", "label", "source", "id"]
@@ -121,7 +284,21 @@ def extract_metadata(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         return None
 
 def save_metadata(metadata: Dict[str, Any], output_file: Path) -> bool:
-    """Save metadata to file with error handling."""
+    """Save metadata to JSON file with proper formatting.
+    
+    This function saves metadata to a JSON file with:
+    - UTF-8 encoding
+    - Proper indentation
+    - Error handling
+    - Logging
+    
+    Args:
+        metadata (Dict[str, Any]): The metadata to save.
+        output_file (Path): The file to save the metadata to.
+        
+    Returns:
+        bool: True if successful, False otherwise.
+    """
     try:
         with open(output_file, 'w', encoding='utf-8', newline='\n') as f:
             json.dump(metadata, f, ensure_ascii=False, indent=4)
@@ -131,7 +308,17 @@ def save_metadata(metadata: Dict[str, Any], output_file: Path) -> bool:
         return False
 
 def fetch_selections_for_dataset(dataset_id: str) -> List[Tuple[str, str]]:
-    """Fetch selections for a single dataset with error handling."""
+    """Fetch selections for a single dataset with error handling.
+    
+    This function fetches all selections for a given dataset and handles
+    various types of errors that might occur during the process.
+    
+    Args:
+        dataset_id (str): The ID of the dataset to fetch selections for.
+        
+    Returns:
+        List[Tuple[str, str]]: List of tuples containing (selection_id, dataset_id).
+    """
     selections = []
     selections_url = f"https://data.csu.gov.cz/api/katalog/v1/sady/{dataset_id}/vybery"
     
@@ -153,7 +340,21 @@ def fetch_selections_for_dataset(dataset_id: str) -> List[Tuple[str, str]]:
     return selections
 
 def process_selection(selection_id: str, dataset_id: str) -> Dict[str, Any]:
-    """Process a single selection and return its status."""
+    """Process a single selection and return its status.
+    
+    This function processes a selection by:
+    1. Checking if the schema already exists
+    2. Fetching metadata from the API
+    3. Extracting and validating metadata
+    4. Saving to a JSON file
+    
+    Args:
+        selection_id (str): The ID of the selection to process.
+        dataset_id (str): The ID of the dataset the selection belongs to.
+        
+    Returns:
+        Dict[str, Any]: A dictionary containing the processing status and details.
+    """
     metadata_url = f"https://data.csu.gov.cz/api/dotaz/v1/data/vybery/{selection_id}"
     output_file = Path('metadata/schemas') / f"{selection_id}_schema.json"
     
@@ -221,6 +422,15 @@ def process_selection(selection_id: str, dataset_id: str) -> Dict[str, Any]:
     return result
 
 def main():
+    """Main function to orchestrate the metadata extraction process.
+    
+    This function:
+    1. Sets up the environment
+    2. Fetches all datasets
+    3. Collects selections
+    4. Processes selections in parallel
+    5. Generates and saves results
+    """
     logger.info("Starting metadata extraction process")
     
     # Create schemas directory if it doesn't exist

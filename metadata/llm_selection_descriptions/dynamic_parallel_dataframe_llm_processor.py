@@ -1,74 +1,133 @@
-module_description = r"""Parallel DataFrame Processing with Azure OpenAI
+module_description = r"""Parallel DataFrame Processing with Azure OpenAI for Selection Descriptions
 
-This module provides functionality to process pandas DataFrames in parallel using Azure OpenAI.
+This module provides functionality to process selection descriptions in parallel using Azure OpenAI,
+with support for incremental processing, dual storage (CSV + SQLite), and robust error handling.
 
 Key Features:
 -------------
-1. Fully Dynamic Column Handling: All DataFrame columns are passed as parameters to the prompt template.
-2. Parallel Processing: Uses ThreadPoolExecutor for concurrent API calls.
+1. Incremental Processing: Skips already processed selection codes using SQLite tracking.
+2. Parallel Processing: Uses ThreadPoolExecutor for concurrent API calls with configurable workers.
 3. Rate Limiting: Implements request rate limiting to respect API constraints.
-4. Error Handling: Retries failed requests and captures errors.
-5. Metrics Collection: Tracks processing time and success/failure rates.
-6. External Template Loading: Loads prompt templates from external text files with UTF-8 support.
+4. Dual Storage: Saves results to both CSV (human-readable) and SQLite (structured querying).
+5. Error Handling: 
+   - Comprehensive error handling with detailed logging
+   - Both console and file logging
+   - Error metrics tracking
+   - Graceful continuation on individual record failures
+6. Progress Tracking: 
+   - Real-time progress bar
+   - Detailed processing statistics
+   - Visual separators in output
+7. External Template Support: Loads prompt templates from external text files with UTF-8 support.
 
-How it works:
-------------
-1. Input: Takes a DataFrame where column names match placeholders in the prompt template.
-2. Configuration: Uses environment variables for Azure OpenAI setup.
-3. Processing:
-   - Each row is processed as a separate API call.
-   - All columns are passed dynamically to the prompt template.
-   - Results are collected and merged back into the DataFrame.
-4. Output: Returns original DataFrame with new response column.
+Processing Flow:
+--------------
+1. Initialization:
+   - Loads environment variables (AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY)
+   - Loads prompt template from file
+   - Validates configuration parameters
+   - Sets up logging (both file and console) and metrics tracking
+
+2. Data Loading:
+   - Loads input DataFrame from CSV file
+   - Joins with corresponding JSON schema files
+   - Validates required columns (selection_code, short_description)
+   - Tracks missing schema files for reporting
+
+3. Processing Preparation:
+   - Checks each selection_code against SQLite database
+   - Skips already processed codes
+   - Creates list of records to process
+   - Calculates rate limiting parameters
+   - Pre-allocates results list for order preservation
+
+4. Parallel Processing:
+   - Uses ThreadPoolExecutor for concurrent processing
+   - Implements rate limiting between requests
+   - Processes each record:
+     a. Formats prompt with selection data
+     b. Calls Azure OpenAI API (single attempt, no retries)
+     c. Handles responses and errors
+     d. Saves results incrementally
+   - Implements 5-minute timeout per record
+
+5. Result Storage:
+   - Saves each processed record to:
+     a. CSV file with visual separators (100 '=' characters × 3)
+     b. SQLite database with timestamps
+   - Updates progress and metrics
+   - Handles errors without stopping processing
+   - Maintains UTF-8 encoding and proper newlines
+
+6. Completion:
+   - Calculates and displays processing statistics:
+     - Total processing time
+     - Success/failure counts
+     - Average time per record
+     - Success rate percentage
+   - Reports any failed records
+   - Lists missing metadata files
+   - Returns updated DataFrame
 
 Usage Example:
 -------------
-# Create a template file with placeholders
-# File: PROMPT_TEMPLATE.txt
-# Content:
-# You are a helpful assistant.
-# Topic: {topic}
-# Task: {task}
-# Style: {style}
-# Additional Context: {context}
-
-# Create DataFrame with matching column names
-test_df = pd.DataFrame({
-    'topic': ['Quantum Computing', 'AI'],
-    'task': ['Explain basics', 'Compare with humans'],
-    'style': ['beginner-friendly', 'technical'],
-    'context': ['high school', 'graduates']
-})
+# Load and process selection descriptions
+from dynamic_parallel_dataframe_llm_processor import process_dataframe_parallel
 
 # Process the DataFrame
 result_df = process_dataframe_parallel(
-    test_df,
-    output_column='response',
+    input_df,
+    output_column='extended_description',
     max_workers=3,
     requests_per_minute=30
-)"""
+)
+
+Required Files:
+-------------
+1. PROMPT_TEMPLATE.txt: Contains the prompt template with placeholders
+2. selection_descriptions.csv: Input CSV with selection codes and descriptions
+3. schemas/*_schema.json: JSON schema files for each selection code
+
+Output Files:
+------------
+1. output.csv: Human-readable results with visual separators
+2. selection_descriptions.db: SQLite database with processed records
+3. metadata_extraction.log: Detailed processing log with timestamps
+
+Error Handling:
+-------------
+- Individual record failures don't stop processing
+- All errors are logged to both console and file
+- Failed records are tracked in metrics
+- Missing schema files are reported at completion
+- Database connection errors are handled gracefully
+- API timeouts are handled with 5-minute limit per record"""
 
 #===============================================================================
 # IMPORTS
 #===============================================================================
-import pandas as pd
+# Standard library imports
 import os
-from dotenv import load_dotenv
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from tenacity import retry, stop_after_attempt, wait_exponential
-import time
-import logging
-from typing import Dict, Any
-from dataclasses import dataclass
-from datetime import datetime
-from functools import wraps
-import tqdm as tqdm_module
 import sys
+import time
+import json
 import csv
+import logging
+from datetime import datetime
 from pathlib import Path
-import sqlite3
+from typing import Dict, Any, Optional
+from dataclasses import dataclass, field
+from functools import wraps
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-# Setup base directory for imports
+# Third-party imports
+import pandas as pd
+import sqlite3
+from dotenv import load_dotenv
+from tenacity import retry, stop_after_attempt, wait_exponential
+import tqdm as tqdm_module
+
+# Local imports
 try:
     BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
@@ -78,7 +137,7 @@ except NameError:
 sys.path.append(str(BASE_DIR))
 
 # Import the get_azure_llm function
-from my_agent.utils.models import get_azure_llm
+from my_agent.utils.models import get_azure_llm, get_azure_llm_4_1
 
 #===============================================================================
 # CUSTOM EXCEPTIONS
@@ -94,42 +153,48 @@ class ProcessingError(Exception):
 #===============================================================================
 # CONFIGURATION AND SETUP
 #===============================================================================
-# Simplified logging setup
-logging.basicConfig(level=logging.CRITICAL, format='%(message)s')
+# Configure logging with minimal output
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
-# Load and validate environment in one step
+# Load and validate environment variables
 load_dotenv()
-for var in ['AZURE_OPENAI_ENDPOINT', 'AZURE_OPENAI_API_KEY']:
-    if not os.getenv(var):
-        raise EnvironmentError(f"Missing required environment variable: {var}")
+required_env_vars = ['AZURE_OPENAI_ENDPOINT', 'AZURE_OPENAI_API_KEY']
+missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+if missing_vars:
+    raise EnvironmentError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
-# Consolidated constants
+# Consolidated configuration with rate limiting and processing parameters
 CONFIG = {
-    'MAX_WORKERS': 30,
+    'MAX_WORKERS': 15,  # Number of parallel processing threads
     'REQUESTS_PER_MINUTE': {
-        'DEFAULT': 60,
-        'MIN': 1,
-        'MAX': 100
+        'DEFAULT': 30,  # Default rate limit for API calls
+        'MIN': 1,       # Minimum allowed rate
+        'MAX': 100      # Maximum allowed rate
     },
     'CSV_SEPARATOR': ';',  # Semicolon separator for CSV files
-    'PROMPT_TEMPLATE': ""  # Will be loaded from file
+    'PROMPT_TEMPLATE': "",  # Will be loaded from file
+    'OUTPUT_COLUMN': 'extended_description',  # Default output column name
+    'PROCESS_ALL_SELECTIONS': 0,  # Set to False to process only specific selection
+    'SPECIFIC_SELECTION_CODE': "PRUM201T1"  # Only used when PROCESS_ALL_SELECTIONS is False
 }
 
-# Track missing metadata files
+# Track missing metadata files for reporting
 missing_metadata_files = []
+
+def validate_config():
+    """Validate configuration parameters."""
+    if not CONFIG['REQUESTS_PER_MINUTE']['MIN'] <= CONFIG['REQUESTS_PER_MINUTE']['DEFAULT'] <= CONFIG['REQUESTS_PER_MINUTE']['MAX']:
+        raise ConfigurationError(f"Invalid requests_per_minute: {CONFIG['REQUESTS_PER_MINUTE']['DEFAULT']}")
+    if CONFIG['MAX_WORKERS'] < 1:
+        raise ConfigurationError(f"Invalid max_workers: {CONFIG['MAX_WORKERS']}")
+
+# Validate configuration
+validate_config()
 
 #===============================================================================
 # HELPER FUNCTIONS
 #===============================================================================
-def get_script_directory() -> str:
-    """Get the absolute path of the directory containing this script."""
-    return os.path.dirname(os.path.abspath(__file__))
-
-def get_absolute_path(relative_path: str) -> str:
-    """Convert relative path to absolute path based on script location."""
-    return os.path.join(get_script_directory(), relative_path)
-
 def load_prompt_template_from_txt(txt_path: str = "PROMPT_TEMPLATE.txt") -> str:
     """Load prompt template from a text file.
 
@@ -143,8 +208,8 @@ def load_prompt_template_from_txt(txt_path: str = "PROMPT_TEMPLATE.txt") -> str:
         ConfigurationError: If the file cannot be loaded or is empty.
     """
     try:
-        absolute_path = get_absolute_path(txt_path)
-        with open(absolute_path, 'r', encoding='utf-8') as file:
+        template_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / txt_path
+        with open(template_path, 'r', encoding='utf-8') as file:
             template = file.read()
             if not template:
                 raise ConfigurationError("Template file is empty")
@@ -165,8 +230,8 @@ def load_dataframe_from_csv_and_jsons(csv_path: str) -> pd.DataFrame:
         ConfigurationError: If the file cannot be loaded or is empty.
     """
     try:
-        absolute_path = BASE_DIR / csv_path
-        with open(absolute_path, 'r', encoding='utf-8') as csvfile:
+        csv_file_path = BASE_DIR / csv_path
+        with open(csv_file_path, 'r', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile, delimiter=CONFIG['CSV_SEPARATOR'])
             header = next(reader)
             data = list(reader)
@@ -223,27 +288,6 @@ def format_system_prompt(**kwargs: Dict[str, Any]) -> str:
     except Exception as e:
         raise ValueError(f"Error formatting prompt template: {e}")
 
-def get_progress_bar(iterable, total: int, desc: str):
-    """Get a simple progress bar suitable for CLI.
-
-    Args:
-        iterable: The iterable to track progress on.
-        total (int): The total number of items in the iterable.
-        desc (str): Description of the progress.
-
-    Returns:
-        tqdm_module.tqdm: A tqdm progress bar instance.
-    """
-    return tqdm_module.tqdm(
-        iterable, 
-        total=total, 
-        desc=desc,
-        leave=True,  # Keep the progress bar
-        ncols=100,   # Fixed width
-        bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]',
-        file=sys.stdout
-    )
-
 def save_to_csv(df: pd.DataFrame, filename: str):
     """Save DataFrame to CSV file with visual separators between rows.
 
@@ -283,7 +327,7 @@ def save_to_sqlite(df: pd.DataFrame, db_name: str = "selection_descriptions.db")
         Exception: If there is an error saving to the database.
     """
     try:
-        db_path = BASE_DIR / db_name
+        db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / db_name
         conn = sqlite3.connect(str(db_path))
         
         # Add timestamp column to DataFrame before saving
@@ -299,68 +343,71 @@ def save_to_sqlite(df: pd.DataFrame, db_name: str = "selection_descriptions.db")
         raise
 
 #===============================================================================
-# CONFIGURATION
-#===============================================================================
-@dataclass
-class Config:
-    """Configuration class for processing."""
-    max_workers: int
-    requests_per_minute: int
-    
-    def __post_init__(self):
-        """Validate configuration parameters after initialization."""
-        if not CONFIG['REQUESTS_PER_MINUTE']['MIN'] <= self.requests_per_minute <= CONFIG['REQUESTS_PER_MINUTE']['MAX']:
-            raise ConfigurationError(f"Invalid requests_per_minute: {self.requests_per_minute}")
-        if self.max_workers < 1:
-            raise ConfigurationError(f"Invalid max_workers: {self.max_workers}")
-
-# Create global config with new CONFIG dictionary
-CONFIG_INSTANCE = Config(
-    max_workers=CONFIG['MAX_WORKERS'],
-    requests_per_minute=CONFIG['REQUESTS_PER_MINUTE']['DEFAULT']
-)
-
-#===============================================================================
 # MONITORING AND METRICS
 #===============================================================================
+@dataclass
 class Metrics:
-    """Simple metrics collection."""
-    def __init__(self):
-        """Initialize metrics."""
-        self.start_time = time.time()
-        self.processed_rows = 0
-        self.failed_rows = 0
-        self.total_processing_time = 0
-        
+    """Simple metrics collection for tracking processing statistics.
+    
+    This class tracks various metrics during the processing of records:
+    - Processing time
+    - Success/failure counts
+    - Performance statistics
+    - Failed records with reasons
+    
+    Attributes:
+        start_time (float): Timestamp when processing started.
+        processed_rows (int): Number of successfully processed rows.
+        failed_rows (int): Number of rows that failed processing.
+        total_processing_time (float): Total time taken for processing.
+        failed_records (list): List of tuples containing (selection_code, error_message) for failed records.
+    """
+    start_time: float = field(default_factory=time.time)
+    processed_rows: int = 0
+    failed_rows: int = 0
+    total_processing_time: float = 0
+    failed_records: list = field(default_factory=list)
+    
     def to_dict(self) -> Dict[str, Any]:
         """Convert metrics to a dictionary.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the metrics.
+            Dict[str, Any]: A dictionary containing the metrics with formatted timestamps
+                           and calculated averages.
         """
         return {
             "start_time": datetime.fromtimestamp(self.start_time).isoformat(),
             "processed_rows": self.processed_rows,
             "failed_rows": self.failed_rows,
             "total_processing_time": self.total_processing_time,
-            "average_time_per_row": self.total_processing_time / max(1, self.processed_rows)
+            "average_time_per_row": self.total_processing_time / max(1, self.processed_rows),
+            "success_rate": (self.processed_rows / max(1, self.processed_rows + self.failed_rows)) * 100,
+            "failed_records": self.failed_records
         }
+    
+    def update_processing_time(self) -> None:
+        """Update the total processing time based on the current time."""
+        self.total_processing_time = time.time() - self.start_time
 
-def log_execution_time(func):
-    """Decorator to log execution time of functions."""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.time()
-        try:
-            result = func(*args, **kwargs)
-            execution_time = time.time() - start_time
-            logger.debug(f"{func.__name__} executed in {execution_time:.2f} seconds")
-            return result
-        except Exception as e: 
-            execution_time = time.time() - start_time
-            logger.error(f"{func.__name__} failed after {execution_time:.2f} seconds: {e}")
-            raise
-    return wrapper
+def handle_processing_error(error: Exception, selection_code: str, metrics: Metrics) -> None:
+    """Handle processing errors consistently.
+
+    This function provides consistent error handling by:
+    1. Formatting error messages uniformly
+    2. Logging to both console and file
+    3. Updating metrics
+    4. Ensuring proper error propagation
+
+    Args:
+        error (Exception): The error that occurred.
+        selection_code (str): The selection code being processed.
+        metrics (Metrics): The metrics object to update.
+    """
+    error_msg = f"Error processing selection code {selection_code}: {str(error)}"
+    print(f"\n{error_msg}")
+    logger.error(error_msg)
+    metrics.failed_rows += 1
+    metrics.failed_records.append((selection_code, str(error)))
 
 #===============================================================================
 # CORE PROCESSING FUNCTIONS
@@ -371,37 +418,38 @@ def log_execution_time(func):
 #     reraise=True
 # )
 def get_azure_llm_response(**kwargs: Dict[str, Any]) -> str:
-    """Get response from Azure OpenAI using the configured LLM.
-
-    Args:
-        **kwargs: Keyword arguments to pass to the prompt template.
-
-    Returns:
-        str: The content of the response from Azure OpenAI.
-
-    Raises:
-        Exception: If there is an error during the API call after all retries are exhausted.
-    """
-    request_id = f"req_{int(time.time()*1000)}"  # Unique request ID
-    formatted_prompt = format_system_prompt(**kwargs)  # Format prompt before try block
+    """Get response from Azure OpenAI using the configured LLM."""
+    request_id = f"req_{int(time.time()*1000)}"
+    formatted_prompt = format_system_prompt(**kwargs)
     
     try:
         print(f"\nInitializing LLM connection...")
-        # Use the get_azure_llm function with default temperature
-        llm = get_azure_llm()
+        llm = get_azure_llm_4_1()
+        print("LLM initialized successfully")
         
-        # Format the message for LangChain
         messages = [{"role": "user", "content": formatted_prompt}]
+        print("Messages prepared")
         
         print(f"\nMaking API call...")
-        # Get response using LangChain's invoke method
         response = llm.invoke(messages)
         print(f"\nReceived response from API")
-        return response.content
+        print("Processing response content...")
+        
+        # Clean the response content
+        result = response.content.strip()
+        # Remove any markdown code block markers
+        result = result.replace('```', '')
+        # Remove any leading/trailing whitespace
+        result = result.strip()
+        
+        print("Response content processed successfully")
+        return result
+        
     except Exception as e:
-        logger.error(f"Error in LLM request {request_id}: {str(e)}")
-        logger.error(f"Attempting retry with prompt: {formatted_prompt[:200]}...")  # Log first 200 chars of prompt
-        raise  # Re-raise the exception for the retry decorator to handle
+        error_msg = f"Error in LLM request {request_id}: {str(e)}"
+        print(f"\n{error_msg}")
+        print(f"Attempting retry with prompt: {formatted_prompt[:200]}...")
+        raise
 
 def check_selection_code_exists(selection_code: str, db_name: str = "selection_descriptions.db") -> bool:
     """Check if a selection code already exists in the database.
@@ -411,95 +459,259 @@ def check_selection_code_exists(selection_code: str, db_name: str = "selection_d
         db_name (str): The name of the SQLite database file.
 
     Returns:
-        bool: True if the selection code exists, False otherwise.
+        bool: True if the selection code exists and has a non-empty extended_description,
+              False otherwise.
     """
     try:
         db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / db_name
-        conn = sqlite3.connect(str(db_path))
-        cursor = conn.cursor()
-        
-        # Check if table exists
-        cursor.execute("""
-            SELECT name FROM sqlite_master 
-            WHERE type='table' AND name='selection_descriptions'
-        """)
-        if not cursor.fetchone():
-            conn.close()
-            return False
+        with sqlite3.connect(str(db_path)) as conn:
+            cursor = conn.cursor()
             
-        # Check if selection code exists and has a non-empty extended_description
-        cursor.execute("""
-            SELECT 1 FROM selection_descriptions 
-            WHERE selection_code = ? AND extended_description IS NOT NULL AND extended_description != ''
-        """, (selection_code,))
-        
-        exists = cursor.fetchone() is not None
-        conn.close()
-        return exists
+            # Check if table exists
+            cursor.execute("""
+                SELECT name FROM sqlite_master 
+                WHERE type='table' AND name='selection_descriptions'
+            """)
+            if not cursor.fetchone():
+                return False
+                
+            # Check if selection code exists and has a non-empty extended_description
+            cursor.execute("""
+                SELECT 1 FROM selection_descriptions 
+                WHERE selection_code = ? AND extended_description IS NOT NULL AND extended_description != ''
+            """, (selection_code,))
+            
+            return cursor.fetchone() is not None
     except Exception as e:
         logger.error(f"Error checking selection code in database: {e}")
         return False
 
 def save_single_record_to_csv(row: pd.Series, filename: str, is_first_record: bool = False):
-    """Save a single record to CSV file.
+    """Save a single record to CSV file with visual separators.
+
+    This function saves a record to CSV with:
+    - Header row for first record only
+    - Visual separator (100 '=' characters repeated 3 times)
+    - UTF-8 encoding
+    - Proper newline handling
 
     Args:
         row (pd.Series): The row to save.
         filename (str): The filename to save to.
         is_first_record (bool): Whether this is the first record being saved.
+                              If True, writes the header row.
     """
     try:
-        # Use BASE_DIR with metadata folder
-        metadata_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / filename
+        csv_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / filename
         mode = 'w' if is_first_record else 'a'
         
-        with open(metadata_path, mode, encoding='utf-8', newline='') as f:
+        with open(csv_path, mode, encoding='utf-8', newline='') as f:
             if is_first_record:
-                # Write header
-                f.write(CONFIG['CSV_SEPARATOR'].join(row.index) + '\n')  
+                f.write(CONFIG['CSV_SEPARATOR'].join(row.index) + '\n')
             
-            # Write row with separator
             f.write(CONFIG['CSV_SEPARATOR'].join(str(val) for val in row) + '\n')
             f.write('\n' + '=' * 100 + '\n' + '=' * 100 + '\n' + '=' * 100 + '\n')
             
     except Exception as e:
-        logger.error(f"Error saving single record to CSV: {e}")
+        error_msg = f"Error saving single record to CSV: {str(e)}"
+        logger.error(error_msg)
         raise
 
 def save_single_record_to_sqlite(row: pd.Series, db_name: str = "selection_descriptions.db"):
-    """Save a single record to SQLite database.
+    """Save a single record to SQLite database with upsert (merge) logic."""
+    try:
+        db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / db_name
+        print(f"\nAttempting to save to database: {db_path}")
+        
+        with sqlite3.connect(str(db_path)) as conn:
+            # Enable foreign keys and set isolation level
+            conn.execute("PRAGMA foreign_keys = ON")
+            conn.isolation_level = None  # Enable autocommit mode
+            
+            cursor = conn.cursor()
+            
+            # Check if table exists
+            cursor.execute(f"""
+                SELECT name FROM sqlite_master 
+                WHERE type='table' AND name='selection_descriptions'
+            """)
+            table_exists = cursor.fetchone() is not None
+            print(f"Table exists: {table_exists}")
+
+            if not table_exists:
+                # Create new table with proper constraints
+                conn.execute(f"""
+                    CREATE TABLE selection_descriptions (
+                        selection_code TEXT PRIMARY KEY,
+                        short_description TEXT,
+                        selection_schema_json TEXT,
+                        extended_description TEXT,
+                        processed_at TEXT
+                    )
+                """)
+                print("Created new selection_descriptions table")
+            else:
+                # Check if selection_code is already a PRIMARY KEY
+                cursor.execute("PRAGMA table_info(selection_descriptions)")
+                columns = cursor.fetchall()
+                selection_code_is_pk = any(col[1] == 'selection_code' and col[5] == 1 for col in columns)
+                print(f"Selection code is PRIMARY KEY: {selection_code_is_pk}")
+                
+                if not selection_code_is_pk:
+                    print("Recreating table with proper PRIMARY KEY constraint...")
+                    # Drop temporary table if it exists
+                    conn.execute("DROP TABLE IF EXISTS selection_descriptions_new")
+                    print("Dropped temporary table if it existed")
+                    
+                    # Create temporary table with correct structure
+                    conn.execute("""
+                        CREATE TABLE selection_descriptions_new (
+                            selection_code TEXT PRIMARY KEY,
+                            short_description TEXT,
+                            selection_schema_json TEXT,
+                            extended_description TEXT,
+                            processed_at TEXT
+                        )
+                    """)
+                    print("Created new temporary table")
+                    
+                    # Copy data from old table to new table, keeping only the most recent record for each selection_code
+                    conn.execute("""
+                        INSERT INTO selection_descriptions_new 
+                        SELECT selection_code, short_description, selection_schema_json, 
+                               extended_description, processed_at 
+                        FROM (
+                            SELECT *,
+                                   ROW_NUMBER() OVER (PARTITION BY selection_code ORDER BY processed_at DESC) as rn
+                            FROM selection_descriptions
+                        ) ranked
+                        WHERE rn = 1
+                    """)
+                    print("Copied data to temporary table")
+                    
+                    # Drop old table and rename new one
+                    conn.execute("DROP TABLE selection_descriptions")
+                    conn.execute("ALTER TABLE selection_descriptions_new RENAME TO selection_descriptions")
+                    print("Table recreated with proper PRIMARY KEY constraint")
+            
+            # Now proceed with the upsert operation
+            row_dict = row.to_dict()
+            row_dict['processed_at'] = datetime.now().isoformat()
+            selection_code = row_dict['selection_code']
+            
+            print(f"\nProcessing selection_code: {selection_code}")
+            
+            # Start transaction
+            conn.execute("BEGIN TRANSACTION")
+            
+            try:
+                # First check if record exists
+                cursor.execute("SELECT selection_code FROM selection_descriptions WHERE selection_code = ?", (selection_code,))
+                existing = cursor.fetchone()
+                print(f"Existing record check: {'Found' if existing else 'Not found'}")
+                
+                # Prepare the data with proper parameter binding
+                placeholders = ', '.join(['?' for _ in row_dict])
+                columns = ', '.join(row_dict.keys())
+                
+                # Use parameterized query for safety
+                cursor.execute(f"""
+                    INSERT OR REPLACE INTO selection_descriptions ({columns})
+                    VALUES ({placeholders})
+                """, list(row_dict.values()))
+                
+                # Verify the operation
+                cursor.execute("SELECT selection_code FROM selection_descriptions WHERE selection_code = ?", (selection_code,))
+                if cursor.fetchone():
+                    print(f"Successfully saved record for {selection_code}")
+                else:
+                    print(f"Failed to save record for {selection_code} - record not found after insert")
+                
+                # Commit transaction
+                conn.execute("COMMIT")
+                print("Transaction committed")
+                
+            except sqlite3.IntegrityError as e:
+                # Rollback on integrity error
+                conn.execute("ROLLBACK")
+                print(f"Integrity error: {str(e)}")
+                # Try to get more information about the error
+                cursor.execute("SELECT * FROM selection_descriptions WHERE selection_code = ?", (selection_code,))
+                if cursor.fetchone():
+                    print(f"Record for {selection_code} already exists in database")
+                raise
+            except Exception as e:
+                # Rollback on any other error
+                conn.execute("ROLLBACK")
+                print(f"Error: {str(e)}")
+                raise
+            
+    except Exception as e:
+        print(f"Error saving single record to SQLite: {e}")
+        raise
+
+def process_row(index: int, row: pd.Series, output_column: str, delay_between_requests: float, metrics: Metrics) -> tuple[int, str | None]:
+    """Process a single row of the DataFrame.
+
+    This function processes a single row by:
+    1. Displaying a visual separator with selection code
+    2. Implementing rate limiting between requests
+    3. Preparing data for LLM processing
+    4. Making the API call
+    5. Handling any errors that occur
 
     Args:
-        row (pd.Series): The row to save.
-        db_name (str): The name of the SQLite database file.
+        index (int): The index of the row.
+        row (pd.Series): The row to process.
+        output_column (str): The name of the output column.
+        delay_between_requests (float): Delay between requests in seconds.
+        metrics (Metrics): The metrics object to update with processing results.
+
+    Returns:
+        tuple[int, str | None]: The index of the row and the result, or None if an error occurred.
     """
     try:
-        # Use BASE_DIR with metadata folder
-        db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / db_name
-        conn = sqlite3.connect(str(db_path))
+        # Extract selection code and display processing header
+        selection_code = row.get('selection_code')
+        print(f"\n{'=' * 100}")
+        print(f"Starting processing for selection code: {selection_code}")
+        print(f"{'=' * 100}\n")
         
-        # Add timestamp
+        # Implement rate limiting between requests
+        if index > 0:
+            print(f"\nWaiting {delay_between_requests:.2f} seconds before processing {selection_code}...")
+            time.sleep(delay_between_requests)
+        
+        # Prepare row data for LLM processing
         row_dict = row.to_dict()
-        row_dict['processed_at'] = datetime.now().isoformat()
+        if output_column in row_dict:
+            del row_dict[output_column]  # Remove existing output to avoid conflicts
         
-        # Create DataFrame from single row
-        df = pd.DataFrame([row_dict])
-        
-        # Save to database
-        df.to_sql('selection_descriptions', conn, if_exists='append', index=False)
-        conn.close()
+        # Call LLM and get response
+        print(f"\nCalling LLM for {selection_code}...")
+        result = get_azure_llm_response(**row_dict)
+        print(f"\nSuccessfully got response for {selection_code}")
+        return index, result
         
     except Exception as e:
-        logger.error(f"Error saving single record to SQLite: {e}")
-        raise
+        # Handle and log any errors during processing
+        handle_processing_error(e, row.get('selection_code', f"Row {index}"), metrics)
+        return index, None
 
 def process_dataframe_parallel(
     df: pd.DataFrame, 
-    output_column: str = 'extended_description',
-    max_workers: int = CONFIG_INSTANCE.max_workers, 
-    requests_per_minute: int = CONFIG_INSTANCE.requests_per_minute
+    output_column: str = CONFIG['OUTPUT_COLUMN'],
+    max_workers: int = CONFIG['MAX_WORKERS'], 
+    requests_per_minute: int = CONFIG['REQUESTS_PER_MINUTE']['DEFAULT']
 ) -> pd.DataFrame:
     """Process a DataFrame in parallel using Azure OpenAI.
+
+    This function processes records in parallel while:
+    - Skipping already processed records
+    - Implementing rate limiting
+    - Saving results incrementally
+    - Providing detailed progress tracking
+    - Handling errors gracefully
 
     Args:
         df (pd.DataFrame): The DataFrame to process.
@@ -509,123 +721,125 @@ def process_dataframe_parallel(
 
     Returns:
         pd.DataFrame: The DataFrame with the results added to the specified output column.
+
+    Raises:
+        ProcessingError: If there's an error in the overall processing flow.
     """
     metrics = Metrics()
-    start_time = time.time()
     
     try:
+        # Initial check to identify which records need processing
         print("\nStarting initial check of records...")
-        # First, check which records need processing
         records_to_process = []
         skipped_count = 0
         
+        # First pass: identify records to process and skip already processed ones
         for index, row in df.iterrows():
             selection_code = row.get('selection_code')
             if not selection_code:
                 print(f"Warning: Row {index + 1} has no selection_code, skipping")
                 continue
                 
+            # Skip if this selection code has already been processed
             if check_selection_code_exists(selection_code):
                 print(f"Skipping already processed selection code: {selection_code}")
+                skipped_count += 1
+                continue
+            
+            # If processing specific selection only, skip others
+            if CONFIG['PROCESS_ALL_SELECTIONS'] == 0 and selection_code != CONFIG['SPECIFIC_SELECTION_CODE']:
+                print(f"Skipping selection code {selection_code} (not the target selection)")
                 skipped_count += 1
                 continue
                 
             records_to_process.append((index, row))
         
+        # Print initial processing summary
         print(f"\nProcessing Summary:")
         print(f"- Total records: {len(df)}")
         print(f"- Already processed: {skipped_count}")
         print(f"- To process: {len(records_to_process)}")
+        if CONFIG['PROCESS_ALL_SELECTIONS'] == 0:
+            print(f"- Processing only selection code: {CONFIG['SPECIFIC_SELECTION_CODE']}")
         
+        # Early return if nothing to process
         if not records_to_process:
             print("\nNo new records to process!")
             return df
             
         print("\nStarting processing of new records...")
+        # Pre-allocate results list to maintain order of processed records
         results = [None] * len(df)
+        # Calculate delay between requests to respect rate limiting
         delay_between_requests = 60 / requests_per_minute
         processed_count = 0
         
-        def process_row(index: int, row: pd.Series):
-            """Process a single row of the DataFrame.
-
-            Args:
-                index (int): The index of the row.
-                row (pd.Series): The row to process.
-
-            Returns:
-                Tuple[int, Optional[str]]: The index of the row and the result, or None if an error occurred.
-            """
-            try:
-                selection_code = row.get('selection_code')
-                print(f"\n{'=' * 100}")
-                print(f"Starting processing for selection code: {selection_code}")
-                print(f"{'=' * 100}\n")
-                
-                # Add delay between requests
-                if index > 0:
-                    print(f"\nWaiting {delay_between_requests:.2f} seconds before processing {selection_code}...")
-                    time.sleep(delay_between_requests)
-                
-                row_dict = row.to_dict()
-                if output_column in row_dict:
-                    del row_dict[output_column]
-                
-                print(f"\nCalling LLM for {selection_code}...")
-                result = get_azure_llm_response(**row_dict)
-                print(f"\nSuccessfully got response for {selection_code}")
-                return index, result
-                
-            except Exception as e:
-                error_msg = f"Error processing selection code {selection_code}: {str(e)}"
-                print(f"\n{error_msg}")
-                logger.error(error_msg)
-                logger.error(f"Row data: {row_dict}")
-                return index, None
-        
-        print(f"\nInitializing ThreadPoolExecutor with {max_workers} workers...")
+        # Process records in parallel using ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            print("\nSubmitting tasks to executor...")
+            # Submit all tasks to the executor, maintaining index for result mapping
             futures = {
-                executor.submit(process_row, index, row): index
+                executor.submit(
+                    process_row, 
+                    index, 
+                    row, 
+                    output_column, 
+                    delay_between_requests,
+                    metrics
+                ): index
                 for index, row in records_to_process
             }
             
-            print("\nStarting progress tracking...")
-            with get_progress_bar(total=len(records_to_process), desc="Processing", iterable=as_completed(futures)) as pbar:
-                for future in pbar:
+            # Monitor progress with tqdm
+            with tqdm_module.tqdm(
+                total=len(records_to_process),
+                desc="Processing",
+                leave=True,
+                ncols=100,
+                bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]',
+                file=sys.stdout
+            ) as pbar:
+                # Process completed futures as they come in
+                for future in as_completed(futures):
                     try:
-                        print("\nWaiting for next result...")
-                        index, result = future.result(timeout=300)  # 5-minute timeout per record
+                        # Get result with timeout to prevent hanging on unresponsive tasks
+                        # 5-minute timeout per record to handle potential API delays
+                        index, result = future.result(timeout=300)
                         results[index] = result
                         
                         if result is not None:
+                            # Successfully processed record
                             metrics.processed_rows += 1
                             processed_count += 1
                             
-                            # Update the DataFrame with the result
+                            # Update DataFrame with the new result
                             df.at[index, output_column] = result
-                            
-                            # Save the processed row immediately
                             row_to_save = df.iloc[index]
-                            print(f"\nSaving record {processed_count} to CSV and database...")
+                            
+                            # Save to both CSV and SQLite for redundancy and backup
+                            # CSV provides human-readable format, SQLite for structured querying
                             save_single_record_to_csv(row_to_save, "output.csv", is_first_record=(processed_count == 1))
                             save_single_record_to_sqlite(row_to_save)
-                            
                             print(f"\nSuccessfully saved record {processed_count}")
                         else:
-                            metrics.failed_rows += 1
+                            # Record processing failed - log and continue
                             print(f"\nFailed to process selection code: {df.iloc[index]['selection_code']}")
                             
                     except TimeoutError:
-                        print(f"\nTimeout while processing selection code: {df.iloc[index]['selection_code']}")
-                        metrics.failed_rows += 1
+                        # Handle timeout errors - task took too long to complete
+                        selection_code = df.iloc[index]['selection_code']
+                        error_msg = f"Timeout while processing selection code: {selection_code}"
+                        print(f"\n{error_msg}")
+                        handle_processing_error(TimeoutError(error_msg), selection_code, metrics)
                     except Exception as e:
-                        print(f"\nUnexpected error in future: {str(e)}")
-                        metrics.failed_rows += 1
+                        # Handle unexpected errors - log and continue processing
+                        selection_code = df.iloc[index]['selection_code']
+                        error_msg = f"Unexpected error in future: {str(e)}"
+                        print(f"\n{error_msg}")
+                        handle_processing_error(e, selection_code, metrics)
+                    pbar.update(1)
         
-        end_time = time.time()
-        metrics.total_processing_time = end_time - start_time
+        # Calculate and display final processing statistics
+        metrics.update_processing_time()
         
         print(f"\nProcessing completed in {metrics.total_processing_time:.2f} seconds:")
         print(f"- Total records: {len(df)}")
@@ -633,15 +847,24 @@ def process_dataframe_parallel(
         print(f"- Newly processed: {processed_count}")
         print(f"- Failed: {metrics.failed_rows}")
         print(f"- Average time per new record: {metrics.total_processing_time/max(1,processed_count):.2f} seconds")
+        print(f"- Success rate: {metrics.to_dict()['success_rate']:.1f}%")
         
+        # Display failed records if any
         if metrics.failed_rows > 0:
-            print("\nWARNING: Some records failed to process. Check the logs above for details.")
+            print("\nFailed Records:")
+            print("=" * 50)
+            for selection_code, error in metrics.failed_records:
+                print(f"- {selection_code}: {error}")
+            print("=" * 50)
+            print(f"Total failed records: {metrics.failed_rows}")
         
         return df
         
     except Exception as e:
-        print(f"\nError in process_dataframe_parallel: {e}")
-        raise
+        error_msg = f"Error in process_dataframe_parallel: {str(e)}"
+        print(f"\n{error_msg}")
+        logger.error(error_msg)
+        raise ProcessingError(error_msg) from e
 
 #===============================================================================
 # EXECUTION BLOCK
@@ -659,9 +882,9 @@ if __name__ == "__main__":
         print("Starting parallel DataFrame processing...")
         processed_df = process_dataframe_parallel(
             test_df,
-            output_column="extended_description",
-            max_workers=3,
-            requests_per_minute=30
+            output_column=CONFIG['OUTPUT_COLUMN'],
+            max_workers=CONFIG['MAX_WORKERS'],
+            requests_per_minute=CONFIG['REQUESTS_PER_MINUTE']['DEFAULT']
         )
         
         # Print missing metadata files if any

@@ -11,7 +11,7 @@ Rules:
 6. Make the description suitable for semantic search purposes
 7. IMPORTANT: You MUST include ALL columns and ALL distinct values for each column in your description, not just a subset. Do not use "etc." or similar abbreviations.
 8. CRITICAL: You MUST use EXACTLY the same column names and distinct values as they appear in the schema. Do not modify, translate, or paraphrase any values. Copy them exactly as they are in the schema, keeping the original language (e.g., if values are in Czech, keep them in Czech).
-
+9. Never include codes/indexes from  the schema, just values.
 Input format:
 - Short description: {short_description}
 - Schema: {selection_schema_json}
