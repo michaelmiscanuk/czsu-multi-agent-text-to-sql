@@ -42,12 +42,7 @@ def get_azure_llm_test():
     response = llm.invoke(messages)
     print(f"\nResponse from LLM:\n{response.content}")
     
-    
-    
-
-#===============================================================================
-# Azure Chat Models
-#===============================================================================
+#-------------------------------------------------------------------------------
 def get_azure_llm_4_1(temperature=0.0):
     """Get an instance of Azure OpenAI LLM with standard configuration.
     

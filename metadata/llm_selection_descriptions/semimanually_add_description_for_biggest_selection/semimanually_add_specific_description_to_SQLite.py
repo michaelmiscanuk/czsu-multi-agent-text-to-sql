@@ -3,6 +3,7 @@ import os
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+import re
 
 # Set up base directory
 try:
@@ -46,6 +47,15 @@ def add_values_to_sqlite(schema_path: str, column_name: str, add_after_this_text
     # Add the rest of the template content
     extended_description += ''.join(template_lines[insertion_index:])
 
+    # Extract selection_code from schema_path filename
+    schema_filename = os.path.basename(str(schema_path))
+    match = re.match(r"(.+)_schema\.json$", schema_filename)
+    if match:
+        selection_code = match.group(1)
+    else:
+        print(f"DEBUG: schema_filename = {schema_filename}")
+        raise ValueError(f"Could not extract selection_code from {schema_filename}")
+
     # Save to SQLite
     try:
         db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / "selection_descriptions.db"
@@ -81,7 +91,7 @@ def add_values_to_sqlite(schema_path: str, column_name: str, add_after_this_text
             
             # Prepare the data for insertion
             row_dict = {
-                'selection_code': column_name,
+                'selection_code': selection_code,
                 'short_description': '',  # Empty as we don't have this information
                 'selection_schema_json': json.dumps(schema),  # Store the full schema
                 'extended_description': extended_description,
@@ -103,11 +113,11 @@ def add_values_to_sqlite(schema_path: str, column_name: str, add_after_this_text
                 """, list(row_dict.values()))
                 
                 # Verify the operation
-                cursor.execute("SELECT selection_code FROM selection_descriptions WHERE selection_code = ?", (column_name,))
+                cursor.execute("SELECT selection_code FROM selection_descriptions WHERE selection_code = ?", (selection_code,))
                 if cursor.fetchone():
-                    print(f"Successfully saved record for {column_name}")
+                    print(f"Successfully saved record for {selection_code}")
                 else:
-                    print(f"Failed to save record for {column_name} - record not found after insert")
+                    print(f"Failed to save record for {selection_code} - record not found after insert")
                 
                 # Commit transaction
                 conn.execute("COMMIT")

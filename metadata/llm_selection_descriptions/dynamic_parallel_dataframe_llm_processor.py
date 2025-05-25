@@ -137,7 +137,7 @@ except NameError:
 sys.path.append(str(BASE_DIR))
 
 # Import the get_azure_llm function
-from my_agent.utils.models import get_azure_llm, get_azure_llm_4_1
+from my_agent.utils.models import get_azure_llm
 
 #===============================================================================
 # CUSTOM EXCEPTIONS
@@ -175,7 +175,7 @@ CONFIG = {
     'CSV_SEPARATOR': ';',  # Semicolon separator for CSV files
     'PROMPT_TEMPLATE': "",  # Will be loaded from file
     'OUTPUT_COLUMN': 'extended_description',  # Default output column name
-    'PROCESS_ALL_SELECTIONS': 0,  # Set to False to process only specific selection
+    'PROCESS_ALL_SELECTIONS': 1,  # Set to False to process only specific selection
     'SPECIFIC_SELECTION_CODE': "PRUM201T1"  # Only used when PROCESS_ALL_SELECTIONS is False
 }
 
@@ -424,7 +424,7 @@ def get_azure_llm_response(**kwargs: Dict[str, Any]) -> str:
     
     try:
         print(f"\nInitializing LLM connection...")
-        llm = get_azure_llm_4_1()
+        llm = get_azure_llm()
         print("LLM initialized successfully")
         
         messages = [{"role": "user", "content": formatted_prompt}]
