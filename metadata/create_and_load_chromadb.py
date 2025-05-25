@@ -417,7 +417,15 @@ def upsert_documents_to_chromadb(
 
         # Initialize ChromaDB client and get/create collection
         client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
-        collection = client.get_or_create_collection(name=collection_name)
+        try:
+            # Try to create the collection with cosine similarity if it doesn't exist
+            collection = client.create_collection(
+                name=collection_name,
+                metadata={"hnsw:space": "cosine"}
+            )
+        except Exception:
+            # If it already exists, just get it
+            collection = client.get_collection(name=collection_name)
 
         # Check for existing documents in ChromaDB
         existing = collection.get(include=["metadatas"], limit=10000)
@@ -576,7 +584,7 @@ if __name__ == "__main__":
 
         # Example: Performing a similarity search
         embedding_client = get_azure_embedding_model()
-        QUERY = "Kolik plechu se pouzilo?"
+        QUERY = "Jake mame druhy Paliva?"
         
         # Generate query embedding
         query_embedding = embedding_client.embeddings.create(
@@ -596,10 +604,11 @@ if __name__ == "__main__":
         debug_print(f"{CREATE_CHROMADB_ID}: Top 3 Most Similar Results:")
         debug_print(f"{CREATE_CHROMADB_ID}: {'=' * 100}")
         
-        for i, (doc, meta, score) in enumerate(zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 1):
+        for i, (doc, meta, distance) in enumerate(zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 1):
             selection = meta.get('selection') if isinstance(meta, dict) and meta is not None else 'N/A'
+            similarity = 1 - distance  # Convert distance to similarity
             debug_print(f"{CREATE_CHROMADB_ID}: Result #{i}")
-            debug_print(f"{CREATE_CHROMADB_ID}: Distance: {score:.4f}")
+            debug_print(f"{CREATE_CHROMADB_ID}: Similarity: {similarity:.4f}")  # Changed from Distance to Similarity
             debug_print(f"{CREATE_CHROMADB_ID}: Selection Code: {selection}")
             debug_print(f"{CREATE_CHROMADB_ID}: Text:")
             debug_print(f"{CREATE_CHROMADB_ID}: {doc}")
