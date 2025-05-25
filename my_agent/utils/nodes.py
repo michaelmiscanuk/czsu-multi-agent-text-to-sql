@@ -16,11 +16,16 @@ from langchain_core.prompts import ChatPromptTemplate
 from typing import Literal, TypedDict
 import ast  # used for syntax validation of generated pandas expressions
 
-from .state import DataAnalysisState
-from .tools import PandasQueryTool, SQLiteQueryTool
+
 from langgraph.prebuilt import ToolNode, tools_condition
 import os
-from .mcp_server import create_mcp_server
+
+import chromadb
+import sqlite3
+
+
+
+
 
 # Get debug mode from environment variable
 DEBUG_MODE = os.environ.get('MY_AGENT_DEBUG', '0') == '1'
@@ -36,15 +41,28 @@ EXECUTE_QUERY_ID = 6
 SUBMIT_FINAL_ID = 7
 SAVE_RESULT_ID = 8
 SHOULD_CONTINUE_ID = 9
+RETRIEVE_NODE_ID = 20
+RELEVANT_NODE_ID = 21
 
 # Constants
 try:
     BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
+    
+    
+from .mcp_server import create_mcp_server
+from my_agent.utils.models import get_azure_embedding_model
+from .state import DataAnalysisState
+from .tools import PandasQueryTool, SQLiteQueryTool
+
+
 MAX_ITERATIONS = 2  # Reduced from 3 to prevent excessive looping
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 ROUTE_DECISION_ID = 11  # ID for routing decision function
+CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
+CHROMA_COLLECTION_NAME = "czsu_selections_chromadb"
+EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
 
 #==============================================================================
 # HELPER FUNCTIONS
@@ -77,18 +95,33 @@ def get_azure_llm(temperature=0.0):
         api_key=os.getenv('AZURE_OPENAI_API_KEY')
     )
 
-async def load_schema():
-    """Load the schema metadata from the JSON file asynchronously.
-    
-    While file operations are synchronous, this function provides an async
-    interface for consistency with the async workflow.
-    
-    Returns:
-        dict: The schema metadata
-    """
-    schema_path = BASE_DIR / "metadata" / "OBY01PDT01_metadata.json"
-    with schema_path.open('r', encoding='utf-8') as f:
-        return json.load(f)
+async def load_schema(state=None):
+    """Load the schema metadata from the SQLite database based on selection_code in state."""
+    if state and state.get("selection_with_possible_answer"):
+        selection_code = state["selection_with_possible_answer"]
+        db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / "selection_descriptions.db"
+        try:
+            conn = sqlite3.connect(str(db_path))
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT extended_description FROM selection_descriptions
+                WHERE selection_code = ? AND extended_description IS NOT NULL AND extended_description != ''
+                """,
+                (selection_code,)
+            )
+            row = cursor.fetchone()
+            if row:
+                return f"Dataset: {selection_code}.\n" + row[0]  # Prepend dataset info
+            else:
+                return f"No schema found for selection_code {selection_code}."
+        except Exception as e:
+            return f"Error loading schema from DB: {e}"
+        finally:
+            if 'conn' in locals():
+                conn.close()
+    # fallback
+    return "No selection_code provided in state."
 
 def format_sql_query(query: str) -> str:
     """Format SQL query for better readability."""
@@ -103,8 +136,8 @@ def format_sql_query(query: str) -> str:
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Get schema details for relevant columns."""
     debug_print(f"{GET_SCHEMA_ID}: Enter get_schema_node")
-    schema = await load_schema()
-    msg = AIMessage(content=f"Schema details: {json.dumps(schema, ensure_ascii=False, indent=2)}")
+    schema = await load_schema(state)
+    msg = AIMessage(content=f"Schema details: {schema}")
     return {"messages": [msg]}  # Reducer will append this to existing messages
 
 
@@ -185,8 +218,6 @@ When generating the query:
 - Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
 - Do NOT modify the database.
 
-USE only one TABLE in FROM clause called 'OBY01PDT01'.
-
 === IMPORTANT RULE ===
 Return ONLY the final SQL query that should be executed, with nothing else around it. 
 Do NOT wrap it in code fences and do NOT add explanations.
@@ -197,7 +228,7 @@ Do NOT wrap it in code fences and do NOT add explanations.
         ("human", "User question: {prompt}\nSchema: {schema}\nPrevious messages:\n{messages}")
     ])
     
-    schema = await load_schema()
+    schema = await load_schema(state)
     result = await llm.ainvoke(prompt.format_messages(
         prompt=state["prompt"],
         schema=json.dumps(schema, ensure_ascii=False, indent=2),
@@ -430,3 +461,39 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     
     debug_print(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}")
     return state
+
+async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Retrieve most similar selection(s) from ChromaDB based on user prompt."""
+    debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node")
+    embedding_client = get_azure_embedding_model()
+    collection = chromadb.PersistentClient(path=str(CHROMA_DB_PATH)).get_collection(name=CHROMA_COLLECTION_NAME)
+    query = state["prompt"]
+    # Generate query embedding
+    query_embedding = embedding_client.embeddings.create(
+        input=[query],
+        model=EMBEDDING_DEPLOYMENT
+    ).data[0].embedding
+    # Query ChromaDB for top 1 most similar selection
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=1,
+        include=["metadatas", "distances"]
+    )
+    most_similar = []
+    for meta, distance in zip(results["metadatas"][0], results["distances"][0]):
+        selection_code = meta.get("selection") if isinstance(meta, dict) and meta is not None else None
+        similarity = 1 - distance  # Convert distance to similarity
+        most_similar.append((selection_code, similarity))
+    debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections: {most_similar}")
+    return {"most_similar_selections": most_similar}
+
+async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Filter out based on cosine similarity threshold (0.35)."""
+    debug_print(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
+    most_similar = state.get("most_similar_selections", [])
+    if most_similar and most_similar[0][0] is not None and most_similar[0][1] >= 0.35:
+        selection_code = most_similar[0][0]
+    else:
+        selection_code = None
+    debug_print(f"{RELEVANT_NODE_ID}: selection_with_possible_answer: {selection_code}")
+    return {"selection_with_possible_answer": selection_code}

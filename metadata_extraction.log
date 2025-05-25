@@ -1,0 +1,23 @@
+2025-05-25 17:12:16,841 - INFO - Starting metadata extraction process
+2025-05-25 17:12:16,842 - INFO - Created/verified schemas directory at metadata\schemas
+2025-05-25 17:12:16,842 - INFO - Fetching datasets from https://data.csu.gov.cz/api/katalog/v1/sady
+2025-05-25 17:12:17,140 - INFO - Successfully fetched 462 datasets
+2025-05-25 17:12:17,140 - INFO - Collecting selections from datasets
+2025-05-25 17:12:17,575 - WARNING - Failed to fetch selections for dataset SZB09A: None
+2025-05-25 17:12:20,647 - WARNING - Failed to fetch selections for dataset VZO01AM: None
+2025-05-25 17:12:21,842 - WARNING - Failed to fetch selections for dataset VZO01DM: None
+2025-05-25 17:12:22,492 - WARNING - Failed to fetch selections for dataset VZO01BM: None
+2025-05-25 17:12:22,572 - WARNING - Failed to fetch selections for dataset VZO01CM: None
+2025-05-25 17:12:24,379 - WARNING - Failed to fetch selections for dataset WREG03E: None
+2025-05-25 17:12:26,059 - INFO - Collected 984 selections to process
+2025-05-25 17:12:26,060 - INFO - Starting parallel processing with 30 workers
+2025-05-25 17:12:26,060 - INFO - Rate limiting: 60 requests per minute
+2025-05-25 17:12:27,695 - ERROR - Error fetching https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01PDOBT1: 500 Server Error:  for url: https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01PDOBT1
+2025-05-25 17:12:27,699 - WARNING - Retrying after error. Attempt 1 of 2
+2025-05-25 17:12:28,565 - ERROR - Error fetching https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN01G1: 404 Client Error:  for url: https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN01G1
+2025-05-25 17:12:28,566 - WARNING - Retrying after error. Attempt 1 of 2
+2025-05-25 17:12:28,856 - ERROR - Error fetching https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01PDOBT1: 500 Server Error:  for url: https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01PDOBT1
+2025-05-25 17:12:29,621 - ERROR - Error fetching https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN01G1: 404 Client Error:  for url: https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN01G1
+2025-05-25 17:12:30,724 - ERROR - Error fetching https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB10: 500 Server Error:  for url: https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB10
+2025-05-25 17:12:30,724 - WARNING - Retrying after error. Attempt 1 of 2
+2025-05-25 17:12:31,899 - ERROR - Error fetching https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB10: 500 Server Error:  for url: https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB10

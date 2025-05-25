@@ -30,7 +30,9 @@ from .utils.nodes import (
     submit_final_answer_node,
     save_node,
     reflect_node,
-    MAX_ITERATIONS
+    MAX_ITERATIONS,
+    retrieve_similar_selections_node,
+    relevant_selections_node
 )
 from .utils.tools import PandasQueryTool
 
@@ -64,6 +66,10 @@ def create_graph():
     #--------------------------------------------------------------------------
     # Add nodes - each handling a specific step in the process
     #--------------------------------------------------------------------------
+    # Add new retrieval and filtering nodes
+    graph.add_node("retrieve_similar_selections", retrieve_similar_selections_node)
+    graph.add_node("relevant_selections", relevant_selections_node)
+    
     # Schema retrieval provides context about available data
     graph.add_node("get_schema", get_schema_node)
     
@@ -85,8 +91,27 @@ def create_graph():
     #--------------------------------------------------------------------------
     # Define the graph execution path
     #--------------------------------------------------------------------------
+    # New start: prompt -> retrieve -> relevant
+    graph.add_edge(START, "retrieve_similar_selections")
+    graph.add_edge("retrieve_similar_selections", "relevant_selections")
+
+    # Conditional edge from relevant_selections
+    def route_after_relevant(state: DataAnalysisState):
+        if state.get("selection_with_possible_answer"):
+            return "get_schema"
+        else:
+            print("Couldn't find relevant dataset selection to provide answer")
+            return END
+    graph.add_conditional_edges(
+        "relevant_selections",
+        route_after_relevant,
+        {
+            "get_schema": "get_schema",
+            END: END
+        }
+    )
+
     # Start by loading the schema to understand available data
-    graph.add_edge(START, "get_schema")
     graph.add_edge("get_schema", "query_gen")
     
     # After query generation, decide whether to reflect or format answer

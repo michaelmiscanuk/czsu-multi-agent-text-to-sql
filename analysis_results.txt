@@ -10636,3 +10636,179 @@ FROM (
 ) AS population_data;
   Result: 0.0014294573090641652
 ----------------------------------------------------------------------------
+Prompt: Jaky obor ma nejvyssi prumerne mzdy v Praze
+Result: Dotaz nelze zodpovědět, protože všechny pokusy o získání dat skončily chybou "no such column".
+Queries and Results:
+  Query: SELECT Uz0123vm AS obor, AVG(value_column) AS prumerna_mzda
+FROM OBY01PDT01
+WHERE Uz0123vm = 'CZ010' AND IndicatorType = '5958F'
+GROUP BY Uz0123vm
+ORDER BY prumerna_mzda DESC
+LIMIT 5;
+  Result: Error: Query error: no such column: Uz0123vm
+  Query: SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda
+FROM OBY01PDT01
+WHERE Uz0123vm = 'CZ010' AND IndicatorType LIKE '%F%'
+GROUP BY IndicatorType
+ORDER BY prumerna_mzda DESC
+LIMIT 1;
+  Result: Error: Query error: no such column: IndicatorType
+  Query: SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda
+FROM OBY01PDT01
+WHERE Uz0123vm = 'CZ010' AND IndicatorType IN ('5958F', '5958P')
+GROUP BY IndicatorType
+ORDER BY prumerna_mzda DESC
+LIMIT 1;
+  Result: Error: Query error: no such column: IndicatorType
+  Query: SELECT Uz0123vm AS obor, AVG(value_column) AS prumerna_mzda
+FROM OBY01PDT01
+WHERE Uz0123vm = 'CZ010' AND IndicatorType = '5958F'
+GROUP BY Uz0123vm
+ORDER BY prumerna_mzda DESC
+LIMIT 5;
+  Result: Error: Query error: no such column: Uz0123vm
+  Query: SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda
+FROM OBY01PDT01
+WHERE Uz0123vm = 'CZ010' AND IndicatorType LIKE '%F%'
+GROUP BY IndicatorType
+ORDER BY prumerna_mzda DESC
+LIMIT 1;
+  Result: Error: Query error: no such column: IndicatorType
+  Query: SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda
+FROM OBY01PDT01
+WHERE Uz0123vm = 'CZ010' AND IndicatorType IN ('5958F', '5958P')
+GROUP BY IndicatorType
+ORDER BY prumerna_mzda DESC
+LIMIT 1;
+  Result: Error: Query error: no such column: IndicatorType
+----------------------------------------------------------------------------
+Prompt: Jaky obor ma nejvyssi prumerne mzdy v Praze
+Result: Dotaz nelze zodpovědět, protože všechny pokusy o získání dat skončily chybou "no such table: dataset".
+Queries and Results:
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_salary
+FROM dataset
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" LIKE 'Praha%'
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_salary DESC
+LIMIT 1;
+  Result: Error: Query error: no such table: dataset
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_salary
+FROM dataset
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Hlavní město Praha'
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_salary DESC
+LIMIT 1;
+  Result: Error: Query error: no such table: dataset
+  Query: SELECT "Ukazatel", AVG("value_column") AS avg_salary
+FROM dataset
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Hlavní město Praha'
+  AND "Ukazatel" LIKE '%mzda%'
+GROUP BY "Ukazatel"
+ORDER BY avg_salary DESC
+LIMIT 1;
+  Result: Error: Query error: no such table: dataset
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_salary
+FROM dataset
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" LIKE 'Praha%'
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_salary DESC
+LIMIT 1;
+  Result: Error: Query error: no such table: dataset
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_salary
+FROM dataset
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Hlavní město Praha'
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_salary DESC
+LIMIT 1;
+  Result: Error: Query error: no such table: dataset
+  Query: SELECT "Ukazatel", AVG("value_column") AS avg_salary
+FROM dataset
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Hlavní město Praha'
+  AND "Ukazatel" LIKE '%mzda%'
+GROUP BY "Ukazatel"
+ORDER BY avg_salary DESC
+LIMIT 1;
+  Result: Error: Query error: no such table: dataset
+----------------------------------------------------------------------------
+Prompt: Jaky obor ma nejvyssi prumerne mzdy v Praze
+Result: V Praze mají všechny uvedené obory průměrné mzdy ve výši 0.0.
+Queries and Results:
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_wage
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" LIKE 'Praha%'
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_wage DESC
+LIMIT 1;
+  Result: [('Praha', 0.0)]
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_wage
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" IN ('Praha', 'Hlavní město Praha')
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_wage DESC
+LIMIT 1;
+  Result: [('Praha', 0.0)]
+  Query: SELECT "ČR, regiony, kraje", "Ukazatel", AVG("value_column") AS avg_wage
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" LIKE '%Praha%'
+  AND "Ukazatel" IN ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 
+                     'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)')
+GROUP BY "ČR, regiony, kraje", "Ukazatel"
+ORDER BY avg_wage DESC
+LIMIT 5;
+  Result: [('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0)]
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_wage
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" LIKE 'Praha%'
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_wage DESC
+LIMIT 1;
+  Result: [('Praha', 0.0)]
+  Query: SELECT "ČR, regiony, kraje", AVG("value_column") AS avg_wage
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" IN ('Praha', 'Hlavní město Praha')
+  AND "Ukazatel" = 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)'
+GROUP BY "ČR, regiony, kraje"
+ORDER BY avg_wage DESC
+LIMIT 1;
+  Result: [('Praha', 0.0)]
+  Query: SELECT "ČR, regiony, kraje", "Ukazatel", AVG("value_column") AS avg_wage
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" LIKE '%Praha%'
+  AND "Ukazatel" IN ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 
+                     'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)')
+GROUP BY "ČR, regiony, kraje", "Ukazatel"
+ORDER BY avg_wage DESC
+LIMIT 5;
+  Result: [('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0)]
+----------------------------------------------------------------------------

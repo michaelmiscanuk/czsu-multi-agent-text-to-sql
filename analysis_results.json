@@ -5531,5 +5531,95 @@
         "result": "0.0014294573090641652"
       }
     ]
+  },
+  {
+    "prompt": "Jaky obor ma nejvyssi prumerne mzdy v Praze",
+    "result": "Dotaz nelze zodpovědět, protože všechny pokusy o získání dat skončily chybou \"no such column\".",
+    "queries_and_results": [
+      {
+        "query": "SELECT Uz0123vm AS obor, AVG(value_column) AS prumerna_mzda\nFROM OBY01PDT01\nWHERE Uz0123vm = 'CZ010' AND IndicatorType = '5958F'\nGROUP BY Uz0123vm\nORDER BY prumerna_mzda DESC\nLIMIT 5;",
+        "result": "Error: Query error: no such column: Uz0123vm"
+      },
+      {
+        "query": "SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda\nFROM OBY01PDT01\nWHERE Uz0123vm = 'CZ010' AND IndicatorType LIKE '%F%'\nGROUP BY IndicatorType\nORDER BY prumerna_mzda DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such column: IndicatorType"
+      },
+      {
+        "query": "SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda\nFROM OBY01PDT01\nWHERE Uz0123vm = 'CZ010' AND IndicatorType IN ('5958F', '5958P')\nGROUP BY IndicatorType\nORDER BY prumerna_mzda DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such column: IndicatorType"
+      },
+      {
+        "query": "SELECT Uz0123vm AS obor, AVG(value_column) AS prumerna_mzda\nFROM OBY01PDT01\nWHERE Uz0123vm = 'CZ010' AND IndicatorType = '5958F'\nGROUP BY Uz0123vm\nORDER BY prumerna_mzda DESC\nLIMIT 5;",
+        "result": "Error: Query error: no such column: Uz0123vm"
+      },
+      {
+        "query": "SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda\nFROM OBY01PDT01\nWHERE Uz0123vm = 'CZ010' AND IndicatorType LIKE '%F%'\nGROUP BY IndicatorType\nORDER BY prumerna_mzda DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such column: IndicatorType"
+      },
+      {
+        "query": "SELECT IndicatorType AS obor, AVG(value_column) AS prumerna_mzda\nFROM OBY01PDT01\nWHERE Uz0123vm = 'CZ010' AND IndicatorType IN ('5958F', '5958P')\nGROUP BY IndicatorType\nORDER BY prumerna_mzda DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such column: IndicatorType"
+      }
+    ]
+  },
+  {
+    "prompt": "Jaky obor ma nejvyssi prumerne mzdy v Praze",
+    "result": "Dotaz nelze zodpovědět, protože všechny pokusy o získání dat skončily chybou \"no such table: dataset\".",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_salary\nFROM dataset\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" LIKE 'Praha%'\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_salary DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such table: dataset"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_salary\nFROM dataset\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" = 'Hlavní město Praha'\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_salary DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such table: dataset"
+      },
+      {
+        "query": "SELECT \"Ukazatel\", AVG(\"value_column\") AS avg_salary\nFROM dataset\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" = 'Hlavní město Praha'\n  AND \"Ukazatel\" LIKE '%mzda%'\nGROUP BY \"Ukazatel\"\nORDER BY avg_salary DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such table: dataset"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_salary\nFROM dataset\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" LIKE 'Praha%'\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_salary DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such table: dataset"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_salary\nFROM dataset\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" = 'Hlavní město Praha'\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_salary DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such table: dataset"
+      },
+      {
+        "query": "SELECT \"Ukazatel\", AVG(\"value_column\") AS avg_salary\nFROM dataset\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" = 'Hlavní město Praha'\n  AND \"Ukazatel\" LIKE '%mzda%'\nGROUP BY \"Ukazatel\"\nORDER BY avg_salary DESC\nLIMIT 1;",
+        "result": "Error: Query error: no such table: dataset"
+      }
+    ]
+  },
+  {
+    "prompt": "Jaky obor ma nejvyssi prumerne mzdy v Praze",
+    "result": "V Praze mají všechny uvedené obory průměrné mzdy ve výši 0.0.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_wage\nFROM MZDQ1T5\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" LIKE 'Praha%'\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_wage DESC\nLIMIT 1;",
+        "result": "[('Praha', 0.0)]"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_wage\nFROM MZDQ1T5\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" IN ('Praha', 'Hlavní město Praha')\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_wage DESC\nLIMIT 1;",
+        "result": "[('Praha', 0.0)]"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", \"Ukazatel\", AVG(\"value_column\") AS avg_wage\nFROM MZDQ1T5\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" LIKE '%Praha%'\n  AND \"Ukazatel\" IN ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', \n                     'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)')\nGROUP BY \"ČR, regiony, kraje\", \"Ukazatel\"\nORDER BY avg_wage DESC\nLIMIT 5;",
+        "result": "[('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0)]"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_wage\nFROM MZDQ1T5\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" LIKE 'Praha%'\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_wage DESC\nLIMIT 1;",
+        "result": "[('Praha', 0.0)]"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", AVG(\"value_column\") AS avg_wage\nFROM MZDQ1T5\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" IN ('Praha', 'Hlavní město Praha')\n  AND \"Ukazatel\" = 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)'\nGROUP BY \"ČR, regiony, kraje\"\nORDER BY avg_wage DESC\nLIMIT 1;",
+        "result": "[('Praha', 0.0)]"
+      },
+      {
+        "query": "SELECT \"ČR, regiony, kraje\", \"Ukazatel\", AVG(\"value_column\") AS avg_wage\nFROM MZDQ1T5\nWHERE \"Čtvrtletí\" = '4. čtvrtletí 2024'\n  AND \"Šetření\" = 'Pracovištní metoda'\n  AND \"ČR, regiony, kraje\" LIKE '%Praha%'\n  AND \"Ukazatel\" IN ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', \n                     'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)')\nGROUP BY \"ČR, regiony, kraje\", \"Ukazatel\"\nORDER BY avg_wage DESC\nLIMIT 5;",
+        "result": "[('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0)]"
+      }
+    ]
   }
 ]
