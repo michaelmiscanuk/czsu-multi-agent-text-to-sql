@@ -3,22 +3,20 @@ import zipfile
 from pathlib import Path
 import sys
 
-# Get the base directory (same as in the other script)
+# Get the base directory
 try:
     BASE_DIR = Path(__file__).resolve().parents[0]
 except NameError:
     BASE_DIR = Path(os.getcwd())
 
-# Configuration of paths to zip (relative to BASE_DIR)
+# Configuration of paths to zip
 PATHS_TO_ZIP = [
-    r"metadata\czsu_chromadb",  # Use r prefix for raw string
+    r"metadata\czsu_chromadb",
     r"data\czsu_data.db"
-    # Add more paths here as needed
 ]
 
 def zip_path(path_to_zip: str):
     """Zip a file or folder at the specified path."""
-    # Convert to absolute path
     abs_path = BASE_DIR / path_to_zip
     
     if not abs_path.exists():

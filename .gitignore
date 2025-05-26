@@ -7,6 +7,5 @@ __pycache__/
 .coverage
 htmlcov/
 .ipynb_checkpoints
-data/CSVs/
 data/czsu_data.db
 metadata/czsu_chromadb/

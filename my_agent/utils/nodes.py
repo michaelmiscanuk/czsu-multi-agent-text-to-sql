@@ -463,37 +463,52 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     return state
 
 async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Retrieve most similar selection(s) from ChromaDB based on user prompt."""
+    """Node: Retrieve most similar selection(s) from ChromaDB based on user prompt using best practices."""
     debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node")
-    embedding_client = get_azure_embedding_model()
     collection = chromadb.PersistentClient(path=str(CHROMA_DB_PATH)).get_collection(name=CHROMA_COLLECTION_NAME)
     query = state["prompt"]
-    # Generate query embedding
-    query_embedding = embedding_client.embeddings.create(
-        input=[query],
-        model=EMBEDDING_DEPLOYMENT
-    ).data[0].embedding
-    # Query ChromaDB for top 1 most similar selection
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=1,
-        include=["metadatas", "distances"]
-    )
-    most_similar = []
-    for meta, distance in zip(results["metadatas"][0], results["distances"][0]):
-        selection_code = meta.get("selection") if isinstance(meta, dict) and meta is not None else None
-        similarity = 1 - distance  # Convert distance to similarity
-        most_similar.append((selection_code, similarity))
-    debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections: {most_similar}")
-    return {"most_similar_selections": most_similar}
+    n_results = state.get("n_results", 3)  # Allow override, default to 3
+
+    try:
+        # Use the same Azure embedding model and deployment as for extended_descriptions
+        embedding_client = get_azure_embedding_model()
+        query_embedding = embedding_client.embeddings.create(
+            input=[query],
+            model="text-embedding-3-large__test1"
+        ).data[0].embedding
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=n_results,
+            include=["metadatas", "distances", "documents"]
+        )
+        most_similar = []
+        # Defensive: handle empty results
+        if results and results["metadatas"] and results["distances"]:
+            for meta, distance in zip(results["metadatas"][0], results["distances"][0]):
+                selection_code = meta.get("selection") if isinstance(meta, dict) and meta is not None else None
+                # Normalized similarity in [0, 1]
+                similarity = 1 - (distance / 2)
+                most_similar.append((selection_code, similarity))
+        else:
+            debug_print(f"{RETRIEVE_NODE_ID}: No results found in ChromaDB query.")
+        debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections: {most_similar}")
+        return {"most_similar_selections": most_similar}
+    except Exception as e:
+        debug_print(f"{RETRIEVE_NODE_ID}: Error querying ChromaDB: {e}")
+        return {"most_similar_selections": []}
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Filter out based on cosine similarity threshold (0.35)."""
     debug_print(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
+    # Use a clear variable name for the similarity threshold
+    SIMILARITY_THRESHOLD = 0.35  # Minimum normalized similarity required
     most_similar = state.get("most_similar_selections", [])
-    if most_similar and most_similar[0][0] is not None and most_similar[0][1] >= 0.35:
-        selection_code = most_similar[0][0]
-    else:
-        selection_code = None
+    selection_code = None
+    if most_similar:
+        top_selection, top_similarity = most_similar[0]
+        # We use ">=" so that a selection with similarity exactly equal to the threshold is considered valid.
+        # This means if the top result's similarity is 0.35 or higher, it will be accepted.
+        if top_selection is not None and top_similarity >= SIMILARITY_THRESHOLD:
+            selection_code = top_selection
     debug_print(f"{RELEVANT_NODE_ID}: selection_with_possible_answer: {selection_code}")
     return {"selection_with_possible_answer": selection_code}

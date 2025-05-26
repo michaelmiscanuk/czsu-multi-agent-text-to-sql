@@ -42,7 +42,23 @@ from my_agent.utils.state import DataAnalysisState
 # DEFAULT_PROMPT = "What was the maximum female population recorded in any region?"
 # DEFAULT_PROMPT = "List regions where the absolute difference between male and female population changes was greater than 3000, and indicate whether men or women changed more"
 # DEFAULT_PROMPT = "What is the average population rate of change for regions with more than 1 million residents?"
-DEFAULT_PROMPT = "Jaky obor ma nejvyssi prumerne mzdy v Praze"
+# DEFAULT_PROMPT = "Jaky obor ma nejvyssi prumerne mzdy v Praze"
+# DEFAULT_PROMPT = "Jaky obor ma nejvyssi prumerne mzdy?"
+DEFAULT_PROMPT = """
+This table contains information about wages and salaries across different industries. It includes data on average wages categorized by economic sectors or industries.
+
+Available columns:
+
+industry (odvětví): distinct values include manufacturing, IT, construction, healthcare, education, etc.
+
+average_wage (průměrná mzda): numerical values representing monthly or annual averages
+
+year: distinct values may include 2020, 2021, 2022, etc.
+
+measurement_unit: e.g., CZK, EUR, USD per month/year
+
+The table allows comparison of wage levels across different economic sectors.
+"""
 
 
 #==============================================================================

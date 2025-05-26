@@ -1,0 +1,955 @@
+Regiony;Roky (regiony soudržnosti);Pohlaví;Věk (roky);Ukazatel;value
+Střední Čechy;2023;muži;0;Počet zemřelých (Dx);18.0
+Střední Čechy;2023;muži;0;Počet obyvatel (Px);6763.0
+Střední Čechy;2023;muži;0;Míra úmrtnosti (mx);0.002661541
+Střední Čechy;2023;muži;0;Pravděpodobnost úmrtí (qx);0.002655251
+Střední Čechy;2023;muži;0;Tabulkový počet dožívajících (lx);100000.0
+Střední Čechy;2023;muži;0;Tabulkový počet zemřelých (dx);265.5251054
+Střední Čechy;2023;muži;0;Tabulkový počet žijících (Lx);99763.68266
+Střední Čechy;2023;muži;0;Pomocný ukazatel (Tx);7692246.059
+Střední Čechy;2023;muži;0;Naděje dožití (ex);76.92246059
+Střední Čechy;2023;muži;1;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;1;Počet obyvatel (Px);7851.0
+Střední Čechy;2023;muži;1;Míra úmrtnosti (mx);0.000146531
+Střední Čechy;2023;muži;1;Pravděpodobnost úmrtí (qx);0.00014652
+Střední Čechy;2023;muži;1;Tabulkový počet dožívajících (lx);99734.47489
+Střední Čechy;2023;muži;1;Tabulkový počet zemřelých (dx);14.61309892
+Střední Čechy;2023;muži;1;Tabulkový počet žijících (Lx);99727.16835
+Střední Čechy;2023;muži;1;Pomocný ukazatel (Tx);7592482.376
+Střední Čechy;2023;muži;1;Naděje dožití (ex);76.12695995
+Střední Čechy;2023;muži;2;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;2;Počet obyvatel (Px);8321.0
+Střední Čechy;2023;muži;2;Míra úmrtnosti (mx);5.69e-05
+Střední Čechy;2023;muži;2;Pravděpodobnost úmrtí (qx);5.69e-05
+Střední Čechy;2023;muži;2;Tabulkový počet dožívajících (lx);99719.8618
+Střední Čechy;2023;muži;2;Tabulkový počet zemřelých (dx);5.678873521
+Střední Čechy;2023;muži;2;Tabulkový počet žijících (Lx);99717.02236
+Střední Čechy;2023;muži;2;Pomocný ukazatel (Tx);7492755.208
+Střední Čechy;2023;muži;2;Naděje dožití (ex);75.13804244
+Střední Čechy;2023;muži;3;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;3;Počet obyvatel (Px);8466.0
+Střední Čechy;2023;muži;3;Míra úmrtnosti (mx);5.11e-05
+Střední Čechy;2023;muži;3;Pravděpodobnost úmrtí (qx);5.11e-05
+Střední Čechy;2023;muži;3;Tabulkový počet dožívajících (lx);99714.18292
+Střední Čechy;2023;muži;3;Tabulkový počet zemřelých (dx);5.099504749
+Střední Čechy;2023;muži;3;Tabulkový počet žijících (Lx);99711.63317
+Střední Čechy;2023;muži;3;Pomocný ukazatel (Tx);7393038.185
+Střední Čechy;2023;muži;3;Naděje dožití (ex);74.14229319
+Střední Čechy;2023;muži;4;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;4;Počet obyvatel (Px);8788.0
+Střední Čechy;2023;muži;4;Míra úmrtnosti (mx);5.0478e-05
+Střední Čechy;2023;muži;4;Pravděpodobnost úmrtí (qx);5.05e-05
+Střední Čechy;2023;muži;4;Tabulkový počet dožívajících (lx);99709.08342
+Střední Čechy;2023;muži;4;Tabulkový počet zemřelých (dx);5.032986532
+Střední Čechy;2023;muži;4;Tabulkový počet žijících (Lx);99706.56692
+Střední Čechy;2023;muži;4;Pomocný ukazatel (Tx);7293326.552
+Střední Čechy;2023;muži;4;Naděje dožití (ex);73.14605954
+Střední Čechy;2023;muži;5;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;5;Počet obyvatel (Px);9083.0
+Střední Čechy;2023;muži;5;Míra úmrtnosti (mx);5.17e-05
+Střední Čechy;2023;muži;5;Pravděpodobnost úmrtí (qx);5.17e-05
+Střední Čechy;2023;muži;5;Tabulkový počet dožívajících (lx);99704.05043
+Střední Čechy;2023;muži;5;Tabulkový počet zemřelých (dx);5.153659798
+Střední Čechy;2023;muži;5;Tabulkový počet žijících (Lx);99701.4736
+Střední Čechy;2023;muži;5;Pomocný ukazatel (Tx);7193619.985
+Střední Čechy;2023;muži;5;Naděje dožití (ex);72.14972666
+Střední Čechy;2023;muži;6;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;6;Počet obyvatel (Px);9170.0
+Střední Čechy;2023;muži;6;Míra úmrtnosti (mx);5.59e-05
+Střední Čechy;2023;muži;6;Pravděpodobnost úmrtí (qx);5.59e-05
+Střední Čechy;2023;muži;6;Tabulkový počet dožívajících (lx);99698.89677
+Střední Čechy;2023;muži;6;Tabulkový počet zemřelých (dx);5.571857375
+Střední Čechy;2023;muži;6;Tabulkový počet žijících (Lx);99696.11084
+Střední Čechy;2023;muži;6;Pomocný ukazatel (Tx);7093918.512
+Střední Čechy;2023;muži;6;Naděje dožití (ex);71.15343039
+Střední Čechy;2023;muži;7;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;7;Počet obyvatel (Px);9040.0
+Střední Čechy;2023;muži;7;Míra úmrtnosti (mx);6.36e-05
+Střední Čechy;2023;muži;7;Pravděpodobnost úmrtí (qx);6.35e-05
+Střední Čechy;2023;muži;7;Tabulkový počet dožívajících (lx);99693.32491
+Střední Čechy;2023;muži;7;Tabulkový počet zemřelých (dx);6.335458256
+Střední Čechy;2023;muži;7;Tabulkový počet žijících (Lx);99690.15718
+Střední Čechy;2023;muži;7;Pomocný ukazatel (Tx);6994222.401
+Střední Čechy;2023;muži;7;Naděje dožití (ex);70.15737921
+Střední Čechy;2023;muži;8;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;8;Počet obyvatel (Px);9078.0
+Střední Čechy;2023;muži;8;Míra úmrtnosti (mx);7.37e-05
+Střední Čechy;2023;muži;8;Pravděpodobnost úmrtí (qx);7.37e-05
+Střední Čechy;2023;muži;8;Tabulkový počet dožívajících (lx);99686.98946
+Střední Čechy;2023;muži;8;Tabulkový počet zemřelých (dx);7.348911595
+Střední Čechy;2023;muži;8;Tabulkový počet žijících (Lx);99683.315
+Střední Čechy;2023;muži;8;Pomocný ukazatel (Tx);6894532.244
+Střední Čechy;2023;muži;8;Naděje dožití (ex);69.16180618
+Střední Čechy;2023;muži;9;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;9;Počet obyvatel (Px);8989.0
+Střední Čechy;2023;muži;9;Míra úmrtnosti (mx);8.4611e-05
+Střední Čechy;2023;muži;9;Pravděpodobnost úmrtí (qx);8.46e-05
+Střední Čechy;2023;muži;9;Tabulkový počet dožívajících (lx);99679.64054
+Střední Čechy;2023;muži;9;Tabulkový počet zemřelých (dx);8.433640435
+Střední Čechy;2023;muži;9;Tabulkový počet žijících (Lx);99675.42372
+Střední Čechy;2023;muži;9;Pomocný ukazatel (Tx);6794848.929
+Střední Čechy;2023;muži;9;Naděje dožití (ex);68.1668683
+Střední Čechy;2023;muži;10;Počet zemřelých (Dx);3.0
+Střední Čechy;2023;muži;10;Počet obyvatel (Px);8926.0
+Střední Čechy;2023;muži;10;Míra úmrtnosti (mx);9.54e-05
+Střední Čechy;2023;muži;10;Pravděpodobnost úmrtí (qx);9.54e-05
+Střední Čechy;2023;muži;10;Tabulkový počet dožívajících (lx);99671.2069
+Střední Čechy;2023;muži;10;Tabulkový počet zemřelých (dx);9.509789661
+Střední Čechy;2023;muži;10;Tabulkový počet žijících (Lx);99666.45201
+Střední Čechy;2023;muži;10;Pomocný ukazatel (Tx);6695173.505
+Střední Čechy;2023;muži;10;Naděje dožití (ex);67.1725939
+Střední Čechy;2023;muži;11;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;11;Počet obyvatel (Px);9043.0
+Střední Čechy;2023;muži;11;Míra úmrtnosti (mx);0.000107081
+Střední Čechy;2023;muži;11;Pravděpodobnost úmrtí (qx);0.000107075
+Střední Čechy;2023;muži;11;Tabulkový počet dožívajících (lx);99661.69711
+Střední Čechy;2023;muži;11;Tabulkový počet zemřelých (dx);10.67126299
+Střední Čechy;2023;muži;11;Tabulkový počet žijících (Lx);99656.36148
+Střední Čechy;2023;muži;11;Pomocný ukazatel (Tx);6595507.053
+Střední Čechy;2023;muži;11;Naděje dožití (ex);66.17895585
+Střední Čechy;2023;muži;12;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;12;Počet obyvatel (Px);9331.0
+Střední Čechy;2023;muži;12;Míra úmrtnosti (mx);0.000121113
+Střední Čechy;2023;muži;12;Pravděpodobnost úmrtí (qx);0.000121106
+Střední Čechy;2023;muži;12;Tabulkový počet dožívajících (lx);99651.02585
+Střední Čechy;2023;muži;12;Tabulkový počet zemřelých (dx);12.06831939
+Střední Čechy;2023;muži;12;Tabulkový počet žijících (Lx);99644.99169
+Střední Čechy;2023;muži;12;Pomocný ukazatel (Tx);6495850.692
+Střední Čechy;2023;muži;12;Naděje dožití (ex);65.18598917
+Střední Čechy;2023;muži;13;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;13;Počet obyvatel (Px);9490.0
+Střední Čechy;2023;muži;13;Míra úmrtnosti (mx);0.00013898
+Střední Čechy;2023;muži;13;Pravděpodobnost úmrtí (qx);0.000138971
+Střední Čechy;2023;muži;13;Tabulkový počet dožívajících (lx);99638.95753
+Střední Čechy;2023;muži;13;Tabulkový počet zemřelých (dx);13.84687519
+Střední Čechy;2023;muži;13;Tabulkový počet žijících (Lx);99632.03409
+Střední Čechy;2023;muži;13;Pomocný ukazatel (Tx);6396205.7
+Střední Čechy;2023;muži;13;Naděje dožití (ex);64.19382397
+Střední Čechy;2023;muži;14;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;14;Počet obyvatel (Px);9461.0
+Střední Čechy;2023;muži;14;Míra úmrtnosti (mx);0.000162356
+Střední Čechy;2023;muži;14;Pravděpodobnost úmrtí (qx);0.000162343
+Střední Čechy;2023;muži;14;Tabulkový počet dožívajících (lx);99625.11066
+Střední Čechy;2023;muži;14;Tabulkový počet zemřelých (dx);16.17346633
+Střední Čechy;2023;muži;14;Tabulkový počet žijících (Lx);99617.02392
+Střední Čechy;2023;muži;14;Pomocný ukazatel (Tx);6296573.666
+Střední Čechy;2023;muži;14;Naděje dožití (ex);63.20267676
+Střední Čechy;2023;muži;15;Počet zemřelých (Dx);3.0
+Střední Čechy;2023;muži;15;Počet obyvatel (Px);9282.0
+Střední Čechy;2023;muži;15;Míra úmrtnosti (mx);0.00019342
+Střední Čechy;2023;muži;15;Pravděpodobnost úmrtí (qx);0.000193401
+Střední Čechy;2023;muži;15;Tabulkový počet dožívajících (lx);99608.93719
+Střední Čechy;2023;muži;15;Tabulkový počet zemřelých (dx);19.26450236
+Střední Čechy;2023;muži;15;Tabulkový počet žijících (Lx);99599.30494
+Střední Čechy;2023;muži;15;Pomocný ukazatel (Tx);6196956.642
+Střední Čechy;2023;muži;15;Naděje dožití (ex);62.21285777
+Střední Čechy;2023;muži;16;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;16;Počet obyvatel (Px);8765.0
+Střední Čechy;2023;muži;16;Míra úmrtnosti (mx);0.000233277
+Střední Čechy;2023;muži;16;Pravděpodobnost úmrtí (qx);0.000233249
+Střední Čechy;2023;muži;16;Tabulkový počet dožívajících (lx);99589.67269
+Střední Čechy;2023;muži;16;Tabulkový počet zemřelých (dx);23.22923565
+Střední Čechy;2023;muži;16;Tabulkový počet žijících (Lx);99578.05807
+Střední Čechy;2023;muži;16;Pomocný ukazatel (Tx);6097357.337
+Střední Čechy;2023;muži;16;Naděje dožití (ex);61.22479543
+Střední Čechy;2023;muži;17;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;17;Počet obyvatel (Px);8541.0
+Střední Čechy;2023;muži;17;Míra úmrtnosti (mx);0.000281856
+Střední Čechy;2023;muži;17;Pravděpodobnost úmrtí (qx);0.000281816
+Střední Čechy;2023;muži;17;Tabulkový počet dožívajících (lx);99566.44345
+Střední Čechy;2023;muži;17;Tabulkový počet zemřelých (dx);28.05942763
+Střední Čechy;2023;muži;17;Tabulkový počet žijících (Lx);99552.41374
+Střední Čechy;2023;muži;17;Pomocný ukazatel (Tx);5997779.279
+Střední Čechy;2023;muži;17;Naděje dožití (ex);60.23896276
+Střední Čechy;2023;muži;18;Počet zemřelých (Dx);3.0
+Střední Čechy;2023;muži;18;Počet obyvatel (Px);8196.0
+Střední Čechy;2023;muži;18;Míra úmrtnosti (mx);0.000337919
+Střední Čechy;2023;muži;18;Pravděpodobnost úmrtí (qx);0.000337862
+Střední Čechy;2023;muži;18;Tabulkový počet dožívajících (lx);99538.38402
+Střední Čechy;2023;muži;18;Tabulkový počet zemřelých (dx);33.63022023
+Střední Čechy;2023;muži;18;Tabulkový počet žijících (Lx);99521.56891
+Střední Čechy;2023;muži;18;Pomocný ukazatel (Tx);5898226.865
+Střední Čechy;2023;muži;18;Naděje dožití (ex);59.2558029
+Střední Čechy;2023;muži;19;Počet zemřelých (Dx);7.0
+Střední Čechy;2023;muži;19;Počet obyvatel (Px);7327.0
+Střední Čechy;2023;muži;19;Míra úmrtnosti (mx);0.000399452
+Střední Čechy;2023;muži;19;Pravděpodobnost úmrtí (qx);0.000399372
+Střední Čechy;2023;muži;19;Tabulkový počet dožívajících (lx);99504.7538
+Střední Čechy;2023;muži;19;Tabulkový počet zemřelých (dx);39.73939026
+Střední Čechy;2023;muži;19;Tabulkový počet žijících (Lx);99484.88411
+Střední Čechy;2023;muži;19;Pomocný ukazatel (Tx);5798705.296
+Střední Čechy;2023;muži;19;Naděje dožití (ex);58.27566096
+Střední Čechy;2023;muži;20;Počet zemřelých (Dx);3.0
+Střední Čechy;2023;muži;20;Počet obyvatel (Px);6949.0
+Střední Čechy;2023;muži;20;Míra úmrtnosti (mx);0.000462945
+Střední Čechy;2023;muži;20;Pravděpodobnost úmrtí (qx);0.000462838
+Střední Čechy;2023;muži;20;Tabulkový počet dožívajících (lx);99465.01441
+Střední Čechy;2023;muži;20;Tabulkový počet zemřelých (dx);46.03613903
+Střední Čechy;2023;muži;20;Tabulkový počet žijících (Lx);99441.99634
+Střední Čechy;2023;muži;20;Pomocný ukazatel (Tx);5699220.412
+Střední Čechy;2023;muži;20;Naděje dožití (ex);57.29874414
+Střední Čechy;2023;muži;21;Počet zemřelých (Dx);2.0
+Střední Čechy;2023;muži;21;Počet obyvatel (Px);6852.0
+Střední Čechy;2023;muži;21;Míra úmrtnosti (mx);0.00052452
+Střední Čechy;2023;muži;21;Pravděpodobnost úmrtí (qx);0.000524382
+Střední Čechy;2023;muži;21;Tabulkový počet dožívajících (lx);99418.97827
+Střední Čechy;2023;muži;21;Tabulkový počet zemřelých (dx);52.13352623
+Střední Čechy;2023;muži;21;Tabulkový počet žijících (Lx);99392.91151
+Střední Čechy;2023;muži;21;Pomocný ukazatel (Tx);5599778.416
+Střední Čechy;2023;muži;21;Naděje dožití (ex);56.32504491
+Střední Čechy;2023;muži;22;Počet zemřelých (Dx);7.0
+Střední Čechy;2023;muži;22;Počet obyvatel (Px);6683.0
+Střední Čechy;2023;muži;22;Míra úmrtnosti (mx);0.000582917
+Střední Čechy;2023;muži;22;Pravděpodobnost úmrtí (qx);0.000582747
+Střední Čechy;2023;muži;22;Tabulkový počet dožívajících (lx);99366.84475
+Střední Čechy;2023;muži;22;Tabulkový počet zemřelých (dx);57.90570448
+Střední Čechy;2023;muži;22;Tabulkový počet žijících (Lx);99337.8919
+Střední Čechy;2023;muži;22;Pomocný ukazatel (Tx);5500385.504
+Střední Čechy;2023;muži;22;Naděje dožití (ex);55.35433391
+Střední Čechy;2023;muži;23;Počet zemřelých (Dx);4.0
+Střední Čechy;2023;muži;23;Počet obyvatel (Px);6343.0
+Střední Čechy;2023;muži;23;Míra úmrtnosti (mx);0.00063807
+Střední Čechy;2023;muži;23;Pravděpodobnost úmrtí (qx);0.000637866
+Střední Čechy;2023;muži;23;Tabulkový počet dožívajících (lx);99308.93904
+Střední Čechy;2023;muži;23;Tabulkový počet zemřelých (dx);63.34580365
+Střední Čechy;2023;muži;23;Tabulkový počet žijících (Lx);99277.26614
+Střední Čechy;2023;muži;23;Pomocný ukazatel (Tx);5401047.612
+Střední Čechy;2023;muži;23;Naděje dožití (ex);54.38631874
+Střední Čechy;2023;muži;24;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;24;Počet obyvatel (Px);6288.0
+Střední Čechy;2023;muži;24;Míra úmrtnosti (mx);0.000690546
+Střední Čechy;2023;muži;24;Pravděpodobnost úmrtí (qx);0.000690308
+Střední Čechy;2023;muži;24;Tabulkový počet dožívajících (lx);99245.59324
+Střední Čechy;2023;muži;24;Tabulkový počet zemřelých (dx);68.50997319
+Střední Čechy;2023;muži;24;Tabulkový počet žijících (Lx);99211.33825
+Střední Čechy;2023;muži;24;Pomocný ukazatel (Tx);5301770.346
+Střední Čechy;2023;muži;24;Naděje dožití (ex);53.42071293
+Střední Čechy;2023;muži;25;Počet zemřelých (Dx);8.0
+Střední Čechy;2023;muži;25;Počet obyvatel (Px);6490.0
+Střední Čechy;2023;muži;25;Míra úmrtnosti (mx);0.000741301
+Střední Čechy;2023;muži;25;Pravděpodobnost úmrtí (qx);0.000741026
+Střední Čechy;2023;muži;25;Tabulkový počet dožívajících (lx);99177.08327
+Střední Čechy;2023;muži;25;Tabulkový počet zemřelých (dx);73.49278817
+Střední Čechy;2023;muži;25;Tabulkový počet žijících (Lx);99140.33687
+Střední Čechy;2023;muži;25;Pomocný ukazatel (Tx);5202559.008
+Střední Čechy;2023;muži;25;Naděje dožití (ex);52.45726973
+Střední Čechy;2023;muži;26;Počet zemřelých (Dx);4.0
+Střední Čechy;2023;muži;26;Počet obyvatel (Px);6564.0
+Střední Čechy;2023;muži;26;Míra úmrtnosti (mx);0.000791844
+Střední Čechy;2023;muži;26;Pravděpodobnost úmrtí (qx);0.00079153
+Střední Čechy;2023;muži;26;Tabulkový počet dožívajících (lx);99103.59048
+Střední Čechy;2023;muži;26;Tabulkový počet zemřelých (dx);78.44348495
+Střední Čechy;2023;muži;26;Tabulkový počet žijících (Lx);99064.36874
+Střední Čechy;2023;muži;26;Pomocný ukazatel (Tx);5103418.671
+Střední Čechy;2023;muži;26;Naděje dožití (ex);51.49579996
+Střední Čechy;2023;muži;27;Počet zemřelých (Dx);4.0
+Střední Čechy;2023;muži;27;Počet obyvatel (Px);6680.0
+Střední Čechy;2023;muži;27;Míra úmrtnosti (mx);0.000843013
+Střední Čechy;2023;muži;27;Pravděpodobnost úmrtí (qx);0.000842658
+Střední Čechy;2023;muži;27;Tabulkový počet dožívajících (lx);99025.14699
+Střední Čechy;2023;muži;27;Tabulkový počet zemřelých (dx);83.44429766
+Střední Čechy;2023;muži;27;Tabulkový počet žijících (Lx);98983.42485
+Střední Čechy;2023;muži;27;Pomocný ukazatel (Tx);5004354.302
+Střední Čechy;2023;muži;27;Naděje dožití (ex);50.53619666
+Střední Čechy;2023;muži;28;Počet zemřelých (Dx);4.0
+Střední Čechy;2023;muži;28;Počet obyvatel (Px);7131.0
+Střední Čechy;2023;muži;28;Míra úmrtnosti (mx);0.00089464
+Střední Čechy;2023;muži;28;Pravděpodobnost úmrtí (qx);0.00089424
+Střední Čechy;2023;muži;28;Tabulkový počet dožívajících (lx);98941.7027
+Střední Čechy;2023;muži;28;Tabulkový počet zemřelých (dx);88.47765523
+Střední Čechy;2023;muži;28;Tabulkový počet žijících (Lx);98897.46387
+Střední Čechy;2023;muži;28;Pomocný ukazatel (Tx);4905370.877
+Střední Čechy;2023;muži;28;Naděje dožití (ex);49.5783956
+Střední Čechy;2023;muži;29;Počet zemřelých (Dx);11.0
+Střední Čechy;2023;muži;29;Počet obyvatel (Px);7939.0
+Střední Čechy;2023;muži;29;Míra úmrtnosti (mx);0.000946488
+Střední Čechy;2023;muži;29;Pravděpodobnost úmrtí (qx);0.00094604
+Střední Čechy;2023;muži;29;Tabulkový počet dožívajících (lx);98853.22504
+Střední Čechy;2023;muži;29;Tabulkový počet zemřelých (dx);93.51910638
+Střední Čechy;2023;muži;29;Tabulkový počet žijících (Lx);98806.46549
+Střední Čechy;2023;muži;29;Pomocný ukazatel (Tx);4806473.414
+Střední Čechy;2023;muži;29;Naděje dožití (ex);48.62232276
+Střední Čechy;2023;muži;30;Počet zemřelých (Dx);9.0
+Střední Čechy;2023;muži;30;Počet obyvatel (Px);8625.0
+Střední Čechy;2023;muži;30;Míra úmrtnosti (mx);0.000998022
+Střední Čechy;2023;muži;30;Pravděpodobnost úmrtí (qx);0.000997525
+Střední Čechy;2023;muži;30;Tabulkový počet dožívajících (lx);98759.70593
+Střední Čechy;2023;muži;30;Tabulkový počet zemřelých (dx);98.51522618
+Střední Čechy;2023;muži;30;Tabulkový počet žijících (Lx);98710.44832
+Střední Čechy;2023;muži;30;Pomocný ukazatel (Tx);4707666.948
+Střední Čechy;2023;muži;30;Naděje dožití (ex);47.66789151
+Střední Čechy;2023;muži;31;Počet zemřelých (Dx);7.0
+Střední Čechy;2023;muži;31;Počet obyvatel (Px);9060.0
+Střední Čechy;2023;muži;31;Míra úmrtnosti (mx);0.001048455
+Střední Čechy;2023;muži;31;Pravděpodobnost úmrtí (qx);0.001047906
+Střední Čechy;2023;muži;31;Tabulkový počet dožívajících (lx);98661.19071
+Střední Čechy;2023;muži;31;Tabulkový počet zemřelých (dx);103.3876269
+Střední Čechy;2023;muži;31;Tabulkový počet žijících (Lx);98609.4969
+Střední Čechy;2023;muži;31;Pomocný ukazatel (Tx);4608956.5
+Střední Čechy;2023;muži;31;Naděje dožití (ex);46.71498962
+Střední Čechy;2023;muži;32;Počet zemřelých (Dx);13.0
+Střední Čechy;2023;muži;32;Počet obyvatel (Px);9295.0
+Střední Čechy;2023;muži;32;Míra úmrtnosti (mx);0.001097067
+Střední Čechy;2023;muži;32;Pravděpodobnost úmrtí (qx);0.001096465
+Střední Čechy;2023;muži;32;Tabulkový počet dožívajících (lx);98557.80308
+Střední Čechy;2023;muži;32;Tabulkový počet zemřelých (dx);108.0652057
+Střední Čechy;2023;muži;32;Tabulkový počet žijících (Lx);98503.77048
+Střední Čechy;2023;muži;32;Pomocný ukazatel (Tx);4510347.003
+Střední Čechy;2023;muži;32;Naděje dožití (ex);45.76346937
+Střední Čechy;2023;muži;33;Počet zemřelých (Dx);11.0
+Střední Čechy;2023;muži;33;Počet obyvatel (Px);9329.0
+Střední Čechy;2023;muži;33;Míra úmrtnosti (mx);0.001144249
+Střední Čechy;2023;muži;33;Pravděpodobnost úmrtí (qx);0.001143595
+Střední Čechy;2023;muži;33;Tabulkový počet dožívajících (lx);98449.73788
+Střední Čechy;2023;muži;33;Tabulkový počet zemřelých (dx);112.5866313
+Střední Čechy;2023;muži;33;Tabulkový počet žijících (Lx);98393.44456
+Střední Čechy;2023;muži;33;Pomocný ukazatel (Tx);4411843.232
+Střední Čechy;2023;muži;33;Naděje dožití (ex);44.81315367
+Střední Čechy;2023;muži;34;Počet zemřelých (Dx);14.0
+Střední Čechy;2023;muži;34;Počet obyvatel (Px);9471.0
+Střední Čechy;2023;muži;34;Míra úmrtnosti (mx);0.001191043
+Střední Čechy;2023;muži;34;Pravděpodobnost úmrtí (qx);0.001190334
+Střední Čechy;2023;muži;34;Tabulkový počet dožívajících (lx);98337.15124
+Střední Čechy;2023;muži;34;Tabulkový počet zemřelých (dx);117.0540157
+Střední Čechy;2023;muži;34;Tabulkový počet žijících (Lx);98278.62424
+Střední Čechy;2023;muži;34;Pomocný ukazatel (Tx);4313449.788
+Střední Čechy;2023;muži;34;Naděje dožití (ex);43.86388799
+Střední Čechy;2023;muži;35;Počet zemřelých (Dx);13.0
+Střední Čechy;2023;muži;35;Počet obyvatel (Px);9550.0
+Střední Čechy;2023;muži;35;Míra úmrtnosti (mx);0.001238923
+Střední Čechy;2023;muži;35;Pravděpodobnost úmrtí (qx);0.001238156
+Střední Čechy;2023;muži;35;Tabulkový počet dožívajících (lx);98220.09723
+Střední Čechy;2023;muži;35;Tabulkový počet zemřelých (dx);121.6118355
+Střední Čechy;2023;muži;35;Tabulkový počet žijících (Lx);98159.29131
+Střední Čechy;2023;muži;35;Pomocný ukazatel (Tx);4215171.164
+Střední Čechy;2023;muži;35;Naděje dožití (ex);42.915567
+Střední Čechy;2023;muži;36;Počet zemřelých (Dx);12.0
+Střední Čechy;2023;muži;36;Počet obyvatel (Px);9765.0
+Střední Čechy;2023;muži;36;Míra úmrtnosti (mx);0.001290583
+Střední Čechy;2023;muži;36;Pravděpodobnost úmrtí (qx);0.001289751
+Střední Čechy;2023;muži;36;Tabulkový počet dožívajících (lx);98098.48539
+Střední Čechy;2023;muži;36;Tabulkový počet zemřelých (dx);126.5226074
+Střední Čechy;2023;muži;36;Tabulkový počet žijících (Lx);98035.22409
+Střední Čechy;2023;muži;36;Pomocný ukazatel (Tx);4117011.872
+Střední Čechy;2023;muži;36;Naděje dožití (ex);41.96814921
+Střední Čechy;2023;muži;37;Počet zemřelých (Dx);9.0
+Střední Čechy;2023;muži;37;Počet obyvatel (Px);10116.0
+Střední Čechy;2023;muži;37;Míra úmrtnosti (mx);0.001349429
+Střední Čechy;2023;muži;37;Pravděpodobnost úmrtí (qx);0.001348519
+Střední Čechy;2023;muži;37;Tabulkový počet dožívajících (lx);97971.96279
+Střední Čechy;2023;muži;37;Tabulkový počet zemřelých (dx);132.1170132
+Střední Čechy;2023;muži;37;Tabulkový počet žijících (Lx);97905.90428
+Střední Čechy;2023;muži;37;Pomocný ukazatel (Tx);4018976.648
+Střední Čechy;2023;muži;37;Naděje dožití (ex);41.02170186
+Střední Čechy;2023;muži;38;Počet zemřelých (Dx);13.0
+Střední Čechy;2023;muži;38;Počet obyvatel (Px);10328.0
+Střední Čechy;2023;muži;38;Míra úmrtnosti (mx);0.001418361
+Střední Čechy;2023;muži;38;Pravděpodobnost úmrtí (qx);0.001417356
+Střední Čechy;2023;muži;38;Tabulkový počet dožívajících (lx);97839.84577
+Střední Čechy;2023;muži;38;Tabulkový počet zemřelých (dx);138.6738954
+Střední Čechy;2023;muži;38;Tabulkový počet žijících (Lx);97770.50883
+Střední Čechy;2023;muži;38;Pomocný ukazatel (Tx);3921070.744
+Střední Čechy;2023;muži;38;Naděje dožití (ex);40.07641992
+Střední Čechy;2023;muži;39;Počet zemřelých (Dx);12.0
+Střední Čechy;2023;muži;39;Počet obyvatel (Px);10376.0
+Střední Čechy;2023;muži;39;Míra úmrtnosti (mx);0.001497709
+Střední Čechy;2023;muži;39;Pravděpodobnost úmrtí (qx);0.001496588
+Střední Čechy;2023;muži;39;Tabulkový počet dožívajících (lx);97701.17188
+Střední Čechy;2023;muži;39;Tabulkový počet zemřelých (dx);146.2184286
+Střední Čechy;2023;muži;39;Tabulkový počet žijících (Lx);97628.06266
+Střední Čechy;2023;muži;39;Pomocný ukazatel (Tx);3823300.235
+Střední Čechy;2023;muži;39;Naděje dožití (ex);39.13259341
+Střední Čechy;2023;muži;40;Počet zemřelých (Dx);15.0
+Střední Čechy;2023;muži;40;Počet obyvatel (Px);10494.0
+Střední Čechy;2023;muži;40;Míra úmrtnosti (mx);0.001587277
+Střední Čechy;2023;muži;40;Pravděpodobnost úmrtí (qx);0.001586019
+Střední Čechy;2023;muži;40;Tabulkový počet dožívajících (lx);97554.95345
+Střední Čechy;2023;muži;40;Tabulkový počet zemřelých (dx);154.7239787
+Střední Čechy;2023;muži;40;Tabulkový počet žijících (Lx);97477.59146
+Střední Čechy;2023;muži;40;Pomocný ukazatel (Tx);3725672.172
+Střední Čechy;2023;muži;40;Naděje dožití (ex);38.19049716
+Střední Čechy;2023;muži;41;Počet zemřelých (Dx);30.0
+Střední Čechy;2023;muži;41;Počet obyvatel (Px);10713.0
+Střední Čechy;2023;muži;41;Míra úmrtnosti (mx);0.001687161
+Střední Čechy;2023;muži;41;Pravděpodobnost úmrtí (qx);0.001685739
+Střední Čechy;2023;muži;41;Tabulkový počet dožívajících (lx);97400.22947
+Střední Čechy;2023;muži;41;Tabulkový počet zemřelých (dx);164.1913791
+Střední Čechy;2023;muži;41;Tabulkový počet žijících (Lx);97318.13378
+Střední Čechy;2023;muži;41;Pomocný ukazatel (Tx);3628194.581
+Střední Čechy;2023;muži;41;Naděje dožití (ex);37.25036995
+Střední Čechy;2023;muži;42;Počet zemřelých (Dx);21.0
+Střední Čechy;2023;muži;42;Počet obyvatel (Px);11192.0
+Střední Čechy;2023;muži;42;Míra úmrtnosti (mx);0.001798146
+Střední Čechy;2023;muži;42;Pravděpodobnost úmrtí (qx);0.001796531
+Střední Čechy;2023;muži;42;Tabulkový počet dožívajících (lx);97236.03809
+Střední Čechy;2023;muži;42;Tabulkový počet zemřelých (dx);174.6875183
+Střední Čechy;2023;muži;42;Tabulkový počet žijících (Lx);97148.69433
+Střední Čechy;2023;muži;42;Pomocný ukazatel (Tx);3530876.447
+Střední Čechy;2023;muži;42;Naděje dožití (ex);36.3124261
+Střední Čechy;2023;muži;43;Počet zemřelých (Dx);18.0
+Střední Čechy;2023;muži;43;Počet obyvatel (Px);12171.0
+Střední Čechy;2023;muži;43;Míra úmrtnosti (mx);0.001921202
+Střední Čechy;2023;muži;43;Pravděpodobnost úmrtí (qx);0.001919359
+Střední Čechy;2023;muži;43;Tabulkový počet dožívajících (lx);97061.35057
+Střední Čechy;2023;muži;43;Tabulkový počet zemřelých (dx);186.295525
+Střední Čechy;2023;muži;43;Tabulkový počet žijících (Lx);96968.20281
+Střední Čechy;2023;muži;43;Pomocný ukazatel (Tx);3433727.753
+Střední Čechy;2023;muži;43;Naděje dožití (ex);35.37688001
+Střední Čechy;2023;muži;44;Počet zemřelých (Dx);33.0
+Střední Čechy;2023;muži;44;Počet obyvatel (Px);13022.0
+Střední Čechy;2023;muži;44;Míra úmrtnosti (mx);0.00205878
+Střední Čechy;2023;muži;44;Pravděpodobnost úmrtí (qx);0.002056662
+Střední Čechy;2023;muži;44;Tabulkový počet dožívajících (lx);96875.05505
+Střední Čechy;2023;muži;44;Tabulkový počet zemřelých (dx);199.2392831
+Střední Čechy;2023;muži;44;Tabulkový počet žijících (Lx);96775.43541
+Střední Čechy;2023;muži;44;Pomocný ukazatel (Tx);3336759.55
+Střední Čechy;2023;muži;44;Naděje dožití (ex);34.44394998
+Střední Čechy;2023;muži;45;Počet zemřelých (Dx);27.0
+Střední Čechy;2023;muži;45;Počet obyvatel (Px);13318.0
+Střední Čechy;2023;muži;45;Míra úmrtnosti (mx);0.002215523
+Střední Čechy;2023;muži;45;Pravděpodobnost úmrtí (qx);0.002213072
+Střední Čechy;2023;muži;45;Tabulkový počet dožívajících (lx);96675.81576
+Střední Čechy;2023;muži;45;Tabulkový počet zemřelých (dx);213.9505302
+Střední Čechy;2023;muži;45;Tabulkový počet žijících (Lx);96568.8405
+Střední Čechy;2023;muži;45;Pomocný ukazatel (Tx);3239984.115
+Střední Čechy;2023;muži;45;Naděje dožití (ex);33.5139051
+Střední Čechy;2023;muži;46;Počet zemřelých (Dx);31.0
+Střední Čechy;2023;muži;46;Počet obyvatel (Px);13481.0
+Střední Čechy;2023;muži;46;Míra úmrtnosti (mx);0.002397297
+Střední Čechy;2023;muži;46;Pravděpodobnost úmrtí (qx);0.002394427
+Střední Čechy;2023;muži;46;Tabulkový počet dožívajících (lx);96461.86523
+Střední Čechy;2023;muži;46;Tabulkový počet zemřelých (dx);230.9708693
+Střední Čechy;2023;muži;46;Tabulkový počet žijících (Lx);96346.3798
+Střední Čechy;2023;muži;46;Pomocný ukazatel (Tx);3143415.274
+Střední Čechy;2023;muži;46;Naděje dožití (ex);32.58712929
+Střední Čechy;2023;muži;47;Počet zemřelých (Dx);36.0
+Střední Čechy;2023;muži;47;Počet obyvatel (Px);13710.0
+Střední Čechy;2023;muži;47;Míra úmrtnosti (mx);0.002610674
+Střední Čechy;2023;muži;47;Pravděpodobnost úmrtí (qx);0.002607271
+Střední Čechy;2023;muži;47;Tabulkový počet dožívajících (lx);96230.89437
+Střední Čechy;2023;muži;47;Tabulkový počet zemřelých (dx);250.8999722
+Střední Čechy;2023;muži;47;Tabulkový počet žijících (Lx);96105.44438
+Střední Čechy;2023;muži;47;Pomocný ukazatel (Tx);3047068.894
+Střední Čechy;2023;muži;47;Naděje dožití (ex);31.66414398
+Střední Čechy;2023;muži;48;Počet zemřelých (Dx);41.0
+Střední Čechy;2023;muži;48;Počet obyvatel (Px);13834.0
+Střední Čechy;2023;muži;48;Míra úmrtnosti (mx);0.002863306
+Střední Čechy;2023;muži;48;Pravděpodobnost úmrtí (qx);0.002859213
+Střední Čechy;2023;muži;48;Tabulkový počet dožívajících (lx);95979.99439
+Střední Čechy;2023;muži;48;Tabulkový počet zemřelých (dx);274.4272351
+Střední Čechy;2023;muži;48;Tabulkový počet žijících (Lx);95842.78078
+Střední Čechy;2023;muži;48;Pomocný ukazatel (Tx);2950963.45
+Střední Čechy;2023;muži;48;Naděje dožití (ex);30.74560974
+Střední Čechy;2023;muži;49;Počet zemřelých (Dx);37.0
+Střední Čechy;2023;muži;49;Počet obyvatel (Px);13371.0
+Střední Čechy;2023;muži;49;Míra úmrtnosti (mx);0.003164564
+Střední Čechy;2023;muži;49;Pravděpodobnost úmrtí (qx);0.003159564
+Střední Čechy;2023;muži;49;Tabulkový počet dožívajících (lx);95705.56716
+Střední Čechy;2023;muži;49;Tabulkový počet zemřelých (dx);302.3879038
+Střední Čechy;2023;muži;49;Tabulkový počet žijících (Lx);95554.37321
+Střední Čechy;2023;muži;49;Pomocný ukazatel (Tx);2855120.669
+Střední Čechy;2023;muži;49;Naděje dožití (ex);29.83233634
+Střední Čechy;2023;muži;50;Počet zemřelých (Dx);41.0
+Střední Čechy;2023;muži;50;Počet obyvatel (Px);12123.0
+Střední Čechy;2023;muži;50;Míra úmrtnosti (mx);0.003523095
+Střední Čechy;2023;muži;50;Pravděpodobnost úmrtí (qx);0.0035169
+Střední Čechy;2023;muži;50;Tabulkový počet dožívajících (lx);95403.17925
+Střední Čechy;2023;muži;50;Tabulkový počet zemřelých (dx);335.5234305
+Střední Čechy;2023;muži;50;Tabulkový počet žijících (Lx);95235.41754
+Střední Čechy;2023;muži;50;Pomocný ukazatel (Tx);2759566.296
+Střední Čechy;2023;muži;50;Naděje dožití (ex);28.9253075
+Střední Čechy;2023;muži;51;Počet zemřelých (Dx);35.0
+Střední Čechy;2023;muži;51;Počet obyvatel (Px);11033.0
+Střední Čechy;2023;muži;51;Míra úmrtnosti (mx);0.003947564
+Střední Čechy;2023;muži;51;Pravděpodobnost úmrtí (qx);0.003939787
+Střední Čechy;2023;muži;51;Tabulkový počet dožívajících (lx);95067.65582
+Střední Čechy;2023;muži;51;Tabulkový počet zemřelých (dx);374.5463482
+Střední Čechy;2023;muži;51;Tabulkový počet žijících (Lx);94880.38265
+Střední Čechy;2023;muži;51;Pomocný ukazatel (Tx);2664330.878
+Střední Čechy;2023;muži;51;Naděje dožití (ex);28.02562928
+Střední Čechy;2023;muži;52;Počet zemřelých (Dx);43.0
+Střední Čechy;2023;muži;52;Počet obyvatel (Px);10389.0
+Střední Čechy;2023;muži;52;Míra úmrtnosti (mx);0.004446978
+Střední Čechy;2023;muži;52;Pravděpodobnost úmrtí (qx);0.004437112
+Střední Čechy;2023;muži;52;Tabulkový počet dožívajících (lx);94693.10948
+Střední Čechy;2023;muži;52;Tabulkový počet zemřelých (dx);420.1639707
+Střední Čechy;2023;muži;52;Tabulkový počet žijících (Lx);94483.02749
+Střední Čechy;2023;muži;52;Pomocný ukazatel (Tx);2569450.496
+Střední Čechy;2023;muži;52;Naděje dožití (ex);27.13450335
+Střední Čechy;2023;muži;53;Počet zemřelých (Dx);50.0
+Střední Čechy;2023;muži;53;Počet obyvatel (Px);9794.0
+Střední Čechy;2023;muži;53;Míra úmrtnosti (mx);0.005025804
+Střední Čechy;2023;muži;53;Pravděpodobnost úmrtí (qx);0.005013206
+Střední Čechy;2023;muži;53;Tabulkový počet dožívajících (lx);94272.9455
+Střední Čechy;2023;muži;53;Tabulkový počet zemřelých (dx);472.6097
+Střední Čechy;2023;muži;53;Tabulkový počet žijících (Lx);94036.64065
+Střední Čechy;2023;muži;53;Pomocný ukazatel (Tx);2474967.468
+Střední Čechy;2023;muži;53;Naděje dožití (ex);26.25321035
+Střední Čechy;2023;muži;54;Počet zemřelých (Dx);61.0
+Střední Čechy;2023;muži;54;Počet obyvatel (Px);9166.0
+Střední Čechy;2023;muži;54;Míra úmrtnosti (mx);0.005684314
+Střední Čechy;2023;muži;54;Pravděpodobnost úmrtí (qx);0.005668204
+Střední Čechy;2023;muži;54;Tabulkový počet dožívajících (lx);93800.3358
+Střední Čechy;2023;muži;54;Tabulkový počet zemřelých (dx);531.679419
+Střední Čechy;2023;muži;54;Tabulkový počet žijících (Lx);93534.4961
+Střední Čechy;2023;muži;54;Pomocný ukazatel (Tx);2380930.828
+Střední Čechy;2023;muži;54;Naděje dožití (ex);25.38296699
+Střední Čechy;2023;muži;55;Počet zemřelých (Dx);54.0
+Střední Čechy;2023;muži;55;Počet obyvatel (Px);8846.0
+Střední Čechy;2023;muži;55;Míra úmrtnosti (mx);0.006419966
+Střední Čechy;2023;muži;55;Pravděpodobnost úmrtí (qx);0.006399423
+Střední Čechy;2023;muži;55;Tabulkový počet dožívajících (lx);93268.65639
+Střední Čechy;2023;muži;55;Tabulkový počet zemřelých (dx);596.8656266
+Střední Čechy;2023;muži;55;Tabulkový počet žijících (Lx);92970.22357
+Střední Čechy;2023;muži;55;Pomocný ukazatel (Tx);2287396.332
+Střední Čechy;2023;muži;55;Naděje dožití (ex);24.52481273
+Střední Čechy;2023;muži;56;Počet zemřelých (Dx);66.0
+Střední Čechy;2023;muži;56;Počet obyvatel (Px);8760.0
+Střední Čechy;2023;muži;56;Míra úmrtnosti (mx);0.007231174
+Střední Čechy;2023;muži;56;Pravděpodobnost úmrtí (qx);0.007205123
+Střední Čechy;2023;muži;56;Tabulkový počet dožívajících (lx);92671.79076
+Střední Čechy;2023;muži;56;Tabulkový počet zemřelých (dx);667.7116246
+Střední Čechy;2023;muži;56;Tabulkový počet žijících (Lx);92337.93495
+Střední Čechy;2023;muži;56;Pomocný ukazatel (Tx);2194426.108
+Střední Čechy;2023;muži;56;Naděje dožití (ex);23.6795479
+Střední Čechy;2023;muži;57;Počet zemřelých (Dx);75.0
+Střední Čechy;2023;muži;57;Počet obyvatel (Px);8716.0
+Střední Čechy;2023;muži;57;Míra úmrtnosti (mx);0.008113786
+Střední Čechy;2023;muži;57;Pravděpodobnost úmrtí (qx);0.008081003
+Střední Čechy;2023;muži;57;Tabulkový počet dožívajících (lx);92004.07913
+Střední Čechy;2023;muži;57;Tabulkový počet zemřelých (dx);743.4852091
+Střední Čechy;2023;muži;57;Tabulkový počet žijících (Lx);91632.33653
+Střední Čechy;2023;muži;57;Pomocný ukazatel (Tx);2102088.173
+Střední Čechy;2023;muži;57;Naděje dožití (ex);22.84777146
+Střední Čechy;2023;muži;58;Počet zemřelých (Dx);81.0
+Střední Čechy;2023;muži;58;Počet obyvatel (Px);8920.0
+Střední Čechy;2023;muži;58;Míra úmrtnosti (mx);0.009062592
+Střední Čechy;2023;muži;58;Pravděpodobnost úmrtí (qx);0.009021712
+Střední Čechy;2023;muži;58;Tabulkový počet dožívajících (lx);91260.59393
+Střední Čechy;2023;muži;58;Tabulkový počet zemřelých (dx);823.3267863
+Střední Čechy;2023;muži;58;Tabulkový počet žijících (Lx);90848.93053
+Střední Čechy;2023;muži;58;Pomocný ukazatel (Tx);2010455.837
+Střední Čechy;2023;muži;58;Naděje dožití (ex);22.02983511
+Střední Čechy;2023;muži;59;Počet zemřelých (Dx);91.0
+Střední Čechy;2023;muži;59;Počet obyvatel (Px);8795.0
+Střední Čechy;2023;muži;59;Míra úmrtnosti (mx);0.010076064
+Střední Čechy;2023;muži;59;Pravděpodobnost úmrtí (qx);0.010025554
+Střední Čechy;2023;muži;59;Tabulkový počet dožívajících (lx);90437.26714
+Střední Čechy;2023;muži;59;Tabulkový počet zemřelých (dx);906.6837457
+Střední Čechy;2023;muži;59;Tabulkový počet žijících (Lx);89983.92527
+Střední Čechy;2023;muži;59;Pomocný ukazatel (Tx);1919606.906
+Střední Čechy;2023;muži;59;Naděje dožití (ex);21.22583938
+Střední Čechy;2023;muži;60;Počet zemřelých (Dx);92.0
+Střední Čechy;2023;muži;60;Počet obyvatel (Px);8138.0
+Střední Čechy;2023;muži;60;Míra úmrtnosti (mx);0.011152524
+Střední Čechy;2023;muži;60;Pravděpodobnost úmrtí (qx);0.011090679
+Střední Čechy;2023;muži;60;Tabulkový počet dožívajících (lx);89530.58339
+Střední Čechy;2023;muži;60;Tabulkový počet zemřelých (dx);992.9549719
+Střední Čechy;2023;muži;60;Tabulkový počet žijících (Lx);89034.10591
+Střední Čechy;2023;muži;60;Pomocný ukazatel (Tx);1829622.981
+Střední Čechy;2023;muži;60;Naděje dožití (ex);20.4357317
+Střední Čechy;2023;muži;61;Počet zemřelých (Dx);80.0
+Střední Čechy;2023;muži;61;Počet obyvatel (Px);7512.0
+Střední Čechy;2023;muži;61;Míra úmrtnosti (mx);0.012289377
+Střední Čechy;2023;muži;61;Pravděpodobnost úmrtí (qx);0.012214324
+Střední Čechy;2023;muži;61;Tabulkový počet dožívajících (lx);88537.62842
+Střední Čechy;2023;muži;61;Tabulkový počet zemřelých (dx);1081.427261
+Střední Čechy;2023;muži;61;Tabulkový počet žijících (Lx);87996.91479
+Střední Čechy;2023;muži;61;Pomocný ukazatel (Tx);1740588.875
+Střední Čechy;2023;muži;61;Naděje dožití (ex);19.65931216
+Střední Čechy;2023;muži;62;Počet zemřelých (Dx);105.0
+Střední Čechy;2023;muži;62;Počet obyvatel (Px);7045.0
+Střední Čechy;2023;muži;62;Míra úmrtnosti (mx);0.013483016
+Střední Čechy;2023;muži;62;Pravděpodobnost úmrtí (qx);0.013392729
+Střední Čechy;2023;muži;62;Tabulkový počet dožívajících (lx);87456.20116
+Střední Čechy;2023;muži;62;Tabulkový počet zemřelých (dx);1171.27721
+Střední Čechy;2023;muži;62;Tabulkový počet žijících (Lx);86870.56256
+Střední Čechy;2023;muži;62;Pomocný ukazatel (Tx);1652591.96
+Střední Čechy;2023;muži;62;Naděje dožití (ex);18.89622392
+Střední Čechy;2023;muži;63;Počet zemřelých (Dx);98.0
+Střední Čechy;2023;muži;63;Počet obyvatel (Px);6785.0
+Střední Čechy;2023;muži;63;Míra úmrtnosti (mx);0.014729197
+Střední Čechy;2023;muži;63;Pravděpodobnost úmrtí (qx);0.014621515
+Střední Čechy;2023;muži;63;Tabulkový počet dožívajících (lx);86284.92395
+Střední Čechy;2023;muži;63;Tabulkový počet zemřelých (dx);1261.616307
+Střední Čechy;2023;muži;63;Tabulkový počet žijících (Lx);85654.1158
+Střední Čechy;2023;muži;63;Pomocný ukazatel (Tx);1565721.397
+Střední Čechy;2023;muži;63;Naděje dožití (ex);18.14594399
+Střední Čechy;2023;muži;64;Počet zemřelých (Dx);117.0
+Střední Čechy;2023;muži;64;Počet obyvatel (Px);6953.0
+Střední Čechy;2023;muži;64;Míra úmrtnosti (mx);0.016028779
+Střední Čechy;2023;muži;64;Pravděpodobnost úmrtí (qx);0.015901339
+Střední Čechy;2023;muži;64;Tabulkový počet dožívajících (lx);85023.30764
+Střední Čechy;2023;muži;64;Tabulkový počet zemřelých (dx);1351.984452
+Střední Čechy;2023;muži;64;Tabulkový počet žijících (Lx);84347.31542
+Střední Čechy;2023;muži;64;Pomocný ukazatel (Tx);1480067.282
+Střední Čechy;2023;muži;64;Naděje dožití (ex);17.40778291
+Střední Čechy;2023;muži;65;Počet zemřelých (Dx);137.0
+Střední Čechy;2023;muži;65;Počet obyvatel (Px);7331.0
+Střední Čechy;2023;muži;65;Míra úmrtnosti (mx);0.017389506
+Střední Čechy;2023;muži;65;Pravděpodobnost úmrtí (qx);0.017239611
+Střední Čechy;2023;muži;65;Tabulkový počet dožívajících (lx);83671.32319
+Střední Čechy;2023;muži;65;Tabulkový počet zemřelých (dx);1442.461098
+Střední Čechy;2023;muži;65;Tabulkový počet žijících (Lx);82950.09264
+Střední Čechy;2023;muži;65;Pomocný ukazatel (Tx);1395719.966
+Střední Čechy;2023;muži;65;Naděje dožití (ex);16.68098356
+Střední Čechy;2023;muži;66;Počet zemřelých (Dx);164.0
+Střední Čechy;2023;muži;66;Počet obyvatel (Px);7624.0
+Střední Čechy;2023;muži;66;Míra úmrtnosti (mx);0.018824147
+Střední Čechy;2023;muži;66;Pravděpodobnost úmrtí (qx);0.018648625
+Střední Čechy;2023;muži;66;Tabulkový počet dožívajících (lx);82228.86209
+Střední Čechy;2023;muži;66;Tabulkový počet zemřelých (dx);1533.455225
+Střední Čechy;2023;muži;66;Tabulkový počet žijících (Lx);81462.13448
+Střední Čechy;2023;muži;66;Pomocný ukazatel (Tx);1312769.874
+Střední Čechy;2023;muži;66;Naděje dožití (ex);15.96483084
+Střední Čechy;2023;muži;67;Počet zemřelých (Dx);146.0
+Střední Čechy;2023;muži;67;Počet obyvatel (Px);7689.0
+Střední Čechy;2023;muži;67;Míra úmrtnosti (mx);0.020366482
+Střední Čechy;2023;muži;67;Pravděpodobnost úmrtí (qx);0.020161176
+Střední Čechy;2023;muži;67;Tabulkový počet dožívajících (lx);80695.40687
+Střední Čechy;2023;muži;67;Tabulkový počet zemřelých (dx);1626.914292
+Střední Čechy;2023;muži;67;Tabulkový počet žijících (Lx);79881.94972
+Střední Čechy;2023;muži;67;Pomocný ukazatel (Tx);1231307.739
+Střední Čechy;2023;muži;67;Naděje dožití (ex);15.2587091
+Střední Čechy;2023;muži;68;Počet zemřelých (Dx);150.0
+Střední Čechy;2023;muži;68;Počet obyvatel (Px);7605.0
+Střední Čechy;2023;muži;68;Míra úmrtnosti (mx);0.022071307
+Střední Čechy;2023;muži;68;Pravděpodobnost úmrtí (qx);0.021830394
+Střední Čechy;2023;muži;68;Tabulkový počet dožívajících (lx);79068.49258
+Střední Čechy;2023;muži;68;Tabulkový počet zemřelých (dx);1726.096373
+Střední Čechy;2023;muži;68;Tabulkový počet žijících (Lx);78205.44439
+Střední Čechy;2023;muži;68;Pomocný ukazatel (Tx);1151425.789
+Střední Čechy;2023;muži;68;Naděje dožití (ex);14.56238448
+Střední Čechy;2023;muži;69;Počet zemřelých (Dx);175.0
+Střední Čechy;2023;muži;69;Počet obyvatel (Px);7478.0
+Střední Čechy;2023;muži;69;Míra úmrtnosti (mx);0.024005336
+Střední Čechy;2023;muži;69;Pravděpodobnost úmrtí (qx);0.023720625
+Střední Čechy;2023;muži;69;Tabulkový počet dožívajících (lx);77342.39621
+Střední Čechy;2023;muži;69;Tabulkový počet zemřelých (dx);1834.609985
+Střední Čechy;2023;muži;69;Tabulkový počet žijících (Lx);76425.09121
+Střední Čechy;2023;muži;69;Pomocný ukazatel (Tx);1073220.345
+Střední Čechy;2023;muži;69;Naděje dožití (ex);13.8762231
+Střední Čechy;2023;muži;70;Počet zemřelých (Dx);194.0
+Střední Čechy;2023;muži;70;Počet obyvatel (Px);7367.0
+Střední Čechy;2023;muži;70;Míra úmrtnosti (mx);0.026223654
+Střední Čechy;2023;muži;70;Pravděpodobnost úmrtí (qx);0.025884264
+Střední Čechy;2023;muži;70;Tabulkový počet dožívajících (lx);75507.78622
+Střední Čechy;2023;muži;70;Tabulkový počet zemřelých (dx);1954.463484
+Střední Čechy;2023;muži;70;Tabulkový počet žijících (Lx);74530.55448
+Střední Čechy;2023;muži;70;Pomocný ukazatel (Tx);996795.2538
+Střední Čechy;2023;muži;70;Naděje dožití (ex);13.20122472
+Střední Čechy;2023;muži;71;Počet zemřelých (Dx);188.0
+Střední Čechy;2023;muži;71;Počet obyvatel (Px);7163.0
+Střední Čechy;2023;muži;71;Míra úmrtnosti (mx);0.028782383
+Střední Čechy;2023;muži;71;Pravděpodobnost úmrtí (qx);0.028374046
+Střední Čechy;2023;muži;71;Tabulkový počet dožívajících (lx);73553.32274
+Střední Čechy;2023;muži;71;Tabulkový počet zemřelých (dx);2087.005381
+Střední Čechy;2023;muži;71;Tabulkový počet žijících (Lx);72509.82005
+Střední Čechy;2023;muži;71;Pomocný ukazatel (Tx);922264.6993
+Střední Čechy;2023;muži;71;Naděje dožití (ex);12.53872245
+Střední Čechy;2023;muži;72;Počet zemřelých (Dx);242.0
+Střední Čechy;2023;muži;72;Počet obyvatel (Px);6785.0
+Střední Čechy;2023;muži;72;Míra úmrtnosti (mx);0.031744867
+Střední Čechy;2023;muži;72;Pravděpodobnost úmrtí (qx);0.031248871
+Střední Čechy;2023;muži;72;Tabulkový počet dožívajících (lx);71466.31736
+Střední Čechy;2023;muži;72;Tabulkový počet zemřelých (dx);2233.241763
+Střední Čechy;2023;muži;72;Tabulkový počet žijících (Lx);70349.69647
+Střední Čechy;2023;muži;72;Pomocný ukazatel (Tx);849754.8793
+Střední Čechy;2023;muži;72;Naděje dožití (ex);11.89028497
+Střední Čechy;2023;muži;73;Počet zemřelých (Dx);202.0
+Střední Čechy;2023;muži;73;Počet obyvatel (Px);6523.0
+Střední Čechy;2023;muži;73;Míra úmrtnosti (mx);0.035164653
+Střední Čechy;2023;muži;73;Pravděpodobnost úmrtí (qx);0.034557059
+Střední Čechy;2023;muži;73;Tabulkový počet dožívajících (lx);69233.07559
+Střední Čechy;2023;muži;73;Tabulkový počet zemřelých (dx);2392.491479
+Střední Čechy;2023;muži;73;Tabulkový počet žijících (Lx);68036.82985
+Střední Čechy;2023;muži;73;Pomocný ukazatel (Tx);779405.1828
+Střední Čechy;2023;muži;73;Naděje dožití (ex);11.25769982
+Střední Čechy;2023;muži;74;Počet zemřelých (Dx);254.0
+Střední Čechy;2023;muži;74;Počet obyvatel (Px);6352.0
+Střední Čechy;2023;muži;74;Míra úmrtnosti (mx);0.039095644
+Střední Čechy;2023;muži;74;Pravděpodobnost úmrtí (qx);0.038346062
+Střední Čechy;2023;muži;74;Tabulkový počet dožívajících (lx);66840.58411
+Střední Čechy;2023;muži;74;Tabulkový počet zemřelých (dx);2563.073194
+Střední Čechy;2023;muži;74;Tabulkový počet žijících (Lx);65559.04752
+Střední Čechy;2023;muži;74;Pomocný ukazatel (Tx);711368.353
+Střední Čechy;2023;muži;74;Naděje dožití (ex);10.64276087
+Střední Čechy;2023;muži;75;Počet zemřelých (Dx);256.0
+Střední Čechy;2023;muži;75;Počet obyvatel (Px);6274.0
+Střední Čechy;2023;muži;75;Míra úmrtnosti (mx);0.043589028
+Střední Čechy;2023;muži;75;Pravděpodobnost úmrtí (qx);0.042659289
+Střední Čechy;2023;muži;75;Tabulkový počet dožívajících (lx);64277.51092
+Střední Čechy;2023;muži;75;Tabulkový počet zemřelých (dx);2742.032924
+Střední Čechy;2023;muži;75;Tabulkový počet žijících (Lx);62906.49446
+Střední Čechy;2023;muži;75;Pomocný ukazatel (Tx);645809.3054
+Střední Čechy;2023;muži;75;Naděje dožití (ex);10.04720463
+Střední Čechy;2023;muži;76;Počet zemřelých (Dx);316.0
+Střední Čechy;2023;muži;76;Počet obyvatel (Px);5920.0
+Střední Čechy;2023;muži;76;Míra úmrtnosti (mx);0.048677979
+Střední Čechy;2023;muži;76;Pravděpodobnost úmrtí (qx);0.047521357
+Střední Čechy;2023;muži;76;Tabulkový počet dožívajících (lx);61535.47799
+Střední Čechy;2023;muži;76;Tabulkový počet zemřelých (dx);2924.249428
+Střední Čechy;2023;muži;76;Tabulkový počet žijících (Lx);60073.35328
+Střední Čechy;2023;muži;76;Pomocný ukazatel (Tx);582902.811
+Střední Čechy;2023;muži;76;Naděje dožití (ex);9.472629936
+Střední Čechy;2023;muži;77;Počet zemřelých (Dx);252.0
+Střední Čechy;2023;muži;77;Počet obyvatel (Px);4931.0
+Střední Čechy;2023;muži;77;Míra úmrtnosti (mx);0.054381665
+Střední Čechy;2023;muži;77;Pravděpodobnost úmrtí (qx);0.052942124
+Střední Čechy;2023;muži;77;Tabulkový počet dožívajících (lx);58611.22857
+Střední Čechy;2023;muži;77;Tabulkový počet zemřelých (dx);3103.002944
+Střední Čechy;2023;muži;77;Tabulkový počet žijících (Lx);57059.72709
+Střední Čechy;2023;muži;77;Pomocný ukazatel (Tx);522829.4577
+Střední Čechy;2023;muži;77;Naděje dožití (ex);8.920295146
+Střední Čechy;2023;muži;78;Počet zemřelých (Dx);256.0
+Střední Čechy;2023;muži;78;Počet obyvatel (Px);4202.0
+Střední Čechy;2023;muži;78;Míra úmrtnosti (mx);0.060713575
+Střední Čechy;2023;muži;78;Pravděpodobnost úmrtí (qx);0.058924807
+Střední Čechy;2023;muži;78;Tabulkový počet dožívajících (lx);55508.22562
+Střední Čechy;2023;muži;78;Tabulkový počet zemřelých (dx);3270.81147
+Střední Čechy;2023;muži;78;Tabulkový počet žijících (Lx);53872.81989
+Střední Čechy;2023;muži;78;Pomocný ukazatel (Tx);465769.7306
+Střední Čechy;2023;muži;78;Naděje dožití (ex);8.391003773
+Střední Čechy;2023;muži;79;Počet zemřelých (Dx);277.0
+Střední Čechy;2023;muži;79;Počet obyvatel (Px);3877.0
+Střední Čechy;2023;muži;79;Míra úmrtnosti (mx);0.067689762
+Střední Čechy;2023;muži;79;Pravděpodobnost úmrtí (qx);0.065473809
+Střední Čechy;2023;muži;79;Tabulkový počet dožívajících (lx);52237.41415
+Střední Čechy;2023;muži;79;Tabulkový počet zemřelých (dx);3420.182482
+Střední Čechy;2023;muži;79;Tabulkový počet žijících (Lx);50527.32291
+Střední Čechy;2023;muži;79;Pomocný ukazatel (Tx);411896.9107
+Střední Čechy;2023;muži;79;Naděje dožití (ex);7.885093805
+Střední Čechy;2023;muži;80;Počet zemřelých (Dx);263.0
+Střední Čechy;2023;muži;80;Počet obyvatel (Px);3290.0
+Střední Čechy;2023;muži;80;Míra úmrtnosti (mx);0.075314892
+Střední Čechy;2023;muži;80;Pravděpodobnost úmrtí (qx);0.072581652
+Střední Čechy;2023;muži;80;Tabulkový počet dožívajících (lx);48817.23167
+Střední Čechy;2023;muži;80;Tabulkový počet zemřelých (dx);3543.235329
+Střední Čechy;2023;muži;80;Tabulkový počet žijících (Lx);47045.61401
+Střední Čechy;2023;muži;80;Pomocný ukazatel (Tx);361369.5878
+Střední Čechy;2023;muži;80;Naděje dožití (ex);7.402500622
+Střední Čechy;2023;muži;81;Počet zemřelých (Dx);232.0
+Střední Čechy;2023;muži;81;Počet obyvatel (Px);2682.0
+Střední Čechy;2023;muži;81;Míra úmrtnosti (mx);0.083749355
+Střední Čechy;2023;muži;81;Pravděpodobnost úmrtí (qx);0.080383329
+Střední Čechy;2023;muži;81;Tabulkový počet dožívajících (lx);45273.99634
+Střední Čechy;2023;muži;81;Tabulkový počet zemřelých (dx);3639.27453
+Střední Čechy;2023;muži;81;Tabulkový počet žijících (Lx);43454.35908
+Střední Čechy;2023;muži;81;Pomocný ukazatel (Tx);314323.9738
+Střední Čechy;2023;muži;81;Naděje dožití (ex);6.942704404
+Střední Čechy;2023;muži;82;Počet zemřelých (Dx);221.0
+Střední Čechy;2023;muži;82;Počet obyvatel (Px);2313.0
+Střední Čechy;2023;muži;82;Míra úmrtnosti (mx);0.093037638
+Střední Čechy;2023;muži;82;Pravděpodobnost úmrtí (qx);0.088902021
+Střední Čechy;2023;muži;82;Tabulkový počet dožívajících (lx);41634.72181
+Střední Čechy;2023;muži;82;Tabulkový počet zemřelých (dx);3701.410917
+Střední Čechy;2023;muži;82;Tabulkový počet žijících (Lx);39784.01635
+Střední Čechy;2023;muži;82;Pomocný ukazatel (Tx);270869.6147
+Střední Čechy;2023;muži;82;Naděje dožití (ex);6.505858642
+Střední Čechy;2023;muži;83;Počet zemřelých (Dx);186.0
+Střední Čechy;2023;muži;83;Počet obyvatel (Px);1949.0
+Střední Čechy;2023;muži;83;Míra úmrtnosti (mx);0.10331028
+Střední Čechy;2023;muži;83;Pravděpodobnost úmrtí (qx);0.098235892
+Střední Čechy;2023;muži;83;Tabulkový počet dožívajících (lx);37933.3109
+Střední Čechy;2023;muži;83;Tabulkový počet zemřelých (dx);3726.41262
+Střední Čechy;2023;muži;83;Tabulkový počet žijících (Lx);36070.10459
+Střední Čechy;2023;muži;83;Pomocný ukazatel (Tx);231085.5984
+Střední Čechy;2023;muži;83;Naděje dožití (ex);6.091891083
+Střední Čechy;2023;muži;84;Počet zemřelých (Dx);163.0
+Střední Čechy;2023;muži;84;Počet obyvatel (Px);1610.0
+Střední Čechy;2023;muži;84;Míra úmrtnosti (mx);0.114669147
+Střední Čechy;2023;muži;84;Pravděpodobnost úmrtí (qx);0.108451147
+Střední Čechy;2023;muži;84;Tabulkový počet dožívajících (lx);34206.89828
+Střední Čechy;2023;muži;84;Tabulkový počet zemřelých (dx);3709.777342
+Střední Čechy;2023;muži;84;Tabulkový počet žijících (Lx);32352.00961
+Střední Čechy;2023;muži;84;Pomocný ukazatel (Tx);195015.4938
+Střední Čechy;2023;muži;84;Naděje dožití (ex);5.701057495
+Střední Čechy;2023;muži;85;Počet zemřelých (Dx);195.0
+Střední Čechy;2023;muži;85;Počet obyvatel (Px);1375.0
+Střední Čechy;2023;muži;85;Míra úmrtnosti (mx);0.127175776
+Střední Čechy;2023;muži;85;Pravděpodobnost úmrtí (qx);0.119572419
+Střední Čechy;2023;muži;85;Tabulkový počet dožívajících (lx);30497.12093
+Střední Čechy;2023;muži;85;Tabulkový počet zemřelých (dx);3646.614506
+Střední Čechy;2023;muži;85;Tabulkový počet žijících (Lx);28673.81368
+Střední Čechy;2023;muži;85;Pomocný ukazatel (Tx);162663.4842
+Střední Čechy;2023;muži;85;Naděje dožití (ex);5.333732471
+Střední Čechy;2023;muži;86;Počet zemřelých (Dx);136.0
+Střední Čechy;2023;muži;86;Počet obyvatel (Px);1148.0
+Střední Čechy;2023;muži;86;Míra úmrtnosti (mx);0.140832057
+Střední Čechy;2023;muži;86;Pravděpodobnost úmrtí (qx);0.13156759
+Střední Čechy;2023;muži;86;Tabulkový počet dožívajících (lx);26850.50643
+Střední Čechy;2023;muži;86;Tabulkový počet zemřelých (dx);3532.656415
+Střední Čechy;2023;muži;86;Tabulkový počet žijících (Lx);25084.17822
+Střední Čechy;2023;muži;86;Pomocný ukazatel (Tx);133989.6705
+Střední Čechy;2023;muži;86;Naděje dožití (ex);4.99021018
+Střední Čechy;2023;muži;87;Počet zemřelých (Dx);145.0
+Střední Čechy;2023;muži;87;Počet obyvatel (Px);971.0
+Střední Čechy;2023;muži;87;Míra úmrtnosti (mx);0.155522015
+Střední Čechy;2023;muži;87;Pravděpodobnost úmrtí (qx);0.144301022
+Střední Čechy;2023;muži;87;Tabulkový počet dožívajících (lx);23317.85001
+Střední Čechy;2023;muži;87;Tabulkový počet zemřelých (dx);3364.789583
+Střední Čechy;2023;muži;87;Tabulkový počet žijících (Lx);21635.45522
+Střední Čechy;2023;muži;87;Pomocný ukazatel (Tx);108905.4923
+Střední Čechy;2023;muži;87;Naděje dožití (ex);4.670477433
+Střední Čechy;2023;muži;88;Počet zemřelých (Dx);143.0
+Střední Čechy;2023;muži;88;Počet obyvatel (Px);795.0
+Střední Čechy;2023;muži;88;Míra úmrtnosti (mx);0.171046229
+Střední Čechy;2023;muži;88;Pravděpodobnost úmrtí (qx);0.157570324
+Střední Čechy;2023;muži;88;Tabulkový počet dožívajících (lx);19953.06043
+Střední Čechy;2023;muži;88;Tabulkový počet zemřelých (dx);3144.010201
+Střední Čechy;2023;muži;88;Tabulkový počet žijících (Lx);18381.05533
+Střední Čechy;2023;muži;88;Pomocný ukazatel (Tx);87270.03706
+Střední Čechy;2023;muži;88;Naděje dožití (ex);4.37376699
+Střední Čechy;2023;muži;89;Počet zemřelých (Dx);147.0
+Střední Čechy;2023;muži;89;Počet obyvatel (Px);661.0
+Střední Čechy;2023;muži;89;Míra úmrtnosti (mx);0.187143286
+Střední Čechy;2023;muži;89;Pravděpodobnost úmrtí (qx);0.171130339
+Střední Čechy;2023;muži;89;Tabulkový počet dožívajících (lx);16809.05023
+Střední Čechy;2023;muži;89;Tabulkový počet zemřelých (dx);2876.538462
+Střední Čechy;2023;muži;89;Tabulkový počet žijících (Lx);15370.781
+Střední Čechy;2023;muži;89;Pomocný ukazatel (Tx);68888.98173
+Střední Čechy;2023;muži;89;Naděje dožití (ex);4.098326841
+Střední Čechy;2023;muži;90;Počet zemřelých (Dx);113.0
+Střední Čechy;2023;muži;90;Počet obyvatel (Px);542.0
+Střední Čechy;2023;muži;90;Míra úmrtnosti (mx);0.203490898
+Střední Čechy;2023;muži;90;Pravděpodobnost úmrtí (qx);0.184698651
+Střední Čechy;2023;muži;90;Tabulkový počet dožívajících (lx);13932.51177
+Střední Čechy;2023;muži;90;Tabulkový počet zemřelých (dx);2573.316121
+Střední Čechy;2023;muži;90;Tabulkový počet žijících (Lx);12645.85371
+Střední Čechy;2023;muži;90;Pomocný ukazatel (Tx);53518.20073
+Střední Čechy;2023;muži;90;Naděje dožití (ex);3.841245687
+Střední Čechy;2023;muži;91;Počet zemřelých (Dx);104.0
+Střední Čechy;2023;muži;91;Počet obyvatel (Px);427.0
+Střední Čechy;2023;muži;91;Míra úmrtnosti (mx);0.222206977
+Střední Čechy;2023;muži;91;Pravděpodobnost úmrtí (qx);0.199987652
+Střední Čechy;2023;muži;91;Tabulkový počet dožívajících (lx);11359.19565
+Střední Čechy;2023;muži;91;Tabulkový počet zemřelých (dx);2271.698861
+Střední Čechy;2023;muži;91;Tabulkový počet žijících (Lx);10223.34621
+Střední Čechy;2023;muži;91;Pomocný ukazatel (Tx);40872.34703
+Střední Čechy;2023;muži;91;Naděje dožití (ex);3.598172644
+Střední Čechy;2023;muži;92;Počet zemřelých (Dx);99.0
+Střední Čechy;2023;muži;92;Počet obyvatel (Px);333.0
+Střední Čechy;2023;muži;92;Míra úmrtnosti (mx);0.242096027
+Střední Čechy;2023;muži;92;Pravděpodobnost úmrtí (qx);0.215955092
+Střední Čechy;2023;muži;92;Tabulkový počet dožívajících (lx);9087.496784
+Střední Čechy;2023;muži;92;Tabulkový počet zemřelých (dx);1962.491206
+Střední Čechy;2023;muži;92;Tabulkový počet žijících (Lx);8106.251181
+Střední Čechy;2023;muži;92;Pomocný ukazatel (Tx);30649.00081
+Střední Čechy;2023;muži;92;Naděje dožití (ex);3.372656028
+Střední Čechy;2023;muži;93;Počet zemřelých (Dx);90.0
+Střední Čechy;2023;muži;93;Počet obyvatel (Px);237.0
+Střední Čechy;2023;muži;93;Míra úmrtnosti (mx);0.263138746
+Střední Čechy;2023;muži;93;Pravděpodobnost úmrtí (qx);0.232543185
+Střední Čechy;2023;muži;93;Tabulkový počet dožívajících (lx);7125.005578
+Střední Čechy;2023;muži;93;Tabulkový počet zemřelých (dx);1656.87149
+Střední Čechy;2023;muži;93;Tabulkový počet žijících (Lx);6296.569833
+Střední Čechy;2023;muži;93;Pomocný ukazatel (Tx);22542.74963
+Střední Čechy;2023;muži;93;Naděje dožití (ex);3.163892208
+Střední Čechy;2023;muži;94;Počet zemřelých (Dx);53.0
+Střední Čechy;2023;muži;94;Počet obyvatel (Px);155.0
+Střední Čechy;2023;muži;94;Míra úmrtnosti (mx);0.285298643
+Střední Čechy;2023;muži;94;Pravděpodobnost úmrtí (qx);0.249681715
+Střední Čechy;2023;muži;94;Tabulkový počet dožívajících (lx);5468.134088
+Střední Čechy;2023;muži;94;Tabulkový počet zemřelých (dx);1365.293099
+Střední Čechy;2023;muži;94;Tabulkový počet žijících (Lx);4785.487538
+Střední Čechy;2023;muži;94;Pomocný ukazatel (Tx);16246.1798
+Střední Čechy;2023;muži;94;Naděje dožití (ex);2.971064633
+Střední Čechy;2023;muži;95;Počet zemřelých (Dx);29.0
+Střední Čechy;2023;muži;95;Počet obyvatel (Px);95.0
+Střední Čechy;2023;muži;95;Míra úmrtnosti (mx);0.308520908
+Střední Čechy;2023;muži;95;Pravděpodobnost úmrtí (qx);0.267288814
+Střední Čechy;2023;muži;95;Tabulkový počet dožívajících (lx);4102.840989
+Střední Čechy;2023;muži;95;Tabulkový počet zemřelých (dx);1096.643504
+Střední Čechy;2023;muži;95;Tabulkový počet žijících (Lx);3554.519237
+Střední Čechy;2023;muži;95;Pomocný ukazatel (Tx);11460.69226
+Střední Čechy;2023;muži;95;Naděje dožití (ex);2.793355212
+Střední Čechy;2023;muži;96;Počet zemřelých (Dx);25.0
+Střední Čechy;2023;muži;96;Počet obyvatel (Px);71.0
+Střední Čechy;2023;muži;96;Míra úmrtnosti (mx);0.332731791
+Střední Čechy;2023;muži;96;Pravděpodobnost úmrtí (qx);0.285272222
+Střední Čechy;2023;muži;96;Tabulkový počet dožívajících (lx);3006.197485
+Střední Čechy;2023;muži;96;Tabulkový počet zemřelých (dx);857.584636
+Střední Čechy;2023;muži;96;Tabulkový počet žijících (Lx);2577.405167
+Střední Čechy;2023;muži;96;Pomocný ukazatel (Tx);7906.173022
+Střední Čechy;2023;muži;96;Naděje dožití (ex);2.629957965
+Střední Čechy;2023;muži;97;Počet zemřelých (Dx);23.0
+Střední Čechy;2023;muži;97;Počet obyvatel (Px);43.0
+Střední Čechy;2023;muži;97;Míra úmrtnosti (mx);0.357838575
+Střední Čechy;2023;muži;97;Pravděpodobnost úmrtí (qx);0.303531021
+Střední Čechy;2023;muži;97;Tabulkový počet dožívajících (lx);2148.612849
+Střední Čechy;2023;muži;97;Tabulkový počet zemřelých (dx);652.1706518
+Střední Čechy;2023;muži;97;Tabulkový počet žijících (Lx);1822.527523
+Střední Čechy;2023;muži;97;Pomocný ukazatel (Tx);5328.767855
+Střední Čechy;2023;muži;97;Naděje dožití (ex);2.480096801
+Střední Čechy;2023;muži;98;Počet zemřelých (Dx);10.0
+Střední Čechy;2023;muži;98;Počet obyvatel (Px);24.0
+Střední Čechy;2023;muži;98;Míra úmrtnosti (mx);0.383730254
+Střední Čechy;2023;muži;98;Pravděpodobnost úmrtí (qx);0.321957783
+Střední Čechy;2023;muži;98;Tabulkový počet dožívajících (lx);1496.442197
+Střední Čechy;2023;muži;98;Tabulkový počet zemřelých (dx);481.7912124
+Střední Čechy;2023;muži;98;Tabulkový počet žijících (Lx);1255.546591
+Střední Čechy;2023;muži;98;Pomocný ukazatel (Tx);3506.240331
+Střední Čechy;2023;muži;98;Naděje dožití (ex);2.343050963
+Střední Čechy;2023;muži;99;Počet zemřelých (Dx);10.0
+Střední Čechy;2023;muži;99;Počet obyvatel (Px);15.0
+Střední Čechy;2023;muži;99;Míra úmrtnosti (mx);0.410278926
+Střední Čechy;2023;muži;99;Pravděpodobnost úmrtí (qx);0.340441035
+Střední Čechy;2023;muži;99;Tabulkový počet dožívajících (lx);1014.650985
+Střední Čechy;2023;muži;99;Tabulkový počet zemřelých (dx);345.4288315
+Střední Čechy;2023;muži;99;Tabulkový počet žijících (Lx);841.9365692
+Střední Čechy;2023;muži;99;Pomocný ukazatel (Tx);2250.69374
+Střední Čechy;2023;muži;99;Naděje dožití (ex);2.218194999
+Střední Čechy;2023;muži;100;Počet zemřelých (Dx);5.0
+Střední Čechy;2023;muži;100;Počet obyvatel (Px);8.0
+Střední Čechy;2023;muži;100;Míra úmrtnosti (mx);0.437341927
+Střední Čechy;2023;muži;100;Pravděpodobnost úmrtí (qx);0.358867931
+Střední Čechy;2023;muži;100;Tabulkový počet dožívajících (lx);669.2221535
+Střední Čechy;2023;muži;100;Tabulkový počet zemřelých (dx);240.1623694
+Střední Čechy;2023;muži;100;Tabulkový počet žijících (Lx);549.1409688
+Střední Čechy;2023;muži;100;Pomocný ukazatel (Tx);1408.757171
+Střední Čechy;2023;muži;100;Naděje dožití (ex);2.105066552
+Střední Čechy;2023;muži;101;Počet zemřelých (Dx);1.0
+Střední Čechy;2023;muži;101;Počet obyvatel (Px);4.0
+Střední Čechy;2023;muži;101;Míra úmrtnosti (mx);0.46476464
+Střední Čechy;2023;muži;101;Pravděpodobnost úmrtí (qx);0.377126994
+Střední Čechy;2023;muži;101;Tabulkový počet dožívajících (lx);429.0597841
+Střední Čechy;2023;muži;101;Tabulkový počet zemřelých (dx);161.8100265
+Střední Čechy;2023;muži;101;Tabulkový počet žijících (Lx);348.1547708
+Střední Čechy;2023;muži;101;Pomocný ukazatel (Tx);859.6162023
+Střední Čechy;2023;muži;101;Naděje dožití (ex);2.003488172
+Střední Čechy;2023;muži;102;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;102;Počet obyvatel (Px);0.0
+Střední Čechy;2023;muži;102;Míra úmrtnosti (mx);0.492383882
+Střední Čechy;2023;muži;102;Pravděpodobnost úmrtí (qx);0.395110789
+Střední Čechy;2023;muži;102;Tabulkový počet dožívajících (lx);267.2497575
+Střední Čechy;2023;muži;102;Tabulkový počet zemřelých (dx);105.5932627
+Střední Čechy;2023;muži;102;Tabulkový počet žijících (Lx);214.4531262
+Střední Čechy;2023;muži;102;Pomocný ukazatel (Tx);511.4614315
+Střední Čechy;2023;muži;102;Naděje dožití (ex);1.91379568
+Střední Čechy;2023;muži;103;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;103;Počet obyvatel (Px);1.0
+Střední Čechy;2023;muži;103;Míra úmrtnosti (mx);0.520031719
+Střední Čechy;2023;muži;103;Pravděpodobnost úmrtí (qx);0.412718392
+Střední Čechy;2023;muži;103;Tabulkový počet dožívajících (lx);161.6564949
+Střední Čechy;2023;muži;103;Tabulkový počet zemřelých (dx);66.71860852
+Střední Čechy;2023;muži;103;Tabulkový počet žijících (Lx);128.2971906
+Střední Čechy;2023;muži;103;Pomocný ukazatel (Tx);297.0083053
+Střední Čechy;2023;muži;103;Naděje dožití (ex);1.837280374
+Střední Čechy;2023;muži;104;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;104;Počet obyvatel (Px);1.0
+Střední Čechy;2023;muži;104;Míra úmrtnosti (mx);0.547539521
+Střední Čechy;2023;muži;104;Pravděpodobnost úmrtí (qx);0.429857529
+Střední Čechy;2023;muži;104;Tabulkový počet dožívajících (lx);94.93788633
+Střední Čechy;2023;muži;104;Tabulkový počet zemřelých (dx);40.80976519
+Střední Čechy;2023;muži;104;Tabulkový počet žijících (Lx);74.53300373
+Střední Čechy;2023;muži;104;Pomocný ukazatel (Tx);168.7111147
+Střední Čechy;2023;muži;104;Naděje dožití (ex);1.777068368
+Střední Čechy;2023;muži;105;Počet zemřelých (Dx);0.0
+Střední Čechy;2023;muži;105;Počet obyvatel (Px);0.0
+Střední Čechy;2023;muži;105;Míra úmrtnosti (mx);0.574742056
+Střední Čechy;2023;muži;105;Pravděpodobnost úmrtí (qx);1.0
+Střední Čechy;2023;muži;105;Tabulkový počet dožívajících (lx);54.12812114
+Střední Čechy;2023;muži;105;Tabulkový počet zemřelých (dx);54.12812114
+Střední Čechy;2023;muži;105;Tabulkový počet žijících (Lx);94.17811099
+Střední Čechy;2023;muži;105;Pomocný ukazatel (Tx);94.17811099
+Střední Čechy;2023;muži;105;Naděje dožití (ex);1.739910956

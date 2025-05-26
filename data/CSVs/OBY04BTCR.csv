@@ -1,0 +1,955 @@
+Stát;Roky (ČR);Pohlaví;Věk (roky);Ukazatel;value
+Česko;2023;muži;0;Počet zemřelých (Dx);112.0
+Česko;2023;muži;0;Počet obyvatel (Px);49700.0
+Česko;2023;muži;0;Míra úmrtnosti (mx);0.002253521
+Česko;2023;muži;0;Pravděpodobnost úmrtí (qx);0.00224901
+Česko;2023;muži;0;Tabulkový počet dožívajících (lx);100000.0
+Česko;2023;muži;0;Tabulkový počet zemřelých (dx);224.9010435
+Česko;2023;muži;0;Tabulkový počet žijících (Lx);99799.83807
+Česko;2023;muži;0;Pomocný ukazatel (Tx);7689409.283
+Česko;2023;muži;0;Naděje dožití (ex);76.89409283
+Česko;2023;muži;1;Počet zemřelých (Dx);10.0
+Česko;2023;muži;1;Počet obyvatel (Px);56060.0
+Česko;2023;muži;1;Míra úmrtnosti (mx);0.000185189
+Česko;2023;muži;1;Pravděpodobnost úmrtí (qx);0.000185172
+Česko;2023;muži;1;Tabulkový počet dožívajících (lx);99775.09896
+Česko;2023;muži;1;Tabulkový počet zemřelých (dx);18.47552986
+Česko;2023;muži;1;Tabulkový počet žijících (Lx);99765.86119
+Česko;2023;muži;1;Pomocný ukazatel (Tx);7589609.445
+Česko;2023;muži;1;Naděje dožití (ex);76.06717031
+Česko;2023;muži;2;Počet zemřelých (Dx);6.0
+Česko;2023;muži;2;Počet obyvatel (Px);58404.0
+Česko;2023;muži;2;Míra úmrtnosti (mx);0.000110421
+Česko;2023;muži;2;Pravděpodobnost úmrtí (qx);0.000110415
+Česko;2023;muži;2;Tabulkový počet dožívajících (lx);99756.62343
+Česko;2023;muži;2;Tabulkový počet zemřelých (dx);11.01465134
+Česko;2023;muži;2;Tabulkový počet žijících (Lx);99751.1161
+Česko;2023;muži;2;Pomocný ukazatel (Tx);7489843.583
+Česko;2023;muži;2;Naděje dožití (ex);75.0811658
+Česko;2023;muži;3;Počet zemřelých (Dx);8.0
+Česko;2023;muži;3;Počet obyvatel (Px);58387.0
+Česko;2023;muži;3;Míra úmrtnosti (mx);0.000123042
+Česko;2023;muži;3;Pravděpodobnost úmrtí (qx);0.000123034
+Česko;2023;muži;3;Tabulkový počet dožívajících (lx);99745.60878
+Česko;2023;muži;3;Tabulkový počet zemřelých (dx);12.2721038
+Česko;2023;muži;3;Tabulkový počet žijících (Lx);99739.47272
+Česko;2023;muži;3;Pomocný ukazatel (Tx);7390092.467
+Česko;2023;muži;3;Naděje dožití (ex);74.08940161
+Česko;2023;muži;4;Počet zemřelých (Dx);8.0
+Česko;2023;muži;4;Počet obyvatel (Px);59734.0
+Česko;2023;muži;4;Míra úmrtnosti (mx);0.00010905
+Česko;2023;muži;4;Pravděpodobnost úmrtí (qx);0.000109045
+Česko;2023;muži;4;Tabulkový počet dožívajících (lx);99733.33667
+Česko;2023;muži;4;Tabulkový počet zemřelých (dx);10.87537079
+Česko;2023;muži;4;Tabulkový počet žijících (Lx);99727.89899
+Česko;2023;muži;4;Pomocný ukazatel (Tx);7290352.995
+Česko;2023;muži;4;Naděje dožití (ex);73.09845672
+Česko;2023;muži;5;Počet zemřelých (Dx);5.0
+Česko;2023;muži;5;Počet obyvatel (Px);60703.0
+Česko;2023;muži;5;Míra úmrtnosti (mx);8.41e-05
+Česko;2023;muži;5;Pravděpodobnost úmrtí (qx);8.4e-05
+Česko;2023;muži;5;Tabulkový počet dožívajících (lx);99722.4613
+Česko;2023;muži;5;Tabulkový počet zemřelých (dx);8.381463728
+Česko;2023;muži;5;Tabulkový počet žijících (Lx);99718.27057
+Česko;2023;muži;5;Pomocný ukazatel (Tx);7190625.096
+Česko;2023;muži;5;Naděje dožití (ex);72.10637405
+Česko;2023;muži;6;Počet zemřelých (Dx);3.0
+Česko;2023;muži;6;Počet obyvatel (Px);61091.0
+Česko;2023;muži;6;Míra úmrtnosti (mx);6.82e-05
+Česko;2023;muži;6;Pravděpodobnost úmrtí (qx);6.82e-05
+Česko;2023;muži;6;Tabulkový počet dožívajících (lx);99714.07984
+Česko;2023;muži;6;Tabulkový počet zemřelých (dx);6.797127013
+Česko;2023;muži;6;Tabulkový počet žijících (Lx);99710.68127
+Česko;2023;muži;6;Pomocný ukazatel (Tx);7090906.825
+Česko;2023;muži;6;Naděje dožití (ex);71.11239292
+Česko;2023;muži;7;Počet zemřelých (Dx);3.0
+Česko;2023;muži;7;Počet obyvatel (Px);60566.0
+Česko;2023;muži;7;Míra úmrtnosti (mx);6.35e-05
+Česko;2023;muži;7;Pravděpodobnost úmrtí (qx);6.34e-05
+Česko;2023;muži;7;Tabulkový počet dožívajících (lx);99707.28271
+Česko;2023;muži;7;Tabulkový počet zemřelých (dx);6.326409132
+Česko;2023;muži;7;Tabulkový počet žijících (Lx);99704.11951
+Česko;2023;muži;7;Pomocný ukazatel (Tx);6991196.144
+Česko;2023;muži;7;Naděje dožití (ex);70.11720662
+Česko;2023;muži;8;Počet zemřelých (Dx);2.0
+Česko;2023;muži;8;Počet obyvatel (Px);59974.0
+Česko;2023;muži;8;Míra úmrtnosti (mx);6.5e-05
+Česko;2023;muži;8;Pravděpodobnost úmrtí (qx);6.5e-05
+Česko;2023;muži;8;Tabulkový počet dožívajících (lx);99700.9563
+Česko;2023;muži;8;Tabulkový počet zemřelých (dx);6.48121621
+Česko;2023;muži;8;Tabulkový počet žijících (Lx);99697.71569
+Česko;2023;muži;8;Pomocný ukazatel (Tx);6891492.024
+Česko;2023;muži;8;Naděje dožití (ex);69.1216241
+Česko;2023;muži;9;Počet zemřelých (Dx);4.0
+Česko;2023;muži;9;Počet obyvatel (Px);59183.0
+Česko;2023;muži;9;Míra úmrtnosti (mx);6.99e-05
+Česko;2023;muži;9;Pravděpodobnost úmrtí (qx);6.99e-05
+Česko;2023;muži;9;Tabulkový počet dožívajících (lx);99694.47508
+Česko;2023;muži;9;Tabulkový počet zemřelých (dx);6.964032178
+Česko;2023;muži;9;Tabulkový počet žijících (Lx);99690.99307
+Česko;2023;muži;9;Pomocný ukazatel (Tx);6791794.308
+Česko;2023;muži;9;Naděje dožití (ex);68.12608525
+Česko;2023;muži;10;Počet zemřelých (Dx);11.0
+Česko;2023;muži;10;Počet obyvatel (Px);58874.0
+Česko;2023;muži;10;Míra úmrtnosti (mx);7.7e-05
+Česko;2023;muži;10;Pravděpodobnost úmrtí (qx);7.7e-05
+Česko;2023;muži;10;Tabulkový počet dožívajících (lx);99687.51105
+Česko;2023;muži;10;Tabulkový počet zemřelých (dx);7.671709421
+Česko;2023;muži;10;Tabulkový počet žijících (Lx);99683.6752
+Česko;2023;muži;10;Pomocný ukazatel (Tx);6692103.315
+Česko;2023;muži;10;Naděje dožití (ex);67.13080951
+Česko;2023;muži;11;Počet zemřelých (Dx);3.0
+Česko;2023;muži;11;Počet obyvatel (Px);59321.0
+Česko;2023;muži;11;Míra úmrtnosti (mx);8.68e-05
+Česko;2023;muži;11;Pravděpodobnost úmrtí (qx);8.6774e-05
+Česko;2023;muži;11;Tabulkový počet dožívajících (lx);99679.83934
+Česko;2023;muži;11;Tabulkový počet zemřelých (dx);8.649616523
+Česko;2023;muži;11;Tabulkový počet žijících (Lx);99675.51453
+Česko;2023;muži;11;Pomocný ukazatel (Tx);6592419.64
+Česko;2023;muži;11;Naděje dožití (ex);66.13593765
+Česko;2023;muži;12;Počet zemřelých (Dx);7.0
+Česko;2023;muži;12;Počet obyvatel (Px);61435.0
+Česko;2023;muži;12;Míra úmrtnosti (mx);0.000100081
+Česko;2023;muži;12;Pravděpodobnost úmrtí (qx);0.000100076
+Česko;2023;muži;12;Tabulkový počet dožívajících (lx);99671.18973
+Česko;2023;muži;12;Tabulkový počet zemřelých (dx);9.974650279
+Česko;2023;muži;12;Tabulkový počet žijících (Lx);99666.2024
+Česko;2023;muži;12;Pomocný ukazatel (Tx);6492744.126
+Česko;2023;muži;12;Naděje dožití (ex);65.14163364
+Česko;2023;muži;13;Počet zemřelých (Dx);6.0
+Česko;2023;muži;13;Počet obyvatel (Px);63479.0
+Česko;2023;muži;13;Míra úmrtnosti (mx);0.000118501
+Česko;2023;muži;13;Pravděpodobnost úmrtí (qx);0.000118494
+Česko;2023;muži;13;Tabulkový počet dožívajících (lx);99661.21508
+Česko;2023;muži;13;Tabulkový počet zemřelých (dx);11.80922586
+Česko;2023;muži;13;Tabulkový počet žijících (Lx);99655.31046
+Česko;2023;muži;13;Pomocný ukazatel (Tx);6393077.923
+Česko;2023;muži;13;Naděje dožití (ex);64.14810334
+Česko;2023;muži;14;Počet zemřelých (Dx);6.0
+Česko;2023;muži;14;Počet obyvatel (Px);63979.0
+Česko;2023;muži;14;Míra úmrtnosti (mx);0.000144939
+Česko;2023;muži;14;Pravděpodobnost úmrtí (qx);0.000144928
+Česko;2023;muži;14;Tabulkový počet dožívajících (lx);99649.40585
+Česko;2023;muži;14;Tabulkový počet zemřelých (dx);14.44199083
+Česko;2023;muži;14;Tabulkový počet žijících (Lx);99642.18485
+Česko;2023;muži;14;Pomocný ukazatel (Tx);6293422.613
+Česko;2023;muži;14;Naděje dožití (ex);63.15564613
+Česko;2023;muži;15;Počet zemřelých (Dx);12.0
+Česko;2023;muži;15;Počet obyvatel (Px);63238.0
+Česko;2023;muži;15;Míra úmrtnosti (mx);0.000183636
+Česko;2023;muži;15;Pravděpodobnost úmrtí (qx);0.000183619
+Česko;2023;muži;15;Tabulkový počet dožívajících (lx);99634.96386
+Česko;2023;muži;15;Tabulkový počet zemřelých (dx);18.2949118
+Česko;2023;muži;15;Tabulkový počet žijících (Lx);99625.8164
+Česko;2023;muži;15;Pomocný ukazatel (Tx);6193780.428
+Česko;2023;muži;15;Naděje dožití (ex);62.164728
+Česko;2023;muži;16;Počet zemřelých (Dx);8.0
+Česko;2023;muži;16;Počet obyvatel (Px);60689.0
+Česko;2023;muži;16;Míra úmrtnosti (mx);0.000237194
+Česko;2023;muži;16;Pravděpodobnost úmrtí (qx);0.000237166
+Česko;2023;muži;16;Tabulkový počet dožívajících (lx);99616.66895
+Česko;2023;muži;16;Tabulkový počet zemřelých (dx);23.62569752
+Česko;2023;muži;16;Tabulkový počet žijících (Lx);99604.8561
+Česko;2023;muži;16;Pomocný ukazatel (Tx);6094154.612
+Česko;2023;muži;16;Naděje dožití (ex);61.17605292
+Česko;2023;muži;17;Počet zemřelých (Dx);22.0
+Česko;2023;muži;17;Počet obyvatel (Px);59663.0
+Česko;2023;muži;17;Míra úmrtnosti (mx);0.000305373
+Česko;2023;muži;17;Pravděpodobnost úmrtí (qx);0.000305327
+Česko;2023;muži;17;Tabulkový počet dožívajících (lx);99593.04325
+Česko;2023;muži;17;Tabulkový počet zemřelých (dx);30.40842423
+Česko;2023;muži;17;Tabulkový počet žijících (Lx);99577.83904
+Česko;2023;muži;17;Pomocný ukazatel (Tx);5994549.755
+Česko;2023;muži;17;Naděje dožití (ex);60.19044664
+Česko;2023;muži;18;Počet zemřelých (Dx);19.0
+Česko;2023;muži;18;Počet obyvatel (Px);58658.0
+Česko;2023;muži;18;Míra úmrtnosti (mx);0.000384016
+Česko;2023;muži;18;Pravděpodobnost úmrtí (qx);0.000383942
+Česko;2023;muži;18;Tabulkový počet dožívajících (lx);99562.63483
+Česko;2023;muži;18;Tabulkový počet zemřelých (dx);38.22629054
+Česko;2023;muži;18;Tabulkový počet žijících (Lx);99543.52168
+Česko;2023;muži;18;Pomocný ukazatel (Tx);5894971.916
+Česko;2023;muži;18;Naděje dožití (ex);59.2086773
+Česko;2023;muži;19;Počet zemřelých (Dx);31.0
+Česko;2023;muži;19;Počet obyvatel (Px);54474.0
+Česko;2023;muži;19;Míra úmrtnosti (mx);0.000465996
+Česko;2023;muži;19;Pravděpodobnost úmrtí (qx);0.000465887
+Česko;2023;muži;19;Tabulkový počet dožívajících (lx);99524.40854
+Česko;2023;muži;19;Tabulkový počet zemřelých (dx);46.36715514
+Česko;2023;muži;19;Tabulkový počet žijících (Lx);99501.22496
+Česko;2023;muži;19;Pomocný ukazatel (Tx);5795428.395
+Česko;2023;muži;19;Naděje dožití (ex);58.23122669
+Česko;2023;muži;20;Počet zemřelých (Dx);31.0
+Česko;2023;muži;20;Počet obyvatel (Px);52301.0
+Česko;2023;muži;20;Míra úmrtnosti (mx);0.000540055
+Česko;2023;muži;20;Pravděpodobnost úmrtí (qx);0.00053991
+Česko;2023;muži;20;Tabulkový počet dožívajících (lx);99478.04138
+Česko;2023;muži;20;Tabulkový počet zemřelých (dx);53.7091541
+Česko;2023;muži;20;Tabulkový počet žijících (Lx);99451.1868
+Česko;2023;muži;20;Pomocný ukazatel (Tx);5695927.17
+Česko;2023;muži;20;Naděje dožití (ex);57.25813547
+Česko;2023;muži;21;Počet zemřelých (Dx);40.0
+Česko;2023;muži;21;Počet obyvatel (Px);51663.0
+Česko;2023;muži;21;Míra úmrtnosti (mx);0.000595737
+Česko;2023;muži;21;Pravděpodobnost úmrtí (qx);0.00059556
+Česko;2023;muži;21;Tabulkový počet dožívajících (lx);99424.33223
+Česko;2023;muži;21;Tabulkový počet zemřelých (dx);59.21312617
+Česko;2023;muži;21;Tabulkový počet žijících (Lx);99394.72566
+Česko;2023;muži;21;Pomocný ukazatel (Tx);5596475.983
+Česko;2023;muži;21;Naděje dožití (ex);56.28879629
+Česko;2023;muži;22;Počet zemřelých (Dx);33.0
+Česko;2023;muži;22;Počet obyvatel (Px);51504.0
+Česko;2023;muži;22;Míra úmrtnosti (mx);0.000633163
+Česko;2023;muži;22;Pravděpodobnost úmrtí (qx);0.000632963
+Česko;2023;muži;22;Tabulkový počet dožívajících (lx);99365.1191
+Česko;2023;muži;22;Tabulkový počet zemřelých (dx);62.89443396
+Česko;2023;muži;22;Tabulkový počet žijících (Lx);99333.67188
+Česko;2023;muži;22;Pomocný ukazatel (Tx);5497081.257
+Česko;2023;muži;22;Naděje dožití (ex);55.32204165
+Česko;2023;muži;23;Počet zemřelých (Dx);26.0
+Česko;2023;muži;23;Počet obyvatel (Px);51224.0
+Česko;2023;muži;23;Míra úmrtnosti (mx);0.000657652
+Česko;2023;muži;23;Pravděpodobnost úmrtí (qx);0.000657436
+Česko;2023;muži;23;Tabulkový počet dožívajících (lx);99302.22467
+Česko;2023;muži;23;Tabulkový počet zemřelých (dx);65.28485211
+Česko;2023;muži;23;Tabulkový počet žijících (Lx);99269.58224
+Česko;2023;muži;23;Pomocný ukazatel (Tx);5397747.585
+Česko;2023;muži;23;Naděje dožití (ex);54.35676395
+Česko;2023;muži;24;Počet zemřelých (Dx);26.0
+Česko;2023;muži;24;Počet obyvatel (Px);51265.0
+Česko;2023;muži;24;Míra úmrtnosti (mx);0.000675383
+Česko;2023;muži;24;Pravděpodobnost úmrtí (qx);0.000675155
+Česko;2023;muži;24;Tabulkový počet dožívajících (lx);99236.93981
+Česko;2023;muži;24;Tabulkový počet zemřelých (dx);67.00029456
+Česko;2023;muži;24;Tabulkový počet žijících (Lx);99203.43967
+Česko;2023;muži;24;Pomocný ukazatel (Tx);5298478.003
+Česko;2023;muži;24;Naděje dožití (ex);53.39219461
+Česko;2023;muži;25;Počet zemřelých (Dx);55.0
+Česko;2023;muži;25;Počet obyvatel (Px);52275.0
+Česko;2023;muži;25;Míra úmrtnosti (mx);0.000691193
+Česko;2023;muži;25;Pravděpodobnost úmrtí (qx);0.000690954
+Česko;2023;muži;25;Tabulkový počet dožívajících (lx);99169.93952
+Česko;2023;muži;25;Tabulkový počet zemřelých (dx);68.52184792
+Česko;2023;muži;25;Tabulkový počet žijících (Lx);99135.6786
+Česko;2023;muži;25;Pomocný ukazatel (Tx);5199274.564
+Česko;2023;muži;25;Naděje dožití (ex);52.42792916
+Česko;2023;muži;26;Počet zemřelých (Dx);35.0
+Česko;2023;muži;26;Počet obyvatel (Px);52899.0
+Česko;2023;muži;26;Míra úmrtnosti (mx);0.000710203
+Česko;2023;muži;26;Pravděpodobnost úmrtí (qx);0.00070995
+Česko;2023;muži;26;Tabulkový počet dožívajících (lx);99101.41767
+Česko;2023;muži;26;Tabulkový počet zemřelých (dx);70.35709108
+Česko;2023;muži;26;Tabulkový počet žijících (Lx);99066.23913
+Česko;2023;muži;26;Pomocný ukazatel (Tx);5100138.885
+Česko;2023;muži;26;Naděje dožití (ex);51.46383377
+Česko;2023;muži;27;Počet zemřelých (Dx);28.0
+Česko;2023;muži;27;Počet obyvatel (Px);54927.0
+Česko;2023;muži;27;Míra úmrtnosti (mx);0.00073613
+Česko;2023;muži;27;Pravděpodobnost úmrtí (qx);0.000735859
+Česko;2023;muži;27;Tabulkový počet dožívajících (lx);99031.06058
+Česko;2023;muži;27;Tabulkový počet zemřelých (dx);72.87294027
+Česko;2023;muži;27;Tabulkový počet žijících (Lx);98994.62411
+Česko;2023;muži;27;Pomocný ukazatel (Tx);5001072.646
+Česko;2023;muži;27;Naděje dožití (ex);50.50004126
+Česko;2023;muži;28;Počet zemřelých (Dx);42.0
+Česko;2023;muži;28;Počet obyvatel (Px);59393.0
+Česko;2023;muži;28;Míra úmrtnosti (mx);0.00077131
+Česko;2023;muži;28;Pravděpodobnost úmrtí (qx);0.000771013
+Česko;2023;muži;28;Tabulkový počet dožívajících (lx);98958.18764
+Česko;2023;muži;28;Tabulkový počet zemřelých (dx);76.29804933
+Česko;2023;muži;28;Tabulkový počet žijících (Lx);98920.03862
+Česko;2023;muži;28;Pomocný ukazatel (Tx);4902078.022
+Česko;2023;muži;28;Naděje dožití (ex);49.53686136
+Česko;2023;muži;29;Počet zemřelých (Dx);57.0
+Česko;2023;muži;29;Počet obyvatel (Px);65702.0
+Česko;2023;muži;29;Míra úmrtnosti (mx);0.000818327
+Česko;2023;muži;29;Pravděpodobnost úmrtí (qx);0.000817992
+Česko;2023;muži;29;Tabulkový počet dožívajících (lx);98881.88959
+Česko;2023;muži;29;Tabulkový počet zemřelých (dx);80.8846243
+Česko;2023;muži;29;Tabulkový počet žijících (Lx);98841.44728
+Česko;2023;muži;29;Pomocný ukazatel (Tx);4803157.983
+Česko;2023;muži;29;Naděje dožití (ex);48.57469859
+Česko;2023;muži;30;Počet zemřelých (Dx);59.0
+Česko;2023;muži;30;Počet obyvatel (Px);69712.0
+Česko;2023;muži;30;Míra úmrtnosti (mx);0.000877214
+Česko;2023;muži;30;Pravděpodobnost úmrtí (qx);0.00087683
+Česko;2023;muži;30;Tabulkový počet dožívajících (lx);98801.00497
+Česko;2023;muži;30;Tabulkový počet zemřelých (dx);86.63165104
+Česko;2023;muži;30;Tabulkový počet žijících (Lx);98757.68914
+Česko;2023;muži;30;Pomocný ukazatel (Tx);4704316.536
+Česko;2023;muži;30;Naděje dožití (ex);47.61405552
+Česko;2023;muži;31;Počet zemřelých (Dx);66.0
+Česko;2023;muži;31;Počet obyvatel (Px);72031.0
+Česko;2023;muži;31;Míra úmrtnosti (mx);0.000945713
+Česko;2023;muži;31;Pravděpodobnost úmrtí (qx);0.000945266
+Česko;2023;muži;31;Tabulkový počet dožívajících (lx);98714.37332
+Česko;2023;muži;31;Tabulkový počet zemřelých (dx);93.31133833
+Česko;2023;muži;31;Tabulkový počet žijících (Lx);98667.71765
+Česko;2023;muži;31;Pomocný ukazatel (Tx);4605558.847
+Česko;2023;muži;31;Naděje dožití (ex);46.65540277
+Česko;2023;muži;32;Počet zemřelých (Dx);81.0
+Česko;2023;muži;32;Počet obyvatel (Px);73927.0
+Česko;2023;muži;32;Míra úmrtnosti (mx);0.001020848
+Česko;2023;muži;32;Pravděpodobnost úmrtí (qx);0.001020327
+Česko;2023;muži;32;Tabulkový počet dožívajících (lx);98621.06198
+Česko;2023;muži;32;Tabulkový počet zemřelých (dx);100.6257319
+Česko;2023;muži;32;Tabulkový počet žijících (Lx);98570.74911
+Česko;2023;muži;32;Pomocný ukazatel (Tx);4506891.129
+Česko;2023;muži;32;Naděje dožití (ex);45.69907319
+Česko;2023;muži;33;Počet zemřelých (Dx);80.0
+Česko;2023;muži;33;Počet obyvatel (Px);73385.0
+Česko;2023;muži;33;Míra úmrtnosti (mx);0.001100122
+Česko;2023;muži;33;Pravděpodobnost úmrtí (qx);0.001099517
+Česko;2023;muži;33;Tabulkový počet dožívajících (lx);98520.43625
+Česko;2023;muži;33;Tabulkový počet zemřelých (dx);108.3248727
+Česko;2023;muži;33;Tabulkový počet žijících (Lx);98466.27381
+Česko;2023;muži;33;Pomocný ukazatel (Tx);4408320.38
+Česko;2023;muži;33;Naděje dožití (ex);44.74523812
+Česko;2023;muži;34;Počet zemřelých (Dx);85.0
+Česko;2023;muži;34;Počet obyvatel (Px);73699.0
+Česko;2023;muži;34;Míra úmrtnosti (mx);0.001180869
+Česko;2023;muži;34;Pravděpodobnost úmrtí (qx);0.001180172
+Česko;2023;muži;34;Tabulkový počet dožívajících (lx);98412.11137
+Česko;2023;muži;34;Tabulkový počet zemřelých (dx);116.1432535
+Česko;2023;muži;34;Tabulkový počet žijících (Lx);98354.03975
+Česko;2023;muži;34;Pomocný ukazatel (Tx);4309854.106
+Česko;2023;muži;34;Naděje dožití (ex);43.79394005
+Česko;2023;muži;35;Počet zemřelých (Dx);100.0
+Česko;2023;muži;35;Počet obyvatel (Px);74579.0
+Česko;2023;muži;35;Míra úmrtnosti (mx);0.001260418
+Česko;2023;muži;35;Pravděpodobnost úmrtí (qx);0.001259624
+Česko;2023;muži;35;Tabulkový počet dožívajících (lx);98295.96812
+Česko;2023;muži;35;Tabulkový počet zemřelých (dx);123.8159623
+Česko;2023;muži;35;Tabulkový počet žijících (Lx);98234.06014
+Česko;2023;muži;35;Pomocný ukazatel (Tx);4211500.066
+Česko;2023;muži;35;Naděje dožití (ex);42.84509474
+Česko;2023;muži;36;Počet zemřelých (Dx);106.0
+Česko;2023;muži;36;Počet obyvatel (Px);74951.0
+Česko;2023;muži;36;Míra úmrtnosti (mx);0.001338965
+Česko;2023;muži;36;Pravděpodobnost úmrtí (qx);0.001338069
+Česko;2023;muži;36;Tabulkový počet dožívajících (lx);98172.15216
+Česko;2023;muži;36;Tabulkový počet zemřelých (dx);131.361149
+Česko;2023;muži;36;Tabulkový počet žijících (Lx);98106.47158
+Česko;2023;muži;36;Pomocný ukazatel (Tx);4113266.006
+Česko;2023;muži;36;Naděje dožití (ex);41.89850091
+Česko;2023;muži;37;Počet zemřelých (Dx);114.0
+Česko;2023;muži;37;Počet obyvatel (Px);75976.0
+Česko;2023;muži;37;Míra úmrtnosti (mx);0.001417918
+Česko;2023;muži;37;Pravděpodobnost úmrtí (qx);0.001416914
+Česko;2023;muži;37;Tabulkový počet dožívajících (lx);98040.79101
+Česko;2023;muži;37;Tabulkový počet zemřelých (dx);138.9153413
+Česko;2023;muži;37;Tabulkový počet žijících (Lx);97971.33334
+Česko;2023;muži;37;Pomocný ukazatel (Tx);4015159.535
+Česko;2023;muži;37;Naděje dožití (ex);40.95396919
+Česko;2023;muži;38;Počet zemřelých (Dx);110.0
+Česko;2023;muži;38;Počet obyvatel (Px);76683.0
+Česko;2023;muži;38;Míra úmrtnosti (mx);0.001499252
+Česko;2023;muži;38;Pravděpodobnost úmrtí (qx);0.001498129
+Česko;2023;muži;38;Tabulkový počet dožívajících (lx);97901.87567
+Česko;2023;muži;38;Tabulkový počet zemřelých (dx);146.6696681
+Česko;2023;muži;38;Tabulkový počet žijících (Lx);97828.54083
+Česko;2023;muži;38;Pomocný ukazatel (Tx);3917188.201
+Česko;2023;muži;38;Naděje dožití (ex);40.01137031
+Česko;2023;muži;39;Počet zemřelých (Dx);106.0
+Česko;2023;muži;39;Počet obyvatel (Px);76749.0
+Česko;2023;muži;39;Míra úmrtnosti (mx);0.00158574
+Česko;2023;muži;39;Pravděpodobnost úmrtí (qx);0.001584484
+Česko;2023;muži;39;Tabulkový počet dožívajících (lx);97755.206
+Česko;2023;muži;39;Tabulkový počet zemřelých (dx);154.8915256
+Česko;2023;muži;39;Tabulkový počet žijících (Lx);97677.76024
+Česko;2023;muži;39;Pomocný ukazatel (Tx);3819359.66
+Česko;2023;muži;39;Naděje dožití (ex);39.07065226
+Česko;2023;muži;40;Počet zemřelých (Dx);128.0
+Česko;2023;muži;40;Počet obyvatel (Px);77287.0
+Česko;2023;muži;40;Míra úmrtnosti (mx);0.001680835
+Česko;2023;muži;40;Pravděpodobnost úmrtí (qx);0.001679423
+Česko;2023;muži;40;Tabulkový počet dožívajících (lx);97600.31447
+Česko;2023;muži;40;Tabulkový počet zemřelých (dx);163.9122435
+Česko;2023;muži;40;Tabulkový počet žijících (Lx);97518.35835
+Česko;2023;muži;40;Pomocný ukazatel (Tx);3721681.9
+Česko;2023;muži;40;Naděje dožití (ex);38.13186382
+Česko;2023;muži;41;Počet zemřelých (Dx);159.0
+Česko;2023;muži;41;Počet obyvatel (Px);78084.0
+Česko;2023;muži;41;Míra úmrtnosti (mx);0.001787905
+Česko;2023;muži;41;Pravděpodobnost úmrtí (qx);0.001786308
+Česko;2023;muži;41;Tabulkový počet dožívajících (lx);97436.40223
+Česko;2023;muži;41;Tabulkový počet zemřelých (dx);174.0514635
+Česko;2023;muži;41;Tabulkový počet žijících (Lx);97349.3765
+Česko;2023;muži;41;Pomocný ukazatel (Tx);3624163.542
+Česko;2023;muži;41;Naděje dožití (ex);37.19516997
+Česko;2023;muži;42;Počet zemřelých (Dx);152.0
+Česko;2023;muži;42;Počet obyvatel (Px);80654.0
+Česko;2023;muži;42;Míra úmrtnosti (mx);0.001909495
+Česko;2023;muži;42;Pravděpodobnost úmrtí (qx);0.001907674
+Česko;2023;muži;42;Tabulkový počet dožívajících (lx);97262.35077
+Česko;2023;muži;42;Tabulkový počet zemřelých (dx);185.5448057
+Česko;2023;muži;42;Tabulkový počet žijících (Lx);97169.57836
+Česko;2023;muži;42;Pomocný ukazatel (Tx);3526814.165
+Česko;2023;muži;42;Naděje dožití (ex);36.26083616
+Česko;2023;muži;43;Počet zemřelých (Dx);178.0
+Česko;2023;muži;43;Počet obyvatel (Px);86788.0
+Česko;2023;muži;43;Míra úmrtnosti (mx);0.00204852
+Česko;2023;muži;43;Pravděpodobnost úmrtí (qx);0.002046424
+Česko;2023;muži;43;Tabulkový počet dožívajících (lx);97076.80596
+Česko;2023;muži;43;Tabulkový počet zemřelých (dx);198.660267
+Česko;2023;muži;43;Tabulkový počet žijících (Lx);96977.47583
+Česko;2023;muži;43;Pomocný ukazatel (Tx);3429644.587
+Česko;2023;muži;43;Naděje dožití (ex);35.32918655
+Česko;2023;muži;44;Počet zemřelých (Dx);194.0
+Česko;2023;muži;44;Počet obyvatel (Px);91923.0
+Česko;2023;muži;44;Míra úmrtnosti (mx);0.002208644
+Česko;2023;muži;44;Pravděpodobnost úmrtí (qx);0.002206208
+Česko;2023;muži;44;Tabulkový počet dožívajících (lx);96878.14569
+Česko;2023;muži;44;Tabulkový počet zemřelých (dx);213.7332912
+Česko;2023;muži;44;Tabulkový počet žijících (Lx);96771.27905
+Česko;2023;muži;44;Pomocný ukazatel (Tx);3332667.111
+Česko;2023;muži;44;Naděje dožití (ex);34.40060797
+Česko;2023;muži;45;Počet zemřelých (Dx);219.0
+Česko;2023;muži;45;Počet obyvatel (Px);93608.0
+Česko;2023;muži;45;Míra úmrtnosti (mx);0.002394514
+Česko;2023;muži;45;Pravděpodobnost úmrtí (qx);0.002391651
+Česko;2023;muži;45;Tabulkový počet dožívajících (lx);96664.4124
+Česko;2023;muži;45;Tabulkový počet zemřelých (dx);231.1875289
+Česko;2023;muži;45;Tabulkový počet žijících (Lx);96548.81864
+Česko;2023;muži;45;Pomocný ukazatel (Tx);3235895.832
+Česko;2023;muži;45;Naděje dožití (ex);33.47556512
+Česko;2023;muži;46;Počet zemřelých (Dx);259.0
+Česko;2023;muži;46;Počet obyvatel (Px);95246.0
+Česko;2023;muži;46;Míra úmrtnosti (mx);0.002611773
+Česko;2023;muži;46;Pravděpodobnost úmrtí (qx);0.002608367
+Česko;2023;muži;46;Tabulkový počet dožívajících (lx);96433.22487
+Česko;2023;muži;46;Tabulkový počet zemřelých (dx);251.5332529
+Česko;2023;muži;46;Tabulkový počet žijících (Lx);96307.45825
+Česko;2023;muži;46;Pomocný ukazatel (Tx);3139347.014
+Česko;2023;muži;46;Naděje dožití (ex);32.55462023
+Česko;2023;muži;47;Počet zemřelých (Dx);263.0
+Česko;2023;muži;47;Počet obyvatel (Px);97027.0
+Česko;2023;muži;47;Míra úmrtnosti (mx);0.002865226
+Česko;2023;muži;47;Pravděpodobnost úmrtí (qx);0.002861127
+Česko;2023;muži;47;Tabulkový počet dožívajících (lx);96181.69162
+Česko;2023;muži;47;Tabulkový počet zemřelých (dx);275.1880558
+Česko;2023;muži;47;Tabulkový počet žijících (Lx);96044.09759
+Česko;2023;muži;47;Pomocný ukazatel (Tx);3043039.555
+Česko;2023;muži;47;Naděje dožití (ex);31.63844911
+Česko;2023;muži;48;Počet zemřelých (Dx);320.0
+Česko;2023;muži;48;Počet obyvatel (Px);98078.0
+Česko;2023;muži;48;Míra úmrtnosti (mx);0.003158713
+Česko;2023;muži;48;Pravděpodobnost úmrtí (qx);0.003153733
+Česko;2023;muži;48;Tabulkový počet dožívajících (lx);95906.50356
+Česko;2023;muži;48;Tabulkový počet zemřelých (dx);302.4634534
+Česko;2023;muži;48;Tabulkový počet žijících (Lx);95755.27184
+Česko;2023;muži;48;Pomocný ukazatel (Tx);2946995.458
+Česko;2023;muži;48;Naděje dožití (ex);30.7277958
+Česko;2023;muži;49;Počet zemřelých (Dx);335.0
+Česko;2023;muži;49;Počet obyvatel (Px);95565.0
+Česko;2023;muži;49;Míra úmrtnosti (mx);0.003496226
+Česko;2023;muži;49;Pravděpodobnost úmrtí (qx);0.003490125
+Česko;2023;muži;49;Tabulkový počet dožívajících (lx);95604.04011
+Česko;2023;muži;49;Tabulkový počet zemřelých (dx);333.670055
+Česko;2023;muži;49;Tabulkový počet žijících (Lx);95437.20508
+Česko;2023;muži;49;Pomocný ukazatel (Tx);2851240.186
+Česko;2023;muži;49;Naděje dožití (ex);29.82342778
+Česko;2023;muži;50;Počet zemřelých (Dx);338.0
+Česko;2023;muži;50;Počet obyvatel (Px);87861.0
+Česko;2023;muži;50;Míra úmrtnosti (mx);0.003881377
+Česko;2023;muži;50;Pravděpodobnost úmrtí (qx);0.003873859
+Česko;2023;muži;50;Tabulkový počet dožívajících (lx);95270.37006
+Česko;2023;muži;50;Tabulkový počet zemřelých (dx);369.0639605
+Česko;2023;muži;50;Tabulkový počet žijících (Lx);95085.83808
+Česko;2023;muži;50;Pomocný ukazatel (Tx);2755802.981
+Česko;2023;muži;50;Naděje dožití (ex);28.92612865
+Česko;2023;muži;51;Počet zemřelých (Dx);333.0
+Česko;2023;muži;51;Počet obyvatel (Px);80689.0
+Česko;2023;muži;51;Míra úmrtnosti (mx);0.004317206
+Česko;2023;muži;51;Pravděpodobnost úmrtí (qx);0.004307907
+Česko;2023;muži;51;Tabulkový počet dožívajících (lx);94901.3061
+Česko;2023;muži;51;Tabulkový počet zemřelých (dx);408.8260114
+Česko;2023;muži;51;Tabulkový počet žijících (Lx);94696.89309
+Česko;2023;muži;51;Pomocný ukazatel (Tx);2660717.143
+Česko;2023;muži;51;Naděje dožití (ex);28.0366757
+Česko;2023;muži;52;Počet zemřelých (Dx);364.0
+Česko;2023;muži;52;Počet obyvatel (Px);76430.0
+Česko;2023;muži;52;Míra úmrtnosti (mx);0.004805847
+Česko;2023;muži;52;Pravděpodobnost úmrtí (qx);0.004794326
+Česko;2023;muži;52;Tabulkový počet dožívajících (lx);94492.48008
+Česko;2023;muži;52;Tabulkový počet zemřelých (dx);453.0277776
+Česko;2023;muži;52;Tabulkový počet žijících (Lx);94265.9662
+Česko;2023;muži;52;Pomocný ukazatel (Tx);2566020.25
+Česko;2023;muži;52;Naděje dožití (ex);27.15581438
+Česko;2023;muži;53;Počet zemřelých (Dx);417.0
+Česko;2023;muži;53;Počet obyvatel (Px);73010.0
+Česko;2023;muži;53;Míra úmrtnosti (mx);0.005347305
+Česko;2023;muži;53;Pravděpodobnost úmrtí (qx);0.005333046
+Česko;2023;muži;53;Tabulkový počet dožívajících (lx);94039.45231
+Česko;2023;muži;53;Tabulkový počet zemřelých (dx);501.516765
+Česko;2023;muži;53;Tabulkový počet žijících (Lx);93788.69392
+Česko;2023;muži;53;Pomocný ukazatel (Tx);2471754.283
+Česko;2023;muži;53;Naděje dožití (ex);26.2842267
+Česko;2023;muži;54;Počet zemřelých (Dx);406.0
+Česko;2023;muži;54;Počet obyvatel (Px);69406.0
+Česko;2023;muži;54;Míra úmrtnosti (mx);0.005939136
+Česko;2023;muži;54;Pravděpodobnost úmrtí (qx);0.005921551
+Česko;2023;muži;54;Tabulkový počet dožívajících (lx);93537.93554
+Česko;2023;muži;54;Tabulkový počet zemřelých (dx);553.8896754
+Česko;2023;muži;54;Tabulkový počet žijících (Lx);93260.9907
+Česko;2023;muži;54;Pomocný ukazatel (Tx);2377965.589
+Česko;2023;muži;54;Naděje dožití (ex);25.42247245
+Česko;2023;muži;55;Počet zemřelých (Dx);453.0
+Česko;2023;muži;55;Počet obyvatel (Px);67251.0
+Česko;2023;muži;55;Míra úmrtnosti (mx);0.006578936
+Česko;2023;muži;55;Pravděpodobnost úmrtí (qx);0.006557366
+Česko;2023;muži;55;Tabulkový počet dožívajících (lx);92984.04587
+Česko;2023;muži;55;Tabulkový počet zemřelých (dx);609.7304224
+Česko;2023;muži;55;Tabulkový počet žijících (Lx);92679.18065
+Česko;2023;muži;55;Pomocný ukazatel (Tx);2284704.599
+Česko;2023;muži;55;Naděje dožití (ex);24.57093125
+Česko;2023;muži;56;Počet zemřelých (Dx);500.0
+Česko;2023;muži;56;Počet obyvatel (Px);67302.0
+Česko;2023;muži;56;Míra úmrtnosti (mx);0.00727232
+Česko;2023;muži;56;Pravděpodobnost úmrtí (qx);0.007245973
+Česko;2023;muži;56;Tabulkový počet dožívajících (lx);92374.31544
+Česko;2023;muži;56;Tabulkový počet zemřelých (dx);669.3417627
+Česko;2023;muži;56;Tabulkový počet žijících (Lx);92039.64456
+Česko;2023;muži;56;Pomocný ukazatel (Tx);2192025.418
+Česko;2023;muži;56;Naděje dožití (ex);23.72981502
+Česko;2023;muži;57;Počet zemřelých (Dx);518.0
+Česko;2023;muži;57;Počet obyvatel (Px);68294.0
+Česko;2023;muži;57;Míra úmrtnosti (mx);0.008028565
+Česko;2023;muži;57;Pravděpodobnost úmrtí (qx);0.007996464
+Česko;2023;muži;57;Tabulkový počet dožívajících (lx);91704.97368
+Česko;2023;muži;57;Tabulkový počet zemřelých (dx);733.3155565
+Česko;2023;muži;57;Tabulkový počet žijících (Lx);91338.3159
+Česko;2023;muži;57;Pomocný ukazatel (Tx);2099985.774
+Česko;2023;muži;57;Naděje dožití (ex);22.89936619
+Česko;2023;muži;58;Počet zemřelých (Dx);627.0
+Česko;2023;muži;58;Počet obyvatel (Px);70527.0
+Česko;2023;muži;58;Míra úmrtnosti (mx);0.008858337
+Česko;2023;muži;58;Pravděpodobnost úmrtí (qx);0.008819274
+Česko;2023;muži;58;Tabulkový počet dožívajících (lx);90971.65812
+Česko;2023;muži;58;Tabulkový počet zemřelých (dx);802.3040192
+Česko;2023;muži;58;Tabulkový počet žijících (Lx);90570.50611
+Česko;2023;muži;58;Pomocný ukazatel (Tx);2008647.458
+Česko;2023;muži;58;Naděje dožití (ex);22.07992576
+Česko;2023;muži;59;Počet zemřelých (Dx);715.0
+Česko;2023;muži;59;Počet obyvatel (Px);70040.0
+Česko;2023;muži;59;Míra úmrtnosti (mx);0.00977224
+Česko;2023;muži;59;Pravděpodobnost úmrtí (qx);0.009724724
+Česko;2023;muži;59;Tabulkový počet dožívajících (lx);90169.35411
+Česko;2023;muži;59;Tabulkový počet zemřelých (dx);876.872073
+Česko;2023;muži;59;Tabulkový počet žijících (Lx);89730.91807
+Česko;2023;muži;59;Pomocný ukazatel (Tx);1918076.952
+Česko;2023;muži;59;Naděje dožití (ex);21.27193846
+Česko;2023;muži;60;Počet zemřelých (Dx);678.0
+Česko;2023;muži;60;Počet obyvatel (Px);64944.0
+Česko;2023;muži;60;Míra úmrtnosti (mx);0.010782617
+Česko;2023;muži;60;Pravděpodobnost úmrtí (qx);0.010724796
+Česko;2023;muži;60;Tabulkový počet dožívajících (lx);89292.48203
+Česko;2023;muži;60;Tabulkový počet zemřelých (dx);957.6436699
+Česko;2023;muži;60;Tabulkový počet žijících (Lx);88813.6602
+Česko;2023;muži;60;Pomocný ukazatel (Tx);1828346.033
+Česko;2023;muži;60;Naděje dožití (ex);20.47592353
+Česko;2023;muži;61;Počet zemřelých (Dx);687.0
+Česko;2023;muži;61;Počet obyvatel (Px);60192.0
+Česko;2023;muži;61;Míra úmrtnosti (mx);0.011900923
+Česko;2023;muži;61;Pravděpodobnost úmrtí (qx);0.011830526
+Česko;2023;muži;61;Tabulkový počet dožívajících (lx);88334.83836
+Česko;2023;muži;61;Tabulkový počet zemřelých (dx);1045.047631
+Česko;2023;muži;61;Tabulkový počet žijících (Lx);87812.31455
+Česko;2023;muži;61;Pomocný ukazatel (Tx);1739532.373
+Česko;2023;muži;61;Naděje dožití (ex);19.6924838
+Česko;2023;muži;62;Počet zemřelých (Dx);796.0
+Česko;2023;muži;62;Počet obyvatel (Px);58117.0
+Česko;2023;muži;62;Míra úmrtnosti (mx);0.01313529
+Česko;2023;muži;62;Pravděpodobnost úmrtí (qx);0.013049585
+Česko;2023;muži;62;Tabulkový počet dožívajících (lx);87289.79073
+Česko;2023;muži;62;Tabulkový počet zemřelých (dx);1139.095535
+Česko;2023;muži;62;Tabulkový počet žijících (Lx);86720.24296
+Česko;2023;muži;62;Pomocný ukazatel (Tx);1651720.059
+Česko;2023;muži;62;Naděje dožití (ex);18.92225935
+Česko;2023;muži;63;Počet zemřelých (Dx);825.0
+Česko;2023;muži;63;Počet obyvatel (Px);56368.0
+Česko;2023;muži;63;Míra úmrtnosti (mx);0.014493113
+Česko;2023;muži;63;Pravděpodobnost úmrtí (qx);0.014388844
+Česko;2023;muži;63;Tabulkový počet dožívajících (lx);86150.6952
+Česko;2023;muži;63;Tabulkový počet zemřelých (dx);1239.608885
+Česko;2023;muži;63;Tabulkový počet žijících (Lx);85530.89075
+Česko;2023;muži;63;Pomocný ukazatel (Tx);1564999.816
+Česko;2023;muži;63;Naděje dožití (ex);18.16584082
+Česko;2023;muži;64;Počet zemřelých (Dx);873.0
+Česko;2023;muži;64;Počet obyvatel (Px);56929.0
+Česko;2023;muži;64;Míra úmrtnosti (mx);0.015978153
+Česko;2023;muži;64;Pravděpodobnost úmrtí (qx);0.015851514
+Česko;2023;muži;64;Tabulkový počet dožívajících (lx);84911.08631
+Česko;2023;muži;64;Tabulkový počet zemřelých (dx);1345.969268
+Česko;2023;muži;64;Tabulkový počet žijících (Lx);84238.10168
+Česko;2023;muži;64;Pomocný ukazatel (Tx);1479468.925
+Česko;2023;muži;64;Naděje dožití (ex);17.42374276
+Česko;2023;muži;65;Počet zemřelých (Dx);1051.0
+Česko;2023;muži;65;Počet obyvatel (Px);59853.0
+Česko;2023;muži;65;Míra úmrtnosti (mx);0.017589073
+Česko;2023;muži;65;Pravděpodobnost úmrtí (qx);0.017435734
+Česko;2023;muži;65;Tabulkový počet dožívajících (lx);83565.11704
+Česko;2023;muži;65;Tabulkový počet zemřelých (dx);1457.019163
+Česko;2023;muži;65;Tabulkový počet žijících (Lx);82836.60746
+Česko;2023;muži;65;Pomocný ukazatel (Tx);1395230.823
+Česko;2023;muži;65;Naděje dožití (ex);16.69633063
+Česko;2023;muži;66;Počet zemřelých (Dx);1230.0
+Česko;2023;muži;66;Počet obyvatel (Px);61614.0
+Česko;2023;muži;66;Míra úmrtnosti (mx);0.019321764
+Česko;2023;muži;66;Pravděpodobnost úmrtí (qx);0.019136885
+Česko;2023;muži;66;Tabulkový počet dožívajících (lx);82108.09788
+Česko;2023;muži;66;Tabulkový počet zemřelých (dx);1571.293196
+Česko;2023;muži;66;Tabulkový počet žijících (Lx);81322.45128
+Česko;2023;muži;66;Pomocný ukazatel (Tx);1312394.216
+Česko;2023;muži;66;Naděje dožití (ex);15.98373668
+Česko;2023;muži;67;Počet zemřelých (Dx);1314.0
+Česko;2023;muži;67;Počet obyvatel (Px);61478.0
+Česko;2023;muži;67;Míra úmrtnosti (mx);0.021182463
+Česko;2023;muži;67;Pravděpodobnost úmrtí (qx);0.020960466
+Česko;2023;muži;67;Tabulkový počet dožívajících (lx);80536.80468
+Česko;2023;muži;67;Tabulkový počet zemřelých (dx);1688.088935
+Česko;2023;muži;67;Tabulkový počet žijících (Lx);79692.76022
+Česko;2023;muži;67;Pomocný ukazatel (Tx);1231071.765
+Česko;2023;muži;67;Naděje dožití (ex);15.28582825
+Česko;2023;muži;68;Počet zemřelých (Dx);1399.0
+Česko;2023;muži;68;Počet obyvatel (Px);60393.0
+Česko;2023;muži;68;Míra úmrtnosti (mx);0.023187127
+Česko;2023;muži;68;Pravděpodobnost úmrtí (qx);0.022921386
+Česko;2023;muži;68;Tabulkový počet dožívajících (lx);78848.71575
+Česko;2023;muži;68;Tabulkový počet zemřelých (dx);1807.321865
+Česko;2023;muži;68;Tabulkový počet žijících (Lx);77945.05482
+Česko;2023;muži;68;Pomocný ukazatel (Tx);1151379.004
+Česko;2023;muži;68;Naděje dožití (ex);14.6023812
+Česko;2023;muži;69;Počet zemřelých (Dx);1480.0
+Česko;2023;muži;69;Počet obyvatel (Px);59349.0
+Česko;2023;muži;69;Míra úmrtnosti (mx);0.025355704
+Česko;2023;muži;69;Pravděpodobnost úmrtí (qx);0.025038273
+Česko;2023;muži;69;Tabulkový počet dožívajících (lx);77041.39388
+Česko;2023;muži;69;Tabulkový počet zemřelých (dx);1928.983418
+Česko;2023;muži;69;Tabulkový počet žijících (Lx);76076.90217
+Česko;2023;muži;69;Pomocný ukazatel (Tx);1073433.95
+Česko;2023;muži;69;Naděje dožití (ex);13.93321039
+Česko;2023;muži;70;Počet zemřelých (Dx);1594.0
+Česko;2023;muži;70;Počet obyvatel (Px);58387.0
+Česko;2023;muži;70;Míra úmrtnosti (mx);0.027712912
+Česko;2023;muži;70;Pravděpodobnost úmrtí (qx);0.027334158
+Česko;2023;muži;70;Tabulkový počet dožívajících (lx);75112.41046
+Česko;2023;muži;70;Tabulkový počet zemřelých (dx);2053.134482
+Česko;2023;muži;70;Tabulkový počet žijících (Lx);74085.84322
+Česko;2023;muži;70;Pomocný ukazatel (Tx);997357.0474
+Česko;2023;muži;70;Naděje dožití (ex);13.27819253
+Česko;2023;muži;71;Počet zemřelých (Dx);1777.0
+Česko;2023;muži;71;Počet obyvatel (Px);56863.0
+Česko;2023;muži;71;Míra úmrtnosti (mx);0.030289122
+Česko;2023;muži;71;Pravděpodobnost úmrtí (qx);0.02983725
+Česko;2023;muži;71;Tabulkový počet dožívajících (lx);73059.27598
+Česko;2023;muži;71;Tabulkový počet zemřelých (dx);2179.88789
+Česko;2023;muži;71;Tabulkový počet žijících (Lx);71969.33204
+Česko;2023;muži;71;Pomocný ukazatel (Tx);923271.2042
+Česko;2023;muži;71;Naděje dožití (ex);12.63728927
+Česko;2023;muži;72;Počet zemřelých (Dx);1798.0
+Česko;2023;muži;72;Počet obyvatel (Px);54480.0
+Česko;2023;muži;72;Míra úmrtnosti (mx);0.033119495
+Česko;2023;muži;72;Pravděpodobnost úmrtí (qx);0.032579979
+Česko;2023;muži;72;Tabulkový počet dožívajících (lx);70879.38809
+Česko;2023;muži;72;Tabulkový počet zemřelých (dx);2309.248965
+Česko;2023;muži;72;Tabulkový počet žijících (Lx);69724.76361
+Česko;2023;muži;72;Pomocný ukazatel (Tx);851301.8721
+Česko;2023;muži;72;Naděje dožití (ex);12.01057028
+Česko;2023;muži;73;Počet zemřelých (Dx);1812.0
+Česko;2023;muži;73;Počet obyvatel (Px);51536.0
+Česko;2023;muži;73;Míra úmrtnosti (mx);0.036238459
+Česko;2023;muži;73;Pravděpodobnost úmrtí (qx);0.035593531
+Česko;2023;muži;73;Tabulkový počet dožívajících (lx);68570.13913
+Česko;2023;muži;73;Tabulkový počet zemřelých (dx);2440.653389
+Česko;2023;muži;73;Tabulkový počet žijících (Lx);67349.81243
+Česko;2023;muži;73;Pomocný ukazatel (Tx);781577.1085
+Česko;2023;muži;73;Naděje dožití (ex);11.39821384
+Česko;2023;muži;74;Počet zemřelých (Dx);2007.0
+Česko;2023;muži;74;Počet obyvatel (Px);49812.0
+Česko;2023;muži;74;Míra úmrtnosti (mx);0.039641211
+Česko;2023;muži;74;Pravděpodobnost úmrtí (qx);0.038870769
+Česko;2023;muži;74;Tabulkový počet dožívajících (lx);66129.48574
+Česko;2023;muži;74;Tabulkový počet zemřelých (dx);2570.503974
+Česko;2023;muži;74;Tabulkový počet žijících (Lx);64844.23375
+Česko;2023;muži;74;Pomocný ukazatel (Tx);714227.2961
+Česko;2023;muži;74;Naděje dožití (ex);10.80043627
+Česko;2023;muži;75;Počet zemřelých (Dx);2155.0
+Česko;2023;muži;75;Počet obyvatel (Px);49347.0
+Česko;2023;muži;75;Míra úmrtnosti (mx);0.043403184
+Česko;2023;muži;75;Pravděpodobnost úmrtí (qx);0.042481273
+Česko;2023;muži;75;Tabulkový počet dožívajících (lx);63558.98176
+Česko;2023;muži;75;Tabulkový počet zemřelých (dx);2700.06645
+Česko;2023;muži;75;Tabulkový počet žijících (Lx);62208.94854
+Česko;2023;muži;75;Pomocný ukazatel (Tx);649383.0623
+Česko;2023;muži;75;Naděje dožití (ex);10.21701488
+Česko;2023;muži;76;Počet zemřelých (Dx);2253.0
+Česko;2023;muži;76;Počet obyvatel (Px);46660.0
+Česko;2023;muži;76;Míra úmrtnosti (mx);0.047603051
+Česko;2023;muži;76;Pravděpodobnost úmrtí (qx);0.046496366
+Česko;2023;muži;76;Tabulkový počet dožívajících (lx);60858.91531
+Česko;2023;muži;76;Tabulkový počet zemřelých (dx);2829.718426
+Česko;2023;muži;76;Tabulkový počet žijících (Lx);59444.0561
+Česko;2023;muži;76;Pomocný ukazatel (Tx);587174.1138
+Česko;2023;muži;76;Naděje dožití (ex);9.648119931
+Česko;2023;muži;77;Počet zemřelých (Dx);1991.0
+Česko;2023;muži;77;Počet obyvatel (Px);38701.0
+Česko;2023;muži;77;Míra úmrtnosti (mx);0.052330103
+Česko;2023;muži;77;Pravděpodobnost úmrtí (qx);0.050995795
+Česko;2023;muži;77;Tabulkový počet dožívajících (lx);58029.19689
+Česko;2023;muži;77;Tabulkový počet zemřelých (dx);2959.245049
+Česko;2023;muži;77;Tabulkový počet žijících (Lx);56549.57436
+Česko;2023;muži;77;Pomocný ukazatel (Tx);527730.0577
+Česko;2023;muži;77;Naděje dožití (ex);9.094216119
+Česko;2023;muži;78;Počet zemřelých (Dx);1896.0
+Česko;2023;muži;78;Počet obyvatel (Px);33063.0
+Česko;2023;muži;78;Míra úmrtnosti (mx);0.05768693
+Česko;2023;muži;78;Pravděpodobnost úmrtí (qx);0.056069686
+Česko;2023;muži;78;Tabulkový počet dožívajících (lx);55069.95184
+Česko;2023;muži;78;Tabulkový počet zemřelých (dx);3087.754885
+Česko;2023;muži;78;Tabulkový počet žijících (Lx);53526.0744
+Česko;2023;muži;78;Pomocný ukazatel (Tx);471180.4833
+Česko;2023;muži;78;Naděje dožití (ex);8.556035871
+Česko;2023;muži;79;Počet zemřelých (Dx);2068.0
+Česko;2023;muži;79;Počet obyvatel (Px);31464.0
+Česko;2023;muži;79;Míra úmrtnosti (mx);0.063788294
+Česko;2023;muži;79;Pravděpodobnost úmrtí (qx);0.061816703
+Česko;2023;muži;79;Tabulkový počet dožívajících (lx);51982.19695
+Česko;2023;muži;79;Tabulkový počet zemřelých (dx);3213.36805
+Česko;2023;muži;79;Tabulkový počet žijících (Lx);50375.51293
+Česko;2023;muži;79;Pomocný ukazatel (Tx);417654.4089
+Česko;2023;muži;79;Naděje dožití (ex);8.034566321
+Česko;2023;muži;80;Počet zemřelých (Dx);1913.0
+Česko;2023;muži;80;Počet obyvatel (Px);27322.0
+Česko;2023;muži;80;Míra úmrtnosti (mx);0.070751873
+Česko;2023;muži;80;Pravděpodobnost úmrtí (qx);0.068334477
+Česko;2023;muži;80;Tabulkový počet dožívajících (lx);48768.8289
+Česko;2023;muži;80;Tabulkový počet zemřelých (dx);3332.592392
+Česko;2023;muži;80;Tabulkový počet žijících (Lx);47102.53271
+Česko;2023;muži;80;Pomocný ukazatel (Tx);367278.896
+Česko;2023;muži;80;Naděje dožití (ex);7.531017338
+Česko;2023;muži;81;Počet zemřelých (Dx);1716.0
+Česko;2023;muži;81;Počet obyvatel (Px);23274.0
+Česko;2023;muži;81;Míra úmrtnosti (mx);0.078688277
+Česko;2023;muži;81;Pravděpodobnost úmrtí (qx);0.07570955
+Česko;2023;muži;81;Tabulkový počet dožívajících (lx);45436.23651
+Česko;2023;muži;81;Tabulkový počet zemřelých (dx);3439.957022
+Česko;2023;muži;81;Tabulkový počet žijících (Lx);43716.258
+Česko;2023;muži;81;Pomocný ukazatel (Tx);320176.3633
+Česko;2023;muži;81;Naděje dožití (ex);7.046718388
+Česko;2023;muži;82;Počet zemřelých (Dx);1856.0
+Česko;2023;muži;82;Počet obyvatel (Px);20781.0
+Česko;2023;muži;82;Míra úmrtnosti (mx);0.087698625
+Česko;2023;muži;82;Pravděpodobnost úmrtí (qx);0.084014641
+Česko;2023;muži;82;Tabulkový počet dožívajících (lx);41996.27949
+Česko;2023;muži;82;Tabulkový počet zemřelých (dx);3528.302331
+Česko;2023;muži;82;Tabulkový počet žijících (Lx);40232.12832
+Česko;2023;muži;82;Pomocný ukazatel (Tx);276460.1053
+Česko;2023;muži;82;Naděje dožití (ex);6.582966602
+Česko;2023;muži;83;Počet zemřelých (Dx);1729.0
+Česko;2023;muži;83;Počet obyvatel (Px);17492.0
+Česko;2023;muži;83;Míra úmrtnosti (mx);0.097873475
+Česko;2023;muži;83;Pravděpodobnost úmrtí (qx);0.093307319
+Česko;2023;muži;83;Tabulkový počet dožívajících (lx);38467.97716
+Česko;2023;muži;83;Tabulkový počet zemřelých (dx);3589.34382
+Česko;2023;muži;83;Tabulkový počet žijících (Lx);36673.30525
+Česko;2023;muži;83;Pomocný ukazatel (Tx);236227.977
+Česko;2023;muži;83;Naděje dožití (ex);6.140899377
+Česko;2023;muži;84;Počet zemřelých (Dx);1494.0
+Česko;2023;muži;84;Počet obyvatel (Px);14273.0
+Česko;2023;muži;84;Míra úmrtnosti (mx);0.10913336
+Česko;2023;muži;84;Pravděpodobnost úmrtí (qx);0.103486448
+Česko;2023;muži;84;Tabulkový počet dožívajících (lx);34878.63334
+Česko;2023;muži;84;Tabulkový počet zemřelých (dx);3609.465873
+Česko;2023;muži;84;Tabulkový počet žijících (Lx);33073.9004
+Česko;2023;muži;84;Pomocný ukazatel (Tx);199554.6717
+Česko;2023;muži;84;Naděje dožití (ex);5.72140169
+Česko;2023;muži;85;Počet zemřelých (Dx);1452.0
+Česko;2023;muži;85;Počet obyvatel (Px);11925.0
+Česko;2023;muži;85;Míra úmrtnosti (mx);0.121706072
+Česko;2023;muži;85;Pravděpodobnost úmrtí (qx);0.114724724
+Česko;2023;muži;85;Tabulkový počet dožívajících (lx);31269.16746
+Česko;2023;muži;85;Tabulkový počet zemřelých (dx);3587.346599
+Česko;2023;muži;85;Tabulkový počet žijících (Lx);29475.49416
+Česko;2023;muži;85;Pomocný ukazatel (Tx);166480.7713
+Česko;2023;muži;85;Naděje dožití (ex);5.324119087
+Česko;2023;muži;86;Počet zemřelých (Dx);1330.0
+Česko;2023;muži;86;Počet obyvatel (Px);9932.0
+Česko;2023;muži;86;Míra úmrtnosti (mx);0.135696445
+Česko;2023;muži;86;Pravděpodobnost úmrtí (qx);0.127074655
+Česko;2023;muži;86;Tabulkový počet dožívajících (lx);27681.82086
+Česko;2023;muži;86;Tabulkový počet zemřelých (dx);3517.657844
+Česko;2023;muži;86;Tabulkový počet žijících (Lx);25922.99194
+Česko;2023;muži;86;Pomocný ukazatel (Tx);137005.2772
+Česko;2023;muži;86;Naděje dožití (ex);4.949287037
+Česko;2023;muži;87;Počet zemřelých (Dx);1232.0
+Česko;2023;muži;87;Počet obyvatel (Px);8502.0
+Česko;2023;muži;87;Míra úmrtnosti (mx);0.151204837
+Česko;2023;muži;87;Pravděpodobnost úmrtí (qx);0.140576885
+Česko;2023;muži;87;Tabulkový počet dožívajících (lx);24164.16302
+Česko;2023;muži;87;Tabulkový počet zemřelých (dx);3396.922764
+Česko;2023;muži;87;Tabulkový počet žijících (Lx);22465.70164
+Česko;2023;muži;87;Pomocný ukazatel (Tx);111082.2852
+Česko;2023;muži;87;Naděje dožití (ex);4.596984598
+Česko;2023;muži;88;Počet zemřelých (Dx);1240.0
+Česko;2023;muži;88;Počet obyvatel (Px);7127.0
+Česko;2023;muži;88;Míra úmrtnosti (mx);0.168323166
+Česko;2023;muži;88;Pravděpodobnost úmrtí (qx);0.155256531
+Česko;2023;muži;88;Tabulkový počet dožívajících (lx);20767.24026
+Česko;2023;muži;88;Tabulkový počet zemřelých (dx);3224.249676
+Česko;2023;muži;88;Tabulkový počet žijících (Lx);19155.11542
+Česko;2023;muži;88;Pomocný ukazatel (Tx);88616.58358
+Česko;2023;muži;88;Naděje dožití (ex);4.267133355
+Česko;2023;muži;89;Počet zemřelých (Dx);1167.0
+Česko;2023;muži;89;Počet obyvatel (Px);5894.0
+Česko;2023;muži;89;Míra úmrtnosti (mx);0.187130281
+Česko;2023;muži;89;Pravděpodobnost úmrtí (qx);0.171119464
+Česko;2023;muži;89;Tabulkový počet dožívajících (lx);17542.99058
+Česko;2023;muži;89;Tabulkový počet zemřelých (dx);3001.947142
+Česko;2023;muži;89;Tabulkový počet žijících (Lx);16042.01701
+Česko;2023;muži;89;Pomocný ukazatel (Tx);69461.46816
+Česko;2023;muži;89;Naděje dožití (ex);3.959499827
+Česko;2023;muži;90;Počet zemřelých (Dx);1039.0
+Česko;2023;muži;90;Počet obyvatel (Px);4849.0
+Česko;2023;muži;90;Míra úmrtnosti (mx);0.207686775
+Česko;2023;muži;90;Pravděpodobnost úmrtí (qx);0.18814877
+Česko;2023;muži;90;Tabulkový počet dožívajících (lx);14541.04344
+Česko;2023;muži;90;Tabulkový počet zemřelých (dx);2735.879432
+Česko;2023;muži;90;Tabulkový počet žijících (Lx);13173.10372
+Česko;2023;muži;90;Pomocný ukazatel (Tx);53419.45115
+Česko;2023;muži;90;Naděje dožití (ex);3.673701367
+Česko;2023;muži;91;Počet zemřelých (Dx);927.0
+Česko;2023;muži;91;Počet obyvatel (Px);3839.0
+Česko;2023;muži;91;Míra úmrtnosti (mx);0.230029434
+Česko;2023;muži;91;Pravděpodobnost úmrtí (qx);0.206301702
+Česko;2023;muži;91;Tabulkový počet dožívajících (lx);11805.16401
+Česko;2023;muži;91;Tabulkový počet zemřelých (dx);2435.425428
+Česko;2023;muži;91;Tabulkový počet žijících (Lx);10587.45129
+Česko;2023;muži;91;Pomocný ukazatel (Tx);40246.34743
+Česko;2023;muži;91;Naděje dožití (ex);3.409215442
+Česko;2023;muži;92;Počet zemřelých (Dx);783.0
+Česko;2023;muži;92;Počet obyvatel (Px);2933.0
+Česko;2023;muži;92;Míra úmrtnosti (mx);0.254165588
+Česko;2023;muži;92;Pravděpodobnost úmrtí (qx);0.225507469
+Česko;2023;muži;92;Tabulkový počet dožívajících (lx);9369.738578
+Česko;2023;muži;92;Tabulkový počet zemřelých (dx);2112.946032
+Česko;2023;muži;92;Tabulkový počet žijících (Lx);8313.265562
+Česko;2023;muži;92;Pomocný ukazatel (Tx);29658.89614
+Česko;2023;muži;92;Naděje dožití (ex);3.165392064
+Česko;2023;muži;93;Počet zemřelých (Dx);647.0
+Česko;2023;muži;93;Počet obyvatel (Px);2060.0
+Česko;2023;muži;93;Míra úmrtnosti (mx);0.280067779
+Česko;2023;muži;93;Pravděpodobnost úmrtí (qx);0.245666187
+Česko;2023;muži;93;Tabulkový počet dožívajících (lx);7256.792546
+Česko;2023;muži;93;Tabulkový počet zemřelých (dx);1782.748557
+Česko;2023;muži;93;Tabulkový počet žijících (Lx);6365.418267
+Česko;2023;muži;93;Pomocný ukazatel (Tx);21345.63058
+Česko;2023;muži;93;Naděje dožití (ex);2.941469036
+Česko;2023;muži;94;Počet zemřelých (Dx);446.0
+Česko;2023;muži;94;Počet obyvatel (Px);1341.0
+Česko;2023;muži;94;Míra úmrtnosti (mx);0.307669188
+Česko;2023;muži;94;Pravděpodobnost úmrtí (qx);0.266649301
+Česko;2023;muži;94;Tabulkový počet dožívajících (lx);5474.043989
+Česko;2023;muži;94;Tabulkový počet zemřelých (dx);1459.650002
+Česko;2023;muži;94;Tabulkový počet žijících (Lx);4744.218988
+Česko;2023;muži;94;Pomocný ukazatel (Tx);14980.21231
+Česko;2023;muži;94;Naděje dožití (ex);2.736589684
+Česko;2023;muži;95;Počet zemřelých (Dx);330.0
+Česko;2023;muži;95;Počet obyvatel (Px);893.0
+Česko;2023;muži;95;Míra úmrtnosti (mx);0.336860354
+Česko;2023;muži;95;Pravděpodobnost úmrtí (qx);0.288301655
+Česko;2023;muži;95;Tabulkový počet dožívajících (lx);4014.393987
+Česko;2023;muži;95;Tabulkový počet zemřelých (dx);1157.35643
+Česko;2023;muži;95;Tabulkový počet žijících (Lx);3435.715772
+Česko;2023;muži;95;Pomocný ukazatel (Tx);10235.99332
+Česko;2023;muži;95;Naděje dožití (ex);2.549822801
+Česko;2023;muži;96;Počet zemřelých (Dx);247.0
+Česko;2023;muži;96;Počet obyvatel (Px);569.0
+Česko;2023;muži;96;Míra úmrtnosti (mx);0.36748769
+Česko;2023;muži;96;Pravděpodobnost úmrtí (qx);0.310445281
+Česko;2023;muži;96;Tabulkový počet dožívajících (lx);2857.037557
+Česko;2023;muži;96;Tabulkový počet zemřelých (dx);886.9538263
+Česko;2023;muži;96;Tabulkový počet žijících (Lx);2413.560644
+Česko;2023;muži;96;Pomocný ukazatel (Tx);6800.277549
+Česko;2023;muži;96;Naděje dožití (ex);2.380184864
+Česko;2023;muži;97;Počet zemřelých (Dx);150.0
+Česko;2023;muži;97;Počet obyvatel (Px);355.0
+Česko;2023;muži;97;Míra úmrtnosti (mx);0.399354235
+Česko;2023;muži;97;Pravděpodobnost úmrtí (qx);0.332884765
+Česko;2023;muži;97;Tabulkový počet dožívajících (lx);1970.083731
+Česko;2023;muži;97;Tabulkový počet zemřelých (dx);655.8108594
+Česko;2023;muži;97;Tabulkový počet žijících (Lx);1642.178301
+Česko;2023;muži;97;Pomocný ukazatel (Tx);4386.716905
+Česko;2023;muži;97;Naděje dožití (ex);2.22666521
+Česko;2023;muži;98;Počet zemřelých (Dx);76.0
+Česko;2023;muži;98;Počet obyvatel (Px);202.0
+Česko;2023;muži;98;Míra úmrtnosti (mx);0.432222923
+Česko;2023;muži;98;Pravděpodobnost úmrtí (qx);0.355413904
+Česko;2023;muži;98;Tabulkový počet dožívajících (lx);1314.272872
+Česko;2023;muži;98;Tabulkový počet zemřelých (dx);467.1108527
+Česko;2023;muži;98;Tabulkový počet žijících (Lx);1080.717445
+Česko;2023;muži;98;Pomocný ukazatel (Tx);2744.538603
+Česko;2023;muži;98;Naděje dožití (ex);2.0882563
+Česko;2023;muži;99;Počet zemřelých (Dx);65.0
+Česko;2023;muži;99;Počet obyvatel (Px);108.0
+Česko;2023;muži;99;Míra úmrtnosti (mx);0.465822445
+Česko;2023;muži;99;Pravděpodobnost úmrtí (qx);0.377823185
+Česko;2023;muži;99;Tabulkový počet dožívajících (lx);847.1620188
+Česko;2023;muži;99;Tabulkový počet zemřelých (dx);320.0774519
+Česko;2023;muži;99;Tabulkový počet žijících (Lx);687.1232928
+Česko;2023;muži;99;Pomocný ukazatel (Tx);1663.821158
+Česko;2023;muži;99;Naděje dožití (ex);1.963994043
+Česko;2023;muži;100;Počet zemřelých (Dx);39.0
+Česko;2023;muži;100;Počet obyvatel (Px);52.0
+Česko;2023;muži;100;Míra úmrtnosti (mx);0.499855499
+Česko;2023;muži;100;Pravděpodobnost úmrtí (qx);0.399907514
+Česko;2023;muži;100;Tabulkový počet dožívajících (lx);527.0845669
+Česko;2023;muži;100;Tabulkový počet zemřelých (dx);210.7850789
+Česko;2023;muži;100;Tabulkový počet žijících (Lx);421.6920274
+Česko;2023;muži;100;Pomocný ukazatel (Tx);976.6978655
+Česko;2023;muži;100;Naděje dožití (ex);1.853019282
+Česko;2023;muži;101;Počet zemřelých (Dx);12.0
+Česko;2023;muži;101;Počet obyvatel (Px);28.0
+Česko;2023;muži;101;Míra úmrtnosti (mx);0.53400896
+Česko;2023;muži;101;Pravděpodobnost úmrtí (qx);0.421473616
+Česko;2023;muži;101;Tabulkový počet dožívajících (lx);316.299488
+Česko;2023;muži;101;Tabulkový počet zemřelých (dx);133.311889
+Česko;2023;muži;101;Tabulkový počet žijících (Lx);249.6435435
+Česko;2023;muži;101;Pomocný ukazatel (Tx);555.0058381
+Česko;2023;muži;101;Naděje dožití (ex);1.754684592
+Česko;2023;muži;102;Počet zemřelých (Dx);8.0
+Česko;2023;muži;102;Počet obyvatel (Px);15.0
+Česko;2023;muži;102;Míra úmrtnosti (mx);0.567965251
+Česko;2023;muži;102;Pravděpodobnost úmrtí (qx);0.442346524
+Česko;2023;muži;102;Tabulkový počet dožívajících (lx);182.987599
+Česko;2023;muži;102;Tabulkový počet zemřelých (dx);80.94392827
+Česko;2023;muži;102;Tabulkový počet žijících (Lx);142.5156349
+Česko;2023;muži;102;Pomocný ukazatel (Tx);305.3622946
+Česko;2023;muži;102;Naděje dožití (ex);1.668759502
+Česko;2023;muži;103;Počet zemřelých (Dx);4.0
+Česko;2023;muži;103;Počet obyvatel (Px);6.0
+Česko;2023;muži;103;Míra úmrtnosti (mx);0.601414069
+Česko;2023;muži;103;Pravděpodobnost úmrtí (qx);0.462374734
+Česko;2023;muži;103;Tabulkový počet dožívajících (lx);102.0436707
+Česko;2023;muži;103;Tabulkový počet zemřelých (dx);47.18241509
+Česko;2023;muži;103;Tabulkový počet žijících (Lx);78.4524632
+Česko;2023;muži;103;Pomocný ukazatel (Tx);162.8466597
+Česko;2023;muži;103;Naděje dožití (ex);1.595852624
+Česko;2023;muži;104;Počet zemřelých (Dx);0.0
+Česko;2023;muži;104;Počet obyvatel (Px);3.0
+Česko;2023;muži;104;Míra úmrtnosti (mx);0.634063543
+Česko;2023;muži;104;Pravděpodobnost úmrtí (qx);0.481433749
+Česko;2023;muži;104;Tabulkový počet dožívajících (lx);54.86125566
+Česko;2023;muži;104;Tabulkový počet zemřelých (dx);26.41205998
+Česko;2023;muži;104;Tabulkový počet žijících (Lx);41.65522567
+Česko;2023;muži;104;Pomocný ukazatel (Tx);84.39419649
+Česko;2023;muži;104;Naděje dožití (ex);1.538320541
+Česko;2023;muži;105;Počet zemřelých (Dx);0.0
+Česko;2023;muži;105;Počet obyvatel (Px);0.0
+Česko;2023;muži;105;Míra úmrtnosti (mx);0.665649994
+Česko;2023;muži;105;Pravděpodobnost úmrtí (qx);1.0
+Česko;2023;muži;105;Tabulkový počet dožívajících (lx);28.44919568
+Česko;2023;muži;105;Tabulkový počet zemřelých (dx);28.44919568
+Česko;2023;muži;105;Tabulkový počet žijících (Lx);42.73897082
+Česko;2023;muži;105;Pomocný ukazatel (Tx);42.73897082
+Česko;2023;muži;105;Naděje dožití (ex);1.502291007

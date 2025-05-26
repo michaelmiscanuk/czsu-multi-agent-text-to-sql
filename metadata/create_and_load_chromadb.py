@@ -584,7 +584,19 @@ if __name__ == "__main__":
 
         # Example: Performing a similarity search
         embedding_client = get_azure_embedding_model()
-        QUERY = "Jake mame druhy Paliva?"
+        # QUERY = "Jake odvetvi ma nejvyssi prumerne mzdy?"
+        # QUERY = "How many flight did NASA make to MARS"
+        QUERY = """
+This table contains average wages (průměrné mzdy) by industry (odvětví).
+
+Key columns:
+
+'odvětví' (industry): Distinct values like IT, manufacturing, healthcare, construction.
+
+'průměrná mzda' (average wage): Numerical values (e.g., 50,000 Kč/month).
+
+Purpose: Identify which industry has the highest average wage.
+        """
         
         # Generate query embedding
         query_embedding = embedding_client.embeddings.create(
@@ -606,9 +618,10 @@ if __name__ == "__main__":
         
         for i, (doc, meta, distance) in enumerate(zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 1):
             selection = meta.get('selection') if isinstance(meta, dict) and meta is not None else 'N/A'
-            similarity = 1 - distance  # Convert distance to similarity
+            # Use normalized similarity in [0, 1]: similarity = 1 - (distance / 2)
+            similarity = 1 - (distance / 2)
             debug_print(f"{CREATE_CHROMADB_ID}: Result #{i}")
-            debug_print(f"{CREATE_CHROMADB_ID}: Similarity: {similarity:.4f}")  # Changed from Distance to Similarity
+            debug_print(f"{CREATE_CHROMADB_ID}: Normalized Similarity: {similarity:.4f}")
             debug_print(f"{CREATE_CHROMADB_ID}: Selection Code: {selection}")
             debug_print(f"{CREATE_CHROMADB_ID}: Text:")
             debug_print(f"{CREATE_CHROMADB_ID}: {doc}")

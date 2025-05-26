@@ -10812,3 +10812,233 @@ ORDER BY avg_wage DESC
 LIMIT 5;
   Result: [('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Hlavní město Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0)]
 ----------------------------------------------------------------------------
+Prompt: Jaky obor ma nejvyssi prumerne mzdy v Praze
+Result: Všechny uvedené ukazatele průměrné hrubé měsíční mzdy v Praze mají hodnotu 0.0. Na základě dostupných dat nelze určit obor s nejvyšší průměrnou mzdou.
+Queries and Results:
+  Query: SELECT "Ukazatel", AVG("value_column") AS "Average_Wage"
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Praha'
+  AND "Ukazatel" LIKE '%Průměrná hrubá měsíční mzda%'
+GROUP BY "Ukazatel"
+ORDER BY "Average_Wage" DESC
+LIMIT 5;
+  Result: [('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)', 0.0)]
+  Query: SELECT "ČR, regiony, kraje", "Ukazatel", AVG("value_column") AS "Average_Wage"
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Praha'
+  AND "Ukazatel" LIKE '%Průměrná hrubá měsíční mzda%'
+GROUP BY "ČR, regiony, kraje", "Ukazatel"
+ORDER BY "Average_Wage" DESC
+LIMIT 5;
+  Result: [('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)', 0.0)]
+  Query: SELECT "Ukazatel", AVG("value_column") AS "Average_Wage"
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Praha'
+  AND "Ukazatel" LIKE '%Průměrná hrubá měsíční mzda%'
+GROUP BY "Ukazatel"
+ORDER BY "Average_Wage" DESC
+LIMIT 5;
+  Result: [('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)', 0.0)]
+  Query: SELECT "Ukazatel", AVG("value_column") AS "Average_Wage"
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Praha'
+  AND "Ukazatel" LIKE '%Průměrná hrubá měsíční mzda%'
+GROUP BY "Ukazatel"
+ORDER BY "Average_Wage" DESC
+LIMIT 5;
+  Result: [('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)', 0.0)]
+  Query: SELECT "ČR, regiony, kraje", "Ukazatel", AVG("value_column") AS "Average_Wage"
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Praha'
+  AND "Ukazatel" LIKE '%Průměrná hrubá měsíční mzda%'
+GROUP BY "ČR, regiony, kraje", "Ukazatel"
+ORDER BY "Average_Wage" DESC
+LIMIT 5;
+  Result: [('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Praha', 'Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)', 0.0)]
+  Query: SELECT "Ukazatel", AVG("value_column") AS "Average_Wage"
+FROM MZDQ1T5
+WHERE "Čtvrtletí" = '4. čtvrtletí 2024'
+  AND "Šetření" = 'Pracovištní metoda'
+  AND "ČR, regiony, kraje" = 'Praha'
+  AND "Ukazatel" LIKE '%Průměrná hrubá měsíční mzda%'
+GROUP BY "Ukazatel"
+ORDER BY "Average_Wage" DESC
+LIMIT 5;
+  Result: [('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)', 0.0), ('Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)', 0.0), ('Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)', 0.0)]
+----------------------------------------------------------------------------
+Prompt: Jaky obor ma nejvyssi prumerne mzdy
+Result: Nejsou dostupná žádná data, která by určovala obor s nejvyšší průměrnou mzdou.
+Queries and Results:
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+  AND "Území" != "Česko"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+  Query: SELECT "Území", AVG("Hodnota") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+  AND "Území" != "Česko"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+  AND "Území" != "Česko"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+  Query: SELECT "Území", AVG("Hodnota") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+  AND "Území" != "Česko"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+----------------------------------------------------------------------------
+Prompt: Jaky obor ma nejvyssi prumerne mzdy?
+Result: Obor s nejvyšší průměrnou mzdou je "Ústecký kraj" s průměrnou mzdou 0.
+Queries and Results:
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+  AND "Území" != "Česko"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)'
+  AND "Území" != 'Česko'
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 5;
+  Result: No results found
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" LIKE '%měsíční mzda%'
+  AND "Území" != 'Česko'
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: [('Ústecký kraj', 0.0)]
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)"
+  AND "Území" != "Česko"
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: No results found
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" = 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)'
+  AND "Území" != 'Česko'
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 5;
+  Result: No results found
+  Query: SELECT "Území", AVG("value_column") AS "average_wage"
+FROM WREG03B03
+WHERE "Ukazatel" LIKE '%měsíční mzda%'
+  AND "Území" != 'Česko'
+GROUP BY "Území"
+ORDER BY "average_wage" DESC
+LIMIT 1;
+  Result: [('Ústecký kraj', 0.0)]
+----------------------------------------------------------------------------
+Prompt: 
+This table contains information about wages and salaries across different industries. It includes data on average wages categorized by economic sectors or industries.
+
+Available columns:
+
+industry (odvětví): distinct values include manufacturing, IT, construction, healthcare, education, etc.
+
+average_wage (průměrná mzda): numerical values representing monthly or annual averages
+
+year: distinct values may include 2020, 2021, 2022, etc.
+
+measurement_unit: e.g., CZK, EUR, USD per month/year
+
+The table allows comparison of wage levels across different economic sectors.
+
+Result: The data indicates that for the year 2024, the average wage across all listed regions (Ústecký kraj, Zlínský kraj, Středočeský kraj, Plzeňský kraj, Pardubický kraj) is 0.0. This suggests either missing or invalid data for the specified metric in these regions for that year.
+Queries and Results:
+  Query: SELECT Území, Roky, AVG(value_column) AS average_wage
+FROM WREG0303
+WHERE Ukazatel = 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)'
+  AND Území != 'Česko'
+GROUP BY Území, Roky
+ORDER BY Roky DESC, average_wage DESC
+LIMIT 5;
+  Result: Error: Query error: no such column: value_column
+  Query: SELECT Území, Roky, MAX(Průměrná_mzda) AS max_wage
+FROM WREG0303
+WHERE Ukazatel = 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)'
+  AND Území != 'Česko'
+GROUP BY Území, Roky
+ORDER BY max_wage DESC
+LIMIT 5;
+  Result: Error: Query error: no such column: Průměrná_mzda
+  Query: SELECT Území, Roky, AVG(CAST(REPLACE(Ukazatel, 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)', '') AS NUMERIC)) AS average_wage
+FROM WREG0303
+WHERE Území != 'Česko'
+GROUP BY Území, Roky
+ORDER BY Roky DESC, average_wage DESC
+LIMIT 5;
+  Result: [('Ústecký kraj', 2024, 0.0), ('Zlínský kraj', 2024, 0.0), ('Středočeský kraj', 2024, 0.0), ('Plzeňský kraj', 2024, 0.0), ('Pardubický kraj', 2024, 0.0)]
+  Query: SELECT Území, Roky, AVG(value_column) AS average_wage
+FROM WREG0303
+WHERE Ukazatel = 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)'
+  AND Území != 'Česko'
+GROUP BY Území, Roky
+ORDER BY Roky DESC, average_wage DESC
+LIMIT 5;
+  Result: Error: Query error: no such column: value_column
+  Query: SELECT Území, Roky, MAX(Průměrná_mzda) AS max_wage
+FROM WREG0303
+WHERE Ukazatel = 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)'
+  AND Území != 'Česko'
+GROUP BY Území, Roky
+ORDER BY max_wage DESC
+LIMIT 5;
+  Result: Error: Query error: no such column: Průměrná_mzda
+  Query: SELECT Území, Roky, AVG(CAST(REPLACE(Ukazatel, 'Průměrná hrubá měsíční mzda – přepočtené počty zaměstnanců (Kč)', '') AS NUMERIC)) AS average_wage
+FROM WREG0303
+WHERE Území != 'Česko'
+GROUP BY Území, Roky
+ORDER BY Roky DESC, average_wage DESC
+LIMIT 5;
+  Result: [('Ústecký kraj', 2024, 0.0), ('Zlínský kraj', 2024, 0.0), ('Středočeský kraj', 2024, 0.0), ('Plzeňský kraj', 2024, 0.0), ('Pardubický kraj', 2024, 0.0)]
+----------------------------------------------------------------------------
