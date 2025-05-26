@@ -1,0 +1,158 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB03K",
+    "label": " Výdaje na dávky nemocenského pojištění v krajích (tis. Kč)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:52:14.558992Z",
+    "id": [
+        "CasR",
+        "IndicatorType",
+        "Uz02h",
+        "DRUHSOCDAVH"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        7
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6090H": 0
+                },
+                "label": {
+                    "6090H": "Hodnota vyplacených dávek nemocenského pojištění (tis. Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6090H": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "DRUHSOCDAVH": {
+            "label": "Druh soc. dávek",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "2": 1,
+                    "3": 2,
+                    "4": 3,
+                    "5": 4,
+                    "24": 5,
+                    "25": 6
+                },
+                "label": {
+                    "0": "Výdaje celkem",
+                    "2": "Nemocenské",
+                    "3": "Ošetřovné (dříve \"podpora při ošetřování člena rodiny\")",
+                    "4": "Peněžitá pomoc v mateřství (tzv. \"mateřská\")",
+                    "5": "Vyrovnávací příspěvek v těhotenství a mateřství",
+                    "24": "Dávka otcovské poporodní péče",
+                    "25": "Dlouhodobé ošetřovné"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

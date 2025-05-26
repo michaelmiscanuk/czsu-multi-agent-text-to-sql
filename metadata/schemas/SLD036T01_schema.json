@@ -1,0 +1,162 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD036T01",
+    "label": "Domovní fond",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:43:15.172179Z",
+    "id": [
+        "CenRoky1",
+        "UzCrKr_H",
+        "IndicatorType",
+        "DRDOMUWS"
+    ],
+    "size": [
+        1,
+        1,
+        9,
+        4
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2409": 0,
+                    "U_2409_1": 1,
+                    "U_2409_1_FYZOSOBA": 2,
+                    "U_2409_1_OBECSTAT": 3,
+                    "U_2409_1_BYTDRUZSTVO": 4,
+                    "U_2409_1_JINAPRAVOSOBA": 5,
+                    "U_2409_1_SPVLASTNIKU": 6,
+                    "U_2409_1_1919": 7,
+                    "U_2409_1_2016AV": 8
+                },
+                "label": {
+                    "U_2409": "Počet domů",
+                    "U_2409_1": "Počet obydlených domů",
+                    "U_2409_1_FYZOSOBA": "Vlastník domu - fyzická osoba",
+                    "U_2409_1_OBECSTAT": "Vlastník domu - obec, stát",
+                    "U_2409_1_BYTDRUZSTVO": "Vlastník domu - bytové družstvo",
+                    "U_2409_1_JINAPRAVOSOBA": "Vlastník domu - jiná právnická osoba",
+                    "U_2409_1_SPVLASTNIKU": "Vlastník domu - spoluvlastnictví vlastníků bytů",
+                    "U_2409_1_1919": "Období výstavby nebo rekonstrukce - 1919 a dříve",
+                    "U_2409_1_2016AV": "Období výstavby nebo rekonstrukce - 2016 a později"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2409_1_1919": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_OBECSTAT": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_BYTDRUZSTVO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_FYZOSOBA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_JINAPRAVOSOBA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_2016AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_SPVLASTNIKU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "DRDOMUWS": {
+            "label": "Druh domu",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "51": 1,
+                    "4": 2,
+                    "55": 3
+                },
+                "label": {
+                    "0": "Domy celkem",
+                    "51": "Rodinné domy",
+                    "4": "Bytové domy",
+                    "55": "Ostatní budovy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

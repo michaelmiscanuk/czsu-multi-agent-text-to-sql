@@ -1,0 +1,195 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RES01QT2",
+    "label": "Ekonomické subjekty podle vybraných právních forem - data za ČR, kraje a okresy",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:00:52.394166Z",
+    "id": [
+        "UZ023H2U",
+        "AKTIVITA",
+        "IndicatorType",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        1,
+        10,
+        17
+    ],
+    "role": {
+        "geo": [
+            "UZ023H2U"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "UZ023H2U": {
+            "label": "ČR, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "AKTIVITA": {
+            "label": "Ekonomické subjekty ",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Počet ekonomických subjektů v registru"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0,
+                    "4958_reg_FO": 1,
+                    "4958_reg_ZIV": 2,
+                    "4958_FO_JINE": 3,
+                    "4958_FO_ZEME": 4,
+                    "4958_reg_PO": 5,
+                    "4958_reg_OS": 6,
+                    "4958_OS_AS": 7,
+                    "4958_reg_DRU": 8,
+                    "4958_reg_STA": 9
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem",
+                    "4958_reg_FO": "Fyzické osoby celkem",
+                    "4958_reg_ZIV": "Soukromí podnikatelé podnikající podle živnostenského zákona",
+                    "4958_FO_JINE": "Fyzická osoba podnikající dle jiných zákonů než živnostenského a zákona o zemědělství",
+                    "4958_FO_ZEME": "Zemědělský podnikatel - fyzická osoba ",
+                    "4958_reg_PO": "Právnické osoby celkem",
+                    "4958_reg_OS": "Obchodní společnosti",
+                    "4958_OS_AS": "Akciové společnosti",
+                    "4958_reg_DRU": "Družstva",
+                    "4958_reg_STA": "Státní podniky"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg_ZIV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_DRU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_PO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_OS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_FO_ZEME": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_FO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_OS_AS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_FO_JINE": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_STA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2025-Q1": 0,
+                    "2024-Q4": 1,
+                    "2024-Q3": 2,
+                    "2024-Q2": 3,
+                    "2024-Q1": 4,
+                    "2023-Q4": 5,
+                    "2023-Q3": 6,
+                    "2023-Q2": 7,
+                    "2023-Q1": 8,
+                    "2022-Q4": 9,
+                    "2022-Q3": 10,
+                    "2022-Q2": 11,
+                    "2022-Q1": 12,
+                    "2021-Q4": 13,
+                    "2021-Q3": 14,
+                    "2021-Q2": 15,
+                    "2021-Q1": 16
+                },
+                "label": {
+                    "2025-Q1": "1. čtvrtletí 2025",
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q1": "1. čtvrtletí 2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

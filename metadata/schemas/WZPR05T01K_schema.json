@@ -1,0 +1,147 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZPR05T01K",
+    "label": "Výdaje na ochranu životního prostředí podle kraje sídla investora",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:53:15.303108Z",
+    "id": [
+        "CasR",
+        "Uz02",
+        "IndicatorType",
+        "OCHRANAZP"
+    ],
+    "size": [
+        1,
+        15,
+        2,
+        7
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0
+                },
+                "label": {
+                    "2015": "2015"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3937A": 0,
+                    "3911A": 1
+                },
+                "label": {
+                    "3937A": "Investice na ochranu ŽP (tis. Kč, b.c)",
+                    "3911A": "Neinvestiční náklady na ochranu ŽP (tis. Kč, b.c)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3911A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3937A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "OCHRANAZP": {
+            "label": "Ochrana životního prostředí",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "130": 1,
+                    "111": 2,
+                    "140": 3,
+                    "114": 4,
+                    "112": 5,
+                    "113": 6
+                },
+                "label": {
+                    "0": "celkem",
+                    "130": "ochrana ovzduší a klimatu",
+                    "111": "nakládání s odpadními vodami",
+                    "140": "nakládání s odpady",
+                    "114": "ochrana krajiny a biodiverzity (druhová rozmanitost)",
+                    "112": "ochrana a sanace půdy, podzemních a povrchových vod",
+                    "113": "omezování hluku a vibrací (kromě ochrany pracovišť)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

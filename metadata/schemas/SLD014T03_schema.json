@@ -1,0 +1,172 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD014T03",
+    "label": "Obyvatelstvo podle druhu registrovaného pobytu a krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "1) registrovaný pobyt zahrnuje i osoby bez státního občanství\n2) dlouhodobý pobyt cizince zahrnuje přechodný pobyt občanů třetích zemí na území ČR na základě dlouhodobého víza (nad 90 dnů) nebo povolení k dlouhodobému pobytu, hlášený přechodný pobyt občanů zemí EU, Norska, Švýcarska, Islandu, Lichtenštejnska a jejich rodinných příslušníků na území ČR a pobyt cizinců s platným azylem nebo doplňkovou ochranou v ČR",
+        null
+    ],
+    "updated": "2025-05-24T07:45:10.461579Z",
+    "id": [
+        "IndicatorType",
+        "CenRoky1",
+        "POHL1",
+        "UzCrKr_H",
+        "DRPOBYTWS"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        15,
+        6
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162": 0
+                },
+                "label": {
+                    "U_3162": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3018": 1,
+                    "3026": 2,
+                    "3034": 3,
+                    "3042": 4,
+                    "3051": 5,
+                    "3069": 6,
+                    "3077": 7,
+                    "3085": 8,
+                    "3093": 9,
+                    "3107": 10,
+                    "3115": 11,
+                    "3123": 12,
+                    "3131": 13,
+                    "3140": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3018",
+                        "3026",
+                        "3034",
+                        "3042",
+                        "3051",
+                        "3069",
+                        "3077",
+                        "3085",
+                        "3093",
+                        "3107",
+                        "3115",
+                        "3123",
+                        "3131",
+                        "3140"
+                    ]
+                }
+            }
+        },
+        "DRPOBYTWS": {
+            "label": "Druh registrovaného pobytu",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "59": 1,
+                    "60": 2,
+                    "61": 3,
+                    "88": 4,
+                    "9": 5
+                },
+                "label": {
+                    "0": "Obyvatelstvo celkem",
+                    "59": "Trvalý pobyt občana ČR",
+                    "60": "Trvalý pobyt cizince (bez rozlišení státu)",
+                    "61": "Dlouhodobý pobyt cizince",
+                    "88": "Osoby bez registrovaného pobytu",
+                    "9": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

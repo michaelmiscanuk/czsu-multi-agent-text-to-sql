@@ -1,0 +1,161 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WNUC01DWNUC01T01",
+    "label": "Čtvrtletní odhady HDP - grafy",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:47:00.624840Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        4,
+        29
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9988J09": 0,
+                    "9988J10": 1,
+                    "9988J08": 2,
+                    "9992J13": 3
+                },
+                "label": {
+                    "9988J09": "HDP – mezičtvrtletní reálná změna (sezónně očištěno v %)",
+                    "9988J10": "HDP – meziroční reálná změna (sezónně očištěno v %)",
+                    "9988J08": "Příspěvky k meziročnímu reálnému růstu HDP po vyloučení dovozu pro konečné užití (sezónně očištěno)",
+                    "9992J13": "Příspěvky odvětví k meziročnímu reálnému růstu HPH (sezónně očištěno)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9992J13": {
+                        "decimals": 3,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J09": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J08": {
+                        "decimals": 3,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J10": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2018-Q1": 0,
+                    "2018-Q2": 1,
+                    "2018-Q3": 2,
+                    "2018-Q4": 3,
+                    "2019-Q1": 4,
+                    "2019-Q2": 5,
+                    "2019-Q3": 6,
+                    "2019-Q4": 7,
+                    "2020-Q1": 8,
+                    "2020-Q2": 9,
+                    "2020-Q3": 10,
+                    "2020-Q4": 11,
+                    "2021-Q1": 12,
+                    "2021-Q2": 13,
+                    "2021-Q3": 14,
+                    "2021-Q4": 15,
+                    "2022-Q1": 16,
+                    "2022-Q2": 17,
+                    "2022-Q3": 18,
+                    "2022-Q4": 19,
+                    "2023-Q1": 20,
+                    "2023-Q2": 21,
+                    "2023-Q3": 22,
+                    "2023-Q4": 23,
+                    "2024-Q1": 24,
+                    "2024-Q2": 25,
+                    "2024-Q3": 26,
+                    "2024-Q4": 27,
+                    "2025-Q1": 28
+                },
+                "label": {
+                    "2018-Q1": "1. čtvrtletí 2018",
+                    "2018-Q2": "2. čtvrtletí 2018",
+                    "2018-Q3": "3. čtvrtletí 2018",
+                    "2018-Q4": "4. čtvrtletí 2018",
+                    "2019-Q1": "1. čtvrtletí 2019",
+                    "2019-Q2": "2. čtvrtletí 2019",
+                    "2019-Q3": "3. čtvrtletí 2019",
+                    "2019-Q4": "4. čtvrtletí 2019",
+                    "2020-Q1": "1. čtvrtletí 2020",
+                    "2020-Q2": "2. čtvrtletí 2020",
+                    "2020-Q3": "3. čtvrtletí 2020",
+                    "2020-Q4": "4. čtvrtletí 2020",
+                    "2021-Q1": "1. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2025-Q1": "1. čtvrtletí 2025"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

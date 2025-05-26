@@ -1,0 +1,263 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/MZDRT5",
+    "label": "Průměrný evidenční počet zaměstnanců a průměrné hrubé měsíční mzdy z čtvrtletního zjišťování - dle krajů a regionů soudržnosti",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "údaje jsou zpracovány ze čtvrtletního zjišťování"
+    ],
+    "updated": "2025-05-24T08:07:54.273053Z",
+    "id": [
+        "CasR",
+        "ZJIST",
+        "Uz0123vm",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        23,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz0123vm"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "ZJIST": {
+            "label": "Šetření",
+            "category": {
+                "index": {
+                    "2": 0
+                },
+                "label": {
+                    "2": "Pracovištní metoda"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz0123vm": {
+            "label": "ČR, regiony, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ01": 1,
+                    "CZ02": 2,
+                    "CZ03": 3,
+                    "CZ04": 4,
+                    "CZ05": 5,
+                    "CZ06": 6,
+                    "CZ07": 7,
+                    "CZ08": 8,
+                    "CZ010": 9,
+                    "CZ020": 10,
+                    "CZ031": 11,
+                    "CZ032": 12,
+                    "CZ041": 13,
+                    "CZ042": 14,
+                    "CZ051": 15,
+                    "CZ052": 16,
+                    "CZ053": 17,
+                    "CZ063": 18,
+                    "CZ064": 19,
+                    "CZ071": 20,
+                    "CZ072": 21,
+                    "CZ080": 22
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ01": "Praha",
+                    "CZ02": "Střední Čechy",
+                    "CZ03": "Jihozápad",
+                    "CZ04": "Severozápad",
+                    "CZ05": "Severovýchod",
+                    "CZ06": "Jihovýchod",
+                    "CZ07": "Střední Morava",
+                    "CZ08": "Moravskoslezsko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ01",
+                        "CZ02",
+                        "CZ03",
+                        "CZ04",
+                        "CZ05",
+                        "CZ06",
+                        "CZ07",
+                        "CZ08"
+                    ],
+                    "CZ01": [
+                        "CZ010"
+                    ],
+                    "CZ02": [
+                        "CZ020"
+                    ],
+                    "CZ03": [
+                        "CZ031",
+                        "CZ032"
+                    ],
+                    "CZ04": [
+                        "CZ041",
+                        "CZ042"
+                    ],
+                    "CZ05": [
+                        "CZ051",
+                        "CZ052",
+                        "CZ053"
+                    ],
+                    "CZ06": [
+                        "CZ063",
+                        "CZ064"
+                    ],
+                    "CZ07": [
+                        "CZ071",
+                        "CZ072"
+                    ],
+                    "CZ08": [
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "299A": 0,
+                    "299RROZ": 1,
+                    "299I": 2,
+                    "5958P": 3,
+                    "5958PRROZ": 4,
+                    "5958PI": 5,
+                    "317A": 6,
+                    "317RROZ": 7,
+                    "317IF": 8,
+                    "5958F": 9,
+                    "5958FRROZ": 10,
+                    "5958FI": 11
+                },
+                "label": {
+                    "299A": "Průměrný evidenční počet zaměstnanců přepočtený (tis. osob)",
+                    "299RROZ": "Průměrný evidenční počet zaměstnanců přepočtený - meziroční rozdíl (tis. osob)",
+                    "299I": "Průměrný evidenční počet zaměstnanců přepočtený - meziroční index (%)",
+                    "5958P": "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)",
+                    "5958PRROZ": "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční rozdíl (Kč)",
+                    "5958PI": "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)",
+                    "317A": "Průměrný evidenční počet zaměstnanců na fyzické osoby (tis. osob)",
+                    "317RROZ": "Průměrný evidenční počet zaměstnanců na fyzické osoby - meziroční rozdíl (tis. osob)",
+                    "317IF": "Průměrný evidenční počet zaměstnanců na fyzické osoby - meziroční index (%)",
+                    "5958F": "Průměrná hrubá měsíční mzda na fyzické osoby (Kč)",
+                    "5958FRROZ": "Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)",
+                    "5958FI": "Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "299I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PRROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958FRROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317IF": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958FI": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "299A": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "299RROZ": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958F": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958P": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317RROZ": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PI": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317A": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

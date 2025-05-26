@@ -1,0 +1,168 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN03CT02",
+    "label": "Ženy a muži – používání internetu podle věkových skupin",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "podíl osob ve věku 16 a více let na celkovém počtu osob v této věkové skupině; tříleté klouzavé průměry",
+        "Podíly z žen/mužů ve věku 16 a více let."
+    ],
+    "updated": "2025-05-24T08:14:37.496382Z",
+    "id": [
+        "Uz02h",
+        "CasR",
+        "IndicatorType",
+        "POHZM",
+        "VEKSKDIG"
+    ],
+    "size": [
+        1,
+        1,
+        7,
+        2,
+        5
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "7644W01": 0,
+                    "7644W02": 1,
+                    "7644W03": 2,
+                    "7644W04": 3,
+                    "7644W05": 4,
+                    "7644W06": 5,
+                    "7644W07": 6
+                },
+                "label": {
+                    "7644W01": "Osoby používající internet (%)",
+                    "7644W02": "Osoby používající internet na mobilním telefonu (%)",
+                    "7644W03": "Osoby připojující se na mobilním telefonu k internetu přes mobilní data (%)",
+                    "7644W04": "Osoby připojující se na mobilním telefonu k internetu přes Wi-Fi (%)",
+                    "7644W05": "Osoby nakupující na internetu (%)",
+                    "7644W06": "Osoby používající internetové bankovnictví (%)",
+                    "7644W07": "Osoby používající sociální sítě (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7644W02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7644W03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7644W01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7644W06": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7644W07": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7644W04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7644W05": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHZM": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "2": 0,
+                    "1": 1
+                },
+                "label": {
+                    "2": "ženy",
+                    "1": "muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VEKSKDIG": {
+            "label": "Věk",
+            "category": {
+                "index": {
+                    "410016799999000": 0,
+                    "410016610035000": 1,
+                    "410035610055000": 2,
+                    "410055610075000": 3,
+                    "410075799999000": 4
+                },
+                "label": {
+                    "410016799999000": "Celkem (16+)",
+                    "410016610035000": "16 - 34",
+                    "410035610055000": "35 - 54",
+                    "410055610075000": "55 - 74",
+                    "410075799999000": "75+"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,294 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU02QDMOT3",
+    "label": "Návštěvnost hromadných ubytovacích zařízení v členěných DMO ",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:44:21.108339Z",
+    "id": [
+        "KATHUZ",
+        "CasQ",
+        "UzZ2",
+        "IndicatorType",
+        "REZIDENCE"
+    ],
+    "size": [
+        1,
+        1,
+        81,
+        3,
+        3
+    ],
+    "role": {
+        "geo": [
+            "UzZ2"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "KATHUZ": {
+            "label": "Kategorie",
+            "category": {
+                "index": {
+                    "1": 0
+                },
+                "label": {
+                    "1": "Hromadná ubytovací zařízení celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q4": 0
+                },
+                "label": {
+                    "2024-Q4": "4. čtvrtletí 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzZ2": {
+            "label": "Oblasti destinačního managementu členěné",
+            "category": {
+                "index": {
+                    "1101": 0,
+                    "2101": 1,
+                    "2102": 2,
+                    "2103": 3,
+                    "2104": 4,
+                    "2105": 5,
+                    "2106": 6,
+                    "2107": 7,
+                    "2108": 8,
+                    "2109": 9,
+                    "2110": 10,
+                    "2111": 11,
+                    "2113": 12,
+                    "3101": 13,
+                    "3102": 14,
+                    "3103": 15,
+                    "3104": 16,
+                    "3105": 17,
+                    "3106": 18,
+                    "3109": 19,
+                    "3110": 20,
+                    "3111": 21,
+                    "3202": 22,
+                    "3203": 23,
+                    "3205": 24,
+                    "3206": 25,
+                    "3207": 26,
+                    "3208": 27,
+                    "3211": 28,
+                    "3212": 29,
+                    "3213": 30,
+                    "3214": 31,
+                    "4101": 32,
+                    "4102": 33,
+                    "4103": 34,
+                    "4201": 35,
+                    "4202": 36,
+                    "4203": 37,
+                    "4204": 38,
+                    "5101": 39,
+                    "5102": 40,
+                    "5103": 41,
+                    "5104": 42,
+                    "5105": 43,
+                    "5201": 44,
+                    "5202": 45,
+                    "5203": 46,
+                    "5204": 47,
+                    "5205": 48,
+                    "5206": 49,
+                    "5207": 50,
+                    "5301": 51,
+                    "5302": 52,
+                    "5303": 53,
+                    "5304": 54,
+                    "5305": 55,
+                    "6302": 56,
+                    "6304": 57,
+                    "6306": 58,
+                    "6307": 59,
+                    "6308": 60,
+                    "6309": 61,
+                    "6310": 62,
+                    "6401": 63,
+                    "6402": 64,
+                    "6404": 65,
+                    "6406": 66,
+                    "6407": 67,
+                    "6408": 68,
+                    "7101": 69,
+                    "7102": 70,
+                    "7201": 71,
+                    "7202": 72,
+                    "7203": 73,
+                    "7204": 74,
+                    "8101": 75,
+                    "8102": 76,
+                    "8103": 77,
+                    "8104": 78,
+                    "8105": 79,
+                    "8106": 80
+                },
+                "label": {
+                    "1101": "Praha",
+                    "2101": "Berounsko",
+                    "2102": "Brdy a Podbrdsko",
+                    "2103": "Český ráj  - Středočeský kraj",
+                    "2104": "Kladensko - Slánsko",
+                    "2105": "Kutnohorsko a Kolínsko",
+                    "2106": "Kraj blanických rytířů",
+                    "2107": "Mělnicko - Kokořínsko",
+                    "2108": "Pojizeří a Polabí",
+                    "2109": "Posázaví",
+                    "2110": "Rakovnicko",
+                    "2111": "Toulava  - Středočeský kraj",
+                    "2113": "Máchův kraj - Středočeský kraj",
+                    "3101": "Česká Kanada",
+                    "3102": "Budějovicko",
+                    "3103": "Český Krumlov a okolí",
+                    "3104": "Lipensko",
+                    "3105": "Novohradsko-Doudlebsko",
+                    "3106": "Písecko, Blatensko, Strakonicko, Vodňansko",
+                    "3109": "Šumavsko",
+                    "3110": "Toulava - Jihočeský kraj",
+                    "3111": "Třeboňsko",
+                    "3202": "Pobrdí",
+                    "3203": "Český les",
+                    "3205": "Pošumaví",
+                    "3206": "Plzeň a okolí",
+                    "3207": "Postřelí - Plzeňský kraj",
+                    "3208": "Šumava západ",
+                    "3211": "Jižní Plzeňsko",
+                    "3212": "Šumava žije",
+                    "3213": "Plzeň a okolí jihozápad",
+                    "3214": "Rokycansko - Horažďovicko",
+                    "4101": "Krušnohoří - Karlovarský kraj",
+                    "4102": "Západočeské lázně",
+                    "4103": "Postřelí - Karlovarský kraj",
+                    "4201": "České Středohoří",
+                    "4202": "České Švýcarsko",
+                    "4203": "Dolní Poohří",
+                    "4204": "Krušnohoří - Ústecký kraj",
+                    "5101": "Český ráj - Liberecký kraj",
+                    "5102": "Jizerské hory",
+                    "5103": "Krkonoše - Liberecký kraj",
+                    "5104": "Lužické hory",
+                    "5105": "Máchův kraj - Liberecký kraj",
+                    "5201": "Broumovsko",
+                    "5202": "Český ráj - Královéhradecký kraj",
+                    "5203": "Hradecko",
+                    "5204": "Kladské pomezí",
+                    "5205": "Krkonoše - Královéhradecký kraj",
+                    "5206": "Orlické hory a Podorlicko - Královéhradecký kraj",
+                    "5207": "Podkrkonoší - Podzvičinsko",
+                    "5301": "Českomoravské pomezí",
+                    "5302": "Chrudimsko-Hlinecko",
+                    "5303": "Králický Sněžník",
+                    "5304": "Orlické hory a Podorlicko - Pardubický kraj",
+                    "5305": "Pardubicko",
+                    "6302": "Koruna Vysočiny",
+                    "6304": "Třebíčsko",
+                    "6306": "Kraj pod Javořicí",
+                    "6307": "Střední Vysočina - Jihlavsko",
+                    "6308": "Vysočina west",
+                    "6309": "Havlíčkobrodsko - Ledečsko",
+                    "6310": "Tepna Vysočiny",
+                    "6401": "Brno a okolí",
+                    "6402": "Moravský kras a okolí",
+                    "6404": "Slovácko - Jihomoravský kraj",
+                    "6406": "Znojemsko a Podyjí",
+                    "6407": "LVA a Hustopečsko",
+                    "6408": "Pálava",
+                    "7101": "Jeseníky-západ",
+                    "7102": "Střední Morava",
+                    "7201": "Valašsko",
+                    "7202": "Kroměřížsko",
+                    "7203": "Slovácko - Zlínský kraj",
+                    "7204": "Zlínsko - Luhačovicko",
+                    "8101": "Beskydy",
+                    "8102": "Jeseníky-východ",
+                    "8103": "Opavské Slezsko",
+                    "8104": "Ostrava a okolí",
+                    "8105": "Poodří",
+                    "8106": "Těšínské Slezsko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2654": 0,
+                    "2655": 1,
+                    "5443": 2
+                },
+                "label": {
+                    "2654": "Počet hostů",
+                    "2655": "Počet přenocování",
+                    "5443": "Průměrný počet přenocování "
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2655": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2654": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5443": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "REZIDENCE": {
+            "label": "Rezidence",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "203": 1,
+                    "17": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "203": "Rezidenti",
+                    "17": "Nerezidenti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,378 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/FIN03PSDUK",
+    "label": "Doplňkové ukazatele penzijních společností a fondů (mil. Kč) \t",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:02:46.678119Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        4,
+        5
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2506PSF": 0,
+                    "2507PSF": 1,
+                    "2508PSF": 2,
+                    "1517PSF": 3
+                },
+                "label": {
+                    "2506PSF": "Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.",
+                    "2507PSF": "Vyplacené dividendy a podíly na zisku nerezidentům",
+                    "2508PSF": "Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům)",
+                    "1517PSF": "Přijaté dividendy a podíly na zisku - brutto"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "1932PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1009PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1548PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1955PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2520PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1554PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "937PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1997PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1836PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1673PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "8040PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "396FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "803FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6176FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1708PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1207PS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2508PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6179FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1228PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1115PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6181FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "348PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1831PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1030PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1112PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "856PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1076PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6180FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4415GFIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2083PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1863PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1622PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "779PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1924PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1950PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1517PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1113PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4299FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2506PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "8272PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1167PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1960PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1935PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2108PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4416FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1670PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6594PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "942PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2096PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1091PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "332PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1206PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "376FIN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2507PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1202PSF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2018": 0,
+                    "2019": 1,
+                    "2020": 2,
+                    "2021": 3,
+                    "2022": 4
+                },
+                "label": {
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

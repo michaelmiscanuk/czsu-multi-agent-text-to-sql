@@ -1,0 +1,148 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD053T01",
+    "label": "Domovní fond",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "do roku 2001 podle trvalého pobytu, od roku 2011 podle obvyklého pobytu\n",
+        null
+    ],
+    "updated": "2025-05-24T07:40:17.095251Z",
+    "id": [
+        "UzCrKr_H",
+        "IndicatorType",
+        "CenRoky2"
+    ],
+    "size": [
+        1,
+        9,
+        5
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky2"
+        ]
+    },
+    "dimension": {
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2409_Uz2021": 0,
+                    "U_2409_1_Uz2021": 1,
+                    "U_2409_1_RD_Uz2021": 2,
+                    "U_2409_1_BD_Uz2021": 3,
+                    "U_2409_1_FYZOS_Uz2021": 4,
+                    "U_2409_1_OBST_Uz2021": 5,
+                    "U_2409_2_Uz2021": 6,
+                    "U_2409_2_RD_Uz2021": 7,
+                    "U_2409_2_BD_Uz2021": 8
+                },
+                "label": {
+                    "U_2409_Uz2021": "Domy celkem",
+                    "U_2409_1_Uz2021": "Obydlené domy celkem",
+                    "U_2409_1_RD_Uz2021": "Obydlené rodinné domy",
+                    "U_2409_1_BD_Uz2021": "Obydlené bytové domy",
+                    "U_2409_1_FYZOS_Uz2021": "Vlastník - fyzická osoba",
+                    "U_2409_1_OBST_Uz2021": "Vlastník - obec, stát",
+                    "U_2409_2_Uz2021": "Neobydlené domy celkem",
+                    "U_2409_2_RD_Uz2021": "Neobydlené rodinné domy",
+                    "U_2409_2_BD_Uz2021": "Neobydlené bytové domy"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2409_1_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_2_RD_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_2_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_RD_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_FYZOS_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_BD_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_2_BD_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_OBST_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CenRoky2": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C19801101": 0,
+                    "C19910303": 1,
+                    "C20010301": 2,
+                    "C20110326": 3,
+                    "C20210326": 4
+                },
+                "label": {
+                    "C19801101": "1980",
+                    "C19910303": "1991",
+                    "C20010301": "2001",
+                    "C20110326": "2011",
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

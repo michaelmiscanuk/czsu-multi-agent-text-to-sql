@@ -1,0 +1,237 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBC01CT3",
+    "label": "Indexy tržeb bez DPH v maloobchodě a za prodej a opravy motorových vozidel - sezónně očištěno, včetně očištění o kalendářní vlivy - roční",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Měsíční zjišťování SP1-12"
+    ],
+    "updated": "2025-05-24T07:49:24.883155Z",
+    "id": [
+        "TYPUDAJSLU",
+        "IndicatorType",
+        "OCIST3",
+        "Uz0",
+        "CZNACEOB",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        27,
+        25
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "TYPUDAJSLU": {
+            "label": "Typ indexu",
+            "category": {
+                "index": {
+                    "IR": 0
+                },
+                "label": {
+                    "IR": "Meziroční index"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "1007SC": 0
+                },
+                "label": {
+                    "1007SC": "Index tržeb bez DPH - stálé ceny (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "1007SC": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1007BC": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "OCIST3": {
+            "label": "Očištění",
+            "category": {
+                "index": {
+                    "SA": 0
+                },
+                "label": {
+                    "SA": "Sezónně očištěno, včetně očištění o kalendářní vlivy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZNACEOB": {
+            "label": "Odvětví (NACE)",
+            "category": {
+                "index": {
+                    "45470001": 0,
+                    "45470002": 1,
+                    "45": 2,
+                    "45450001": 3,
+                    "451": 4,
+                    "452": 5,
+                    "453": 6,
+                    "454": 7,
+                    "47": 8,
+                    "47470003": 9,
+                    "47470001": 10,
+                    "47470002": 11,
+                    "471": 12,
+                    "4711": 13,
+                    "4719": 14,
+                    "472": 15,
+                    "473": 16,
+                    "474": 17,
+                    "475": 18,
+                    "476": 19,
+                    "477": 20,
+                    "47470004": 21,
+                    "47470005": 22,
+                    "4775": 23,
+                    "478": 24,
+                    "479": 25,
+                    "4791": 26
+                },
+                "label": {
+                    "45470001": "45+47 Maloobchod (vč.maloobchodního prodeje pohonných hmot) a prodej a opravy motorových vozidel",
+                    "45470002": "45+47.3 Obchod, opravy a údržba motorových vozidel a maloobchodní prodej pohonných hmot",
+                    "45": "45 Obchod, opravy a údržba motorových vozidel",
+                    "45450001": "45.1+45.3+45.4 Obchod s motorovými vozidly; obchod, opravy a údržba motocyklů",
+                    "451": "45.1 Obchod s motorovými vozidly, kromě motocyklů",
+                    "452": "45.2 Opravy a údržba motorových vozidel, kromě motocyklů",
+                    "453": "45.3 Obchod s díly a příslušenstvím pro motorová vozidla, kromě motocyklů",
+                    "454": "45.4 Obchod, opravy a údržba motocyklů, jejich dílů a příslušenství",
+                    "47": "47 Maloobchod kromě motorových vozidel",
+                    "47470003": "47 bez 47.3 Maloobchod kromě maloobchodního prodeje pohonných hmot",
+                    "47470001": "47.11+47.2 Maloobchod s potravinami",
+                    "47470002": "47.19+47.4 až 47.9 Maloobchod s nepotravinářským zbožím",
+                    "471": "47.1 Maloobchod v nespecializovaných prodejnách",
+                    "4711": "47.11 Maloobchod s převahou potravin v nespecializovaných prodejnách",
+                    "4719": "47.19 Ostatní maloobchod v nespecializovaných prodejnách",
+                    "472": "47.2 Maloobchod s potravinami ve specializovaných prodejnách",
+                    "473": "47.3 Maloobchodní prodej pohonných hmot",
+                    "474": "47.4 Maloobchod s počítačovým a komunikačním zařízením ve specializovaných prodejnách",
+                    "475": "47.5 Maloobchod s výrobky převážně pro domácnost  ve specializovaných prodejnách",
+                    "476": "47.6 Maloobchod s výrobky pro kulturu a rekreaci ve specializovaných prodejnách",
+                    "477": "47.7 Maloobchod s ostatním zbožím ve specializovaných prodejnách",
+                    "47470004": "47.71+47.72 Maloobchod s oděvy, obuví a koženým zbožím ve specializovaných prodejnách",
+                    "47470005": "47.73+47.74 Maloobchod s farmaceutickým a zdravotnickým zbožím ve specializovaných prodejnách",
+                    "4775": "47.75 Maloobchod s kosmetickými a toaletními výrobky",
+                    "478": "47.8 Maloobchod ve stáncích a na trzích",
+                    "479": "47.9 Maloobchod mimo prodejny, stánky a trhy",
+                    "4791": "47.91 Maloobchod prostřednictvím internetu nebo zásilkové služby"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2000": 0,
+                    "2001": 1,
+                    "2002": 2,
+                    "2003": 3,
+                    "2004": 4,
+                    "2005": 5,
+                    "2006": 6,
+                    "2007": 7,
+                    "2008": 8,
+                    "2009": 9,
+                    "2010": 10,
+                    "2011": 11,
+                    "2012": 12,
+                    "2013": 13,
+                    "2014": 14,
+                    "2015": 15,
+                    "2016": 16,
+                    "2017": 17,
+                    "2018": 18,
+                    "2019": 19,
+                    "2020": 20,
+                    "2021": 21,
+                    "2022": 22,
+                    "2023": 23,
+                    "2024": 24
+                },
+                "label": {
+                    "2000": "2000",
+                    "2001": "2001",
+                    "2002": "2002",
+                    "2003": "2003",
+                    "2004": "2004",
+                    "2005": "2005",
+                    "2006": "2006",
+                    "2007": "2007",
+                    "2008": "2008",
+                    "2009": "2009",
+                    "2010": "2010",
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

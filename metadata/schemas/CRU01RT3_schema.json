@@ -1,0 +1,161 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU01RT3",
+    "label": "Kapacity hromadných ubytovacích zařízení podle kategorie - ČR, kraje, okresy, územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:40:16.006647Z",
+    "id": [
+        "IndicatorType",
+        "UZ023H2U",
+        "CasR",
+        "KAT"
+    ],
+    "size": [
+        1,
+        1,
+        13,
+        12
+    ],
+    "role": {
+        "geo": [
+            "UZ023H2U"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5457": 0
+                },
+                "label": {
+                    "5457": "Počet hromadných ubytovacích zařízení"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2658": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2657": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2662": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5457": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "UZ023H2U": {
+            "label": "ČR, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11,
+                    "2012": 12
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "KAT": {
+            "label": "Kategorie ubytovacího zařízení",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "01": 1,
+                    "02": 2,
+                    "03": 3,
+                    "04": 4,
+                    "05": 5,
+                    "06": 6,
+                    "07": 7,
+                    "08": 8,
+                    "09": 9,
+                    "10": 10,
+                    "11": 11
+                },
+                "label": {
+                    "1": "HUZ celkem",
+                    "01": "Hotel *****",
+                    "02": "Hotel, motel, botel ****",
+                    "03": "Hotel, motel, botel ***",
+                    "04": "Hotel, motel, botel **",
+                    "05": "Hotel, motel, botel *",
+                    "06": "Hotel garni",
+                    "07": "Penzion",
+                    "08": "Kemp",
+                    "09": "Chatová osada",
+                    "10": "Turistická ubytovna",
+                    "11": "Ostatní HUZ"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

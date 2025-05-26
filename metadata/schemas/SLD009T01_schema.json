@@ -1,0 +1,143 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD009T01",
+    "label": "Obyvatelstvo podle ekonomické aktivity",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:47:43.214211Z",
+    "id": [
+        "IndicatorType",
+        "CenRoky1",
+        "UzCrKr_H",
+        "EKONAKTIVWS",
+        "POHL1"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        10,
+        3
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162": 0
+                },
+                "label": {
+                    "U_3162": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162_2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "EKONAKTIVWS": {
+            "label": "Ekonomická aktivita",
+            "category": {
+                "index": {
+                    "53": 0,
+                    "51": 1,
+                    "2": 2,
+                    "4": 3,
+                    "52": 4,
+                    "54": 5,
+                    "6": 6,
+                    "14": 7,
+                    "8": 8,
+                    "99": 9
+                },
+                "label": {
+                    "53": "Pracovní síla",
+                    "51": "Zaměstnaní",
+                    "2": "Pracující důchodci",
+                    "4": "Osoby na mateřské dovolené",
+                    "52": "Nezaměstnaní",
+                    "54": "Mimo pracovní sílu",
+                    "6": "Nepracující důchodci",
+                    "14": "Osoby na rodičovské dovolené",
+                    "8": "Žáci, studenti",
+                    "99": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "2": 1,
+                    "1": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "2": "Ženy",
+                    "1": "Muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

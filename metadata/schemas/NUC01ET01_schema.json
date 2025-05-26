@@ -1,0 +1,189 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/NUC01ET01",
+    "label": "Výdaje na hrubý domácí produkt, objemové indexy, předchozí období = 100, sezonně očištěno (%)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:47:00.013697Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        14,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9988J07": 0,
+                    "10000J01": 1,
+                    "10000J02": 2,
+                    "10000J03": 3,
+                    "10000J04": 4,
+                    "10001J01": 5,
+                    "9991J02": 6,
+                    "10002J01": 7,
+                    "10003J01": 8,
+                    "10005J01": 9,
+                    "10006J01": 10,
+                    "10004J01": 11,
+                    "10007J01": 12,
+                    "10008J01": 13
+                },
+                "label": {
+                    "9988J07": "Hrubý domácí produkt",
+                    "10000J01": "Výdaje na konečnou spotřebu celkem",
+                    "10000J02": "Výdaje na konečnou spotřebu domácností",
+                    "10000J03": "Výdaje na konečnou spotřebu vládních institucí",
+                    "10000J04": "Výdaje na konečnou spotřebu neziskových institucí",
+                    "10001J01": "Tvorba hrubého kapitálu celkem",
+                    "9991J02": "Tvorba hrubého fixního kapitálu",
+                    "10002J01": "Čisté pořízení cenností",
+                    "10003J01": "Vývoz celkem",
+                    "10005J01": "Vývoz zboží",
+                    "10006J01": "Vývoz služeb",
+                    "10004J01": "Dovoz celkem",
+                    "10007J01": "Dovoz zboží",
+                    "10008J01": "Dovoz služeb"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9988J07": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10001J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10002J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10000J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10000J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10000J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10000J04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9991J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10007J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10004J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10003J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10008J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10005J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10006J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2023-Q1": 0,
+                    "2023-Q2": 1,
+                    "2023-Q3": 2,
+                    "2023-Q4": 3,
+                    "2024-Q1": 4,
+                    "2024-Q2": 5,
+                    "2024-Q3": 6,
+                    "2024-Q4": 7
+                },
+                "label": {
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q4": "4. čtvrtletí 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

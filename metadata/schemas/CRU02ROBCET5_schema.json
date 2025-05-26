@@ -1,0 +1,158 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU02ROBCET5",
+    "label": "Návštěvnost HUZ za vybraný správný obvod hl. města Prahy - časová řada",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:11:25.998309Z",
+    "id": [
+        "UZ6B",
+        "KAT",
+        "IndicatorType",
+        "REZIDENCE",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        3,
+        3,
+        13
+    ],
+    "role": {
+        "geo": [
+            "UZ6B"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "UZ6B": {
+            "label": "Správní obvody hl. města Prahy",
+            "category": {
+                "index": {
+                    "1101": 0
+                },
+                "label": {
+                    "1101": "Praha 1"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "KAT": {
+            "label": "Kategorie ubytovacího zařízení",
+            "category": {
+                "index": {
+                    "1": 0
+                },
+                "label": {
+                    "1": "HUZ celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2654": 0,
+                    "2655": 1,
+                    "5443": 2
+                },
+                "label": {
+                    "2654": "Počet hostů",
+                    "2655": "Počet přenocování",
+                    "5443": "Průměrný počet přenocování "
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2655": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2654": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5443": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "REZIDENCE": {
+            "label": "Rezidence",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "203": 1,
+                    "17": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "203": "Rezidenti",
+                    "17": "Nerezidenti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11,
+                    "2012": 12
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

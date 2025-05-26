@@ -1,0 +1,172 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WOBY04A",
+    "label": "Zemřelí podle věku",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:15:00.200420Z",
+    "id": [
+        "Uz02h",
+        "POHL1",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        9,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5393W": 0,
+                    "5393WV0": 1,
+                    "5393WV114": 2,
+                    "5393WV1544": 3,
+                    "5393WV4564": 4,
+                    "5393WV6574": 5,
+                    "5393WV7584": 6,
+                    "5393WV85AV": 7,
+                    "5407": 8
+                },
+                "label": {
+                    "5393W": "Celkem",
+                    "5393WV0": "ve věku 0 let",
+                    "5393WV114": "ve věku 1 - 14 let",
+                    "5393WV1544": "ve věku 15- 44 let",
+                    "5393WV4564": "ve věku 45 - 64 let",
+                    "5393WV6574": "ve věku 65 - 74 let",
+                    "5393WV7584": "ve věku 75 - 84 let",
+                    "5393WV85AV": "ve věku 85 a více let",
+                    "5407": "Kojenecká úmrtnost"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5393WV6574": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV7584": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV0": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV1544": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV4564": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV85AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV114": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5407": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2016": 0,
+                    "2017": 1,
+                    "2018": 2,
+                    "2019": 3,
+                    "2020": 4,
+                    "2021": 5,
+                    "2022": 6,
+                    "2023": 7,
+                    "2024": 8
+                },
+                "label": {
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

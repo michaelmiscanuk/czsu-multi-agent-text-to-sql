@@ -1,0 +1,137 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZPR01KG",
+    "label": "Počet maloplošných zvláště chráněných území ",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Zdroj informací: Agentura ochrany přírody a krajiny. Od roku 2017 je rozloha vypočítávána ve všech případech z obvodových hranic chráněných území. Údaj za ČR neodpovídá součtu za kraje, neboť některá chráněná území se rozkládají na území více krajů (okresů)."
+    ],
+    "updated": "2025-05-24T07:53:35.747874Z",
+    "id": [
+        "IndicatorType",
+        "DRCHRANUZM",
+        "Uz02",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "7520": 0
+                },
+                "label": {
+                    "7520": "Počet chráněných území"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7521": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7520": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "DRCHRANUZM": {
+            "label": "Druh chráněného území",
+            "category": {
+                "index": {
+                    "2": 0
+                },
+                "label": {
+                    "2": "Maloplošné chráněné území"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2020": 0,
+                    "2021": 1,
+                    "2022": 2
+                },
+                "label": {
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

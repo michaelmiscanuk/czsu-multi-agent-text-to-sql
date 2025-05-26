@@ -1,0 +1,138 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ZUR01BT1",
+    "label": "Domácnosti podle postavení osoby v čele a právní formy užívání bytu",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:48:44.443281Z",
+    "id": [
+        "IndicatorType",
+        "Uz0",
+        "CasR",
+        "PRDUVUZBYT",
+        "EKAKTIOCD"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        5,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2423B": 0
+                },
+                "label": {
+                    "2423B": "Podíl hospodařících domácností podle právní formy užívání bytu (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2423B": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "PRDUVUZBYT": {
+            "label": "Právní forma užívání bytu",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "2": 1,
+                    "9": 2,
+                    "4": 3,
+                    "8": 4
+                },
+                "label": {
+                    "1": "Byt ve vlastním domě",
+                    "2": "Byt v osobním vlastnictví",
+                    "9": "Byt družstevní",
+                    "4": "Byt pronajatý",
+                    "8": "Byt u příbuzných, známých"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "EKAKTIOCD": {
+            "label": "Ekonomická aktivita osoby v čele domácnosti",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "6": 1,
+                    "6A": 2,
+                    "6B": 3,
+                    "5": 4,
+                    "14": 5,
+                    "4": 6,
+                    "11": 7
+                },
+                "label": {
+                    "0": "Celkem",
+                    "6": "Zaměstnanci ",
+                    "6A": "Zaměstnanci s nižším vzděláním",
+                    "6B": "Zaměstnanci s vyšším vzděláním",
+                    "5": "Samostatně činní",
+                    "14": "Důchodci",
+                    "4": "Nezaměstnaní",
+                    "11": "Ostatní domácnosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

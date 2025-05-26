@@ -1,0 +1,164 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RSO001OBCE",
+    "label": "Počet obcí (města, statutární města, mestyse)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:53:56.389261Z",
+    "id": [
+        "IndicatorType",
+        "TYPOBCE",
+        "Uz02h",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3971OBCE": 0
+                },
+                "label": {
+                    "3971OBCE": "Počet obcí"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3971OBCE": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "TYPOBCE": {
+            "label": "Typ obce",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Počet obcí celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8,
+                    "2024": 9
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

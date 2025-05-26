@@ -1,0 +1,196 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/MZDMPQT1",
+    "label": "Mzdové prostředky a OON z čtvrtletního zjišťování - dle sekce CZ-NACE",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:08:19.302918Z",
+    "id": [
+        "Uz0",
+        "CasQ",
+        "CZNACEMZDY",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        21,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q4": 0
+                },
+                "label": {
+                    "2024-Q4": "4. čtvrtletí 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZNACEMZDY": {
+            "label": "Odvětví ekonomické činnosti",
+            "category": {
+                "index": {
+                    "A-S": 0,
+                    "A": 1,
+                    "B-E": 2,
+                    "B": 3,
+                    "C": 4,
+                    "D": 5,
+                    "E": 6,
+                    "F": 7,
+                    "G": 8,
+                    "H": 9,
+                    "I": 10,
+                    "J": 11,
+                    "K": 12,
+                    "L": 13,
+                    "M": 14,
+                    "N": 15,
+                    "O": 16,
+                    "P": 17,
+                    "Q": 18,
+                    "R": 19,
+                    "S": 20
+                },
+                "label": {
+                    "A-S": "Celkem",
+                    "A": "A - Zemědělství, lesnictví, rybářství",
+                    "B-E": "B-E - Průmysl celkem",
+                    "B": "B - Těžba a dobývání",
+                    "C": "C - Zpracovatelský průmysl",
+                    "D": "D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu",
+                    "E": "E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi",
+                    "F": "F - Stavebnictví",
+                    "G": "G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel",
+                    "H": "H - Doprava a skladování",
+                    "I": "I - Ubytování, stravování a pohostinství",
+                    "J": "J - Informační a komunikační činnosti",
+                    "K": "K - Peněžnictví a pojišťovnictví",
+                    "L": "L - Činnosti v oblasti nemovitostí",
+                    "M": "M - Profesní, vědecké a technické činnosti",
+                    "N": "N - Administrativní a podpůrné činnosti",
+                    "O": "O - Veřejná správa a obrana; povinné sociální zabezpečení",
+                    "P": "P - Vzdělávání",
+                    "Q": "Q - Zdravotní a sociální péče",
+                    "R": "R - Kulturní, zábavní a rekreační činnosti",
+                    "S": "S - Ostatní činnosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "697A": 0,
+                    "697ROZ": 1,
+                    "697I": 2,
+                    "348A": 3,
+                    "348ROZ": 4,
+                    "348I": 5,
+                    "390A": 6,
+                    "390ROZ": 7,
+                    "390I": 8
+                },
+                "label": {
+                    "697A": "Mzdy včetně ostatních osobních nákladů (tis. Kč)",
+                    "697ROZ": "Mzdy včetně ostatních osobních nákladů - meziroční rozdíl (tis. Kč)",
+                    "697I": "Mzdy včetně ostatních osobních nákladů - meziroční index (%)",
+                    "348A": "Mzdy bez ostatních osobních nákladů (tis. Kč)",
+                    "348ROZ": "Mzdy bez ostatních osobních nákladů - meziroční rozdíl (tis. Kč)",
+                    "348I": "Mzdy bez ostatních osobních nákladů - meziroční index (%)",
+                    "390A": "Ostatní osobní náklady (tis. Kč)",
+                    "390ROZ": "Ostatní osobní náklady - meziroční rozdíl (tis. Kč)",
+                    "390I": "Ostatní osobní náklady - meziroční index (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "390ROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "697A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "348I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "390I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "348ROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "697ROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "697I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "348A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "390A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

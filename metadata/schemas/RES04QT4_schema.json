@@ -1,0 +1,160 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RES04QT4",
+    "label": "Ekonomické subjekty podle institucionálního sektoru - data za ČR a kraje, územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:56:58.055732Z",
+    "id": [
+        "IndicatorType",
+        "ISEKTOR2",
+        "Uz02A",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        17
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "ISEKTOR2": {
+            "label": "Institucionální sektor",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2025-Q1": 0,
+                    "2024-Q4": 1,
+                    "2024-Q3": 2,
+                    "2024-Q2": 3,
+                    "2024-Q1": 4,
+                    "2023-Q4": 5,
+                    "2023-Q3": 6,
+                    "2023-Q2": 7,
+                    "2023-Q1": 8,
+                    "2022-Q4": 9,
+                    "2022-Q3": 10,
+                    "2022-Q2": 11,
+                    "2022-Q1": 12,
+                    "2021-Q4": 13,
+                    "2021-Q3": 14,
+                    "2021-Q2": 15,
+                    "2021-Q1": 16
+                },
+                "label": {
+                    "2025-Q1": "1. čtvrtletí 2025",
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q1": "1. čtvrtletí 2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

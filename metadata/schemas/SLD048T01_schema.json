@@ -1,0 +1,128 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD048T01",
+    "label": "Obydlené domy podle období výstavby v ČR",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:42:09.162279Z",
+    "id": [
+        "IndicatorType",
+        "UzCrKr_H",
+        "CenRok2011",
+        "OBDVYSTDOMPDI2011",
+        "DRDOMUWS"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        6,
+        2
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRok2011"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2409OBD": 0
+                },
+                "label": {
+                    "2409OBD": "Počet obydlených domů"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2409OBD": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CenRok2011": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20110326": 0
+                },
+                "label": {
+                    "C20110326": "2011"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "OBDVYSTDOMPDI2011": {
+            "label": "Období výstavby domu",
+            "category": {
+                "index": {
+                    "10": 0,
+                    "54": 1,
+                    "6": 2,
+                    "7": 3,
+                    "11": 4,
+                    "53": 5
+                },
+                "label": {
+                    "10": "1919 a dříve",
+                    "54": "1920 - 1970",
+                    "6": "1971 - 1980",
+                    "7": "1981 - 1990",
+                    "11": "1991 - 2000",
+                    "53": "2001 - 2011"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "DRDOMUWS": {
+            "label": "Druh domu",
+            "category": {
+                "index": {
+                    "51": 0,
+                    "4": 1
+                },
+                "label": {
+                    "51": "Rodinné domy",
+                    "4": "Bytové domy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

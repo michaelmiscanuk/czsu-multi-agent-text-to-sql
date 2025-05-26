@@ -1,0 +1,141 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WSTA05T3",
+    "label": "Stavební povolení ",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:09:17.002707Z",
+    "id": [
+        "Uz02",
+        "IndicatorType",
+        "TYPSTAVBY2",
+        "CasR"
+    ],
+    "size": [
+        1,
+        2,
+        4,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3030": 0,
+                    "3037": 1
+                },
+                "label": {
+                    "3030": "Počet stavebních povolení v ČR",
+                    "3037": "Orientační hodnota stavebních povolení (mil. Kč, b.c.)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3037SU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3037": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3030": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3030SU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "TYPSTAVBY2": {
+            "label": "Druh stavby",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "11": 1,
+                    "12": 2,
+                    "2": 3
+                },
+                "label": {
+                    "0": "Celkem",
+                    "11": "Bytové budovy ",
+                    "12": "Nebytové budovy ",
+                    "2": "Inženýrské stavby"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8,
+                    "2024": 9
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

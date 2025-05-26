@@ -1,0 +1,234 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CEN0401T02",
+    "label": "Indexy cen nemovitostí - čtvrtletní",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:10:04.677065Z",
+    "id": [
+        "IndicatorType",
+        "REPRCENNEM4",
+        "TYPUDAJENEM",
+        "UZ02HN",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        16,
+        36
+    ],
+    "role": {
+        "geo": [
+            "UZ02HN"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6144": 0
+                },
+                "label": {
+                    "6144": "Index cen nemovitostí (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6144": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "REPRCENNEM4": {
+            "label": "Druh nemovitosti",
+            "category": {
+                "index": {
+                    "10602": 0
+                },
+                "label": {
+                    "10602": "Byty"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPUDAJENEM": {
+            "label": "Typ údaje",
+            "category": {
+                "index": {
+                    "IZ2015": 0
+                },
+                "label": {
+                    "IZ2015": "Bazický index (2015 = 100)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ02HN": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "2": 1,
+                    "CZ010": 2,
+                    "CZ020": 3,
+                    "CZ031": 4,
+                    "CZ032": 5,
+                    "CZ041": 6,
+                    "CZ042": 7,
+                    "CZ051": 8,
+                    "CZ052": 9,
+                    "CZ053": 10,
+                    "CZ063": 11,
+                    "CZ064": 12,
+                    "CZ071": 13,
+                    "CZ072": 14,
+                    "CZ080": 15
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "2": "ČR bez Prahy",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "2": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2015-Q1": 0,
+                    "2015-Q2": 1,
+                    "2015-Q3": 2,
+                    "2015-Q4": 3,
+                    "2016-Q1": 4,
+                    "2016-Q2": 5,
+                    "2016-Q3": 6,
+                    "2016-Q4": 7,
+                    "2017-Q1": 8,
+                    "2017-Q2": 9,
+                    "2017-Q3": 10,
+                    "2017-Q4": 11,
+                    "2018-Q1": 12,
+                    "2018-Q2": 13,
+                    "2018-Q3": 14,
+                    "2018-Q4": 15,
+                    "2019-Q1": 16,
+                    "2019-Q2": 17,
+                    "2019-Q3": 18,
+                    "2019-Q4": 19,
+                    "2020-Q1": 20,
+                    "2020-Q2": 21,
+                    "2020-Q3": 22,
+                    "2020-Q4": 23,
+                    "2021-Q1": 24,
+                    "2021-Q2": 25,
+                    "2021-Q3": 26,
+                    "2021-Q4": 27,
+                    "2022-Q1": 28,
+                    "2022-Q2": 29,
+                    "2022-Q3": 30,
+                    "2022-Q4": 31,
+                    "2023-Q1": 32,
+                    "2023-Q2": 33,
+                    "2023-Q3": 34,
+                    "2023-Q4": 35
+                },
+                "label": {
+                    "2015-Q1": "1. čtvrtletí 2015",
+                    "2015-Q2": "2. čtvrtletí 2015",
+                    "2015-Q3": "3. čtvrtletí 2015",
+                    "2015-Q4": "4. čtvrtletí 2015",
+                    "2016-Q1": "1. čtvrtletí 2016",
+                    "2016-Q2": "2. čtvrtletí 2016",
+                    "2016-Q3": "3. čtvrtletí 2016",
+                    "2016-Q4": "4. čtvrtletí 2016",
+                    "2017-Q1": "1. čtvrtletí 2017",
+                    "2017-Q2": "2. čtvrtletí 2017",
+                    "2017-Q3": "3. čtvrtletí 2017",
+                    "2017-Q4": "4. čtvrtletí 2017",
+                    "2018-Q1": "1. čtvrtletí 2018",
+                    "2018-Q2": "2. čtvrtletí 2018",
+                    "2018-Q3": "3. čtvrtletí 2018",
+                    "2018-Q4": "4. čtvrtletí 2018",
+                    "2019-Q1": "1. čtvrtletí 2019",
+                    "2019-Q2": "2. čtvrtletí 2019",
+                    "2019-Q3": "3. čtvrtletí 2019",
+                    "2019-Q4": "4. čtvrtletí 2019",
+                    "2020-Q1": "1. čtvrtletí 2020",
+                    "2020-Q2": "2. čtvrtletí 2020",
+                    "2020-Q3": "3. čtvrtletí 2020",
+                    "2020-Q4": "4. čtvrtletí 2020",
+                    "2021-Q1": "1. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q4": "4. čtvrtletí 2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

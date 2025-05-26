@@ -1,0 +1,523 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01PDT08",
+    "label": "Rozvody",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:51:09.355242Z",
+    "id": [
+        "CASKQ3",
+        "Uz02A",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        15,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASKQ3"
+        ]
+    },
+    "dimension": {
+        "CASKQ3": {
+            "label": "Kumulace čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q3": 0
+                },
+                "label": {
+                    "2024-Q3": "Q1-Q3 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5397C": 0,
+                    "5397NZ": 1,
+                    "5397NS": 2,
+                    "5397NDC": 3,
+                    "5397ND1": 4,
+                    "5397ND2": 5,
+                    "5397ND3AV": 6,
+                    "53971M": 7,
+                    "53971Z": 8
+                },
+                "label": {
+                    "5397C": "Rozvody",
+                    "5397NZ": "Rozvody na návrh ženy",
+                    "5397NS": "Rozvody na společný návrh",
+                    "5397NDC": "Rozvody manželství s nezletilými dětmi celkem",
+                    "5397ND1": "Rozvody manželství s 1 nezletilým dítětem",
+                    "5397ND2": "Rozvody manželství se 2 nezletilými dětmi",
+                    "5397ND3AV": "Rozvody manželství se 3+ nezletilými dětmi",
+                    "53971M": "1. rozvod - muži",
+                    "53971Z": "1. rozvod - ženy"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5393V114": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406P2Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403ZCR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5420": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5421": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V0": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404DOCIM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V1539": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V90AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355WPZNMM": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397ND1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406P2M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355ZNMM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5414": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5415": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V4059": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5416": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5417": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404DOCIC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5418": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "53961Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355ZNC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "53971M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403CIM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406P2C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V8089": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5491M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5424": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5425": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355WZNP1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V6069": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355WZNP2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V7079": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355WZNM2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355WZNP3AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403ZCRM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "53962AVM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397NZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V28D": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403CIC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404DOCR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397NS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "53962AVZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "53971Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5401C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404DOCRM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355MN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402CI": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9379Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406KC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9379M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355ZNVM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "53961M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5401M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397ND2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406KM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5491": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406KZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5401Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396RSS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397ND3AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9379C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5407": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397NDC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

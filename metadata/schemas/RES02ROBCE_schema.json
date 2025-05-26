@@ -1,0 +1,148 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RES02ROBCE",
+    "label": "Ekonomické subjekty podle převažující činnosti CZ-NACE - roční data za obce podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:05:22.683975Z",
+    "id": [
+        "IndicatorType",
+        "CZNACERES0",
+        "UZ25",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        14,
+        12
+    ],
+    "role": {
+        "geo": [
+            "UZ25"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CZNACERES0": {
+            "label": "Odvětví ekonomické činnosti CZ-NACE",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ25": {
+            "label": "Kraje a obce",
+            "category": {
+                "index": {
+                    "CZ010": 0,
+                    "CZ020": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

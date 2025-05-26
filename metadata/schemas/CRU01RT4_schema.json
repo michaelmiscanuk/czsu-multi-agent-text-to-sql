@@ -1,0 +1,137 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU01RT4",
+    "label": "Kapacity hromadných ubytovacích zařízení podle kategorie - ČR, kraje, SO ORP, územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:40:17.090848Z",
+    "id": [
+        "IndicatorType",
+        "CasR",
+        "Uz024hA",
+        "KAT"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz024hA"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5457": 0
+                },
+                "label": {
+                    "5457": "Počet hromadných ubytovacích zařízení"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2658": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2657": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2662": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5457": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz024hA": {
+            "label": "ČR, kraje, SO ORP",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "KAT": {
+            "label": "Kategorie ubytovacího zařízení",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "01": 1,
+                    "02": 2,
+                    "03": 3,
+                    "04": 4,
+                    "05": 5,
+                    "06": 6,
+                    "07": 7,
+                    "08": 8,
+                    "09": 9,
+                    "10": 10,
+                    "11": 11
+                },
+                "label": {
+                    "1": "HUZ celkem",
+                    "01": "Hotel *****",
+                    "02": "Hotel, motel, botel ****",
+                    "03": "Hotel, motel, botel ***",
+                    "04": "Hotel, motel, botel **",
+                    "05": "Hotel, motel, botel *",
+                    "06": "Hotel garni",
+                    "07": "Penzion",
+                    "08": "Kemp",
+                    "09": "Chatová osada",
+                    "10": "Turistická ubytovna",
+                    "11": "Ostatní HUZ"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

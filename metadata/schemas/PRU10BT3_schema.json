@@ -1,0 +1,204 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/PRU10BT3",
+    "label": " Nové průmyslové zakázky (za vybraná odvětví) : data očištěná od sezónních a kalendářních vlivů - rok",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:13:55.966367Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "TYPUDAJE4",
+        "PROTISTRANA",
+        "NACEPRU",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        13,
+        25
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "710": 0
+                },
+                "label": {
+                    "710": "Nové průmyslové zakázky (běžné ceny)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "710": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "TYPUDAJE4": {
+            "label": "Typ indexu",
+            "category": {
+                "index": {
+                    "IRK": 0
+                },
+                "label": {
+                    "IRK": "Meziroční index, kalendářní očištění"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "PROTISTRANA": {
+            "label": "Typ zakázek",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "NACEPRU": {
+            "label": "Vybraná odvětví průmyslu",
+            "category": {
+                "index": {
+                    "13300002": 0,
+                    "13": 1,
+                    "14": 2,
+                    "17": 3,
+                    "20": 4,
+                    "21": 5,
+                    "24": 6,
+                    "25": 7,
+                    "26": 8,
+                    "27": 9,
+                    "28": 10,
+                    "29": 11,
+                    "30": 12
+                },
+                "label": {
+                    "13300002": "Průmysl",
+                    "13": "13 Výroba textilií",
+                    "14": "14 Výroba oděvů",
+                    "17": "17 Výroba papíru a výrobků z papíru",
+                    "20": "20 Výroba chemických látek a chemických přípravků",
+                    "21": "21 Výroba základních farmaceutických výrobků a farmaceutických přípravků",
+                    "24": "24 Výroba základních kovů, hutní zpracování kovů; slévárenství",
+                    "25": "25 Výroba kovových konstrukcí a kovodělných výrobků, kromě strojů a zařízení",
+                    "26": "26 Výroba počítačů, elektronických a optických přístrojů a zařízení",
+                    "27": "27 Výroba elektrických zařízení",
+                    "28": "28 Výroba strojů a zařízení j. n.",
+                    "29": "29 Výroba motorových vozidel (kromě motocyklů), přívěsů a návěsů",
+                    "30": "30 Výroba ostatních dopravních prostředků a zařízení"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11,
+                    "2012": 12,
+                    "2011": 13,
+                    "2010": 14,
+                    "2009": 15,
+                    "2008": 16,
+                    "2007": 17,
+                    "2006": 18,
+                    "2005": 19,
+                    "2004": 20,
+                    "2003": 21,
+                    "2002": 22,
+                    "2001": 23,
+                    "2000": 24
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012",
+                    "2011": "2011",
+                    "2010": "2010",
+                    "2009": "2009",
+                    "2008": "2008",
+                    "2007": "2007",
+                    "2006": "2006",
+                    "2005": "2005",
+                    "2004": "2004",
+                    "2003": "2003",
+                    "2002": "2002",
+                    "2001": "2001",
+                    "2000": "2000"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

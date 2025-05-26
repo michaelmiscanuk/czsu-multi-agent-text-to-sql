@@ -1,0 +1,152 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WADMUPCRMCWUPT4",
+    "label": " Registrovaná nezaměstnanost  - měsíce",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Zdroj přebíraných údajů: údaje o nezaměstnanosti a pracovních místech – MPSV z evidence úřadů práce. Údaje o počtu obyvatel ve věku 15-64 let – bilance obyvatelstva ČSÚ."
+    ],
+    "updated": "2025-05-24T07:49:26.985193Z",
+    "id": [
+        "IndicatorType",
+        "CasM",
+        "UZ02HU"
+    ],
+    "size": [
+        1,
+        10,
+        1
+    ],
+    "role": {
+        "geo": [
+            "UZ02HU"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasM"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5973": 0
+                },
+                "label": {
+                    "5973": "Uchazeči o zaměstnání v evidenci ÚP - celkem"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5971C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973D": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5971A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DI": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5971ZP": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973IP": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973ZP": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973IPM": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasM": {
+            "label": "Měsíce",
+            "category": {
+                "index": {
+                    "2024-12": 0,
+                    "2024-11": 1,
+                    "2024-10": 2,
+                    "2024-09": 3,
+                    "2024-08": 4,
+                    "2024-07": 5,
+                    "2024-06": 6,
+                    "2024-05": 7,
+                    "2024-04": 8,
+                    "2024-03": 9
+                },
+                "label": {
+                    "2024-12": "prosinec 2024",
+                    "2024-11": "listopad 2024",
+                    "2024-10": "říjen 2024",
+                    "2024-09": "září 2024",
+                    "2024-08": "srpen 2024",
+                    "2024-07": "červenec 2024",
+                    "2024-06": "červen 2024",
+                    "2024-05": "květen 2024",
+                    "2024-04": "duben 2024",
+                    "2024-03": "březen 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ02HU": {
+            "label": "ČR a kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

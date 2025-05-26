@@ -1,0 +1,122 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ZAMG07T1",
+    "label": "Zaměstnaní podle délky pracovní doby",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Pramen: Výběrové šetření pracovních sil ČSÚ"
+    ],
+    "updated": "2025-05-24T07:54:21.235560Z",
+    "id": [
+        "Uz0",
+        "CasR",
+        "POHL1",
+        "TYPPRACDO",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        4,
+        1
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPPRACDO": {
+            "label": "Délka pracovní doby",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "105": 1,
+                    "201": 2,
+                    "9": 3
+                },
+                "label": {
+                    "0": "Celkem",
+                    "105": "Plná pracovní doba",
+                    "201": "Kratší pracovní doba",
+                    "9": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6285Z": 0
+                },
+                "label": {
+                    "6285Z": "Zaměstnaní (tis. osob)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6285Z": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

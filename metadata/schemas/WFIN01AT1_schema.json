@@ -1,0 +1,172 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WFIN01AT1",
+    "label": "Příjmy a výdaje územních rozpočtů (tis. Kč)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Zdroj: Ministerstvo financí ČR"
+    ],
+    "updated": "2025-05-24T07:52:34.723752Z",
+    "id": [
+        "Uz02h",
+        "FORMA2",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        9,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "FORMA2": {
+            "label": "Právní forma",
+            "category": {
+                "index": {
+                    "56": 0
+                },
+                "label": {
+                    "56": "Souhrn rozpočtů krajů, obcí a svazků obcí"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5761": 0,
+                    "5761_1": 1,
+                    "5761_2": 2,
+                    "5761_3": 3,
+                    "5761_4": 4,
+                    "5758": 5,
+                    "5758_5": 6,
+                    "5758_6": 7,
+                    "5762": 8
+                },
+                "label": {
+                    "5761": "Příjmy celkem",
+                    "5761_1": "Daňové příjmy ",
+                    "5761_2": "Nedaňové příjmy ",
+                    "5761_3": "Kapitalové příjmy ",
+                    "5761_4": "Přijaté transféry",
+                    "5758": "Výdaje celkem",
+                    "5758_5": "Běžné výdaje ",
+                    "5758_6": "Kapitalové výdaje ",
+                    "5762": "Saldo příjmů a výdajů "
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5761_3": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5761_2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5761_4": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5761": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5762": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5758_5": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5758_6": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5758": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5761_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

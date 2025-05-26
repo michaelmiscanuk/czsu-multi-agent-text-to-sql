@@ -1,0 +1,176 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SILC01ET1",
+    "label": "Osoby ohrožené příjmovou chudobou podle typu domácnosti",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:11:07.741664Z",
+    "id": [
+        "IndicatorType",
+        "Uz0",
+        "TYPDOMAC",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        16,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3337CHP": 0
+                },
+                "label": {
+                    "3337CHP": "Podíl osob pod hranicí příjmové chudoby"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3337CHP": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPDOMAC": {
+            "label": "Typ domácnosti",
+            "category": {
+                "index": {
+                    "A": 0,
+                    "B": 1,
+                    "A1": 2,
+                    "A2": 3,
+                    "A3": 4,
+                    "BA": 5,
+                    "BB": 6,
+                    "BC": 7,
+                    "BD": 8,
+                    "BE": 9,
+                    "A1M": 10,
+                    "A1Z": 11,
+                    "A1A": 12,
+                    "A1B": 13,
+                    "A2B": 14,
+                    "A2A": 15
+                },
+                "label": {
+                    "A": "Domácnosti bez závislých dětí",
+                    "B": "Domácnosti se závislými dětmi",
+                    "A1": "Jednotlivci",
+                    "A2": "2 dospělí",
+                    "A3": "3 a více dospělých",
+                    "BA": "1 dospělý, alespoň 1 závislé dítě",
+                    "BB": "2 dospělí, 1 závislé dítě",
+                    "BC": "2 dospělí, 2 závislé děti",
+                    "BD": "2 dospělí, 3 a více závislých dětí",
+                    "BE": "3 a více dospělých, alespoň 1 závislé dítě",
+                    "A1M": "Muži",
+                    "A1Z": "Ženy",
+                    "A1A": "Jednotlivci do 65 let",
+                    "A1B": "Jednotlivci 65 a více let",
+                    "A2B": "2 dospělí, alespoň jeden 65 a více let",
+                    "A2A": "2 dospělí, oba do 65 let"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "A": [
+                        "A1",
+                        "A2",
+                        "A3"
+                    ],
+                    "B": [
+                        "BA",
+                        "BB",
+                        "BC",
+                        "BD",
+                        "BE"
+                    ],
+                    "A1": [
+                        "A1M",
+                        "A1Z",
+                        "A1A",
+                        "A1B"
+                    ],
+                    "A2": [
+                        "A2B",
+                        "A2A"
+                    ]
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2013": 0,
+                    "2014": 1,
+                    "2015": 2,
+                    "2016": 3,
+                    "2017": 4,
+                    "2018": 5,
+                    "2019": 6,
+                    "2020": 7,
+                    "2021": 8,
+                    "2022": 9,
+                    "2023": 10,
+                    "2024": 11
+                },
+                "label": {
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

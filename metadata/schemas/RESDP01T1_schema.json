@@ -1,0 +1,199 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RESDP01T1",
+    "label": "Podniky - zaměstnavatelé podle převažující ekonomické činnosti",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "nefinanční sektor",
+        null
+    ],
+    "updated": "2025-05-24T07:41:01.384958Z",
+    "id": [
+        "Uz0",
+        "ISEKTOR1",
+        "IndicatorType",
+        "CZNACERES",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        6,
+        18,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "ISEKTOR1": {
+            "label": "Institucionální sektor ",
+            "category": {
+                "index": {
+                    "11140005": 0
+                },
+                "label": {
+                    "11140005": "Nefinanční podniky, finanční instituce, zaměstnavatelé a OSVČ"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9761": 0,
+                    "9755": 1,
+                    "9756": 2,
+                    "9757": 3,
+                    "9758": 4,
+                    "9760": 5
+                },
+                "label": {
+                    "9761": "Počet aktivních podniků - zaměstnavatelů",
+                    "9755": "Počet vzniklých podniků - zaměstnavatelů",
+                    "9756": "Míra vzniků podniků - zaměstnavatelů (%)",
+                    "9757": "Počet zaniklých podniků - zaměstnavatelů",
+                    "9758": "Míra zániků podniků - zaměstnavatelů (%)",
+                    "9760": "Míra přežití podniků - zaměstnavatelů (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9760": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9761": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9755": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9756": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9757": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9758": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CZNACERES": {
+            "label": "Odvětví ekonomické činnosti",
+            "category": {
+                "index": {
+                    "05960003": 0,
+                    "B": 1,
+                    "C": 2,
+                    "D": 3,
+                    "E": 4,
+                    "F": 5,
+                    "G": 6,
+                    "H": 7,
+                    "I": 8,
+                    "J": 9,
+                    "64660002": 10,
+                    "L": 11,
+                    "M": 12,
+                    "N": 13,
+                    "P": 14,
+                    "Q": 15,
+                    "R": 16,
+                    "95960001": 17
+                },
+                "label": {
+                    "05960003": "Celkem",
+                    "B": "Těžba a dobývání",
+                    "C": "Zpracovatelský průmysl",
+                    "D": "Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu",
+                    "E": "Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi",
+                    "F": "Stavebnictví",
+                    "G": "Velkoobchod a maloobchod; opravy a údržba motorových vozidel",
+                    "H": "Doprava a skladování",
+                    "I": "Ubytování, stravování a pohostinství",
+                    "J": "Informační a komunikační činnosti",
+                    "64660002": "Peněžní zprostředkování",
+                    "L": "Činnosti v oblasti nemovitostí",
+                    "M": "Profesní, vědecké a technické činnosti",
+                    "N": "Administrativní a podpůrné činnosti",
+                    "P": "Vzdělávání",
+                    "Q": "Zdravotní a sociální péče",
+                    "R": "Kulturní, zábavní a rekreační činnosti",
+                    "95960001": "Osobní služby "
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2022": 0,
+                    "2021": 1,
+                    "2020": 2,
+                    "2019": 3,
+                    "2018": 4,
+                    "2017": 5,
+                    "2016": 6,
+                    "2015": 7
+                },
+                "label": {
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

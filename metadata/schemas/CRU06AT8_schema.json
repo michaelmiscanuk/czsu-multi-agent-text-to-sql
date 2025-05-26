@@ -1,0 +1,166 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU06AT8",
+    "label": "Počet cest, přenocování a náklady podle druhu cesty, způsobu dopravy a pohlaví",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:54:43.158246Z",
+    "id": [
+        "Uz0",
+        "CasR",
+        "DRUHCES",
+        "DRDOPRDOPPROSCR",
+        "IndicatorType",
+        "POHL2"
+    ],
+    "size": [
+        1,
+        1,
+        3,
+        7,
+        3,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "DRUHCES": {
+            "label": "Druh cesty ",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "2": 1,
+                    "3": 2
+                },
+                "label": {
+                    "1": "Delší cesty za účelem trávení volného času a rekreace",
+                    "2": "Kratší cesty za účelem trávení volného času a rekreace",
+                    "3": "Služební cesty"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "DRDOPRDOPPROSCR": {
+            "label": "Způsob dopravy",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "020": 2,
+                    "040": 3,
+                    "050": 4,
+                    "060": 5,
+                    "070": 6
+                },
+                "label": {
+                    "0": "Celkem",
+                    "1": "Osobní motorové vozidlo",
+                    "020": "Autobus",
+                    "040": "Jízdní kolo",
+                    "050": "Vlak",
+                    "060": "Letadlo",
+                    "070": "Loď"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2654R": 0,
+                    "2655R": 1,
+                    "5455R": 2
+                },
+                "label": {
+                    "2654R": "Počet cest",
+                    "2655R": "Počet přenocování",
+                    "5455R": "Náklady (Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5455R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2654R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2655R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHL2": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "2": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "1": "Muži",
+                    "2": "Ženy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

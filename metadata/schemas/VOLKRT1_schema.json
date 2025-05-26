@@ -1,0 +1,152 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/VOLKRT1",
+    "label": "Základní údaje o volbách do zastupitelstev krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Volby neprobíhají na území Prahy\n",
+        null
+    ],
+    "updated": "2025-05-24T07:57:23.752094Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "CASVOLKR"
+    ],
+    "size": [
+        1,
+        9,
+        7
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASVOLKR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "498_1": 0,
+                    "495_1": 1,
+                    "496_1": 2,
+                    "497_1": 3,
+                    "7532_1": 4,
+                    "483_1": 5,
+                    "484": 6,
+                    "505M": 7,
+                    "505Z": 8
+                },
+                "label": {
+                    "498_1": "Počet okrsků",
+                    "495_1": "Voliči v seznamu",
+                    "496_1": "Vydané obálky",
+                    "497_1": "Volební účast (%)",
+                    "7532_1": "Odevzdané obálky",
+                    "483_1": "Platné hlasy",
+                    "484": "Počet kandidátů",
+                    "505M": "Počet zvolených mužů",
+                    "505Z": "Počet zvolených žen"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "484": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "498_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7532_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "497_1": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "496_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "495_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "483_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "505Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "505M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CASVOLKR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2000": 0,
+                    "2004": 1,
+                    "2008": 2,
+                    "2012": 3,
+                    "2016": 4,
+                    "2020": 5,
+                    "2024": 6
+                },
+                "label": {
+                    "2000": "2000",
+                    "2004": "2004",
+                    "2008": "2008",
+                    "2012": "2012",
+                    "2016": "2016",
+                    "2020": "2020",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,122 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RES03RT5",
+    "label": "Ekonomické subjekty podle počtu zaměstnanců - data za ČR, kraje a okresy, územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:58:23.616516Z",
+    "id": [
+        "IndicatorType",
+        "KATP",
+        "UZ023H2U",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        12
+    ],
+    "role": {
+        "geo": [
+            "UZ023H2U"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "KATP": {
+            "label": "Počet zaměstnanců",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ023H2U": {
+            "label": "ČR, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

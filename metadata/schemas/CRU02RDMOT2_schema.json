@@ -1,0 +1,290 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU02RDMOT2",
+    "label": "Návštěvnost hromadných ubytovacích zařízení podle kategorie v nečleněných DMO",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:48:24.387966Z",
+    "id": [
+        "CasR",
+        "IndicatorType",
+        "REZIDENCE",
+        "UzZ1",
+        "KAT"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        72,
+        12
+    ],
+    "role": {
+        "geo": [
+            "UzZ1"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2654": 0
+                },
+                "label": {
+                    "2654": "Počet hostů"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2655": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2654": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5443": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "REZIDENCE": {
+            "label": "Rezidence",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzZ1": {
+            "label": "Oblasti destinačního managementu nečleněné",
+            "category": {
+                "index": {
+                    "01": 0,
+                    "02": 1,
+                    "03": 2,
+                    "04": 3,
+                    "05": 4,
+                    "06": 5,
+                    "07": 6,
+                    "08": 7,
+                    "09": 8,
+                    "10": 9,
+                    "11": 10,
+                    "12": 11,
+                    "13": 12,
+                    "14": 13,
+                    "15": 14,
+                    "16": 15,
+                    "19": 16,
+                    "20": 17,
+                    "21": 18,
+                    "22": 19,
+                    "24": 20,
+                    "25": 21,
+                    "26": 22,
+                    "27": 23,
+                    "28": 24,
+                    "29": 25,
+                    "31": 26,
+                    "32": 27,
+                    "33": 28,
+                    "35": 29,
+                    "36": 30,
+                    "37": 31,
+                    "38": 32,
+                    "39": 33,
+                    "40": 34,
+                    "41": 35,
+                    "42": 36,
+                    "43": 37,
+                    "44": 38,
+                    "45": 39,
+                    "46": 40,
+                    "47": 41,
+                    "48": 42,
+                    "50": 43,
+                    "52": 44,
+                    "53": 45,
+                    "54": 46,
+                    "56": 47,
+                    "58": 48,
+                    "59": 49,
+                    "60": 50,
+                    "61": 51,
+                    "62": 52,
+                    "63": 53,
+                    "64": 54,
+                    "65": 55,
+                    "66": 56,
+                    "67": 57,
+                    "68": 58,
+                    "69": 59,
+                    "70": 60,
+                    "78": 61,
+                    "80": 62,
+                    "81": 63,
+                    "82": 64,
+                    "83": 65,
+                    "84": 66,
+                    "85": 67,
+                    "86": 68,
+                    "87": 69,
+                    "88": 70,
+                    "89": 71
+                },
+                "label": {
+                    "01": "Praha",
+                    "02": "Berounsko",
+                    "03": "Brdy a Podbrdsko",
+                    "04": "Kladensko - Slánsko",
+                    "05": "Kutnohorsko a Kolínsko",
+                    "06": "Kraj blanických rytířů",
+                    "07": "Mělnicko - Kokořínsko",
+                    "08": "Pojizeří a Polabí",
+                    "09": "Posázaví",
+                    "10": "Rakovnicko",
+                    "11": "Česká Kanada",
+                    "12": "Budějovicko",
+                    "13": "Český Krumlov a okolí",
+                    "14": "Lipensko",
+                    "15": "Novohradsko-Doudlebsko",
+                    "16": "Písecko, Blatensko, Strakonicko, Vodňansko",
+                    "19": "Šumavsko",
+                    "20": "Toulava",
+                    "21": "Třeboňsko",
+                    "22": "Český les",
+                    "24": "Pošumaví",
+                    "25": "Plzeň a okolí",
+                    "26": "Postřelí",
+                    "27": "Šumava západ",
+                    "28": "Krušnohoří",
+                    "29": "Západočeské lázně",
+                    "31": "České Středohoří",
+                    "32": "České Švýcarsko",
+                    "33": "Dolní Poohří",
+                    "35": "Český ráj",
+                    "36": "Jizerské hory",
+                    "37": "Lužické hory",
+                    "38": "Máchův kraj",
+                    "39": "Broumovsko",
+                    "40": "Hradecko",
+                    "41": "Kladské pomezí",
+                    "42": "Krkonoše",
+                    "43": "Orlické hory a Podorlicko",
+                    "44": "Podkrkonoší - Podzvičinsko",
+                    "45": "Českomoravské pomezí",
+                    "46": "Chrudimsko-Hlinecko",
+                    "47": "Králický Sněžník",
+                    "48": "Pardubicko",
+                    "50": "Koruna Vysočiny",
+                    "52": "Třebíčsko",
+                    "53": "Brno a okolí",
+                    "54": "Moravský kras a okolí",
+                    "56": "Slovácko",
+                    "58": "Znojemsko a Podyjí",
+                    "59": "Jeseníky-západ",
+                    "60": "Střední Morava",
+                    "61": "Valašsko",
+                    "62": "Kroměřížsko",
+                    "63": "Zlínsko - Luhačovicko",
+                    "64": "Beskydy",
+                    "65": "Jeseníky-východ",
+                    "66": "Opavské Slezsko",
+                    "67": "Ostrava a okolí",
+                    "68": "Poodří",
+                    "69": "Těšínské Slezsko",
+                    "70": "Pobrdí",
+                    "78": "Jižní Plzeňsko",
+                    "80": "Kraj pod Javořicí",
+                    "81": "Střední Vysočina - Jihlavsko",
+                    "82": "Vysočina west",
+                    "83": "Havlíčkobrodsko - Ledečsko",
+                    "84": "LVA a Hustopečsko",
+                    "85": "Pálava",
+                    "86": "Šumava žije",
+                    "87": "Plzeň a okolí jihozápad",
+                    "88": "Rokycansko - Horažďovicko",
+                    "89": "Tepna Vysočiny"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "KAT": {
+            "label": "Kategorie ubytovacího zařízení",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "01": 1,
+                    "02": 2,
+                    "03": 3,
+                    "04": 4,
+                    "05": 5,
+                    "06": 6,
+                    "07": 7,
+                    "08": 8,
+                    "09": 9,
+                    "10": 10,
+                    "11": 11
+                },
+                "label": {
+                    "1": "HUZ celkem",
+                    "01": "Hotel *****",
+                    "02": "Hotel, motel, botel ****",
+                    "03": "Hotel, motel, botel ***",
+                    "04": "Hotel, motel, botel **",
+                    "05": "Hotel, motel, botel *",
+                    "06": "Hotel garni",
+                    "07": "Penzion",
+                    "08": "Kemp",
+                    "09": "Chatová osada",
+                    "10": "Turistická ubytovna",
+                    "11": "Ostatní HUZ"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

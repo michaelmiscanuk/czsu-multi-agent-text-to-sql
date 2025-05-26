@@ -1,0 +1,158 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/NEZ02T2",
+    "label": "Struktura uchazečů o zaměstnání v evidenci úřadu práce - podle věkových skupin",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Zdroj přebíraných údajů:\núdaje o nezaměstnanosti a pracovních místech - MPSV z evidence úřadů práce\núdaje o počtu obyvatel ve věku 15-64 let - bilance obyvatelstva ČSÚ"
+    ],
+    "updated": "2025-05-24T08:06:08.371137Z",
+    "id": [
+        "UZ023H2U",
+        "IndicatorType",
+        "POHL1",
+        "VEKNEZ",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        12,
+        11
+    ],
+    "role": {
+        "geo": [
+            "UZ023H2U"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "UZ023H2U": {
+            "label": "ČR, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5973": 0
+                },
+                "label": {
+                    "5973": "Uchazeči o zaměstnání v evidenci ÚP - celkem"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5973": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VEKNEZ": {
+            "label": "Věkové skupiny",
+            "category": {
+                "index": {
+                    "410015610065000": 0,
+                    "410015610020000": 1,
+                    "410020610025000": 2,
+                    "410025610030000": 3,
+                    "410030610035000": 4,
+                    "410035610040000": 5,
+                    "410040610045000": 6,
+                    "410045610050000": 7,
+                    "410050610055000": 8,
+                    "410055610060000": 9,
+                    "410060610065000": 10,
+                    "410065799999000": 11
+                },
+                "label": {
+                    "410015610065000": "Celkem",
+                    "410015610020000": "do 19 let",
+                    "410020610025000": "20 až 24",
+                    "410025610030000": "25 až 29",
+                    "410030610035000": "30 až 34",
+                    "410035610040000": "35 až 39",
+                    "410040610045000": "40 až 44",
+                    "410045610050000": "45 až 49",
+                    "410050610055000": "50 až 54",
+                    "410055610060000": "55 až 59",
+                    "410060610065000": "60 až 64",
+                    "410065799999000": "Od 65 a více let"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

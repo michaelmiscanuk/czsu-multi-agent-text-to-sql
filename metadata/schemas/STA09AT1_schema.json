@@ -1,0 +1,213 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/STA09AT1",
+    "label": "Zahájené a dokončené byty - ČR - rok",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:10:04.472640Z",
+    "id": [
+        "Uz0A",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        12,
+        27
+    ],
+    "role": {
+        "geo": [
+            "Uz0A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0A": {
+            "label": "Stát",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3025": 0,
+                    "3049": 1,
+                    "3076": 2,
+                    "3072": 3,
+                    "3074": 4,
+                    "5935": 5,
+                    "3103": 6,
+                    "3111": 7,
+                    "3116": 8,
+                    "3113": 9,
+                    "3114": 10,
+                    "3414": 11
+                },
+                "label": {
+                    "3025": "Zahájené byty",
+                    "3049": "Zahájené byty - nová výstavba",
+                    "3076": "Zahájené byty - změna dokončených staveb",
+                    "3072": "Zahájené byty v nových rodinných domech",
+                    "3074": "Zahájené byty v nových bytových domech",
+                    "5935": "Zahájené byty v nebytových budovách",
+                    "3103": "Dokončené byty",
+                    "3111": "Dokončené byty - nová výstavba",
+                    "3116": "Dokončené byty - změna dokončených staveb",
+                    "3113": "Dokončené byty v nových rodinných domech",
+                    "3114": "Dokončené byty v nových bytových domech",
+                    "3414": "Dokončené byty v nebytových budovách"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3414": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3116": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3049": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3103": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3114": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3025": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3113": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3111": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3076": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3074": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5935": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3072": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11,
+                    "2012": 12,
+                    "2011": 13,
+                    "2010": 14,
+                    "2009": 15,
+                    "2008": 16,
+                    "2007": 17,
+                    "2006": 18,
+                    "2005": 19,
+                    "2004": 20,
+                    "2003": 21,
+                    "2002": 22,
+                    "2001": 23,
+                    "2000": 24,
+                    "1999": 25,
+                    "1998": 26
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012",
+                    "2011": "2011",
+                    "2010": "2010",
+                    "2009": "2009",
+                    "2008": "2008",
+                    "2007": "2007",
+                    "2006": "2006",
+                    "2005": "2005",
+                    "2004": "2004",
+                    "2003": "2003",
+                    "2002": "2002",
+                    "2001": "2001",
+                    "2000": "2000",
+                    "1999": "1999",
+                    "1998": "1998"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,143 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ENE02T3",
+    "label": "Těžba uhlí",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:42:34.109096Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "ENERPAL",
+        "CasR"
+    ],
+    "size": [
+        1,
+        3,
+        3,
+        6
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2688X": 0,
+                    "2690X": 1,
+                    "6310X": 2
+                },
+                "label": {
+                    "2688X": "Vytěžené množství (kilotuna)",
+                    "2690X": "Vytěžené množství (TJ)",
+                    "6310X": "Výhřevnost paliva (GJ na tunu)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2688XX": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2853": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2690X": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6310XX": {
+                        "decimals": 3,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6310X": {
+                        "decimals": 3,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2688X": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "ENERPAL": {
+            "label": "Druh paliva",
+            "category": {
+                "index": {
+                    "102": 0,
+                    "103": 1,
+                    "28": 2
+                },
+                "label": {
+                    "102": "Černé uhlí vhodné pro koksování",
+                    "103": "Černé uhlí energetické",
+                    "28": "Hnědé uhlí a lignit"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0,
+                    "2022": 1,
+                    "2021": 2,
+                    "2020": 3,
+                    "2019": 4,
+                    "2018": 5
+                },
+                "label": {
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

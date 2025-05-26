@@ -1,0 +1,110 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD049T01",
+    "label": "Průměrná obytná plocha na 1 obydlený byt (m²)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:42:04.688124Z",
+    "id": [
+        "CenRoky1",
+        "CrKr",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        14,
+        1
+    ],
+    "role": {
+        "geo": [
+            "CrKr"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20110326": 0
+                },
+                "label": {
+                    "C20110326": "2011"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CrKr": {
+            "label": "ČR a kraje",
+            "category": {
+                "index": {
+                    "3018": 0,
+                    "3026": 1,
+                    "3034": 2,
+                    "3042": 3,
+                    "3051": 4,
+                    "3069": 5,
+                    "3077": 6,
+                    "3085": 7,
+                    "3093": 8,
+                    "3107": 9,
+                    "3115": 10,
+                    "3123": 11,
+                    "3131": 12,
+                    "3140": 13
+                },
+                "label": {
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2414_1": 0
+                },
+                "label": {
+                    "U_2414_1": "Průměrná obytná plocha na 1 byt v m²"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2414_1": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

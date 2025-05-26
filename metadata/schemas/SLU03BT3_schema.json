@@ -1,0 +1,212 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLU03BT3",
+    "label": "Index produkce ve službách - neočištěno - roční",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:00:13.470903Z",
+    "id": [
+        "TYPUDAJVM",
+        "IndicatorType",
+        "OCIST1",
+        "Uz0",
+        "CZNACESL3B",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        31,
+        11
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "TYPUDAJVM": {
+            "label": "Typ indexu",
+            "category": {
+                "index": {
+                    "IR": 0
+                },
+                "label": {
+                    "IR": "Meziroční index"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "8689Z": 0
+                },
+                "label": {
+                    "8689Z": "Index produkce služeb - stálé ceny (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "8689Z": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "OCIST1": {
+            "label": "Očištění",
+            "category": {
+                "index": {
+                    "N": 0
+                },
+                "label": {
+                    "N": "Bez očištění"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZNACESL3B": {
+            "label": "CZ NACE",
+            "category": {
+                "index": {
+                    "49820002": 0,
+                    "H": 1,
+                    "49": 2,
+                    "50": 3,
+                    "51": 4,
+                    "52": 5,
+                    "53": 6,
+                    "I": 7,
+                    "55": 8,
+                    "56": 9,
+                    "J": 10,
+                    "58": 11,
+                    "59": 12,
+                    "60": 13,
+                    "61": 14,
+                    "62": 15,
+                    "63": 16,
+                    "68": 17,
+                    "69740002": 18,
+                    "69": 19,
+                    "702": 20,
+                    "71": 21,
+                    "73": 22,
+                    "74": 23,
+                    "N": 24,
+                    "77": 25,
+                    "78": 26,
+                    "79": 27,
+                    "80": 28,
+                    "81": 29,
+                    "82": 30
+                },
+                "label": {
+                    "49820002": "H,I,J,L,M_sts a N SLUŽBY CELKEM (bez CZ-NACE 701, 72 a 75)",
+                    "H": "49 až 53 Sekce H - DOPRAVA A SKLADOVÁNÍ",
+                    "49": "49 Pozemní a potrubní doprava",
+                    "50": "50 Vodní doprava",
+                    "51": "51 Letecká doprava",
+                    "52": "52 Skladování a vedlejší činnosti v dopravě",
+                    "53": "53 Poštovní a kurýrní činnosti",
+                    "I": "55 a 56 Sekce I - UBYTOVÁNÍ, STRAVOVÁNÍ A POHOSTINSTVÍ",
+                    "55": "55 Ubytování",
+                    "56": "56 Stravování a pohostinství",
+                    "J": "58 až 63 Sekce J - INFORMAČNÍ A KOMUNIKAČNÍ ČINNOSTI",
+                    "58": "58 Vydavatelské činnosti",
+                    "59": "59 Činnosti v oblasti filmů, videozáznamů a televizních programů, pořizování zvukových nahrávek a hudební vydavatelské činnosti",
+                    "60": "60 Tvorba programů a vysílání",
+                    "61": "61 Telekomunikační činnosti",
+                    "62": "62 Činnosti v oblasti informačních technologií",
+                    "63": "63 Informační činnosti",
+                    "68": "68 Sekce L - ČINNOSTI V OBLASTI NEMOVITOSTÍ",
+                    "69740002": "69 a 702 a 71 a 73 a 74 Sekce M_sts - PROFESNÍ, VĚDECKÉ A TECHNICKÉ ČINNOSTI (bez CZ-NACE 701, 72 a 75)",
+                    "69": "69 Právní a účetnické činnosti",
+                    "702": "70.2 Poradenství v oblasti řízení",
+                    "71": "71 Architektonické a inženýrské činnosti; technické zkoušky a analýzy",
+                    "73": "73 Reklama a průzkum trhu",
+                    "74": "74 Ostatní profesní, vědecké a technické činnosti",
+                    "N": "77 až 82 Sekce N - ADMINISTRATIVNÍ A PODPŮRNÉ ČINNOSTI",
+                    "77": "77 Činnosti v oblasti pronájmu a operativního leasingu",
+                    "78": "78 Činnosti související se zaměstnáním",
+                    "79": "79 Činnosti cestovních agentur, kanceláří a jiné rezervační a související činnosti",
+                    "80": "80 Bezpečnostní a pátrací činnosti",
+                    "81": "81 Činnosti související se stavbami a úpravou krajiny",
+                    "82": "82 Administrativní, kancelářské a jiné podpůrné činnosti pro podnikání"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2014": 0,
+                    "2015": 1,
+                    "2016": 2,
+                    "2017": 3,
+                    "2018": 4,
+                    "2019": 5,
+                    "2020": 6,
+                    "2021": 7,
+                    "2022": 8,
+                    "2023": 9,
+                    "2024": 10
+                },
+                "label": {
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

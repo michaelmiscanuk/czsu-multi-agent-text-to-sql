@@ -1,0 +1,170 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB08AA",
+    "label": "Příjemci důchodů (starobní a invalidní včetně souběhu) v prosinci příslušného roku -územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Bez vdovských a vdoveckých důchodů",
+        ""
+    ],
+    "updated": "2025-05-24T07:41:23.074031Z",
+    "id": [
+        "IndicatorType",
+        "CasR",
+        "Pohlciz",
+        "UZ023H2U",
+        "DRUHDUCHSOU"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        15,
+        5
+    ],
+    "role": {
+        "geo": [
+            "UZ023H2U"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6095H": 0
+                },
+                "label": {
+                    "6095H": "Počet příjemců důchodu"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6095H": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Pohlciz": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "2": 0
+                },
+                "label": {
+                    "2": "žena"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ023H2U": {
+            "label": "ČR, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "DRUHDUCHSOU": {
+            "label": "Druh důchodu",
+            "category": {
+                "index": {
+                    "28": 0,
+                    "29": 1,
+                    "30": 2,
+                    "31": 3,
+                    "32": 4
+                },
+                "label": {
+                    "28": "Důchod plný starobní (včetně souběhu)",
+                    "29": "Důchod poměrný starobní (včetně souběhu)",
+                    "30": "Invalidní důchod pro invaliditu třetího stupně (vč. souběhu)",
+                    "31": "Invalidní důchod pro invaliditu druhého stupně (vč. souběhu)",
+                    "32": "Invalidní důchod pro invaliditu prvního stupně (vč. souběhu)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

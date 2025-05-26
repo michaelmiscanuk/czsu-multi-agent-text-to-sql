@@ -1,0 +1,195 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ZAM01T1",
+    "label": "Základní charakteristiky ekonomického postavení obyvatelstva ve věku 15 a více let podle krajů - čtvrtletí",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Zdroj: VŠPS - výběrová šetření pracovních sil. Od roku 2001 údaje vycházejí z výsledků SLDB 2001, od roku 2011 vycházejí z definitivních výsledků SLDB 2011.\nDo roku 2022 včetně byla pro váhy výběrového souboru používána krátkodobá projekce koncového stavu demografických dat obyvatelstva ČR k 31. 12. předchozího roku na střed aktuálního čtvrtletí.\nOd roku 2023 je pro všechna čtvrtletí daného roku používána projekce koncového stavu demografických dat k 31. 12. předchozího roku po odečtení odhadu osob žijících mimo soukromé domácnosti resp. mimo byty",
+        null
+    ],
+    "updated": "2025-05-24T08:12:26.741040Z",
+    "id": [
+        "CasQ",
+        "POHL1",
+        "Uz02h",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q4": 0
+                },
+                "label": {
+                    "2024-Q4": "4. čtvrtletí 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3162C": 0,
+                    "6279": 1,
+                    "6285Z": 2,
+                    "6284": 3,
+                    "6283": 4,
+                    "6287": 5,
+                    "6289": 6,
+                    "6290": 7
+                },
+                "label": {
+                    "3162C": "Obyvatelstvo ve věku 15 a více let (tis.osob)",
+                    "6279": "Pracovní síla ekonomicky aktivní (tis. osob)",
+                    "6285Z": "Zaměstnaní (tis. osob)",
+                    "6284": "Nezaměstnaní (tis. osob)",
+                    "6283": "Ekonomicky neaktivní (tis. osob)",
+                    "6287": "Míra ekonomické aktivity (%)",
+                    "6289": "Míra zaměstnanosti (%)",
+                    "6290": "Obecná míra nezaměstnanosti (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6285Z": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6284": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6287": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6289": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6279": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6290": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3162C": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6283": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

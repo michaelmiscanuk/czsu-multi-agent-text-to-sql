@@ -1,0 +1,144 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY05B03T01",
+    "label": "Rozvody podle pětiletých intervalů délky trvání manželství",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:39:32.918707Z",
+    "id": [
+        "IndicatorType",
+        "CasRA",
+        "Uz02A",
+        "DOBATRMAN5"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasRA"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5397": 0
+                },
+                "label": {
+                    "5397": "Rozvody"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5397": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasRA": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "DOBATRMAN5": {
+            "label": "Délka trvání manželství (pětileté intervaly délky)",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "399999600005000": 1,
+                    "400005610010000": 2,
+                    "410010610015000": 3,
+                    "410015610020000": 4,
+                    "410020610025000": 5,
+                    "410025610030000": 6,
+                    "410030610035000": 7,
+                    "410035799999000": 8
+                },
+                "label": {
+                    "0": "Celkem",
+                    "399999600005000": "0 - 4",
+                    "400005610010000": "5 - 9",
+                    "410010610015000": "10 - 14",
+                    "410015610020000": "15 - 19",
+                    "410020610025000": "20 - 24",
+                    "410025610030000": "25 - 29",
+                    "410030610035000": "30 - 34",
+                    "410035799999000": "35 a více"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

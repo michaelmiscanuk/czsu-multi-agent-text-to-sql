@@ -1,0 +1,115 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRUHVD2",
+    "label": "Návštěvnost hromadných ubytovacích zařízení ",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:42:09.131612Z",
+    "id": [
+        "CasR",
+        "UzDEGURBA",
+        "IndicatorType",
+        "REZIDENCE"
+    ],
+    "size": [
+        1,
+        3,
+        2,
+        3
+    ],
+    "role": {
+        "geo": [
+            "UzDEGURBA"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzDEGURBA": {
+            "label": "Lokality dle stupně urbanizace",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "2": 1,
+                    "3": 2
+                },
+                "label": {
+                    "1": "Lokalita s vysokou hustotou populace",
+                    "2": "Lokalita se střední hustotou populace",
+                    "3": "Lokalita s nízkou hustotou populace"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2654": 0,
+                    "2655": 1
+                },
+                "label": {
+                    "2654": "Počet hostů",
+                    "2655": "Počet přenocování"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2655": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2654": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "REZIDENCE": {
+            "label": "Rezidence",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "203": 1,
+                    "17": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "203": "Rezidenti",
+                    "17": "Nerezidenti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

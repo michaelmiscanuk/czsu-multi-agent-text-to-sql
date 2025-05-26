@@ -1,0 +1,149 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WPPS01",
+    "label": "Podniky pod tuzemskou a zahraniční kontrolou",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Podniky CZ-NACE B - N + S95 (bez K)",
+        "Podniky CZ-NACE B - N + S95 (bez K)"
+    ],
+    "updated": "2025-05-24T07:45:33.802411Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "ZEMEVV",
+        "CasR"
+    ],
+    "size": [
+        1,
+        6,
+        3,
+        6
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6594": 0,
+                    "1007A": 1,
+                    "9620": 2,
+                    "6865": 3,
+                    "6902": 4,
+                    "316PPS": 5
+                },
+                "label": {
+                    "6594": "Počet aktivních podniků",
+                    "1007A": "Obrat (mil. CZK)",
+                    "9620": "Čistý obrat (mil. CZK)",
+                    "6865": "Výkony v metodice podnikových statistik (mil. CZK)",
+                    "6902": "Přidaná hodnota v metodice podnikových statistik (mil. CZK)",
+                    "316PPS": "Počet pracujících osob"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9620": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1007A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6594": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6865": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "316PPS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6902": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "ZEMEVV": {
+            "label": "Typ kontroly",
+            "category": {
+                "index": {
+                    "49": 0,
+                    "203": 1,
+                    "50": 2
+                },
+                "label": {
+                    "49": "Podniky celkem",
+                    "203": "Podniky pod tuzemskou kontrolou",
+                    "50": "Podniky pod zahraniční kontrolou"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2022": 0,
+                    "2021": 1,
+                    "2020": 2,
+                    "2019": 3,
+                    "2018": 4,
+                    "2017": 5
+                },
+                "label": {
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

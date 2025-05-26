@@ -1,0 +1,208 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WOBY01B",
+    "label": "Základní údaje o stavu a pohybu obyvatel  - roční údaje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:00:32.492838Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        10,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2406W3112": 0,
+                    "4355ZN": 1,
+                    "5393": 2,
+                    "5396W": 3,
+                    "5397W": 4,
+                    "5403W": 5,
+                    "5404W": 6,
+                    "5401W": 7,
+                    "5402W": 8,
+                    "5399W": 9
+                },
+                "label": {
+                    "2406W3112": "Počet obyvatel (k 31. 12.)",
+                    "4355ZN": "Živě narození",
+                    "5393": "Zemřelí",
+                    "5396W": "Sňatky",
+                    "5397W": "Rozvody",
+                    "5403W": "Přistěhovalí",
+                    "5404W": "Vystěhovalí",
+                    "5401W": "Přirozený přírůstek/úbytek",
+                    "5402W": "Přírůstek/úbytek stěhováním",
+                    "5399W": "Celkový přírůstek/úbytek"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5393": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406W3112": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355ZN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5416W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5417W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5418W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5401W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5424W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5414W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5425W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5415W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5420W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5421W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2016": 0,
+                    "2017": 1,
+                    "2018": 2,
+                    "2019": 3,
+                    "2020": 4,
+                    "2021": 5,
+                    "2022": 6,
+                    "2023": 7,
+                    "2024": 8
+                },
+                "label": {
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

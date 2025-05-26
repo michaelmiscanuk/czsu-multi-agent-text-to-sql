@@ -1,0 +1,157 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN01BK",
+    "label": "Ženy a muži v krajích – naděje dožití a zemřelí",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:09:16.016325Z",
+    "id": [
+        "CasR",
+        "Uz02h",
+        "IndicatorType",
+        "POHZM"
+    ],
+    "size": [
+        1,
+        1,
+        6,
+        2
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5393WC": 0,
+                    "5393WV014": 1,
+                    "5393WV1564": 2,
+                    "5393WV65AV": 3,
+                    "5411WV0": 4,
+                    "5411WV65": 5
+                },
+                "label": {
+                    "5393WC": "Zemřelí celkem",
+                    "5393WV014": "Zemřelí ve věku 0 - 14 let",
+                    "5393WV1564": "Zemřelí ve věku 15- 64 let",
+                    "5393WV65AV": "Zemřelí ve věku 65 a více let",
+                    "5411WV0": "Naděje dožití při narození (roky)",
+                    "5411WV65": "Naděje dožití ve věku 65 let (roky)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5393WPII2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPXX2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPIX2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5411WV0": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV1564": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5411WV65": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV65AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPX2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WV014": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHZM": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "2": 0,
+                    "1": 1
+                },
+                "label": {
+                    "2": "ženy",
+                    "1": "muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

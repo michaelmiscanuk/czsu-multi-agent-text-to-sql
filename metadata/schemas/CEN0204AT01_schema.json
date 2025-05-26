@@ -1,0 +1,430 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CEN0204AT01",
+    "label": "Indexy cen v tržních službách - roční",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:50:07.028235Z",
+    "id": [
+        "IndicatorType",
+        "TYPUDAJETR",
+        "Uz0",
+        "CZCPAT",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        85,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6148": 0
+                },
+                "label": {
+                    "6148": "Index cen za poskytnutí tržních služeb (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6148": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "TYPUDAJETR": {
+            "label": "Typ indexu",
+            "category": {
+                "index": {
+                    "IZ2015": 0
+                },
+                "label": {
+                    "IZ2015": "Bazický index (2015 = 100)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZCPAT": {
+            "label": "Klasifikace CZ-CPA",
+            "category": {
+                "index": {
+                    "HJKLMN": 0,
+                    "HJKLMN_bez_J60_a_M731": 1,
+                    "H49": 2,
+                    "H50": 3,
+                    "H52": 4,
+                    "H53": 5,
+                    "J58": 6,
+                    "J59": 7,
+                    "J60": 8,
+                    "J61": 9,
+                    "J62": 10,
+                    "J63": 11,
+                    "K65": 12,
+                    "L68": 13,
+                    "M69": 14,
+                    "M70": 15,
+                    "M71": 16,
+                    "M73": 17,
+                    "M74": 18,
+                    "N77": 19,
+                    "N78": 20,
+                    "N80": 21,
+                    "N81": 22,
+                    "N82": 23,
+                    "H492": 24,
+                    "H494": 25,
+                    "H4941": 26,
+                    "H504": 27,
+                    "H50401": 28,
+                    "H521": 29,
+                    "H522": 30,
+                    "H531": 31,
+                    "H532": 32,
+                    "J581": 33,
+                    "J611": 34,
+                    "J612": 35,
+                    "J620": 36,
+                    "J6201": 37,
+                    "J6202": 38,
+                    "J631": 39,
+                    "J6311": 40,
+                    "K651": 41,
+                    "K6512": 42,
+                    "K65122": 43,
+                    "K651229": 44,
+                    "K65124": 45,
+                    "K651241": 46,
+                    "K651249": 47,
+                    "L682": 48,
+                    "L6820121": 49,
+                    "L6820122": 50,
+                    "L6820123": 51,
+                    "L6820124": 52,
+                    "L683": 53,
+                    "L6831": 54,
+                    "L6832": 55,
+                    "M691": 56,
+                    "M692": 57,
+                    "M69201": 58,
+                    "M69202": 59,
+                    "M692023": 60,
+                    "M69203": 61,
+                    "M702": 62,
+                    "M711": 63,
+                    "M7111": 64,
+                    "M7112": 65,
+                    "M731": 66,
+                    "M7312": 67,
+                    "M731211": 68,
+                    "M731212": 69,
+                    "M731213": 70,
+                    "M731219": 71,
+                    "M7312191": 72,
+                    "M732": 73,
+                    "M743": 74,
+                    "N771": 75,
+                    "N773": 76,
+                    "N7732": 77,
+                    "N7739": 78,
+                    "N781": 79,
+                    "N782": 80,
+                    "N801": 81,
+                    "N802": 82,
+                    "N812": 83,
+                    "N823": 84
+                },
+                "label": {
+                    "HJKLMN": "Index cen tržních služeb",
+                    "HJKLMN_bez_J60_a_M731": "Tržní služby bez reklam",
+                    "H49": "Pozemní a potrubní doprava",
+                    "H50": "Vodní doprava",
+                    "H52": "Skladování a podpůrné služby v dopravě",
+                    "H53": "Poštovní a kurýrní služby",
+                    "J58": "Vydavatelské služby",
+                    "J59": "Činnosti v oblasti filmů, videozáznamů a televizních programů, pořizování zvukových nahrávek a hudební vydavatelské činnosti",
+                    "J60": "Tvorba programů a vysílání",
+                    "J61": "Telekomunikační služby",
+                    "J62": "Služby v oblasti programování a poradenství a související služby",
+                    "J63": "Informační služby",
+                    "K65": "Pojištění, zajištění a penzijní financování, kromě povinného \nsociálního zabezpečení",
+                    "L68": "Služby v oblasti nemovitostí",
+                    "M69": "Právní a účetnické služby",
+                    "M70": "Vedení podniků, poradenství v oblasti řízení",
+                    "M71": "Architektonické a inženýrské služby; technické zkoušky a analýzy",
+                    "M73": "Reklamní služby a průzkum trhu",
+                    "M74": "Ostatní odborné, vědecké a technické služby ",
+                    "N77": "Služby v oblasti pronájmu a operativního leasingu",
+                    "N78": "Služby v oblasti zaměstnání",
+                    "N80": "Bezpečnostní a pátrací služby",
+                    "N81": "Služby související se stavbami a úpravou krajiny",
+                    "N82": "Administrativní, kancelářské a jiné podpůrné služby pro podnikání",
+                    "H492": "Železniční nákladní doprava",
+                    "H494": "Silniční nákladní doprava a stěhovací služby",
+                    "H4941": "Silniční nákladní doprava",
+                    "H504": "Vnitrozemská vodní nákladní doprava, pronájem nákladních plavidel, vlečení a tlačení lodí",
+                    "H50401": "Vnitrozemská vodní nákladní doprava",
+                    "H521": "Skladování",
+                    "H522": "Podpůrné služby v dopravě",
+                    "H531": "Poštovní služby poskytované na základě poštovní licence",
+                    "H532": "Kurýrní a ostatní poštovní služby",
+                    "J581": "Vydávání knih, periodických publikací a ostatní vydavatelské služby",
+                    "J611": "Služby související s pevnými telekomunikačními sítěmi",
+                    "J612": "Služby související s bezdrátovými telekomunikačními sítěmi",
+                    "J620": "Služby v oblasti programování a poradenství a související služby",
+                    "J6201": "Programování",
+                    "J6202": "Poradenství v oblasti počítačů",
+                    "J631": "Zpracování dat, hosting a související služby; obsah webových portálů",
+                    "J6311": "Zpracování dat, hosting a související služby",
+                    "K651": "Pojištění",
+                    "K6512": "Neživotní pojištění",
+                    "K65122": "Pojištění motorových vozidel",
+                    "K651229": "Ostatní pojištění motorových vozidel",
+                    "K65124": "Pojištění majetku proti požáru a jiným škodám",
+                    "K651241": "Pojištění majetku proti požáru",
+                    "K651249": "Pojištění majetku proti ostatním škodám (odcizení)",
+                    "L682": "Pronájem a správa vlastních nebo pronajatých nemovitostí",
+                    "L6820121": "Pronájem vlastnich nebo pronajatých nemovitostí - kancelář",
+                    "L6820122": "Pronájem vlastních nebo pronajatých nemovitostí - obchod",
+                    "L6820123": "Pronájem vlastních nebo pronajatých nemovitostí - sklad, hala, garáž",
+                    "L6820124": "Pronájem vlastních nebo pronajatých nemovitostí - oplocená plocha",
+                    "L683": "Služby v oblasti nemovitostí na základě smlouvy nebo dohody",
+                    "L6831": "Služby realitních agentur na základě smlouvy nebo dohody",
+                    "L6832": "Správa nemovitostí na základě smlouvy nebo dohody",
+                    "M691": "Právní služby",
+                    "M692": "Účetnické a auditorské služby; služby daňového poradenství",
+                    "M69201": "Finanční auditorské služby",
+                    "M69202": "Účetnické služby",
+                    "M692023": "Služby vedení účetnictví",
+                    "M69203": "Služby daňového poradenství",
+                    "M702": "Poradenství v oblasti řízení",
+                    "M711": "Architektonické a inženýrské služby a související technické poradenství",
+                    "M7111": "Architektonické služby",
+                    "M7112": "Inženýrské služby a související technické poradenství",
+                    "M731": "Reklamní služby",
+                    "M7312": "Zastupování médií při prodeji reklamního prostoru a času",
+                    "M731211": "Zprostředkování prodeje reklamního prostoru v tištěných médiích",
+                    "M731212": "Zprostředkování prodeje reklamního prostoru nebo času v televizi \nnebo v rozhlase",
+                    "M731213": "Zprostředkování prodeje reklamního prostoru nebo času na internetu",
+                    "M731219": "Ostatní zprostředkování prodeje reklamního prostoru nebo času",
+                    "M7312191": "Pronájem reklamních panelů",
+                    "M732": "Průzkum trhu a veřejného mínění",
+                    "M743": "Překladatelské a tlumočnické služby",
+                    "N771": "Pronájem a leasing motorových vozidel, kromě motocyklů",
+                    "N773": "Pronájem a leasing ostatních strojů, zařízení a výrobků",
+                    "N7732": "Pronájem a leasing stavebních strojů a zařízení",
+                    "N7739": "Pronájem a leasing ostatních strojů, zařízení a výrobků j. n.",
+                    "N781": "Služby agentur zprostředkujících zaměstnání",
+                    "N782": "Služby agentur zprostředkujících pracovníky na přechodnou dobu",
+                    "N801": "Soukromé bezpečnostní služby",
+                    "N802": "Služby související s provozem bezpečnostních systémů",
+                    "N812": "Úklidové služby",
+                    "N823": "Pořádání konferencí a hospodářských výstav"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "HJKLMN": [
+                        "HJKLMN_bez_J60_a_M731",
+                        "H49",
+                        "H50",
+                        "H52",
+                        "H53",
+                        "J58",
+                        "J59",
+                        "J60",
+                        "J61",
+                        "J62",
+                        "J63",
+                        "K65",
+                        "L68",
+                        "M69",
+                        "M70",
+                        "M71",
+                        "M73",
+                        "M74",
+                        "N77",
+                        "N78",
+                        "N80",
+                        "N81",
+                        "N82"
+                    ],
+                    "H49": [
+                        "H492",
+                        "H494",
+                        "H4941"
+                    ],
+                    "H50": [
+                        "H504",
+                        "H50401"
+                    ],
+                    "H52": [
+                        "H521",
+                        "H522"
+                    ],
+                    "H53": [
+                        "H531",
+                        "H532"
+                    ],
+                    "J58": [
+                        "J581"
+                    ],
+                    "J61": [
+                        "J611",
+                        "J612"
+                    ],
+                    "J62": [
+                        "J620",
+                        "J6201",
+                        "J6202"
+                    ],
+                    "J63": [
+                        "J631",
+                        "J6311"
+                    ],
+                    "K65": [
+                        "K651",
+                        "K6512",
+                        "K65122",
+                        "K651229",
+                        "K65124",
+                        "K651241",
+                        "K651249"
+                    ],
+                    "L68": [
+                        "L682",
+                        "L6820121",
+                        "L6820122",
+                        "L6820123",
+                        "L6820124",
+                        "L683",
+                        "L6831",
+                        "L6832"
+                    ],
+                    "M69": [
+                        "M691",
+                        "M692",
+                        "M69201",
+                        "M69202",
+                        "M692023",
+                        "M69203"
+                    ],
+                    "M70": [
+                        "M702"
+                    ],
+                    "M71": [
+                        "M711",
+                        "M7111",
+                        "M7112"
+                    ],
+                    "M73": [
+                        "M731",
+                        "M7312",
+                        "M731211",
+                        "M731212",
+                        "M731213",
+                        "M731219",
+                        "M7312191",
+                        "M732"
+                    ],
+                    "M74": [
+                        "M743"
+                    ],
+                    "N77": [
+                        "N771",
+                        "N773",
+                        "N7732",
+                        "N7739"
+                    ],
+                    "N78": [
+                        "N781",
+                        "N782"
+                    ],
+                    "N80": [
+                        "N801",
+                        "N802"
+                    ],
+                    "N81": [
+                        "N812"
+                    ],
+                    "N82": [
+                        "N823"
+                    ]
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8,
+                    "2024": 9
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

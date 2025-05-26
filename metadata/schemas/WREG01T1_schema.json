@@ -1,0 +1,356 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WREG01T1",
+    "label": "Počet obyvatel a věkové složení podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:03:05.971623Z",
+    "id": [
+        "CasR",
+        "Uz02",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        15,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2406WKC": 0,
+                    "2406WKMREG": 1,
+                    "2406WKZREG": 2,
+                    "2406WKV014": 3,
+                    "2406WKV1564": 4,
+                    "2406WKV65AV": 5,
+                    "5436WCREG": 6,
+                    "5422W": 7
+                },
+                "label": {
+                    "2406WKC": "Počet obyvatel - celkem",
+                    "2406WKMREG": "Počet mužů",
+                    "2406WKZREG": "Počet žen",
+                    "2406WKV014": "Počet obyvatel ve věku 0 - 14 let",
+                    "2406WKV1564": "Počet obyvatel ve věku 15 - 64 let",
+                    "2406WKV65AV": "Počet obyvatel ve věku 65 a více let",
+                    "5436WCREG": "Průměrný věk obyvatel (roky)",
+                    "5422W": "Index stáří (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "317IREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5971CREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3030SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J06": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317AREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3025SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10033J01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DIREGZ": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9991J01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7154SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKV65AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "299AREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J05": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J03": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5422W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973ZPREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKV014": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "299IREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3072SU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKMREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973IPMREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DIREG": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10038J01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PIREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10032J01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKV1564": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10034J01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958FIREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355ZN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3113SU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5436WCREG": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3103SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973REG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DIREGM": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958FREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3037SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKZREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

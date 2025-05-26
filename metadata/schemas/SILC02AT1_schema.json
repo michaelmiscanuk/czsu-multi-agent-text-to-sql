@@ -1,0 +1,101 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SILC02AT1",
+    "label": "Hranice materiální deprivace a míra materiální deprivace",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:04:42.129277Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        2,
+        6
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3337D": 0,
+                    "9971": 1
+                },
+                "label": {
+                    "3337D": "Počet osob pod hranicí deprivace (v tis.)",
+                    "9971": "Míra deprivace (v %)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9971": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3337D": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2019": 0,
+                    "2020": 1,
+                    "2021": 2,
+                    "2022": 3,
+                    "2023": 4,
+                    "2024": 5
+                },
+                "label": {
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

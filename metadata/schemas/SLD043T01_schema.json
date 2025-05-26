@@ -1,0 +1,136 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD043T01",
+    "label": "Obyvatelstvo podle ekonomické aktivity",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:41:45.103529Z",
+    "id": [
+        "IndicatorType",
+        "UzCrKr_H",
+        "CenRok2011",
+        "EKONAKTIVPDI2011",
+        "POHL1"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        9,
+        3
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRok2011"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162": 0
+                },
+                "label": {
+                    "U_3162": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CenRok2011": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20110326": 0
+                },
+                "label": {
+                    "C20110326": "2011"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "EKONAKTIVPDI2011": {
+            "label": "Ekonomická aktivita",
+            "category": {
+                "index": {
+                    "53": 0,
+                    "51": 1,
+                    "2": 2,
+                    "4": 3,
+                    "52": 4,
+                    "54": 5,
+                    "6": 6,
+                    "8": 7,
+                    "99": 8
+                },
+                "label": {
+                    "53": "Ekonomicky aktivní celkem",
+                    "51": "Zaměstnaní",
+                    "2": "Zaměstnaní - pracující důchodci",
+                    "4": "Zaměstnaní - ženy na mateřské dovolené",
+                    "52": "Nezaměstnaní",
+                    "54": "Ekonomicky neaktivní celkem",
+                    "6": "Nepracující důchodci",
+                    "8": "Žáci, studenti, učni",
+                    "99": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "2": 1,
+                    "1": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "2": "Ženy",
+                    "1": "Muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,120 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD039T01",
+    "label": "Hospodařící domácnosti",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:43:41.101532Z",
+    "id": [
+        "CenRoky1",
+        "UzCrKr_H",
+        "TYPHDAWCSU",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        11,
+        1
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPHDAWCSU": {
+            "label": "Hospodařící domácnosti podle typu domácnosti",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "13": 1,
+                    "4": 2,
+                    "5": 3,
+                    "6": 4,
+                    "7": 5,
+                    "8": 6,
+                    "9": 7,
+                    "10": 8,
+                    "1100": 9,
+                    "20": 10
+                },
+                "label": {
+                    "0": "Hospodařící domácnosti celkem",
+                    "13": "HD tvořené 1 rodinou ",
+                    "4": "Manželské páry",
+                    "5": "Faktická manželství",
+                    "6": "Registrovaná partnerství",
+                    "7": "Faktická partnerství",
+                    "8": "Neúplné rodiny - osamělý otec",
+                    "9": "Neúplné rodiny - osamělá matka",
+                    "10": "HD tvořené 2 a více rodinami",
+                    "1100": "Domácnosti jednotlivců",
+                    "20": "Vícečlenné nerodinné domácnosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2423": 0
+                },
+                "label": {
+                    "U_2423": "Počet hospodařících domácností"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2423": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

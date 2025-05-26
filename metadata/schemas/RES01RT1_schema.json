@@ -1,0 +1,185 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RES01RT1",
+    "label": "Ekonomické subjekty podle vybraných právních forem - data za ČR a kraje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:00:52.960777Z",
+    "id": [
+        "Uz02A",
+        "AKTIVITA",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        10,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "AKTIVITA": {
+            "label": "Ekonomické subjekty ",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Počet ekonomických subjektů v registru"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0,
+                    "4958_reg_FO": 1,
+                    "4958_reg_ZIV": 2,
+                    "4958_FO_JINE": 3,
+                    "4958_FO_ZEME": 4,
+                    "4958_reg_PO": 5,
+                    "4958_reg_OS": 6,
+                    "4958_OS_AS": 7,
+                    "4958_reg_DRU": 8,
+                    "4958_reg_STA": 9
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem",
+                    "4958_reg_FO": "Fyzické osoby celkem",
+                    "4958_reg_ZIV": "Soukromí podnikatelé podnikající podle živnostenského zákona",
+                    "4958_FO_JINE": "Fyzická osoba podnikající dle jiných zákonů než živnostenského a zákona o zemědělství",
+                    "4958_FO_ZEME": "Zemědělský podnikatel - fyzická osoba ",
+                    "4958_reg_PO": "Právnické osoby celkem",
+                    "4958_reg_OS": "Obchodní společnosti",
+                    "4958_OS_AS": "Akciové společnosti",
+                    "4958_reg_DRU": "Družstva",
+                    "4958_reg_STA": "Státní podniky"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg_ZIV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_DRU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_PO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_OS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_FO_ZEME": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_FO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_OS_AS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_FO_JINE": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_STA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

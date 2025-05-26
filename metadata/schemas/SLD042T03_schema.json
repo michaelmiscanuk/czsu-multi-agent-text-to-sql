@@ -1,0 +1,146 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD042T03",
+    "label": "Obyvatelstvo podle nejvyššího dosaženého vzdělání v ČR",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:41:44.290549Z",
+    "id": [
+        "IndicatorType",
+        "CenRoky1",
+        "UzCrKr_H",
+        "VekSkOst1",
+        "VzdelPDI2011",
+        "POHL1"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        7,
+        2
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162": 0
+                },
+                "label": {
+                    "U_3162": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20110326": 0
+                },
+                "label": {
+                    "C20110326": "2011"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VekSkOst1": {
+            "label": "Věk",
+            "category": {
+                "index": {
+                    "1200159999": 0
+                },
+                "label": {
+                    "1200159999": "15 a více let"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VzdelPDI2011": {
+            "label": "Nejvyšší dosažené vzdělání",
+            "category": {
+                "index": {
+                    "109": 0,
+                    "011": 1,
+                    "202": 2,
+                    "127": 3,
+                    "105": 4,
+                    "117": 5,
+                    "001": 6
+                },
+                "label": {
+                    "109": "Vysokoškolské",
+                    "011": "Vyšší odborné vzdělání",
+                    "202": "Nástavbové studium",
+                    "127": "Úplné střední (s maturitou)",
+                    "105": "Střední vč. vyučení (bez maturity)",
+                    "117": "Základní vč. neukončeného",
+                    "001": "Bez vzdělání"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "2": 1
+                },
+                "label": {
+                    "1": "Muži",
+                    "2": "Ženy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,135 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WNEJOBYR",
+    "label": "Obyvatelstvo",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:48:04.340735Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "CASR3112"
+    ],
+    "size": [
+        1,
+        6,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASR3112"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5436WC2": 0,
+                    "2406WKV65AV": 1,
+                    "2406WVP65A2": 2,
+                    "2406WKS2": 3,
+                    "2406WKM2": 4,
+                    "2406WKZ2": 5
+                },
+                "label": {
+                    "5436WC2": "Průměrný věk obyvatel",
+                    "2406WKV65AV": "Počet obyvatel ve věku 65 a více let",
+                    "2406WVP65A2": "Podíl obyvatel ve věku 65 a více let",
+                    "2406WKS2": "Počet obyvatel",
+                    "2406WKM2": "Počet obyvatel - muži",
+                    "2406WKZ2": "Počet obyvatel - ženy"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2406WVP65A2": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKS2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKV65AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKM2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5436WC2": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKZ2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CASR3112": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2016-12-31": 0,
+                    "2017-12-31": 1,
+                    "2018-12-31": 2,
+                    "2019-12-31": 3,
+                    "2020-12-31": 4,
+                    "2021-12-31": 5,
+                    "2022-12-31": 6,
+                    "2023-12-31": 7,
+                    "2024-12-31": 8
+                },
+                "label": {
+                    "2016-12-31": "31.12.2016",
+                    "2017-12-31": "31.12.2017",
+                    "2018-12-31": "31.12.2018",
+                    "2019-12-31": "31.12.2019",
+                    "2020-12-31": "31.12.2020",
+                    "2021-12-31": "31.12.2021",
+                    "2022-12-31": "31.12.2022",
+                    "2023-12-31": "31.12.2023",
+                    "2024-12-31": "31.12.2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,193 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD045T02",
+    "label": "Obydlené byty podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:41:45.291693Z",
+    "id": [
+        "CenRoky1",
+        "UzCrKr_H",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        15,
+        10
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20110326": 0
+                },
+                "label": {
+                    "C20110326": "2011"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3018": 1,
+                    "3026": 2,
+                    "3034": 3,
+                    "3042": 4,
+                    "3051": 5,
+                    "3069": 6,
+                    "3077": 7,
+                    "3085": 8,
+                    "3093": 9,
+                    "3107": 10,
+                    "3115": 11,
+                    "3123": 12,
+                    "3131": 13,
+                    "3140": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3018",
+                        "3026",
+                        "3034",
+                        "3042",
+                        "3051",
+                        "3069",
+                        "3077",
+                        "3085",
+                        "3093",
+                        "3107",
+                        "3115",
+                        "3123",
+                        "3131",
+                        "3140"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2607_1": 0,
+                    "U_2607_1_DUVUZ_VLD": 1,
+                    "U_2607_1_DUVUZ_OSVL": 2,
+                    "U_2607_1_DUVUZ_DRU": 3,
+                    "U_2607_1_DUVUZ_NAJ": 4,
+                    "U_2607_2_POCM_1": 5,
+                    "U_2607_2_POCM_2": 6,
+                    "U_2607_2_POCM_3": 7,
+                    "U_2607_2_POCM_4": 8,
+                    "U_2607_2_POCM_5AV": 9
+                },
+                "label": {
+                    "U_2607_1": "Počet  obydlených bytů",
+                    "U_2607_1_DUVUZ_VLD": "Obydlené byty ve vlastním domě",
+                    "U_2607_1_DUVUZ_OSVL": "Obydlené byty v osobním vlastnictví",
+                    "U_2607_1_DUVUZ_DRU": "Obydlené družstevní byty",
+                    "U_2607_1_DUVUZ_NAJ": "Obydlené nájemní/pronajaté byty",
+                    "U_2607_2_POCM_1": "Obydlené byty s 1 obytnou místností",
+                    "U_2607_2_POCM_2": "Obydlené byty se 2 obytnými místnostmi",
+                    "U_2607_2_POCM_3": "Obydlené byty se 3 obytnými místnostmi",
+                    "U_2607_2_POCM_4": "Obydlené byty se 4 obytnými místnostmi",
+                    "U_2607_2_POCM_5AV": "Obydlené byty s 5 a více obytnými místnostmi"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2607_2_POCM_5AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_1_DUVUZ_OSVL": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_1_DUVUZ_VLD": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_2_POCM_4": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_2_POCM_3": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_1_DUVUZ_DRU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_1_DUVUZ_NAJ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_2_POCM_2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2607_2_POCM_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

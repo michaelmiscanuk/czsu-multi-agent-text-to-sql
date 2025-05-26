@@ -1,0 +1,131 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WOBY04BK",
+    "label": "Naděje dožití podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:48:04.339552Z",
+    "id": [
+        "CAS2R",
+        "Uz2",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        14,
+        4
+    ],
+    "role": {
+        "geo": [
+            "Uz2"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CAS2R"
+        ]
+    },
+    "dimension": {
+        "CAS2R": {
+            "label": "Dvouleté období",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2022-2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz2": {
+            "label": "Kraje",
+            "category": {
+                "index": {
+                    "CZ010": 0,
+                    "CZ020": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5411WM0": 0,
+                    "5411WZ0": 1,
+                    "5411WM65": 2,
+                    "5411WZ65": 3
+                },
+                "label": {
+                    "5411WM0": "Naděje dožití mužů při narození",
+                    "5411WZ0": "Naděje dožití žen při narození",
+                    "5411WM65": "Naděje dožití mužů ve věku 65 let",
+                    "5411WZ65": "Naděje dožití žen ve věku 65 let"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5411WZ65": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5411WM0": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5411WZ0": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5411WM65": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

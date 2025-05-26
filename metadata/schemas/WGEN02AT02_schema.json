@@ -1,0 +1,189 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN02AT02",
+    "label": "Ženy a muži v krajích – zaměstnanost",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "obyvatelstvo ve věku 15 a více let",
+        "obyvatelstvo ve věku 15 a více let"
+    ],
+    "updated": "2025-05-24T08:09:39.208813Z",
+    "id": [
+        "CasR",
+        "Uz02h",
+        "IndicatorType",
+        "POHZM"
+    ],
+    "size": [
+        1,
+        15,
+        4,
+        2
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3162WEA01": 0,
+                    "3162WEA02": 1,
+                    "3162WEA03": 2,
+                    "6287W": 3
+                },
+                "label": {
+                    "3162WEA01": "Zaměstnaní celkem (tis. osob)",
+                    "3162WEA02": "Nezaměstnaní (tis. osob)",
+                    "3162WEA03": "Ekonomicky neaktivní (tis. osob)",
+                    "6287W": "Míra ekonomické aktivity (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3162WEA01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3162WEA02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3162WEA03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6290W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3162WEA04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3162WEA05": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6289W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6287W": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHZM": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "2": 0,
+                    "1": 1
+                },
+                "label": {
+                    "2": "ženy",
+                    "1": "muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

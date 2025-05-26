@@ -1,0 +1,178 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB07A1",
+    "label": "Zařízení sociálních služeb k 31. 12 - územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:06:32.544061Z",
+    "id": [
+        "IndicatorType",
+        "CasRA",
+        "Uz0245h",
+        "DRUHSOCZAR"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        20
+    ],
+    "role": {
+        "geo": [
+            "Uz0245h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasRA"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6098H": 0
+                },
+                "label": {
+                    "6098H": "Počet zařízení sociálních služeb"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {}
+            }
+        },
+        "CasRA": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz0245h": {
+            "label": "ČR, kraje, SO ORP, obce",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ031": 2,
+                    "CZ064": 3,
+                    "CZ041": 4,
+                    "CZ063": 5,
+                    "CZ052": 6,
+                    "CZ051": 7,
+                    "CZ080": 8,
+                    "CZ071": 9,
+                    "CZ053": 10,
+                    "CZ032": 11,
+                    "CZ020": 12,
+                    "CZ042": 13,
+                    "CZ072": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ080": "Moravskoslezský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ020": "Středočeský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ072": "Zlínský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ031",
+                        "CZ064",
+                        "CZ041",
+                        "CZ063",
+                        "CZ052",
+                        "CZ051",
+                        "CZ080",
+                        "CZ071",
+                        "CZ053",
+                        "CZ032",
+                        "CZ020",
+                        "CZ042",
+                        "CZ072"
+                    ]
+                }
+            }
+        },
+        "DRUHSOCZAR": {
+            "label": "Druh zařízení sociálních služeb",
+            "category": {
+                "index": {
+                    "102": 0,
+                    "108": 1,
+                    "114": 2,
+                    "115": 3,
+                    "118": 4,
+                    "120": 5,
+                    "121": 6,
+                    "122": 7,
+                    "123": 8,
+                    "124": 9,
+                    "125": 10,
+                    "128": 11,
+                    "129": 12,
+                    "130": 13,
+                    "131": 14,
+                    "132": 15,
+                    "133": 16,
+                    "134": 17,
+                    "135": 18,
+                    "156": 19
+                },
+                "label": {
+                    "102": "Sociální poradny",
+                    "108": "Služby rané péče",
+                    "114": "Nízkoprahová denní centra",
+                    "115": "Nízkoprahová zařízení pro děti a mládež",
+                    "118": "Sociálně terapeutické dílny",
+                    "120": "Terapeutické komunity",
+                    "121": "Centra denních služeb",
+                    "122": "Zařízení pro krizovou pomoc",
+                    "123": "Centra sociálně rehabilitačních služeb",
+                    "124": "Intervenční centra",
+                    "125": "Služby následné péče",
+                    "128": "Stacionáře denní",
+                    "129": "Domovy pro osoby se zdravotním postižením",
+                    "130": "Domovy pro seniory",
+                    "131": "Azylové domy",
+                    "132": "Domy na půl cesty",
+                    "133": "Chráněné bydlení",
+                    "134": "Noclehárny",
+                    "135": "Domovy se zvláštním režimem",
+                    "156": "Stacionáře týdenní"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

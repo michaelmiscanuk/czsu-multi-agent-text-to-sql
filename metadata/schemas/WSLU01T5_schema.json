@@ -1,0 +1,206 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WSLU01T5",
+    "label": "Meziroční indexy tržeb bez DPH ve službách",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:08:19.469771Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "TYPUDAJVM",
+        "OCIST",
+        "TYPCENA",
+        "CZNACESLU",
+        "CasM"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        7,
+        24
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasM"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "1007I": 0
+                },
+                "label": {
+                    "1007I": "Index tržeb bez DPH  (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "1007I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "TYPUDAJVM": {
+            "label": "Typ indexu",
+            "category": {
+                "index": {
+                    "IR": 0
+                },
+                "label": {
+                    "IR": "Meziroční index"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "OCIST": {
+            "label": "Očištění",
+            "category": {
+                "index": {
+                    "P": 0
+                },
+                "label": {
+                    "P": "Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPCENA": {
+            "label": "Typ ceny",
+            "category": {
+                "index": {
+                    "P": 0
+                },
+                "label": {
+                    "P": "Stálé ceny"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZNACESLU": {
+            "label": "Odvětví (NACE)",
+            "category": {
+                "index": {
+                    "49820001": 0,
+                    "H": 1,
+                    "I": 2,
+                    "J": 3,
+                    "68": 4,
+                    "69740001": 5,
+                    "N": 6
+                },
+                "label": {
+                    "49820001": "Sekce H,I,J,L,M a N - Služby celkem",
+                    "H": "Sekce H - Doprava a skladování",
+                    "I": "Sekce I - Ubytování, stravování a pohostinství",
+                    "J": "Sekce J - Informační a komunikační činnosti",
+                    "68": "Sekce L - Činnosti v oblasti nemovitostí",
+                    "69740001": "Sekce M - Profesní, vědecké a technické činnosti ",
+                    "N": "Sekce N - Administrativní a podpůrné činnosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasM": {
+            "label": "Měsíce",
+            "category": {
+                "index": {
+                    "2025-03": 0,
+                    "2025-02": 1,
+                    "2025-01": 2,
+                    "2024-12": 3,
+                    "2024-11": 4,
+                    "2024-10": 5,
+                    "2024-09": 6,
+                    "2024-08": 7,
+                    "2024-07": 8,
+                    "2024-06": 9,
+                    "2024-05": 10,
+                    "2024-04": 11,
+                    "2024-03": 12,
+                    "2024-02": 13,
+                    "2024-01": 14,
+                    "2023-12": 15,
+                    "2023-11": 16,
+                    "2023-10": 17,
+                    "2023-09": 18,
+                    "2023-08": 19,
+                    "2023-07": 20,
+                    "2023-06": 21,
+                    "2023-05": 22,
+                    "2023-04": 23
+                },
+                "label": {
+                    "2025-03": "březen 2025",
+                    "2025-02": "únor 2025",
+                    "2025-01": "leden 2025",
+                    "2024-12": "prosinec 2024",
+                    "2024-11": "listopad 2024",
+                    "2024-10": "říjen 2024",
+                    "2024-09": "září 2024",
+                    "2024-08": "srpen 2024",
+                    "2024-07": "červenec 2024",
+                    "2024-06": "červen 2024",
+                    "2024-05": "květen 2024",
+                    "2024-04": "duben 2024",
+                    "2024-03": "březen 2024",
+                    "2024-02": "únor 2024",
+                    "2024-01": "leden 2024",
+                    "2023-12": "prosinec 2023",
+                    "2023-11": "listopad 2023",
+                    "2023-10": "říjen 2023",
+                    "2023-09": "září 2023",
+                    "2023-08": "srpen 2023",
+                    "2023-07": "červenec 2023",
+                    "2023-06": "červen 2023",
+                    "2023-05": "květen 2023",
+                    "2023-04": "duben 2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

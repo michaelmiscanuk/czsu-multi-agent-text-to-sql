@@ -1,0 +1,167 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WFIN02",
+    "label": "Zdravotní pojišťovny - vybrané ukazatele",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:52:14.210391Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        4,
+        32
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6594_ZDP": 0,
+                    "765_ZDP": 1,
+                    "6442_ZDP": 2,
+                    "759_ZDP": 3
+                },
+                "label": {
+                    "6594_ZDP": "Počet zdravotních pojišťoven",
+                    "765_ZDP": "Předepsané pojistné (mil. Kč)",
+                    "6442_ZDP": "Náklady celkem (mil. Kč)",
+                    "759_ZDP": "Náklady na zdravotní služby (mil. Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "759_ZDP": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6594_ZDP": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "765_ZDP": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6442_ZDP": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q4": 0,
+                    "2024-Q3": 1,
+                    "2024-Q2": 2,
+                    "2024-Q1": 3,
+                    "2023-Q4": 4,
+                    "2023-Q3": 5,
+                    "2023-Q2": 6,
+                    "2023-Q1": 7,
+                    "2022-Q4": 8,
+                    "2022-Q3": 9,
+                    "2022-Q2": 10,
+                    "2022-Q1": 11,
+                    "2021-Q4": 12,
+                    "2021-Q3": 13,
+                    "2021-Q2": 14,
+                    "2021-Q1": 15,
+                    "2020-Q4": 16,
+                    "2020-Q3": 17,
+                    "2020-Q2": 18,
+                    "2020-Q1": 19,
+                    "2019-Q4": 20,
+                    "2019-Q3": 21,
+                    "2019-Q2": 22,
+                    "2019-Q1": 23,
+                    "2018-Q4": 24,
+                    "2018-Q3": 25,
+                    "2018-Q2": 26,
+                    "2018-Q1": 27,
+                    "2017-Q4": 28,
+                    "2017-Q3": 29,
+                    "2017-Q2": 30,
+                    "2017-Q1": 31
+                },
+                "label": {
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q1": "1. čtvrtletí 2021",
+                    "2020-Q4": "4. čtvrtletí 2020",
+                    "2020-Q3": "3. čtvrtletí 2020",
+                    "2020-Q2": "2. čtvrtletí 2020",
+                    "2020-Q1": "1. čtvrtletí 2020",
+                    "2019-Q4": "4. čtvrtletí 2019",
+                    "2019-Q3": "3. čtvrtletí 2019",
+                    "2019-Q2": "2. čtvrtletí 2019",
+                    "2019-Q1": "1. čtvrtletí 2019",
+                    "2018-Q4": "4. čtvrtletí 2018",
+                    "2018-Q3": "3. čtvrtletí 2018",
+                    "2018-Q2": "2. čtvrtletí 2018",
+                    "2018-Q1": "1. čtvrtletí 2018",
+                    "2017-Q4": "4. čtvrtletí 2017",
+                    "2017-Q3": "3. čtvrtletí 2017",
+                    "2017-Q2": "2. čtvrtletí 2017",
+                    "2017-Q1": "1. čtvrtletí 2017"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

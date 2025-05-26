@@ -1,0 +1,231 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WESU01A",
+    "label": "Počet ekonomických subjektů celkem (stav k 31. 12.)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:01:43.462694Z",
+    "id": [
+        "Uz02h",
+        "AKTIVITA",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        16,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "AKTIVITA": {
+            "label": "Ekonomické subjekty ",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Počet ekonomických subjektů v registru"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0,
+                    "4958_reg_FO": 1,
+                    "4958_reg_ZIV": 2,
+                    "4958_reg_PO": 3,
+                    "4958_reg_OS": 4,
+                    "4958_reg_DRU": 5,
+                    "4958_reg_STA": 6,
+                    "4958_reg_NACEA": 7,
+                    "4958_reg_NACEBE": 8,
+                    "4958_reg_NACEF": 9,
+                    "4958_reg_NACEG": 10,
+                    "4958_reg_KATP1": 11,
+                    "4958_reg_KATP2": 12,
+                    "4958_reg_KATP3": 13,
+                    "4958_reg_KATP4": 14,
+                    "4958_reg_KATP5": 15
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem",
+                    "4958_reg_FO": "Fyzické osoby celkem",
+                    "4958_reg_ZIV": "Soukromí podnikatelé podnikající podle živnostenského zákona",
+                    "4958_reg_PO": "Právnické osoby celkem",
+                    "4958_reg_OS": "Obchodní společnosti",
+                    "4958_reg_DRU": "Družstva",
+                    "4958_reg_STA": "Státní podniky",
+                    "4958_reg_NACEA": "Odvětví CZ-NACE - A Zemědělství, lesnictví, rybářství",
+                    "4958_reg_NACEBE": "Odvětví CZ-NACE - B-E Průmysl celkem",
+                    "4958_reg_NACEF": "Odvětví CZ-NACE - F Stavebnictví",
+                    "4958_reg_NACEG": "Odvětví CZ-NACE - G Velkoobchod a maloobchod; opravy a údržba motorových vozidel",
+                    "4958_reg_KATP1": "Počet zaměstnanců - neuvedeno",
+                    "4958_reg_KATP2": "Počet zaměstnanců - bez zaměstnanců ",
+                    "4958_reg_KATP3": "Počet zaměstnanců 1 - 19",
+                    "4958_reg_KATP4": "Počet zaměstnanců 20 - 249",
+                    "4958_reg_KATP5": "Počet zaměstnanců 250+"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg_NACEBE": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_KATP2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_KATP3": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_NACEA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_STA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_KATP1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_NACEF": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_ZIV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_DRU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_NACEG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_PO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_OS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_KATP4": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_KATP5": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4958_reg_FO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4962": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4963": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

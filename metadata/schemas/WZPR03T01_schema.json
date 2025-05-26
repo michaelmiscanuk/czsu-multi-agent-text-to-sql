@@ -1,0 +1,173 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZPR03T01",
+    "label": "Produkce odpadů a nakládání s odpady",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:53:15.596397Z",
+    "id": [
+        "Uz02",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        12,
+        7
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5777A": 0,
+                    "5777": 1,
+                    "3968": 2,
+                    "3968A": 3,
+                    "3968B": 4,
+                    "3968C": 5,
+                    "3968D": 6,
+                    "3968E": 7,
+                    "3968F": 8,
+                    "3968G": 9,
+                    "3968H": 10,
+                    "3968I": 11
+                },
+                "label": {
+                    "5777A": "Produkce odpadů (t)",
+                    "5777": "Produkce odpadů (kg/obyvatele)",
+                    "3968": "Nakládání s odpady celkem (t)",
+                    "3968A": "Využívání odpadu celkem (t)",
+                    "3968B": "Energetické využití (t)",
+                    "3968C": "Recyklace materiálu (t)",
+                    "3968D": "Kompostování (t)",
+                    "3968E": "Zasypávání (t)",
+                    "3968F": "Odstranění odpadu celkem (t)",
+                    "3968G": "Spalování (bez energetického využití) (t)",
+                    "3968H": "Skládkování (t)",
+                    "3968I": "Ostatní způsoby odstraňování odpadu"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3968": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968B": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968E": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968D": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968G": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968F": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968I": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3968H": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5777": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5777A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2017": 0,
+                    "2018": 1,
+                    "2019": 2,
+                    "2020": 3,
+                    "2021": 4,
+                    "2022": 5,
+                    "2023": 6
+                },
+                "label": {
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

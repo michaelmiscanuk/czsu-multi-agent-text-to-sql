@@ -1,0 +1,215 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WNUC03CT01",
+    "label": "Hrubý domácí produkt - mil. Kč, srovnatelné ceny roku 2020",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:48:44.801072Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        10,
+        35
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9988R": 0,
+                    "10013R": 1,
+                    "10014R": 2,
+                    "9992R": 3,
+                    "10009R": 4,
+                    "10010R": 5,
+                    "10000R": 6,
+                    "10001R": 7,
+                    "10003R": 8,
+                    "10004R": 9
+                },
+                "label": {
+                    "9988R": "Hrubý domácí produkt",
+                    "10013R": "Výrobní metoda - produkce",
+                    "10014R": "Výrobní metoda - mezispotřeba",
+                    "9992R": "Výrobní metoda - hrubá přidaná hodnota",
+                    "10009R": "Výrobní metoda - daně z produktů",
+                    "10010R": "Výrobní metoda - dotace na produkty",
+                    "10000R": "Výdajová metoda - výdaje na konečnou spotřebu",
+                    "10001R": "Výdajová metoda - tvorba hrubého kapitálu",
+                    "10003R": "Výdajová metoda - vývoz zboží a služeb",
+                    "10004R": "Výdajová metoda - dovoz zboží a služeb"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "10009R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10004R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10014R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10003R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10013R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9992R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10001R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10000R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10010R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "1990": 0,
+                    "1991": 1,
+                    "1992": 2,
+                    "1993": 3,
+                    "1994": 4,
+                    "1995": 5,
+                    "1996": 6,
+                    "1997": 7,
+                    "1998": 8,
+                    "1999": 9,
+                    "2000": 10,
+                    "2001": 11,
+                    "2002": 12,
+                    "2003": 13,
+                    "2004": 14,
+                    "2005": 15,
+                    "2006": 16,
+                    "2007": 17,
+                    "2008": 18,
+                    "2009": 19,
+                    "2010": 20,
+                    "2011": 21,
+                    "2012": 22,
+                    "2013": 23,
+                    "2014": 24,
+                    "2015": 25,
+                    "2016": 26,
+                    "2017": 27,
+                    "2018": 28,
+                    "2019": 29,
+                    "2020": 30,
+                    "2021": 31,
+                    "2022": 32,
+                    "2023": 33,
+                    "2024": 34
+                },
+                "label": {
+                    "1990": "1990",
+                    "1991": "1991",
+                    "1992": "1992",
+                    "1993": "1993",
+                    "1994": "1994",
+                    "1995": "1995",
+                    "1996": "1996",
+                    "1997": "1997",
+                    "1998": "1998",
+                    "1999": "1999",
+                    "2000": "2000",
+                    "2001": "2001",
+                    "2002": "2002",
+                    "2003": "2003",
+                    "2004": "2004",
+                    "2005": "2005",
+                    "2006": "2006",
+                    "2007": "2007",
+                    "2008": "2008",
+                    "2009": "2009",
+                    "2010": "2010",
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

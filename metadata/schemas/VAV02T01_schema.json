@@ -1,0 +1,167 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/VAV02T01",
+    "label": "High-tech zboží",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:05:00.889925Z",
+    "id": [
+        "IndicatorType",
+        "Uz0",
+        "SITCHTZ",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        10,
+        18
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5755": 0
+                },
+                "label": {
+                    "5755": "Pohyb zboží z ČR (v mil. Kč, FOB)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "8476": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5754": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5755": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "8491": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "SITCHTZ": {
+            "label": "Klasifikace SITC",
+            "category": {
+                "index": {
+                    "52890001": 0,
+                    "76890001": 1,
+                    "77770001": 2,
+                    "54770001": 3,
+                    "52590001": 4,
+                    "71870001": 5,
+                    "71730001": 6,
+                    "77890001": 7,
+                    "75750001": 8,
+                    "89890001": 9
+                },
+                "label": {
+                    "52890001": "Celkem",
+                    "76890001": "Elektronika a telekomunikace",
+                    "77770001": "Elektrotechnika",
+                    "54770001": "Farmacie",
+                    "52590001": "Chemie",
+                    "71870001": "Letecká technika",
+                    "71730001": "Neelektrické stroje",
+                    "77890001": "Vědecké přístroje",
+                    "75750001": "Výpočetní technika",
+                    "89890001": "Výzbroj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2007": 0,
+                    "2008": 1,
+                    "2009": 2,
+                    "2010": 3,
+                    "2011": 4,
+                    "2012": 5,
+                    "2013": 6,
+                    "2014": 7,
+                    "2015": 8,
+                    "2016": 9,
+                    "2017": 10,
+                    "2018": 11,
+                    "2019": 12,
+                    "2020": 13,
+                    "2021": 14,
+                    "2022": 15,
+                    "2023": 16,
+                    "2024": 17
+                },
+                "label": {
+                    "2007": "2007",
+                    "2008": "2008",
+                    "2009": "2009",
+                    "2010": "2010",
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

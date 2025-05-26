@@ -1,0 +1,158 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB09",
+    "label": "Příjemci příspěvku na péči podle stupně závislosti v prosinci daného roku - v časové řadě",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        ""
+    ],
+    "updated": "2025-05-24T08:06:57.371767Z",
+    "id": [
+        "Pohlciz",
+        "UZ02HU",
+        "VEKSZB",
+        "IndicatorType",
+        "CasR",
+        "sTZPRISPECE"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        10,
+        5
+    ],
+    "role": {
+        "geo": [
+            "UZ02HU"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Pohlciz": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ02HU": {
+            "label": "ČR a kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VEKSZB": {
+            "label": "Věkové skupiny",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "10078": 0
+                },
+                "label": {
+                    "10078": "Příjemci příspěvku na péči podle stupně závislosti v prosinci daného roku"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "10078": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2014": 0,
+                    "2015": 1,
+                    "2016": 2,
+                    "2017": 3,
+                    "2018": 4,
+                    "2019": 5,
+                    "2020": 6,
+                    "2021": 7,
+                    "2022": 8,
+                    "2023": 9
+                },
+                "label": {
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "sTZPRISPECE": {
+            "label": "Stupeň závislosti u příspěvku na péči",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "2": 2,
+                    "3": 3,
+                    "4": 4
+                },
+                "label": {
+                    "0": "Celkem",
+                    "1": "I. stupeň závislosti",
+                    "2": "II. stupeň závislosti",
+                    "3": "III. stupeň závislosti",
+                    "4": "IV. stupeň závislosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

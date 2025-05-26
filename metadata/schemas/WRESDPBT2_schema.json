@@ -1,0 +1,162 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WRESDPBT2",
+    "label": "Přežívání vzniklých podniků po dobu 5 let",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:58:47.975758Z",
+    "id": [
+        "Uz0",
+        "CZNACERES",
+        "ISEKTOR1",
+        "IndicatorType",
+        "DOBAPREZPOD",
+        "ROKVZNPOD"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        2,
+        5,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZNACERES": {
+            "label": "Odvětví ekonomické činnosti",
+            "category": {
+                "index": {
+                    "05960003": 0
+                },
+                "label": {
+                    "05960003": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "ISEKTOR1": {
+            "label": "Institucionální sektor ",
+            "category": {
+                "index": {
+                    "11140005": 0
+                },
+                "label": {
+                    "11140005": "Nefinanční podniky, finanční instituce, zaměstnavatelé a OSVČ"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9510W": 0,
+                    "9760W": 1
+                },
+                "label": {
+                    "9510W": "Míra přežití podniků (%)",
+                    "9760W": "Míra přežití podniků - zaměstnavatelů (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9510W": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9760W": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "DOBAPREZPOD": {
+            "label": "Doba přežití podniku",
+            "category": {
+                "index": {
+                    "400001400001000": 0,
+                    "400002400002000": 1,
+                    "400003400003000": 2,
+                    "400004400004000": 3,
+                    "400005400005000": 4
+                },
+                "label": {
+                    "400001400001000": "1 rok",
+                    "400002400002000": "2 roky",
+                    "400003400003000": "3 roky",
+                    "400004400004000": "4 roky",
+                    "400005400005000": "5 let"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "ROKVZNPOD": {
+            "label": "Rok vzniku podniku",
+            "category": {
+                "index": {
+                    "432013432013000": 0,
+                    "432014432014000": 1,
+                    "432015432015000": 2,
+                    "432016432016000": 3,
+                    "432017432017000": 4,
+                    "432018432018000": 5,
+                    "432019432019000": 6,
+                    "432020432020000": 7,
+                    "432021432021000": 8,
+                    "432022432022000": 9
+                },
+                "label": {
+                    "432013432013000": "2013",
+                    "432014432014000": "2014",
+                    "432015432015000": "2015",
+                    "432016432016000": "2016",
+                    "432017432017000": "2017",
+                    "432018432018000": "2018",
+                    "432019432019000": "2019",
+                    "432020432020000": "2020",
+                    "432021432021000": "2021",
+                    "432022432022000": "2022"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,180 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01B01T01",
+    "label": "Základní údaje o stavu a pohybu obyvatel podle obcí",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:04:40.690019Z",
+    "id": [
+        "CasR",
+        "UZ25",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        14,
+        11
+    ],
+    "role": {
+        "geo": [
+            "UZ25"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ25": {
+            "label": "Kraje a obce",
+            "category": {
+                "index": {
+                    "CZ010": 0,
+                    "CZ020": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9379W": 0,
+                    "2406K": 1,
+                    "4355ZN": 2,
+                    "5393": 3,
+                    "5401": 4,
+                    "5403": 5,
+                    "5404": 6,
+                    "5402": 7,
+                    "5399": 8,
+                    "5396": 9,
+                    "5397": 10
+                },
+                "label": {
+                    "9379W": "Počet obyvatel k 1. 7.",
+                    "2406K": "Počet obyvatel k 31. 12.",
+                    "4355ZN": "Živě narození",
+                    "5393": "Zemřelí",
+                    "5401": "Přirozený přírůstek/úbytek",
+                    "5403": "Přistěhovalí",
+                    "5404": "Vystěhovalí",
+                    "5402": "Přírůstek/úbytek stěhováním",
+                    "5399": "Celkový přírůstek/úbytek",
+                    "5396": "Sňatky",
+                    "5397": "Rozvody"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9379W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355ZN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5401": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406K": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

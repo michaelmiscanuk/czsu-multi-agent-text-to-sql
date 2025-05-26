@@ -1,0 +1,140 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/STA03AT4",
+    "label": "Index stavební produkce - běžné ceny - rok",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:08:15.664047Z",
+    "id": [
+        "Uz0A",
+        "TYPCENA1",
+        "CasR",
+        "IndicatorType",
+        "TYPUDAJVM"
+    ],
+    "size": [
+        1,
+        1,
+        5,
+        3,
+        2
+    ],
+    "role": {
+        "geo": [
+            "Uz0A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0A": {
+            "label": "Stát",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPCENA1": {
+            "label": "Typ ceny",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Běžné ceny"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5939": 0,
+                    "6261": 1,
+                    "6262": 2
+                },
+                "label": {
+                    "5939": "Index stavební produkce - Celkem (%)",
+                    "6261": "Index stavební produkce - Pozemní stavby (%)",
+                    "6262": "Index stavební produkce - Inženýrské stavby (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6262": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5939": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6261": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "TYPUDAJVM": {
+            "label": "Typ indexu",
+            "category": {
+                "index": {
+                    "IR": 0,
+                    "IZ2021": 1
+                },
+                "label": {
+                    "IR": "Meziroční index",
+                    "IZ2021": "Bazický index (2021 = 100)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

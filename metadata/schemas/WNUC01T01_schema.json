@@ -1,0 +1,115 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WNUC01T01",
+    "label": "Čtvrtletní odhady HDP - TOP ukazatele",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:47:25.387631Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        4,
+        6
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9988J01": 0,
+                    "9988J02": 1,
+                    "7873J01": 2,
+                    "7873J02": 3
+                },
+                "label": {
+                    "9988J01": "Hrubý domácí produkt, mezičtvrtletní růst/pokles, %",
+                    "9988J02": "Hrubý domácí produkt, meziroční růst/pokles, %",
+                    "7873J01": "Zaměstnanost, mezičtvrtletní růst/pokles, %",
+                    "7873J02": "Zaměstnanost, meziroční růst/pokles, %"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7873J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7873J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2023-Q4": 0,
+                    "2024-Q1": 1,
+                    "2024-Q2": 2,
+                    "2024-Q3": 3,
+                    "2024-Q4": 4,
+                    "2025-Q1": 5
+                },
+                "label": {
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2025-Q1": "1. čtvrtletí 2025"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

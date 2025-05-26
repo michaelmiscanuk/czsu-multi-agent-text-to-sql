@@ -1,0 +1,169 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZEM05T01",
+    "label": "Spotřeba hnojiv za hospodářský rok (t)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:12:27.290047Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "CASHR"
+    ],
+    "size": [
+        1,
+        9,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASHR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6532": 0,
+                    "6533": 1,
+                    "6534": 2,
+                    "6535": 3,
+                    "6510": 4,
+                    "6513": 5,
+                    "6514": 6,
+                    "6518": 7,
+                    "6519": 8
+                },
+                "label": {
+                    "6532": "Minerální hnojiva (živiny)",
+                    "6533": "Minerální hnojiva - dusíkatá (N)",
+                    "6534": "Minerální hnojiva - fosforečná (P₂0₅)",
+                    "6535": "Minerální hnojiva - draselná (K₂O)",
+                    "6510": "Vápenatá hnojiva",
+                    "6513": "Statková hnojiva",
+                    "6514": "Statková hnojiva - hnůj",
+                    "6518": "Organická hnojiva",
+                    "6519": "Organominerální hnojiva"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6533": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6532": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6510": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6535": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6513": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6534": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6515": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6514": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6517": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6516": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6519": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6518": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CASHR": {
+            "label": "Hospodářský rok",
+            "category": {
+                "index": {
+                    "2017": 0,
+                    "2018": 1,
+                    "2019": 2,
+                    "2020": 3,
+                    "2021": 4,
+                    "2022": 5,
+                    "2023": 6,
+                    "2024": 7
+                },
+                "label": {
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

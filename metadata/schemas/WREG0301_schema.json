@@ -1,0 +1,169 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WREG0301",
+    "label": "Věkové složení obyvatel podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:05:01.303238Z",
+    "id": [
+        "CasR",
+        "Uz02",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        14,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ010": 0,
+                    "CZ020": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2406WKV014": 0,
+                    "2406WKV1564": 1,
+                    "2406WKV65AV": 2
+                },
+                "label": {
+                    "2406WKV014": "Počet obyvatel ve věku 0 - 14 let",
+                    "2406WKV1564": "Počet obyvatel ve věku 15 - 64 let",
+                    "2406WKV65AV": "Počet obyvatel ve věku 65 a více let"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5401W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3103SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKV65AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10032J01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973REG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKV1564": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5973DREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406WKV014": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3025SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

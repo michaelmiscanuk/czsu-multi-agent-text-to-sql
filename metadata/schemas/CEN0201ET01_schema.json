@@ -1,0 +1,213 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CEN0201ET01",
+    "label": "Index cen průmyslových výrobců - rozklad přírůstků",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:56:38.737401Z",
+    "id": [
+        "IndicatorType",
+        "Uz0",
+        "CZCPAPR",
+        "CasM"
+    ],
+    "size": [
+        1,
+        1,
+        28,
+        28
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasM"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6140J07": 0
+                },
+                "label": {
+                    "6140J07": "Rozklad přírůstků meziměsíčního (procentní bod)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6140J08": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6140J07": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZCPAPR": {
+            "label": "Klasifikace produkce",
+            "category": {
+                "index": {
+                    "BCDE": 0,
+                    "05": 1,
+                    "06": 2,
+                    "08": 3,
+                    "10": 4,
+                    "11": 5,
+                    "13": 6,
+                    "14": 7,
+                    "15": 8,
+                    "16": 9,
+                    "17": 10,
+                    "18": 11,
+                    "20": 12,
+                    "21": 13,
+                    "22": 14,
+                    "23": 15,
+                    "24": 16,
+                    "25": 17,
+                    "26": 18,
+                    "27": 19,
+                    "28": 20,
+                    "29": 21,
+                    "30": 22,
+                    "31": 23,
+                    "32": 24,
+                    "33": 25,
+                    "35": 26,
+                    "36": 27
+                },
+                "label": {
+                    "BCDE": "ÚHRN",
+                    "05": "Černé a hnědé uhlí a lignit",
+                    "06": "Ropa a zemní plyn",
+                    "08": "Ostatní těžba a dobývání nerostných surovin",
+                    "10": "Potravinářské výrobky, vč. souvisejících služeb a prací",
+                    "11": "Nápoje",
+                    "13": "Textilie",
+                    "14": "Oděvy",
+                    "15": "Usně a související výrobky",
+                    "16": "Dřevo a dřevěné a korkové výrobky, kromě nábytku",
+                    "17": "Papír a výrobky z papíru",
+                    "18": "Tiskařské a nahrávací služby",
+                    "20": "Chemické látky a chemické přípravky",
+                    "21": "Základní farmaceutické výrobky a farmaceutické přípravky",
+                    "22": "Pryžové a plastové výrobky",
+                    "23": "Ostatní nekovové minerální výrobky",
+                    "24": "Základní kovy",
+                    "25": "Kovodělné výrobky, kromě strojů a zařízení",
+                    "26": "Počítače, elektronické a optické přístroje a zařízení",
+                    "27": "Elektrická zařízení",
+                    "28": "Stroje a zařízení j. n.",
+                    "29": "Motorová vozidla (kromě motocyklů), přívěsy a návěsy",
+                    "30": "Ostatní dopravní prostředky a zařízení",
+                    "31": "Nábytek",
+                    "32": "Ostatní výrobky zpracovatelského průmyslu",
+                    "33": "Opravy, údržba a instalace strojů a zařízení",
+                    "35": "Elektřina, plyn, pára a klimatizovaný vzduch",
+                    "36": "Přír. voda; úprava a rozvod vody, obchod s vodou, prostř. sítí"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasM": {
+            "label": "Měsíce",
+            "category": {
+                "index": {
+                    "2023-01": 0,
+                    "2023-02": 1,
+                    "2023-03": 2,
+                    "2023-04": 3,
+                    "2023-05": 4,
+                    "2023-06": 5,
+                    "2023-07": 6,
+                    "2023-08": 7,
+                    "2023-09": 8,
+                    "2023-10": 9,
+                    "2023-11": 10,
+                    "2023-12": 11,
+                    "2024-01": 12,
+                    "2024-02": 13,
+                    "2024-03": 14,
+                    "2024-04": 15,
+                    "2024-05": 16,
+                    "2024-06": 17,
+                    "2024-07": 18,
+                    "2024-08": 19,
+                    "2024-09": 20,
+                    "2024-10": 21,
+                    "2024-11": 22,
+                    "2024-12": 23,
+                    "2025-01": 24,
+                    "2025-02": 25,
+                    "2025-03": 26,
+                    "2025-04": 27
+                },
+                "label": {
+                    "2023-01": "leden 2023",
+                    "2023-02": "únor 2023",
+                    "2023-03": "březen 2023",
+                    "2023-04": "duben 2023",
+                    "2023-05": "květen 2023",
+                    "2023-06": "červen 2023",
+                    "2023-07": "červenec 2023",
+                    "2023-08": "srpen 2023",
+                    "2023-09": "září 2023",
+                    "2023-10": "říjen 2023",
+                    "2023-11": "listopad 2023",
+                    "2023-12": "prosinec 2023",
+                    "2024-01": "leden 2024",
+                    "2024-02": "únor 2024",
+                    "2024-03": "březen 2024",
+                    "2024-04": "duben 2024",
+                    "2024-05": "květen 2024",
+                    "2024-06": "červen 2024",
+                    "2024-07": "červenec 2024",
+                    "2024-08": "srpen 2024",
+                    "2024-09": "září 2024",
+                    "2024-10": "říjen 2024",
+                    "2024-11": "listopad 2024",
+                    "2024-12": "prosinec 2024",
+                    "2025-01": "leden 2025",
+                    "2025-02": "únor 2025",
+                    "2025-03": "březen 2025",
+                    "2025-04": "duben 2025"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

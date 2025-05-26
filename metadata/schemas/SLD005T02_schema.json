@@ -1,0 +1,176 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD005T02",
+    "label": "Obyvatelstvo ve věku 15 a více let podle nejvyššího dosaženého vzdělání a krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:46:42.158597Z",
+    "id": [
+        "CenRoky1",
+        "IndicatorType",
+        "VekSkOst1",
+        "UzCrKr_H",
+        "VzdelWS"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        15,
+        8
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162": 0
+                },
+                "label": {
+                    "U_3162": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "VekSkOst1": {
+            "label": "Věk",
+            "category": {
+                "index": {
+                    "1200159999": 0
+                },
+                "label": {
+                    "1200159999": "15 a více let"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3018": 1,
+                    "3026": 2,
+                    "3034": 3,
+                    "3042": 4,
+                    "3051": 5,
+                    "3069": 6,
+                    "3077": 7,
+                    "3085": 8,
+                    "3093": 9,
+                    "3107": 10,
+                    "3115": 11,
+                    "3123": 12,
+                    "3131": 13,
+                    "3140": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3018",
+                        "3026",
+                        "3034",
+                        "3042",
+                        "3051",
+                        "3069",
+                        "3077",
+                        "3085",
+                        "3093",
+                        "3107",
+                        "3115",
+                        "3123",
+                        "3131",
+                        "3140"
+                    ]
+                }
+            }
+        },
+        "VzdelWS": {
+            "label": "Nejvyšší dosažené vzdělání",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "001": 1,
+                    "117": 2,
+                    "105": 3,
+                    "132": 4,
+                    "130": 5,
+                    "109": 6,
+                    "900": 7
+                },
+                "label": {
+                    "0": "Celkem",
+                    "001": "Bez vzdělání",
+                    "117": "Základní vč. neukončeného",
+                    "105": "Střední vč. vyučení (bez maturity)",
+                    "132": "Úplné střední (s maturitou), vč. nástavbového a pomaturitního",
+                    "130": "Vyšší odborné, konzervatoř",
+                    "109": "Vysokoškolské",
+                    "900": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

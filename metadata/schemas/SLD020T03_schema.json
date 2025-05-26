@@ -1,0 +1,141 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD020T03",
+    "label": "Obydlené domy podle období výstavby v ČR",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:43:59.164180Z",
+    "id": [
+        "IndicatorType",
+        "CenRoky1",
+        "UzCrKr_H",
+        "OBDVYSTDOMWS",
+        "DRDOMUWS"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        10,
+        2
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2409_1": 0
+                },
+                "label": {
+                    "U_2409_1": "Počet obydlených domů"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2409": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "OBDVYSTDOMWS": {
+            "label": "Období výstavby domu",
+            "category": {
+                "index": {
+                    "10": 0,
+                    "3": 1,
+                    "55": 2,
+                    "6": 3,
+                    "7": 4,
+                    "11": 5,
+                    "23": 6,
+                    "24": 7,
+                    "25": 8,
+                    "99": 9
+                },
+                "label": {
+                    "10": "1919 a dříve",
+                    "3": "1920 - 1945",
+                    "55": "1946 - 1970",
+                    "6": "1971 - 1980",
+                    "7": "1981 - 1990",
+                    "11": "1991 - 2000",
+                    "23": "2001 - 2010",
+                    "24": "2011 - 2015",
+                    "25": "2016 a později",
+                    "99": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "DRDOMUWS": {
+            "label": "Druh domu",
+            "category": {
+                "index": {
+                    "51": 0,
+                    "4": 1
+                },
+                "label": {
+                    "51": "Rodinné domy",
+                    "4": "Bytové domy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,129 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WCEN03BT01",
+    "label": "Index cen vývozu a dovozu - meziroční změny (v %)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:04:40.692086Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasM"
+    ],
+    "size": [
+        1,
+        4,
+        13
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasM"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "614601": 0,
+                    "614701": 1,
+                    "614602": 2,
+                    "614702": 3
+                },
+                "label": {
+                    "614601": "Index cen vývozu",
+                    "614701": "Index cen dovozu",
+                    "614602": "Vývoz",
+                    "614702": "Dovoz"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "614702": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "614601": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "614701": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "614602": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasM": {
+            "label": "Měsíce",
+            "category": {
+                "index": {
+                    "2024-03": 0,
+                    "2024-04": 1,
+                    "2024-05": 2,
+                    "2024-06": 3,
+                    "2024-07": 4,
+                    "2024-08": 5,
+                    "2024-09": 6,
+                    "2024-10": 7,
+                    "2024-11": 8,
+                    "2024-12": 9,
+                    "2025-01": 10,
+                    "2025-02": 11,
+                    "2025-03": 12
+                },
+                "label": {
+                    "2024-03": "březen 2024",
+                    "2024-04": "duben 2024",
+                    "2024-05": "květen 2024",
+                    "2024-06": "červen 2024",
+                    "2024-07": "červenec 2024",
+                    "2024-08": "srpen 2024",
+                    "2024-09": "září 2024",
+                    "2024-10": "říjen 2024",
+                    "2024-11": "listopad 2024",
+                    "2024-12": "prosinec 2024",
+                    "2025-01": "leden 2025",
+                    "2025-02": "únor 2025",
+                    "2025-03": "březen 2025"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

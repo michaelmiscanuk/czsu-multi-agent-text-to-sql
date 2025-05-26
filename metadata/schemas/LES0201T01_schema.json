@@ -1,0 +1,195 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/LES0201T01",
+    "label": "Vybrané údaje o myslivosti",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:06:51.619061Z",
+    "id": [
+        "UZ02HZ",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        11,
+        9
+    ],
+    "role": {
+        "geo": [
+            "UZ02HZ"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "UZ02HZ": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5877": 0,
+                    "7117": 1,
+                    "7122": 2,
+                    "7118": 3,
+                    "5881J5": 4,
+                    "5881": 5,
+                    "5881J1": 6,
+                    "5881J2": 7,
+                    "5881J3": 8,
+                    "5881J4": 9,
+                    "7131": 10
+                },
+                "label": {
+                    "5877": "Výměra honiteb (ha)",
+                    "7117": "Počet honiteb",
+                    "7122": "Osoby trvale vykonávající v honitbě právo myslivosti",
+                    "7118": "Stav psů s loveckou upotřebitelností (skutečný počet)",
+                    "5881J5": "Odstřel - jelení zvěř (kusy)",
+                    "5881": "Odstřel - srnčí zvěř (kusy)",
+                    "5881J1": "Odstřel - černá zvěř (kusy)",
+                    "5881J2": "Odstřel - zajíci (kusy)",
+                    "5881J3": "Odstřel - bažanti (kusy)",
+                    "5881J4": "Odstřel - kachna divoká (kusy)",
+                    "7131": "Lov - liška obecná (kusy)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7131": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5880J1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7122": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5880": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5880J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J3": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J4": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J5": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J6": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J7": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7118": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7117": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5877": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

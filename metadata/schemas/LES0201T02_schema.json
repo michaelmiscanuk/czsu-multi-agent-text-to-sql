@@ -1,0 +1,212 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/LES0201T02",
+    "label": "Vybrané údaje o myslivosti podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:06:52.424815Z",
+    "id": [
+        "CasR",
+        "UZ02HZ",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        14,
+        6
+    ],
+    "role": {
+        "geo": [
+            "UZ02HZ"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ02HZ": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ01A2": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ01A2": "Praha + Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ01A2",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5881J5": 0,
+                    "5881": 1,
+                    "5881J1": 2,
+                    "5881J2": 3,
+                    "5881J3": 4,
+                    "5881J4": 5
+                },
+                "label": {
+                    "5881J5": "Odstřel - jelení zvěř (kusy)",
+                    "5881": "Odstřel - srnčí zvěř (kusy)",
+                    "5881J1": "Odstřel - černá zvěř (kusy)",
+                    "5881J2": "Odstřel - zajíci (kusy)",
+                    "5881J3": "Odstřel - bažanti (kusy)",
+                    "5881J4": "Odstřel - kachna divoká (kusy)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7131": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5880J1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7122": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5880": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5880J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J3": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J4": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J5": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J6": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5881J7": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7118": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7117": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5877": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

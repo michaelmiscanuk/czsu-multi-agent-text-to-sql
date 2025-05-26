@@ -1,0 +1,128 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SILC01DT1",
+    "label": "Osoby ohrožené příjmovou chudobou podle ekonomické aktivity",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:11:25.986872Z",
+    "id": [
+        "IndicatorType",
+        "Uz0",
+        "EKONAKTIVSILC",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        4,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3337CHP": 0
+                },
+                "label": {
+                    "3337CHP": "Podíl osob pod hranicí příjmové chudoby"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3337CHP": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "EKONAKTIVSILC": {
+            "label": "Převažující ekonomická aktivita (osoby ve věku 18+)",
+            "category": {
+                "index": {
+                    "3": 0,
+                    "4": 1,
+                    "14": 2,
+                    "11": 3
+                },
+                "label": {
+                    "3": "Pracující celkem",
+                    "4": "Nezaměstnaní",
+                    "14": "Důchodci",
+                    "11": "Ostatní neaktivní"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2013": 0,
+                    "2014": 1,
+                    "2015": 2,
+                    "2016": 3,
+                    "2017": 4,
+                    "2018": 5,
+                    "2019": 6,
+                    "2020": 7,
+                    "2021": 8,
+                    "2022": 9,
+                    "2023": 10,
+                    "2024": 11
+                },
+                "label": {
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

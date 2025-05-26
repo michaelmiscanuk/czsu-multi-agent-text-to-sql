@@ -1,0 +1,142 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY02AT01",
+    "label": "Počet obyvatel celkem k 1. 1., 1. 7. a 31. 12. podle pohlaví",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:51:53.423860Z",
+    "id": [
+        "IndicatorType",
+        "CasR",
+        "Uz02A",
+        "POHL2"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2406K2": 0
+                },
+                "label": {
+                    "2406K2": "Počet obyvatel k 31. 12. (koncový stav)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2406P": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9379": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406K2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL2": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "2": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "1": "Muži",
+                    "2": "Ženy"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

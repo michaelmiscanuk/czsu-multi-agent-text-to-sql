@@ -8,7 +8,5 @@ __pycache__/
 htmlcov/
 .ipynb_checkpoints
 data/CSVs/
-*.db
 data/czsu_data.db
 metadata/czsu_chromadb/
-metadata/schemas/

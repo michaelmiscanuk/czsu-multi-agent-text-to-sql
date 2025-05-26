@@ -1,0 +1,137 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN07PST01",
+    "label": "Ženy a muži – volby do Poslanecké sněmovny Parlamentu ČR",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:07:12.092819Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "POHZM",
+        "CASVOLPS"
+    ],
+    "size": [
+        1,
+        4,
+        2,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASVOLPS"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "484KC": 0,
+                    "5737KC": 1,
+                    "505PC": 2,
+                    "5736PC": 3
+                },
+                "label": {
+                    "484KC": "Kandidáti",
+                    "5737KC": "Průměrný věk kandidátů (roky)",
+                    "505PC": "Zvolení poslanci",
+                    "5736PC": "Průměrný věk zvolených poslanců (roky)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5737KC": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5736PC": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "505PC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "484KC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHZM": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "2": 0,
+                    "1": 1
+                },
+                "label": {
+                    "2": "ženy",
+                    "1": "muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CASVOLPS": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "1996": 0,
+                    "1998": 1,
+                    "2002": 2,
+                    "2006": 3,
+                    "2010": 4,
+                    "2013": 5,
+                    "2017": 6,
+                    "2021": 7
+                },
+                "label": {
+                    "1996": "1996",
+                    "1998": "1998",
+                    "2002": "2002",
+                    "2006": "2006",
+                    "2010": "2010",
+                    "2013": "2013",
+                    "2017": "2017",
+                    "2021": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

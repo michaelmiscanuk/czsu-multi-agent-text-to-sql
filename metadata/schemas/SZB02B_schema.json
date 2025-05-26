@@ -1,0 +1,163 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB02B",
+    "label": "Vyplacené dávky státní sociální podpory a pěstounské péče - územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:52:34.319310Z",
+    "id": [
+        "IndicatorType",
+        "CasR",
+        "Uz023h",
+        "DRUHSOCDAVH1"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        7
+    ],
+    "role": {
+        "geo": [
+            "Uz023h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "7412H": 0
+                },
+                "label": {
+                    "7412H": "Počet vyplacených dávek státní sociální podpory"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7399H": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7412H": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz023h": {
+            "label": "Česko, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "DRUHSOCDAVH1": {
+            "label": "Druh soc. dávek",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "11": 1,
+                    "12": 2,
+                    "13": 3,
+                    "14": 4,
+                    "15": 5,
+                    "16": 6
+                },
+                "label": {
+                    "0": "Dávky státní sociální podpory celkem",
+                    "11": "Přídavek na dítě",
+                    "12": "Rodičovský příspěvek",
+                    "13": "Příspěvek na bydlení",
+                    "14": "Porodné",
+                    "15": "Pohřebné",
+                    "16": "Dávky pěstounské péče"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,161 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZPR04T01K",
+    "label": "Vodovody a kanalizace pro veřejnou potřebu podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:53:15.525167Z",
+    "id": [
+        "CasR",
+        "Uz02",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        15,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2022": 0
+                },
+                "label": {
+                    "2022": "2022"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5917": 0,
+                    "5722": 1,
+                    "5738": 2,
+                    "5739": 3,
+                    "5915": 4,
+                    "5733": 5,
+                    "5863": 6,
+                    "5864": 7
+                },
+                "label": {
+                    "5917": "Podíl obyvatel zásobovaných vodou z vodovodů (%)",
+                    "5722": "Voda vyrobená (tis. m³)",
+                    "5738": "Voda fakturovaná (tis. m³)",
+                    "5739": "Voda fakturovaná domácnostem (tis. m³)",
+                    "5915": "Podíl obyvatel bydlících v domech napojených na kanalizaci (%)",
+                    "5733": "Vypouštěné odpadní vody do kanalizace bez zpoplat. srážkových vod (tis. m³)",
+                    "5863": "Podíl čištěných odpadních vod (%)",
+                    "5864": "Podíl ztrát z vody vyrobené určené k realizaci (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5739": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5915": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5917": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5863": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5864": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5722": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5733": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5738": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,172 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY05A03T01",
+    "label": "Sňatky podle vzájemného rodinného stavu snoubenců",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:48:03.946004Z",
+    "id": [
+        "IndicatorType",
+        "Uz0",
+        "RODSTAVZ2",
+        "RODSTAVN2",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        4,
+        4,
+        23
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5396": 0
+                },
+                "label": {
+                    "5396": "Sňatky"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5396": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "RODSTAVZ2": {
+            "label": "Rodinný stav ženicha",
+            "category": {
+                "index": {
+                    "C": 0,
+                    "1": 1,
+                    "3": 2,
+                    "4": 3
+                },
+                "label": {
+                    "C": "Celkem",
+                    "1": "Svobodný",
+                    "3": "Rozvedený",
+                    "4": "Ovdovělý"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "RODSTAVN2": {
+            "label": "Rodinný stav nevěsty",
+            "category": {
+                "index": {
+                    "C": 0,
+                    "1": 1,
+                    "3": 2,
+                    "4": 3
+                },
+                "label": {
+                    "C": "Celkem",
+                    "1": "Svobodná",
+                    "3": "Rozvedená",
+                    "4": "Ovdovělá"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0,
+                    "2022": 1,
+                    "2021": 2,
+                    "2020": 3,
+                    "2019": 4,
+                    "2018": 5,
+                    "2017": 6,
+                    "2016": 7,
+                    "2015": 8,
+                    "2014": 9,
+                    "2013": 10,
+                    "2012": 11,
+                    "2011": 12,
+                    "2010": 13,
+                    "2009": 14,
+                    "2008": 15,
+                    "2007": 16,
+                    "2006": 17,
+                    "2005": 18,
+                    "2004": 19,
+                    "2003": 20,
+                    "2002": 21,
+                    "2001": 22
+                },
+                "label": {
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012",
+                    "2011": "2011",
+                    "2010": "2010",
+                    "2009": "2009",
+                    "2008": "2008",
+                    "2007": "2007",
+                    "2006": "2006",
+                    "2005": "2005",
+                    "2004": "2004",
+                    "2003": "2003",
+                    "2002": "2002",
+                    "2001": "2001"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,154 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WREG01DT5",
+    "label": "Stavební povolení a bytová výstavba podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:05:23.215973Z",
+    "id": [
+        "CasR",
+        "Uz02",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        14,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ010": 0,
+                    "CZ020": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3030SUREG": 0,
+                    "7154SUREG": 1,
+                    "9171SUREG": 2,
+                    "3037SUREG": 3,
+                    "3025SUREG": 4,
+                    "3072SU": 5,
+                    "3103SUREG": 6,
+                    "3113SU": 7
+                },
+                "label": {
+                    "3030SUREG": "Vydaná stavební povolení  -  celkem",
+                    "7154SUREG": "Vydaná stavební povolení - budovy",
+                    "9171SUREG": "Vydaná stavební povolení - inženýrské stavby",
+                    "3037SUREG": "Orientační hodnota stavebních povolení celkem (mil. Kč)",
+                    "3025SUREG": "Zahájené byty celkem",
+                    "3072SU": "Zahájené byty v nových rodinných domech",
+                    "3103SUREG": "Dokončené byty celkem",
+                    "3113SU": "Dokončené byty v nových rodinných domech"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3030SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3113SU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7154SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3103SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3037SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3025SUREG": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3072SU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

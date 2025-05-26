@@ -1,0 +1,130 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD055T01",
+    "label": "Obyvatelstvo podle národnosti",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "do roku 2001 podle trvalého pobytu, od roku 2011 podle obvyklého pobytu,\nosoby s jednou uvedenou národností\n",
+        null
+    ],
+    "updated": "2025-05-24T07:40:17.279946Z",
+    "id": [
+        "UzCrKr_H",
+        "IndicatorType",
+        "NARODNPDI2001",
+        "CenRoky2"
+    ],
+    "size": [
+        1,
+        1,
+        12,
+        5
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky2"
+        ]
+    },
+    "dimension": {
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162_Uz2021": 0
+                },
+                "label": {
+                    "U_3162_Uz2021": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "NARODNPDI2001": {
+            "label": "Národnost",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "2": 2,
+                    "3": 3,
+                    "4": 4,
+                    "6": 5,
+                    "5": 6,
+                    "7": 7,
+                    "10": 8,
+                    "9": 9,
+                    "15": 10,
+                    "999": 11
+                },
+                "label": {
+                    "0": "Obyvatelstvo celkem",
+                    "1": "Národnost česká",
+                    "2": "Národnost moravská",
+                    "3": "Národnost slezská",
+                    "4": "Národnost slovenská",
+                    "6": "Národnost německá",
+                    "5": "Národnost polská",
+                    "7": "Národnost romská",
+                    "10": "Národnost ruská",
+                    "9": "Národnost ukrajinská",
+                    "15": "Národnost vietnamská",
+                    "999": "Národnost neuvedena"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CenRoky2": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C19801101": 0,
+                    "C19910303": 1,
+                    "C20010301": 2,
+                    "C20110326": 3,
+                    "C20210326": 4
+                },
+                "label": {
+                    "C19801101": "1980",
+                    "C19910303": "1991",
+                    "C20010301": "2001",
+                    "C20110326": "2011",
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

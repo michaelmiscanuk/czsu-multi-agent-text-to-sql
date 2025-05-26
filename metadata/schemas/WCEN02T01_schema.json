@@ -1,0 +1,368 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WCEN02T01",
+    "label": "Ceny výrobců",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Meziroční index (stejné období předchozího roku = 100; %)"
+    ],
+    "updated": "2025-05-24T07:53:56.801448Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        34,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6140J01": 0,
+                    "6140J02": 1,
+                    "6140J03": 2,
+                    "6140J04": 3,
+                    "6140J05": 4,
+                    "6100J01": 5,
+                    "6100J02": 6,
+                    "6100J03": 7,
+                    "6105J01": 8,
+                    "6105J02": 9,
+                    "6105J03": 10,
+                    "6103J1": 11,
+                    "6103J2": 12,
+                    "6103J3": 13,
+                    "6148J01": 14,
+                    "6148J02": 15,
+                    "6148J03": 16,
+                    "6148J04": 17,
+                    "6148J05": 18,
+                    "6148J06": 19,
+                    "6148J07": 20,
+                    "6148J08": 21,
+                    "6148J09": 22,
+                    "6145J01": 23,
+                    "6145J02": 24,
+                    "6145J03": 25,
+                    "6145J04": 26,
+                    "6145J05": 27,
+                    "6504J01": 28,
+                    "6504J02": 29,
+                    "6504J03": 30,
+                    "6504J04": 31,
+                    "6504J05": 32,
+                    "6504J06": 33
+                },
+                "label": {
+                    "6140J01": "Index cen průmyslových výrobců",
+                    "6140J02": "Indexy cen průmyslových výrobců - Těžba a dobývání",
+                    "6140J03": "Indexy cen průmyslových výrobců - Výrobky a služby zpracovatelského průmyslu",
+                    "6140J04": "Indexy cen průmyslových výrobců - Elektřina, plyn, pára a klimatizovaný vzduch",
+                    "6140J05": "Indexy cen průmyslových výrobců - Zásobování vodou; služby souv. s odpad. vodami",
+                    "6100J01": "Indexy cen stavebních děl",
+                    "6100J02": "Indexy cen stavebních děl - Budovy",
+                    "6100J03": "Indexy cen stavebních děl - Inženýrská díla",
+                    "6105J01": "Index nákladů stavební výroby",
+                    "6105J02": "Indexy nákladů stavební výroby - Budovy bytové",
+                    "6105J03": "Indexy nákladů stavební výroby - Inženýrské stavby",
+                    "6103J1": "Indexy cen materiálových vstupů",
+                    "6103J2": "Indexy cen materiálových vstupů - Budovy bytové",
+                    "6103J3": "Indexy cen materiálových vstupů - Inženýrské stavby",
+                    "6148J01": "Index cen tržních služeb pro podniky",
+                    "6148J02": "Index cen služeb v oblasti nemovitostí",
+                    "6148J03": "Indexy cen pozemní a potrubní dopravy",
+                    "6148J04": "Indexy cen služeb v oblasti programování a poradenství",
+                    "6148J05": "Indexy cen skladování a podpůrných služeb v dopravě",
+                    "6148J06": "Indexy cen architektonických a inženýrských služeb",
+                    "6148J07": "Index cen reklamních služeb a průzkum trhu",
+                    "6148J08": "Indexy cen telekomunikačních služeb",
+                    "6148J09": "Indexy cen právních a účetnických služeb",
+                    "6145J01": "Index cen zemědělských výrobců",
+                    "6145J02": "Index cen zemědělských výrobců - rostlinná výroba",
+                    "6145J03": "Index cen zemědělských výrobců - zelenina a zahradnické produkty",
+                    "6145J04": "Index cen zemědělských výrobců - ovoce",
+                    "6145J05": "Index cen zemědělských výrobců - živočišná výroba",
+                    "6504J01": "Indexy cen v lesnictví (surové dříví) - vlastníci",
+                    "6504J02": "Indexy cen v lesnictví - jehličnaté dříví",
+                    "6504J03": "Indexy cen v lesnictví - listnaté dříví",
+                    "6504J04": "Indexy cen v lesnictví (surové dříví) - nevlastníci",
+                    "6504J05": "Indexy cen v lesnictví - jehličnaté dříví",
+                    "6504J06": "Indexy cen v lesnictví - listnaté dříví"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6108J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6103J2": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6103J3": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6103J1": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6504J07": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J09": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6504J05": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6504J06": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6140J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J06": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6504J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6140J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J05": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6504J04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6140J04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J08": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6504J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6140J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J07": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6504J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6100J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6140J06": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6140J05": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6100J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6100J04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6100J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6105J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6105J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6105J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6145J01": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J11": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6148J10": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6145J05": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6145J04": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6145J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6145J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6145J06": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8,
+                    "2024": 9
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

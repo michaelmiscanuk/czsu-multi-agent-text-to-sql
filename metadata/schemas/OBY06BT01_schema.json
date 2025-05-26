@@ -1,0 +1,160 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY06BT01",
+    "label": "Vnitřní stěhování mezi regiony soudržnosti podle pohlaví a věku ",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:07:14.944050Z",
+    "id": [
+        "IndicatorType",
+        "VekSkupZakl",
+        "POHL2",
+        "CasR",
+        "UZ1ZVS",
+        "Uz1VS"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        8,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz1VS"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5403VS": 0
+                },
+                "label": {
+                    "5403VS": "Přistěhovalí / vystěhování"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5403VS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "VekSkupZakl": {
+            "label": "Věkové skupiny",
+            "category": {
+                "index": {
+                    "VEKC": 0
+                },
+                "label": {
+                    "VEKC": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL2": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ1ZVS": {
+            "label": "Region soudržnosti vystěhování",
+            "category": {
+                "index": {
+                    "CZ01": 0,
+                    "CZ02": 1,
+                    "CZ03": 2,
+                    "CZ04": 3,
+                    "CZ05": 4,
+                    "CZ06": 5,
+                    "CZ07": 6,
+                    "CZ08": 7
+                },
+                "label": {
+                    "CZ01": "Praha",
+                    "CZ02": "Střední Čechy",
+                    "CZ03": "Jihozápad",
+                    "CZ04": "Severozápad",
+                    "CZ05": "Severovýchod",
+                    "CZ06": "Jihovýchod",
+                    "CZ07": "Střední Morava",
+                    "CZ08": "Moravskoslezsko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz1VS": {
+            "label": "Region soudržnosti přistěhování",
+            "category": {
+                "index": {
+                    "CZ01": 0,
+                    "CZ02": 1,
+                    "CZ03": 2,
+                    "CZ04": 3,
+                    "CZ05": 4,
+                    "CZ06": 5,
+                    "CZ07": 6,
+                    "CZ08": 7
+                },
+                "label": {
+                    "CZ01": "Praha",
+                    "CZ02": "Střední Čechy",
+                    "CZ03": "Jihozápad",
+                    "CZ04": "Severozápad",
+                    "CZ05": "Severovýchod",
+                    "CZ06": "Jihovýchod",
+                    "CZ07": "Střední Morava",
+                    "CZ08": "Moravskoslezsko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

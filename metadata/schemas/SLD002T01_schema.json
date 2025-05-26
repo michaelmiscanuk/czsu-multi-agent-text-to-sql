@@ -1,0 +1,190 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD002T01",
+    "label": "Obyvatelstvo podle velikostních skupin obcí a pohlaví v krajích ČR",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:45:56.647455Z",
+    "id": [
+        "CenRoky1",
+        "IndicatorType",
+        "POHL1",
+        "UzCrKr_H",
+        "VelSkObciOP1"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        15,
+        10
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162": 0
+                },
+                "label": {
+                    "U_3162": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2406": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2407": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3018": 1,
+                    "3026": 2,
+                    "3034": 3,
+                    "3042": 4,
+                    "3051": 5,
+                    "3069": 6,
+                    "3077": 7,
+                    "3085": 8,
+                    "3093": 9,
+                    "3107": 10,
+                    "3115": 11,
+                    "3123": 12,
+                    "3131": 13,
+                    "3140": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3018",
+                        "3026",
+                        "3034",
+                        "3042",
+                        "3051",
+                        "3069",
+                        "3077",
+                        "3085",
+                        "3093",
+                        "3107",
+                        "3115",
+                        "3123",
+                        "3131",
+                        "3140"
+                    ]
+                }
+            }
+        },
+        "VelSkObciOP1": {
+            "label": "Velikostní skupina obce",
+            "category": {
+                "index": {
+                    "98": 0,
+                    "99": 1,
+                    "2": 2,
+                    "3": 3,
+                    "4": 4,
+                    "5": 5,
+                    "6": 6,
+                    "7": 7,
+                    "8": 8,
+                    "9": 9
+                },
+                "label": {
+                    "98": "do 199 obyvatel",
+                    "99": "200 - 499 obyvatel",
+                    "2": "500 až 999 obyvatel",
+                    "3": "1000 až 1999 obyvatel",
+                    "4": "2000 až 4999 obyvatel",
+                    "5": "5000 až 9999 obyvatel",
+                    "6": "10000 až 19999 obyvatel",
+                    "7": "20000 až 49999 obyvatel",
+                    "8": "50000 až 99999 obyvatel",
+                    "9": "100000 a více obyvatel"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

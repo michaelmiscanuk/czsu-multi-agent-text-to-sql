@@ -1,0 +1,158 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WOBY05A",
+    "label": "Sňatky",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:12:15.538816Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        9,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5396W": 0,
+                    "5396W1M": 1,
+                    "5396W2AVM": 2,
+                    "5396W1Z": 3,
+                    "5396W2AVZ": 4,
+                    "7181WM": 5,
+                    "7181WZ": 6,
+                    "5396WPODM": 7,
+                    "5396WPODZ": 8
+                },
+                "label": {
+                    "5396W": "Sňatky",
+                    "5396W1M": "1. sňatek muže",
+                    "5396W2AVM": "2. a další sňatek muže",
+                    "5396W1Z": "1. sňatek ženy",
+                    "5396W2AVZ": "2. a další sňatek ženy",
+                    "7181WM": "Úhrnná sňatečnost svobodných mužů (%)",
+                    "7181WZ": "Úhrnná sňatečnost svobodných žen (%)",
+                    "5396WPODM": "Podíl 1. sňatků mužů (%)",
+                    "5396WPODZ": "Podíl 1. sňatků žen (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7181WZ": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W2AVM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W1M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W1Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396WPODM": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W2AVZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7181WM": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396WPODZ": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8,
+                    "2024": 9
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

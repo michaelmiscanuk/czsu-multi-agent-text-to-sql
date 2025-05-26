@@ -1,0 +1,175 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY05BT01",
+    "label": "Rozvody - vybrané souhrnné údaje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:06:07.626329Z",
+    "id": [
+        "CasRB",
+        "Uz02A",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        15,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasRB"
+        ]
+    },
+    "dimension": {
+        "CasRB": {
+            "label": "Rok",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5397W": 0,
+                    "5397NDC": 1,
+                    "5397ND1": 2,
+                    "5397ND2": 3,
+                    "5397ND3AV": 4,
+                    "5397NDPOD": 5,
+                    "5397W1M": 6,
+                    "5397W1Z": 7,
+                    "5397W2AVM": 8,
+                    "5397W2AVZ": 9
+                },
+                "label": {
+                    "5397W": "Rozvody",
+                    "5397NDC": "Rozvody manželství s nezletilými dětmi celkem",
+                    "5397ND1": "Rozvody manželství s 1 nezletilým dítětem",
+                    "5397ND2": "Rozvody manželství se 2 nezletilými dětmi",
+                    "5397ND3AV": "Rozvody manželství se 3+ nezletilými dětmi",
+                    "5397NDPOD": "Podíl rozvodů s nezletilými dětmi (%)",
+                    "5397W1M": "1. rozvod muže",
+                    "5397W1Z": "1. rozvod ženy",
+                    "5397W2AVM": "2. a další rozvod muže",
+                    "5397W2AVZ": "2. a další rozvod ženy"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5397ND1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W2AVM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W2AVZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397ND3AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W1M": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W1Z": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397NDPOD": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397ND2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397NDC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

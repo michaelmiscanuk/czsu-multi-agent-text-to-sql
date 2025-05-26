@@ -1,0 +1,145 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RSO03",
+    "label": "Plochy území",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:40:40.739808Z",
+    "id": [
+        "Uz02",
+        "IndicatorType",
+        "typp",
+        "CasR"
+    ],
+    "size": [
+        1,
+        2,
+        13,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4582": 0,
+                    "4582S": 1
+                },
+                "label": {
+                    "4582": "Plocha území (ha)",
+                    "4582S": "Plocha území (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4582": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4582S": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "typp": {
+            "label": "Typ ploch",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "11": 2,
+                    "12": 3,
+                    "13": 4,
+                    "14": 5,
+                    "15": 6,
+                    "16": 7,
+                    "2": 8,
+                    "21": 9,
+                    "22": 10,
+                    "23": 11,
+                    "29": 12
+                },
+                "label": {
+                    "0": "Celková výměra",
+                    "1": "Zemědělská půda",
+                    "11": "Orná půda",
+                    "12": "Chmelnice",
+                    "13": "Vinice",
+                    "14": "Zahrada",
+                    "15": "Ovocný sad",
+                    "16": "Trvalý travní porost",
+                    "2": "Nezemědělská půda",
+                    "21": "Lesní pozemek",
+                    "22": "Vodní plocha",
+                    "23": "Zastavěná plocha a nádvoří",
+                    "29": "Ostatní plocha"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0,
+                    "2022": 1,
+                    "2021": 2,
+                    "2020": 3,
+                    "2019": 4,
+                    "2018": 5,
+                    "2017": 6,
+                    "2016": 7
+                },
+                "label": {
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

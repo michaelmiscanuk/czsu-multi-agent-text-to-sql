@@ -1,0 +1,173 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/STA08A2T2",
+    "label": "Stavební povolení - kraje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:13:56.163981Z",
+    "id": [
+        "CASKM",
+        "Uz2",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        14,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz2"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASKM"
+        ]
+    },
+    "dimension": {
+        "CASKM": {
+            "label": "Kumulace měsíců",
+            "category": {
+                "index": {
+                    "2024-08": 0
+                },
+                "label": {
+                    "2024-08": "srpen 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz2": {
+            "label": "Kraje",
+            "category": {
+                "index": {
+                    "CZ010": 0,
+                    "CZ020": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3030": 0,
+                    "7154": 1,
+                    "3054": 2,
+                    "3055": 3,
+                    "9171": 4,
+                    "3037": 5,
+                    "7159": 6,
+                    "5949": 7,
+                    "5954": 8,
+                    "9172": 9
+                },
+                "label": {
+                    "3030": "Počet stavebních povolení v ČR",
+                    "7154": "Počet vydaných stavebních povolení - budovy",
+                    "3054": "Počet vydaných stavebních povolení - budovy bytové",
+                    "3055": "Počet vydaných stavebních povolení - budovy nebytové",
+                    "9171": "Počet vydaných stavebních povolení - inženýrské stavby",
+                    "3037": "Orientační hodnota stavebních povolení (mil. Kč, b.c.)",
+                    "7159": "Orientační hodnota stavby - budovy (mil. Kč, b.c.)",
+                    "5949": "Orientační hodnota staveb - budovy bytové (mil. Kč, b.c.)",
+                    "5954": "Orientační hodnota staveb - budovy nebytové (mil. Kč, b.c.)",
+                    "9172": "Orientační hodnota stavby - inženýrské stavby (mil. Kč, b.c.)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7154": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5949": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3037": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7159": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9171": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9172": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3055": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3054": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5954": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3030": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

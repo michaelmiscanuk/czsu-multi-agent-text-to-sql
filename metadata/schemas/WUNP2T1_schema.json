@@ -1,0 +1,154 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WUNP2T1",
+    "label": "Hodinové náklady práce",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "V Kč na 1 zaměstnance, přepočtené počty."
+    ],
+    "updated": "2025-05-24T08:14:42.816279Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        9,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5922": 0,
+                    "6813": 1,
+                    "6837": 2,
+                    "6848": 3,
+                    "6831": 4,
+                    "6817": 5,
+                    "6833": 6,
+                    "6782": 7,
+                    "6858": 8
+                },
+                "label": {
+                    "5922": "Náklady práce celkem",
+                    "6813": "Přímé náklady celkem",
+                    "6837": "Přímé náklady - mzdy za vykonanou práci",
+                    "6848": "Přímé náklady - náhrady mzdy",
+                    "6831": "Nepřímé náklady - sociální požitky",
+                    "6817": "Nepřímé náklady - sociální náklady/výdaje - platby zákonného pojistného",
+                    "6833": "Nepřímé náklady - sociální náklady/výdaje - ostatní ",
+                    "6782": "Nepřímé náklady - personální náklady/výdaje",
+                    "6858": "Nepřímé náklady - daně a dotace"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6817": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6782": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6831": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6833": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5922": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6858": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6813": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6837": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6848": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2016": 0,
+                    "2017": 1,
+                    "2018": 2,
+                    "2019": 3,
+                    "2020": 4,
+                    "2021": 5,
+                    "2022": 6,
+                    "2023": 7
+                },
+                "label": {
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

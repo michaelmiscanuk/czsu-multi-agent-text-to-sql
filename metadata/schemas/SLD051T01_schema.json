@@ -1,0 +1,118 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD051T01",
+    "label": "Obyvatelstvo podle náboženské víry",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "do roku 2001 podle trvalého pobytu, od roku 2011 podle obvyklého pobytu\n",
+        null
+    ],
+    "updated": "2025-05-24T07:39:55.314149Z",
+    "id": [
+        "IndicatorType",
+        "UzCrKr_H",
+        "NABVIRAPDI2001",
+        "CenRoky1"
+    ],
+    "size": [
+        1,
+        1,
+        7,
+        4
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162_Uz2021": 0
+                },
+                "label": {
+                    "U_3162_Uz2021": "Počet obyvatel (obvyklý pobyt)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162_Uz2021": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "NABVIRAPDI2001": {
+            "label": "Náboženská víra",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "40": 1,
+                    "9": 2,
+                    "6": 3,
+                    "10": 4,
+                    "1": 5,
+                    "99": 6
+                },
+                "label": {
+                    "0": "Obyvatelstvo celkem",
+                    "40": "Věřící",
+                    "9": "Věřící - Církev římskokatolická",
+                    "6": "Věřící - Církev československá husitská",
+                    "10": "Věřící - Českobratrská církev evangelická",
+                    "1": "Bez náboženské víry",
+                    "99": "Náboženská víra neuvedena"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C19910303": 0,
+                    "C20010301": 1,
+                    "C20110326": 2,
+                    "C20210326": 3
+                },
+                "label": {
+                    "C19910303": "1991",
+                    "C20010301": "2001",
+                    "C20110326": "2011",
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

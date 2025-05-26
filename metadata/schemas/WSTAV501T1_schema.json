@@ -1,0 +1,215 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WSTAV501T1",
+    "label": "Stavební práce \"S\" v tuzemsku podle místa stavby",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Poznámka k výběru",
+        null
+    ],
+    "updated": "2025-05-24T07:55:50.054125Z",
+    "id": [
+        "IndicatorType",
+        "Uz02h",
+        "CasR"
+    ],
+    "size": [
+        1,
+        15,
+        26
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "1181": 0
+                },
+                "label": {
+                    "1181": "Stavební práce \"S\" v tuzemsku (mil. Kč, b.c.)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3329": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3333": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3255": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3331": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3253": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3330": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1181": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3172": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0,
+                    "2022": 1,
+                    "2021": 2,
+                    "2020": 3,
+                    "2019": 4,
+                    "2018": 5,
+                    "2017": 6,
+                    "2016": 7,
+                    "2015": 8,
+                    "2014": 9,
+                    "2013": 10,
+                    "2012": 11,
+                    "2011": 12,
+                    "2010": 13,
+                    "2009": 14,
+                    "2008": 15,
+                    "2007": 16,
+                    "2006": 17,
+                    "2005": 18,
+                    "2004": 19,
+                    "2003": 20,
+                    "2002": 21,
+                    "2001": 22,
+                    "2000": 23,
+                    "1999": 24,
+                    "1998": 25
+                },
+                "label": {
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012",
+                    "2011": "2011",
+                    "2010": "2010",
+                    "2009": "2009",
+                    "2008": "2008",
+                    "2007": "2007",
+                    "2006": "2006",
+                    "2005": "2005",
+                    "2004": "2004",
+                    "2003": "2003",
+                    "2002": "2002",
+                    "2001": "2001",
+                    "2000": "2000",
+                    "1999": "1999",
+                    "1998": "1998"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

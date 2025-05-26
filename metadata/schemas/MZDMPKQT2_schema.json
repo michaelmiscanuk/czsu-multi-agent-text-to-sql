@@ -1,0 +1,179 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/MZDMPKQT2",
+    "label": "Mzdové prostředky a OON z čtvrtletního zjišťování - dle institucionálních sektorů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:57:23.106968Z",
+    "id": [
+        "Uz0",
+        "CASKQ",
+        "ISEKTORMZDH",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        9,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASKQ"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CASKQ": {
+            "label": "Kumulace čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q4": 0
+                },
+                "label": {
+                    "2024-Q4": "Q1-Q4 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "ISEKTORMZDH": {
+            "label": "Institucionální sektory",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "11000": 1,
+                    "12000": 2,
+                    "14000": 3,
+                    "13000": 4,
+                    "15000": 5,
+                    "13110": 6,
+                    "13130": 7,
+                    "13140": 8
+                },
+                "label": {
+                    "0": "Celkem",
+                    "11000": "Nefinanční podniky",
+                    "12000": "Finanční podniky",
+                    "14000": "Domácnosti",
+                    "13000": "Vládní sektor",
+                    "15000": "Neziskové instituce sloužící domácnostem",
+                    "13110": "Ústřední vládní instituce",
+                    "13130": "Místní vládní instituce",
+                    "13140": "Fondy sociálního zabezpečení"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "13000": [
+                        "13110",
+                        "13130",
+                        "13140"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "697A": 0,
+                    "697RROZ": 1,
+                    "697I": 2,
+                    "348A": 3,
+                    "348RROZ": 4,
+                    "348I": 5,
+                    "390A": 6,
+                    "390RROZ": 7,
+                    "390I": 8
+                },
+                "label": {
+                    "697A": "Mzdy včetně ostatních osobních nákladů (tis. Kč)",
+                    "697RROZ": "Mzdy včetně ostatních osobních nákladů - meziroční rozdíl (tis. Kč)",
+                    "697I": "Mzdy včetně ostatních osobních nákladů - meziroční index (%)",
+                    "348A": "Mzdy bez ostatních osobních nákladů (tis. Kč)",
+                    "348RROZ": "Mzdy bez ostatních osobních nákladů - meziroční rozdíl (tis. Kč)",
+                    "348I": "Mzdy bez ostatních osobních nákladů - meziroční index (%)",
+                    "390A": "Ostatní osobní náklady (tis. Kč)",
+                    "390RROZ": "Ostatní osobní náklady - meziroční rozdíl (tis. Kč)",
+                    "390I": "Ostatní osobní náklady - meziroční index (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "697A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "348I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "348RROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "390I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "390RROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "697I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "697RROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "348A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "390A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

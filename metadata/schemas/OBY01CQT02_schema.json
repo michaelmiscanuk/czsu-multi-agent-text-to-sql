@@ -1,0 +1,510 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01CQT02",
+    "label": "Počet a pohyb obyvatel od roku 1992 - čtvrtletní relativní údaje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Od roku 2021 počty obyvatel vychází z výsledků SLDB 2021, kdežto údaje za předchozí roky (v desetileté časové řadě) navazují na výsledky předchozích sčítání lidu (tj. 2011–2020 vychází ze sčítání 2011 atd.).\nOd roku 2007 rozvody tříděny podle měsíce nabytí právní moci rozsudku o rozvodu manželství. Toto třídění je dostupné až při zpracování výsledků za celý rok.\nOd roku 2024 údaje o potratech nejsou součástí průběžné demografické statistiky.\n"
+    ],
+    "updated": "2025-05-24T07:51:53.180700Z",
+    "id": [
+        "Uz0",
+        "CasQ2",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        132,
+        13
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ2"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasQ2": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q4": 0,
+                    "2024-Q3": 1,
+                    "2024-Q2": 2,
+                    "2024-Q1": 3,
+                    "2023-Q4": 4,
+                    "2023-Q3": 5,
+                    "2023-Q2": 6,
+                    "2023-Q1": 7,
+                    "2022-Q4": 8,
+                    "2022-Q3": 9,
+                    "2022-Q2": 10,
+                    "2022-Q1": 11,
+                    "2021-Q4": 12,
+                    "2021-Q3": 13,
+                    "2021-Q2": 14,
+                    "2021-Q1": 15,
+                    "2020-Q4": 16,
+                    "2020-Q3": 17,
+                    "2020-Q2": 18,
+                    "2020-Q1": 19,
+                    "2019-Q4": 20,
+                    "2019-Q3": 21,
+                    "2019-Q2": 22,
+                    "2019-Q1": 23,
+                    "2018-Q4": 24,
+                    "2018-Q3": 25,
+                    "2018-Q2": 26,
+                    "2018-Q1": 27,
+                    "2017-Q4": 28,
+                    "2017-Q3": 29,
+                    "2017-Q2": 30,
+                    "2017-Q1": 31,
+                    "2016-Q4": 32,
+                    "2016-Q3": 33,
+                    "2016-Q2": 34,
+                    "2016-Q1": 35,
+                    "2015-Q4": 36,
+                    "2015-Q3": 37,
+                    "2015-Q2": 38,
+                    "2015-Q1": 39,
+                    "2014-Q4": 40,
+                    "2014-Q3": 41,
+                    "2014-Q2": 42,
+                    "2014-Q1": 43,
+                    "2013-Q4": 44,
+                    "2013-Q3": 45,
+                    "2013-Q2": 46,
+                    "2013-Q1": 47,
+                    "2012-Q4": 48,
+                    "2012-Q3": 49,
+                    "2012-Q2": 50,
+                    "2012-Q1": 51,
+                    "2011-Q4": 52,
+                    "2011-Q3": 53,
+                    "2011-Q2": 54,
+                    "2011-Q1": 55,
+                    "2010-Q4": 56,
+                    "2010-Q3": 57,
+                    "2010-Q2": 58,
+                    "2010-Q1": 59,
+                    "2009-Q4": 60,
+                    "2009-Q3": 61,
+                    "2009-Q2": 62,
+                    "2009-Q1": 63,
+                    "2008-Q4": 64,
+                    "2008-Q3": 65,
+                    "2008-Q2": 66,
+                    "2008-Q1": 67,
+                    "2007-Q4": 68,
+                    "2007-Q3": 69,
+                    "2007-Q2": 70,
+                    "2007-Q1": 71,
+                    "2006-Q4": 72,
+                    "2006-Q3": 73,
+                    "2006-Q2": 74,
+                    "2006-Q1": 75,
+                    "2005-Q4": 76,
+                    "2005-Q3": 77,
+                    "2005-Q2": 78,
+                    "2005-Q1": 79,
+                    "2004-Q4": 80,
+                    "2004-Q3": 81,
+                    "2004-Q2": 82,
+                    "2004-Q1": 83,
+                    "2003-Q4": 84,
+                    "2003-Q3": 85,
+                    "2003-Q2": 86,
+                    "2003-Q1": 87,
+                    "2002-Q4": 88,
+                    "2002-Q3": 89,
+                    "2002-Q2": 90,
+                    "2002-Q1": 91,
+                    "2001-Q4": 92,
+                    "2001-Q3": 93,
+                    "2001-Q2": 94,
+                    "2001-Q1": 95,
+                    "2000-Q4": 96,
+                    "2000-Q3": 97,
+                    "2000-Q2": 98,
+                    "2000-Q1": 99,
+                    "1999-Q4": 100,
+                    "1999-Q3": 101,
+                    "1999-Q2": 102,
+                    "1999-Q1": 103,
+                    "1998-Q4": 104,
+                    "1998-Q3": 105,
+                    "1998-Q2": 106,
+                    "1998-Q1": 107,
+                    "1997-Q4": 108,
+                    "1997-Q3": 109,
+                    "1997-Q2": 110,
+                    "1997-Q1": 111,
+                    "1996-Q4": 112,
+                    "1996-Q3": 113,
+                    "1996-Q2": 114,
+                    "1996-Q1": 115,
+                    "1995-Q4": 116,
+                    "1995-Q3": 117,
+                    "1995-Q2": 118,
+                    "1995-Q1": 119,
+                    "1994-Q4": 120,
+                    "1994-Q3": 121,
+                    "1994-Q2": 122,
+                    "1994-Q1": 123,
+                    "1993-Q4": 124,
+                    "1993-Q3": 125,
+                    "1993-Q2": 126,
+                    "1993-Q1": 127,
+                    "1992-Q4": 128,
+                    "1992-Q3": 129,
+                    "1992-Q2": 130,
+                    "1992-Q1": 131
+                },
+                "label": {
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q1": "1. čtvrtletí 2021",
+                    "2020-Q4": "4. čtvrtletí 2020",
+                    "2020-Q3": "3. čtvrtletí 2020",
+                    "2020-Q2": "2. čtvrtletí 2020",
+                    "2020-Q1": "1. čtvrtletí 2020",
+                    "2019-Q4": "4. čtvrtletí 2019",
+                    "2019-Q3": "3. čtvrtletí 2019",
+                    "2019-Q2": "2. čtvrtletí 2019",
+                    "2019-Q1": "1. čtvrtletí 2019",
+                    "2018-Q4": "4. čtvrtletí 2018",
+                    "2018-Q3": "3. čtvrtletí 2018",
+                    "2018-Q2": "2. čtvrtletí 2018",
+                    "2018-Q1": "1. čtvrtletí 2018",
+                    "2017-Q4": "4. čtvrtletí 2017",
+                    "2017-Q3": "3. čtvrtletí 2017",
+                    "2017-Q2": "2. čtvrtletí 2017",
+                    "2017-Q1": "1. čtvrtletí 2017",
+                    "2016-Q4": "4. čtvrtletí 2016",
+                    "2016-Q3": "3. čtvrtletí 2016",
+                    "2016-Q2": "2. čtvrtletí 2016",
+                    "2016-Q1": "1. čtvrtletí 2016",
+                    "2015-Q4": "4. čtvrtletí 2015",
+                    "2015-Q3": "3. čtvrtletí 2015",
+                    "2015-Q2": "2. čtvrtletí 2015",
+                    "2015-Q1": "1. čtvrtletí 2015",
+                    "2014-Q4": "4. čtvrtletí 2014",
+                    "2014-Q3": "3. čtvrtletí 2014",
+                    "2014-Q2": "2. čtvrtletí 2014",
+                    "2014-Q1": "1. čtvrtletí 2014",
+                    "2013-Q4": "4. čtvrtletí 2013",
+                    "2013-Q3": "3. čtvrtletí 2013",
+                    "2013-Q2": "2. čtvrtletí 2013",
+                    "2013-Q1": "1. čtvrtletí 2013",
+                    "2012-Q4": "4. čtvrtletí 2012",
+                    "2012-Q3": "3. čtvrtletí 2012",
+                    "2012-Q2": "2. čtvrtletí 2012",
+                    "2012-Q1": "1. čtvrtletí 2012",
+                    "2011-Q4": "4. čtvrtletí 2011",
+                    "2011-Q3": "3. čtvrtletí 2011",
+                    "2011-Q2": "2. čtvrtletí 2011",
+                    "2011-Q1": "1. čtvrtletí 2011",
+                    "2010-Q4": "4. čtvrtletí 2010",
+                    "2010-Q3": "3. čtvrtletí 2010",
+                    "2010-Q2": "2. čtvrtletí 2010",
+                    "2010-Q1": "1. čtvrtletí 2010",
+                    "2009-Q4": "4. čtvrtletí 2009",
+                    "2009-Q3": "3. čtvrtletí 2009",
+                    "2009-Q2": "2. čtvrtletí 2009",
+                    "2009-Q1": "1. čtvrtletí 2009",
+                    "2008-Q4": "4. čtvrtletí 2008",
+                    "2008-Q3": "3. čtvrtletí 2008",
+                    "2008-Q2": "2. čtvrtletí 2008",
+                    "2008-Q1": "1. čtvrtletí 2008",
+                    "2007-Q4": "4. čtvrtletí 2007",
+                    "2007-Q3": "3. čtvrtletí 2007",
+                    "2007-Q2": "2. čtvrtletí 2007",
+                    "2007-Q1": "1. čtvrtletí 2007",
+                    "2006-Q4": "4. čtvrtletí 2006",
+                    "2006-Q3": "3. čtvrtletí 2006",
+                    "2006-Q2": "2. čtvrtletí 2006",
+                    "2006-Q1": "1. čtvrtletí 2006",
+                    "2005-Q4": "4. čtvrtletí 2005",
+                    "2005-Q3": "3. čtvrtletí 2005",
+                    "2005-Q2": "2. čtvrtletí 2005",
+                    "2005-Q1": "1. čtvrtletí 2005",
+                    "2004-Q4": "4. čtvrtletí 2004",
+                    "2004-Q3": "3. čtvrtletí 2004",
+                    "2004-Q2": "2. čtvrtletí 2004",
+                    "2004-Q1": "1. čtvrtletí 2004",
+                    "2003-Q4": "4. čtvrtletí 2003",
+                    "2003-Q3": "3. čtvrtletí 2003",
+                    "2003-Q2": "2. čtvrtletí 2003",
+                    "2003-Q1": "1. čtvrtletí 2003",
+                    "2002-Q4": "4. čtvrtletí 2002",
+                    "2002-Q3": "3. čtvrtletí 2002",
+                    "2002-Q2": "2. čtvrtletí 2002",
+                    "2002-Q1": "1. čtvrtletí 2002",
+                    "2001-Q4": "4. čtvrtletí 2001",
+                    "2001-Q3": "3. čtvrtletí 2001",
+                    "2001-Q2": "2. čtvrtletí 2001",
+                    "2001-Q1": "1. čtvrtletí 2001",
+                    "2000-Q4": "4. čtvrtletí 2000",
+                    "2000-Q3": "3. čtvrtletí 2000",
+                    "2000-Q2": "2. čtvrtletí 2000",
+                    "2000-Q1": "1. čtvrtletí 2000",
+                    "1999-Q4": "4. čtvrtletí 1999",
+                    "1999-Q3": "3. čtvrtletí 1999",
+                    "1999-Q2": "2. čtvrtletí 1999",
+                    "1999-Q1": "1. čtvrtletí 1999",
+                    "1998-Q4": "4. čtvrtletí 1998",
+                    "1998-Q3": "3. čtvrtletí 1998",
+                    "1998-Q2": "2. čtvrtletí 1998",
+                    "1998-Q1": "1. čtvrtletí 1998",
+                    "1997-Q4": "4. čtvrtletí 1997",
+                    "1997-Q3": "3. čtvrtletí 1997",
+                    "1997-Q2": "2. čtvrtletí 1997",
+                    "1997-Q1": "1. čtvrtletí 1997",
+                    "1996-Q4": "4. čtvrtletí 1996",
+                    "1996-Q3": "3. čtvrtletí 1996",
+                    "1996-Q2": "2. čtvrtletí 1996",
+                    "1996-Q1": "1. čtvrtletí 1996",
+                    "1995-Q4": "4. čtvrtletí 1995",
+                    "1995-Q3": "3. čtvrtletí 1995",
+                    "1995-Q2": "2. čtvrtletí 1995",
+                    "1995-Q1": "1. čtvrtletí 1995",
+                    "1994-Q4": "4. čtvrtletí 1994",
+                    "1994-Q3": "3. čtvrtletí 1994",
+                    "1994-Q2": "2. čtvrtletí 1994",
+                    "1994-Q1": "1. čtvrtletí 1994",
+                    "1993-Q4": "4. čtvrtletí 1993",
+                    "1993-Q3": "3. čtvrtletí 1993",
+                    "1993-Q2": "2. čtvrtletí 1993",
+                    "1993-Q1": "1. čtvrtletí 1993",
+                    "1992-Q4": "4. čtvrtletí 1992",
+                    "1992-Q3": "3. čtvrtletí 1992",
+                    "1992-Q2": "2. čtvrtletí 1992",
+                    "1992-Q1": "1. čtvrtletí 1992"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5414": 0,
+                    "5415": 1,
+                    "5416": 2,
+                    "5413": 3,
+                    "5413UPT": 4,
+                    "5417": 5,
+                    "5424": 6,
+                    "5425": 7,
+                    "5418": 8,
+                    "5421": 9,
+                    "5420": 10,
+                    "5407": 11,
+                    "5408": 12
+                },
+                "label": {
+                    "5414": "Sňatky na 1 000 obyvatel",
+                    "5415": "Rozvody na 1 000 obyvatel",
+                    "5416": "Živě narození na 1 000 obyvatel",
+                    "5413": "Potraty na 1 000 obyvatel",
+                    "5413UPT": "UPT na 1 000 obyvatel",
+                    "5417": "Zemřelí na 1 000 obyvatel",
+                    "5424": "Přistěhovalí na 1 000 obyvatel",
+                    "5425": "Vystěhovalí na 1 000 obyvatel",
+                    "5418": "Přirozený přírůstek/úbytek na 1 000 obyvatel",
+                    "5421": "Přírůstek/úbytek stěhováním na 1 000 obyvatel",
+                    "5420": "Celkový přírůstek/úbytek na 1 000 obyvatel",
+                    "5407": "Kojenecká úmrtnost",
+                    "5408": "Novorozenecká úmrtnost"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5420": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5421": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V0": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5413UPT": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "93792": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5398UPT": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406K3": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5402W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393V28D": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5404W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5397W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5413": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5414": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5399W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5415": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5416": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5417": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5418": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5398": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2406P2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "4355ZN": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5401W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5403W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5424": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5425": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5396W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5407": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5408": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

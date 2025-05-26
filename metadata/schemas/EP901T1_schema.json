@@ -1,0 +1,178 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/EP901T1",
+    "label": "Energetická náročnost vybraných výrobků",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:45:33.795717Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "OSTPRODUKT",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        36,
+        5
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6357": 0
+                },
+                "label": {
+                    "6357": "Energetická náročnost na výrobu vybraných výrobků"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6357": {
+                        "decimals": 3,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "OSTPRODUKT": {
+            "label": "Výrobek",
+            "category": {
+                "index": {
+                    "000037": 0,
+                    "000040": 1,
+                    "123000": 2,
+                    "130000": 3,
+                    "141001": 4,
+                    "585101": 5,
+                    "585300": 6,
+                    "622000": 7,
+                    "753300": 8,
+                    "585200": 9,
+                    "782200": 10,
+                    "100030": 11,
+                    "102002": 12,
+                    "102003": 13,
+                    "123001": 14,
+                    "125140": 15,
+                    "143001": 16,
+                    "1": 17,
+                    "150002": 18,
+                    "156001": 19,
+                    "161001": 20,
+                    "161002": 21,
+                    "162000": 22,
+                    "163000": 23,
+                    "184300": 24,
+                    "212311": 25,
+                    "212315": 26,
+                    "222112": 27,
+                    "232001": 28,
+                    "232140": 29,
+                    "271211": 30,
+                    "593000": 31,
+                    "596001": 32,
+                    "634111": 33,
+                    "635100": 34,
+                    "644000": 35
+                },
+                "label": {
+                    "000037": "Teplo z tepláren (GJ/GJ)",
+                    "000040": "Elektřina vyrobená parou z paliv (GJ/MWh)",
+                    "123000": "Železo surové a vysokopecní feroslitiny - vsázka (GJ/t)",
+                    "130000": "Válcovaný ocelový materiál celkem (bez trubek) (GJ/t)",
+                    "141001": "Ocelové trubky bezešvé (GJ/t)",
+                    "585101": "Slínky cementové - suchý způsob",
+                    "585300": "Vápna (GJ/t)",
+                    "622000": "Papíry a kartony (GJ/t)",
+                    "753300": "Cukr rafinovaný (GJ/t)",
+                    "585200": "Cementy (GJ/t)",
+                    "782200": "Pivo (GJ/tis. l)",
+                    "100030": "Těžba zemního plynu (GJ/tis. m3)",
+                    "102002": "Hnědé uhlí, těžba v lomech vč.skrývky (GJ/tis. m3)",
+                    "102003": "Úprava hnědého uhlí (GJ/t)",
+                    "123001": "Železo surové a vysokopecní feroslitiny (provozní spotřeba) (GJ/t)",
+                    "125140": "Elektroocel z tuhé vsázky (GJ/t)",
+                    "143001": "Ocelové trubky svařované (GJ/t)",
+                    "1": "Ocelové trubky (GJ/t)",
+                    "150002": "Ocel pásová za studena válcovaná (GJ/t)",
+                    "156001": "Ocelový drát (GJ/t)",
+                    "161001": "Odlitky z litin - elektrické pece (GJ/t)",
+                    "161002": "Odlitky z litin - kuplovny a plamenné pece (GJ/t)",
+                    "162000": "Odlitky z ocelí (GJ/t)",
+                    "163000": "Výkovky a výlisky z ocelí (GJ/t)",
+                    "184300": "Hliník a slitiny v základních tvarech",
+                    "212311": "Kyselina dusičná (GJ/t)",
+                    "212315": "Kyselina sírová (GJ/t)",
+                    "222112": "Ethanol (GJ/t)",
+                    "232001": "Polyetylén a kopolymery (GJ/t)",
+                    "232140": "Polypropylén a kopolymery (GJ/t)",
+                    "271211": "Butadien-styrenový kaučuk a latex (GJ/t)",
+                    "593000": "Dílce stavební konstrukční, betonové a železobetonové (GJ/t)",
+                    "596001": "Cihly pálené (GJ/t)",
+                    "634111": "Sklo ploché tažené (GJ/t)",
+                    "635100": "Sklo ostatní (mimo ploché) (GJ/t)",
+                    "644000": "Porcelán užitkový a ozdobný (GJ/t)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2022": 0,
+                    "2021": 1,
+                    "2020": 2,
+                    "2019": 3,
+                    "2018": 4
+                },
+                "label": {
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,205 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/STAV501T1",
+    "label": " Stavební práce \"S\" celkem",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Poznámka k výběru",
+        "Poznámka k datové sadě"
+    ],
+    "updated": "2025-05-24T08:10:41.413864Z",
+    "id": [
+        "Uz0",
+        "CasR",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        30,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0,
+                    "2022": 1,
+                    "2021": 2,
+                    "2020": 3,
+                    "2019": 4,
+                    "2018": 5,
+                    "2017": 6,
+                    "2016": 7,
+                    "2015": 8,
+                    "2014": 9,
+                    "2013": 10,
+                    "2012": 11,
+                    "2011": 12,
+                    "2010": 13,
+                    "2009": 14,
+                    "2008": 15,
+                    "2007": 16,
+                    "2006": 17,
+                    "2005": 18,
+                    "2004": 19,
+                    "2003": 20,
+                    "2002": 21,
+                    "2001": 22,
+                    "2000": 23,
+                    "1999": 24,
+                    "1998": 25,
+                    "1997": 26,
+                    "1996": 27,
+                    "1995": 28,
+                    "1994": 29
+                },
+                "label": {
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012",
+                    "2011": "2011",
+                    "2010": "2010",
+                    "2009": "2009",
+                    "2008": "2008",
+                    "2007": "2007",
+                    "2006": "2006",
+                    "2005": "2005",
+                    "2004": "2004",
+                    "2003": "2003",
+                    "2002": "2002",
+                    "2001": "2001",
+                    "2000": "2000",
+                    "1999": "1999",
+                    "1998": "1998",
+                    "1997": "1997",
+                    "1996": "1996",
+                    "1995": "1995",
+                    "1994": "1994"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "734": 0,
+                    "1181": 1,
+                    "5946": 2,
+                    "3253": 3,
+                    "3329": 4,
+                    "3330": 5,
+                    "3331": 6,
+                    "3333": 7,
+                    "3255": 8,
+                    "5947": 9
+                },
+                "label": {
+                    "734": "Stavební práce \"S\" celkem (mil. Kč, b.c.)",
+                    "1181": "Stavební práce \"S\" v tuzemsku (mil. Kč, b.c.)",
+                    "5946": "Stavební práce \"S\" v tuzemsku - nová výstavba, rekonstrukce a modernizace (mil. Kč, b.c.)",
+                    "3253": "Stavební práce \"S\" v tuzemsku - bytové budovy (mil. Kč, b.c.)",
+                    "3329": "Stavební práce \"S\" v tuzemsku - nebytové budovy nevýrobní (mil. Kč, b.c.)",
+                    "3330": "Stavební práce \"S\" v tuzemsku - nebytové budovy výrobní (mil. Kč, b.c.)",
+                    "3331": "Stavební práce \"S\" v tuzemsku - inženýrské stavby (mil. Kč, b.c.)",
+                    "3333": "Stavební práce \"S\" v tuzemsku - vodohospodářské stavby (mil. Kč, b.c.)",
+                    "3255": "Stavební práce \"S\" v tuzemsku - opravy a údržba (mil. Kč, b.c.)",
+                    "5947": "Stavební práce \"S\" v zahraničí (mil. Kč, b.c.)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3329": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3333": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "734": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3255": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3331": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3253": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3330": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1181": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5946": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5947": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

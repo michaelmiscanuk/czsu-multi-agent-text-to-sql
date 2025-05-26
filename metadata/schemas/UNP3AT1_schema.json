@@ -1,0 +1,194 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/UNP3AT1",
+    "label": "Roční náklady práce - dle sekce CZ-NACE",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:52:34.906015Z",
+    "id": [
+        "Uz0A",
+        "CasR",
+        "CZNACEMZDY",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        20,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz0A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0A": {
+            "label": "Stát",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZNACEMZDY": {
+            "label": "Odvětví ekonomické činnosti",
+            "category": {
+                "index": {
+                    "A-S": 0,
+                    "A": 1,
+                    "B": 2,
+                    "C": 3,
+                    "D": 4,
+                    "E": 5,
+                    "F": 6,
+                    "G": 7,
+                    "H": 8,
+                    "I": 9,
+                    "J": 10,
+                    "K": 11,
+                    "L": 12,
+                    "M": 13,
+                    "N": 14,
+                    "O": 15,
+                    "P": 16,
+                    "Q": 17,
+                    "R": 18,
+                    "S": 19
+                },
+                "label": {
+                    "A-S": "Celkem",
+                    "A": "A - Zemědělství, lesnictví, rybářství",
+                    "B": "B - Těžba a dobývání",
+                    "C": "C - Zpracovatelský průmysl",
+                    "D": "D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu",
+                    "E": "E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi",
+                    "F": "F - Stavebnictví",
+                    "G": "G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel",
+                    "H": "H - Doprava a skladování",
+                    "I": "I - Ubytování, stravování a pohostinství",
+                    "J": "J - Informační a komunikační činnosti",
+                    "K": "K - Peněžnictví a pojišťovnictví",
+                    "L": "L - Činnosti v oblasti nemovitostí",
+                    "M": "M - Profesní, vědecké a technické činnosti",
+                    "N": "N - Administrativní a podpůrné činnosti",
+                    "O": "O - Veřejná správa a obrana; povinné sociální zabezpečení",
+                    "P": "P - Vzdělávání",
+                    "Q": "Q - Zdravotní a sociální péče",
+                    "R": "R - Kulturní, zábavní a rekreační činnosti",
+                    "S": "S - Ostatní činnosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5920R": 0,
+                    "5958UNPR": 1,
+                    "6867R": 2,
+                    "6885R": 3,
+                    "6810R": 4,
+                    "6797R": 5,
+                    "6812R": 6,
+                    "6781R": 7,
+                    "6857R": 8
+                },
+                "label": {
+                    "5920R": "Náklady práce celkem",
+                    "5958UNPR": "Přímé náklady celkem",
+                    "6867R": "Přímé náklady - mzdy za vykonanou práci",
+                    "6885R": "Přímé náklady - náhrady mzdy",
+                    "6810R": "Nepřímé náklady - sociální požitky",
+                    "6797R": "Nepřímé náklady - sociální náklady/výdaje - platby zákonného pojistného",
+                    "6812R": "Nepřímé náklady - sociální náklady/výdaje - ostatní",
+                    "6781R": "Nepřímé náklady - personální náklady/výdaje",
+                    "6857R": "Nepřímé náklady - daně a dotace"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6885R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6797R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6810R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5920R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6781R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6867R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6812R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958UNPR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6857R": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

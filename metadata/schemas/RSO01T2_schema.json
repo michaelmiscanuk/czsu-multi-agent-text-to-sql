@@ -1,0 +1,160 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RSO01T2",
+    "label": "Počty územních jednotek - územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:39:32.568460Z",
+    "id": [
+        "IndicatorType",
+        "CasR",
+        "UZ023H2U",
+        "TYPPROSJED"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        8
+    ],
+    "role": {
+        "geo": [
+            "UZ023H2U"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3971b": 0
+                },
+                "label": {
+                    "3971b": "Počet územních jednotek"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3971b": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UZ023H2U": {
+            "label": "ČR, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "TYPPROSJED": {
+            "label": "Typ prostorové jednotky",
+            "category": {
+                "index": {
+                    "401": 0,
+                    "411": 1,
+                    "421": 2,
+                    "501": 3,
+                    "502": 4,
+                    "601": 5,
+                    "611": 6,
+                    "621": 7
+                },
+                "label": {
+                    "401": "Okres",
+                    "411": "Správní obvod obce s rozšířenou působností",
+                    "421": "Správní obvod obce s pověřeným obecním úřadem",
+                    "501": "Obec",
+                    "502": "Městský obvod (městská část) statutárních měst",
+                    "601": "Část obce",
+                    "611": "Katastrální území",
+                    "621": "Základní sídelní jednotka"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

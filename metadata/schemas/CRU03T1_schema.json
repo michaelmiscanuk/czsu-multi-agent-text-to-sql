@@ -1,0 +1,132 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU03T1",
+    "label": "Konference v hromadných ubytovacích zařízeních - roční data",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:56:10.723193Z",
+    "id": [
+        "Uz02A",
+        "CasR",
+        "IndicatorType",
+        "KATKONF"
+    ],
+    "size": [
+        1,
+        16,
+        2,
+        4
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11,
+                    "2012": 12,
+                    "2011": 13,
+                    "2010": 14,
+                    "2009": 15
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012",
+                    "2011": "2011",
+                    "2010": "2010",
+                    "2009": "2009"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2665A": 0,
+                    "2664A": 1
+                },
+                "label": {
+                    "2665A": "Počet kongresů (konferencí)",
+                    "2664A": "Počet účastníků kongresů (konferencí)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {}
+            }
+        },
+        "KATKONF": {
+            "label": "Kategorie",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "01": 1,
+                    "02": 2,
+                    "03": 3
+                },
+                "label": {
+                    "1": "Hromadná ubytovací zařízení",
+                    "01": "Hotel *****",
+                    "02": "Hotel, motel, botel ****",
+                    "03": "Hotel, motel, botel ***"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

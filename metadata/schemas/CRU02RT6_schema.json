@@ -1,0 +1,250 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/CRU02RT6",
+    "label": "Hosté a přenocování v hromadných ubytovacích zařízeních podle zemí",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:59:47.597130Z",
+    "id": [
+        "KAT",
+        "Uz02A",
+        "CasR",
+        "REZIDENCE",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        61,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "KAT": {
+            "label": "Kategorie ubytovacího zařízení",
+            "category": {
+                "index": {
+                    "1": 0
+                },
+                "label": {
+                    "1": "HUZ celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "REZIDENCE": {
+            "label": "Rezidence",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "203": 1,
+                    "17": 2,
+                    "056": 3,
+                    "100": 4,
+                    "208": 5,
+                    "233": 6,
+                    "246": 7,
+                    "250": 8,
+                    "191": 9,
+                    "372": 10,
+                    "352": 11,
+                    "380": 12,
+                    "196": 13,
+                    "440": 14,
+                    "428": 15,
+                    "442": 16,
+                    "438": 17,
+                    "348": 18,
+                    "470": 19,
+                    "276": 20,
+                    "528": 21,
+                    "578": 22,
+                    "616": 23,
+                    "620": 24,
+                    "040": 25,
+                    "642": 26,
+                    "643": 27,
+                    "300": 28,
+                    "703": 29,
+                    "705": 30,
+                    "826": 31,
+                    "18": 32,
+                    "724": 33,
+                    "752": 34,
+                    "756": 35,
+                    "792": 36,
+                    "804": 37,
+                    "12": 38,
+                    "124": 39,
+                    "840": 40,
+                    "076": 41,
+                    "484": 42,
+                    "032": 43,
+                    "14": 44,
+                    "156": 45,
+                    "356": 46,
+                    "376": 47,
+                    "392": 48,
+                    "410": 49,
+                    "158": 50,
+                    "682": 51,
+                    "784": 52,
+                    "764": 53,
+                    "398": 54,
+                    "15": 55,
+                    "710": 56,
+                    "13": 57,
+                    "036": 58,
+                    "554": 59,
+                    "16": 60
+                },
+                "label": {
+                    "0": "Celkem",
+                    "203": "Rezidenti",
+                    "17": "Nerezidenti",
+                    "056": "Belgie",
+                    "100": "Bulharsko",
+                    "208": "Dánsko",
+                    "233": "Estonsko",
+                    "246": "Finsko",
+                    "250": "Francie",
+                    "191": "Chorvatsko",
+                    "372": "Irsko",
+                    "352": "Island",
+                    "380": "Itálie",
+                    "196": "Kypr",
+                    "440": "Litva",
+                    "428": "Lotyšsko",
+                    "442": "Lucembursko",
+                    "438": "Lichtenštejnsko",
+                    "348": "Maďarsko",
+                    "470": "Malta",
+                    "276": "Německo",
+                    "528": "Nizozemské království",
+                    "578": "Norsko",
+                    "616": "Polsko",
+                    "620": "Portugalsko",
+                    "040": "Rakousko",
+                    "642": "Rumunsko",
+                    "643": "Rusko",
+                    "300": "Řecko",
+                    "703": "Slovensko",
+                    "705": "Slovinsko",
+                    "826": "Velká Británie a Severní Irsko",
+                    "18": "Srbsko a Černá Hora",
+                    "724": "Španělsko",
+                    "752": "Švédsko",
+                    "756": "Švýcarsko",
+                    "792": "Turecko",
+                    "804": "Ukrajina",
+                    "12": "Ostatní evropské země",
+                    "124": "Kanada",
+                    "840": "Spojené státy",
+                    "076": "Brazílie",
+                    "484": "Mexiko",
+                    "032": "Argentina",
+                    "14": "Ostatní americké země",
+                    "156": "Čína",
+                    "356": "Indie",
+                    "376": "Izrael",
+                    "392": "Japonsko",
+                    "410": "Korejská republika",
+                    "158": "Tchaj-wan",
+                    "682": "Saúdská Arábie",
+                    "784": "Spojené arabské emiráty",
+                    "764": "Thajsko",
+                    "398": "Kazachstán",
+                    "15": "Ostatní asijské země",
+                    "710": "Jižní Afrika",
+                    "13": "Ostatní africké země",
+                    "036": "Austrálie",
+                    "554": "Nový Zéland",
+                    "16": "Oceánie"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2654": 0,
+                    "2655": 1,
+                    "5443": 2
+                },
+                "label": {
+                    "2654": "Počet hostů",
+                    "2655": "Počet přenocování",
+                    "5443": "Průměrný počet přenocování "
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2655": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2654": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5443": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

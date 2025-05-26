@@ -1,0 +1,186 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD036T02",
+    "label": "Domovní fond podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:43:15.183720Z",
+    "id": [
+        "CenRoky1",
+        "UzCrKr_H",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        15,
+        9
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3018": 1,
+                    "3026": 2,
+                    "3034": 3,
+                    "3042": 4,
+                    "3051": 5,
+                    "3069": 6,
+                    "3077": 7,
+                    "3085": 8,
+                    "3093": 9,
+                    "3107": 10,
+                    "3115": 11,
+                    "3123": 12,
+                    "3131": 13,
+                    "3140": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3018",
+                        "3026",
+                        "3034",
+                        "3042",
+                        "3051",
+                        "3069",
+                        "3077",
+                        "3085",
+                        "3093",
+                        "3107",
+                        "3115",
+                        "3123",
+                        "3131",
+                        "3140"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2409": 0,
+                    "U_2409_1": 1,
+                    "U_2409_1_FYZOSOBA": 2,
+                    "U_2409_1_OBECSTAT": 3,
+                    "U_2409_1_BYTDRUZSTVO": 4,
+                    "U_2409_1_JINAPRAVOSOBA": 5,
+                    "U_2409_1_SPVLASTNIKU": 6,
+                    "U_2409_1_1919": 7,
+                    "U_2409_1_2016AV": 8
+                },
+                "label": {
+                    "U_2409": "Počet domů",
+                    "U_2409_1": "Počet obydlených domů",
+                    "U_2409_1_FYZOSOBA": "Vlastník domu - fyzická osoba",
+                    "U_2409_1_OBECSTAT": "Vlastník domu - obec, stát",
+                    "U_2409_1_BYTDRUZSTVO": "Vlastník domu - bytové družstvo",
+                    "U_2409_1_JINAPRAVOSOBA": "Vlastník domu - jiná právnická osoba",
+                    "U_2409_1_SPVLASTNIKU": "Vlastník domu - spoluvlastnictví vlastníků bytů",
+                    "U_2409_1_1919": "Období výstavby nebo rekonstrukce - 1919 a dříve",
+                    "U_2409_1_2016AV": "Období výstavby nebo rekonstrukce - 2016 a později"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2409_1_1919": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_OBECSTAT": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_BYTDRUZSTVO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_FYZOSOBA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_JINAPRAVOSOBA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_2016AV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_2409_1_SPVLASTNIKU": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

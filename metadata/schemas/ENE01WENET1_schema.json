@@ -1,0 +1,185 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ENE01WENET1",
+    "label": " Bilance elektrické energie v ČR (GWh)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Zdroj: Energetický regulační úřad"
+    ],
+    "updated": "2025-05-24T07:42:33.995709Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        14,
+        6
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2711": 0,
+                    "2711T": 1,
+                    "2711VO": 2,
+                    "2711VE": 3,
+                    "2711S": 4,
+                    "2711J": 5,
+                    "7486": 6,
+                    "2862": 7,
+                    "2705": 8,
+                    "7471": 9,
+                    "6369": 10,
+                    "6365": 11,
+                    "6366": 12,
+                    "7478": 13
+                },
+                "label": {
+                    "2711": "Výroba elektřiny celkem (GWh)",
+                    "2711T": "Výroba elektřiny - tepelné elektrárny",
+                    "2711VO": "Výroba elektřiny - vodní elektrárny",
+                    "2711VE": "Výroba elektřiny - větrné elektrárny",
+                    "2711S": "Výroba elektřiny - solární elektrárny",
+                    "2711J": "Výroba elektřiny - jaderné elektrárny",
+                    "7486": "Saldo dovozu (+), vývozu (-) (GWh)",
+                    "2862": "Vlastní spotřeba na výrobu elektrické energie (GWh)",
+                    "2705": "Ztráty v rozvodu (GWh)",
+                    "7471": "Čistá (netto) spotřeba celkem (GWh)",
+                    "6369": "Čistá (netto) spotřeba - velkoodběr",
+                    "6365": "Čistá (netto) spotřeba - maloodběr",
+                    "6366": "Čistá (netto) spotřeba - maloodběr: domácnosti",
+                    "7478": "Čistá (netto) spotřeba - maloodběr: podnikatelé"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7486": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2711VE": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6366": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6365": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7478": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2711VO": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7471": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2711": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2711S": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2711T": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2862": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6369": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2705": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2711J": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0,
+                    "2022": 1,
+                    "2021": 2,
+                    "2020": 3,
+                    "2019": 4,
+                    "2018": 5
+                },
+                "label": {
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

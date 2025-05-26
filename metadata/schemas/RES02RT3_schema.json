@@ -1,0 +1,160 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RES02RT3",
+    "label": "Ekonomické subjekty podle převažující činnosti CZ-NACE - data za kraje a SO ORP",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:59:27.643933Z",
+    "id": [
+        "Uz24h",
+        "IndicatorType",
+        "CZNACERES0",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        20,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz24h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz24h": {
+            "label": "Kraje, SO ORP",
+            "category": {
+                "index": {
+                    "CZ010": 0
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CZNACERES0": {
+            "label": "Odvětví ekonomické činnosti CZ-NACE",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "A": 1,
+                    "BE": 2,
+                    "F": 3,
+                    "G": 4,
+                    "H": 5,
+                    "I": 6,
+                    "J": 7,
+                    "K": 8,
+                    "L": 9,
+                    "M": 10,
+                    "N": 11,
+                    "O": 12,
+                    "P": 13,
+                    "Q": 14,
+                    "R": 15,
+                    "S": 16,
+                    "T": 17,
+                    "U": 18,
+                    "8": 19
+                },
+                "label": {
+                    "0": "Celkem",
+                    "A": "A Zemědělství, lesnictví, rybářství",
+                    "BE": "B-E Průmysl celkem",
+                    "F": "F Stavebnictví",
+                    "G": "G Velkoobchod a maloobchod; opravy a údržba motorových vozidel",
+                    "H": "H Doprava a skladování",
+                    "I": "I Ubytování, stravování a pohostinství",
+                    "J": "J Informační a komunikační činnosti",
+                    "K": "K Peněžnictví a pojišťovnictví",
+                    "L": "L Činnosti v oblasti nemovitostí",
+                    "M": "M Profesní, vědecké a technické činnosti",
+                    "N": "N Administrativní a podpůrné činnosti",
+                    "O": "O Veřejná správa a obrana; povinné sociální zabezpečení",
+                    "P": "P Vzdělávání",
+                    "Q": "Q Zdravotní a sociální péče",
+                    "R": "R Kulturní, zábavní a rekreační činnosti",
+                    "S": "S Ostatní činnosti",
+                    "T": "T Činnosti domácností jako zaměstnavatelů",
+                    "U": "U Činnosti exteritoriálních organizací a orgánů",
+                    "8": "X Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

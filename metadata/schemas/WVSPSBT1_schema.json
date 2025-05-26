@@ -1,0 +1,126 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WVSPSBT1",
+    "label": "Specifické míry nezaměstnanosti v ČR podle nejvyššího ukončeného vzdělání v ČR",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Zdroj: VŠPS - výběrové šetření pracovních sil. Od roku 2001 údaje vycházejí z výsledků SLDB 2001, od roku 2011 vycházejí z definitivních výsledků SLDB 2011.\nMimořádná revize 1. září 2021 vzhledem k metodické změně u ekonomického postavení osob na rodičovské dovolené.\nDo roku 2022 včetně byla pro váhy výběrového souboru používána krátkodobá projekce koncového stavu demografických dat obyvatelstva ČR k 31. 12. předchozího roku na střed aktuálního čtvrtletí.\nOd roku 2023 je pro všechna čtvrtletí daného roku používána projekce koncového stavu demografických dat k 31. 12. předchozího roku po odečtení odhadu osob žijících mimo soukromé domácnosti resp. mimo byty.",
+        null
+    ],
+    "updated": "2025-05-24T07:55:32.650287Z",
+    "id": [
+        "IndicatorType",
+        "CasR",
+        "Uz0",
+        "UKONVZDEL",
+        "POHL1"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        4,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6290": 0
+                },
+                "label": {
+                    "6290": "Obecná míra nezaměstnanosti (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6290": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UKONVZDEL": {
+            "label": "Nejvyšší ukončené vzdělání",
+            "category": {
+                "index": {
+                    "02": 0,
+                    "2": 1,
+                    "03": 2,
+                    "04": 3
+                },
+                "label": {
+                    "02": "Základní ",
+                    "2": "Střední bez maturity",
+                    "03": "Střední s maturitou",
+                    "04": "Vyšší a vysokoškolské"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "2": 1,
+                    "1": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "2": "Ženy",
+                    "1": "Muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

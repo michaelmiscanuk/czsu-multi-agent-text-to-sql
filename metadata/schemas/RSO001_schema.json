@@ -1,0 +1,132 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RSO001",
+    "label": "Počty územních jednotek (31. 12.)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:39:32.621078Z",
+    "id": [
+        "IndicatorType",
+        "UZ023H2U",
+        "TYPPROSJED",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        8,
+        10
+    ],
+    "role": {
+        "geo": [
+            "UZ023H2U"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3971b": 0
+                },
+                "label": {
+                    "3971b": "Počet územních jednotek"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3971b": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "UZ023H2U": {
+            "label": "ČR, kraje, okresy",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPPROSJED": {
+            "label": "Typ prostorové jednotky",
+            "category": {
+                "index": {
+                    "401": 0,
+                    "411": 1,
+                    "421": 2,
+                    "501": 3,
+                    "502": 4,
+                    "601": 5,
+                    "611": 6,
+                    "621": 7
+                },
+                "label": {
+                    "401": "Okres",
+                    "411": "Správní obvod obce s rozšířenou působností",
+                    "421": "Správní obvod obce s pověřeným obecním úřadem",
+                    "501": "Obec",
+                    "502": "Městský obvod (městská část) statutárních měst",
+                    "601": "Část obce",
+                    "611": "Katastrální území",
+                    "621": "Základní sídelní jednotka"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

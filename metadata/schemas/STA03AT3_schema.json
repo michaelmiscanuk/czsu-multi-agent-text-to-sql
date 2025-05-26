@@ -1,0 +1,172 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/STA03AT3",
+    "label": "Index stavební produkce - běžné ceny - čtvrtletí",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:08:15.424625Z",
+    "id": [
+        "Uz0A",
+        "TYPCENA1",
+        "CasQ",
+        "IndicatorType",
+        "TYPUDAJVM"
+    ],
+    "size": [
+        1,
+        1,
+        21,
+        3,
+        2
+    ],
+    "role": {
+        "geo": [
+            "Uz0A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "Uz0A": {
+            "label": "Stát",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "TYPCENA1": {
+            "label": "Typ ceny",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Běžné ceny"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2025-Q1": 0,
+                    "2024-Q4": 1,
+                    "2024-Q3": 2,
+                    "2024-Q2": 3,
+                    "2024-Q1": 4,
+                    "2023-Q4": 5,
+                    "2023-Q3": 6,
+                    "2023-Q2": 7,
+                    "2023-Q1": 8,
+                    "2022-Q4": 9,
+                    "2022-Q3": 10,
+                    "2022-Q2": 11,
+                    "2022-Q1": 12,
+                    "2021-Q4": 13,
+                    "2021-Q3": 14,
+                    "2021-Q2": 15,
+                    "2021-Q1": 16,
+                    "2020-Q4": 17,
+                    "2020-Q3": 18,
+                    "2020-Q2": 19,
+                    "2020-Q1": 20
+                },
+                "label": {
+                    "2025-Q1": "1. čtvrtletí 2025",
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q1": "1. čtvrtletí 2021",
+                    "2020-Q4": "4. čtvrtletí 2020",
+                    "2020-Q3": "3. čtvrtletí 2020",
+                    "2020-Q2": "2. čtvrtletí 2020",
+                    "2020-Q1": "1. čtvrtletí 2020"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5939": 0,
+                    "6261": 1,
+                    "6262": 2
+                },
+                "label": {
+                    "5939": "Index stavební produkce - Celkem (%)",
+                    "6261": "Index stavební produkce - Pozemní stavby (%)",
+                    "6262": "Index stavební produkce - Inženýrské stavby (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6262": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5939": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6261": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "TYPUDAJVM": {
+            "label": "Typ indexu",
+            "category": {
+                "index": {
+                    "IR": 0,
+                    "IZ2021": 1
+                },
+                "label": {
+                    "IR": "Meziroční index",
+                    "IZ2021": "Bazický index (2021 = 100)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

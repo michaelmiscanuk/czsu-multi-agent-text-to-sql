@@ -1,0 +1,160 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZEM03AT01",
+    "label": "Sklizeň zemědělských plodin podle krajů (t)",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:41:24.551835Z",
+    "id": [
+        "CasR",
+        "IndicatorType",
+        "Uz02h",
+        "DRUHZEMPLODK"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        8
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5906": 0
+                },
+                "label": {
+                    "5906": "Sklizeň zemědělských plodin (t)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5906": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "CZ": [
+                        "CZ010",
+                        "CZ020",
+                        "CZ031",
+                        "CZ032",
+                        "CZ041",
+                        "CZ042",
+                        "CZ051",
+                        "CZ052",
+                        "CZ053",
+                        "CZ063",
+                        "CZ064",
+                        "CZ071",
+                        "CZ072",
+                        "CZ080"
+                    ]
+                }
+            }
+        },
+        "DRUHZEMPLODK": {
+            "label": "Druh zemědělské plodiny",
+            "category": {
+                "index": {
+                    "112": 0,
+                    "103": 1,
+                    "105": 2,
+                    "201": 3,
+                    "306": 4,
+                    "30200": 5,
+                    "401": 6,
+                    "502": 7
+                },
+                "label": {
+                    "112": "Obiloviny na zrno",
+                    "103": "Pšenice",
+                    "105": "Ječmen",
+                    "201": "Luskoviny a bílkovinné plodiny na zrno",
+                    "306": "Brambory",
+                    "30200": "Řepa cukrová",
+                    "401": "Řepka",
+                    "502": "Kukuřice na zeleno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,169 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WNUC04T01",
+    "label": "Regionální účty",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:45:05.301144Z",
+    "id": [
+        "IndicatorType",
+        "Uz012",
+        "CasR"
+    ],
+    "size": [
+        1,
+        23,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz012"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "10032J01": 0
+                },
+                "label": {
+                    "10032J01": "Hrubý domácí produkt na 1 obyvatele v Kč, běžné ceny"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "10032J01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988J11": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10032J03": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10034J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10032J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10033J02": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz012": {
+            "label": "ČR, Reg. soudržnosti, Kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ01": 1,
+                    "CZ02": 2,
+                    "CZ03": 3,
+                    "CZ04": 4,
+                    "CZ05": 5,
+                    "CZ06": 6,
+                    "CZ07": 7,
+                    "CZ08": 8,
+                    "CZ010": 9,
+                    "CZ020": 10,
+                    "CZ031": 11,
+                    "CZ032": 12,
+                    "CZ041": 13,
+                    "CZ042": 14,
+                    "CZ051": 15,
+                    "CZ052": 16,
+                    "CZ053": 17,
+                    "CZ063": 18,
+                    "CZ064": 19,
+                    "CZ071": 20,
+                    "CZ072": 21,
+                    "CZ080": 22
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ01": "Praha",
+                    "CZ02": "Střední Čechy",
+                    "CZ03": "Jihozápad",
+                    "CZ04": "Severozápad",
+                    "CZ05": "Severovýchod",
+                    "CZ06": "Jihovýchod",
+                    "CZ07": "Střední Morava",
+                    "CZ08": "Moravskoslezsko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

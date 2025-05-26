@@ -1,0 +1,165 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/STA08B2T2",
+    "label": "Stavební povolení (budovy) - kraje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:13:13.449761Z",
+    "id": [
+        "CASKM",
+        "Uz2",
+        "IndicatorType",
+        "SMERVYSTA"
+    ],
+    "size": [
+        1,
+        14,
+        6,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz2"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASKM"
+        ]
+    },
+    "dimension": {
+        "CASKM": {
+            "label": "Kumulace měsíců",
+            "category": {
+                "index": {
+                    "2024-08": 0
+                },
+                "label": {
+                    "2024-08": "srpen 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz2": {
+            "label": "Kraje",
+            "category": {
+                "index": {
+                    "CZ010": 0,
+                    "CZ020": 1,
+                    "CZ031": 2,
+                    "CZ032": 3,
+                    "CZ041": 4,
+                    "CZ042": 5,
+                    "CZ051": 6,
+                    "CZ052": 7,
+                    "CZ053": 8,
+                    "CZ063": 9,
+                    "CZ064": 10,
+                    "CZ071": 11,
+                    "CZ072": 12,
+                    "CZ080": 13
+                },
+                "label": {
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "7154": 0,
+                    "3054": 1,
+                    "3055": 2,
+                    "7159": 3,
+                    "5949": 4,
+                    "5954": 5
+                },
+                "label": {
+                    "7154": "Počet vydaných stavebních povolení - budovy",
+                    "3054": "Počet vydaných stavebních povolení - budovy bytové",
+                    "3055": "Počet vydaných stavebních povolení - budovy nebytové",
+                    "7159": "Orientační hodnota stavby - budovy (mil. Kč, b.c.)",
+                    "5949": "Orientační hodnota staveb - budovy bytové (mil. Kč, b.c.)",
+                    "5954": "Orientační hodnota staveb - budovy nebytové (mil. Kč, b.c.)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7154": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5949": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7159": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3055": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "3054": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5954": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "SMERVYSTA": {
+            "label": "Směr výstavby",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "2": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "1": "Nová výstavba",
+                    "2": "Změny dokončených staveb"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

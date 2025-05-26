@@ -1,0 +1,167 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD038T01",
+    "label": "Vyjíždějící do zaměstnání a školy",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:43:35.857441Z",
+    "id": [
+        "CenRoky1",
+        "UzCrKr_H",
+        "IndicatorType",
+        "POHL1"
+    ],
+    "size": [
+        1,
+        1,
+        10,
+        3
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0
+                },
+                "label": {
+                    "19": "Česká republika"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162_2A": 0,
+                    "U_3162_2_MPR_AOP": 1,
+                    "U_3162_2_MPR_JAOB": 2,
+                    "U_3162_2_MPR_JOBOK": 3,
+                    "U_3162_2_MPR_JOKKR": 4,
+                    "U_3162_2_MPR_JKR": 5,
+                    "U_3162_2_MPR_ZAHR": 6,
+                    "U_3162_3": 7,
+                    "U_3162_3_MSK_JAOB": 8,
+                    "U_3162_3_MSK_MOB": 9
+                },
+                "label": {
+                    "U_3162_2A": "Zaměstnaní vč. pracujících žáků a studentů",
+                    "U_3162_2_MPR_AOP": "Místo pracoviště - na adrese obvyklého pobytu",
+                    "U_3162_2_MPR_JAOB": "Místo pracoviště - na jiné adrese v obci",
+                    "U_3162_2_MPR_JOBOK": "Místo pracoviště - v jiné obci okresu",
+                    "U_3162_2_MPR_JOKKR": "Místo pracoviště - v jiném okrese kraje",
+                    "U_3162_2_MPR_JKR": "Místo pracoviště - v jiném kraji",
+                    "U_3162_2_MPR_ZAHR": "Místo pracoviště - v zahraničí",
+                    "U_3162_3": "Nepracující žáci a studenti",
+                    "U_3162_3_MSK_JAOB": "Místo školy - na jiné adrese v obci",
+                    "U_3162_3_MSK_MOB": "Místo školy - mimo obec"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162_2_MPR_JOKKR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_2_MPR_JOBOK": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_2_MPR_JAOB": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_2_MPR_AOP": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_2_MPR_JKR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_2_MPR_ZAHR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_3_MSK_MOB": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_2A": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_3": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_3_MSK_JAOB": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "2": 1,
+                    "1": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "2": "Ženy",
+                    "1": "Muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

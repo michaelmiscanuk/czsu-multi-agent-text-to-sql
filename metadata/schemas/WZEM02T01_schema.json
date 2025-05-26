@@ -1,0 +1,302 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZEM02T01",
+    "label": "Živočišná výroba a užitkovost",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        ""
+    ],
+    "updated": "2025-05-24T08:12:15.537168Z",
+    "id": [
+        "UZ02HZ",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        27,
+        9
+    ],
+    "role": {
+        "geo": [
+            "UZ02HZ"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "UZ02HZ": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5581": 0,
+                    "5783": 1,
+                    "5607": 2,
+                    "5785": 3,
+                    "5636": 4,
+                    "6498": 5,
+                    "5997S": 6,
+                    "6097J": 7,
+                    "5996J": 8,
+                    "6271J": 9,
+                    "6125": 10,
+                    "6132": 11,
+                    "5652": 12,
+                    "5653": 13,
+                    "6495": 14,
+                    "5648": 15,
+                    "5659": 16,
+                    "6004J": 17,
+                    "5997J2": 18,
+                    "5938J2": 19,
+                    "6097J1": 20,
+                    "5998J2": 21,
+                    "5670J2": 22,
+                    "5671J2": 23,
+                    "5672J2": 24,
+                    "5996J2": 25,
+                    "5617": 26
+                },
+                "label": {
+                    "5581": "Stavy skotu (ks)",
+                    "5783": "Stavy krav (ks)",
+                    "5607": "Stavy prasat (ks)",
+                    "5785": "Stavy prasnic (ks)",
+                    "5636": "Stavy drůbeže (ks)",
+                    "6498": "Stavy drůbeže vč. pštrosů (ks)",
+                    "5997S": "Výroba hovězího masa (t)",
+                    "6097J": "Výroba vepřového masa (t)",
+                    "5996J": "Výroba drůbežího masa (t)",
+                    "6271J": "Průměrná roční dojivost (litr na dojnici)",
+                    "6125": "Průměrný počet odchovaných selat (na prasnici)",
+                    "6132": "Průměrná roční snáška konzumních vajec (na nosnici)",
+                    "5652": "Výroba jatečného skotu (t živé hm.)",
+                    "5653": "Výroba jatečných prasat (t živé hm.)",
+                    "6495": "Výroba jatečné drůbeže (t živé hm.)",
+                    "5648": "Výroba mléka (tis. litrů)",
+                    "5659": "Výroba konzumních vajec (tis. kusů)",
+                    "6004J": "Maso celkem",
+                    "5997J2": "Hovězí",
+                    "5938J2": "Telecí",
+                    "6097J1": "Vepřové",
+                    "5998J2": "Skopové",
+                    "5670J2": "Jehněčí",
+                    "5671J2": "Kozí",
+                    "5672J2": "Koňské",
+                    "5996J2": "Drůbeží",
+                    "5617": "Stavy ovcí (ks)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5581": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6132": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6495": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6004J": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6498": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5997J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5783": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5998J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6004J1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6004J2": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5785": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5996J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5997S": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6004J11": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6097J1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5636": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5659": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5938J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5617": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5671J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5670J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6271J": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5652": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6125": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5653": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5672J2": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5996J": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5607": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6097J": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5648": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6004J21": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2016": 0,
+                    "2017": 1,
+                    "2018": 2,
+                    "2019": 3,
+                    "2020": 4,
+                    "2021": 5,
+                    "2022": 6,
+                    "2023": 7,
+                    "2024": 8
+                },
+                "label": {
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

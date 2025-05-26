@@ -1,0 +1,200 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/MZDKQT3",
+    "label": "Průměrný evidenční počet zaměstnanců a průměrné hrubé měsíční mzdy z čtvrtletního zjišťování - dle institucionálních sektorů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "údaje jsou zpracovány ze čtvrtletního zjišťování"
+    ],
+    "updated": "2025-05-24T08:13:33.111812Z",
+    "id": [
+        "Uz0",
+        "CASKQ",
+        "ISEKTORMZDH",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        1,
+        9,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CASKQ"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CASKQ": {
+            "label": "Kumulace čtvrtletí",
+            "category": {
+                "index": {
+                    "2024-Q4": 0
+                },
+                "label": {
+                    "2024-Q4": "Q1-Q4 2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "ISEKTORMZDH": {
+            "label": "Institucionální sektory",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "11000": 1,
+                    "12000": 2,
+                    "14000": 3,
+                    "13000": 4,
+                    "15000": 5,
+                    "13110": 6,
+                    "13130": 7,
+                    "13140": 8
+                },
+                "label": {
+                    "0": "Celkem",
+                    "11000": "Nefinanční podniky",
+                    "12000": "Finanční podniky",
+                    "14000": "Domácnosti",
+                    "13000": "Vládní sektor",
+                    "15000": "Neziskové instituce sloužící domácnostem",
+                    "13110": "Ústřední vládní instituce",
+                    "13130": "Místní vládní instituce",
+                    "13140": "Fondy sociálního zabezpečení"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "13000": [
+                        "13110",
+                        "13130",
+                        "13140"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "299A": 0,
+                    "299RROZ": 1,
+                    "299I": 2,
+                    "5958P": 3,
+                    "5958PRROZ": 4,
+                    "5958PI": 5,
+                    "317A": 6,
+                    "317RROZ": 7,
+                    "317IF": 8,
+                    "5958F": 9,
+                    "5958FRROZ": 10,
+                    "5958FI": 11
+                },
+                "label": {
+                    "299A": "Průměrný evidenční počet zaměstnanců přepočtený (tis. osob)",
+                    "299RROZ": "Průměrný evidenční počet zaměstnanců přepočtený - meziroční rozdíl (tis. osob)",
+                    "299I": "Průměrný evidenční počet zaměstnanců přepočtený - meziroční index (%)",
+                    "5958P": "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)",
+                    "5958PRROZ": "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční rozdíl (Kč)",
+                    "5958PI": "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců - meziroční index (%)",
+                    "317A": "Průměrný evidenční počet zaměstnanců na fyzické osoby (tis. osob)",
+                    "317RROZ": "Průměrný evidenční počet zaměstnanců na fyzické osoby - meziroční rozdíl (tis. osob)",
+                    "317IF": "Průměrný evidenční počet zaměstnanců na fyzické osoby - meziroční index (%)",
+                    "5958F": "Průměrná hrubá měsíční mzda na fyzické osoby (Kč)",
+                    "5958FRROZ": "Průměrná hrubá měsíční mzda na fyzické osoby - meziroční rozdíl (Kč)",
+                    "5958FI": "Průměrná hrubá měsíční mzda na fyzické osoby - meziroční index (%)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "299I": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PRROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958FRROZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317IF": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958FI": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "299A": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "299RROZ": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958F": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958P": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317RROZ": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958PI": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "317A": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

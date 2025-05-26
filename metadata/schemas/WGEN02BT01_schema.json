@@ -1,0 +1,133 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WGEN02BT01",
+    "label": "Ženy a muži – průměrná mzda a medián mezd ",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Zdroj: strukturální mzdová statistika",
+        "Zdroj: strukturální mzdová statistika"
+    ],
+    "updated": "2025-05-24T08:09:39.367027Z",
+    "id": [
+        "Uz02h",
+        "IndicatorType",
+        "POHZM",
+        "CasR"
+    ],
+    "size": [
+        1,
+        2,
+        2,
+        13
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5958W": 0,
+                    "5958W1": 1
+                },
+                "label": {
+                    "5958W": "Průměrná hrubá měsíční mzda (Kč)",
+                    "5958W1": "Medián hrubé měsíční mzdy (Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5958W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958W1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHZM": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "2": 0,
+                    "1": 1
+                },
+                "label": {
+                    "2": "ženy",
+                    "1": "muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2011": 0,
+                    "2012": 1,
+                    "2013": 2,
+                    "2014": 3,
+                    "2015": 4,
+                    "2016": 5,
+                    "2017": 6,
+                    "2018": 7,
+                    "2019": 8,
+                    "2020": 9,
+                    "2021": 10,
+                    "2022": 11,
+                    "2023": 12
+                },
+                "label": {
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,140 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SZB09A",
+    "label": "Příjemci příspěvku na péči podle stupně závislosti v prosinci daného roku - územní srovnání",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        ""
+    ],
+    "updated": "2025-05-24T08:06:57.369597Z",
+    "id": [
+        "Pohlciz",
+        "CasR",
+        "VEKSZB",
+        "IndicatorType",
+        "UZ02HU",
+        "sTZPRISPECE"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        5
+    ],
+    "role": {
+        "geo": [
+            "UZ02HU"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Pohlciz": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VEKSZB": {
+            "label": "Věkové skupiny",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "10078": 0
+                },
+                "label": {
+                    "10078": "Příjemci příspěvku na péči podle stupně závislosti v prosinci daného roku"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "10078": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "UZ02HU": {
+            "label": "ČR a kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "sTZPRISPECE": {
+            "label": "Stupeň závislosti u příspěvku na péči",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "1": 1,
+                    "2": 2,
+                    "3": 3,
+                    "4": 4
+                },
+                "label": {
+                    "0": "Celkem",
+                    "1": "I. stupeň závislosti",
+                    "2": "II. stupeň závislosti",
+                    "3": "III. stupeň závislosti",
+                    "4": "IV. stupeň závislosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

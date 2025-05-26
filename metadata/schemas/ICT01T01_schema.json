@@ -1,0 +1,231 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ICT01T01",
+    "label": "ICT sektor",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        ""
+    ],
+    "updated": "2025-05-24T07:59:08.024143Z",
+    "id": [
+        "IndicatorType",
+        "Uz0",
+        "NACEICT",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        10,
+        19
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "659401": 0
+                },
+                "label": {
+                    "659401": "Počet aktivních podniků"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2927PS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6397": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6455": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2560": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958P": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "8293": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "659401": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "322PS": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "1007": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "894": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "942": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "316": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6447": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "NACEICT": {
+            "label": "CZ-NACE",
+            "category": {
+                "index": {
+                    "26950002": 0,
+                    "26260001": 1,
+                    "465": 2,
+                    "58950001": 3,
+                    "261": 4,
+                    "262": 5,
+                    "263": 6,
+                    "26260003": 7,
+                    "61": 8,
+                    "58950002": 9
+                },
+                "label": {
+                    "26950002": "ICT sektor",
+                    "26260001": "ICT zpracovatelský průmysl",
+                    "465": "Obchod s ICT (46.5)",
+                    "58950001": "ICT služby",
+                    "261": "Výroba elektronických součástek a desek (26.1)",
+                    "262": "Výroba počítačů a periferních zařízení (26.2)",
+                    "263": "Výroba komunikačních zařízení (26.3)",
+                    "26260003": "Výroba spotřební elektroniky a médií (26.4 + 26.8)",
+                    "61": "Telekomunikační činnosti (61)",
+                    "58950002": "IT služby (62, 58.2, 63.1, 95.1)"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "26950002": [
+                        "26260001",
+                        "465",
+                        "58950001"
+                    ],
+                    "26260001": [
+                        "261",
+                        "262",
+                        "263",
+                        "26260003"
+                    ],
+                    "58950001": [
+                        "61",
+                        "58950002"
+                    ]
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2005": 0,
+                    "2006": 1,
+                    "2007": 2,
+                    "2008": 3,
+                    "2009": 4,
+                    "2010": 5,
+                    "2011": 6,
+                    "2012": 7,
+                    "2013": 8,
+                    "2014": 9,
+                    "2015": 10,
+                    "2016": 11,
+                    "2017": 12,
+                    "2018": 13,
+                    "2019": 14,
+                    "2020": 15,
+                    "2021": 16,
+                    "2022": 17,
+                    "2023": 18
+                },
+                "label": {
+                    "2005": "2005",
+                    "2006": "2006",
+                    "2007": "2007",
+                    "2008": "2008",
+                    "2009": "2009",
+                    "2010": "2010",
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

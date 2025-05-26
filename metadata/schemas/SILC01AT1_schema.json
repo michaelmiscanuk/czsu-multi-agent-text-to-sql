@@ -1,0 +1,120 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SILC01AT1",
+    "label": "Osoby ohrožené příjmovou chudobou",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:11:46.656126Z",
+    "id": [
+        "Uz0",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        3,
+        12
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "3337CH": 0,
+                    "9382": 1,
+                    "9380": 2
+                },
+                "label": {
+                    "3337CH": "Počet osob pod hranicí příjmové chudoby (v tis.)",
+                    "9382": "Míra příjmové chudoby (v %)",
+                    "9380": "Hranice příjmové chudoby (Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "3337CH": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9380": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9382": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2013": 0,
+                    "2014": 1,
+                    "2015": 2,
+                    "2016": 3,
+                    "2017": 4,
+                    "2018": 5,
+                    "2019": 6,
+                    "2020": 7,
+                    "2021": 8,
+                    "2022": 9,
+                    "2023": 10,
+                    "2024": 11
+                },
+                "label": {
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

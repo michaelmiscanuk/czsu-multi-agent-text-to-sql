@@ -1,0 +1,202 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WUNP1T1",
+    "label": "Náklady práce celkem",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "V Kč na 1 zaměstnance, přepočtené počty."
+    ],
+    "updated": "2025-05-24T08:14:42.504292Z",
+    "id": [
+        "Uz02h",
+        "CASZUNP",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        9,
+        24
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CASZUNP": {
+            "label": "Náklady práce",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Roční (Kč/rok na 1 zaměstnance (přepočtené počty)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5920": 0,
+                    "5958N": 1,
+                    "6867": 2,
+                    "6885": 3,
+                    "6810": 4,
+                    "6797": 5,
+                    "6812": 6,
+                    "6781": 7,
+                    "6857": 8
+                },
+                "label": {
+                    "5920": "Náklady práce celkem",
+                    "5958N": "Přímé náklady celkem",
+                    "6867": "Přímé náklady - mzdy za vykonanou práci",
+                    "6885": "Přímé náklady - náhrady mzdy",
+                    "6810": "Nepřímé náklady - sociální požitky",
+                    "6797": "Nepřímé náklady - platby zákonného pojistného",
+                    "6812": "Nepřímé náklady - ostatní sociální náklady a výdaje",
+                    "6781": "Nepřímé náklady - personální náklady / výdaje",
+                    "6857": "Nepřímé náklady - daně a dotace"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5958N": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6781": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6885": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6797": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6810": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5920": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6867": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6812": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6857": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2000": 0,
+                    "2001": 1,
+                    "2002": 2,
+                    "2003": 3,
+                    "2004": 4,
+                    "2005": 5,
+                    "2006": 6,
+                    "2007": 7,
+                    "2008": 8,
+                    "2009": 9,
+                    "2010": 10,
+                    "2011": 11,
+                    "2012": 12,
+                    "2013": 13,
+                    "2014": 14,
+                    "2015": 15,
+                    "2016": 16,
+                    "2017": 17,
+                    "2018": 18,
+                    "2019": 19,
+                    "2020": 20,
+                    "2021": 21,
+                    "2022": 22,
+                    "2023": 23
+                },
+                "label": {
+                    "2000": "2000",
+                    "2001": "2001",
+                    "2002": "2002",
+                    "2003": "2003",
+                    "2004": "2004",
+                    "2005": "2005",
+                    "2006": "2006",
+                    "2007": "2007",
+                    "2008": "2008",
+                    "2009": "2009",
+                    "2010": "2010",
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

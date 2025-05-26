@@ -1,0 +1,160 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY04CT02",
+    "label": "Zemřelí podle vybraných příčin smrti podle SO ORP",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:04:15.362918Z",
+    "id": [
+        "IndicatorType",
+        "Uz4A",
+        "PRICSMRT2",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        19,
+        13
+    ],
+    "role": {
+        "geo": [
+            "Uz4A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5393": 0
+                },
+                "label": {
+                    "5393": "Zemřelí"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5393": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "Uz4A": {
+            "label": "SO ORP",
+            "category": {
+                "index": {
+                    "4101": 0
+                },
+                "label": {
+                    "4101": "Aš"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "PRICSMRT2": {
+            "label": "Příčiny smrti (pro SO ORP)",
+            "category": {
+                "index": {
+                    "ZEMC": 0,
+                    "II": 1,
+                    "02020001": 2,
+                    "02020003": 3,
+                    "C25": 4,
+                    "02020006": 5,
+                    "C50": 6,
+                    "IV": 7,
+                    "VI": 8,
+                    "IX": 9,
+                    "09090007": 10,
+                    "09090008": 11,
+                    "09090003": 12,
+                    "X": 13,
+                    "10100001": 14,
+                    "XI": 15,
+                    "XXII": 16,
+                    "22220001": 17,
+                    "XX": 18
+                },
+                "label": {
+                    "ZEMC": "Zemřelí",
+                    "II": "II. Novotvary (C00-D48)",
+                    "02020001": "zhoubné novotvary (C00-C97)",
+                    "02020003": "zhoubný novotvar tlustého střeva, konečníku a řiti (C18-C21)",
+                    "C25": "zhoubný novotvar slinivky břišní (C25)",
+                    "02020006": "zhoubný novotvar průdušnice, průdušky a plíce (C33-C34)",
+                    "C50": "zhoubný novotvar prsu (C50)",
+                    "IV": "IV. Nemoci endokrinní, výživy a přeměny látek (E00-E90)",
+                    "VI": "VI. Nemoci nervové soustavy (G00-G99)",
+                    "IX": "IX. Nemoci oběhové soustavy (I00-I99)",
+                    "09090007": "ischemické nemoci srdeční (I20-I25)",
+                    "09090008": "akutní a pokračující infarkt myokardu (I21-I22)",
+                    "09090003": "cévní nemoci mozku (I60-I69)",
+                    "X": "X. Nemoci dýchací soustavy (J00-J99)",
+                    "10100001": "záněty plic (J12-J18)",
+                    "XI": "XI. Nemoci trávicí soustavy (K00-K93)",
+                    "XXII": "XXII. Kódy pro speciální účely (U00-U85)",
+                    "22220001": "Covid-19 včetně multisystémového zánětlivého syndromu (U07, U10)",
+                    "XX": "XX. Vnější příčiny nemocnosti a úmrtnosti (V01-Y98)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2024": 0,
+                    "2023": 1,
+                    "2022": 2,
+                    "2021": 3,
+                    "2020": 4,
+                    "2019": 5,
+                    "2018": 6,
+                    "2017": 7,
+                    "2016": 8,
+                    "2015": 9,
+                    "2014": 10,
+                    "2013": 11,
+                    "2012": 12
+                },
+                "label": {
+                    "2024": "2024",
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

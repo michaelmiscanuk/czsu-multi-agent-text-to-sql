@@ -1,0 +1,193 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD047T02",
+    "label": "Vyjíždějící do zaměstnání a školy podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:42:04.498951Z",
+    "id": [
+        "CenRok2011",
+        "UzCrKr_H",
+        "IndicatorType"
+    ],
+    "size": [
+        1,
+        15,
+        10
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRok2011"
+        ]
+    },
+    "dimension": {
+        "CenRok2011": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20110326": 0
+                },
+                "label": {
+                    "C20110326": "2011"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "UzCrKr_H": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3018": 1,
+                    "3026": 2,
+                    "3034": 3,
+                    "3042": 4,
+                    "3051": 5,
+                    "3069": 6,
+                    "3077": 7,
+                    "3085": 8,
+                    "3093": 9,
+                    "3107": 10,
+                    "3115": 11,
+                    "3123": 12,
+                    "3131": 13,
+                    "3140": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3018": "Hlavní město Praha",
+                    "3026": "Středočeský kraj",
+                    "3034": "Jihočeský kraj",
+                    "3042": "Plzeňský kraj",
+                    "3051": "Karlovarský kraj",
+                    "3069": "Ústecký kraj",
+                    "3077": "Liberecký kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3093": "Pardubický kraj",
+                    "3107": "Kraj Vysočina",
+                    "3115": "Jihomoravský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3131": "Zlínský kraj",
+                    "3140": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3018",
+                        "3026",
+                        "3034",
+                        "3042",
+                        "3051",
+                        "3069",
+                        "3077",
+                        "3085",
+                        "3093",
+                        "3107",
+                        "3115",
+                        "3123",
+                        "3131",
+                        "3140"
+                    ]
+                }
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_3162_4": 0,
+                    "U_3162_4_MPR": 1,
+                    "U_3162_4_MPR_JAOB": 2,
+                    "U_3162_4_MPR_JOBOK": 3,
+                    "U_3162_4_MPR_JOKKR": 4,
+                    "U_3162_4_MPR_JKR": 5,
+                    "U_3162_4_MPR_ZAHR": 6,
+                    "U_3162_5_MSK": 7,
+                    "U_3162_5_MSK_JAOB": 8,
+                    "U_3162_5_MSK_MOB": 9
+                },
+                "label": {
+                    "U_3162_4": "Vyjíždějící celkem",
+                    "U_3162_4_MPR": "Vyjíždějící do zaměstnání",
+                    "U_3162_4_MPR_JAOB": "Vyjíždějící do zaměstnání v rámci obce",
+                    "U_3162_4_MPR_JOBOK": "Vyjíždějící do zaměstnání do jiné obce okresu",
+                    "U_3162_4_MPR_JOKKR": "Vyjíždějící do zaměstnání do jiného okresu kraje",
+                    "U_3162_4_MPR_JKR": "Vyjíždějící do zaměstnání do jiného kraje",
+                    "U_3162_4_MPR_ZAHR": "Vyjíždějící do zaměstnání do zahraničí",
+                    "U_3162_5_MSK": "Vyjíždějící do škol",
+                    "U_3162_5_MSK_JAOB": "Vyjíždějící do škol v rámci obce",
+                    "U_3162_5_MSK_MOB": "Vyjíždějící do škol mimo obec"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_3162_4_MPR_ZAHR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_4_MPR_JOKKR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_4_MPR_JKR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_4_MPR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_4_MPR_JOBOK": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_5_MSK_MOB": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_4_MPR_JAOB": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_5_MSK_JAOB": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_4": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "U_3162_5_MSK": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        }
+    }
+}

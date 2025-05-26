@@ -1,0 +1,150 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY02ET01",
+    "label": "Počet obyvatel podle pohlaví a základních věkových skupin k 31. 12.",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:52:34.307732Z",
+    "id": [
+        "IndicatorType",
+        "POHL2",
+        "CasRB",
+        "Uz02A",
+        "VekSkupZakl"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        15,
+        4
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasRB"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "2406K": 0
+                },
+                "label": {
+                    "2406K": "Počet obyvatel k 31. 12."
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "2406K": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHL2": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasRB": {
+            "label": "Rok",
+            "category": {
+                "index": {
+                    "2024": 0
+                },
+                "label": {
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0,
+                    "CZ010": 1,
+                    "CZ020": 2,
+                    "CZ031": 3,
+                    "CZ032": 4,
+                    "CZ041": 5,
+                    "CZ042": 6,
+                    "CZ051": 7,
+                    "CZ052": 8,
+                    "CZ053": 9,
+                    "CZ063": 10,
+                    "CZ064": 11,
+                    "CZ071": 12,
+                    "CZ072": 13,
+                    "CZ080": 14
+                },
+                "label": {
+                    "CZ": "Česko",
+                    "CZ010": "Hlavní město Praha",
+                    "CZ020": "Středočeský kraj",
+                    "CZ031": "Jihočeský kraj",
+                    "CZ032": "Plzeňský kraj",
+                    "CZ041": "Karlovarský kraj",
+                    "CZ042": "Ústecký kraj",
+                    "CZ051": "Liberecký kraj",
+                    "CZ052": "Královéhradecký kraj",
+                    "CZ053": "Pardubický kraj",
+                    "CZ063": "Kraj Vysočina",
+                    "CZ064": "Jihomoravský kraj",
+                    "CZ071": "Olomoucký kraj",
+                    "CZ072": "Zlínský kraj",
+                    "CZ080": "Moravskoslezský kraj"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VekSkupZakl": {
+            "label": "Věkové skupiny",
+            "category": {
+                "index": {
+                    "VEKC": 0,
+                    "VEK014": 1,
+                    "VEK1564": 2,
+                    "VEK65AV": 3
+                },
+                "label": {
+                    "VEKC": "Celkem",
+                    "VEK014": "0 - 14 let",
+                    "VEK1564": "15 - 64 let",
+                    "VEK65AV": "65 a více let"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

@@ -1,0 +1,150 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/RES04QT1",
+    "label": "Ekonomické subjekty podle institucionálního sektoru - data za ČR a kraje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:56:40.474317Z",
+    "id": [
+        "Uz02A",
+        "IndicatorType",
+        "ISEKTOR2",
+        "CasQ"
+    ],
+    "size": [
+        1,
+        1,
+        10,
+        17
+    ],
+    "role": {
+        "geo": [
+            "Uz02A"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ"
+        ]
+    },
+    "dimension": {
+        "Uz02A": {
+            "label": "ČR, kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "4958_reg": 0
+                },
+                "label": {
+                    "4958_reg": "Počet ekonomických subjektů celkem"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "4958_reg": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "ISEKTOR2": {
+            "label": "Institucionální sektor",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "10000": 1,
+                    "11000": 2,
+                    "12000": 3,
+                    "13000": 4,
+                    "14000": 5,
+                    "15000": 6,
+                    "20000": 7,
+                    "21000": 8,
+                    "22000": 9
+                },
+                "label": {
+                    "0": "Celkem",
+                    "10000": "Národní hospodářství - rezidenti",
+                    "11000": "Nefinanční podniky",
+                    "12000": "Finanční instituce",
+                    "13000": "Vládní instituce",
+                    "14000": "Domácnosti",
+                    "15000": "Neziskové instituce sloužící domácnostem",
+                    "20000": "Nerezidenti",
+                    "21000": "Členské státy, orgány a instituce Evropské unie",
+                    "22000": "Ostatní země a mezinárodní organizace - nerezidenti EU"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasQ": {
+            "label": "Čtvrtletí",
+            "category": {
+                "index": {
+                    "2025-Q1": 0,
+                    "2024-Q4": 1,
+                    "2024-Q3": 2,
+                    "2024-Q2": 3,
+                    "2024-Q1": 4,
+                    "2023-Q4": 5,
+                    "2023-Q3": 6,
+                    "2023-Q2": 7,
+                    "2023-Q1": 8,
+                    "2022-Q4": 9,
+                    "2022-Q3": 10,
+                    "2022-Q2": 11,
+                    "2022-Q1": 12,
+                    "2021-Q4": 13,
+                    "2021-Q3": 14,
+                    "2021-Q2": 15,
+                    "2021-Q1": 16
+                },
+                "label": {
+                    "2025-Q1": "1. čtvrtletí 2025",
+                    "2024-Q4": "4. čtvrtletí 2024",
+                    "2024-Q3": "3. čtvrtletí 2024",
+                    "2024-Q2": "2. čtvrtletí 2024",
+                    "2024-Q1": "1. čtvrtletí 2024",
+                    "2023-Q4": "4. čtvrtletí 2023",
+                    "2023-Q3": "3. čtvrtletí 2023",
+                    "2023-Q2": "2. čtvrtletí 2023",
+                    "2023-Q1": "1. čtvrtletí 2023",
+                    "2022-Q4": "4. čtvrtletí 2022",
+                    "2022-Q3": "3. čtvrtletí 2022",
+                    "2022-Q2": "2. čtvrtletí 2022",
+                    "2022-Q1": "1. čtvrtletí 2022",
+                    "2021-Q4": "4. čtvrtletí 2021",
+                    "2021-Q3": "3. čtvrtletí 2021",
+                    "2021-Q2": "2. čtvrtletí 2021",
+                    "2021-Q1": "1. čtvrtletí 2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

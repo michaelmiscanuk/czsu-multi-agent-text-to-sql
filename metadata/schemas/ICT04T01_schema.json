@@ -1,0 +1,155 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ICT04T01",
+    "label": "Osoby používající ICT a vykonávající činnosti na internetu - podle věkových skupin",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:59:07.371223Z",
+    "id": [
+        "IndicatorType",
+        "DRCINNET",
+        "Uz0",
+        "VEKICTV16",
+        "CasQ3"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        9,
+        10
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasQ3"
+        ]
+    },
+    "dimension": {
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "7644V16": 0
+                },
+                "label": {
+                    "7644V16": "Používání internetu (podíl osob) - věk 16+"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7644V25": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7644V16": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "DRCINNET": {
+            "label": "Činnost",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Používání internetu"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "VEKICTV16": {
+            "label": "Věk",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "410016610025000": 1,
+                    "410025610035000": 2,
+                    "410035610045000": 3,
+                    "410045610055000": 4,
+                    "410055610065000": 5,
+                    "410065610075000": 6,
+                    "410075799999000": 7,
+                    "410065799999000": 8
+                },
+                "label": {
+                    "0": "16+",
+                    "410016610025000": "16-24",
+                    "410025610035000": "25-34",
+                    "410035610045000": "35-44",
+                    "410045610055000": "45-54",
+                    "410055610065000": "55-64",
+                    "410065610075000": "65-74",
+                    "410075799999000": "75+",
+                    "410065799999000": "65+"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasQ3": {
+            "label": "2Q čtvrtletí",
+            "category": {
+                "index": {
+                    "2015-Q2": 0,
+                    "2016-Q2": 1,
+                    "2017-Q2": 2,
+                    "2018-Q2": 3,
+                    "2019-Q2": 4,
+                    "2020-Q2": 5,
+                    "2021-Q2": 6,
+                    "2022-Q2": 7,
+                    "2023-Q2": 8,
+                    "2024-Q2": 9
+                },
+                "label": {
+                    "2015-Q2": "2015",
+                    "2016-Q2": "2016",
+                    "2017-Q2": "2017",
+                    "2018-Q2": "2018",
+                    "2019-Q2": "2019",
+                    "2020-Q2": "2020",
+                    "2021-Q2": "2021",
+                    "2022-Q2": "2022",
+                    "2023-Q2": "2023",
+                    "2024-Q2": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

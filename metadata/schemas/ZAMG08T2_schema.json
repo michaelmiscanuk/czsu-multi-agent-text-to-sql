@@ -1,0 +1,147 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ZAMG08T2",
+    "label": "Průměrná hrubá měsíční mzda a medián mezd v třídění podle hlavních tříd CZ-ISCO",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        "Pramen: Struktura mezd zaměstnanců, ČSÚ"
+    ],
+    "updated": "2025-05-24T07:54:21.417686Z",
+    "id": [
+        "Uz0",
+        "CasR",
+        "CZISCO",
+        "IndicatorType",
+        "POHL1"
+    ],
+    "size": [
+        1,
+        1,
+        11,
+        2,
+        3
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0
+                },
+                "label": {
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZISCO": {
+            "label": "Klasifikace zaměstnání (CZISCO)",
+            "category": {
+                "index": {
+                    "C": 0,
+                    "1": 1,
+                    "2": 2,
+                    "3": 3,
+                    "4": 4,
+                    "5": 5,
+                    "6": 6,
+                    "7": 7,
+                    "8": 8,
+                    "9": 9,
+                    "0": 10
+                },
+                "label": {
+                    "C": "Celkem",
+                    "1": "Zákonodárci a řídící pracovníci",
+                    "2": "Specialisté",
+                    "3": "Techničtí a odborní pracovníci",
+                    "4": "Úředníci",
+                    "5": "Pracovníci ve službách a prodeji",
+                    "6": "Kvalifikovaní pracovníci v zemědělství, lesnictví a rybářství",
+                    "7": "Řemeslníci a opraváři",
+                    "8": "Obsluha strojů a zařízení, montéři",
+                    "9": "Pomocní a nekvalifikovaní pracovníci",
+                    "0": "Zaměstnanci v ozbrojených silách"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5958MZ": 0,
+                    "5958MED": 1
+                },
+                "label": {
+                    "5958MZ": "Průměrná hrubá měsíční mzda (Kč)",
+                    "5958MED": "Medián měsíčních mezd (Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5958MED": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5958MZ": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "2": 1,
+                    "1": 2
+                },
+                "label": {
+                    "0": "Celkem",
+                    "2": "Ženy",
+                    "1": "Muži"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

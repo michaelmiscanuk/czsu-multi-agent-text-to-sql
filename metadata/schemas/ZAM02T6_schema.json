@@ -1,0 +1,214 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/ZAM02T6",
+    "label": "Zaměstnaní podle odvětví ekonomické činnosti CZ-NACE - rok",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "Zdroj: VŠPS - výběrová šetření pracovních sil. Od roku 2001 údaje vycházejí z výsledků SLDB 2001, od roku 2011 vycházejí z definitivních výsledků SLDB 2011.\nDo roku 2022 včetně byla pro váhy výběrového souboru používána krátkodobá projekce koncového stavu demografických dat obyvatelstva ČR k 31. 12. předchozího roku na střed aktuálního čtvrtletí.\nOd roku 2023 je pro všechna čtvrtletí daného roku používána projekce koncového stavu demografických dat k 31. 12. předchozího roku po odečtení odhadu osob žijících mimo soukromé domácnosti resp. mimo byty",
+        null
+    ],
+    "updated": "2025-05-24T08:12:49.293225Z",
+    "id": [
+        "UZ02HU",
+        "IndicatorType",
+        "POHL1",
+        "CZNACEMZDY",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        1,
+        20,
+        31
+    ],
+    "role": {
+        "geo": [
+            "UZ02HU"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "UZ02HU": {
+            "label": "ČR a kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "6285Z": 0
+                },
+                "label": {
+                    "6285Z": "Zaměstnaní (tis. osob)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6285Z": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CZNACEMZDY": {
+            "label": "Odvětví ekonomické činnosti",
+            "category": {
+                "index": {
+                    "A-S": 0,
+                    "A": 1,
+                    "B": 2,
+                    "C": 3,
+                    "D": 4,
+                    "E": 5,
+                    "F": 6,
+                    "G": 7,
+                    "H": 8,
+                    "I": 9,
+                    "J": 10,
+                    "K": 11,
+                    "L": 12,
+                    "M": 13,
+                    "N": 14,
+                    "O": 15,
+                    "P": 16,
+                    "Q": 17,
+                    "R": 18,
+                    "S": 19
+                },
+                "label": {
+                    "A-S": "Celkem",
+                    "A": "A - Zemědělství, lesnictví, rybářství",
+                    "B": "B - Těžba a dobývání",
+                    "C": "C - Zpracovatelský průmysl",
+                    "D": "D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu",
+                    "E": "E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi",
+                    "F": "F - Stavebnictví",
+                    "G": "G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel",
+                    "H": "H - Doprava a skladování",
+                    "I": "I - Ubytování, stravování a pohostinství",
+                    "J": "J - Informační a komunikační činnosti",
+                    "K": "K - Peněžnictví a pojišťovnictví",
+                    "L": "L - Činnosti v oblasti nemovitostí",
+                    "M": "M - Profesní, vědecké a technické činnosti",
+                    "N": "N - Administrativní a podpůrné činnosti",
+                    "O": "O - Veřejná správa a obrana; povinné sociální zabezpečení",
+                    "P": "P - Vzdělávání",
+                    "Q": "Q - Zdravotní a sociální péče",
+                    "R": "R - Kulturní, zábavní a rekreační činnosti",
+                    "S": "S - Ostatní činnosti"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2023": 0,
+                    "2022": 1,
+                    "2021": 2,
+                    "2020": 3,
+                    "2019": 4,
+                    "2018": 5,
+                    "2017": 6,
+                    "2016": 7,
+                    "2015": 8,
+                    "2014": 9,
+                    "2013": 10,
+                    "2012": 11,
+                    "2011": 12,
+                    "2010": 13,
+                    "2009": 14,
+                    "2008": 15,
+                    "2007": 16,
+                    "2006": 17,
+                    "2005": 18,
+                    "2004": 19,
+                    "2003": 20,
+                    "2002": 21,
+                    "2001": 22,
+                    "2000": 23,
+                    "1999": 24,
+                    "1998": 25,
+                    "1997": 26,
+                    "1996": 27,
+                    "1995": 28,
+                    "1994": 29,
+                    "1993": 30
+                },
+                "label": {
+                    "2023": "2023",
+                    "2022": "2022",
+                    "2021": "2021",
+                    "2020": "2020",
+                    "2019": "2019",
+                    "2018": "2018",
+                    "2017": "2017",
+                    "2016": "2016",
+                    "2015": "2015",
+                    "2014": "2014",
+                    "2013": "2013",
+                    "2012": "2012",
+                    "2011": "2011",
+                    "2010": "2010",
+                    "2009": "2009",
+                    "2008": "2008",
+                    "2007": "2007",
+                    "2006": "2006",
+                    "2005": "2005",
+                    "2004": "2004",
+                    "2003": "2003",
+                    "2002": "2002",
+                    "2001": "2001",
+                    "2000": "2000",
+                    "1999": "1999",
+                    "1998": "1998",
+                    "1997": "1997",
+                    "1996": "1996",
+                    "1995": "1995",
+                    "1994": "1994",
+                    "1993": "1993"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

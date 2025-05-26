@@ -1,0 +1,172 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WOBY04C",
+    "label": "Zemřelí podle příčin smrti",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:14:42.605730Z",
+    "id": [
+        "Uz02h",
+        "POHL1",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        9,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz02h"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz02h": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "POHL1": {
+            "label": "Pohlaví",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Celkem"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5393W": 0,
+                    "5393WPII": 1,
+                    "5393WPIV": 2,
+                    "5393WPVI": 3,
+                    "5393WPIX": 4,
+                    "5393WPX": 5,
+                    "5393WPXI": 6,
+                    "5393WPXXII": 7,
+                    "5393WPXX": 8
+                },
+                "label": {
+                    "5393W": "Celkem",
+                    "5393WPII": "Novotvary (C00-D48)",
+                    "5393WPIV": "Nemoci endokrinní, výživy a přeměny látek (E00-E90)",
+                    "5393WPVI": "Nemoci nervové soustavy (G00-G99)",
+                    "5393WPIX": "Nemoci oběhové soustavy (I00-I99)",
+                    "5393WPX": "Nemoci dýchací soustavy (J00-J99)",
+                    "5393WPXI": "Nemoci trávicí soustavy (K00-K93)",
+                    "5393WPXXII": "Kódy pro speciální účely (U00-U85)",
+                    "5393WPXX": "Vnější příčiny nemocnosti a úmrtnosti (V01-Y98)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "5393WPVI": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPXI": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPII": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPXX": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPIX": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPIV": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPX": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393WPXXII": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5393W": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2016": 0,
+                    "2017": 1,
+                    "2018": 2,
+                    "2019": 3,
+                    "2020": 4,
+                    "2021": 5,
+                    "2022": 6,
+                    "2023": 7,
+                    "2024": 8
+                },
+                "label": {
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

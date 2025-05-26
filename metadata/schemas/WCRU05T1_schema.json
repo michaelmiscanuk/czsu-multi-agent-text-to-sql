@@ -1,0 +1,195 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WCRU05T1",
+    "label": "Počet cest a přenocování dle druhu cestovního ruchu",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:40:38.397807Z",
+    "id": [
+        "Uz0",
+        "DRUHCR",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        8,
+        9
+    ],
+    "role": {
+        "geo": [
+            "Uz0"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz0": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "DRUHCR": {
+            "label": "Druh cestovního ruchu",
+            "category": {
+                "index": {
+                    "1": 0
+                },
+                "label": {
+                    "1": "Příjezdový cestovní ruch"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "5448": 0,
+                    "5453": 1,
+                    "2654TSA": 2,
+                    "2655TSA": 3,
+                    "5443b": 4,
+                    "8959c": 5,
+                    "8959n": 6,
+                    "8959d": 7
+                },
+                "label": {
+                    "5448": "Počet návštěvníků celkem",
+                    "5453": "Jednodenní návštěvníci (bez přenocování)",
+                    "2654TSA": "Turisté (s přenocováním)",
+                    "2655TSA": "Počet přenocování celkem",
+                    "5443b": "Průměrný počet přenocování (noci)",
+                    "8959c": "Spotřeba (Výdaje) v cestovním ruchu v mil. Kč",
+                    "8959n": "Průměrná spotřeba na 1 návštěvníka (Kč)",
+                    "8959d": "Průměrná spotřeba na 1 den cesty (Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "6285": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5453": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "8959n": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5443b": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "HPHCRP": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "6285s": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "HDPCRP": {
+                        "decimals": 2,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "8959d": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "8959c": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "HPHCR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "HDPCR": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "5448": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2654TSA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "2655TSA": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2015": 0,
+                    "2016": 1,
+                    "2017": 2,
+                    "2018": 3,
+                    "2019": 4,
+                    "2020": 5,
+                    "2021": 6,
+                    "2022": 7,
+                    "2023": 8
+                },
+                "label": {
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

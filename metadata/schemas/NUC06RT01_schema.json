@@ -1,0 +1,201 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/NUC06RT01",
+    "label": "Národní účty – hlavní souhrnné ukazatele HDP - roční údaje",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T08:14:39.032215Z",
+    "id": [
+        "Uz012",
+        "IndicatorType",
+        "CasR"
+    ],
+    "size": [
+        1,
+        8,
+        35
+    ],
+    "role": {
+        "geo": [
+            "Uz012"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "Uz012": {
+            "label": "ČR, Reg. soudržnosti, Kraje",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "9988S03": 0,
+                    "9988S11": 1,
+                    "10032S01": 2,
+                    "9992BC": 3,
+                    "10000DOM": 4,
+                    "9991BC": 5,
+                    "9991OI": 6,
+                    "9993C": 7
+                },
+                "label": {
+                    "9988S03": "Hrubý domácí produkt (mil. Kč, běžné ceny)",
+                    "9988S11": "Reálný růst/pokles hrubého domácího produktu v % (SOPR = 100)",
+                    "10032S01": "Hrubý domácí produkt na 1 obyvatele v Kč, běžné ceny",
+                    "9992BC": "Hrubá přidaná hodnota (mil. Kč, běžné ceny)",
+                    "10000DOM": "Výdaje na konečnou spotřebu domácností (mil. Kč, běžné ceny)",
+                    "9991BC": "Tvorba hrubého fixního kapitálu (mil. Kč, běžné ceny)",
+                    "9991OI": "Tvorba hrubého fixního kapitálu (%, objemové indexy, SOPR = 100)",
+                    "9993C": "Náhrady zaměstnancům (mil. Kč)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "9991OI": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988S03": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9988S11": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10032S01": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9993C": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9992BC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "10000DOM": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "9991BC": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "1990": 0,
+                    "1991": 1,
+                    "1992": 2,
+                    "1993": 3,
+                    "1994": 4,
+                    "1995": 5,
+                    "1996": 6,
+                    "1997": 7,
+                    "1998": 8,
+                    "1999": 9,
+                    "2000": 10,
+                    "2001": 11,
+                    "2002": 12,
+                    "2003": 13,
+                    "2004": 14,
+                    "2005": 15,
+                    "2006": 16,
+                    "2007": 17,
+                    "2008": 18,
+                    "2009": 19,
+                    "2010": 20,
+                    "2011": 21,
+                    "2012": 22,
+                    "2013": 23,
+                    "2014": 24,
+                    "2015": 25,
+                    "2016": 26,
+                    "2017": 27,
+                    "2018": 28,
+                    "2019": 29,
+                    "2020": 30,
+                    "2021": 31,
+                    "2022": 32,
+                    "2023": 33,
+                    "2024": 34
+                },
+                "label": {
+                    "1990": "1990",
+                    "1991": "1991",
+                    "1992": "1992",
+                    "1993": "1993",
+                    "1994": "1994",
+                    "1995": "1995",
+                    "1996": "1996",
+                    "1997": "1997",
+                    "1998": "1998",
+                    "1999": "1999",
+                    "2000": "2000",
+                    "2001": "2001",
+                    "2002": "2002",
+                    "2003": "2003",
+                    "2004": "2004",
+                    "2005": "2005",
+                    "2006": "2006",
+                    "2007": "2007",
+                    "2008": "2008",
+                    "2009": "2009",
+                    "2010": "2010",
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021",
+                    "2022": "2022",
+                    "2023": "2023",
+                    "2024": "2024"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

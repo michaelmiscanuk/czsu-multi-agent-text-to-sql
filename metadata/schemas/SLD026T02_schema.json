@@ -1,0 +1,162 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/SLD026T02",
+    "label": "Obydlené byty podle celkové plochy bytu a podle krajů",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:44:45.173237Z",
+    "id": [
+        "CenRoky1",
+        "IndicatorType",
+        "UzCrKr_H",
+        "CELPLOBYTWS"
+    ],
+    "size": [
+        1,
+        1,
+        15,
+        9
+    ],
+    "role": {
+        "geo": [
+            "UzCrKr_H"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CenRoky1"
+        ]
+    },
+    "dimension": {
+        "CenRoky1": {
+            "label": "Rok sčítání",
+            "category": {
+                "index": {
+                    "C20210326": 0
+                },
+                "label": {
+                    "C20210326": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "U_2607_1": 0
+                },
+                "label": {
+                    "U_2607_1": "Počet  obydlených bytů"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "U_2607_1": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "UzCrKr_H": {
+            "label": "ČR a kraje",
+            "category": {
+                "index": {
+                    "19": 0,
+                    "3107": 1,
+                    "3093": 2,
+                    "3042": 3,
+                    "3123": 4,
+                    "3115": 5,
+                    "3140": 6,
+                    "3131": 7,
+                    "3026": 8,
+                    "3018": 9,
+                    "3034": 10,
+                    "3069": 11,
+                    "3051": 12,
+                    "3085": 13,
+                    "3077": 14
+                },
+                "label": {
+                    "19": "Česká republika",
+                    "3107": "Kraj Vysočina",
+                    "3093": "Pardubický kraj",
+                    "3042": "Plzeňský kraj",
+                    "3123": "Olomoucký kraj",
+                    "3115": "Jihomoravský kraj",
+                    "3140": "Moravskoslezský kraj",
+                    "3131": "Zlínský kraj",
+                    "3026": "Středočeský kraj",
+                    "3018": "Hlavní město Praha",
+                    "3034": "Jihočeský kraj",
+                    "3069": "Ústecký kraj",
+                    "3051": "Karlovarský kraj",
+                    "3085": "Královéhradecký kraj",
+                    "3077": "Liberecký kraj"
+                },
+                "note": [
+                    null
+                ],
+                "child": {
+                    "19": [
+                        "3107",
+                        "3093",
+                        "3042",
+                        "3123",
+                        "3115",
+                        "3140",
+                        "3131",
+                        "3026",
+                        "3018",
+                        "3034",
+                        "3069",
+                        "3051",
+                        "3085",
+                        "3077"
+                    ]
+                }
+            }
+        },
+        "CELPLOBYTWS": {
+            "label": "Celková plocha bytu (m2)",
+            "category": {
+                "index": {
+                    "0": 0,
+                    "399999610040000": 1,
+                    "410040610060000": 2,
+                    "410060610080000": 3,
+                    "410080620100000": 4,
+                    "420100620120000": 5,
+                    "420120620150000": 6,
+                    "420150799999000": 7,
+                    "9": 8
+                },
+                "label": {
+                    "0": "Obydlené byty celkem",
+                    "399999610040000": "do 39,9",
+                    "410040610060000": "40,0 až 59,9",
+                    "410060610080000": "60,0 až 79,9",
+                    "410080620100000": "80,0 až 99,9",
+                    "420100620120000": "100,0 až 119,9",
+                    "420120620150000": "120,0 až 149,9",
+                    "420150799999000": "150,0 a více",
+                    "9": "Nezjištěno"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}

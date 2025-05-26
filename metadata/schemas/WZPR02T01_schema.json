@@ -1,0 +1,161 @@
+{
+    "version": "2.0",
+    "class": "dataset",
+    "href": "https://data.csu.gov.cz/api/dotaz/v1/data/vybery/WZPR02T01",
+    "label": "Emise hlavních znečišťujících látek do ovzduší",
+    "source": "DataStat – databáze ČSÚ",
+    "note": [
+        "",
+        null
+    ],
+    "updated": "2025-05-24T07:53:35.306267Z",
+    "id": [
+        "ZDRZNEC",
+        "Uz02",
+        "IndicatorType",
+        "DRZNECLATOVZ",
+        "CasR"
+    ],
+    "size": [
+        1,
+        1,
+        2,
+        4,
+        17
+    ],
+    "role": {
+        "geo": [
+            "Uz02"
+        ],
+        "metric": [
+            "IndicatorType"
+        ],
+        "time": [
+            "CasR"
+        ]
+    },
+    "dimension": {
+        "ZDRZNEC": {
+            "label": "Zdroj znečišťování ovzduší",
+            "category": {
+                "index": {
+                    "0": 0
+                },
+                "label": {
+                    "0": "Emise hlavních znečišťujících látek do ovzduší - REZZO 1 - 4"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "Uz02": {
+            "label": "Území",
+            "category": {
+                "index": {
+                    "CZ": 0
+                },
+                "label": {
+                    "CZ": "Česko"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "IndicatorType": {
+            "label": "Ukazatel",
+            "category": {
+                "index": {
+                    "7677": 0,
+                    "7678": 1
+                },
+                "label": {
+                    "7677": "Emise znečišťujících látek (t)",
+                    "7678": "Měrné emise znečišťujících látek (t/km²)"
+                },
+                "note": [
+                    ""
+                ],
+                "unit": {
+                    "7677": {
+                        "decimals": 0,
+                        "symbol": "",
+                        "position": ""
+                    },
+                    "7678": {
+                        "decimals": 1,
+                        "symbol": "",
+                        "position": ""
+                    }
+                }
+            }
+        },
+        "DRZNECLATOVZ": {
+            "label": "Druh látky znečišťující ovzduší",
+            "category": {
+                "index": {
+                    "1": 0,
+                    "2": 1,
+                    "3": 2,
+                    "4": 3
+                },
+                "label": {
+                    "1": "Tuhé látky",
+                    "2": "Oxid siřičitý (SO₂)",
+                    "3": "Oxidy dusíku (NOₓ)",
+                    "4": "Oxid uhelnatý (CO)"
+                },
+                "note": [
+                    null
+                ]
+            }
+        },
+        "CasR": {
+            "label": "Roky",
+            "category": {
+                "index": {
+                    "2005": 0,
+                    "2006": 1,
+                    "2007": 2,
+                    "2008": 3,
+                    "2009": 4,
+                    "2010": 5,
+                    "2011": 6,
+                    "2012": 7,
+                    "2013": 8,
+                    "2014": 9,
+                    "2015": 10,
+                    "2016": 11,
+                    "2017": 12,
+                    "2018": 13,
+                    "2019": 14,
+                    "2020": 15,
+                    "2021": 16
+                },
+                "label": {
+                    "2005": "2005",
+                    "2006": "2006",
+                    "2007": "2007",
+                    "2008": "2008",
+                    "2009": "2009",
+                    "2010": "2010",
+                    "2011": "2011",
+                    "2012": "2012",
+                    "2013": "2013",
+                    "2014": "2014",
+                    "2015": "2015",
+                    "2016": "2016",
+                    "2017": "2017",
+                    "2018": "2018",
+                    "2019": "2019",
+                    "2020": "2020",
+                    "2021": "2021"
+                },
+                "note": [
+                    null
+                ]
+            }
+        }
+    }
+}
