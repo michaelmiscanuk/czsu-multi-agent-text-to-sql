@@ -467,7 +467,7 @@ async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnal
     debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node")
     collection = chromadb.PersistentClient(path=str(CHROMA_DB_PATH)).get_collection(name=CHROMA_COLLECTION_NAME)
     query = state["prompt"]
-    n_results = state.get("n_results", 3)  # Allow override, default to 3
+    n_results = state.get("n_results", 10)  # Allow override, default to 3
 
     try:
         # Use the same Azure embedding model and deployment as for extended_descriptions

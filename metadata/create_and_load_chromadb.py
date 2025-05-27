@@ -586,17 +586,22 @@ if __name__ == "__main__":
         embedding_client = get_azure_embedding_model()
         # QUERY = "Jake odvetvi ma nejvyssi prumerne mzdy?"
         # QUERY = "How many flight did NASA make to MARS"
-        QUERY = """
-This table contains average wages (průměrné mzdy) by industry (odvětví).
+        # QUERY = """
+# This table contains average wages (průměrné mzdy) by industry (odvětví).
 
-Key columns:
+# Key columns:
 
-'odvětví' (industry): Distinct values like IT, manufacturing, healthcare, construction.
+# 'odvětví' (industry): Distinct values like IT, manufacturing, healthcare, construction.
 
-'průměrná mzda' (average wage): Numerical values (e.g., 50,000 Kč/month).
+#'průměrná mzda' (average wage): Numerical values (e.g., 50,000 Kč/month).
 
-Purpose: Identify which industry has the highest average wage.
-        """
+# Purpose: Identify which industry has the highest average wage.
+#        """
+
+        #  QUERY = "Jaký je meziměsíční index spotřebitelských cen za služby v dubnu 2025?"
+        # QUERY = "Kolik cizinců z Ukrajiny žilo v Česku v roce 2023?"
+        QUERY = "Kolik hromadných ubytovacích zařízení bylo v Česku v roce 2024?"
+        
         
         # Generate query embedding
         query_embedding = embedding_client.embeddings.create(

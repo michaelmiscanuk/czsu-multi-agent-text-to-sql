@@ -1,23 +1,38 @@
 from langsmith import Client
 from langsmith.utils import LangSmithNotFoundError
 
+# Configuration
+CONFIG = {
+    "dataset_name": "czsu agent selection retrieval",
+    "dataset_description": "Dataset of Czech Statistical Office agent For Evaluation of step to find the right selection with ChromaDB"
+}
+
 # Your questions and answers
 # Define questions and answers for the golden dataset
 question_answers = {
     "Jake odvetvi ma nejvyssi prumerne mzdy?": "MZDQ1T2",
-
+    # Answer: J - Informační a komunikační činnosti.
+    
+    "Jaký je meziměsíční index spotřebitelských cen za služby v dubnu 2025?": "CEN0101LT01",
+    # Answer: 100.2
+    
+    "Kolik cizinců z Ukrajiny žilo v Česku v roce 2023?": "CIZ01D",
+    # Answer: 574447
+    
+    "Kolik hromadných ubytovacích zařízení bylo v Česku v roce 2024?": "CRU01RT3",
+    # Answer: 10104
 }
 
 ls_client = Client()
 
 # Get or create dataset
 try:
-    dataset = ls_client.read_dataset(dataset_name="czsu agent")
+    dataset = ls_client.read_dataset(dataset_name=CONFIG["dataset_name"])
     print(f"Dataset '{dataset.name}' found with ID: {dataset.id}")
 except LangSmithNotFoundError:
     dataset = ls_client.create_dataset(
-        dataset_name="czsu agent finding selections",
-        description="Dataset of Czech Statistical Office agent For Evaluation of step to find the right selection with ChromaDB"
+        dataset_name=CONFIG["dataset_name"],
+        description=CONFIG["dataset_description"]
     )
     print(f"Dataset '{dataset.name}' created with ID: {dataset.id}")
 
