@@ -16,6 +16,8 @@ Key components:
 import sys
 import os
 from pathlib import Path
+import asyncio
+
 
 # Handle base directory path
 try:
@@ -32,6 +34,8 @@ if str(BASE_DIR) not in sys.path:
 
 print(f"BASE_DIR: {BASE_DIR}")
 print(f"Python path: {sys.path}")
+
+from my_agent import create_graph
 
 # Temporarily override MY_AGENT_DEBUG for this notebook execution
 original_debug_value = os.environ.get('MY_AGENT_DEBUG')
@@ -53,6 +57,9 @@ EXPERIMENT_CONFIG = {
     "max_concurrency": 4,            # Maximum number of concurrent evaluations
     "evaluators": ["selection_correct"],   # List of evaluator functions to use
 }
+
+# Create the LangGraph app/graph
+app = create_graph()
 
 #==============================================================================
 # EVALUATION FUNCTIONS
@@ -122,40 +129,56 @@ def example_to_state(inputs: dict) -> dict:
     Returns:
         DataAnalysisState: Initialized state object for the agent
     """
-    return DataAnalysisState(
-        prompt=inputs['question'],
-        messages=[],
-        result="",
-        iteration=0
-    )
+    return {
+        "prompt": inputs['question'],
+        "messages": [],
+        "iteration": 0,
+        "queries_and_results": [],
+        "reflection_decision": "",
+        "most_similar_selections": [],
+        "selection_with_possible_answer": None
+    }
 
-async def target_with_config(inputs: dict):
-    """
-    Async wrapper to invoke the agent node with a unique checkpoint thread_id in the config.
-    This version only runs the first node and stops.
-    """
+# --- Retry wrapper for node evaluation ---
+async def retry_node(inputs, node, max_attempts=6, wait_seconds=10):
     state = example_to_state(inputs)
-    config = {"configurable": {"thread_id": str(uuid.uuid4())}}
-    state = await retrieve_similar_selections_node(state)
-    print("[target_with_config] state after retrieve_similar_selections_node:", state)
-    return state
+    prompt = state["prompt"]
+    attempt = 0
+    while attempt < max_attempts:
+        attempt += 1
+        print(f"[retry_node] Attempt {attempt} for prompt: {prompt}")
+        output = await node(state)
+        most_similar = output.get("most_similar_selections", [])
+        if most_similar:
+            print(f"[retry_node] Got result for prompt: {prompt} on attempt {attempt}")
+            return output
+        else:
+            print(f"[retry_node] Empty output for prompt: {prompt} (attempt {attempt}), waiting {wait_seconds}s before retry...")
+            await asyncio.sleep(wait_seconds)
+    print(f"[retry_node] WARNING: No result for prompt: {prompt} after {max_attempts} attempts!")
+    return output
 
 #==============================================================================
 # MAIN EVALUATION
 #==============================================================================
-async def main():
-    experiment_results = await aevaluate(
-        target_with_config,
-        data=EXPERIMENT_CONFIG["dataset_name"],
-        evaluators=[selection_correct, selection_in_top_n],
-        max_concurrency=EXPERIMENT_CONFIG["max_concurrency"],
-        experiment_prefix=EXPERIMENT_CONFIG["experiment_prefix"],
-    )
-
-    print(f"Evaluation results: {experiment_results}")
-
 if __name__ == "__main__":
-    import asyncio
+    # For demonstration, import or define app and node as needed
+    import sys
+    print("[INFO] Starting node evaluation with retry logic...")
+    
+    async def node_target(inputs):
+        return await retry_node(inputs, retrieve_similar_selections_node)
+
+    async def main():
+        experiment_results = await aevaluate(
+            node_target,
+            data="czsu agent selection retrieval",  # Replace with your dataset name
+            evaluators=[selection_correct, selection_in_top_n],
+            max_concurrency=4,
+            experiment_prefix="selection-retrieval-node-retry",
+        )
+        print(f"Evaluation results: {experiment_results}")
+
     asyncio.run(main())
     
     # Restore original MY_AGENT_DEBUG value

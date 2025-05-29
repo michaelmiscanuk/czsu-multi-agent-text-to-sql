@@ -24,9 +24,6 @@ import chromadb
 import sqlite3
 
 
-
-
-
 # Get debug mode from environment variable
 DEBUG_MODE = os.environ.get('MY_AGENT_DEBUG', '0') == '1'
 
@@ -55,6 +52,13 @@ from .mcp_server import create_mcp_server
 from my_agent.utils.models import get_azure_embedding_model
 from .state import DataAnalysisState
 from .tools import PandasQueryTool, SQLiteQueryTool
+from metadata.create_and_load_chromadb import (
+    hybrid_search,
+    similarity_search_chromadb,
+    get_langchain_chroma_vectorstore,
+    get_azure_embedding_model,
+    cohere_rerank
+)
 
 
 MAX_ITERATIONS = 2  # Reduced from 3 to prevent excessive looping
@@ -463,52 +467,42 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     return state
 
 async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Retrieve most similar selection(s) from ChromaDB based on user prompt using best practices."""
-    debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node")
-    collection = chromadb.PersistentClient(path=str(CHROMA_DB_PATH)).get_collection(name=CHROMA_COLLECTION_NAME)
+    """Node: Retrieve most similar selection(s) from ChromaDB based on user prompt using Cohere rerank hybrid search. Returns selection codes and Cohere rerank scores."""
+    debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node (rerank hybrid)")
     query = state["prompt"]
-    n_results = state.get("n_results", 10)  # Allow override, default to 3
+    n_results = state.get("n_results", 10)  # Allow override, default to 10
 
     try:
-        # Use the same Azure embedding model and deployment as for extended_descriptions
-        embedding_client = get_azure_embedding_model()
-        query_embedding = embedding_client.embeddings.create(
-            input=[query],
-            model="text-embedding-3-large__test1"
-        ).data[0].embedding
-        results = collection.query(
-            query_embeddings=[query_embedding],
-            n_results=n_results,
-            include=["metadatas", "distances", "documents"]
+        chroma_vectorstore = get_langchain_chroma_vectorstore(
+            collection_name=CHROMA_COLLECTION_NAME,
+            chroma_db_path=str(CHROMA_DB_PATH),
+            embedding_model_name=EMBEDDING_DEPLOYMENT
         )
+        initial_results = hybrid_search(chroma_vectorstore, query, k=n_results)
+        reranked = cohere_rerank(query, initial_results, top_n=n_results)
         most_similar = []
-        # Defensive: handle empty results
-        if results and results["metadatas"] and results["distances"]:
-            for meta, distance in zip(results["metadatas"][0], results["distances"][0]):
-                selection_code = meta.get("selection") if isinstance(meta, dict) and meta is not None else None
-                # Normalized similarity in [0, 1]
-                similarity = 1 - (distance / 2)
-                most_similar.append((selection_code, similarity))
-        else:
-            debug_print(f"{RETRIEVE_NODE_ID}: No results found in ChromaDB query.")
-        debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections: {most_similar}")
+        for doc, res in reranked:
+            selection_code = doc.metadata.get("selection") if doc.metadata else None
+            score = res.relevance_score
+            most_similar.append((selection_code, score))
+        debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections (rerank hybrid): {most_similar}")
         return {"most_similar_selections": most_similar}
     except Exception as e:
-        debug_print(f"{RETRIEVE_NODE_ID}: Error querying ChromaDB: {e}")
+        debug_print(f"{RETRIEVE_NODE_ID}: Error in rerank hybrid search: {e}")
         return {"most_similar_selections": []}
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Filter out based on cosine similarity threshold (0.35)."""
+    """Node: Select the top reranked selection if its Cohere relevance score exceeds the threshold (0.35)."""
     debug_print(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
-    # Use a clear variable name for the similarity threshold
-    SIMILARITY_THRESHOLD = 0.35  # Minimum normalized similarity required
+    SIMILARITY_THRESHOLD = 0.35  # Minimum Cohere rerank score required
     most_similar = state.get("most_similar_selections", [])
     selection_code = None
     if most_similar:
         top_selection, top_similarity = most_similar[0]
-        # We use ">=" so that a selection with similarity exactly equal to the threshold is considered valid.
-        # This means if the top result's similarity is 0.35 or higher, it will be accepted.
-        if top_selection is not None and top_similarity >= SIMILARITY_THRESHOLD:
+        if top_similarity is None:
+            # Accept the top result without thresholding (should not happen with rerank)
+            selection_code = top_selection
+        elif top_selection is not None and top_similarity >= SIMILARITY_THRESHOLD:
             selection_code = top_selection
     debug_print(f"{RELEVANT_NODE_ID}: selection_with_possible_answer: {selection_code}")
     return {"selection_with_possible_answer": selection_code}

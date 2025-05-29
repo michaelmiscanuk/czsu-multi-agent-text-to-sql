@@ -146,6 +146,15 @@ from typing import Dict, Any, List, Tuple
 import chromadb
 import tqdm as tqdm_module
 import tiktoken
+from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings, AzureOpenAIEmbeddings
+from langchain_community.retrievers import BM25Retriever
+from langchain.retrievers import EnsembleRetriever
+from langchain_core.documents import Document
+import cohere
+import openpyxl
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 
 #==============================================================================
 # PATH SETUP
@@ -159,7 +168,7 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 # Local Imports
-from my_agent.utils.models import get_azure_embedding_model
+from my_agent.utils.models import get_azure_embedding_model, get_langchain_azure_embedding_model
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -572,6 +581,139 @@ def upsert_documents_to_chromadb(
         debug_print(f"{CREATE_CHROMADB_ID}: Error in upsert_documents_to_chromadb: {str(e)}")
         raise
 
+def get_langchain_chroma_vectorstore(collection_name: str, chroma_db_path: str, embedding_model_name: str = "text-embedding-3-large__test1"):
+    """Return a LangChain Chroma vectorstore instance for the given collection, using AzureOpenAIEmbeddings."""
+    embeddings = get_langchain_azure_embedding_model(model_name=embedding_model_name)
+    chroma = Chroma(
+        client=chromadb.PersistentClient(path=chroma_db_path),
+        collection_name=collection_name,
+        embedding_function=embeddings
+    )
+    return chroma
+
+def similarity_search_chromadb(collection, embedding_client, query: str, embedding_model_name: str = "text-embedding-3-large__test1", k: int = 3):
+    """Perform a pure embedding-based similarity search using ChromaDB's .query method."""
+    query_embedding = embedding_client.embeddings.create(
+        input=[query],
+        model=embedding_model_name
+    ).data[0].embedding
+    results = collection.query(
+        query_embeddings=[query_embedding],
+        n_results=k,
+        include=["documents", "metadatas", "distances"]
+    )
+    return results
+
+def hybrid_search(chroma, query: str, k: int = 5):
+    """Perform a Hybrid Search (similarity_search + BM25Retriever) in the collection. Returns a list of Document objects."""
+    raw_docs = chroma.get(include=["documents", "metadatas"])
+    documents = [
+        Document(page_content=doc, metadata=meta)
+        for doc, meta in zip(raw_docs["documents"], raw_docs["metadatas"])
+    ]
+    bm25_retriever = BM25Retriever.from_documents(documents=documents, k=k)
+    similarity_search_retriever = chroma.as_retriever(
+        search_type="similarity",
+        search_kwargs={'k': k}
+    )
+    ensemble_retriever = EnsembleRetriever(retrievers=[similarity_search_retriever, bm25_retriever], weights=[0.5, 0.5])
+    return ensemble_retriever.invoke(query)
+
+def cohere_rerank(query, docs, top_n):
+    """Return reranked list of (Document, CohereResult) tuples using Cohere's rerank-multilingual-v3.0, using .index field for correct mapping."""
+    cohere_api_key = os.environ.get("COHERE_API_KEY", "")
+    co = cohere.Client(cohere_api_key)
+    texts = [doc.page_content for doc in docs]
+    docs_for_cohere = [{"text": t} for t in texts]
+    # print("\n[DEBUG] Texts sent to Cohere rerank:")
+    # for idx, t in enumerate(texts, 1):
+    #     t_clean = t[:100].replace('\n', ' ')
+    #     print(f"#{idx}: {t_clean}{'...' if len(t) > 100 else ''}")
+    rerank_response = co.rerank(
+        model="rerank-multilingual-v3.0",
+        query=query,
+        documents=docs_for_cohere,
+        top_n=top_n
+    )
+    
+    # print("[DEBUG] Raw Cohere rerank response:")
+    # print(rerank_response)
+    
+    # Use .index field to map back to the original doc
+    reranked = []
+    for res in rerank_response.results:
+        doc = docs[res.index]
+        reranked.append((doc, res))
+    return reranked
+
+def write_rerank_debug_excel(query, semantic_results, hybrid_results, reranked_results, path):
+    """
+    Write a side-by-side comparison Excel file for search results.
+    All data (semantic_results, hybrid_results, reranked_results) must be passed in as computed in the main block.
+    This function does not recalculate or fetch any results internally.
+    The output rows are sorted by Rank_Hybrid ascending (None at the end).
+    """
+    from openpyxl import Workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'Comparison'
+    ws.append(['Query', 'Rank_Semantic', 'Rank_Hybrid', 'Rank_Reranked', 'Text', 'Selection_Code', 'Similarity Score', 'Cohere Score'])
+
+    # Build lookup tables for fast access
+    semantic_docs = semantic_results["documents"][0]
+    semantic_metas = semantic_results["metadatas"][0]
+    semantic_scores = semantic_results["distances"][0]
+    semantic_lookup = {}
+    for i, (doc, meta, score) in enumerate(zip(semantic_docs, semantic_metas, semantic_scores)):
+        key = meta.get('selection') if meta else doc[:50]
+        semantic_lookup[key] = (i+1, score, doc)
+
+    hybrid_lookup = {}
+    for i, doc in enumerate(hybrid_results, 1):
+        key = doc.metadata.get('selection') if doc.metadata else doc.page_content[:50]
+        hybrid_lookup[key] = (i, doc)
+
+    rerank_lookup = {}
+    for i, (doc, res) in enumerate(reranked_results, 1):
+        key = doc.metadata.get('selection') if doc.metadata else doc.page_content[:50]
+        rerank_lookup[key] = (i, res.relevance_score, doc)
+
+    all_keys = set(semantic_lookup.keys()) | set(hybrid_lookup.keys()) | set(rerank_lookup.keys())
+
+    # Collect all rows first
+    rows = []
+    for key in all_keys:
+        q = query
+        rank_sem, sim_score, sem_text = semantic_lookup.get(key, (None, None, None))
+        rank_hyb, hyb_doc = hybrid_lookup.get(key, (None, None))
+        rank_rerank, cohere_score, rerank_doc = rerank_lookup.get(key, (None, None, None))
+        text = sem_text or (hyb_doc.page_content if hyb_doc else (rerank_doc.page_content if rerank_doc else ""))
+        selection_code = None
+        if hyb_doc and hyb_doc.metadata:
+            selection_code = hyb_doc.metadata.get('selection')
+        elif rerank_doc and rerank_doc.metadata:
+            selection_code = rerank_doc.metadata.get('selection')
+        elif key:
+            selection_code = key
+        sim_val = None
+        if sim_score is not None:
+            sim_val = 1 - (sim_score / 2)
+        rows.append([
+            q,
+            rank_sem,
+            rank_hyb,
+            rank_rerank,
+            text,
+            selection_code,
+            sim_val,
+            cohere_score
+        ])
+    # Sort rows by Rank_Hybrid (index 2), None at the end
+    rows_sorted = sorted(rows, key=lambda r: (r[2] is None, r[2] if r[2] is not None else float('inf')))
+    for row in rows_sorted:
+        ws.append(row)
+    wb.save(str(path))
+
 #==============================================================================
 # SCRIPT ENTRY POINT
 #==============================================================================
@@ -582,56 +724,67 @@ if __name__ == "__main__":
         if collection is None:
             sys.exit(1)
 
-        # Example: Performing a similarity search
         embedding_client = get_azure_embedding_model()
-        # QUERY = "Jake odvetvi ma nejvyssi prumerne mzdy?"
-        # QUERY = "How many flight did NASA make to MARS"
-        # QUERY = """
-# This table contains average wages (průměrné mzdy) by industry (odvětví).
+        QUERY = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
+        k = 15
 
-# Key columns:
-
-# 'odvětví' (industry): Distinct values like IT, manufacturing, healthcare, construction.
-
-#'průměrná mzda' (average wage): Numerical values (e.g., 50,000 Kč/month).
-
-# Purpose: Identify which industry has the highest average wage.
-#        """
-
-        #  QUERY = "Jaký je meziměsíční index spotřebitelských cen za služby v dubnu 2025?"
-        # QUERY = "Kolik cizinců z Ukrajiny žilo v Česku v roce 2023?"
-        QUERY = "Kolik hromadných ubytovacích zařízení bylo v Česku v roce 2024?"
-        
-        
-        # Generate query embedding
-        query_embedding = embedding_client.embeddings.create(
-            input=[QUERY],
-            model="text-embedding-3-large__test1"
-        ).data[0].embedding
-
-        # Perform similarity search
-        results = collection.query(
-            query_embeddings=[query_embedding],
-            n_results=3,
-            include=["documents", "metadatas", "distances"]
+        # --- Similarity search (original method) ---
+        results = similarity_search_chromadb(
+            collection=collection,
+            embedding_client=embedding_client,
+            query=QUERY,
+            embedding_model_name="text-embedding-3-large__test1",
+            k=k
         )
-
-        # Display results
-        debug_print(f"{CREATE_CHROMADB_ID}: Query: {QUERY}")
-        debug_print(f"{CREATE_CHROMADB_ID}: Top 3 Most Similar Results:")
-        debug_print(f"{CREATE_CHROMADB_ID}: {'=' * 100}")
-        
+        print(f"\n[Semantic Search] Top {k} Results:")
         for i, (doc, meta, distance) in enumerate(zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 1):
             selection = meta.get('selection') if isinstance(meta, dict) and meta is not None else 'N/A'
-            # Use normalized similarity in [0, 1]: similarity = 1 - (distance / 2)
             similarity = 1 - (distance / 2)
-            debug_print(f"{CREATE_CHROMADB_ID}: Result #{i}")
-            debug_print(f"{CREATE_CHROMADB_ID}: Normalized Similarity: {similarity:.4f}")
-            debug_print(f"{CREATE_CHROMADB_ID}: Selection Code: {selection}")
-            debug_print(f"{CREATE_CHROMADB_ID}: Text:")
-            debug_print(f"{CREATE_CHROMADB_ID}: {doc}")
-            debug_print(f"{CREATE_CHROMADB_ID}: {'=' * 100}")
-            
+            print(f"#{i}: Selection Code: {selection} | Similarity: {similarity:.4f}")
+        print("Selection Codes (most to least important):")
+        print([
+            meta.get('selection') if isinstance(meta, dict) and meta is not None else 'N/A'
+            for meta in results["metadatas"][0]
+        ])
+
+        # --- Hybrid search (LangChain) ---
+        chroma_vectorstore = get_langchain_chroma_vectorstore(
+            collection_name="czsu_selections_chromadb",
+            chroma_db_path=str(CHROMA_DB_PATH),
+            embedding_model_name="text-embedding-3-large__test1"
+        )
+        hybrid_results = hybrid_search(chroma_vectorstore, QUERY, k=k)
+        print(f"\n[Hybrid Search] Top {k} Results:")
+        for i, doc in enumerate(hybrid_results, 1):
+            selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
+            print(f"#{i}: Selection Code: {selection}")
+        print("Selection Codes (most to least important):")
+        print([
+            doc.metadata.get('selection') if doc.metadata else 'N/A'
+            for doc in hybrid_results
+        ])
+
+        # --- Rerank Hybrid Search (Cohere) ---
+        # print("100")
+        # print(hybrid_results)
+        reranked = cohere_rerank(QUERY, hybrid_results, top_n=k)
+        print(f"\n[Reranked Hybrid Search] Top {k} Results:")
+        for i, (doc, res) in enumerate(reranked, 1):
+            selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
+            print(f"#{i}: Selection Code: {selection} | Cohere Score: {res.relevance_score:.4f}")
+        print("Selection Codes (most to least important):")
+        print([
+            doc.metadata.get('selection') if doc.metadata else 'N/A'
+            for doc, _ in reranked
+        ])
+
+        # --- Excel Debug Output ---
+        debug_xlsx_path = BASE_DIR / 'metadata' / 'rerank_debug.xlsx'
+        try:
+            write_rerank_debug_excel(QUERY, results, hybrid_results, reranked, debug_xlsx_path)
+            print(f"Excel debug file written to {debug_xlsx_path}")
+        except Exception as e:
+            print(f"Error writing rerank debug Excel: {e}")
     except KeyboardInterrupt:
         debug_print(f"{CREATE_CHROMADB_ID}: Process interrupted by user")
         sys.exit(1)

@@ -108,6 +108,25 @@ def get_azure_embedding_model_test():
         )
     print(response.usage)
 
+def get_langchain_azure_embedding_model(model_name="text-embedding-3-large__test1"):
+    """Get a LangChain AzureOpenAIEmbeddings instance with standard configuration."""
+    from langchain_openai import AzureOpenAIEmbeddings
+    return AzureOpenAIEmbeddings(
+        model=model_name,
+        azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
+        api_key=os.getenv('AZURE_OPENAI_API_KEY'),
+        openai_api_version=os.getenv('AZURE_OPENAI_API_VERSION', '2024-12-01-preview'),
+        deployment=model_name
+    )
+
+def get_langchain_azure_embedding_model_test():
+    # Test the LangChain AzureOpenAIEmbeddings with some sample data
+    embedding_model = get_langchain_azure_embedding_model()
+    phrases = ["first phrase", "second phrase", "third phrase"]
+    vectors = embedding_model.embed_documents(phrases)
+    for i, vector in enumerate(vectors):
+        print(f"data[{i}]: length={len(vector)}, [{vector[0]}, {vector[1]}, ..., {vector[-2]}, {vector[-1]}]")
+
 if __name__ == "__main__":
     # get_azure_embedding_model_test()
     # get_azure_llm_test()

@@ -15,3 +15,7 @@ ipywidgets
 mcp>=0.3.0
 pyjstat
 chromadb
+langchain-chroma>=0.2.4
+rank_bm25
+cohere
+openpyxl

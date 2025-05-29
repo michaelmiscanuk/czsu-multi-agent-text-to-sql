@@ -44,21 +44,23 @@ from my_agent.utils.state import DataAnalysisState
 # DEFAULT_PROMPT = "What is the average population rate of change for regions with more than 1 million residents?"
 # DEFAULT_PROMPT = "Jaky obor ma nejvyssi prumerne mzdy v Praze"
 # DEFAULT_PROMPT = "Jaky obor ma nejvyssi prumerne mzdy?"
-DEFAULT_PROMPT = """
-This table contains information about wages and salaries across different industries. It includes data on average wages categorized by economic sectors or industries.
+# DEFAULT_PROMPT = """
+# This table contains information about wages and salaries across different industries. It includes data on average wages categorized by economic sectors or industries.
 
-Available columns:
+# Available columns:
 
-industry (odvětví): distinct values include manufacturing, IT, construction, healthcare, education, etc.
+# industry (odvětví): distinct values include manufacturing, IT, construction, healthcare, education, etc.
 
-average_wage (průměrná mzda): numerical values representing monthly or annual averages
+# average_wage (průměrná mzda): numerical values representing monthly or annual averages
 
-year: distinct values may include 2020, 2021, 2022, etc.
+# year: distinct values may include 2020, 2021, 2022, etc.
 
-measurement_unit: e.g., CZK, EUR, USD per month/year
+# measurement_unit: e.g., CZK, EUR, USD per month/year
 
-The table allows comparison of wage levels across different economic sectors.
-"""
+# The table allows comparison of wage levels across different economic sectors.
+# """
+DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
+
 
 
 #==============================================================================
