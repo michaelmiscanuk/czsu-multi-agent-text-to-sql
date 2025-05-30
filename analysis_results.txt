@@ -11330,3 +11330,37 @@ WHERE "Území" = 'Česko'
   AND "Ekonomické subjekty " = 'Počet ekonomických subjektů v registru';
   Result: 2836017
 ----------------------------------------------------------------------------
+Prompt: Jaká byla průměrná kupní cena bytů v Česku za období 2017-2019 v Kč/m2?
+Result: Průměrná kupní cena bytů v Česku za období 2017-2019 byla 26514 Kč/m2.
+Queries and Results:
+  Query: SELECT AVG(value) AS prumerna_cena
+FROM PRUMCENEMOT2
+WHERE "Tříleté období" = '2017-2019'
+  AND "Území" = 'Česko'
+  AND "Ukazatel" = 'Průměrná jednotková kupní cena nemovitosti'
+  AND "Druh nemovitosti" = 'Byty [Kč/m2]';
+  Result: 26514.0
+  Query: SELECT AVG(value) AS prumerna_cena
+FROM PRUMCENEMOT2
+WHERE "Tříleté období" = '2017-2019'
+  AND "Území" = 'Česko'
+  AND "Ukazatel" = 'Průměrná jednotková kupní cena nemovitosti'
+  AND "Druh nemovitosti" = 'Byty [Kč/m2]';
+  Result: 26514.0
+----------------------------------------------------------------------------
+Prompt: how many people are registered at employment office?
+Result: The number of people registered at the employment office is 279227.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_registered_people
+FROM NEZ01T1
+WHERE Roky = 2023
+  AND "ČR, kraje, okresy" = 'Česko'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP - celkem';
+  Result: 279227.0
+  Query: SELECT SUM(value) AS total_registered_people
+FROM NEZ01T1
+WHERE Roky = 2023
+  AND "ČR, kraje, okresy" = 'Česko'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP - celkem';
+  Result: 279227.0
+----------------------------------------------------------------------------

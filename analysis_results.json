@@ -5961,5 +5961,33 @@
         "result": "2836017"
       }
     ]
+  },
+  {
+    "prompt": "Jaká byla průměrná kupní cena bytů v Česku za období 2017-2019 v Kč/m2?",
+    "result": "Průměrná kupní cena bytů v Česku za období 2017-2019 byla 26514 Kč/m2.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS prumerna_cena\nFROM PRUMCENEMOT2\nWHERE \"Tříleté období\" = '2017-2019'\n  AND \"Území\" = 'Česko'\n  AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti'\n  AND \"Druh nemovitosti\" = 'Byty [Kč/m2]';",
+        "result": "26514.0"
+      },
+      {
+        "query": "SELECT AVG(value) AS prumerna_cena\nFROM PRUMCENEMOT2\nWHERE \"Tříleté období\" = '2017-2019'\n  AND \"Území\" = 'Česko'\n  AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti'\n  AND \"Druh nemovitosti\" = 'Byty [Kč/m2]';",
+        "result": "26514.0"
+      }
+    ]
+  },
+  {
+    "prompt": "how many people are registered at employment office?",
+    "result": "The number of people registered at the employment office is 279227.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_registered_people\nFROM NEZ01T1\nWHERE Roky = 2023\n  AND \"ČR, kraje, okresy\" = 'Česko'\n  AND \"Ukazatel\" = 'Uchazeči o zaměstnání v evidenci ÚP - celkem';",
+        "result": "279227.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_registered_people\nFROM NEZ01T1\nWHERE Roky = 2023\n  AND \"ČR, kraje, okresy\" = 'Česko'\n  AND \"Ukazatel\" = 'Uchazeči o zaměstnání v evidenci ÚP - celkem';",
+        "result": "279227.0"
+      }
+    ]
   }
 ]
