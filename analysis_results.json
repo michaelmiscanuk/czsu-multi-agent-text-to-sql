@@ -5801,5 +5801,123 @@
         "result": "[(0, 'Území', 'TEXT', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Druh energetického pochodu', 'TEXT', 0, None, 0), (3, 'Roky', 'INTEGER', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]"
       }
     ]
+  },
+  {
+    "prompt": "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?",
+    "result": "Výroba kapalných paliv z ropy v Česku v roce 2023 byla 0.0.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value_column) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: value_column"
+      },
+      {
+        "query": "SELECT SUM(Hodnota) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: Hodnota"
+      },
+      {
+        "query": "SELECT SUM(\"Hodnota v TJ\") AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "0.0"
+      },
+      {
+        "query": "SELECT SUM(value_column) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: value_column"
+      },
+      {
+        "query": "SELECT SUM(Hodnota) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: Hodnota"
+      },
+      {
+        "query": "SELECT SUM(\"Hodnota v TJ\") AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "0.0"
+      }
+    ]
+  },
+  {
+    "prompt": "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?",
+    "result": "Výroba kapalných paliv z ropy v Česku v roce 2023 nemohla být určena, protože dotazy obsahovaly chyby v názvu sloupce. Správný název sloupce pro hodnoty je \"value\", ale nebyl použit v dotazech.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value_column) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND Druh_energetického_pochodu = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: value_column"
+      },
+      {
+        "query": "SELECT SUM(Hodnota) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND Druh_energetického_pochodu = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: Hodnota"
+      },
+      {
+        "query": "PRAGMA table_info(EP801);",
+        "result": "[(0, 'Území', 'TEXT', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Druh energetického pochodu', 'TEXT', 0, None, 0), (3, 'Roky', 'INTEGER', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]"
+      },
+      {
+        "query": "SELECT SUM(value_column) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND Druh_energetického_pochodu = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: value_column"
+      },
+      {
+        "query": "SELECT SUM(Hodnota) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND Druh_energetického_pochodu = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "Error: Query error: no such column: Hodnota"
+      },
+      {
+        "query": "PRAGMA table_info(EP801);",
+        "result": "[(0, 'Území', 'TEXT', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Druh energetického pochodu', 'TEXT', 0, None, 0), (3, 'Roky', 'INTEGER', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?",
+    "result": "Výroba kapalných paliv z ropy v Česku v roce 2023 byla 0.0.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", \"Druh energetického pochodu\", SUM(\"value_column\") AS \"Výroba\" \nFROM EP801 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Výroba v procesech zušlechťování paliv celkem' \n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy ' \n  AND \"Roky\" = 2023 \nGROUP BY \"Roky\", \"Ukazatel\", \"Druh energetického pochodu\" \nLIMIT 5;",
+        "result": "[(2023, 'Výroba v procesech zušlechťování paliv celkem', 'Výroba kapalných paliv z ropy ', 0.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", \"Druh energetického pochodu\", SUM(\"value_column\") AS \"Výroba\" \nFROM EP801 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Výroba v procesech zušlechťování paliv celkem' \n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy ' \n  AND \"Roky\" = 2023 \nGROUP BY \"Roky\", \"Ukazatel\", \"Druh energetického pochodu\" \nLIMIT 5;",
+        "result": "[(2023, 'Výroba v procesech zušlechťování paliv celkem', 'Výroba kapalných paliv z ropy ', 0.0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?",
+    "result": "Výroba kapalných paliv z ropy v Česku v roce 2023 byla 330962.822.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "330962.822"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "330962.822"
+      }
+    ]
+  },
+  {
+    "prompt": "Jaký byl podíl osob používajících internet v Česku ve věku 16 a vice v roce 2023?",
+    "result": "Podíl osob používajících internet v Česku ve věku 16 a více v roce 2023 byl 84.8476 % u žen a 87.2328 % u mužů. Celkový údaj pro populaci bez rozlišení pohlaví není k dispozici.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Pohlaví\", \"value\" \nFROM WGEN03CT01 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Osoby používající internet (%)' \n  AND \"Roky\" = '2023';",
+        "result": "[('ženy', 84.8476), ('muži', 87.2328)]"
+      },
+      {
+        "query": "SELECT \"value\" \nFROM WGEN03CT01 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Osoby používající internet (%)' \n  AND \"Roky\" = '2023'\n  AND \"Pohlaví\" IS NULL;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", \"value\" \nFROM WGEN03CT01 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Osoby používající internet (%)' \n  AND \"Roky\" = '2023';",
+        "result": "[('ženy', 84.8476), ('muži', 87.2328)]"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", \"value\" \nFROM WGEN03CT01 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Osoby používající internet (%)' \n  AND \"Roky\" = '2023';",
+        "result": "[('ženy', 84.8476), ('muži', 87.2328)]"
+      },
+      {
+        "query": "SELECT \"value\" \nFROM WGEN03CT01 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Osoby používající internet (%)' \n  AND \"Roky\" = '2023'\n  AND \"Pohlaví\" IS NULL;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", \"value\" \nFROM WGEN03CT01 \nWHERE \"Území\" = 'Česko' \n  AND \"Ukazatel\" = 'Osoby používající internet (%)' \n  AND \"Roky\" = '2023';",
+        "result": "[('ženy', 84.8476), ('muži', 87.2328)]"
+      }
+    ]
   }
 ]

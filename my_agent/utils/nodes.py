@@ -13,16 +13,10 @@ from pathlib import Path
 from langchain_core.messages import AIMessage
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from typing import Literal, TypedDict
-import ast  # used for syntax validation of generated pandas expressions
 
-
-from langgraph.prebuilt import ToolNode, tools_condition
 import os
 
-import chromadb
 import sqlite3
-
 
 # Get debug mode from environment variable
 DEBUG_MODE = os.environ.get('MY_AGENT_DEBUG', '0') == '1'
@@ -49,14 +43,10 @@ except NameError:
     
     
 from .mcp_server import create_mcp_server
-from my_agent.utils.models import get_azure_embedding_model
 from .state import DataAnalysisState
-from .tools import PandasQueryTool, SQLiteQueryTool
 from metadata.create_and_load_chromadb import (
     hybrid_search,
-    similarity_search_chromadb,
     get_langchain_chroma_vectorstore,
-    get_azure_embedding_model,
     cohere_rerank
 )
 
@@ -220,7 +210,10 @@ When generating the query:
 - Limit the output to at most 5 rows using LIMIT unless the user specifies otherwise - but first think if you dont need to group it somehow so it returns reasonable 5 rows.
 - Select only the necessary columns, never all columns.
 - Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
+- Column to Aggregate or extract numeric values is always called "value"! Never use different one or assume how its called.
 - Do NOT modify the database.
+- Always examine the schema to see how the data are laid out - column names and its concrete values. 
+- If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name.
 
 === IMPORTANT RULE ===
 Return ONLY the final SQL query that should be executed, with nothing else around it. 

@@ -34,7 +34,6 @@ from .utils.nodes import (
     retrieve_similar_selections_node,
     relevant_selections_node
 )
-from .utils.tools import PandasQueryTool
 
 # Load environment variables
 load_dotenv()

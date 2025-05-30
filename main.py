@@ -59,7 +59,8 @@ from my_agent.utils.state import DataAnalysisState
 
 # The table allows comparison of wage levels across different economic sectors.
 # """
-DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
+# DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
+DEFAULT_PROMPT = "Jaký byl podíl osob používajících internet v Česku ve věku 16 a vice v roce 2023?"
 
 
 
@@ -124,7 +125,7 @@ async def main(prompt=None):
         config={"configurable": {"thread_id": thread_id}}
     )
     
-    # Extract values from the graph result dictionary
+    # Extract values from the graph result dictionary         
     messages = result["messages"]
     queries_and_results = result["queries_and_results"]
     final_answer = messages[-1].content if messages else ""

@@ -725,7 +725,15 @@ if __name__ == "__main__":
             sys.exit(1)
 
         embedding_client = get_azure_embedding_model()
+        
+        
         QUERY = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
+        #QUERY = "How many flights did NASA made to the MARS?"
+        
+        
+        
+        
+        
         k = 15
 
         # --- Similarity search (original method) ---
