@@ -5919,5 +5919,47 @@
         "result": "[('ženy', 84.8476), ('muži', 87.2328)]"
       }
     ]
+  },
+  {
+    "prompt": "jaka byla rozloha lesu v cechach v roce 2023?",
+    "result": "Rozloha lesů v Česku v roce 2023 byla 2681763.6948 ha.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM LES0102T01 WHERE Území = 'Česko' AND Ukazatel = 'Lesní pozemky k 31. 12. (ha)' AND Roky = '2023' LIMIT 5;",
+        "result": "2681763.6948"
+      },
+      {
+        "query": "SELECT value FROM LES0102T01 WHERE Území = 'Česko' AND Ukazatel = 'Lesní pozemky k 31. 12. (ha)' AND Roky = '2023' LIMIT 5;",
+        "result": "2681763.6948"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik akru lesu bylo v ceske republice v roce 2023?",
+    "result": "V České republice bylo v roce 2023 celkem 2681763.6948 akrů lesů.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_acres FROM LES0102T01 WHERE \"Území\" = \"Česko\" AND \"Ukazatel\" = \"Lesní pozemky k 31. 12. (ha)\" AND \"Roky\" = \"2023\";",
+        "result": "2681763.6948"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_acres FROM LES0102T01 WHERE \"Území\" = \"Česko\" AND \"Ukazatel\" = \"Lesní pozemky k 31. 12. (ha)\" AND \"Roky\" = \"2023\";",
+        "result": "2681763.6948"
+      }
+    ]
+  },
+  {
+    "prompt": "Kolik bylo ekonomických subjektů v Česku v roce 2024?",
+    "result": "V roce 2024 bylo v Česku 2836017 ekonomických subjektů.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_businesses\nFROM WRES00G\nWHERE \"Území\" = 'Česko'\n  AND \"Roky\" = '2024'\n  AND \"Ukazatel\" = 'Počet ekonomických subjektů celkem'\n  AND \"Ekonomické subjekty \" = 'Počet ekonomických subjektů v registru';",
+        "result": "2836017"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_businesses\nFROM WRES00G\nWHERE \"Území\" = 'Česko'\n  AND \"Roky\" = '2024'\n  AND \"Ukazatel\" = 'Počet ekonomických subjektů celkem'\n  AND \"Ekonomické subjekty \" = 'Počet ekonomických subjektů v registru';",
+        "result": "2836017"
+      }
+    ]
   }
 ]

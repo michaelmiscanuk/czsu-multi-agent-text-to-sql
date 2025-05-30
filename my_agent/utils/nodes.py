@@ -487,7 +487,7 @@ async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnal
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Select the top reranked selection if its Cohere relevance score exceeds the threshold (0.35)."""
     debug_print(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
-    SIMILARITY_THRESHOLD = 0.35  # Minimum Cohere rerank score required
+    SIMILARITY_THRESHOLD = 0.005  # Minimum Cohere rerank score required
     most_similar = state.get("most_similar_selections", [])
     selection_code = None
     if most_similar:

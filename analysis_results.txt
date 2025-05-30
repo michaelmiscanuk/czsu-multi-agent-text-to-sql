@@ -11296,3 +11296,37 @@ WHERE "Území" = 'Česko'
   AND "Roky" = '2023';
   Result: [('ženy', 84.8476), ('muži', 87.2328)]
 ----------------------------------------------------------------------------
+Prompt: jaka byla rozloha lesu v cechach v roce 2023?
+Result: Rozloha lesů v Česku v roce 2023 byla 2681763.6948 ha.
+Queries and Results:
+  Query: SELECT value FROM LES0102T01 WHERE Území = 'Česko' AND Ukazatel = 'Lesní pozemky k 31. 12. (ha)' AND Roky = '2023' LIMIT 5;
+  Result: 2681763.6948
+  Query: SELECT value FROM LES0102T01 WHERE Území = 'Česko' AND Ukazatel = 'Lesní pozemky k 31. 12. (ha)' AND Roky = '2023' LIMIT 5;
+  Result: 2681763.6948
+----------------------------------------------------------------------------
+Prompt: kolik akru lesu bylo v ceske republice v roce 2023?
+Result: V České republice bylo v roce 2023 celkem 2681763.6948 akrů lesů.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_acres FROM LES0102T01 WHERE "Území" = "Česko" AND "Ukazatel" = "Lesní pozemky k 31. 12. (ha)" AND "Roky" = "2023";
+  Result: 2681763.6948
+  Query: SELECT SUM(value) AS total_acres FROM LES0102T01 WHERE "Území" = "Česko" AND "Ukazatel" = "Lesní pozemky k 31. 12. (ha)" AND "Roky" = "2023";
+  Result: 2681763.6948
+----------------------------------------------------------------------------
+Prompt: Kolik bylo ekonomických subjektů v Česku v roce 2024?
+Result: V roce 2024 bylo v Česku 2836017 ekonomických subjektů.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_businesses
+FROM WRES00G
+WHERE "Území" = 'Česko'
+  AND "Roky" = '2024'
+  AND "Ukazatel" = 'Počet ekonomických subjektů celkem'
+  AND "Ekonomické subjekty " = 'Počet ekonomických subjektů v registru';
+  Result: 2836017
+  Query: SELECT SUM(value) AS total_businesses
+FROM WRES00G
+WHERE "Území" = 'Česko'
+  AND "Roky" = '2024'
+  AND "Ukazatel" = 'Počet ekonomických subjektů celkem'
+  AND "Ekonomické subjekty " = 'Počet ekonomických subjektů v registru';
+  Result: 2836017
+----------------------------------------------------------------------------
