@@ -6003,5 +6003,19 @@
         "result": "330962.822"
       }
     ]
+  },
+  {
+    "prompt": "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?",
+    "result": "Výroba kapalných paliv z ropy v Česku v roce 2023 byla 330962.822.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "330962.822"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_production\nFROM EP801\nWHERE Území = 'Česko'\n  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'\n  AND \"Druh energetického pochodu\" = 'Výroba kapalných paliv z ropy '\n  AND Roky = 2023;",
+        "result": "330962.822"
+      }
+    ]
   }
 ]
