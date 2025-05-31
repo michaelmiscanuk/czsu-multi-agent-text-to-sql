@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "CZSU_Multi_Agent_App"
+name = "czsu-multi-agent-app"
 version = "0.1.0"
 description = "A prototype project for LangGraph testing."
 authors = ["Your Name <your.email@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.0"
