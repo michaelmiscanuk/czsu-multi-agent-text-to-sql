@@ -4,6 +4,10 @@ version = "0.1.0"
 description = "A prototype project for LangGraph testing."
 authors = ["Your Name <your.email@example.com>"]
 
+packages = [
+    { include = "CZSU_Multi_Agent_App" }
+]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 
