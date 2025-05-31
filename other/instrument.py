@@ -33,7 +33,7 @@ class Framework(Enum):
 #==============================================================================
 # FUNCTIONS
 #==============================================================================
-def instrument(project_name="LangGraph_Prototype4", framework=Framework.LANGGRAPH):
+def instrument(project_name="LangGraph_CZSU_Multi_Agent_App", framework=Framework.LANGGRAPH):
     """Configure Phoenix instrumentation for tracing and monitoring.
     
     This function sets up the OpenTelemetry-based tracing infrastructure that

@@ -9,7 +9,9 @@ __pycache__/
 htmlcov/
 .ipynb_checkpoints
 data/czsu_data.db
+data/CSVs
 metadata/czsu_chromadb/
+metadata/schemas/
 
 # Node/Next.js/Frontend ignores
 node_modules/

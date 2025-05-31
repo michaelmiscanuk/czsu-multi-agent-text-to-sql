@@ -12,7 +12,9 @@ except NameError:
 # Configuration of paths to unzip (relative to BASE_DIR)
 PATHS_TO_UNZIP = [
     r"metadata\czsu_chromadb.zip",  # Use r prefix for raw string
-    r"data\czsu_data.zip"
+    r"data\czsu_data.zip",
+    r"data\CSVs.zip",
+    r"metadata\schemas.zip"
     # Add more paths here as needed
 ]
 

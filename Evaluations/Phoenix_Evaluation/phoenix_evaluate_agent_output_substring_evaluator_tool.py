@@ -21,10 +21,10 @@ from phoenix.experiments import run_experiment
 from phoenix.session.client import Client
 
 # -------------------------------------------------------------------
-# Ensure prototype4 root (parent of Evaluations) is on sys.path
+# Ensure CZSU_Multi_Agent_App root (parent of Evaluations) is on sys.path
 # -------------------------------------------------------------------
-SCRIPT_DIR = Path(__file__).resolve().parent        # .../prototype4/Evaluations
-PROJECT_ROOT = SCRIPT_DIR.parent                    # .../prototype4
+SCRIPT_DIR = Path(__file__).resolve().parent        # .../CZSU_Multi_Agent_App/Evaluations
+PROJECT_ROOT = SCRIPT_DIR.parent                    # .../CZSU_Multi_Agent_App
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 # -------------------------------------------------------------------

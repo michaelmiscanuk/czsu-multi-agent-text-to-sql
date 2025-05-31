@@ -465,6 +465,12 @@ async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnal
     query = state["prompt"]
     n_results = state.get("n_results", 10)  # Allow override, default to 10
 
+    # Check if ChromaDB directory exists
+    chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
+    if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
+        debug_print(f"{RETRIEVE_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}")
+        return {"most_similar_selections": [], "chromadb_missing": True}
+
     try:
         chroma_vectorstore = get_langchain_chroma_vectorstore(
             collection_name=CHROMA_COLLECTION_NAME,
@@ -479,6 +485,7 @@ async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnal
             score = res.relevance_score
             most_similar.append((selection_code, score))
         debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections (rerank hybrid): {most_similar}")
+        debug_print(f"{RETRIEVE_NODE_ID}: DEBUG most_similar_selections: {most_similar}")
         return {"most_similar_selections": most_similar}
     except Exception as e:
         debug_print(f"{RETRIEVE_NODE_ID}: Error in rerank hybrid search: {e}")

@@ -32,7 +32,8 @@ from .utils.nodes import (
     reflect_node,
     MAX_ITERATIONS,
     retrieve_similar_selections_node,
-    relevant_selections_node
+    relevant_selections_node,
+    debug_print
 )
 
 # Load environment variables
@@ -98,8 +99,12 @@ def create_graph():
     def route_after_relevant(state: DataAnalysisState):
         if state.get("selection_with_possible_answer"):
             return "get_schema"
+        elif state.get("chromadb_missing"):
+            print("ERROR: ChromaDB directory is missing. Please unzip or create the ChromaDB at 'metadata/czsu_chromadb'.")
+            return END
         else:
             print("Couldn't find relevant dataset selection to provide answer")
+            debug_print(f"DEBUG STATE: {state}")
             return END
     graph.add_conditional_edges(
         "relevant_selections",

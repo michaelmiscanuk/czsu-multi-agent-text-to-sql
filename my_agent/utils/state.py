@@ -36,3 +36,4 @@ class DataAnalysisState(TypedDict):
     reflection_decision: str  # Last decision from the reflection node: "improve" or "answer"
     most_similar_selections: Annotated[List[Tuple[str, float]], add]  # List of (selection_code, cosine_similarity)
     selection_with_possible_answer: str  # Name of selection_code with possible answer, or None
+    chromadb_missing: bool  # True if ChromaDB directory is missing, else False or not present

@@ -59,8 +59,8 @@ from my_agent.utils.state import DataAnalysisState
 
 # The table allows comparison of wage levels across different economic sectors.
 # """
-# DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
-DEFAULT_PROMPT = "Jaký byl podíl osob používajících internet v Česku ve věku 16 a vice v roce 2023?"
+DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
+# DEFAULT_PROMPT = "Jaký byl podíl osob používajících internet v Česku ve věku 16 a vice v roce 2023?"
 
 
 
@@ -99,7 +99,7 @@ async def main(prompt=None):
         
     # Initialize tracing for debugging and performance monitoring
     # This is crucial for production deployments to track execution paths
-    # instrument(project_name="LangGraph_Prototype4", framework=Framework.LANGGRAPH)
+    # instrument(project_name="LangGraph_CZSU_Multi_Agent_App", framework=Framework.LANGGRAPH)
     
     # Create the LangGraph execution graph - this defines our workflow steps
     graph = create_graph()
@@ -111,7 +111,8 @@ async def main(prompt=None):
         "prompt": prompt,
         "messages": [],
         "iteration": 0,
-        "queries_and_results": []
+        "queries_and_results": [],
+        "chromadb_missing": False
     }
     
     # Generate a unique thread ID to track this specific analysis run

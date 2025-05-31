@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "prototype4"
+name = "CZSU_Multi_Agent_App"
 version = "0.1.0"
 description = "A prototype project for LangGraph testing."
 authors = ["Your Name <your.email@example.com>"]

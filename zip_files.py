@@ -12,7 +12,10 @@ except NameError:
 # Configuration of paths to zip
 PATHS_TO_ZIP = [
     r"metadata\czsu_chromadb",
-    r"data\czsu_data.db"
+    r"data\czsu_data.db",
+    r"data\CSVs",
+    r"metadata\schemas"
+    
 ]
 
 def zip_path(path_to_zip: str):

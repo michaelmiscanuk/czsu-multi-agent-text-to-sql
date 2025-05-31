@@ -11364,3 +11364,21 @@ WHERE Roky = 2023
   AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP - celkem';
   Result: 279227.0
 ----------------------------------------------------------------------------
+Prompt: Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?
+Result: Výroba kapalných paliv z ropy v Česku v roce 2023 byla 330962.822.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_production
+FROM EP801
+WHERE Území = 'Česko'
+  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'
+  AND "Druh energetického pochodu" = 'Výroba kapalných paliv z ropy '
+  AND Roky = 2023;
+  Result: 330962.822
+  Query: SELECT SUM(value) AS total_production
+FROM EP801
+WHERE Území = 'Česko'
+  AND Ukazatel = 'Výroba v procesech zušlechťování paliv celkem'
+  AND "Druh energetického pochodu" = 'Výroba kapalných paliv z ropy '
+  AND Roky = 2023;
+  Result: 330962.822
+----------------------------------------------------------------------------
