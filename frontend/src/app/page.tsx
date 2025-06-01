@@ -55,7 +55,10 @@ const Home = () => {
           }
         ]);
         // Call your FastAPI backend
-        const response = await fetch('http://localhost:8000/analyze', {
+        const API_URL = process.env.NODE_ENV === 'development'
+          ? 'http://localhost:8000/analyze'
+          : '/analyze';
+        const response = await fetch(API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
