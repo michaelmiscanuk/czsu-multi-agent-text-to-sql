@@ -13,6 +13,3 @@ services:
     healthCheckPath: /docs
     autoDeploy: true
     plan: free
-    scaling:
-      minInstances: 1
-      maxInstances: 1
