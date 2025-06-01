@@ -135,7 +135,7 @@ posthog==4.2.0
 prompt_toolkit
 propcache==0.3.1
 protobuf==5.29.4
--e git+https://github.com/michaelmiscanuk/CZSU_Multi_Agent_App@043f3653d5d7ee48b58e7e75fbd9d04c27a9d7a8#egg=czsu-multi-agent-app
+-e git+https://github.com/michaelmiscanuk/czsu-multi-agent-text-to-sql@043f3653d5d7ee48b58e7e75fbd9d04c27a9d7a8#egg=czsu-multi-agent-app
 psutil
 pure_eval
 pyarrow==19.0.1
