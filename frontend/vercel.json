@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/api/$1"
+    }
+  ]
+}
