@@ -109,62 +109,66 @@ const Home = () => {
   };
 
   return (
-    <div className="flex justify-center bg-gray-100 min-h-screen py-8 px-4">
-      {/* Main container with refined shadow and border */}
-      <div className="w-[70%] bg-white flex flex-col rounded-xl shadow-lg border border-gray-100 overflow-hidden h-[90vh]">
-        <Header onMenuClick={setSelectedMenu} selectedMenu={selectedMenu} />
-        {selectedMenu === 'chat' && <>
-          <MessageArea messages={messages} />
-          <InputBar currentMessage={currentMessage} setCurrentMessage={setCurrentMessage} onSubmit={handleSubmit} isLoading={isLoading} />
-        </>}
-        {selectedMenu === 'datasets' && <DatasetsTable onRowClick={handleDatasetRowClick} />}
-        {selectedMenu === 'data' && (
-          <DataTableView
-            selectedTable={selectedTable}
-            setSelectedTable={setSelectedTable}
-            columns={columns}
-            setColumns={setColumns}
-            rows={rows}
-            setRows={setRows}
-            selectedColumn={selectedColumn}
-            setSelectedColumn={setSelectedColumn}
-            columnFilters={columnFilters}
-            setColumnFilters={setColumnFilters}
-            pendingTableSearch={pendingTableSearch}
-            setPendingTableSearch={setPendingTableSearch}
-          />
-        )}
-        {selectedMenu === 'home' && (
-          <div className="flex flex-1 flex-col items-center justify-center text-center p-12">
-            <h1 className="text-2xl font-bold mb-4">Welcome to the CZSU Data Explorer</h1>
-            <p className="text-lg text-gray-700 max-w-xl">
-              This application contains data from the Czech Statistical Office (CZSU).<br />
-              You can chat with the data using natural language, explore datasets, and filter or search tables interactively.
-            </p>
-          </div>
-        )}
-        {selectedMenu === 'contacts' && (
-          <div className="flex flex-1 flex-col items-center justify-center text-center p-12">
-            <h1 className="text-2xl font-bold mb-4">Contact</h1>
-            <div className="text-lg text-gray-700 max-w-xl space-y-4">
-              <div><span className="font-semibold">Name:</span> Michael Miscanuk</div>
-              <div>
-                <span className="font-semibold">Email:</span> <a href="mailto:michael.miscanuk@gmail.com" className="text-blue-600 underline">michael.miscanuk@gmail.com</a>
-              </div>
-              <div>
-                <span className="font-semibold">LinkedIn:</span> <a href="https://www.linkedin.com/in/michael-miscanuk-b9503b77/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">michael-miscanuk-b9503b77</a>
-              </div>
-              <div>
-                <span className="font-semibold">GitHub:</span> <a href="https://github.com/michaelmiscanuk" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">github.com/michaelmiscanuk</a>
-              </div>
-              <div>
-                <span className="font-semibold">About me:</span>
-                <span className="ml-1">I'm passionate about Data Engineering, Data Science, and AI Engineering. I enjoy building intelligent systems and working with data to solve real-world problems.</span>
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 via-blue-50 to-purple-100 flex flex-col">
+      <Header onMenuClick={setSelectedMenu} selectedMenu={selectedMenu} />
+      <main className="flex justify-center flex-1 py-8 px-2">
+        <div className="w-full max-w-5xl bg-white flex flex-col rounded-2xl shadow-2xl border border-gray-100 overflow-hidden min-h-[70vh] p-8">
+          {selectedMenu === 'chat' && <>
+            <MessageArea messages={messages} />
+            <InputBar currentMessage={currentMessage} setCurrentMessage={setCurrentMessage} onSubmit={handleSubmit} isLoading={isLoading} />
+          </>}
+          {selectedMenu === 'datasets' && <DatasetsTable onRowClick={handleDatasetRowClick} />}
+          {selectedMenu === 'data' && (
+            <DataTableView
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
+              columns={columns}
+              setColumns={setColumns}
+              rows={rows}
+              setRows={setRows}
+              selectedColumn={selectedColumn}
+              setSelectedColumn={setSelectedColumn}
+              columnFilters={columnFilters}
+              setColumnFilters={setColumnFilters}
+              pendingTableSearch={pendingTableSearch}
+              setPendingTableSearch={setPendingTableSearch}
+            />
+          )}
+          {selectedMenu === 'home' && (
+            <div className="flex flex-1 flex-col items-center justify-center text-center p-12">
+              <h1 className="text-3xl font-bold mb-4">Welcome to the CZSU Data Explorer</h1>
+              <p className="text-xl text-gray-700 max-w-2xl">
+                This application contains data from the Czech Statistical Office (CZSU).<br />
+                You can chat with the data using natural language, explore datasets, and filter or search tables interactively.
+              </p>
+            </div>
+          )}
+          {selectedMenu === 'contacts' && (
+            <div className="flex flex-1 flex-col items-center justify-center text-center p-12">
+              <h1 className="text-2xl font-bold mb-4">Contact</h1>
+              <div className="text-lg text-gray-700 max-w-xl space-y-4">
+                <div><span className="font-semibold">Name:</span> Michael Miscanuk</div>
+                <div>
+                  <span className="font-semibold">Email:</span> <a href="mailto:michael.miscanuk@gmail.com" className="text-blue-600 underline">michael.miscanuk@gmail.com</a>
+                </div>
+                <div>
+                  <span className="font-semibold">LinkedIn:</span> <a href="https://www.linkedin.com/in/michael-miscanuk-b9503b77/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">michael-miscanuk-b9503b77</a>
+                </div>
+                <div>
+                  <span className="font-semibold">GitHub:</span> <a href="https://github.com/michaelmiscanuk" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">github.com/michaelmiscanuk</a>
+                </div>
+                <div>
+                  <span className="font-semibold">About me:</span>
+                  <span className="ml-1">I'm passionate about Data Engineering, Data Science, and AI Engineering. I enjoy building intelligent systems and working with data to solve real-world problems.</span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </main>
+      <footer className="w-full text-center text-gray-400 text-sm py-4 mt-4">
+        &copy; {new Date().getFullYear()} Michael Miscanuk. Data from the Czech Statistical Office (CZSU).
+      </footer>
     </div>
   );
 };
