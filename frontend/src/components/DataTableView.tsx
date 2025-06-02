@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { removeDiacritics } from './utils';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
@@ -57,7 +58,12 @@ const DataTableView: React.FC<DataTableViewProps> = ({
     fetch(`${API_BASE}/data-tables?q=${encodeURIComponent(search)}`)
       .then(res => res.json())
       .then(data => {
-        setSuggestions(data.tables || []);
+        const normSearch = removeDiacritics(search.toLowerCase());
+        const filteredTables = (data.tables || []).filter((table: string) =>
+          removeDiacritics(table.toLowerCase()).startsWith(normSearch)
+        );
+        const sortedTables = filteredTables.slice().sort((a: string, b: string) => a.localeCompare(b, 'cs', { sensitivity: 'base' }));
+        setSuggestions(sortedTables);
         setLoading(false);
       });
   }, [search]);
@@ -151,12 +157,17 @@ const DataTableView: React.FC<DataTableViewProps> = ({
               default: return cellNum === num;
             }
           } else {
-            // fallback: substring match
-            return String(row[idx]).toLowerCase().includes(filter.toLowerCase());
+            // fallback: substring match (diacritics-insensitive, multi-word)
+            const normWords = removeDiacritics(filter.toLowerCase()).split(/\s+/).filter(Boolean);
+            const haystack = removeDiacritics(String(row[idx]).toLowerCase());
+            return normWords.every(word => haystack.includes(word));
           }
         } else {
-          // Default: substring match
-          return row[idx] !== null && String(row[idx]).toLowerCase().includes(filter.toLowerCase());
+          // Default: diacritics-insensitive, multi-word substring match
+          if (row[idx] === null) return false;
+          const normWords = removeDiacritics(filter.toLowerCase()).split(/\s+/).filter(Boolean);
+          const haystack = removeDiacritics(String(row[idx]).toLowerCase());
+          return normWords.every(word => haystack.includes(word));
         }
       })
     );
@@ -193,6 +204,11 @@ const DataTableView: React.FC<DataTableViewProps> = ({
         )}
         {loading && <div className="absolute right-3 top-2 text-xs text-gray-400">Loading...</div>}
       </div>
+      {selectedTable && (
+        <div className="mb-2 flex items-center">
+          <span className="font-mono text-xs bg-gray-100 border border-gray-200 rounded px-2 py-1 mr-2">Table code: {selectedTable}</span>
+        </div>
+      )}
       {selectedTable && columns.length > 0 && (
         <div className="mb-4 flex items-center space-x-2">
           <label className="text-sm text-gray-700">Column:</label>

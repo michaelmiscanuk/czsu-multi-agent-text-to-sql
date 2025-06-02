@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { removeDiacritics } from './utils';
 
 // To support both local dev and production, set NEXT_PUBLIC_API_BASE in .env.local to your backend URL (e.g., http://localhost:8000) for local dev.
 // In production, leave it unset to use relative paths.
@@ -29,15 +30,31 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
 
   useEffect(() => {
     setLoading(true);
-    const params = new URLSearchParams({ page: page.toString() });
-    if (filter) params.append('q', filter);
-    fetch(`${API_BASE}/datasets?${params.toString()}`)
-      .then(res => res.json())
-      .then((res: DatasetsResponse) => {
-        setData(res.results);
-        setTotal(res.total);
-        setLoading(false);
-      });
+    // If there is a filter, fetch all datasets and filter client-side
+    if (filter) {
+      fetch(`${API_BASE}/datasets?page=1&page_size=10000`)
+        .then(res => res.json())
+        .then((res: DatasetsResponse) => {
+          const normWords = removeDiacritics(filter.toLowerCase()).split(/\s+/).filter(Boolean);
+          const filteredResults = res.results.filter(row => {
+            const haystack = removeDiacritics((row.selection_code + ' ' + row.extended_description).toLowerCase());
+            return normWords.every(word => haystack.includes(word));
+          });
+          setData(filteredResults.slice((page - 1) * 10, page * 10));
+          setTotal(filteredResults.length);
+          setLoading(false);
+        });
+    } else {
+      // No filter: use backend pagination
+      const params = new URLSearchParams({ page: page.toString() });
+      fetch(`${API_BASE}/datasets?${params.toString()}`)
+        .then(res => res.json())
+        .then((res: DatasetsResponse) => {
+          setData(res.results);
+          setTotal(res.total);
+          setLoading(false);
+        });
+    }
   }, [page, filter]);
 
   const totalPages = Math.ceil(total / 10);
@@ -70,10 +87,21 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
               data.map(row => (
                 <tr
                   key={row.selection_code}
-                  className={`hover:bg-gray-50${onRowClick ? ' cursor-pointer' : ''}`}
-                  onClick={onRowClick ? () => onRowClick(row.selection_code) : undefined}
+                  className={"hover:bg-gray-50"}
                 >
-                  <td className="px-4 py-2 border-b font-mono text-xs">{row.selection_code}</td>
+                  <td className="px-4 py-2 border-b font-mono text-xs">
+                    {onRowClick ? (
+                      <button
+                        className="text-blue-600 underline hover:text-blue-800 cursor-pointer p-0 bg-transparent border-0 outline-none"
+                        style={{ textDecoration: 'underline' }}
+                        onClick={() => onRowClick(row.selection_code)}
+                      >
+                        {row.selection_code}
+                      </button>
+                    ) : (
+                      row.selection_code
+                    )}
+                  </td>
                   <td className="px-4 py-2 border-b text-sm whitespace-pre-line">{row.extended_description}</td>
                 </tr>
               ))

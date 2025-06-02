@@ -26,9 +26,12 @@ async def analyze(request: AnalyzeRequest):
     return result 
 
 @app.get("/datasets")
-def get_datasets(page: int = Query(1, ge=1), q: Optional[str] = None):
+def get_datasets(
+    page: int = Query(1, ge=1),
+    q: Optional[str] = None,
+    page_size: int = Query(10, ge=1, le=10000)  # Allow up to 10,000
+):
     db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
-    page_size = 10
     offset = (page - 1) * page_size
     where_clause = ""
     params = []

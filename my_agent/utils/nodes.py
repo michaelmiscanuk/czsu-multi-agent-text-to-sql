@@ -207,7 +207,7 @@ Always calculate using only the relevant data and separate pieces, ensuring accu
 
 When generating the query:
 - Return ONLY the SQL expression that answers the question.
-- Limit the output to at most 5 rows using LIMIT unless the user specifies otherwise - but first think if you dont need to group it somehow so it returns reasonable 5 rows.
+- Limit the output to at most 10 rows using LIMIT unless the user specifies otherwise - but first think if you dont need to group it somehow so it returns reasonable 5 rows.
 - Select only the necessary columns, never all columns.
 - Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
 - Column to Aggregate or extract numeric values is always called "value"! Never use different one or assume how its called.

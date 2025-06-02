@@ -6261,5 +6261,213 @@
         "result": "7442614.0"
       }
     ]
+  },
+  {
+    "prompt": "how many car accidents happened in 2023?",
+    "result": "In 2023, 94945 car accidents happened.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_accidents\nFROM KRI05T1\nWHERE \"Roky\" = 2023\n  AND \"Česko, kraje, okresy\" = 'Česko'\n  AND \"Ukazatel\" = 'Počet dopravních nehod';",
+        "result": "94945.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_accidents\nFROM KRI05T1\nWHERE \"Roky\" = 2023\n  AND \"Česko, kraje, okresy\" = 'Česko'\n  AND \"Ukazatel\" = 'Počet dopravních nehod';",
+        "result": "94945.0"
+      }
+    ]
+  },
+  {
+    "prompt": "what kind of assets banks keep?",
+    "result": "Banks keep the following types of assets in the Czech Republic:\n\n1. **Finanční aktiva**: 4536990.443937002\n2. **Akcie, účasti a jiné podíly**: 1852217.8401817523\n3. **Dluhové cenné papíry**: 953286.7404857851\n4. **Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní**: 301108.3512338736\n5. **Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh**: 87264.6916825144",
+    "queries_and_results": [
+      {
+        "query": "PRAGMA table_info(FIN03NEBANKFA);",
+        "result": "[(0, 'Území', 'TEXT', 0, None, 0), (1, 'Instituce', 'TEXT', 0, None, 0), (2, 'Ukazatel', 'TEXT', 0, None, 0), (3, 'Roky', 'INTEGER', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_value\nFROM FIN03NEBANKFA\nWHERE Území = 'Česko' AND Instituce = 'Nebankovní peněžní instituce účtující jako banky'\nGROUP BY Ukazatel\nLIMIT 5;",
+        "result": "[('Akcie, účasti a jiné podíly', 1852217.8401817523), ('Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh', 87264.6916825144), ('Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní', 301108.3512338736), ('Dluhové cenné papíry', 953286.7404857851), ('Finanční aktiva ', 4536990.443937002)]"
+      },
+      {
+        "query": "SELECT Ukazatel, Roky, SUM(value) AS yearly_value\nFROM FIN03NEBANKFA\nWHERE Území = 'Česko' AND Instituce = 'Nebankovní peněžní instituce účtující jako banky'\nGROUP BY Ukazatel, Roky\nORDER BY Ukazatel, Roky\nLIMIT 5;",
+        "result": "[('Akcie, účasti a jiné podíly', 2014, 91213.3506049617), ('Akcie, účasti a jiné podíly', 2015, 75981.0666750988), ('Akcie, účasti a jiné podíly', 2016, 106921.864289156), ('Akcie, účasti a jiné podíly', 2017, 135304.233048987), ('Akcie, účasti a jiné podíly', 2018, 150179.329087895)]"
+      },
+      {
+        "query": "PRAGMA table_info(FIN03NEBANKFA);",
+        "result": "[(0, 'Území', 'TEXT', 0, None, 0), (1, 'Instituce', 'TEXT', 0, None, 0), (2, 'Ukazatel', 'TEXT', 0, None, 0), (3, 'Roky', 'INTEGER', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_value\nFROM FIN03NEBANKFA\nWHERE Území = 'Česko' AND Instituce = 'Nebankovní peněžní instituce účtující jako banky'\nGROUP BY Ukazatel\nLIMIT 5;",
+        "result": "[('Akcie, účasti a jiné podíly', 1852217.8401817523), ('Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh', 87264.6916825144), ('Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní', 301108.3512338736), ('Dluhové cenné papíry', 953286.7404857851), ('Finanční aktiva ', 4536990.443937002)]"
+      },
+      {
+        "query": "SELECT Ukazatel, Roky, SUM(value) AS yearly_value\nFROM FIN03NEBANKFA\nWHERE Území = 'Česko' AND Instituce = 'Nebankovní peněžní instituce účtující jako banky'\nGROUP BY Ukazatel, Roky\nORDER BY Ukazatel, Roky\nLIMIT 5;",
+        "result": "[('Akcie, účasti a jiné podíly', 2014, 91213.3506049617), ('Akcie, účasti a jiné podíly', 2015, 75981.0666750988), ('Akcie, účasti a jiné podíly', 2016, 106921.864289156), ('Akcie, účasti a jiné podíly', 2017, 135304.233048987), ('Akcie, účasti a jiné podíly', 2018, 150179.329087895)]"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lazni je v cechach?",
+    "result": "Na základě poskytnutých dat není možné určit, kolik lázní je v Čechách, protože žádné relevantní výsledky nebyly nalezeny.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_spas\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" LIKE '%lázně%'\n  AND \"Roky\" = 2023;",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Území\", SUM(value) AS total_population\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" IN ('Karlovy Vary', 'Mariánské Lázně', 'Františkovy Lázně')\n  AND \"Roky\" = 2023\nGROUP BY \"Území\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT DISTINCT \"Území\"\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví';",
+        "result": "Česko"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_spas\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" LIKE '%lázně%'\n  AND \"Roky\" = 2023;",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Území\", SUM(value) AS total_population\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" IN ('Karlovy Vary', 'Mariánské Lázně', 'Františkovy Lázně')\n  AND \"Roky\" = 2023\nGROUP BY \"Území\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT DISTINCT \"Území\"\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví';",
+        "result": "Česko"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lazni je v cechach?",
+    "result": "Dotaz na počet lázní v Čechách nelze z poskytnutých dat zodpovědět, protože žádný výsledek neobsahuje relevantní informaci o počtu lázní.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_spas\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" LIKE '%lázně%'\n  AND \"Roky\" = 2023;",
+        "result": "None"
+      },
+      {
+        "query": "SELECT COUNT(*) AS total_records\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" = 'Celkem'\n  AND \"Roky\" = 2023;",
+        "result": "1"
+      },
+      {
+        "query": "SELECT COUNT(*) AS total_records\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" = 'Celkem ostatní země'\n  AND \"Roky\" = 2023;",
+        "result": "1"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_spas\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" LIKE '%lázně%'\n  AND \"Roky\" = 2023;",
+        "result": "None"
+      },
+      {
+        "query": "SELECT COUNT(*) AS total_records\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" = 'Celkem'\n  AND \"Roky\" = 2023;",
+        "result": "1"
+      },
+      {
+        "query": "SELECT COUNT(*) AS total_records\nFROM CIZ01D\nWHERE \"Ukazatel\" = 'Cizinci podle státního občanství a pohlaví'\n  AND \"Pohlaví\" = 'Celkem'\n  AND \"Území\" = 'Česko'\n  AND \"Státní občanství - hierarchie\" = 'Celkem ostatní země'\n  AND \"Roky\" = 2023;",
+        "result": "1"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik hotelu je v praze?",
+    "result": "V Praze je 233 hotelů.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_hotels\nFROM CRU01ROBCET5\nWHERE \"Roky\" = '2023'\n  AND \"Správní obvody hl. města Prahy\" = 'Praha 1'\n  AND \"Kategorie ubytovacího zařízení\" LIKE 'Hotel%'\n  AND \"Ukazatel\" = 'Počet hromadných ubytovacích zařízení';",
+        "result": "233.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_hotels\nFROM CRU01ROBCET5\nWHERE \"Roky\" = '2023'\n  AND \"Kategorie ubytovacího zařízení\" LIKE 'Hotel%'\n  AND \"Ukazatel\" = 'Počet hromadných ubytovacích zařízení';",
+        "result": "233.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_hotels\nFROM CRU01ROBCET5\nWHERE \"Roky\" = '2023'\n  AND \"Správní obvody hl. města Prahy\" = 'Praha 1'\n  AND \"Kategorie ubytovacího zařízení\" LIKE 'Hotel%'\n  AND \"Ukazatel\" = 'Počet hromadných ubytovacích zařízení';",
+        "result": "233.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_hotels\nFROM CRU01ROBCET5\nWHERE \"Roky\" = '2023'\n  AND \"Kategorie ubytovacího zařízení\" LIKE 'Hotel%'\n  AND \"Ukazatel\" = 'Počet hromadných ubytovacích zařízení';",
+        "result": "233.0"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik hotelu je v brne?",
+    "result": "V Brně je 57 hotelů.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_hotelu\nFROM CRU01T1\nWHERE Ukazatel = 'Počet hromadných ubytovacích zařízení'\n  AND Roky = '2023'\n  AND Území = 'Brno-město'\n  AND Kategorie ubytovacího zařízení LIKE 'Hotel%';",
+        "result": "Error: Query error: near \"ubytovacího\": syntax error"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_hotelu\nFROM CRU01T1\nWHERE \"Ukazatel\" = 'Počet hromadných ubytovacích zařízení'\n  AND \"Roky\" = '2023'\n  AND \"Území\" = 'Brno-město'\n  AND \"Kategorie ubytovacího zařízení\" LIKE 'Hotel%';",
+        "result": "57.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_hotelu\nFROM CRU01T1\nWHERE Ukazatel = 'Počet hromadných ubytovacích zařízení'\n  AND Roky = '2023'\n  AND Území = 'Brno-město'\n  AND Kategorie ubytovacího zařízení LIKE 'Hotel%';",
+        "result": "Error: Query error: near \"ubytovacího\": syntax error"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_hotelu\nFROM CRU01T1\nWHERE \"Ukazatel\" = 'Počet hromadných ubytovacích zařízení'\n  AND \"Roky\" = '2023'\n  AND \"Území\" = 'Brno-město'\n  AND \"Kategorie ubytovacího zařízení\" LIKE 'Hotel%';",
+        "result": "57.0"
+      }
+    ]
+  },
+  {
+    "prompt": "a",
+    "result": "Your question \"a\" is unclear and does not specify what information or comparison is required. Please provide more details or clarify your query.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Měsíce\", \"Klasifikace produkce\", AVG(\"value\") AS \"Average Value\"\nFROM CEN0201BT03\nWHERE \"Ukazatel\" = 'Index cen průmyslových výrobců (%)'\n  AND \"Území\" = 'Česko'\n  AND \"Typ indexu\" = 'Bazický index (2015 = 100)'\nGROUP BY \"Měsíce\", \"Klasifikace produkce\"\nORDER BY \"Měsíce\" ASC\nLIMIT 10;",
+        "result": "[('březen 2015', 'Chemické látky a chemické přípravky, vč. subdodavatelských prací', 96.8), ('březen 2015', 'Dřevo a dřevěné a korkové výrobky, kromě nábytku; proutěné a slaměné výrobky, vč. souvisejících služeb a prací', 100.5), ('březen 2015', 'ELEKTŘINA, PLYN, PÁRA A KLIMATIZOVANÝ VZDUCH', 100.1), ('březen 2015', 'Elektrická zařízení, vč. subdodavatelských prací', 100.6), ('březen 2015', 'Elektřina, plyn, pára a klimatizovaný vzduch', 100.1), ('březen 2015', 'Kovodělné výrobky, kromě strojů a zařízení, vč. subdodavatelských prací', 100.4), ('březen 2015', 'Motorová vozidla (kromě motocyklů), přívěsy a návěsy, vč. subdodavatelských prací', 100.2), ('březen 2015', 'Nábytek, vč. souvisejících služeb a prací', 100.0), ('březen 2015', 'Nápoje, vč. subdodavatelských prací', 99.5), ('březen 2015', 'Oděvy, vč. subdodavatelských prací', 100.2)]"
+      },
+      {
+        "query": "SELECT \"Měsíce\", \"Klasifikace produkce\", MAX(\"value\") AS \"Max Value\"\nFROM CEN0201BT03\nWHERE \"Ukazatel\" = 'Index cen průmyslových výrobců (%)'\n  AND \"Území\" = 'Česko'\n  AND \"Typ indexu\" = 'Bazický index (2015 = 100)'\nGROUP BY \"Měsíce\", \"Klasifikace produkce\"\nORDER BY \"Max Value\" DESC\nLIMIT 10;",
+        "result": "[('leden 2023', 'Černé a hnědé uhlí a lignit', 261.2), ('březen 2023', 'Černé a hnědé uhlí a lignit', 261.0), ('únor 2023', 'Černé a hnědé uhlí a lignit', 261.0), ('duben 2023', 'Černé a hnědé uhlí a lignit', 258.2), ('červen 2023', 'Černé a hnědé uhlí a lignit', 258.0), ('květen 2023', 'Černé a hnědé uhlí a lignit', 257.9), ('listopad 2023', 'Černé a hnědé uhlí a lignit', 255.1), ('prosinec 2023', 'Černé a hnědé uhlí a lignit', 255.1), ('říjen 2023', 'Černé a hnědé uhlí a lignit', 254.2), ('červenec 2023', 'Černé a hnědé uhlí a lignit', 253.1)]"
+      },
+      {
+        "query": "SELECT \"Měsíce\", \"Klasifikace produkce\", MIN(\"value\") AS \"Min Value\"\nFROM CEN0201BT03\nWHERE \"Ukazatel\" = 'Index cen průmyslových výrobců (%)'\n  AND \"Území\" = 'Česko'\n  AND \"Typ indexu\" = 'Bazický index (2015 = 100)'\nGROUP BY \"Měsíce\", \"Klasifikace produkce\"\nORDER BY \"Min Value\" ASC\nLIMIT 10;",
+        "result": "[('květen 2020', 'Ropa a zemní plyn', 51.6), ('červen 2020', 'Ropa a zemní plyn', 56.9), ('srpen 2020', 'Ropa a zemní plyn', 64.1), ('červenec 2020', 'Ropa a zemní plyn', 64.1), ('září 2020', 'Ropa a zemní plyn', 64.7), ('říjen 2020', 'Ropa a zemní plyn', 65.5), ('duben 2020', 'Ropa a zemní plyn', 66.2), ('listopad 2020', 'Ropa a zemní plyn', 69.3), ('březen 2016', 'Ropa a zemní plyn', 69.6), ('prosinec 2020', 'Ropa a zemní plyn', 69.8)]"
+      },
+      {
+        "query": "SELECT \"Měsíce\", \"Klasifikace produkce\", AVG(\"value\") AS \"Average Value\"\nFROM CEN0201BT03\nWHERE \"Ukazatel\" = 'Index cen průmyslových výrobců (%)'\n  AND \"Území\" = 'Česko'\n  AND \"Typ indexu\" = 'Bazický index (2015 = 100)'\nGROUP BY \"Měsíce\", \"Klasifikace produkce\"\nORDER BY \"Měsíce\" ASC\nLIMIT 10;",
+        "result": "[('březen 2015', 'Chemické látky a chemické přípravky, vč. subdodavatelských prací', 96.8), ('březen 2015', 'Dřevo a dřevěné a korkové výrobky, kromě nábytku; proutěné a slaměné výrobky, vč. souvisejících služeb a prací', 100.5), ('březen 2015', 'ELEKTŘINA, PLYN, PÁRA A KLIMATIZOVANÝ VZDUCH', 100.1), ('březen 2015', 'Elektrická zařízení, vč. subdodavatelských prací', 100.6), ('březen 2015', 'Elektřina, plyn, pára a klimatizovaný vzduch', 100.1), ('březen 2015', 'Kovodělné výrobky, kromě strojů a zařízení, vč. subdodavatelských prací', 100.4), ('březen 2015', 'Motorová vozidla (kromě motocyklů), přívěsy a návěsy, vč. subdodavatelských prací', 100.2), ('březen 2015', 'Nábytek, vč. souvisejících služeb a prací', 100.0), ('březen 2015', 'Nápoje, vč. subdodavatelských prací', 99.5), ('březen 2015', 'Oděvy, vč. subdodavatelských prací', 100.2)]"
+      },
+      {
+        "query": "SELECT \"Měsíce\", \"Klasifikace produkce\", MAX(\"value\") AS \"Max Value\"\nFROM CEN0201BT03\nWHERE \"Ukazatel\" = 'Index cen průmyslových výrobců (%)'\n  AND \"Území\" = 'Česko'\n  AND \"Typ indexu\" = 'Bazický index (2015 = 100)'\nGROUP BY \"Měsíce\", \"Klasifikace produkce\"\nORDER BY \"Max Value\" DESC\nLIMIT 10;",
+        "result": "[('leden 2023', 'Černé a hnědé uhlí a lignit', 261.2), ('březen 2023', 'Černé a hnědé uhlí a lignit', 261.0), ('únor 2023', 'Černé a hnědé uhlí a lignit', 261.0), ('duben 2023', 'Černé a hnědé uhlí a lignit', 258.2), ('červen 2023', 'Černé a hnědé uhlí a lignit', 258.0), ('květen 2023', 'Černé a hnědé uhlí a lignit', 257.9), ('listopad 2023', 'Černé a hnědé uhlí a lignit', 255.1), ('prosinec 2023', 'Černé a hnědé uhlí a lignit', 255.1), ('říjen 2023', 'Černé a hnědé uhlí a lignit', 254.2), ('červenec 2023', 'Černé a hnědé uhlí a lignit', 253.1)]"
+      },
+      {
+        "query": "SELECT \"Měsíce\", \"Klasifikace produkce\", MIN(\"value\") AS \"Min Value\"\nFROM CEN0201BT03\nWHERE \"Ukazatel\" = 'Index cen průmyslových výrobců (%)'\n  AND \"Území\" = 'Česko'\n  AND \"Typ indexu\" = 'Bazický index (2015 = 100)'\nGROUP BY \"Měsíce\", \"Klasifikace produkce\"\nORDER BY \"Min Value\" ASC\nLIMIT 10;",
+        "result": "[('květen 2020', 'Ropa a zemní plyn', 51.6), ('červen 2020', 'Ropa a zemní plyn', 56.9), ('srpen 2020', 'Ropa a zemní plyn', 64.1), ('červenec 2020', 'Ropa a zemní plyn', 64.1), ('září 2020', 'Ropa a zemní plyn', 64.7), ('říjen 2020', 'Ropa a zemní plyn', 65.5), ('duben 2020', 'Ropa a zemní plyn', 66.2), ('listopad 2020', 'Ropa a zemní plyn', 69.3), ('březen 2016', 'Ropa a zemní plyn', 69.6), ('prosinec 2020', 'Ropa a zemní plyn', 69.8)]"
+      }
+    ]
+  },
+  {
+    "prompt": "b",
+    "result": "The question \"b\" is unclear and cannot be answered based on the provided data.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Území\", \"Rok sčítání\", SUM(value) AS total_houses\nFROM SLD053T02\nWHERE \"Ukazatel\" = \"Obydlené domy celkem\" AND \"Území\" != \"Česká republika\"\nGROUP BY \"Území\", \"Rok sčítání\"\nORDER BY \"Rok sčítání\" DESC, total_houses DESC\nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2021, 331341), ('Jihomoravský kraj', 2021, 241367), ('Moravskoslezský kraj', 2021, 190881), ('Jihočeský kraj', 2021, 133404), ('Olomoucký kraj', 2021, 126126), ('Zlínský kraj', 2021, 125469), ('Ústecký kraj', 2021, 123776), ('Královéhradecký kraj', 2021, 116863), ('Plzeňský kraj', 2021, 115802), ('Kraj Vysočina', 2021, 114230)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS total_houses\nFROM SLD053T02\nWHERE \"Ukazatel\" = 'Obydlené domy celkem' AND \"Území\" = 'Česká republika'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\" DESC;",
+        "result": "[(2021, 1952668), (2011, 1800075), (2001, 1630705), (1991, 1597076), (1980, 1634304)]"
+      },
+      {
+        "query": "SELECT \"Území\", \"Rok sčítání\", SUM(value) AS total_houses\nFROM SLD053T02\nWHERE \"Ukazatel\" = 'Obydlené domy celkem'\nGROUP BY \"Území\", \"Rok sčítání\"\nORDER BY \"Rok sčítání\" DESC, total_houses DESC\nLIMIT 10;",
+        "result": "[('Česká republika', 2021, 1952668), ('Středočeský kraj', 2021, 331341), ('Jihomoravský kraj', 2021, 241367), ('Moravskoslezský kraj', 2021, 190881), ('Jihočeský kraj', 2021, 133404), ('Olomoucký kraj', 2021, 126126), ('Zlínský kraj', 2021, 125469), ('Ústecký kraj', 2021, 123776), ('Královéhradecký kraj', 2021, 116863), ('Plzeňský kraj', 2021, 115802)]"
+      },
+      {
+        "query": "SELECT \"Území\", \"Rok sčítání\", SUM(value) AS total_houses\nFROM SLD053T02\nWHERE \"Ukazatel\" = \"Obydlené domy celkem\" AND \"Území\" != \"Česká republika\"\nGROUP BY \"Území\", \"Rok sčítání\"\nORDER BY \"Rok sčítání\" DESC, total_houses DESC\nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2021, 331341), ('Jihomoravský kraj', 2021, 241367), ('Moravskoslezský kraj', 2021, 190881), ('Jihočeský kraj', 2021, 133404), ('Olomoucký kraj', 2021, 126126), ('Zlínský kraj', 2021, 125469), ('Ústecký kraj', 2021, 123776), ('Královéhradecký kraj', 2021, 116863), ('Plzeňský kraj', 2021, 115802), ('Kraj Vysočina', 2021, 114230)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS total_houses\nFROM SLD053T02\nWHERE \"Ukazatel\" = 'Obydlené domy celkem' AND \"Území\" = 'Česká republika'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\" DESC;",
+        "result": "[(2021, 1952668), (2011, 1800075), (2001, 1630705), (1991, 1597076), (1980, 1634304)]"
+      },
+      {
+        "query": "SELECT \"Území\", \"Rok sčítání\", SUM(value) AS total_houses\nFROM SLD053T02\nWHERE \"Ukazatel\" = 'Obydlené domy celkem'\nGROUP BY \"Území\", \"Rok sčítání\"\nORDER BY \"Rok sčítání\" DESC, total_houses DESC\nLIMIT 10;",
+        "result": "[('Česká republika', 2021, 1952668), ('Středočeský kraj', 2021, 331341), ('Jihomoravský kraj', 2021, 241367), ('Moravskoslezský kraj', 2021, 190881), ('Jihočeský kraj', 2021, 133404), ('Olomoucký kraj', 2021, 126126), ('Zlínský kraj', 2021, 125469), ('Ústecký kraj', 2021, 123776), ('Královéhradecký kraj', 2021, 116863), ('Plzeňský kraj', 2021, 115802)]"
+      }
+    ]
   }
 ]
