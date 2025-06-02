@@ -130,13 +130,15 @@ async def main(prompt=None):
     messages = result["messages"]
     queries_and_results = result["queries_and_results"]
     final_answer = messages[-1].content if messages else ""
+    selection_with_possible_answer = result.get("selection_with_possible_answer")
     
     # Convert the result to a JSON-serializable format
     serializable_result = {
         "prompt": prompt,
         "result": final_answer,
         "queries_and_results": queries_and_results,
-        "thread_id": thread_id
+        "thread_id": thread_id,
+        "selection_with_possible_answer": selection_with_possible_answer
     }
     
     print(f"Result: {final_answer}")
