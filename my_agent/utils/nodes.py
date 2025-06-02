@@ -49,6 +49,7 @@ from metadata.create_and_load_chromadb import (
     get_langchain_chroma_vectorstore,
     cohere_rerank
 )
+from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini
 
 
 MAX_ITERATIONS = 2  # Reduced from 3 to prevent excessive looping
@@ -70,24 +71,6 @@ def debug_print(msg: str) -> None:
     # Always check environment variable directly to respect runtime changes
     if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
         print(msg)
-
-def get_azure_llm(temperature=0.0):
-    """Get an instance of Azure OpenAI LLM with standard configuration.
-    
-    Args:
-        temperature (float): Temperature setting for generation randomness
-        
-    Returns:
-        AzureChatOpenAI: Configured LLM instance
-    """
-    return AzureChatOpenAI(
-        deployment_name='gpt-4o__test1',
-        model_name='gpt-4o',
-        openai_api_version='2024-05-01-preview',
-        temperature=temperature,
-        azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
-        api_key=os.getenv('AZURE_OPENAI_API_KEY')
-    )
 
 async def load_schema(state=None):
     """Load the schema metadata from the SQLite database based on selection_code in state."""
@@ -139,7 +122,7 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Generate pandas query based on question and schema."""
     debug_print(f"{QUERY_GEN_ID}: Enter query_node")
     
-    llm = get_azure_llm(temperature=0.0)
+    llm = get_azure_llm_gpt_4o(temperature=0.0)
     
     # Create MCP server instance and get tools
     tools = await create_mcp_server()
@@ -280,7 +263,7 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     """
     debug_print(f"{ROUTE_DECISION_ID}: Enter reflect_node")
     
-    llm = get_azure_llm(temperature=0.0)
+    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
     
     # Format messages for context
     messages_text = "\n\n".join([
@@ -320,7 +303,8 @@ Guidelines:
   - For trend analysis, ensure we have data across all relevant time periods.
   - For distribution questions, ensure we have complete coverage of all categories.
 
-Your response should be detailed and specific, helping guide the next query.
+Your response should be detailed and specific, helping guide the next query. 
+But it also must be to the point and not too long, max 400 words.
 
 MOST IMPORTANT: 
 If improvement will be needed - Imagine it is a chatbot and you are now playing a role of a HUMAN giving instructions to the LLM about 
@@ -361,7 +345,7 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """
     debug_print(f"{FORMAT_ANSWER_ID}: Enter format_answer_node")
     
-    llm = get_azure_llm(temperature=0.1)
+    llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
     
     # Format results for better readability
     queries_results_text = "\n\n".join(

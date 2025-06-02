@@ -6469,5 +6469,79 @@
         "result": "[('Česká republika', 2021, 1952668), ('Středočeský kraj', 2021, 331341), ('Jihomoravský kraj', 2021, 241367), ('Moravskoslezský kraj', 2021, 190881), ('Jihočeský kraj', 2021, 133404), ('Olomoucký kraj', 2021, 126126), ('Zlínský kraj', 2021, 125469), ('Ústecký kraj', 2021, 123776), ('Královéhradecký kraj', 2021, 116863), ('Plzeňský kraj', 2021, 115802)]"
       }
     ]
+  },
+  {
+    "prompt": "what is the average age of people in Prague?",
+    "result": "The average age of people in Prague is 45.05491267383684.",
+    "queries_and_results": [
+      {
+        "query": "SELECT AVG(value) AS average_age\nFROM OBY02PKT01\nWHERE Kraje = 'Hlavní město Praha' AND Ukazatel = 'Průměrný věk (roky)';",
+        "result": "45.05491267383684"
+      },
+      {
+        "query": "SELECT AVG(value) AS average_age\nFROM OBY02PKT01\nWHERE Kraje = 'Hlavní město Praha' AND Ukazatel = 'Průměrný věk (roky)';",
+        "result": "45.05491267383684"
+      }
+    ]
+  },
+  {
+    "prompt": "jak ziji lide v praze?",
+    "result": "V Praze žije celkem 1300821 lidí. Z toho 1261930 osob bydlí v bytech, 23624 osob v zařízeních, 15267 osob mimo byty a zařízení a 611 osob je bez domova. Ve srovnání s Českou republikou, kde žije 10520441 lidí, je v Praze podíl osob bydlících v bytech výrazně vyšší.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Způsob bydlení\", SUM(value) AS total_population\nFROM SLD013T02\nWHERE \"Území\" = \"Hlavní město Praha\"\n  AND \"Ukazatel\" = \"Počet obyvatel (obvyklý pobyt)\"\n  AND \"Rok sčítání\" = \"2021\"\n  AND \"Pohlaví\" = \"Celkem\"\nGROUP BY \"Způsob bydlení\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Bydlící osoby celkem', 1300821), ('Osoby bydlící v bytech', 1261930), ('Osoby bydlící v zařízeních', 23624), ('Osoby bydlící mimo byty a zařízení', 15267), ('Osoby bez domova', 611)]"
+      },
+      {
+        "query": "SELECT \"Způsob bydlení\", SUM(value) AS total_population\nFROM SLD013T02\nWHERE \"Území\" = \"Hlavní město Praha\"\n  AND \"Ukazatel\" = \"Počet obyvatel (obvyklý pobyt)\"\n  AND \"Rok sčítání\" = \"2021\"\n  AND \"Pohlaví\" = \"Celkem\"\nGROUP BY \"Způsob bydlení\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Bydlící osoby celkem', 1300821), ('Osoby bydlící v bytech', 1261930), ('Osoby bydlící v zařízeních', 23624), ('Osoby bydlící mimo byty a zařízení', 15267), ('Osoby bez domova', 611)]"
+      },
+      {
+        "query": "SELECT \"Území\", \"Způsob bydlení\", SUM(value) AS total_population\nFROM SLD013T02\nWHERE \"Ukazatel\" = \"Počet obyvatel (obvyklý pobyt)\"\n  AND \"Rok sčítání\" = \"2021\"\n  AND \"Pohlaví\" = \"Celkem\"\nGROUP BY \"Území\", \"Způsob bydlení\"\nHAVING \"Území\" IN (\"Hlavní město Praha\", \"Česká republika\")\nORDER BY \"Území\", total_population DESC;",
+        "result": "[('Hlavní město Praha', 'Bydlící osoby celkem', 1300821), ('Hlavní město Praha', 'Osoby bydlící v bytech', 1261930), ('Hlavní město Praha', 'Osoby bydlící v zařízeních', 23624), ('Hlavní město Praha', 'Osoby bydlící mimo byty a zařízení', 15267), ('Hlavní město Praha', 'Osoby bez domova', 611), ('Česká republika', 'Bydlící osoby celkem', 10520441), ('Česká republika', 'Osoby bydlící v bytech', 10104385), ('Česká republika', 'Osoby bydlící mimo byty a zařízení', 228478), ('Česká republika', 'Osoby bydlící v zařízeních', 187578), ('Česká republika', 'Osoby bez domova', 3726)]"
+      },
+      {
+        "query": "SELECT \"Způsob bydlení\", SUM(value) AS total_population\nFROM SLD013T02\nWHERE \"Území\" = \"Hlavní město Praha\"\n  AND \"Ukazatel\" = \"Počet obyvatel (obvyklý pobyt)\"\n  AND \"Rok sčítání\" = \"2021\"\n  AND \"Pohlaví\" = \"Celkem\"\nGROUP BY \"Způsob bydlení\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Bydlící osoby celkem', 1300821), ('Osoby bydlící v bytech', 1261930), ('Osoby bydlící v zařízeních', 23624), ('Osoby bydlící mimo byty a zařízení', 15267), ('Osoby bez domova', 611)]"
+      },
+      {
+        "query": "SELECT \"Způsob bydlení\", SUM(value) AS total_population\nFROM SLD013T02\nWHERE \"Území\" = \"Hlavní město Praha\"\n  AND \"Ukazatel\" = \"Počet obyvatel (obvyklý pobyt)\"\n  AND \"Rok sčítání\" = \"2021\"\n  AND \"Pohlaví\" = \"Celkem\"\nGROUP BY \"Způsob bydlení\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Bydlící osoby celkem', 1300821), ('Osoby bydlící v bytech', 1261930), ('Osoby bydlící v zařízeních', 23624), ('Osoby bydlící mimo byty a zařízení', 15267), ('Osoby bez domova', 611)]"
+      },
+      {
+        "query": "SELECT \"Území\", \"Způsob bydlení\", SUM(value) AS total_population\nFROM SLD013T02\nWHERE \"Ukazatel\" = \"Počet obyvatel (obvyklý pobyt)\"\n  AND \"Rok sčítání\" = \"2021\"\n  AND \"Pohlaví\" = \"Celkem\"\nGROUP BY \"Území\", \"Způsob bydlení\"\nHAVING \"Území\" IN (\"Hlavní město Praha\", \"Česká republika\")\nORDER BY \"Území\", total_population DESC;",
+        "result": "[('Hlavní město Praha', 'Bydlící osoby celkem', 1300821), ('Hlavní město Praha', 'Osoby bydlící v bytech', 1261930), ('Hlavní město Praha', 'Osoby bydlící v zařízeních', 23624), ('Hlavní město Praha', 'Osoby bydlící mimo byty a zařízení', 15267), ('Hlavní město Praha', 'Osoby bez domova', 611), ('Česká republika', 'Bydlící osoby celkem', 10520441), ('Česká republika', 'Osoby bydlící v bytech', 10104385), ('Česká republika', 'Osoby bydlící mimo byty a zařízení', 228478), ('Česká republika', 'Osoby bydlící v zařízeních', 187578), ('Česká republika', 'Osoby bez domova', 3726)]"
+      }
+    ]
+  },
+  {
+    "prompt": "no a jak ziji lide v brne?",
+    "result": "Lidé v Brně žijí v různých typech nemovitostí s průměrnými cenami. Byty v oblasti s 50 000 obyvateli a více mají průměrnou cenu 76704 Kč/m2, zatímco rodinné domy v téže kategorii mají průměrnou cenu 71967 Kč/m2. V menších obcích, jako jsou ty s 10 000 - 49 999 obyvateli, nejsou dostupné konkrétní cenové údaje. Celkově jsou ceny bytů vyšší než ceny rodinných domů.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Druh nemovitosti\", \"Počet obyvatel obce\", AVG(value) AS \"Průměrná cena [Kč/m2]\"\nFROM CEN0402T03A\nWHERE \"Území\" = 'Brno-město' AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti' AND \"Tříleté období\" = '2021-2023'\nGROUP BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nORDER BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nLIMIT 10;",
+        "result": "[('Byty [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Byty [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Byty [Kč/m2]', '50 000 obyv. a více', 76704.0), ('Byty [Kč/m2]', 'Celkem', 76704.0), ('Byty [Kč/m2]', 'do 1 999 obyv.', None), ('Rodinné domy [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Rodinné domy [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Rodinné domy [Kč/m2]', '50 000 obyv. a více', 71967.0), ('Rodinné domy [Kč/m2]', 'Celkem', 71967.0), ('Rodinné domy [Kč/m2]', 'do 1 999 obyv.', None)]"
+      },
+      {
+        "query": "SELECT \"Území\", \"Druh nemovitosti\", \"Počet obyvatel obce\", AVG(value) AS \"Průměrná cena [Kč/m2]\"\nFROM CEN0402T03A\nWHERE \"Území\" IN ('Brno-město', 'Brno-venkov') AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti' AND \"Tříleté období\" = '2021-2023'\nGROUP BY \"Území\", \"Druh nemovitosti\", \"Počet obyvatel obce\"\nORDER BY \"Území\", \"Druh nemovitosti\", \"Počet obyvatel obce\"\nLIMIT 10;",
+        "result": "[('Brno-město', 'Byty [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Brno-město', 'Byty [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Brno-město', 'Byty [Kč/m2]', '50 000 obyv. a více', 76704.0), ('Brno-město', 'Byty [Kč/m2]', 'Celkem', 76704.0), ('Brno-město', 'Byty [Kč/m2]', 'do 1 999 obyv.', None), ('Brno-město', 'Rodinné domy [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Brno-město', 'Rodinné domy [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Brno-město', 'Rodinné domy [Kč/m2]', '50 000 obyv. a více', 71967.0), ('Brno-město', 'Rodinné domy [Kč/m2]', 'Celkem', 71967.0), ('Brno-město', 'Rodinné domy [Kč/m2]', 'do 1 999 obyv.', None)]"
+      },
+      {
+        "query": "SELECT \"Druh nemovitosti\", \"Počet obyvatel obce\", MAX(value) AS \"Maximální cena [Kč/m2]\", MIN(value) AS \"Minimální cena [Kč/m2]\"\nFROM CEN0402T03A\nWHERE \"Území\" = 'Brno-město' AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti' AND \"Tříleté období\" = '2021-2023'\nGROUP BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nORDER BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nLIMIT 10;",
+        "result": "[('Byty [Kč/m2]', '10 000 - 49 999 obyv.', None, None), ('Byty [Kč/m2]', '2 000 - 9 999 obyv.', None, None), ('Byty [Kč/m2]', '50 000 obyv. a více', 76704.0, 76704.0), ('Byty [Kč/m2]', 'Celkem', 76704.0, 76704.0), ('Byty [Kč/m2]', 'do 1 999 obyv.', None, None), ('Rodinné domy [Kč/m2]', '10 000 - 49 999 obyv.', None, None), ('Rodinné domy [Kč/m2]', '2 000 - 9 999 obyv.', None, None), ('Rodinné domy [Kč/m2]', '50 000 obyv. a více', 71967.0, 71967.0), ('Rodinné domy [Kč/m2]', 'Celkem', 71967.0, 71967.0), ('Rodinné domy [Kč/m2]', 'do 1 999 obyv.', None, None)]"
+      },
+      {
+        "query": "SELECT \"Druh nemovitosti\", \"Počet obyvatel obce\", AVG(value) AS \"Průměrná cena [Kč/m2]\"\nFROM CEN0402T03A\nWHERE \"Území\" = 'Brno-město' AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti' AND \"Tříleté období\" = '2021-2023'\nGROUP BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nORDER BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nLIMIT 10;",
+        "result": "[('Byty [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Byty [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Byty [Kč/m2]', '50 000 obyv. a více', 76704.0), ('Byty [Kč/m2]', 'Celkem', 76704.0), ('Byty [Kč/m2]', 'do 1 999 obyv.', None), ('Rodinné domy [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Rodinné domy [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Rodinné domy [Kč/m2]', '50 000 obyv. a více', 71967.0), ('Rodinné domy [Kč/m2]', 'Celkem', 71967.0), ('Rodinné domy [Kč/m2]', 'do 1 999 obyv.', None)]"
+      },
+      {
+        "query": "SELECT \"Území\", \"Druh nemovitosti\", \"Počet obyvatel obce\", AVG(value) AS \"Průměrná cena [Kč/m2]\"\nFROM CEN0402T03A\nWHERE \"Území\" IN ('Brno-město', 'Brno-venkov') AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti' AND \"Tříleté období\" = '2021-2023'\nGROUP BY \"Území\", \"Druh nemovitosti\", \"Počet obyvatel obce\"\nORDER BY \"Území\", \"Druh nemovitosti\", \"Počet obyvatel obce\"\nLIMIT 10;",
+        "result": "[('Brno-město', 'Byty [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Brno-město', 'Byty [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Brno-město', 'Byty [Kč/m2]', '50 000 obyv. a více', 76704.0), ('Brno-město', 'Byty [Kč/m2]', 'Celkem', 76704.0), ('Brno-město', 'Byty [Kč/m2]', 'do 1 999 obyv.', None), ('Brno-město', 'Rodinné domy [Kč/m2]', '10 000 - 49 999 obyv.', None), ('Brno-město', 'Rodinné domy [Kč/m2]', '2 000 - 9 999 obyv.', None), ('Brno-město', 'Rodinné domy [Kč/m2]', '50 000 obyv. a více', 71967.0), ('Brno-město', 'Rodinné domy [Kč/m2]', 'Celkem', 71967.0), ('Brno-město', 'Rodinné domy [Kč/m2]', 'do 1 999 obyv.', None)]"
+      },
+      {
+        "query": "SELECT \"Druh nemovitosti\", \"Počet obyvatel obce\", MAX(value) AS \"Maximální cena [Kč/m2]\", MIN(value) AS \"Minimální cena [Kč/m2]\"\nFROM CEN0402T03A\nWHERE \"Území\" = 'Brno-město' AND \"Ukazatel\" = 'Průměrná jednotková kupní cena nemovitosti' AND \"Tříleté období\" = '2021-2023'\nGROUP BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nORDER BY \"Druh nemovitosti\", \"Počet obyvatel obce\"\nLIMIT 10;",
+        "result": "[('Byty [Kč/m2]', '10 000 - 49 999 obyv.', None, None), ('Byty [Kč/m2]', '2 000 - 9 999 obyv.', None, None), ('Byty [Kč/m2]', '50 000 obyv. a více', 76704.0, 76704.0), ('Byty [Kč/m2]', 'Celkem', 76704.0, 76704.0), ('Byty [Kč/m2]', 'do 1 999 obyv.', None, None), ('Rodinné domy [Kč/m2]', '10 000 - 49 999 obyv.', None, None), ('Rodinné domy [Kč/m2]', '2 000 - 9 999 obyv.', None, None), ('Rodinné domy [Kč/m2]', '50 000 obyv. a více', 71967.0, 71967.0), ('Rodinné domy [Kč/m2]', 'Celkem', 71967.0, 71967.0), ('Rodinné domy [Kč/m2]', 'do 1 999 obyv.', None, None)]"
+      }
+    ]
   }
 ]

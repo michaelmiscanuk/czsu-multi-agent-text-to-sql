@@ -21,12 +21,31 @@ interface DatasetsTableProps {
   onRowClick?: (selection_code: string) => void;
 }
 
+const DATASETS_PAGE_KEY = 'czsu-datasets-page';
+const DATASETS_FILTER_KEY = 'czsu-datasets-filter';
+
 const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
   const [data, setData] = useState<DatasetRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Restore page and filter from localStorage on mount
+  useEffect(() => {
+    const savedPage = localStorage.getItem(DATASETS_PAGE_KEY);
+    const savedFilter = localStorage.getItem(DATASETS_FILTER_KEY);
+    if (savedPage) setPage(Number(savedPage));
+    if (savedFilter) setFilter(savedFilter);
+  }, []);
+
+  // Persist page and filter to localStorage
+  useEffect(() => {
+    localStorage.setItem(DATASETS_PAGE_KEY, String(page));
+  }, [page]);
+  useEffect(() => {
+    localStorage.setItem(DATASETS_FILTER_KEY, filter);
+  }, [filter]);
 
   useEffect(() => {
     setLoading(true);
@@ -59,16 +78,32 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
 
   const totalPages = Math.ceil(total / 10);
 
+  // Reset filter and page
+  const handleReset = () => {
+    setFilter('');
+    setPage(1);
+  };
+
   return (
     <div className="flex flex-col h-full p-6">
       <div className="mb-4 flex items-center">
         <input
-          className="border border-gray-300 rounded px-3 py-2 w-80 mr-4"
+          className="border border-gray-300 rounded px-3 py-2 w-80 mr-2"
           placeholder="Filter by keyword..."
           value={filter}
           onChange={e => { setPage(1); setFilter(e.target.value); }}
         />
-        <span className="text-gray-500 text-sm">{total} records</span>
+        {filter && (
+          <button
+            className="text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
+            title="Clear filter"
+            onClick={handleReset}
+            style={{ lineHeight: 1 }}
+          >
+            ×
+          </button>
+        )}
+        <span className="text-gray-500 text-sm ml-4">{total} records</span>
       </div>
       <div className="flex-1 overflow-auto">
         <table className="min-w-full border border-gray-200 rounded">

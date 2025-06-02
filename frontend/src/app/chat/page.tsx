@@ -39,6 +39,8 @@ const Modal: React.FC<{ open: boolean; onClose: () => void; children: React.Reac
 };
 
 const CHAT_STORAGE_KEY = 'czsu-chat-messages';
+const LAST_SELECTION_CODE_KEY = 'czsu-chat-lastSelectionCode';
+const LAST_QUERIES_RESULTS_KEY = 'czsu-chat-lastQueriesAndResults';
 const INITIAL_MESSAGE = [
   {
     id: 1,
@@ -56,23 +58,58 @@ export default function ChatPage() {
   const [lastQueriesAndResults, setLastQueriesAndResults] = useState<[string, string][]>([]);
   const [showSQLModal, setShowSQLModal] = useState(false);
 
-  // Load messages from localStorage on mount
+  // Only restore from localStorage on first mount
+  const didRestoreRef = React.useRef(false);
   useEffect(() => {
-    const saved = localStorage.getItem(CHAT_STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessages(parsed);
-        }
-      } catch {}
+    if (!didRestoreRef.current) {
+      const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+      console.log('[ChatPage] Restoring chat from localStorage:', saved);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setMessages(parsed);
+            console.log('[ChatPage] Chat state after restore:', parsed);
+          }
+        } catch {}
+      }
+      // Restore lastSelectionCode
+      const savedSel = localStorage.getItem(LAST_SELECTION_CODE_KEY);
+      setLastSelectionCode(savedSel || null);
+      // Restore lastQueriesAndResults
+      const savedQR = localStorage.getItem(LAST_QUERIES_RESULTS_KEY);
+      if (savedQR) {
+        try {
+          setLastQueriesAndResults(JSON.parse(savedQR));
+        } catch { setLastQueriesAndResults([]); }
+      }
+      didRestoreRef.current = true;
     }
   }, []);
 
   // Save messages to localStorage whenever they change
   useEffect(() => {
+    console.log('[ChatPage] Persisting chat to localStorage:', messages);
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
   }, [messages]);
+
+  // Persist lastSelectionCode
+  useEffect(() => {
+    if (lastSelectionCode) {
+      localStorage.setItem(LAST_SELECTION_CODE_KEY, lastSelectionCode);
+    } else {
+      localStorage.removeItem(LAST_SELECTION_CODE_KEY);
+    }
+  }, [lastSelectionCode]);
+
+  // Persist lastQueriesAndResults
+  useEffect(() => {
+    if (lastQueriesAndResults && lastQueriesAndResults.length > 0) {
+      localStorage.setItem(LAST_QUERIES_RESULTS_KEY, JSON.stringify(lastQueriesAndResults));
+    } else {
+      localStorage.removeItem(LAST_QUERIES_RESULTS_KEY);
+    }
+  }, [lastQueriesAndResults]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

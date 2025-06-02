@@ -136,8 +136,8 @@ except NameError:
 # Add the base directory to sys.path for local imports
 sys.path.append(str(BASE_DIR))
 
-# Import the get_azure_llm function
-from my_agent.utils.models import get_azure_llm
+# Import the get_azure_llm_gpt_4o function
+from my_agent.utils.models import get_azure_llm_gpt_4o
 
 #===============================================================================
 # CUSTOM EXCEPTIONS
@@ -417,14 +417,14 @@ def handle_processing_error(error: Exception, selection_code: str, metrics: Metr
 #     wait=wait_exponential(multiplier=10, min=10, max=60),  # Wait between 10-60 seconds, increasing exponentially
 #     reraise=True
 # )
-def get_azure_llm_response(**kwargs: Dict[str, Any]) -> str:
+def get_azure_llm_gpt_4o_response(**kwargs: Dict[str, Any]) -> str:
     """Get response from Azure OpenAI using the configured LLM."""
     request_id = f"req_{int(time.time()*1000)}"
     formatted_prompt = format_system_prompt(**kwargs)
     
     try:
         print(f"\nInitializing LLM connection...")
-        llm = get_azure_llm()
+        llm = get_azure_llm_gpt_4o()
         print("LLM initialized successfully")
         
         messages = [{"role": "user", "content": formatted_prompt}]
@@ -689,7 +689,7 @@ def process_row(index: int, row: pd.Series, output_column: str, delay_between_re
         
         # Call LLM and get response
         print(f"\nCalling LLM for {selection_code}...")
-        result = get_azure_llm_response(**row_dict)
+        result = get_azure_llm_gpt_4o_response(**row_dict)
         print(f"\nSuccessfully got response for {selection_code}")
         return index, result
         

@@ -4,6 +4,8 @@ import { removeDiacritics } from './utils';
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
 type DataTableViewProps = {
+  search: string;
+  setSearch: (s: string) => void;
   selectedTable: string | null;
   setSelectedTable: (t: string | null) => void;
   columns: string[];
@@ -18,7 +20,14 @@ type DataTableViewProps = {
   setPendingTableSearch?: (s: string | null) => void;
 };
 
+const SELECTED_TABLE_KEY = 'czsu-data-selectedTable';
+const COLUMN_FILTERS_KEY = 'czsu-data-columnFilters';
+const SELECTED_COLUMN_KEY = 'czsu-data-selectedColumn';
+const SEARCH_KEY = 'czsu-data-search';
+
 const DataTableView: React.FC<DataTableViewProps> = ({
+  search,
+  setSearch,
   selectedTable,
   setSelectedTable,
   columns,
@@ -32,12 +41,44 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   pendingTableSearch,
   setPendingTableSearch,
 }) => {
-  const [search, setSearch] = React.useState('');
   const [suggestions, setSuggestions] = React.useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [tableLoading, setTableLoading] = React.useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Restore state from localStorage on mount
+  React.useEffect(() => {
+    const savedTable = localStorage.getItem(SELECTED_TABLE_KEY);
+    const savedFilters = localStorage.getItem(COLUMN_FILTERS_KEY);
+    const savedCol = localStorage.getItem(SELECTED_COLUMN_KEY);
+    if (savedTable) setSelectedTable(savedTable);
+    if (savedFilters) {
+      try {
+        setColumnFilters(JSON.parse(savedFilters));
+      } catch {}
+    }
+    if (savedCol) setSelectedColumn(savedCol);
+  }, [setSelectedTable, setColumnFilters, setSelectedColumn]);
+
+  // Persist state to localStorage
+  React.useEffect(() => {
+    if (selectedTable) {
+      localStorage.setItem(SELECTED_TABLE_KEY, selectedTable);
+    } else {
+      localStorage.removeItem(SELECTED_TABLE_KEY);
+    }
+  }, [selectedTable]);
+  React.useEffect(() => {
+    localStorage.setItem(COLUMN_FILTERS_KEY, JSON.stringify(columnFilters));
+  }, [columnFilters]);
+  React.useEffect(() => {
+    if (selectedColumn) {
+      localStorage.setItem(SELECTED_COLUMN_KEY, selectedColumn);
+    } else {
+      localStorage.removeItem(SELECTED_COLUMN_KEY);
+    }
+  }, [selectedColumn]);
 
   // Prefill search box if pendingTableSearch changes
   React.useEffect(() => {
@@ -47,6 +88,13 @@ const DataTableView: React.FC<DataTableViewProps> = ({
       inputRef.current?.focus();
     }
   }, [pendingTableSearch]);
+
+  // On mount, if search is non-empty and selectedTable is null, set selectedTable to search
+  React.useEffect(() => {
+    if (search && !selectedTable) {
+      setSelectedTable(search);
+    }
+  }, [search, selectedTable, setSelectedTable]);
 
   // Fetch table suggestions as user types
   useEffect(() => {
@@ -175,20 +223,45 @@ const DataTableView: React.FC<DataTableViewProps> = ({
 
   return (
     <div className="flex flex-col h-full p-6">
-      <div className="mb-4 relative">
+      <div className="mb-4 relative flex items-center">
         <input
           ref={inputRef}
           className="border border-gray-300 rounded px-3 py-2 w-96"
           placeholder="Search for a table..."
           value={search}
           onChange={e => {
-            setSearch(e.target.value);
+            const value = e.target.value;
+            setSearch(value);
             setShowSuggestions(true);
-            setSelectedTable(null);
+            // Only clear selectedTable if the search is cleared (empty string)
+            if (value.trim() === '') {
+              setSelectedTable(null);
+            }
           }}
           onFocus={() => setShowSuggestions(true)}
           onBlur={handleBlur}
         />
+        {(selectedTable || Object.values(columnFilters).some(Boolean) || selectedColumn) && (
+          <button
+            className="ml-2 text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
+            title="Reset all"
+            onClick={() => {
+              setSearch('');
+              setSelectedTable(null);
+              setColumns([]);
+              setRows([]);
+              setSelectedColumn(null);
+              setColumnFilters({});
+              if (setPendingTableSearch) setPendingTableSearch(null);
+              localStorage.removeItem(SELECTED_TABLE_KEY);
+              localStorage.removeItem(COLUMN_FILTERS_KEY);
+              localStorage.removeItem(SELECTED_COLUMN_KEY);
+            }}
+            style={{ lineHeight: 1 }}
+          >
+            ×
+          </button>
+        )}
         {showSuggestions && suggestions.length > 0 && (
           <ul className="absolute z-10 bg-white border border-gray-200 rounded w-96 mt-1 max-h-60 overflow-auto shadow-lg">
             {suggestions.map(table => (
