@@ -19,6 +19,7 @@ const InputBar = ({ currentMessage, setCurrentMessage, onSubmit, isLoading = fal
                 <input
                     type="text"
                     placeholder="Type a message"
+                    aria-label="Type a message"
                     value={currentMessage}
                     onChange={handleChange}
                     className="flex-grow px-4 py-2 bg-transparent focus:outline-none text-gray-700"
@@ -26,7 +27,8 @@ const InputBar = ({ currentMessage, setCurrentMessage, onSubmit, isLoading = fal
                 />
                 <button
                     type="submit"
-                    className="bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-600 hover:to-teal-500 rounded-full p-3 ml-2 shadow-md transition-all duration-200 group"
+                    aria-label="Send message"
+                    className="bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 rounded-full p-3 ml-2 shadow-md transition-all duration-200 group"
                     disabled={isLoading}
                 >
                     <svg className="w-6 h-6 text-white transform rotate-45 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

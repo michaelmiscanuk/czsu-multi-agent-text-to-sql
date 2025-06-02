@@ -16,8 +16,14 @@ const PremiumTypingAnimation = () => {
 };
 
 const MessageArea = ({ messages }: { messages: any[] }) => {
+    const bottomRef = React.useRef<HTMLDivElement>(null);
+    React.useEffect(() => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'auto' });
+        }
+    }, [messages]);
     return (
-        <div className="flex-grow overflow-y-auto bg-[#FCFCF8] border-b border-gray-100" style={{ minHeight: 0 }}>
+        <div className="flex-grow overflow-y-auto bg-[#FCFCF8] border-b border-gray-100" style={{ minHeight: 0 }} aria-live="polite" role="log">
             <div className="max-w-4xl mx-auto p-6">
                 {messages.map((message) => (
                     <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-5`}>
@@ -25,7 +31,7 @@ const MessageArea = ({ messages }: { messages: any[] }) => {
                             {/* Message Content */}
                             <div
                                 className={`rounded-lg py-3 px-5 ${message.isUser
-                                    ? 'bg-gradient-to-br from-[#5E507F] to-[#4A3F71] text-white rounded-br-none shadow-md'
+                                    ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-br-none shadow-md'
                                     : 'bg-[#F3F3EE] text-gray-800 border border-gray-200 rounded-bl-none shadow-sm'
                                     }`}
                             >
@@ -41,6 +47,7 @@ const MessageArea = ({ messages }: { messages: any[] }) => {
                         </div>
                     </div>
                 ))}
+                <div ref={bottomRef} />
             </div>
         </div>
     );

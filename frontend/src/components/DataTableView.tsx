@@ -47,39 +47,6 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   const [tableLoading, setTableLoading] = React.useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Restore state from localStorage on mount
-  React.useEffect(() => {
-    const savedTable = localStorage.getItem(SELECTED_TABLE_KEY);
-    const savedFilters = localStorage.getItem(COLUMN_FILTERS_KEY);
-    const savedCol = localStorage.getItem(SELECTED_COLUMN_KEY);
-    if (savedTable) setSelectedTable(savedTable);
-    if (savedFilters) {
-      try {
-        setColumnFilters(JSON.parse(savedFilters));
-      } catch {}
-    }
-    if (savedCol) setSelectedColumn(savedCol);
-  }, [setSelectedTable, setColumnFilters, setSelectedColumn]);
-
-  // Persist state to localStorage
-  React.useEffect(() => {
-    if (selectedTable) {
-      localStorage.setItem(SELECTED_TABLE_KEY, selectedTable);
-    } else {
-      localStorage.removeItem(SELECTED_TABLE_KEY);
-    }
-  }, [selectedTable]);
-  React.useEffect(() => {
-    localStorage.setItem(COLUMN_FILTERS_KEY, JSON.stringify(columnFilters));
-  }, [columnFilters]);
-  React.useEffect(() => {
-    if (selectedColumn) {
-      localStorage.setItem(SELECTED_COLUMN_KEY, selectedColumn);
-    } else {
-      localStorage.removeItem(SELECTED_COLUMN_KEY);
-    }
-  }, [selectedColumn]);
-
   // Prefill search box if pendingTableSearch changes
   React.useEffect(() => {
     if (pendingTableSearch) {
@@ -228,6 +195,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
           ref={inputRef}
           className="border border-gray-300 rounded px-3 py-2 w-96"
           placeholder="Search for a table..."
+          aria-label="Search for a table"
           value={search}
           onChange={e => {
             const value = e.target.value;
@@ -245,6 +213,8 @@ const DataTableView: React.FC<DataTableViewProps> = ({
           <button
             className="ml-2 text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
             title="Reset all"
+            aria-label="Reset all filters and selection"
+            tabIndex={0}
             onClick={() => {
               setSearch('');
               setSelectedTable(null);
@@ -253,9 +223,6 @@ const DataTableView: React.FC<DataTableViewProps> = ({
               setSelectedColumn(null);
               setColumnFilters({});
               if (setPendingTableSearch) setPendingTableSearch(null);
-              localStorage.removeItem(SELECTED_TABLE_KEY);
-              localStorage.removeItem(COLUMN_FILTERS_KEY);
-              localStorage.removeItem(SELECTED_COLUMN_KEY);
             }}
             style={{ lineHeight: 1 }}
           >

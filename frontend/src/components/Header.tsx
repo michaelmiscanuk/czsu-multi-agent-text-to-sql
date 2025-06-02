@@ -1,6 +1,9 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import dynamic from 'next/dynamic';
+
+const AuthButton = dynamic(() => import('./AuthButton'), { ssr: false });
 
 const menuItems = [
   { label: 'HOME', href: '/' },
@@ -13,7 +16,7 @@ const menuItems = [
 const Header = () => {
   const pathname = usePathname();
   return (
-    <header className="relative flex items-center justify-between px-8 py-5 bg-gradient-to-r from-[#4A3F71] to-[#5E507F] z-10">
+    <header className="relative flex items-center justify-between px-8 py-5 bg-gradient-to-r from-blue-700 to-blue-700 z-10">
       <div className="absolute inset-0 bg-[url('/api/placeholder/100/100')] opacity-5 mix-blend-overlay pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
@@ -40,6 +43,7 @@ const Header = () => {
             </Link>
           );
         })}
+        <div className="ml-4"><AuthButton /></div>
       </div>
     </header>
   );

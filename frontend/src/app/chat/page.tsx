@@ -3,6 +3,7 @@ import InputBar from '@/components/InputBar';
 import MessageArea from '@/components/MessageArea';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Message {
   id: number;
@@ -41,6 +42,7 @@ const Modal: React.FC<{ open: boolean; onClose: () => void; children: React.Reac
 const CHAT_STORAGE_KEY = 'czsu-chat-messages';
 const LAST_SELECTION_CODE_KEY = 'czsu-chat-lastSelectionCode';
 const LAST_QUERIES_RESULTS_KEY = 'czsu-chat-lastQueriesAndResults';
+const CHAT_SESSIONS_KEY = 'czsu-chat-sessions';
 const INITIAL_MESSAGE = [
   {
     id: 1,
@@ -57,6 +59,8 @@ export default function ChatPage() {
   const [lastSelectionCode, setLastSelectionCode] = useState<string | null>(null);
   const [lastQueriesAndResults, setLastQueriesAndResults] = useState<[string, string][]>([]);
   const [showSQLModal, setShowSQLModal] = useState(false);
+  const [chatSessions, setChatSessions] = useState<{id: string, title: string, messages: Message[]}[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
 
   // Only restore from localStorage on first mount
   const didRestoreRef = React.useRef(false);
@@ -111,10 +115,126 @@ export default function ChatPage() {
     }
   }, [lastQueriesAndResults]);
 
+  // Load chat sessions from localStorage on mount
+  useEffect(() => {
+    const savedSessions = localStorage.getItem(CHAT_SESSIONS_KEY);
+    if (savedSessions) {
+      try {
+        const parsed = JSON.parse(savedSessions);
+        if (Array.isArray(parsed)) {
+          setChatSessions(parsed);
+          if (parsed.length > 0) setActiveSessionId(parsed[0].id);
+        }
+      } catch {}
+    }
+  }, []);
+
+  // Save chat sessions to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(chatSessions));
+  }, [chatSessions]);
+
+  // When activeSessionId changes, update messages
+  useEffect(() => {
+    if (activeSessionId) {
+      const session = chatSessions.find(s => s.id === activeSessionId);
+      if (session) setMessages(session.messages);
+    }
+  }, [activeSessionId]);
+
+  // When messages change, update the current session
+  useEffect(() => {
+    if (activeSessionId) {
+      setChatSessions(prev => prev.map(s => s.id === activeSessionId ? {...s, messages} : s));
+    }
+  }, [messages]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLastQueriesAndResults([]);
     if (currentMessage.trim()) {
+      // If there is no active session or the session is not in chatSessions, create a new one
+      if (!activeSessionId || !chatSessions.some(s => s.id === activeSessionId)) {
+        const newId = uuidv4();
+        const firstTitle = currentMessage.length > 30 ? currentMessage.slice(0, 30) + '…' : currentMessage;
+        const userMessage = {
+          id: 2,
+          content: currentMessage,
+          isUser: true,
+          type: 'message'
+        };
+        const initialSystemMessage = INITIAL_MESSAGE[0];
+        const newSessionMessages = [initialSystemMessage, userMessage];
+        const newSession = {
+          id: newId,
+          title: firstTitle || `Chat ${chatSessions.length + 1}`,
+          messages: newSessionMessages
+        };
+        setChatSessions([newSession, ...chatSessions]);
+        setActiveSessionId(newId);
+        setMessages(newSessionMessages);
+        setCurrentMessage("");
+        // Continue with AI response as normal
+        setIsLoading(true);
+        try {
+          const aiResponseId = 3;
+          setMessages(prev => [
+            ...prev,
+            {
+              id: aiResponseId,
+              content: "",
+              isUser: false,
+              type: 'message',
+              isLoading: true
+            }
+          ]);
+          const API_URL = process.env.NODE_ENV === 'development'
+            ? 'http://localhost:8000/analyze'
+            : '/analyze';
+          const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ prompt: currentMessage })
+          });
+          if (!response.ok) {
+            throw new Error('Server error');
+          }
+          const data = await response.json();
+          setMessages(prev =>
+            prev.map(msg =>
+              hasIsLoading(msg) && msg.isLoading
+                ? { ...msg, content: data.result || JSON.stringify(data), isLoading: false }
+                : msg
+            )
+          );
+          setLastSelectionCode(data.selection_with_possible_answer || null);
+          if (Array.isArray(data.queries_and_results)) {
+            setLastQueriesAndResults(data.queries_and_results);
+          } else {
+            setLastQueriesAndResults([]);
+          }
+        } catch (error) {
+          setMessages(prev =>
+            prev.map(msg =>
+              hasIsLoading(msg) && msg.isLoading
+                ? { ...msg, content: "Sorry, there was an error processing your request.", isLoading: false }
+                : msg
+            )
+          );
+        } finally {
+          setIsLoading(false);
+        }
+        return;
+      } else if (messages.length === 1 && messages[0].isUser === false) {
+        // If the only message is the initial system message, update the title on first user message
+        setChatSessions(prev => prev.map(s =>
+          s.id === activeSessionId
+            ? { ...s, title: (currentMessage.length > 30 ? currentMessage.slice(0, 30) + '…' : currentMessage) || s.title }
+            : s
+        ));
+      }
       const newMessageId = messages.length > 0 ? Math.max(...messages.map((msg: any) => msg.id)) + 1 : 1;
       setMessages((prev: any[]) => [
         ...prev,
@@ -158,7 +278,7 @@ export default function ChatPage() {
         const data = await response.json();
         setMessages((prev: any[]) =>
           prev.map((msg: any) =>
-            msg.isLoading
+            hasIsLoading(msg) && msg.isLoading
               ? { ...msg, content: data.result || JSON.stringify(data), isLoading: false }
               : msg
           )
@@ -172,7 +292,7 @@ export default function ChatPage() {
       } catch (error) {
         setMessages((prev: any[]) =>
           prev.map((msg: any) =>
-            msg.isLoading
+            hasIsLoading(msg) && msg.isLoading
               ? { ...msg, content: "Sorry, there was an error processing your request.", isLoading: false }
               : msg
           )
@@ -191,81 +311,136 @@ export default function ChatPage() {
     setShowSQLModal(false);
   };
 
-  // New chat button handler
+  // New chat handler
   const handleNewChat = () => {
+    const newId = uuidv4();
+    const newSession = {
+      id: newId,
+      title: `Chat ${chatSessions.length + 1}`,
+      messages: INITIAL_MESSAGE
+    };
+    setChatSessions([newSession, ...chatSessions]);
+    setActiveSessionId(newId);
     setMessages(INITIAL_MESSAGE);
     setLastSelectionCode(null);
     setLastQueriesAndResults([]);
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(INITIAL_MESSAGE));
   };
 
+  // Helper type guard
+  function hasIsLoading(msg: any): msg is { isLoading: boolean } {
+    return typeof msg === 'object' && msg !== null && 'isLoading' in msg;
+  }
+
+  // Sidebar UI
   return (
-    <div className="w-full max-w-5xl bg-white flex flex-col rounded-2xl shadow-2xl border border-gray-100 overflow-hidden min-h-[70vh] p-8">
-      <MessageArea messages={messages} />
-      {lastSelectionCode &&
-        <div className="mt-2 text-sm flex items-center space-x-4">
-          <div>
-            <span>Dataset used: </span>
-            <Link
-              href={`/data?table=${encodeURIComponent(lastSelectionCode)}`}
-              className="text-blue-600 underline font-mono hover:text-blue-800"
+    <div className="flex w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden min-h-[70vh]">
+      {/* Sidebar */}
+      <aside className="w-48 bg-[#F9F9F5] border-r border-gray-200 shadow-sm flex flex-col p-2 text-gray-800">
+        <button
+          className="mb-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-xs font-semibold transition-all duration-200"
+          onClick={handleNewChat}
+        >
+          + New chat
+        </button>
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          {chatSessions.length === 0 ? (
+            <div className="text-xs text-gray-400 mt-4">No chats yet</div>
+          ) : (
+            chatSessions.map(session => (
+              <button
+                key={session.id}
+                className={`w-full text-left px-2 py-2 rounded transition-colors text-xs mb-1 ${activeSessionId === session.id ? 'bg-white font-bold border border-blue-200 shadow' : 'hover:bg-gray-200'}`}
+                onClick={() => setActiveSessionId(session.id)}
+              >
+                {session.title}
+              </button>
+            ))
+          )}
+        </div>
+        <button
+          className="mt-2 w-full px-3 py-1 bg-gradient-to-r from-gray-200 to-gray-100 hover:from-gray-300 hover:to-gray-200 text-gray-700 rounded-full shadow text-xs font-semibold transition-all duration-200 border border-gray-300"
+          onClick={() => {
+            setChatSessions([]);
+            setActiveSessionId(null);
+            setMessages(INITIAL_MESSAGE);
+            setLastSelectionCode(null);
+            setLastQueriesAndResults([]);
+            localStorage.removeItem('czsu-chat-sessions');
+            localStorage.setItem('czsu-chat-messages', JSON.stringify(INITIAL_MESSAGE));
+          }}
+        >
+          Clear Chats
+        </button>
+      </aside>
+      {/* Main chat area */}
+      <div className="flex-1 flex flex-col p-8">
+        <MessageArea messages={messages} />
+        {lastSelectionCode &&
+          <div className="mt-2 text-sm flex items-center space-x-4">
+            <div>
+              <span>Dataset used: </span>
+              <Link
+                href={`/data?table=${encodeURIComponent(lastSelectionCode)}`}
+                className="text-blue-600 underline font-mono hover:text-blue-800"
+              >
+                {lastSelectionCode}
+              </Link>
+            </div>
+            <button
+              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs font-semibold text-gray-700 border border-gray-300"
+              onClick={handleSQLButtonClick}
             >
-              {lastSelectionCode}
-            </Link>
+              SQL
+            </button>
           </div>
+        }
+        <Modal open={showSQLModal} onClose={handleCloseSQLModal}>
+          <h2 className="text-lg font-bold mb-4">SQL Commands & Results</h2>
+          <div className="max-h-[60vh] overflow-y-auto pr-2">
+            {(() => {
+              // Deduplicate by SQL string
+              const uniqueQueriesAndResults = Array.from(
+                new Map(lastQueriesAndResults.map(([q, r]) => [q, [q, r]])).values()
+              );
+              if (uniqueQueriesAndResults.length === 0) {
+                return <div className="text-gray-500">No SQL commands available.</div>;
+              }
+              return (
+                <div className="space-y-6">
+                  {uniqueQueriesAndResults.map(([sql, result], idx) => (
+                    <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
+                      <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">SQL Command {idx + 1}</div>
+                      <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-900">
+                        {sql.split('\n').map((line, i) => (
+                          <React.Fragment key={i}>
+                            {line}
+                            {i !== sql.split('\n').length - 1 && <br />}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                      <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-700 border-t border-gray-200">Result</div>
+                      <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-800">
+                        {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+        </Modal>
+        <div className="flex justify-center mb-2">
           <button
-            className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs font-semibold text-gray-700 border border-gray-300"
-            onClick={handleSQLButtonClick}
+            className="px-4 py-1.5 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-sm font-semibold transition-all duration-200"
+            onClick={handleNewChat}
+            disabled={isLoading}
           >
-            SQL
+            New chat
           </button>
         </div>
-      }
-      <Modal open={showSQLModal} onClose={handleCloseSQLModal}>
-        <h2 className="text-lg font-bold mb-4">SQL Commands & Results</h2>
-        <div className="max-h-[60vh] overflow-y-auto pr-2">
-          {(() => {
-            // Deduplicate by SQL string
-            const uniqueQueriesAndResults = Array.from(
-              new Map(lastQueriesAndResults.map(([q, r]) => [q, [q, r]])).values()
-            );
-            if (uniqueQueriesAndResults.length === 0) {
-              return <div className="text-gray-500">No SQL commands available.</div>;
-            }
-            return (
-              <div className="space-y-6">
-                {uniqueQueriesAndResults.map(([sql, result], idx) => (
-                  <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
-                    <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">SQL Command {idx + 1}</div>
-                    <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-900">
-                      {sql.split('\n').map((line, i) => (
-                        <React.Fragment key={i}>
-                          {line}
-                          {i !== sql.split('\n').length - 1 && <br />}
-                        </React.Fragment>
-                      ))}
-                    </div>
-                    <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-700 border-t border-gray-200">Result</div>
-                    <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-800">
-                      {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            );
-          })()}
-        </div>
-      </Modal>
-      <div className="flex justify-center mt-4 mb-2">
-        <button
-          className="px-3 py-1 bg-gradient-to-r from-teal-500 to-teal-400 hover:from-teal-600 hover:to-teal-500 text-white rounded-full text-xs font-medium transition-all duration-200"
-          onClick={handleNewChat}
-          disabled={isLoading}
-        >
-          New chat
-        </button>
+        <InputBar currentMessage={currentMessage} setCurrentMessage={setCurrentMessage} onSubmit={handleSubmit} isLoading={isLoading} />
       </div>
-      <InputBar currentMessage={currentMessage} setCurrentMessage={setCurrentMessage} onSubmit={handleSubmit} isLoading={isLoading} />
     </div>
   );
 } 

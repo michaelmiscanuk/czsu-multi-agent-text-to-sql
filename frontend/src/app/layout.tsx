@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from '@/components/Header';
+import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,15 +29,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="min-h-screen w-full bg-gradient-to-br from-gray-100 via-blue-50 to-purple-100 flex flex-col">
-          <div className="sticky top-0 z-50"><Header /></div>
-          <main className="flex justify-center flex-1 py-8 px-2">
-            {children}
-          </main>
-          <footer className="w-full text-center text-gray-400 text-sm py-4 mt-4">
-            &copy; {new Date().getFullYear()} Michael Miscanuk. Data from the Czech Statistical Office (CZSU).
-          </footer>
-        </div>
+        <SessionProviderWrapper>
+          <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 flex flex-col">
+            <div className="sticky top-0 z-50"><Header /></div>
+            <main className="flex justify-center flex-1 py-8 px-2">
+              {children}
+            </main>
+            <footer className="w-full text-center text-gray-400 text-sm py-4 mt-4">
+              &copy; {new Date().getFullYear()} Michael Miscanuk. Data from the Czech Statistical Office (CZSU).
+            </footer>
+          </div>
+        </SessionProviderWrapper>
       </body>
     </html>
   );

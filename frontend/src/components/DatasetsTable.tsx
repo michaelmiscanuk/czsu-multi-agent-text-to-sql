@@ -35,8 +35,11 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
   useEffect(() => {
     const savedPage = localStorage.getItem(DATASETS_PAGE_KEY);
     const savedFilter = localStorage.getItem(DATASETS_FILTER_KEY);
-    if (savedPage) setPage(Number(savedPage));
-    if (savedFilter) setFilter(savedFilter);
+    if (savedPage) {
+      const pageNum = Number(savedPage);
+      if (!isNaN(pageNum)) setPage(pageNum);
+    }
+    if (typeof savedFilter === 'string') setFilter(savedFilter);
   }, []);
 
   // Persist page and filter to localStorage
@@ -90,6 +93,7 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
         <input
           className="border border-gray-300 rounded px-3 py-2 w-80 mr-2"
           placeholder="Filter by keyword..."
+          aria-label="Filter datasets by keyword"
           value={filter}
           onChange={e => { setPage(1); setFilter(e.target.value); }}
         />
@@ -97,6 +101,8 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
           <button
             className="text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
             title="Clear filter"
+            aria-label="Clear filter"
+            tabIndex={0}
             onClick={handleReset}
             style={{ lineHeight: 1 }}
           >
