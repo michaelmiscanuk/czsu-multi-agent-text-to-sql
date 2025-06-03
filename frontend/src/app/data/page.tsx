@@ -1,14 +1,14 @@
 "use client";
 import DataTableView from '../../components/DataTableView';
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 const SEARCH_KEY = 'czsu-data-search';
 const SELECTED_TABLE_KEY = 'czsu-data-selectedTable';
 const COLUMN_FILTERS_KEY = 'czsu-data-columnFilters';
 const SELECTED_COLUMN_KEY = 'czsu-data-selectedColumn';
 
-export default function DataPage() {
+function DataPageInner() {
   const searchParams = useSearchParams();
   const table = searchParams.get('table');
 
@@ -90,5 +90,13 @@ export default function DataPage() {
         setPendingTableSearch={setPendingTableSearch}
       />
     </div>
+  );
+}
+
+export default function DataPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DataPageInner />
+    </Suspense>
   );
 } 
