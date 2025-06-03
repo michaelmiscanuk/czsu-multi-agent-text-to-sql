@@ -1,19 +1,20 @@
 @echo off
 
-:: Install requirements
-pip install -r requirements.txt
+echo Creating venv...
+uv venv --python 3.11.9
 
-:: Install jupyter notebook and extension packages compatible with modern Jupyter
-pip install notebook>=7.0.0 jupyterlab ipywidgets
+echo Activating venv...
+call .venv\Scripts\activate
 
-:: Create jupyter config directory if it doesn't exist
-mkdir %USERPROFILE%\.jupyter 2>nul
+echo Installing backend dependencies...
+uv pip install .
+uv pip install .[dev]
 
-:: Enable ipywidgets extension using the correct method for modern Jupyter
-pip install jupyterlab-widgets
-jupyter labextension list
+echo Setting up frontend...
+cd frontend
+npm install
+npm run build
+cd ..
 
-:: For classic notebook support - fixing the syntax error in the Python command
-pip install jupyter_nbextensions_configurator 
-
-echo Setup complete! Environment is ready for use.
+echo Setup complete!
+pause

@@ -1,5 +1,3 @@
-"use client"
-
 export default function Home() {
   return (
     <div className="w-full max-w-5xl bg-white flex flex-col rounded-2xl shadow-2xl border border-gray-100 overflow-hidden min-h-[70vh] p-8">
