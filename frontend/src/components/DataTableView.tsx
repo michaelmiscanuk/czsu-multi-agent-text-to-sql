@@ -104,16 +104,23 @@ const DataTableView: React.FC<DataTableViewProps> = ({
       session?.id_token
         ? { headers: { Authorization: `Bearer ${session.id_token}` } }
         : undefined;
-    fetch(`${API_BASE}/data-table?table=${encodeURIComponent(selectedTable)}`, getFetchOptions())
+    const url = `${API_BASE}/data-table?table=${encodeURIComponent(selectedTable)}`;
+    const fetchOptions = getFetchOptions();
+    console.log('[DataTableView] Fetching table:', selectedTable, url, JSON.stringify(fetchOptions, null, 2));
+    fetch(url, fetchOptions)
       .then(res => res.ok ? res.json() : Promise.reject(res))
       .then(data => {
+        console.log('[DataTableView] Received data:', JSON.stringify(data, null, 2));
         setColumns(data.columns || []);
         setRows(data.rows || []);
         setSelectedColumn(data.columns && data.columns.length > 0 ? data.columns[0] : null);
         setColumnFilters({});
         setTableLoading(false);
       })
-      .catch(() => setTableLoading(false));
+      .catch((err) => {
+        console.error('[DataTableView] Error fetching table:', JSON.stringify(err, null, 2));
+        setTableLoading(false);
+      });
   }, [selectedTable, setColumns, setRows, setSelectedColumn, setColumnFilters, session?.id_token]);
 
   // Auto-select and load the table if pendingTableSearch matches a suggestion exactly
@@ -262,29 +269,13 @@ const DataTableView: React.FC<DataTableViewProps> = ({
       )}
       {selectedTable && columns.length > 0 && (
         <div className="mb-4 flex items-center space-x-2">
-          <label className="text-sm text-gray-700">Column:</label>
-          <select
-            className="border border-gray-300 rounded px-2 py-1 text-sm"
-            value={selectedColumn || ''}
-            onChange={e => handleColumnSelect(e.target.value)}
-          >
-            {columns.map(col => (
-              <option key={col} value={col}>{col}</option>
-            ))}
-          </select>
-          <input
-            className="border border-gray-300 rounded px-2 py-1 text-sm w-64"
-            placeholder={selectedColumn === 'value' ? `Filter in column (e.g. > 10000, <= 500)` : `Filter in column...`}
-            value={selectedColumn ? columnFilters[selectedColumn] || '' : ''}
-            onChange={e => selectedColumn && handleColumnFilterChange(selectedColumn, e.target.value)}
-          />
           <button
-            className="ml-2 text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
+            className="text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
             title="Clear all filters"
             onClick={handleClearFilters}
             style={{ lineHeight: 1 }}
           >
-            ×
+            × Clear all filters
           </button>
         </div>
       )}
@@ -302,6 +293,26 @@ const DataTableView: React.FC<DataTableViewProps> = ({
                     {columns.map(col => (
                       <th key={col} className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap">
                         {col}
+                      </th>
+                    ))}
+                  </tr>
+                  <tr>
+                    {columns.map(col => (
+                      <th key={col + '-filter'} className="px-4 py-1 border-b bg-blue-50">
+                        <input
+                          className="border border-gray-300 rounded px-2 py-1 text-xs w-full"
+                          placeholder={`Filter...`}
+                          value={columnFilters[col] || ''}
+                          onChange={e => handleColumnFilterChange(col, e.target.value)}
+                          title={col === 'value' ? 'You can filter using >, <, >=, <=, =, !=, etc. (e.g. "> 10000")' : undefined}
+                        />
+                        {col === 'value' && (
+                          <span className="text-gray-400 text-[10px] block mt-1" style={{lineHeight: 1}}>
+                            <span title='You can filter using &gt;, &lt;, &gt;=, &lt;=, =, !=, etc. (e.g. "> 10000")'>
+                              e.g. &gt; 10000, &lt;= 500
+                            </span>
+                          </span>
+                        )}
                       </th>
                     ))}
                   </tr>

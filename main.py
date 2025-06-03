@@ -26,6 +26,7 @@ load_dotenv()
 
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
+from my_agent.utils.nodes import MAX_ITERATIONS
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -138,7 +139,9 @@ async def main(prompt=None):
         "result": final_answer,
         "queries_and_results": queries_and_results,
         "thread_id": thread_id,
-        "selection_with_possible_answer": selection_with_possible_answer
+        "selection_with_possible_answer": selection_with_possible_answer,
+        "iteration": result.get("iteration", 0),
+        "max_iterations": MAX_ITERATIONS
     }
     
     print(f"Result: {final_answer}")

@@ -63,78 +63,79 @@ export default function ChatPage() {
   const [showSQLModal, setShowSQLModal] = useState(false);
   const [chatSessions, setChatSessions] = useState<{id: string, title: string, messages: Message[]}[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [iteration, setIteration] = useState(0);
+  const [maxIterations, setMaxIterations] = useState(2); // default fallback
+  const didInitRef = React.useRef(false);
+  const lastUserIdRef = React.useRef<string | null>(null);
 
-  // Only restore from localStorage on first mount
-  const didRestoreRef = React.useRef(false);
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
+
+  // Helper: deep compare sessions (by id and messages length)
+  function sessionsAreEqual(a: any[], b: any[]) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (a[i].id !== b[i].id) return false;
+      if ((a[i].messages?.length || 0) !== (b[i].messages?.length || 0)) return false;
+    }
+    return true;
+  }
+
+  // Helper: deduplicate sessions by id (preserve full session object)
+  function dedupeSessions<T extends {id: string}>(sessions: T[]): T[] {
+    const seen = new Set();
+    return sessions.filter(s => {
+      if (seen.has(s.id)) return false;
+      seen.add(s.id);
+      return true;
+    });
+  }
+
+  // Fetch chat sessions from backend only when user logs in or changes
   useEffect(() => {
-    if (!didRestoreRef.current) {
-      const saved = localStorage.getItem(CHAT_STORAGE_KEY);
-      console.log('[ChatPage] Restoring chat from localStorage:', saved);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setMessages(parsed);
-            console.log('[ChatPage] Chat state after restore:', parsed);
+    const userId = session?.user?.email || null;
+    if (userId && lastUserIdRef.current !== userId && session?.id_token) {
+      fetch(`${API_BASE}/chat-sessions`, {
+        headers: { Authorization: `Bearer ${session.id_token}` }
+      })
+        .then(res => res.ok ? res.json() : Promise.reject(res))
+        .then(data => {
+          const backendSessions = Array.isArray(data) ? dedupeSessions(data.map(s => s.data)) : [];
+          if (!sessionsAreEqual(backendSessions, chatSessions)) {
+            setChatSessions(backendSessions);
+            if (backendSessions.length > 0) {
+              setActiveSessionId(backendSessions[0].id);
+              setMessages(backendSessions[0].messages);
+            } else {
+              setActiveSessionId(null);
+              setMessages(INITIAL_MESSAGE);
+            }
           }
-        } catch {}
-      }
-      // Restore lastSelectionCode
-      const savedSel = localStorage.getItem(LAST_SELECTION_CODE_KEY);
-      setLastSelectionCode(savedSel || null);
-      // Restore lastQueriesAndResults
-      const savedQR = localStorage.getItem(LAST_QUERIES_RESULTS_KEY);
-      if (savedQR) {
-        try {
-          setLastQueriesAndResults(JSON.parse(savedQR));
-        } catch { setLastQueriesAndResults([]); }
-      }
-      didRestoreRef.current = true;
+        })
+        .catch(() => {
+          setChatSessions([]);
+          setActiveSessionId(null);
+          setMessages(INITIAL_MESSAGE);
+        });
+      lastUserIdRef.current = userId;
+      didInitRef.current = true;
     }
-  }, []);
+  }, [session?.id_token, session?.user?.email]);
 
-  // Save messages to localStorage whenever they change
+  // Save chat sessions to backend whenever they change
   useEffect(() => {
-    console.log('[ChatPage] Persisting chat to localStorage:', messages);
-    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
-  }, [messages]);
-
-  // Persist lastSelectionCode
-  useEffect(() => {
-    if (lastSelectionCode) {
-      localStorage.setItem(LAST_SELECTION_CODE_KEY, lastSelectionCode);
-    } else {
-      localStorage.removeItem(LAST_SELECTION_CODE_KEY);
+    if (session?.id_token && chatSessions.length > 0) {
+      chatSessions.forEach(sessionObj => {
+        fetch(`${API_BASE}/chat-sessions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.id_token}`
+          },
+          body: JSON.stringify(sessionObj)
+        });
+      });
     }
-  }, [lastSelectionCode]);
-
-  // Persist lastQueriesAndResults
-  useEffect(() => {
-    if (lastQueriesAndResults && lastQueriesAndResults.length > 0) {
-      localStorage.setItem(LAST_QUERIES_RESULTS_KEY, JSON.stringify(lastQueriesAndResults));
-    } else {
-      localStorage.removeItem(LAST_QUERIES_RESULTS_KEY);
-    }
-  }, [lastQueriesAndResults]);
-
-  // Load chat sessions from localStorage on mount
-  useEffect(() => {
-    const savedSessions = localStorage.getItem(CHAT_SESSIONS_KEY);
-    if (savedSessions) {
-      try {
-        const parsed = JSON.parse(savedSessions);
-        if (Array.isArray(parsed)) {
-          setChatSessions(parsed);
-          if (parsed.length > 0) setActiveSessionId(parsed[0].id);
-        }
-      } catch {}
-    }
-  }, []);
-
-  // Save chat sessions to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(chatSessions));
-  }, [chatSessions]);
+  }, [chatSessions, session?.id_token]);
 
   // When activeSessionId changes, update messages
   useEffect(() => {
@@ -142,21 +143,49 @@ export default function ChatPage() {
       const session = chatSessions.find(s => s.id === activeSessionId);
       if (session) setMessages(session.messages);
     }
-  }, [activeSessionId]);
+  }, [activeSessionId, chatSessions]);
 
-  // When messages change, update the current session
+  // When messages change, update the current session in chatSessions
   useEffect(() => {
     if (activeSessionId) {
       setChatSessions(prev => prev.map(s => s.id === activeSessionId ? {...s, messages} : s));
     }
   }, [messages]);
 
+  // Helper to check if current chat is empty (only system message)
+  const isCurrentChatEmpty = messages.length === 1 && messages[0].isUser === false;
+
+  // Debug: log session on mount and when it changes
+  useEffect(() => {
+    console.log('[ChatPage] Session:', JSON.stringify(session, null, 2));
+  }, [session]);
+
+  // Sync isLoading across tabs/windows
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key === 'czsu-chat-isLoading') {
+        setIsLoading(e.newValue === 'true');
+      }
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) {
+      localStorage.setItem('czsu-chat-isLoading', 'true');
+    } else {
+      localStorage.setItem('czsu-chat-isLoading', 'false');
+    }
+  }, [isLoading]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLastQueriesAndResults([]);
     if (currentMessage.trim()) {
-      // If there is no active session or the session is not in chatSessions, create a new one
-      if (!activeSessionId || !chatSessions.some(s => s.id === activeSessionId)) {
+      const currentSession = chatSessions.find(s => s.id === activeSessionId);
+      const isCurrentSessionEmpty = !currentSession || (currentSession.messages.length === 1 && currentSession.messages[0].isUser === false);
+      if (chatSessions.length === 0 || isCurrentSessionEmpty) {
         const newId = uuidv4();
         const firstTitle = currentMessage.length > 30 ? currentMessage.slice(0, 30) + '…' : currentMessage;
         const userMessage = {
@@ -166,39 +195,34 @@ export default function ChatPage() {
           type: 'message'
         };
         const initialSystemMessage = INITIAL_MESSAGE[0];
-        const newSessionMessages = [initialSystemMessage, userMessage];
+        const aiResponseId = 3;
+        const loadingMessage = {
+          id: aiResponseId,
+          content: "",
+          isUser: false,
+          type: 'message',
+          isLoading: true
+        };
+        const newSessionMessages = [initialSystemMessage, userMessage, loadingMessage];
         const newSession = {
           id: newId,
           title: firstTitle || `Chat ${chatSessions.length + 1}`,
           messages: newSessionMessages
         };
-        setChatSessions([newSession, ...chatSessions]);
+        setChatSessions(dedupeSessions([newSession, ...chatSessions]));
         setActiveSessionId(newId);
         setMessages(newSessionMessages);
         setCurrentMessage("");
-        // Continue with AI response as normal
         setIsLoading(true);
         try {
-          const aiResponseId = 3;
-          setMessages(prev => [
-            ...prev,
-            {
-              id: aiResponseId,
-              content: "",
-              isUser: false,
-              type: 'message',
-              isLoading: true
-            }
-          ]);
-          const API_URL = process.env.NODE_ENV === 'development'
-            ? 'http://localhost:8000/analyze'
-            : '/analyze';
+          const API_URL = `${API_BASE}/analyze`;
+          const headers = {
+            'Content-Type': 'application/json',
+            ...(session?.id_token ? { 'Authorization': `Bearer ${session.id_token}` } : {}),
+          };
           const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(session?.id_token ? { 'Authorization': `Bearer ${session.id_token}` } : {}),
-            },
+            headers,
             body: JSON.stringify({ prompt: currentMessage })
           });
           if (!response.ok) {
@@ -218,6 +242,8 @@ export default function ChatPage() {
           } else {
             setLastQueriesAndResults([]);
           }
+          setIteration(data.iteration ?? 0);
+          setMaxIterations(data.max_iterations ?? 2);
         } catch (error) {
           setMessages(prev =>
             prev.map(msg =>
@@ -231,7 +257,6 @@ export default function ChatPage() {
         }
         return;
       } else if (messages.length === 1 && messages[0].isUser === false) {
-        // If the only message is the initial system message, update the title on first user message
         setChatSessions(prev => prev.map(s =>
           s.id === activeSessionId
             ? { ...s, title: (currentMessage.length > 30 ? currentMessage.slice(0, 30) + '…' : currentMessage) || s.title }
@@ -239,42 +264,37 @@ export default function ChatPage() {
         ));
       }
       const newMessageId = messages.length > 0 ? Math.max(...messages.map((msg: any) => msg.id)) + 1 : 1;
+      const userMessage = {
+        id: newMessageId,
+        content: currentMessage,
+        isUser: true,
+        type: 'message'
+      };
+      const aiResponseId = newMessageId + 1;
+      const loadingMessage = {
+        id: aiResponseId,
+        content: "",
+        isUser: false,
+        type: 'message',
+        isLoading: true
+      };
       setMessages((prev: any[]) => [
         ...prev,
-        {
-          id: newMessageId,
-          content: currentMessage,
-          isUser: true,
-          type: 'message'
-        }
+        userMessage,
+        loadingMessage
       ]);
-      const userInput = currentMessage;
       setCurrentMessage("");
       setIsLoading(true);
       try {
-        // Add loading placeholder for AI response
-        const aiResponseId = newMessageId + 1;
-        setMessages((prev: any[]) => [
-          ...prev,
-          {
-            id: aiResponseId,
-            content: "",
-            isUser: false,
-            type: 'message',
-            isLoading: true
-          }
-        ]);
-        // Call your FastAPI backend
-        const API_URL = process.env.NODE_ENV === 'development'
-          ? 'http://localhost:8000/analyze'
-          : '/analyze';
+        const API_URL = `${API_BASE}/analyze`;
+        const headers = {
+          'Content-Type': 'application/json',
+          ...(session?.id_token ? { 'Authorization': `Bearer ${session.id_token}` } : {}),
+        };
         const response = await fetch(API_URL, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(session?.id_token ? { 'Authorization': `Bearer ${session.id_token}` } : {}),
-          },
-          body: JSON.stringify({ prompt: userInput })
+          headers,
+          body: JSON.stringify({ prompt: currentMessage })
         });
         if (!response.ok) {
           throw new Error('Server error');
@@ -293,6 +313,8 @@ export default function ChatPage() {
         } else {
           setLastQueriesAndResults([]);
         }
+        setIteration(data.iteration ?? 0);
+        setMaxIterations(data.max_iterations ?? 2);
       } catch (error) {
         setMessages((prev: any[]) =>
           prev.map((msg: any) =>
@@ -317,18 +339,29 @@ export default function ChatPage() {
 
   // New chat handler
   const handleNewChat = () => {
+    if (messages.length === 1 && messages[0].isUser === false) return;
     const newId = uuidv4();
+    if (chatSessions.some(s => s.id === newId)) return;
     const newSession = {
       id: newId,
       title: `Chat ${chatSessions.length + 1}`,
       messages: INITIAL_MESSAGE
     };
-    setChatSessions([newSession, ...chatSessions]);
+    setChatSessions(dedupeSessions([newSession, ...chatSessions]));
     setActiveSessionId(newId);
     setMessages(INITIAL_MESSAGE);
     setLastSelectionCode(null);
     setLastQueriesAndResults([]);
-    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(INITIAL_MESSAGE));
+  };
+
+  // Clear all chats handler
+  const handleClearChats = () => {
+    setChatSessions([]);
+    setActiveSessionId(null);
+    setMessages(INITIAL_MESSAGE);
+    setLastSelectionCode(null);
+    setLastQueriesAndResults([]);
+    // Optionally: implement backend delete endpoint to clear all sessions
   };
 
   // Helper type guard
@@ -342,16 +375,18 @@ export default function ChatPage() {
       {/* Sidebar */}
       <aside className="w-48 bg-[#F9F9F5] border-r border-gray-200 shadow-sm flex flex-col p-2 text-gray-800">
         <button
-          className="mb-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-xs font-semibold transition-all duration-200"
+          className="mb-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-xs font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleNewChat}
+          disabled={isCurrentChatEmpty}
+          title={isCurrentChatEmpty ? 'You must send a message before starting a new chat.' : ''}
         >
           + New chat
         </button>
         <div className="flex-1 min-h-0 overflow-y-auto">
-          {chatSessions.length === 0 ? (
+          {dedupeSessions(chatSessions).length === 0 ? (
             <div className="text-xs text-gray-400 mt-4">No chats yet</div>
           ) : (
-            chatSessions.map(session => (
+            dedupeSessions(chatSessions).map(session => (
               <button
                 key={session.id}
                 className={`w-full text-left px-2 py-2 rounded transition-colors text-xs mb-1 ${activeSessionId === session.id ? 'bg-white font-bold border border-blue-200 shadow' : 'hover:bg-gray-200'}`}
@@ -364,15 +399,7 @@ export default function ChatPage() {
         </div>
         <button
           className="mt-2 w-full px-3 py-1 bg-gradient-to-r from-gray-200 to-gray-100 hover:from-gray-300 hover:to-gray-200 text-gray-700 rounded-full shadow text-xs font-semibold transition-all duration-200 border border-gray-300"
-          onClick={() => {
-            setChatSessions([]);
-            setActiveSessionId(null);
-            setMessages(INITIAL_MESSAGE);
-            setLastSelectionCode(null);
-            setLastQueriesAndResults([]);
-            localStorage.removeItem('czsu-chat-sessions');
-            localStorage.setItem('czsu-chat-messages', JSON.stringify(INITIAL_MESSAGE));
-          }}
+          onClick={handleClearChats}
         >
           Clear Chats
         </button>
@@ -436,9 +463,10 @@ export default function ChatPage() {
         </Modal>
         <div className="flex justify-center mb-2">
           <button
-            className="px-4 py-1.5 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-sm font-semibold transition-all duration-200"
+            className="px-4 py-1.5 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleNewChat}
-            disabled={isLoading}
+            disabled={isLoading || isCurrentChatEmpty}
+            title={isCurrentChatEmpty ? 'You must send a message before starting a new chat.' : ''}
           >
             New chat
           </button>

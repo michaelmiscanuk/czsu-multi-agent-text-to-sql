@@ -7,6 +7,8 @@ pip install --upgrade pip
 pip install .
 pip install .[dev]
 
+python3 unzip_files.py
+
 # Frontend dependency setup
 cd frontend
 npm install

@@ -53,6 +53,7 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
   }, [filter]);
 
   useEffect(() => {
+    console.log('[DatasetsTable] Session:', JSON.stringify(session, null, 2));
     setLoading(true);
     const handleError = (err: any) => {
       setData([]);
@@ -64,9 +65,11 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
       session?.id_token
         ? { headers: { Authorization: `Bearer ${session.id_token}` } }
         : undefined;
+    const fetchOptions = getFetchOptions();
+    console.log('[DatasetsTable] Fetch options:', JSON.stringify(fetchOptions, null, 2));
     // If there is a filter, fetch all catalog and filter client-side
     if (filter) {
-      fetch(`${API_BASE}/catalog?page=1&page_size=10000`, getFetchOptions())
+      fetch(`${API_BASE}/catalog?page=1&page_size=10000`, fetchOptions)
         .then(res => res.ok ? res.json() : Promise.reject(res))
         .then((res: CatalogResponse) => {
           const normWords = removeDiacritics(filter.toLowerCase()).split(/\s+/).filter(Boolean);
@@ -82,7 +85,7 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
     } else {
       // No filter: use backend pagination
       const params = new URLSearchParams({ page: page.toString() });
-      fetch(`${API_BASE}/catalog?${params.toString()}`, getFetchOptions())
+      fetch(`${API_BASE}/catalog?${params.toString()}`, fetchOptions)
         .then(res => res.ok ? res.json() : Promise.reject(res))
         .then((res: CatalogResponse) => {
           setData(res.results);

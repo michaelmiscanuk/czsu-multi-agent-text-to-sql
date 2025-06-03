@@ -30,14 +30,22 @@ function DataPageInner() {
       const savedCol = localStorage.getItem(SELECTED_COLUMN_KEY);
       const savedFilters = localStorage.getItem(COLUMN_FILTERS_KEY);
       console.log('[DataPage] Restoring from localStorage:', { savedSearch, savedTable, savedCol, savedFilters });
-      setSearch(savedSearch || '');
-      setSelectedTable(savedTable || table);
+      // If table param is present, use it for search and selection
+      if (table) {
+        setSearch(table);
+        setSelectedTable(table);
+        setPendingTableSearch(table);
+      } else {
+        setSearch(savedSearch || '');
+        setSelectedTable(savedTable || null);
+        setPendingTableSearch(null);
+      }
       setSelectedColumn(savedCol || null);
       setColumnFilters(savedFilters ? JSON.parse(savedFilters) : {});
       didRestoreRef.current = true;
       console.log('[DataPage] State after restore:', {
-        search: savedSearch || '',
-        selectedTable: savedTable || table,
+        search: table || savedSearch || '',
+        selectedTable: table || savedTable || null,
         selectedColumn: savedCol || null,
         columnFilters: savedFilters ? JSON.parse(savedFilters) : {}
       });

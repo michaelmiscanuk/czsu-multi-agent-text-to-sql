@@ -10,6 +10,8 @@ echo Installing backend dependencies...
 uv pip install .
 uv pip install .[dev]
 
+python unzip_files.py
+
 echo Setting up frontend...
 cd frontend
 npm install
