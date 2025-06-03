@@ -1,16 +1,20 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/api/$1"
-    },
-    {
       "source": "/api/analyze",
       "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/analyze"
     },
     {
-      "source": "/analyze",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/analyze"
+      "source": "/api/datasets",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/datasets"
+    },
+    {
+      "source": "/api/data-tables",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/data-tables"
+    },
+    {
+      "source": "/api/data-table",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/data-table"
     }
   ]
 }
