@@ -5,8 +5,8 @@
       "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/analyze"
     },
     {
-      "source": "/api/datasets",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/datasets"
+      "source": "/api/catalog",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/catalog"
     },
     {
       "source": "/api/data-tables",

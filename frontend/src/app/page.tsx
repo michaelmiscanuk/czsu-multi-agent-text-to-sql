@@ -5,7 +5,7 @@ export default function Home() {
         <h1 className="text-3xl font-bold mb-4">Welcome to the CZSU Data Explorer</h1>
         <p className="text-xl text-gray-700 max-w-2xl">
           This application contains data from the Czech Statistical Office (CZSU).<br />
-          You can chat with the data using natural language, explore datasets, and filter or search tables interactively.
+          You can chat with the data using natural language, explore the catalog, and filter or search tables interactively.
         </p>
       </div>
     </div>

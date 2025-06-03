@@ -8,7 +8,7 @@ const AuthButton = dynamic(() => import('./AuthButton'), { ssr: false });
 const menuItems = [
   { label: 'HOME', href: '/' },
   { label: 'CHAT', href: '/chat' },
-  { label: 'DATASETS', href: '/datasets' },
+  { label: 'CATALOG', href: '/catalog' },
   { label: 'DATA', href: '/data' },
   { label: 'CONTACTS', href: '/contacts' },
 ];

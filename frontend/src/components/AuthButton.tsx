@@ -10,7 +10,7 @@ export default function AuthButton() {
         {session.user?.image && (
           <img src={session.user.image} alt="avatar" className="w-7 h-7 rounded-full border border-gray-300" />
         )}
-        <span className="text-xs text-gray-700 font-medium">{session.user?.name || session.user?.email}</span>
+        <span className="text-xs text-white font-medium">{session.user?.name || session.user?.email}</span>
         <button
           className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 border border-gray-300 transition-all duration-200"
           onClick={() => signOut()}

@@ -1,7 +1,19 @@
 "use client";
 import AuthButton from "@/components/AuthButton";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginPage() {
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/chat");
+    }
+  }, [status, router]);
+
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 min-h-[60vh] flex flex-col items-center justify-center p-8 mt-12">
       <div className="flex flex-col items-center mb-8">

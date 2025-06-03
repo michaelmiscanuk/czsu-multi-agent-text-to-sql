@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { removeDiacritics } from './utils';
+import { useSession } from "next-auth/react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
@@ -46,6 +47,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   const [loading, setLoading] = React.useState(false);
   const [tableLoading, setTableLoading] = React.useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
 
   // Prefill search box if pendingTableSearch changes
   React.useEffect(() => {
@@ -70,8 +72,12 @@ const DataTableView: React.FC<DataTableViewProps> = ({
       return;
     }
     setLoading(true);
-    fetch(`${API_BASE}/data-tables?q=${encodeURIComponent(search)}`)
-      .then(res => res.json())
+    const getFetchOptions = () =>
+      session?.id_token
+        ? { headers: { Authorization: `Bearer ${session.id_token}` } }
+        : undefined;
+    fetch(`${API_BASE}/data-tables?q=${encodeURIComponent(search)}`, getFetchOptions())
+      .then(res => res.ok ? res.json() : Promise.reject(res))
       .then(data => {
         const normSearch = removeDiacritics(search.toLowerCase());
         const filteredTables = (data.tables || []).filter((table: string) =>
@@ -80,8 +86,9 @@ const DataTableView: React.FC<DataTableViewProps> = ({
         const sortedTables = filteredTables.slice().sort((a: string, b: string) => a.localeCompare(b, 'cs', { sensitivity: 'base' }));
         setSuggestions(sortedTables);
         setLoading(false);
-      });
-  }, [search]);
+      })
+      .catch(() => setLoading(false));
+  }, [search, session?.id_token]);
 
   // Fetch table data when a table is selected
   useEffect(() => {
@@ -93,16 +100,21 @@ const DataTableView: React.FC<DataTableViewProps> = ({
       return;
     }
     setTableLoading(true);
-    fetch(`${API_BASE}/data-table?table=${encodeURIComponent(selectedTable)}`)
-      .then(res => res.json())
+    const getFetchOptions = () =>
+      session?.id_token
+        ? { headers: { Authorization: `Bearer ${session.id_token}` } }
+        : undefined;
+    fetch(`${API_BASE}/data-table?table=${encodeURIComponent(selectedTable)}`, getFetchOptions())
+      .then(res => res.ok ? res.json() : Promise.reject(res))
       .then(data => {
         setColumns(data.columns || []);
         setRows(data.rows || []);
         setSelectedColumn(data.columns && data.columns.length > 0 ? data.columns[0] : null);
         setColumnFilters({});
         setTableLoading(false);
-      });
-  }, [selectedTable, setColumns, setRows, setSelectedColumn, setColumnFilters]);
+      })
+      .catch(() => setTableLoading(false));
+  }, [selectedTable, setColumns, setRows, setSelectedColumn, setColumnFilters, session?.id_token]);
 
   // Auto-select and load the table if pendingTableSearch matches a suggestion exactly
   React.useEffect(() => {
@@ -201,7 +213,6 @@ const DataTableView: React.FC<DataTableViewProps> = ({
             const value = e.target.value;
             setSearch(value);
             setShowSuggestions(true);
-            // Only clear selectedTable if the search is cleared (empty string)
             if (value.trim() === '') {
               setSelectedTable(null);
             }
@@ -230,7 +241,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
           </button>
         )}
         {showSuggestions && suggestions.length > 0 && (
-          <ul className="absolute z-10 bg-white border border-gray-200 rounded w-96 mt-1 max-h-60 overflow-auto shadow-lg">
+          <ul className="absolute left-0 top-full z-10 bg-white border border-gray-200 rounded w-96 mt-1 max-h-60 overflow-auto shadow-lg">
             {suggestions.map(table => (
               <li
                 key={table}
@@ -284,24 +295,30 @@ const DataTableView: React.FC<DataTableViewProps> = ({
           ) : columns.length === 0 ? (
             <div className="text-center py-8">No data found for this table.</div>
           ) : (
-            <table className="min-w-full border border-gray-200 rounded text-xs">
-              <thead>
-                <tr className="bg-gray-100">
-                  {columns.map(col => (
-                    <th key={col} className="px-2 py-1 border-b text-left whitespace-nowrap">{col}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRows.map((row, i) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    {row.map((cell, j) => (
-                      <td key={j} className="px-2 py-1 border-b whitespace-pre-line">{cell !== null ? String(cell) : ''}</td>
+            <div className="overflow-x-auto rounded shadow border border-gray-200 bg-white">
+              <table className="min-w-full text-xs">
+                <thead className="bg-blue-100 sticky top-0 z-10">
+                  <tr>
+                    {columns.map(col => (
+                      <th key={col} className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap">
+                        {col}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredRows.map((row, i) => (
+                    <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
+                      {row.map((cell, j) => (
+                        <td key={j} className="px-4 py-2 border-b whitespace-pre-line text-gray-800">
+                          {cell !== null ? String(cell) : ''}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       )}

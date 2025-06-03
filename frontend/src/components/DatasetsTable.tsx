@@ -1,31 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { removeDiacritics } from './utils';
+import { useSession } from "next-auth/react";
 
 // To support both local dev and production, set NEXT_PUBLIC_API_BASE in .env.local to your backend URL (e.g., http://localhost:8000) for local dev.
 // In production, leave it unset to use relative paths.
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
-interface DatasetRow {
+interface CatalogRow {
   selection_code: string;
   extended_description: string;
 }
 
-interface DatasetsResponse {
-  results: DatasetRow[];
+interface CatalogResponse {
+  results: CatalogRow[];
   total: number;
   page: number;
   page_size: number;
 }
 
-interface DatasetsTableProps {
+interface CatalogTableProps {
   onRowClick?: (selection_code: string) => void;
 }
 
-const DATASETS_PAGE_KEY = 'czsu-datasets-page';
-const DATASETS_FILTER_KEY = 'czsu-datasets-filter';
+const CATALOG_PAGE_KEY = 'czsu-catalog-page';
+const CATALOG_FILTER_KEY = 'czsu-catalog-filter';
 
-const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
-  const [data, setData] = useState<DatasetRow[]>([]);
+const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
+  const { data: session } = useSession();
+  const [data, setData] = useState<CatalogRow[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState('');
@@ -33,8 +35,8 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
 
   // Restore page and filter from localStorage on mount
   useEffect(() => {
-    const savedPage = localStorage.getItem(DATASETS_PAGE_KEY);
-    const savedFilter = localStorage.getItem(DATASETS_FILTER_KEY);
+    const savedPage = localStorage.getItem(CATALOG_PAGE_KEY);
+    const savedFilter = localStorage.getItem(CATALOG_FILTER_KEY);
     if (savedPage) {
       const pageNum = Number(savedPage);
       if (!isNaN(pageNum)) setPage(pageNum);
@@ -44,19 +46,29 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
 
   // Persist page and filter to localStorage
   useEffect(() => {
-    localStorage.setItem(DATASETS_PAGE_KEY, String(page));
+    localStorage.setItem(CATALOG_PAGE_KEY, String(page));
   }, [page]);
   useEffect(() => {
-    localStorage.setItem(DATASETS_FILTER_KEY, filter);
+    localStorage.setItem(CATALOG_FILTER_KEY, filter);
   }, [filter]);
 
   useEffect(() => {
     setLoading(true);
-    // If there is a filter, fetch all datasets and filter client-side
+    const handleError = (err: any) => {
+      setData([]);
+      setTotal(0);
+      setLoading(false);
+    };
+    // Helper to build fetch options
+    const getFetchOptions = () =>
+      session?.id_token
+        ? { headers: { Authorization: `Bearer ${session.id_token}` } }
+        : undefined;
+    // If there is a filter, fetch all catalog and filter client-side
     if (filter) {
-      fetch(`${API_BASE}/datasets?page=1&page_size=10000`)
-        .then(res => res.json())
-        .then((res: DatasetsResponse) => {
+      fetch(`${API_BASE}/catalog?page=1&page_size=10000`, getFetchOptions())
+        .then(res => res.ok ? res.json() : Promise.reject(res))
+        .then((res: CatalogResponse) => {
           const normWords = removeDiacritics(filter.toLowerCase()).split(/\s+/).filter(Boolean);
           const filteredResults = res.results.filter(row => {
             const haystack = removeDiacritics((row.selection_code + ' ' + row.extended_description).toLowerCase());
@@ -65,19 +77,21 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
           setData(filteredResults.slice((page - 1) * 10, page * 10));
           setTotal(filteredResults.length);
           setLoading(false);
-        });
+        })
+        .catch(handleError);
     } else {
       // No filter: use backend pagination
       const params = new URLSearchParams({ page: page.toString() });
-      fetch(`${API_BASE}/datasets?${params.toString()}`)
-        .then(res => res.json())
-        .then((res: DatasetsResponse) => {
+      fetch(`${API_BASE}/catalog?${params.toString()}`, getFetchOptions())
+        .then(res => res.ok ? res.json() : Promise.reject(res))
+        .then((res: CatalogResponse) => {
           setData(res.results);
           setTotal(res.total);
           setLoading(false);
-        });
+        })
+        .catch(handleError);
     }
-  }, [page, filter]);
+  }, [page, filter, session?.id_token]);
 
   const totalPages = Math.ceil(total / 10);
 
@@ -93,7 +107,7 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
         <input
           className="border border-gray-300 rounded px-3 py-2 w-80 mr-2"
           placeholder="Filter by keyword..."
-          aria-label="Filter datasets by keyword"
+          aria-label="Filter catalog by keyword"
           value={filter}
           onChange={e => { setPage(1); setFilter(e.target.value); }}
         />
@@ -112,43 +126,42 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
         <span className="text-gray-500 text-sm ml-4">{total} records</span>
       </div>
       <div className="flex-1 overflow-auto">
-        <table className="min-w-full border border-gray-200 rounded">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border-b text-left">Selection Code</th>
-              <th className="px-4 py-2 border-b text-left">Extended Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={2} className="text-center py-8">Loading...</td></tr>
-            ) : data.length === 0 ? (
-              <tr><td colSpan={2} className="text-center py-8">No records found.</td></tr>
-            ) : (
-              data.map(row => (
-                <tr
-                  key={row.selection_code}
-                  className={"hover:bg-gray-50"}
-                >
-                  <td className="px-4 py-2 border-b font-mono text-xs">
-                    {onRowClick ? (
-                      <button
-                        className="text-blue-600 underline hover:text-blue-800 cursor-pointer p-0 bg-transparent border-0 outline-none"
-                        style={{ textDecoration: 'underline' }}
-                        onClick={() => onRowClick(row.selection_code)}
-                      >
-                        {row.selection_code}
-                      </button>
-                    ) : (
-                      row.selection_code
-                    )}
-                  </td>
-                  <td className="px-4 py-2 border-b text-sm whitespace-pre-line">{row.extended_description}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto rounded shadow border border-gray-200 bg-white">
+          <table className="min-w-full text-xs">
+            <thead className="bg-blue-100 sticky top-0 z-10">
+              <tr>
+                <th className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap">Selection Code</th>
+                <th className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap">Extended Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={2} className="text-center py-8">Loading...</td></tr>
+              ) : data.length === 0 ? (
+                <tr><td colSpan={2} className="text-center py-8">No records found.</td></tr>
+              ) : (
+                data.map((row, i) => (
+                  <tr key={row.selection_code} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
+                    <td className="px-4 py-2 border-b font-mono text-xs text-blue-900">
+                      {onRowClick ? (
+                        <button
+                          className="text-blue-600 underline hover:text-blue-800 cursor-pointer p-0 bg-transparent border-0 outline-none"
+                          style={{ textDecoration: 'underline' }}
+                          onClick={() => onRowClick(row.selection_code)}
+                        >
+                          {row.selection_code}
+                        </button>
+                      ) : (
+                        row.selection_code
+                      )}
+                    </td>
+                    <td className="px-4 py-2 border-b text-sm whitespace-pre-line text-gray-800">{row.extended_description}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
       <div className="mt-4 flex justify-between items-center">
         <button
@@ -167,4 +180,4 @@ const DatasetsTable: React.FC<DatasetsTableProps> = ({ onRowClick }) => {
   );
 };
 
-export default DatasetsTable; 
+export default CatalogTable; 

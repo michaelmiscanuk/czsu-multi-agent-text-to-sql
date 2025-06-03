@@ -56,8 +56,8 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     result = await analysis_main(request.prompt)
     return result 
 
-@app.get("/datasets")
-def get_datasets(
+@app.get("/catalog")
+def get_catalog(
     page: int = Query(1, ge=1),
     q: Optional[str] = None,
     page_size: int = Query(10, ge=1, le=10000),
@@ -89,7 +89,7 @@ def get_datasets(
     results = [
         {"selection_code": row[0], "extended_description": row[1]} for row in rows
     ]
-    return {"results": results, "total": total, "page": page, "page_size": page_size} 
+    return {"results": results, "total": total, "page": page, "page_size": page_size}
 
 @app.get("/data-tables")
 def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
