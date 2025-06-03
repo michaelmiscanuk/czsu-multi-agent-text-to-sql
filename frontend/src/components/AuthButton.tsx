@@ -22,10 +22,16 @@ export default function AuthButton() {
   }
   return (
     <button
-      className="px-3 py-1 text-xs bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full font-semibold shadow border border-blue-200 transition-all duration-200"
+      className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-all duration-200 text-gray-700 font-medium text-base"
       onClick={() => signIn("google")}
+      style={{ minWidth: 220 }}
     >
-      Sign in with Google
+      <img
+        src="https://developers.google.com/identity/images/g-logo.png"
+        alt="Google logo"
+        className="w-5 h-5 mr-3"
+      />
+      Continue with Google
     </button>
   );
 } 

@@ -4,6 +4,7 @@ import MessageArea from '@/components/MessageArea';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
+import { useSession } from "next-auth/react";
 
 interface Message {
   id: number;
@@ -53,6 +54,7 @@ const INITIAL_MESSAGE = [
 ];
 
 export default function ChatPage() {
+  const { data: session } = useSession();
   const [messages, setMessages] = useState(INITIAL_MESSAGE);
   const [currentMessage, setCurrentMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -194,7 +196,8 @@ export default function ChatPage() {
           const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              ...(session?.id_token ? { 'Authorization': `Bearer ${session.id_token}` } : {}),
             },
             body: JSON.stringify({ prompt: currentMessage })
           });
@@ -268,7 +271,8 @@ export default function ChatPage() {
         const response = await fetch(API_URL, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            ...(session?.id_token ? { 'Authorization': `Bearer ${session.id_token}` } : {}),
           },
           body: JSON.stringify({ prompt: userInput })
         });

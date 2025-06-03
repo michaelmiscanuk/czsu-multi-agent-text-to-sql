@@ -3,6 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from '@/components/Header';
 import SessionProviderWrapper from "@/components/SessionProviderWrapper";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import AuthGuard from "@/components/AuthGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,6 +28,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Client-side auth redirect
+  if (typeof window !== "undefined") {
+    const pathname = window.location.pathname;
+    if (pathname !== "/login") {
+      // Use NextAuth session
+      const { status } = useSession();
+      const router = useRouter();
+      useEffect(() => {
+        if (status === "unauthenticated") {
+          router.replace("/login");
+        }
+      }, [status, router]);
+    }
+  }
+
   return (
     <html lang="en">
       <body
@@ -33,7 +52,7 @@ export default function RootLayout({
           <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 flex flex-col">
             <div className="sticky top-0 z-50"><Header /></div>
             <main className="flex justify-center flex-1 py-8 px-2">
-              {children}
+              <AuthGuard>{children}</AuthGuard>
             </main>
             <footer className="w-full text-center text-gray-400 text-sm py-4 mt-4">
               &copy; {new Date().getFullYear()} Michael Miscanuk. Data from the Czech Statistical Office (CZSU).

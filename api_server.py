@@ -1,10 +1,17 @@
-from fastapi import FastAPI, Request, Query
+from fastapi import FastAPI, Request, Query, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import asyncio
 from main import main as analysis_main
 import sqlite3
 from typing import List, Optional
+import requests
+import jwt
+import os
+import time
+from jwt.algorithms import RSAAlgorithm
+from fastapi import Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 app = FastAPI()
 
@@ -20,8 +27,32 @@ app.add_middleware(
 class AnalyzeRequest(BaseModel):
     prompt: str
 
+GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
+
+# Helper to verify Google JWT
+def verify_google_jwt(token: str):
+    # Get Google public keys
+    jwks = requests.get(GOOGLE_JWK_URL).json()
+    unverified_header = jwt.get_unverified_header(token)
+    for key in jwks["keys"]:
+        if key["kid"] == unverified_header["kid"]:
+            public_key = RSAAlgorithm.from_jwk(key)
+            try:
+                payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
+                return payload
+            except Exception as e:
+                raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
+    raise HTTPException(status_code=401, detail="Public key not found")
+
+# Dependency for JWT authentication
+def get_current_user(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
+    token = authorization.split(" ", 1)[1]
+    return verify_google_jwt(token)
+
 @app.post("/analyze")
-async def analyze(request: AnalyzeRequest):
+async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     result = await analysis_main(request.prompt)
     return result 
 
@@ -29,7 +60,8 @@ async def analyze(request: AnalyzeRequest):
 def get_datasets(
     page: int = Query(1, ge=1),
     q: Optional[str] = None,
-    page_size: int = Query(10, ge=1, le=10000)  # Allow up to 10,000
+    page_size: int = Query(10, ge=1, le=10000),
+    user=Depends(get_current_user)
 ):
     db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
     offset = (page - 1) * page_size
@@ -60,7 +92,7 @@ def get_datasets(
     return {"results": results, "total": total, "page": page, "page_size": page_size} 
 
 @app.get("/data-tables")
-def get_data_tables(q: Optional[str] = None):
+def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
     db_path = "data/czsu_data.db"
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
@@ -72,7 +104,7 @@ def get_data_tables(q: Optional[str] = None):
     return {"tables": tables}
 
 @app.get("/data-table")
-def get_data_table(table: Optional[str] = None):
+def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
     db_path = "data/czsu_data.db"
     if not table:
         return {"columns": [], "rows": []}
