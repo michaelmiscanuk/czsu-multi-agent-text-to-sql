@@ -34,3 +34,9 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Chat Storage
+
+- Chat sessions are now stored locally in the browser using IndexedDB (via the 'idb' library).
+- Each user's chats are isolated by their Google account (email).
+- The chat UI and storage logic are inspired by [ai-chat](https://github.com/ksdev-pl/ai-chat).

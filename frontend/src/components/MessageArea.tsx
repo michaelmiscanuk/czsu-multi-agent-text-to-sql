@@ -47,33 +47,33 @@ const SimpleProgressBar = ({ messageId, startedAt }: SimpleProgressBarProps) => 
 interface MessageAreaProps {
     messages: any[];
     chatId: string | null;
-    shouldAutoScroll: boolean;
-    onSQLClick: (msgId: number) => void;
-    openSQLModalForMsgId: number | null;
+    onSQLClick: (msgId: string) => void;
+    openSQLModalForMsgId: string | null;
     onCloseSQLModal: () => void;
 }
 
-const MessageArea = ({ messages, chatId, shouldAutoScroll, onSQLClick, openSQLModalForMsgId, onCloseSQLModal }: MessageAreaProps) => {
+const MessageArea = ({ messages, chatId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal }: MessageAreaProps) => {
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
-        if (!shouldAutoScroll) return;
         const container = containerRef.current;
         if (!container || !bottomRef.current) return;
         bottomRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, chatId, shouldAutoScroll]);
+    }, [messages, chatId]);
     return (
         <div ref={containerRef} className="flex-grow overflow-y-auto bg-[#FCFCF8] border-b border-gray-100" style={{ minHeight: 0 }} aria-live="polite" role="log">
-            <div className="max-w-4xl mx-auto p-6">
+            <div className="max-w-4xl mx-auto p-6 w-full">
                 {messages.map((message) => (
-                    <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-5`}>
+                    <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-6`}>
                         <div className="flex flex-col max-w-md w-full">
                             {/* Message Content */}
                             <div
-                                className={`rounded-lg py-3 px-5 w-full ${message.isUser
-                                    ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-br-none shadow-md'
-                                    : 'bg-[#F3F3EE] text-gray-800 border border-gray-200 rounded-bl-none shadow-sm'
-                                    }`}
+                                className={`transition-all duration-200 rounded-3xl px-6 py-4 w-full select-text shadow-lg group
+                                    ${message.isUser
+                                        ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-semibold rounded-br-3xl rounded-tr-3xl hover:shadow-xl'
+                                        : 'bg-white border border-blue-100 text-gray-800 rounded-bl-3xl rounded-tl-3xl hover:shadow-xl'}
+                                `}
+                                style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', fontSize: '0.97rem', lineHeight: 1.6, color: message.isUser ? '#fff' : undefined, wordBreak: 'break-word', whiteSpace: 'pre-line' }}
                             >
                                 {message.isLoading && !message.content ? (
                                     <SimpleProgressBar key={message.id} messageId={message.id} startedAt={message.startedAt || Date.now()} />
@@ -85,29 +85,39 @@ const MessageArea = ({ messages, chatId, shouldAutoScroll, onSQLClick, openSQLMo
                                 )}
                             </div>
                             {/* Dataset used and SQL button for AI answers */}
-                            {!message.isUser && message.selectionCode && !message.isLoading && (
-                                <div className="mt-2 text-sm flex items-center space-x-4">
-                                    <div>
-                                        <span>Dataset used: </span>
-                                        <Link
-                                            href={`/data?table=${encodeURIComponent(message.selectionCode)}`}
-                                            className="text-blue-600 underline font-mono hover:text-blue-800"
+                            {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.sql) && (
+                                <div className="mt-3 flex items-center space-x-3" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
+                                    {(message.selectionCode || message.meta?.datasetUrl) && (
+                                        <div>
+                                            <span className="text-xs text-gray-500 mr-1">Dataset used:</span>
+                                            <Link
+                                                href={`/data?table=${encodeURIComponent(message.selectionCode || message.meta?.datasetUrl.replace('/datasets/', ''))}`}
+                                                className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
+                                                style={{ textDecoration: 'none' }}
+                                            >
+                                                {message.selectionCode || (message.meta?.datasetUrl ? message.meta.datasetUrl.replace('/datasets/', '') : '')}
+                                            </Link>
+                                        </div>
+                                    )}
+                                    {message.meta?.sql && (
+                                        <button
+                                            className="px-4 py-1 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 text-white text-xs font-bold shadow hover:from-blue-500 hover:to-blue-700 border-0 transition-all duration-150"
+                                            onClick={() => onSQLClick(message.id)}
                                         >
-                                            {message.selectionCode}
-                                        </Link>
-                                    </div>
-                                    <button
-                                        className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs font-semibold text-gray-700 border border-gray-300"
-                                        onClick={() => onSQLClick(message.id)}
-                                    >
-                                        SQL
-                                    </button>
+                                            SQL
+                                        </button>
+                                    )}
                                     {/* SQL Modal for this message */}
                                     {openSQLModalForMsgId === message.id && (
                                         <Modal open={true} onClose={onCloseSQLModal}>
                                             <h2 className="text-lg font-bold mb-4">SQL Commands & Results</h2>
                                             <div className="max-h-[60vh] overflow-y-auto pr-2">
-                                                {(() => {
+                                                {message.meta?.sql ? (
+                                                    <div>
+                                                        <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">SQL Command</div>
+                                                        <pre className="p-3 font-mono text-xs whitespace-pre-line text-gray-900 bg-gray-50 rounded-b border border-gray-200 border-t-0">{message.meta.sql}</pre>
+                                                    </div>
+                                                ) : (() => {
                                                     const uniqueQueriesAndResults = Array.from(
                                                         new Map((message.queriesAndResults || []).map(([q, r]: [string, string]) => [q, [q, r]])).values()
                                                     ) as [string, string][];

@@ -132,7 +132,14 @@ async def main(prompt=None):
     queries_and_results = result["queries_and_results"]
     final_answer = messages[-1].content if messages else ""
     selection_with_possible_answer = result.get("selection_with_possible_answer")
-    
+
+    # Extract SQL from the last query, if available
+    sql_query = queries_and_results[-1][0] if queries_and_results else None
+    # Construct dataset URL (customize as needed)
+    dataset_url = None
+    if selection_with_possible_answer:
+        dataset_url = f"/datasets/{selection_with_possible_answer}"
+
     # Convert the result to a JSON-serializable format
     serializable_result = {
         "prompt": prompt,
@@ -141,7 +148,9 @@ async def main(prompt=None):
         "thread_id": thread_id,
         "selection_with_possible_answer": selection_with_possible_answer,
         "iteration": result.get("iteration", 0),
-        "max_iterations": MAX_ITERATIONS
+        "max_iterations": MAX_ITERATIONS,
+        "sql": sql_query,
+        "datasetUrl": dataset_url
     }
     
     print(f"Result: {final_answer}")

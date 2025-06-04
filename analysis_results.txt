@@ -13653,3 +13653,475 @@ WHERE "Rok sčítání" = 2021
 GROUP BY "Pohlaví";
   Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
 ----------------------------------------------------------------------------
+Prompt: how many hotels we have?
+Result: Celkový počet hotelů v Česku je 35271.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_hotels
+FROM CRU01RT3
+WHERE "Ukazatel" = "Počet hromadných ubytovacích zařízení"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Kategorie ubytovacího zařízení" LIKE "Hotel%";
+  Result: 35271
+  Query: SELECT "Kategorie ubytovacího zařízení", "Roky", SUM(value) AS total_hotels
+FROM CRU01RT3
+WHERE "Ukazatel" = "Počet hromadných ubytovacích zařízení"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Kategorie ubytovacího zařízení" LIKE "Hotel%"
+GROUP BY "Kategorie ubytovacího zařízení", "Roky"
+ORDER BY "Roky" DESC, "Kategorie ubytovacího zařízení"
+LIMIT 10;
+  Result: [('Hotel *****', 2024, 77), ('Hotel garni', 2024, 155), ('Hotel, motel, botel *', 2024, 93), ('Hotel, motel, botel **', 2024, 184), ('Hotel, motel, botel ***', 2024, 1502), ('Hotel, motel, botel ****', 2024, 850), ('Hotel *****', 2023, 75), ('Hotel garni', 2023, 155), ('Hotel, motel, botel *', 2023, 100), ('Hotel, motel, botel **', 2023, 194)]
+  Query: SELECT "Roky", SUM(value) AS total_hotels
+FROM CRU01RT3
+WHERE "Ukazatel" = "Počet hromadných ubytovacích zařízení"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Kategorie ubytovacího zařízení" LIKE "Hotel%"
+GROUP BY "Roky"
+ORDER BY "Roky" DESC
+LIMIT 10;
+  Result: [(2024, 2861), (2023, 2894), (2022, 2976), (2021, 2949), (2020, 2964), (2019, 2626), (2018, 2653), (2017, 2540), (2016, 2572), (2015, 2586)]
+  Query: SELECT SUM(value) AS total_hotels
+FROM CRU01RT3
+WHERE "Ukazatel" = "Počet hromadných ubytovacích zařízení"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Kategorie ubytovacího zařízení" LIKE "Hotel%";
+  Result: 35271
+  Query: SELECT "Kategorie ubytovacího zařízení", "Roky", SUM(value) AS total_hotels
+FROM CRU01RT3
+WHERE "Ukazatel" = "Počet hromadných ubytovacích zařízení"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Kategorie ubytovacího zařízení" LIKE "Hotel%"
+GROUP BY "Kategorie ubytovacího zařízení", "Roky"
+ORDER BY "Roky" DESC, "Kategorie ubytovacího zařízení"
+LIMIT 10;
+  Result: [('Hotel *****', 2024, 77), ('Hotel garni', 2024, 155), ('Hotel, motel, botel *', 2024, 93), ('Hotel, motel, botel **', 2024, 184), ('Hotel, motel, botel ***', 2024, 1502), ('Hotel, motel, botel ****', 2024, 850), ('Hotel *****', 2023, 75), ('Hotel garni', 2023, 155), ('Hotel, motel, botel *', 2023, 100), ('Hotel, motel, botel **', 2023, 194)]
+  Query: SELECT "Roky", SUM(value) AS total_hotels
+FROM CRU01RT3
+WHERE "Ukazatel" = "Počet hromadných ubytovacích zařízení"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Kategorie ubytovacího zařízení" LIKE "Hotel%"
+GROUP BY "Roky"
+ORDER BY "Roky" DESC
+LIMIT 10;
+  Result: [(2024, 2861), (2023, 2894), (2022, 2976), (2021, 2949), (2020, 2964), (2019, 2626), (2018, 2653), (2017, 2540), (2016, 2572), (2015, 2586)]
+----------------------------------------------------------------------------
+Prompt: how m,any people live in prague?
+Result: V Praze žije 1301432 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = '2021'
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = '2021'
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+----------------------------------------------------------------------------
+Prompt: smart
+Result: Nejvyšší procento osob používajících chytrý telefon je u žen ve věkové skupině 16 - 34, a to 99.616044892. U mužů ve stejné věkové skupině je to 99.315463784. V dalších věkových skupinách je procento nižší, například u žen ve věku 35 - 54 je to 98.129219413 a u mužů 96.710540102. Celkově (16+) používá chytrý telefon 84.876719544 % žen a 83.57404163 % mužů.
+Queries and Results:
+  Query: SELECT "Ukazatel", "Pohlaví", "Věk", "value" 
+FROM WGEN03C2T01 
+WHERE "Území" = 'Česko' AND "Roky" = '2024' 
+ORDER BY "value" DESC 
+LIMIT 10;
+  Result: [('Osoby používající chytrý telefon (%)', 'ženy', '16 - 34', 99.616044892), ('Osoby používající chytrý telefon (%)', 'muži', '16 - 34', 99.315463784), ('Osoby používající chytrý telefon (%)', 'ženy', '35 - 54', 98.129219413), ('Osoby používající chytrý telefon (%)', 'muži', '35 - 54', 96.710540102), ('Osoby používající chytrý telefon (%)', 'ženy', 'Celkem (16+)', 84.876719544), ('Osoby používající chytrý telefon (%)', 'muži', 'Celkem (16+)', 83.57404163), ('Osoby používající chytrý telefon (%)', 'ženy', '55 - 74', 78.075996297), ('Osoby používající chytrý telefon (%)', 'muži', '55 - 74', 73.383492106), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'muži', '16 - 34', 67.64447571), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'ženy', '16 - 34', 62.961335218)]
+  Query: SELECT "Ukazatel", "Pohlaví", "Věk", AVG("value") as avg_value
+FROM WGEN03C2T01
+WHERE "Území" = 'Česko' AND "Roky" = '2024'
+GROUP BY "Ukazatel", "Pohlaví", "Věk"
+ORDER BY avg_value DESC
+LIMIT 10;
+  Result: [('Osoby používající chytrý telefon (%)', 'ženy', '16 - 34', 99.616044892), ('Osoby používající chytrý telefon (%)', 'muži', '16 - 34', 99.315463784), ('Osoby používající chytrý telefon (%)', 'ženy', '35 - 54', 98.129219413), ('Osoby používající chytrý telefon (%)', 'muži', '35 - 54', 96.710540102), ('Osoby používající chytrý telefon (%)', 'ženy', 'Celkem (16+)', 84.876719544), ('Osoby používající chytrý telefon (%)', 'muži', 'Celkem (16+)', 83.57404163), ('Osoby používající chytrý telefon (%)', 'ženy', '55 - 74', 78.075996297), ('Osoby používající chytrý telefon (%)', 'muži', '55 - 74', 73.383492106), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'muži', '16 - 34', 67.64447571), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'ženy', '16 - 34', 62.961335218)]
+  Query: SELECT "Ukazatel", "Pohlaví", "Věk", SUM("value") as total_value
+FROM WGEN03C2T01
+WHERE "Území" = 'Česko' AND "Roky" = '2024'
+GROUP BY "Ukazatel", "Pohlaví", "Věk"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('Osoby používající chytrý telefon (%)', 'ženy', '16 - 34', 99.616044892), ('Osoby používající chytrý telefon (%)', 'muži', '16 - 34', 99.315463784), ('Osoby používající chytrý telefon (%)', 'ženy', '35 - 54', 98.129219413), ('Osoby používající chytrý telefon (%)', 'muži', '35 - 54', 96.710540102), ('Osoby používající chytrý telefon (%)', 'ženy', 'Celkem (16+)', 84.876719544), ('Osoby používající chytrý telefon (%)', 'muži', 'Celkem (16+)', 83.57404163), ('Osoby používající chytrý telefon (%)', 'ženy', '55 - 74', 78.075996297), ('Osoby používající chytrý telefon (%)', 'muži', '55 - 74', 73.383492106), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'muži', '16 - 34', 67.64447571), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'ženy', '16 - 34', 62.961335218)]
+  Query: SELECT "Ukazatel", "Pohlaví", "Věk", "value" 
+FROM WGEN03C2T01 
+WHERE "Území" = 'Česko' AND "Roky" = '2024' 
+ORDER BY "value" DESC 
+LIMIT 10;
+  Result: [('Osoby používající chytrý telefon (%)', 'ženy', '16 - 34', 99.616044892), ('Osoby používající chytrý telefon (%)', 'muži', '16 - 34', 99.315463784), ('Osoby používající chytrý telefon (%)', 'ženy', '35 - 54', 98.129219413), ('Osoby používající chytrý telefon (%)', 'muži', '35 - 54', 96.710540102), ('Osoby používající chytrý telefon (%)', 'ženy', 'Celkem (16+)', 84.876719544), ('Osoby používající chytrý telefon (%)', 'muži', 'Celkem (16+)', 83.57404163), ('Osoby používající chytrý telefon (%)', 'ženy', '55 - 74', 78.075996297), ('Osoby používající chytrý telefon (%)', 'muži', '55 - 74', 73.383492106), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'muži', '16 - 34', 67.64447571), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'ženy', '16 - 34', 62.961335218)]
+  Query: SELECT "Ukazatel", "Pohlaví", "Věk", AVG("value") as avg_value
+FROM WGEN03C2T01
+WHERE "Území" = 'Česko' AND "Roky" = '2024'
+GROUP BY "Ukazatel", "Pohlaví", "Věk"
+ORDER BY avg_value DESC
+LIMIT 10;
+  Result: [('Osoby používající chytrý telefon (%)', 'ženy', '16 - 34', 99.616044892), ('Osoby používající chytrý telefon (%)', 'muži', '16 - 34', 99.315463784), ('Osoby používající chytrý telefon (%)', 'ženy', '35 - 54', 98.129219413), ('Osoby používající chytrý telefon (%)', 'muži', '35 - 54', 96.710540102), ('Osoby používající chytrý telefon (%)', 'ženy', 'Celkem (16+)', 84.876719544), ('Osoby používající chytrý telefon (%)', 'muži', 'Celkem (16+)', 83.57404163), ('Osoby používající chytrý telefon (%)', 'ženy', '55 - 74', 78.075996297), ('Osoby používající chytrý telefon (%)', 'muži', '55 - 74', 73.383492106), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'muži', '16 - 34', 67.64447571), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'ženy', '16 - 34', 62.961335218)]
+  Query: SELECT "Ukazatel", "Pohlaví", "Věk", SUM("value") as total_value
+FROM WGEN03C2T01
+WHERE "Území" = 'Česko' AND "Roky" = '2024'
+GROUP BY "Ukazatel", "Pohlaví", "Věk"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('Osoby používající chytrý telefon (%)', 'ženy', '16 - 34', 99.616044892), ('Osoby používající chytrý telefon (%)', 'muži', '16 - 34', 99.315463784), ('Osoby používající chytrý telefon (%)', 'ženy', '35 - 54', 98.129219413), ('Osoby používající chytrý telefon (%)', 'muži', '35 - 54', 96.710540102), ('Osoby používající chytrý telefon (%)', 'ženy', 'Celkem (16+)', 84.876719544), ('Osoby používající chytrý telefon (%)', 'muži', 'Celkem (16+)', 83.57404163), ('Osoby používající chytrý telefon (%)', 'ženy', '55 - 74', 78.075996297), ('Osoby používající chytrý telefon (%)', 'muži', '55 - 74', 73.383492106), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'muži', '16 - 34', 67.64447571), ('Osoby sledující na chytré televizi videa či pořady z internetu (%)', 'ženy', '16 - 34', 62.961335218)]
+----------------------------------------------------------------------------
+Prompt: kolik tu zije lidi?
+Result: V Česku žije 10909500 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = "2024"
+  AND "ČR, kraje" = "Česko"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 10909500
+  Query: SELECT "ČR, kraje", "Věkové skupiny", SUM(value) AS total_population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = "2024"
+GROUP BY "ČR, kraje", "Věkové skupiny"
+LIMIT 10;
+  Result: [('Hlavní město Praha', '0 - 14 let', 215285), ('Hlavní město Praha', '15 - 64 let', 925154), ('Hlavní město Praha', '65 a více let', 257441), ('Hlavní město Praha', 'Celkem', 1397880), ('Jihomoravský kraj', '0 - 14 let', 195085), ('Jihomoravský kraj', '15 - 64 let', 780610), ('Jihomoravský kraj', '65 a více let', 253648), ('Jihomoravský kraj', 'Celkem', 1229343), ('Jihočeský kraj', '0 - 14 let', 100376), ('Jihočeský kraj', '15 - 64 let', 410412)]
+  Query: SELECT "Rok", "ČR, kraje", SUM(value) AS total_population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+GROUP BY "Rok", "ČR, kraje"
+ORDER BY "Rok" DESC, total_population DESC
+LIMIT 10;
+  Result: [(2024, 'Česko', 21819000), (2024, 'Středočeský kraj', 2932430), (2024, 'Hlavní město Praha', 2795760), (2024, 'Jihomoravský kraj', 2458686), (2024, 'Moravskoslezský kraj', 2365226), (2024, 'Ústecký kraj', 1616712), (2024, 'Jihočeský kraj', 1306454), (2024, 'Olomoucký kraj', 1263000), (2024, 'Plzeňský kraj', 1229280), (2024, 'Zlínský kraj', 1157996)]
+  Query: SELECT SUM(value) AS total_population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = "2024"
+  AND "ČR, kraje" = "Česko"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 10909500
+  Query: SELECT "ČR, kraje", "Věkové skupiny", SUM(value) AS total_population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = "2024"
+GROUP BY "ČR, kraje", "Věkové skupiny"
+LIMIT 10;
+  Result: [('Hlavní město Praha', '0 - 14 let', 215285), ('Hlavní město Praha', '15 - 64 let', 925154), ('Hlavní město Praha', '65 a více let', 257441), ('Hlavní město Praha', 'Celkem', 1397880), ('Jihomoravský kraj', '0 - 14 let', 195085), ('Jihomoravský kraj', '15 - 64 let', 780610), ('Jihomoravský kraj', '65 a více let', 253648), ('Jihomoravský kraj', 'Celkem', 1229343), ('Jihočeský kraj', '0 - 14 let', 100376), ('Jihočeský kraj', '15 - 64 let', 410412)]
+  Query: SELECT "Rok", "ČR, kraje", SUM(value) AS total_population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+GROUP BY "Rok", "ČR, kraje"
+ORDER BY "Rok" DESC, total_population DESC
+LIMIT 10;
+  Result: [(2024, 'Česko', 21819000), (2024, 'Středočeský kraj', 2932430), (2024, 'Hlavní město Praha', 2795760), (2024, 'Jihomoravský kraj', 2458686), (2024, 'Moravskoslezský kraj', 2365226), (2024, 'Ústecký kraj', 1616712), (2024, 'Jihočeský kraj', 1306454), (2024, 'Olomoucký kraj', 1263000), (2024, 'Plzeňský kraj', 1229280), (2024, 'Zlínský kraj', 1157996)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi je v praze?
+Result: V Praze je 1301432 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+----------------------------------------------------------------------------
+Prompt: kolik lidi zije v praze?
+Result: V Praze žije 1301432 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS population
+FROM SLD0100T2
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Území podle okresů" = 'Praha'
+  AND "Pohlaví" = 'celkem'
+  AND "Věkové skupiny (desetiletky)" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100T2
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Území podle okresů" = 'Praha'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 2155321), ('muž', 1067170), ('žena', 1088151)]
+  Query: SELECT "Věkové skupiny (desetiletky)", SUM(value) AS population
+FROM SLD0100T2
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Území podle okresů" = 'Praha'
+GROUP BY "Věkové skupiny (desetiletky)";
+  Result: [('0 - 9 let', 273400), ('10 - 19 let', 227070), ('20 - 29 let', 329924), ('30 - 39 let', 443130), ('40 - 49 let', 434254), ('celkem', 2602864)]
+  Query: SELECT SUM(value) AS population
+FROM SLD0100T2
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Území podle okresů" = 'Praha'
+  AND "Pohlaví" = 'celkem'
+  AND "Věkové skupiny (desetiletky)" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100T2
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Území podle okresů" = 'Praha'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 2155321), ('muž', 1067170), ('žena', 1088151)]
+  Query: SELECT "Věkové skupiny (desetiletky)", SUM(value) AS population
+FROM SLD0100T2
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Území podle okresů" = 'Praha'
+GROUP BY "Věkové skupiny (desetiletky)";
+  Result: [('0 - 9 let', 273400), ('10 - 19 let', 227070), ('20 - 29 let', 329924), ('30 - 39 let', 443130), ('40 - 49 let', 434254), ('celkem', 2602864)]
+----------------------------------------------------------------------------
+Prompt: jaka byla inflace v posledich letech?
+Result: Inflace v posledních letech v Česku vykazuje následující hodnoty: 
+
+- Přírůstek průměrného ročního indexu spotřebitelských cen (měsíční):
+  - říjen 2024: 3.1
+  - červenec 2024: 4.4
+  - červen 2024: 4.9
+  - únor 2025: 2.5
+  - září 2024: 3.5
+  - srpen 2024: 3.9
+  - prosinec 2024: 2.4
+  - listopad 2024: 2.7
+  - leden 2025: 2.5
+  - květen 2024: 5.6
+
+- Průměrný přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku:
+  - říjen 2024: 2.8
+  - červenec 2024: 2.2
+  - červen 2024: 2.0
+  - únor 2025: 2.7
+  - září 2024: 2.6
+  - srpen 2024: 2.2
+  - prosinec 2024: 3.0
+  - listopad 2024: 2.8
+  - leden 2025: 2.8
+  - květen 2024: 2.6
+
+- Přírůstek indexu spotřebitelských cen k předchozímu měsíci:
+  - říjen 2024: 0.3
+  - červenec 2024: 0.7
+  - červen 2024: -0.3
+  - únor 2025: 0.2
+  - září 2024: -0.4
+  - srpen 2024: 0.3
+  - prosinec 2024: -0.3
+  - listopad 2024: 0.1
+  - leden 2025: 1.3
+  - květen 2024: 0.00001
+
+Celkově inflace kolísá, s nejvyššími hodnotami v květnu 2024 (5.6) a červnu 2024 (4.9) a nižšími hodnotami v pozdějších měsících.
+Queries and Results:
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 3.1), ('červenec 2024', 4.4), ('červen 2024', 4.9), ('únor 2025', 2.5), ('září 2024', 3.5), ('srpen 2024', 3.9), ('prosinec 2024', 2.4), ('listopad 2024', 2.7), ('leden 2025', 2.5), ('květen 2024', 5.6)]
+  Query: SELECT "Měsíce", AVG("value") AS "Average_Inflation" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku' 
+GROUP BY "Měsíce" 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 2.8), ('červenec 2024', 2.2), ('červen 2024', 2.0), ('únor 2025', 2.7), ('září 2024', 2.6), ('srpen 2024', 2.2), ('prosinec 2024', 3.0), ('listopad 2024', 2.8), ('leden 2025', 2.8), ('květen 2024', 2.6)]
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci' 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 0.3), ('červenec 2024', 0.7), ('červen 2024', -0.3), ('únor 2025', 0.2), ('září 2024', -0.4), ('srpen 2024', 0.3), ('prosinec 2024', -0.3), ('listopad 2024', 0.1), ('leden 2025', 1.3), ('květen 2024', 1e-05)]
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 3.1), ('červenec 2024', 4.4), ('červen 2024', 4.9), ('únor 2025', 2.5), ('září 2024', 3.5), ('srpen 2024', 3.9), ('prosinec 2024', 2.4), ('listopad 2024', 2.7), ('leden 2025', 2.5), ('květen 2024', 5.6)]
+  Query: SELECT "Měsíce", AVG("value") AS "Average_Inflation" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku' 
+GROUP BY "Měsíce" 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 2.8), ('červenec 2024', 2.2), ('červen 2024', 2.0), ('únor 2025', 2.7), ('září 2024', 2.6), ('srpen 2024', 2.2), ('prosinec 2024', 3.0), ('listopad 2024', 2.8), ('leden 2025', 2.8), ('květen 2024', 2.6)]
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci' 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 0.3), ('červenec 2024', 0.7), ('červen 2024', -0.3), ('únor 2025', 0.2), ('září 2024', -0.4), ('srpen 2024', 0.3), ('prosinec 2024', -0.3), ('listopad 2024', 0.1), ('leden 2025', 1.3), ('květen 2024', 1e-05)]
+----------------------------------------------------------------------------
+Prompt: jaka byla inflace v cechach?
+Result: Inflace v Česku byla následující: v roce 2008 byla 6.3, v roce 2009 1.0, v roce 2010 1.5, v roce 2011 1.9, v roce 2012 3.3, v roce 2013 1.4, v roce 2014 0.4, v roce 2015 0.3, v roce 2016 0.7, v roce 2017 2.5, v roce 2018 2.1, v roce 2019 2.8, v roce 2020 3.2, v roce 2021 3.8, v roce 2022 15.1, v roce 2023 10.7 a v roce 2024 2.4.
+Queries and Results:
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace' 
+ORDER BY Roky 
+LIMIT 10;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5)]
+  Query: SELECT Roky, AVG(value) AS average_inflation
+FROM WCEN01T02
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace'
+GROUP BY Roky
+ORDER BY Roky;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5), (2018, 2.1), (2019, 2.8), (2020, 3.2), (2021, 3.8), (2022, 15.1), (2023, 10.7), (2024, 2.4)]
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace' 
+ORDER BY Roky 
+LIMIT 10;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5)]
+  Query: SELECT Roky, AVG(value) AS average_inflation
+FROM WCEN01T02
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace'
+GROUP BY Roky
+ORDER BY Roky;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5), (2018, 2.1), (2019, 2.8), (2020, 3.2), (2021, 3.8), (2022, 15.1), (2023, 10.7), (2024, 2.4)]
+----------------------------------------------------------------------------
+Prompt: jaka byla inflace v cechach?
+Result: Inflace v Česku byla následující: v roce 2008 byla 6.3, v roce 2009 1.0, v roce 2010 1.5, v roce 2011 1.9, v roce 2012 3.3, v roce 2013 1.4, v roce 2014 0.4, v roce 2015 0.3, v roce 2016 0.7, v roce 2017 2.5, v roce 2018 2.1, v roce 2019 2.8, v roce 2020 3.2, v roce 2021 3.8, v roce 2022 15.1, a v roce 2023 10.7.
+Queries and Results:
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace' 
+ORDER BY Roky 
+LIMIT 10;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5)]
+  Query: SELECT Roky, AVG(value) AS average_inflation
+FROM WCEN01T02
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace'
+GROUP BY Roky
+ORDER BY Roky;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5), (2018, 2.1), (2019, 2.8), (2020, 3.2), (2021, 3.8), (2022, 15.1), (2023, 10.7), (2024, 2.4)]
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace' 
+ORDER BY Roky 
+LIMIT 10;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5)]
+  Query: SELECT Roky, AVG(value) AS average_inflation
+FROM WCEN01T02
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace'
+GROUP BY Roky
+ORDER BY Roky;
+  Result: [(2008, 6.3), (2009, 1.0), (2010, 1.5), (2011, 1.9), (2012, 3.3), (2013, 1.4), (2014, 0.4), (2015, 0.3), (2016, 0.7), (2017, 2.5), (2018, 2.1), (2019, 2.8), (2020, 3.2), (2021, 3.8), (2022, 15.1), (2023, 10.7), (2024, 2.4)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi je v praze?
+Result: V Praze je 1301432 obyvatel.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+  Query: SELECT "Rok sčítání", SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Rok sčítání"
+ORDER BY "Rok sčítání";
+  Result: [(2021, 2602864)]
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+  Query: SELECT "Rok sčítání", SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Rok sčítání"
+ORDER BY "Rok sčítání";
+  Result: [(2021, 2602864)]
+----------------------------------------------------------------------------
+Prompt: jaky turisti navstevuji prahu?
+Result: V roce 2023 navštívilo Prahu celkem 5556444 turistů, z toho 4858579 byli nerezidenti a 697865 rezidenti. Nejvíce turistů přišlo do kategorií "HUZ celkem" s 2805867 návštěvníky a "Hotel, motel, botel ****" s 1246728 návštěvníky. Turistické ubytovny a penziony měly po 3 záznamech, ale jejich návštěvnost byla výrazně nižší.
+Queries and Results:
+  Query: SELECT "Rezidence", SUM("value") AS "Total Visitors"
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Rezidence"
+ORDER BY "Total Visitors" DESC;
+  Result: [('Celkem', 5556444.0), ('Nerezidenti', 4858579.0), ('Rezidenti', 697865.0)]
+  Query: SELECT "Kategorie ubytovacího zařízení", "Rezidence", SUM("value") AS "Total Visitors"
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Kategorie ubytovacího zařízení", "Rezidence"
+ORDER BY "Total Visitors" DESC;
+  Result: [('HUZ celkem', 'Celkem', 2805867.0), ('HUZ celkem', 'Nerezidenti', 2451994.0), ('Hotel, motel, botel ****', 'Celkem', 1246728.0), ('Hotel, motel, botel ****', 'Nerezidenti', 1094435.0), ('Hotel *****', 'Celkem', 851846.0), ('Hotel *****', 'Nerezidenti', 772185.0), ('Hotel, motel, botel ***', 'Celkem', 409294.0), ('HUZ celkem', 'Rezidenti', 353873.0), ('Hotel, motel, botel ***', 'Nerezidenti', 339804.0), ('Hotel, motel, botel ****', 'Rezidenti', 152293.0), ('Ostatní HUZ', 'Celkem', 132224.0), ('Ostatní HUZ', 'Nerezidenti', 112407.0), ('Turistická ubytovna', 'Celkem', 88107.0), ('Hotel *****', 'Rezidenti', 79661.0), ('Hotel, motel, botel ***', 'Rezidenti', 69490.0), ('Turistická ubytovna', 'Nerezidenti', 69373.0), ('Penzion', 'Celkem', 22378.0), ('Ostatní HUZ', 'Rezidenti', 19817.0), ('Turistická ubytovna', 'Rezidenti', 18734.0), ('Penzion', 'Nerezidenti', 18381.0), ('Penzion', 'Rezidenti', 3997.0), ('Chatová osada', 'Celkem', None), ('Chatová osada', 'Nerezidenti', None), ('Chatová osada', 'Rezidenti', None), ('Hotel garni', 'Celkem', None), ('Hotel garni', 'Nerezidenti', None), ('Hotel garni', 'Rezidenti', None), ('Hotel, motel, botel *', 'Celkem', None), ('Hotel, motel, botel *', 'Nerezidenti', None), ('Hotel, motel, botel *', 'Rezidenti', None), ('Hotel, motel, botel **', 'Celkem', None), ('Hotel, motel, botel **', 'Nerezidenti', None), ('Hotel, motel, botel **', 'Rezidenti', None), ('Kemp', 'Celkem', None), ('Kemp', 'Nerezidenti', None), ('Kemp', 'Rezidenti', None)]
+  Query: SELECT "Kategorie ubytovacího zařízení", COUNT("value") AS "Visitor Count"
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY "Visitor Count" DESC;
+  Result: [('Turistická ubytovna', 3), ('Penzion', 3), ('Ostatní HUZ', 3), ('Hotel, motel, botel ****', 3), ('Hotel, motel, botel ***', 3), ('Hotel *****', 3), ('HUZ celkem', 3), ('Kemp', 0), ('Hotel, motel, botel **', 0), ('Hotel, motel, botel *', 0), ('Hotel garni', 0), ('Chatová osada', 0)]
+  Query: SELECT "Rezidence", SUM("value") AS "Total Visitors"
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Rezidence"
+ORDER BY "Total Visitors" DESC;
+  Result: [('Celkem', 5556444.0), ('Nerezidenti', 4858579.0), ('Rezidenti', 697865.0)]
+  Query: SELECT "Kategorie ubytovacího zařízení", "Rezidence", SUM("value") AS "Total Visitors"
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Kategorie ubytovacího zařízení", "Rezidence"
+ORDER BY "Total Visitors" DESC;
+  Result: [('HUZ celkem', 'Celkem', 2805867.0), ('HUZ celkem', 'Nerezidenti', 2451994.0), ('Hotel, motel, botel ****', 'Celkem', 1246728.0), ('Hotel, motel, botel ****', 'Nerezidenti', 1094435.0), ('Hotel *****', 'Celkem', 851846.0), ('Hotel *****', 'Nerezidenti', 772185.0), ('Hotel, motel, botel ***', 'Celkem', 409294.0), ('HUZ celkem', 'Rezidenti', 353873.0), ('Hotel, motel, botel ***', 'Nerezidenti', 339804.0), ('Hotel, motel, botel ****', 'Rezidenti', 152293.0), ('Ostatní HUZ', 'Celkem', 132224.0), ('Ostatní HUZ', 'Nerezidenti', 112407.0), ('Turistická ubytovna', 'Celkem', 88107.0), ('Hotel *****', 'Rezidenti', 79661.0), ('Hotel, motel, botel ***', 'Rezidenti', 69490.0), ('Turistická ubytovna', 'Nerezidenti', 69373.0), ('Penzion', 'Celkem', 22378.0), ('Ostatní HUZ', 'Rezidenti', 19817.0), ('Turistická ubytovna', 'Rezidenti', 18734.0), ('Penzion', 'Nerezidenti', 18381.0), ('Penzion', 'Rezidenti', 3997.0), ('Chatová osada', 'Celkem', None), ('Chatová osada', 'Nerezidenti', None), ('Chatová osada', 'Rezidenti', None), ('Hotel garni', 'Celkem', None), ('Hotel garni', 'Nerezidenti', None), ('Hotel garni', 'Rezidenti', None), ('Hotel, motel, botel *', 'Celkem', None), ('Hotel, motel, botel *', 'Nerezidenti', None), ('Hotel, motel, botel *', 'Rezidenti', None), ('Hotel, motel, botel **', 'Celkem', None), ('Hotel, motel, botel **', 'Nerezidenti', None), ('Hotel, motel, botel **', 'Rezidenti', None), ('Kemp', 'Celkem', None), ('Kemp', 'Nerezidenti', None), ('Kemp', 'Rezidenti', None)]
+  Query: SELECT "Kategorie ubytovacího zařízení", COUNT("value") AS "Visitor Count"
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY "Visitor Count" DESC;
+  Result: [('Turistická ubytovna', 3), ('Penzion', 3), ('Ostatní HUZ', 3), ('Hotel, motel, botel ****', 3), ('Hotel, motel, botel ***', 3), ('Hotel *****', 3), ('HUZ celkem', 3), ('Kemp', 0), ('Hotel, motel, botel **', 0), ('Hotel, motel, botel *', 0), ('Hotel garni', 0), ('Chatová osada', 0)]
+----------------------------------------------------------------------------

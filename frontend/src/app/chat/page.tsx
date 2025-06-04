@@ -5,6 +5,18 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
+import { openDB } from 'idb';
+import {
+  listSessions,
+  getChatSession,
+  saveSession,
+  deleteSession,
+  listMessages,
+  saveMessage,
+  deleteMessage,
+  ChatSessionMeta,
+  ChatMessage
+} from '@/components/utils';
 
 interface Message {
   id: number;
@@ -14,6 +26,10 @@ interface Message {
   isLoading?: boolean;
   selectionCode?: string | null;
   queriesAndResults?: [string, string][];
+  meta?: {
+    datasetUrl?: string;
+    sql?: string;
+  };
 }
 
 const INITIAL_MESSAGE = [
@@ -25,117 +41,226 @@ const INITIAL_MESSAGE = [
   }
 ];
 
+// Utility: open or create the IndexedDB for chat sessions
+async function getChatDB() {
+  return openDB('czsu-chat-db', 1, {
+    upgrade(db) {
+      if (!db.objectStoreNames.contains('sessions')) {
+        db.createObjectStore('sessions');
+      }
+    },
+  });
+}
+
+// Utility: get all chat sessions for a user
+async function loadChatSessions(userEmail: string) {
+  const db = await getChatDB();
+  const sessions = await db.get('sessions', userEmail);
+  return Array.isArray(sessions) ? sessions : [];
+}
+
+// Utility: save all chat sessions for a user
+async function saveChatSessions(userEmail: string, sessions: any[]) {
+  const db = await getChatDB();
+  await db.put('sessions', sessions, userEmail);
+}
+
 export default function ChatPage() {
   const { data: session } = useSession();
-  const [chatSessions, setChatSessions] = useState<{id: string, title: string, messages: Message[]}[]>([]);
+  const userEmail = session?.user?.email || null;
+  const [sessions, setSessions] = useState<ChatSessionMeta[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [openSQLModalForMsgId, setOpenSQLModalForMsgId] = useState<number | null>(null);
+  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
+  const [newTitle, setNewTitle] = useState("");
+  const [openSQLModalForMsgId, setOpenSQLModalForMsgId] = useState<string | null>(null);
   const [iteration, setIteration] = useState(0);
   const [maxIterations, setMaxIterations] = useState(2); // default fallback
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
-  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
-  // Derive messages from active session
-  const messages = React.useMemo(() => {
-    const session = chatSessions.find(s => s.id === activeSessionId);
-    return session ? session.messages : [{
-      id: 1,
-      content: 'Hi there, how can I help you?',
-      isUser: false,
-      type: 'message'
-    }];
-  }, [chatSessions, activeSessionId]);
-
-  // Helper: deep compare sessions (by id and messages length)
-  function sessionsAreEqual(a: any[], b: any[]) {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (a[i].id !== b[i].id) return false;
-      if ((a[i].messages?.length || 0) !== (b[i].messages?.length || 0)) return false;
-    }
-    return true;
-  }
-
-  // Helper: deduplicate sessions by id (preserve full session object)
-  function dedupeSessions<T extends {id: string}>(sessions: T[]): T[] {
-    const seen = new Set();
-    return sessions.filter(s => {
-      if (seen.has(s.id)) return false;
-      seen.add(s.id);
-      return true;
-    });
-  }
-
-  // Always fetch chat sessions from backend on mount if authenticated
+  // Load sessions on mount/user change
   useEffect(() => {
-    if (session?.id_token) {
-      fetch(`${API_BASE}/chat-sessions`, {
-        headers: { Authorization: `Bearer ${session.id_token}` }
-      })
-        .then(res => res.ok ? res.json() : Promise.reject(res))
-        .then(data => {
-          const backendSessions = Array.isArray(data) ? dedupeSessions(data.map(s => s.data)) : [];
-          setChatSessions(backendSessions);
-          // Restore last active chat from localStorage if possible
-          const lastActiveId = localStorage.getItem('czsu-last-active-chat');
-          if (lastActiveId && backendSessions.some(s => s.id === lastActiveId)) {
-            setActiveSessionId(lastActiveId);
-          } else if (backendSessions.length > 0) {
-            setActiveSessionId(backendSessions[0].id);
-          } else {
-            setActiveSessionId(null);
-          }
-        })
-        .catch(() => {
-          setChatSessions([]);
-          setActiveSessionId(null);
-        });
-    }
-  }, [session?.id_token]);
+    if (!userEmail) return;
+    listSessions(userEmail).then(setSessions);
+  }, [userEmail]);
 
-  // Persist last active chat ID
+  // Load messages for active session
+  useEffect(() => {
+    if (!userEmail || !activeSessionId) {
+      setMessages([]);
+      return;
+    }
+    listMessages(userEmail, activeSessionId).then(setMessages);
+  }, [userEmail, activeSessionId]);
+
+  // Remember last active chat in localStorage
   useEffect(() => {
     if (activeSessionId) {
       localStorage.setItem('czsu-last-active-chat', activeSessionId);
     }
   }, [activeSessionId]);
 
-  // Save a single chat session to backend
-  const saveChatSession = async (sessionObj: {id: string, title: string, messages: Message[]}) => {
-    if (session?.id_token) {
-      try {
-        await fetch(`${API_BASE}/chat-sessions`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.id_token}`
-          },
-          body: JSON.stringify(sessionObj)
-        });
-      } catch (e) {
-        // ignore error
-      }
+  // Restore last active chat on mount
+  useEffect(() => {
+    if (!userEmail) return;
+    const lastActive = localStorage.getItem('czsu-last-active-chat');
+    if (lastActive) {
+      setActiveSessionId(lastActive);
+    } else if (sessions.length > 0 && !activeSessionId) {
+      setActiveSessionId(sessions[0].id);
+    }
+    // eslint-disable-next-line
+  }, [userEmail, sessions.length]);
+
+  // New chat
+  const handleNewChat = async () => {
+    if (!userEmail) return;
+    const id = uuidv4();
+    const now = Date.now();
+    const meta: ChatSessionMeta = {
+      id,
+      user: userEmail,
+      title: 'New Chat',
+      createdAt: now,
+      updatedAt: now,
+    };
+    await saveSession(meta);
+    setSessions(await listSessions(userEmail));
+    setActiveSessionId(id);
+  };
+
+  // Rename chat
+  const handleRename = async (id: string, title: string) => {
+    if (!userEmail) return;
+    const meta = await getChatSession(userEmail, id);
+    if (meta) {
+      meta.title = title;
+      meta.updatedAt = Date.now();
+      await saveSession(meta);
+      setSessions(await listSessions(userEmail));
+      setEditingTitleId(null);
     }
   };
 
-  // Determine if we should auto-scroll
-  useEffect(() => {
-    const prevChatId = prevChatIdRef.current;
-    const prevMsgCount = prevMsgCountRef.current;
-    if (activeSessionId === prevChatId) {
-      setShouldAutoScroll(messages.length > prevMsgCount);
-    } else {
-      setShouldAutoScroll(false);
+  // Delete chat
+  const handleDelete = async (id: string) => {
+    if (!userEmail) return;
+    await deleteSession(userEmail, id);
+    const updated = await listSessions(userEmail);
+    setSessions(updated);
+    if (activeSessionId === id) {
+      setActiveSessionId(updated[0]?.id || null);
     }
-    prevChatIdRef.current = activeSessionId;
-    prevMsgCountRef.current = messages.length;
-  }, [activeSessionId, messages]);
+  };
+
+  // Send message
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userEmail || !currentMessage.trim()) return;
+    setIsLoading(true);
+    let sessionId = activeSessionId;
+    let isNewSession = false;
+    // If no session exists, create a new one
+    if (!sessionId) {
+      sessionId = uuidv4();
+      const now = Date.now();
+      const meta: ChatSessionMeta = {
+        id: sessionId,
+        user: userEmail,
+        title: currentMessage.slice(0, 30), // Use first message as title, max 30 chars, no ellipsis
+        createdAt: now,
+        updatedAt: now,
+      };
+      await saveSession(meta);
+      setSessions(await listSessions(userEmail));
+      setActiveSessionId(sessionId);
+      isNewSession = true;
+    }
+    const msg: ChatMessage = {
+      id: uuidv4(),
+      sessionId: sessionId,
+      user: userEmail,
+      content: currentMessage,
+      isUser: true,
+      createdAt: Date.now(),
+    };
+    await saveMessage(msg);
+    setMessages(await listMessages(userEmail, sessionId));
+    setCurrentMessage("");
+    // Update session title if it's 'New Chat' and this is the first message
+    if (!isNewSession) {
+      const meta = await getChatSession(userEmail, sessionId);
+      if (meta && meta.title === 'New Chat') {
+        meta.title = msg.content.slice(0, 30);
+        meta.updatedAt = Date.now();
+        await saveSession(meta);
+        setSessions(await listSessions(userEmail));
+      }
+    }
+    // Call backend for AI response
+    try {
+      const freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        signOut();
+        setIsLoading(false);
+        return;
+      }
+      const API_URL = `${API_BASE}/analyze`;
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${freshSession.id_token}`
+      };
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ prompt: msg.content })
+      });
+      if (response.status === 401) {
+        signOut();
+        setIsLoading(false);
+        return;
+      }
+      if (!response.ok) {
+        throw new Error('Server error');
+      }
+      const data = await response.json();
+      const aiMsg: ChatMessage = {
+        id: uuidv4(),
+        sessionId: sessionId,
+        user: userEmail,
+        content: data.result || JSON.stringify(data),
+        isUser: false,
+        createdAt: Date.now(),
+        meta: {
+          datasetUrl: data.datasetUrl,
+          sql: data.sql
+        }
+      };
+      await saveMessage(aiMsg);
+      setMessages(await listMessages(userEmail, sessionId));
+      // Update session updatedAt
+      const meta = await getChatSession(userEmail, sessionId);
+      if (meta) {
+        meta.updatedAt = Date.now();
+        // If this was a new session, update the title to the first message
+        if (isNewSession) {
+          meta.title = msg.content.slice(0, 30);
+        }
+        await saveSession(meta);
+        setSessions(await listSessions(userEmail));
+      }
+    } catch (error) {
+      // Optionally show error message
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Debug: log session on mount and when it changes
   useEffect(() => {
@@ -161,143 +286,7 @@ export default function ChatPage() {
     }
   }, [isLoading]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!currentMessage.trim()) return;
-    // Always get a fresh session (token)
-    const freshSession = await getSession();
-    if (!freshSession?.id_token) {
-      // Token missing or expired, sign out
-      signOut();
-      return;
-    }
-    let currentSession = chatSessions.find(s => s.id === activeSessionId);
-    // If no session, create a new one and set as active
-    if (!currentSession) {
-      const newId = uuidv4();
-      const firstTitle = currentMessage.length > 30 ? currentMessage.slice(0, 30) + '…' : currentMessage;
-      const userMessage = {
-        id: 2,
-        content: currentMessage,
-        isUser: true,
-        type: 'message'
-      };
-      const initialSystemMessage = INITIAL_MESSAGE[0];
-      const aiResponseId = 3;
-      const loadingMessage = {
-        id: aiResponseId,
-        content: "",
-        isUser: false,
-        type: 'message',
-        isLoading: true,
-        startedAt: Date.now()
-      };
-      const newSessionMessages = [initialSystemMessage, userMessage, loadingMessage];
-      const newSession = {
-        id: newId,
-        title: firstTitle || `Chat ${chatSessions.length + 1}`,
-        messages: newSessionMessages
-      };
-      setChatSessions(dedupeSessions([newSession, ...chatSessions]));
-      setActiveSessionId(newId);
-      setCurrentMessage("");
-      currentSession = newSession;
-    }
-    // If first user message, update title
-    if (currentSession.messages.length === 1 && currentSession.messages[0].isUser === false) {
-      const firstTitle = currentMessage.length > 30 ? currentMessage.slice(0, 30) + '…' : currentMessage;
-      setChatSessions(prev => prev.map(s =>
-        s.id === activeSessionId
-          ? { ...s, title: firstTitle || s.title }
-          : s
-      ));
-    }
-    // Add user message and loading message to current session
-    const newMessageId = currentSession.messages.length > 0 ? Math.max(...currentSession.messages.map((msg: any) => msg.id)) + 1 : 1;
-    const userMessage = {
-      id: newMessageId,
-      content: currentMessage,
-      isUser: true,
-      type: 'message'
-    };
-    const aiResponseId = newMessageId + 1;
-    const loadingMessage = {
-      id: aiResponseId,
-      content: "",
-      isUser: false,
-      type: 'message',
-      isLoading: true,
-      startedAt: Date.now()
-    };
-    const updatedMessages = [...currentSession.messages, userMessage, loadingMessage];
-    setChatSessions(prev => prev.map(s =>
-      s.id === activeSessionId
-        ? { ...s, messages: updatedMessages }
-        : s
-    ));
-    // Save immediately after adding user and loading message
-    const sessionToSave = { ...currentSession, messages: updatedMessages };
-    await saveChatSession(sessionToSave);
-    setCurrentMessage("");
-    setIsLoading(true);
-    try {
-      const API_URL = `${API_BASE}/analyze`;
-      const headers = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${freshSession.id_token}`
-      };
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ prompt: currentMessage })
-      });
-      if (response.status === 401) {
-        // Token expired or invalid, sign out
-        signOut();
-        setChatSessions(prev => prev.map(s =>
-          s.id === activeSessionId
-            ? { ...s, messages: s.messages.filter((msg: any) => !(hasIsLoading(msg) && msg.isLoading)) }
-            : s
-        ));
-        setIsLoading(false);
-        return;
-      }
-      if (!response.ok) {
-        throw new Error('Server error');
-      }
-      const data = await response.json();
-      setChatSessions(prev => prev.map(s =>
-        s.id === activeSessionId
-          ? { ...s, messages: s.messages.map((msg: any) =>
-              hasIsLoading(msg) && msg.isLoading
-                ? {
-                    ...msg,
-                    content: data.result || JSON.stringify(data),
-                    isLoading: false,
-                    selectionCode: data.selection_with_possible_answer || null,
-                    queriesAndResults: Array.isArray(data.queries_and_results) ? data.queries_and_results : [],
-                  }
-                : msg
-            ) }
-          : s
-      ));
-      setIteration(data.iteration ?? 0);
-      setMaxIterations(data.max_iterations ?? 2);
-      // Save only the updated session
-      const updatedSession = chatSessions.find(s => s.id === activeSessionId);
-      if (updatedSession) await saveChatSession(updatedSession);
-    } catch (error) {
-      setChatSessions(prev => prev.map(s =>
-        s.id === activeSessionId
-          ? { ...s, messages: s.messages.filter((msg: any) => !(hasIsLoading(msg) && msg.isLoading)) }
-          : s
-      ));
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSQLButtonClick = (msgId: number) => {
+  const handleSQLButtonClick = (msgId: string) => {
     setOpenSQLModalForMsgId(msgId);
   };
 
@@ -305,105 +294,50 @@ export default function ChatPage() {
     setOpenSQLModalForMsgId(null);
   };
 
-  // New chat handler
-  const handleNewChat = async () => {
-    const newId = uuidv4();
-    const newSession = {
-      id: newId,
-      title: `Chat ${chatSessions.length + 1}`,
-      messages: [{
-        id: 1,
-        content: 'Hi there, how can I help you?',
-        isUser: false,
-        type: 'message'
-      }]
-    };
-    setChatSessions(dedupeSessions([newSession, ...chatSessions]));
-    setActiveSessionId(newId);
-    await saveChatSession(newSession);
-  };
-
-  // Clear all chats handler
-  const handleClearChats = async () => {
-    setChatSessions([]);
-    setActiveSessionId(null);
-    setCurrentMessage("");
-    if (session?.id_token) {
-      try {
-        await fetch(`${API_BASE}/chat-sessions`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${session.id_token}` }
-        });
-      } catch (e) {
-        // ignore error, just clear local state
-      }
-    }
-  };
-
-  // Delete a specific chat session
-  const handleDeleteChat = async (chatId: string) => {
-    setChatSessions(prev => prev.filter(s => s.id !== chatId));
-    if (activeSessionId === chatId) {
-      // If the deleted chat was active, switch to another or reset
-      const remaining = chatSessions.filter(s => s.id !== chatId);
-      if (remaining.length > 0) {
-        setActiveSessionId(remaining[0].id);
-      } else {
-        setActiveSessionId(null);
-      }
-    }
-    if (session?.id_token) {
-      try {
-        await fetch(`${API_BASE}/chat-sessions/${chatId}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${session.id_token}` }
-        });
-      } catch (e) {
-        // ignore error, just update local state
-      }
-    }
-  };
-
-  // Helper type guard
-  function hasIsLoading(msg: any): msg is { isLoading: boolean } {
-    return typeof msg === 'object' && msg !== null && 'isLoading' in msg;
-  }
-
-  // Sidebar UI
+  // UI
   return (
-    <div className="flex w-full max-w-5xl bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden min-h-[70vh]">
+    <div className="flex h-[80vh] w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-48 bg-[#F9F9F5] border-r border-gray-200 shadow-sm flex flex-col p-2 text-gray-800">
-        <button
-          className="mb-2 px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-xs font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          onClick={handleNewChat}
-          disabled={messages.length === 1 && messages[0].isUser === false}
-          title={messages.length === 1 && messages[0].isUser === false ? 'You must send a message before starting a new chat.' : ''}
-        >
-          + New chat
-        </button>
-        <div className="flex-1 min-h-0 overflow-y-auto">
-          {dedupeSessions(chatSessions).length === 0 ? (
+      <aside className="w-60 bg-gradient-to-b from-blue-50 to-white border-r border-gray-200 flex flex-col p-3">
+        <div className="flex items-center mb-4">
+          <span className="font-bold text-lg text-blue-700">Chats</span>
+          <button
+            className="ml-auto px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-xs font-semibold shadow"
+            onClick={handleNewChat}
+            title="New chat"
+            disabled={isLoading || sessions.some(s => !messages.length && s.id === activeSessionId)}
+          >
+            +
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto">
+          {sessions.length === 0 ? (
             <div className="text-xs text-gray-400 mt-4">No chats yet</div>
           ) : (
-            dedupeSessions(chatSessions).map(session => (
-              <div key={session.id} className="relative group flex items-center">
+            sessions.map(s => (
+              <div key={s.id} className={`group flex items-center mb-1 rounded ${activeSessionId === s.id ? 'bg-blue-100' : 'hover:bg-gray-100'}`}>
+                {editingTitleId === s.id ? (
+                  <input
+                    className="flex-1 px-2 py-1 text-xs rounded bg-white border border-blue-300 focus:outline-none"
+                    value={newTitle}
+                    onChange={e => setNewTitle(e.target.value)}
+                    onBlur={() => handleRename(s.id, newTitle)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleRename(s.id, newTitle); }}
+                    autoFocus
+                  />
+                ) : (
+                  <button
+                    className={`flex-1 text-left px-2 py-2 text-xs font-medium truncate ${activeSessionId === s.id ? 'text-blue-800 font-bold' : 'text-gray-700'}`}
+                    onClick={() => setActiveSessionId(s.id)}
+                    onDoubleClick={() => { setEditingTitleId(s.id); setNewTitle(s.title); }}
+                  >
+                    {s.title}
+                  </button>
+                )}
                 <button
-                  className={`w-full text-left px-2 py-2 rounded transition-colors text-xs mb-1 ${activeSessionId === session.id ? 'bg-white font-bold border border-blue-200 shadow' : 'hover:bg-gray-200'}`}
-                  onClick={() => {
-                    setActiveSessionId(session.id);
-                  }}
-                >
-                  {session.title}
-                </button>
-                <button
-                  className="absolute right-1 top-1 text-gray-400 hover:text-red-500 text-lg font-bold opacity-0 group-hover:opacity-100 transition-opacity duration-150 px-1"
+                  className="ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-1"
                   title="Delete chat"
-                  onClick={e => {
-                    e.stopPropagation();
-                    handleDeleteChat(session.id);
-                  }}
-                  tabIndex={-1}
+                  onClick={() => handleDelete(s.id)}
                 >
                   ×
                 </button>
@@ -411,37 +345,36 @@ export default function ChatPage() {
             ))
           )}
         </div>
-        <button
-          className="mt-2 w-full px-3 py-1 bg-gradient-to-r from-gray-200 to-gray-100 hover:from-gray-300 hover:to-gray-200 text-gray-700 rounded-full shadow text-xs font-semibold transition-all duration-200 border border-gray-300"
-          onClick={handleClearChats}
-        >
-          Clear Chats
-        </button>
       </aside>
       {/* Main chat area */}
-      <div className="flex-1 flex flex-col p-8">
-        {typeof window !== 'undefined' && (
-          <pre style={{fontSize:10, color:'#aaa'}}>[DEBUG] showSQLModal: {String(openSQLModalForMsgId !== null)} | messages: {messages.length}</pre>
-        )}
-        <MessageArea
-          messages={messages}
-          chatId={activeSessionId}
-          shouldAutoScroll={shouldAutoScroll}
-          onSQLClick={handleSQLButtonClick}
-          openSQLModalForMsgId={openSQLModalForMsgId}
-          onCloseSQLModal={handleCloseSQLModal}
-        />
-        <div className="flex justify-center mb-2">
-          <button
-            className="px-4 py-1.5 bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 text-white rounded-full shadow text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleNewChat}
-            disabled={isLoading || messages.length === 1 && messages[0].isUser === false}
-            title={messages.length === 1 && messages[0].isUser === false ? 'You must send a message before starting a new chat.' : ''}
-          >
-            New chat
-          </button>
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-white to-blue-50">
+        <div className="flex-1 overflow-y-auto p-8">
+          <MessageArea
+            messages={messages}
+            chatId={activeSessionId}
+            onSQLClick={handleSQLButtonClick}
+            openSQLModalForMsgId={openSQLModalForMsgId}
+            onCloseSQLModal={handleCloseSQLModal}
+          />
         </div>
-        <InputBar currentMessage={currentMessage} setCurrentMessage={setCurrentMessage} onSubmit={handleSubmit} isLoading={isLoading} />
+        {/* Input bar */}
+        <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100 flex items-center">
+          <input
+            type="text"
+            placeholder="Type a message…"
+            value={currentMessage}
+            onChange={e => setCurrentMessage(e.target.value)}
+            className="flex-1 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-gray-700 bg-blue-50"
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            className="ml-2 px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-semibold shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading || !currentMessage.trim()}
+          >
+            Send
+          </button>
+        </form>
       </div>
     </div>
   );
