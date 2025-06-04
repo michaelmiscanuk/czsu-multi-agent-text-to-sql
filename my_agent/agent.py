@@ -43,7 +43,7 @@ load_dotenv()
 #==============================================================================
 # GRAPH CREATION
 #==============================================================================
-def create_graph():
+def create_graph(checkpointer=None):
     """Create the graph for data analysis.
     
     This function constructs a directed graph representing the graph for
@@ -163,4 +163,7 @@ def create_graph():
 
     # Compile with memory-based checkpointing for execution persistence
     # This enables resuming interrupted runs and improves reliability
-    return graph.compile(checkpointer=MemorySaver())
+    if checkpointer is None:
+        from langgraph.checkpoint.memory import MemorySaver
+        checkpointer = MemorySaver()
+    return graph.compile(checkpointer=checkpointer)

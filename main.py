@@ -18,8 +18,11 @@ from pathlib import Path
 from dotenv import load_dotenv
 from typing import List
 from langchain_core.messages import BaseMessage
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 # from my_agent.utils.instrument import instrument, Framework
-
+import os
+import sys
+from urllib.parse import quote
 
 # Load environment variables
 load_dotenv()
@@ -27,6 +30,14 @@ load_dotenv()
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
 from my_agent.utils.nodes import MAX_ITERATIONS
+
+# Robust BASE_DIR logic for project root
+try:
+    BASE_DIR = Path(__file__).resolve().parents[0]
+except NameError:
+    BASE_DIR = Path(os.getcwd()).parents[0]
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -68,7 +79,7 @@ DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 202
 #==============================================================================
 # MAIN FUNCTION
 #==============================================================================
-async def main(prompt=None):
+async def main(prompt=None, thread_id=None):
     """Main entry point for the application.
     
     This async function serves as the central coordinator for the data analysis process.
@@ -80,6 +91,8 @@ async def main(prompt=None):
     Args:
         prompt (str, optional): The analysis prompt to process. If None and script is run
                                directly, will attempt to get from command line args.
+        thread_id (str, optional): The conversation thread ID for memory. If None and script is run
+                                   directly, a new thread ID will be generated.
     
     Returns:
         dict: A dictionary containing the prompt, result, and thread_id for downstream
@@ -91,71 +104,85 @@ async def main(prompt=None):
         parser = argparse.ArgumentParser(description='Run data analysis with LangGraph')
         parser.add_argument('prompt', nargs='?', default=DEFAULT_PROMPT,
                            help=f'Analysis prompt (default: "{DEFAULT_PROMPT}")')
+        parser.add_argument('--thread_id', type=str, default=None, help='Conversation thread ID for memory')
         args = parser.parse_args()
         prompt = args.prompt
+        thread_id = args.thread_id
     
     # Ensure we always have a valid prompt to avoid None-type errors downstream
     if prompt is None:
         prompt = DEFAULT_PROMPT
         
+    # Use a thread_id for short-term memory (thread-level persistence)
+    if thread_id is None:
+        thread_id = f"data_analysis_{uuid.uuid4().hex[:8]}"
+    
     # Initialize tracing for debugging and performance monitoring
     # This is crucial for production deployments to track execution paths
     # instrument(project_name="LangGraph_czsu-multi-agent-text-to-sql", framework=Framework.LANGGRAPH)
     
-    # Create the LangGraph execution graph - this defines our workflow steps
-    graph = create_graph()
-    
-    print(f"Processing prompt: {prompt}")
-    
-    # Create initial state with the user's prompt
-    initial_state: DataAnalysisState = {
-        "prompt": prompt,
-        "rewritten_prompt": None,
-        "messages": [],
-        "iteration": 0,
-        "queries_and_results": [],
-        "chromadb_missing": False
-    }
-    
-    # Generate a unique thread ID to track this specific analysis run
-    # This is important for concurrent executions and audit trails
-    thread_id = f"data_analysis_{uuid.uuid4().hex[:8]}"
-    
-    # Execute the graph with checkpoint configuration asynchronously
-    # Checkpoints allow resuming execution if interrupted
-    result = await graph.ainvoke(
-        initial_state,
-        config={"configurable": {"thread_id": thread_id}}
-    )
-    
-    # Extract values from the graph result dictionary         
-    messages = result["messages"]
-    queries_and_results = result["queries_and_results"]
-    final_answer = messages[-1].content if messages else ""
-    selection_with_possible_answer = result.get("selection_with_possible_answer")
+    # Create the LangGraph execution graph with AsyncSqliteSaver for persistent short-term memory
+    print("[DEBUG] BASE_DIR:", BASE_DIR)
+    DB_PATH = BASE_DIR / "data" / "langgraph_checkpoints.db"
+    print("[DEBUG] DB_PATH:", DB_PATH)
+    print("[DEBUG] data dir exists:", (BASE_DIR / "data").exists())
+    print("[DEBUG] DB file exists:", DB_PATH.exists())
+    conn_str = str(DB_PATH)
+    print("[DEBUG] DB file path (not URI):", conn_str)
+    async with AsyncSqliteSaver.from_conn_string(conn_str) as checkpointer:
+        await checkpointer.setup()
+        graph = create_graph(checkpointer=checkpointer)
+        
+        print(f"Processing prompt: {prompt} (thread_id={thread_id})")
+        
+        # Retrieve previous messages for this thread (short-term memory)
+        # For InMemorySaver, this is handled by LangGraph automatically when using the same thread_id
+        # So we just need to pass the thread_id in config
 
-    # Extract SQL from the last query, if available
-    sql_query = queries_and_results[-1][0] if queries_and_results else None
-    # Construct dataset URL (customize as needed)
-    dataset_url = None
-    if selection_with_possible_answer:
-        dataset_url = f"/datasets/{selection_with_possible_answer}"
+        initial_state: DataAnalysisState = {
+            "prompt": prompt,
+            "rewritten_prompt": None,
+            "messages": [],
+            "iteration": 0,
+            "queries_and_results": [],
+            "chromadb_missing": False
+        }
+        
+        # Execute the graph with checkpoint configuration asynchronously
+        # Checkpoints allow resuming execution if interrupted
+        result = await graph.ainvoke(
+            initial_state,
+            config={"configurable": {"thread_id": thread_id}}
+        )
+        
+        # Extract values from the graph result dictionary         
+        messages = result["messages"]
+        queries_and_results = result["queries_and_results"]
+        final_answer = messages[-1].content if messages else ""
+        selection_with_possible_answer = result.get("selection_with_possible_answer")
 
-    # Convert the result to a JSON-serializable format
-    serializable_result = {
-        "prompt": prompt,
-        "result": final_answer,
-        "queries_and_results": queries_and_results,
-        "thread_id": thread_id,
-        "selection_with_possible_answer": selection_with_possible_answer,
-        "iteration": result.get("iteration", 0),
-        "max_iterations": MAX_ITERATIONS,
-        "sql": sql_query,
-        "datasetUrl": dataset_url
-    }
-    
-    print(f"Result: {final_answer}")
-    return serializable_result
+        # Extract SQL from the last query, if available
+        sql_query = queries_and_results[-1][0] if queries_and_results else None
+        # Construct dataset URL (customize as needed)
+        dataset_url = None
+        if selection_with_possible_answer:
+            dataset_url = f"/datasets/{selection_with_possible_answer}"
+
+        # Convert the result to a JSON-serializable format
+        serializable_result = {
+            "prompt": prompt,
+            "result": final_answer,
+            "queries_and_results": queries_and_results,
+            "thread_id": thread_id,
+            "selection_with_possible_answer": selection_with_possible_answer,
+            "iteration": result.get("iteration", 0),
+            "max_iterations": MAX_ITERATIONS,
+            "sql": sql_query,
+            "datasetUrl": dataset_url
+        }
+        
+        print(f"Result: {final_answer}")
+        return serializable_result
 
 #==============================================================================
 # SCRIPT ENTRY POINT

@@ -27,6 +27,7 @@ app.add_middleware(
 
 class AnalyzeRequest(BaseModel):
     prompt: str
+    thread_id: str
 
 GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
 
@@ -59,7 +60,7 @@ def get_current_user(authorization: str = Header(None)):
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
-    result = await analysis_main(request.prompt)
+    result = await analysis_main(request.prompt, thread_id=request.thread_id)
     return result 
 
 @app.get("/catalog")

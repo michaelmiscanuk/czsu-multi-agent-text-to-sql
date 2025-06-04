@@ -227,7 +227,7 @@ export default function ChatPage() {
       let response = await fetch(API_URL, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ prompt: msg.content })
+        body: JSON.stringify({ prompt: msg.content, thread_id: sessionId })
       });
       // If 401, try to force session refresh and retry once
       if (response.status === 401) {
@@ -245,7 +245,7 @@ export default function ChatPage() {
         response = await fetch(API_URL, {
           method: 'POST',
           headers: retryHeaders,
-          body: JSON.stringify({ prompt: msg.content })
+          body: JSON.stringify({ prompt: msg.content, thread_id: sessionId })
         });
         if (response.status === 401) {
           signOut();
