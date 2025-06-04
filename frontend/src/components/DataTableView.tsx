@@ -226,7 +226,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
 
   return (
     <div className="flex flex-col h-full p-6">
-      <div className="mb-4 flex flex-col relative">
+      <div className="mb-4 flex flex-col relative z-30">
         <div className="flex items-center w-full">
           <input
             ref={inputRef}
@@ -269,13 +269,17 @@ const DataTableView: React.FC<DataTableViewProps> = ({
           )}
         </div>
         <div className="flex items-center mt-2 space-x-4">
-          <span className="text-gray-400 text-[10px] block" style={{lineHeight: 1}} title="Starting with * searches only for codes.">
+          <span
+            className="text-gray-400 text-[10px] font-normal block"
+            style={{ lineHeight: 1, fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}
+            title="Starting with * searches only for codes."
+          >
             Starting with * searches only for codes.
           </span>
           <span className="text-gray-500 text-xs">{allTables.length} tables</span>
         </div>
         {showSuggestions && suggestions.length > 0 && (
-          <ul className="absolute left-0 top-full z-10 bg-white border border-gray-200 rounded w-112 mt-1 max-h-60 overflow-auto shadow-lg">
+          <ul className="absolute left-0 top-full z-40 bg-white border border-gray-200 rounded w-112 mt-1 max-h-60 overflow-auto shadow-lg">
             {suggestions.map(table => (
               <li
                 key={table.selection_code}
@@ -325,7 +329,10 @@ const DataTableView: React.FC<DataTableViewProps> = ({
                           title={col === 'value' ? 'You can filter using >, <, >=, <=, =, !=, etc. (e.g. "> 10000")' : undefined}
                         />
                         {col === 'value' && (
-                          <span className="text-gray-400 text-[10px] block mt-1" style={{lineHeight: 1}}>
+                          <span
+                            className="text-gray-400 text-[10px] font-normal block mt-1"
+                            style={{ lineHeight: 1, fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}
+                          >
                             <span title='You can filter using &gt;, &lt;, &gt;=, &lt;=, =, !=, etc. (e.g. "> 10000")'>
                               e.g. &gt; 10000, &lt;= 500
                             </span>

@@ -102,6 +102,7 @@ const MessageArea = ({ messages, chatId, onSQLClick, openSQLModalForMsgId, onClo
                                     {message.meta?.sql && (
                                         <button
                                             className="px-4 py-1 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 text-white text-xs font-bold shadow hover:from-blue-500 hover:to-blue-700 border-0 transition-all duration-150"
+                                            style={{ color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.18)' }}
                                             onClick={() => onSQLClick(message.id)}
                                         >
                                             SQL
@@ -112,12 +113,7 @@ const MessageArea = ({ messages, chatId, onSQLClick, openSQLModalForMsgId, onClo
                                         <Modal open={true} onClose={onCloseSQLModal}>
                                             <h2 className="text-lg font-bold mb-4">SQL Commands & Results</h2>
                                             <div className="max-h-[60vh] overflow-y-auto pr-2">
-                                                {message.meta?.sql ? (
-                                                    <div>
-                                                        <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">SQL Command</div>
-                                                        <pre className="p-3 font-mono text-xs whitespace-pre-line text-gray-900 bg-gray-50 rounded-b border border-gray-200 border-t-0">{message.meta.sql}</pre>
-                                                    </div>
-                                                ) : (() => {
+                                                {(() => {
                                                     const uniqueQueriesAndResults = Array.from(
                                                         new Map((message.queriesAndResults || []).map(([q, r]: [string, string]) => [q, [q, r]])).values()
                                                     ) as [string, string][];

@@ -5,7 +5,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
-import { openDB } from 'idb';
 import {
   listSessions,
   getChatSession,
@@ -13,7 +12,6 @@ import {
   deleteSession,
   listMessages,
   saveMessage,
-  deleteMessage,
   ChatSessionMeta,
   ChatMessage
 } from '@/components/utils';
@@ -41,33 +39,13 @@ const INITIAL_MESSAGE = [
   }
 ];
 
-// Utility: open or create the IndexedDB for chat sessions
-async function getChatDB() {
-  return openDB('czsu-chat-db', 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains('sessions')) {
-        db.createObjectStore('sessions');
-      }
-    },
-  });
-}
-
-// Utility: get all chat sessions for a user
-async function loadChatSessions(userEmail: string) {
-  const db = await getChatDB();
-  const sessions = await db.get('sessions', userEmail);
-  return Array.isArray(sessions) ? sessions : [];
-}
-
-// Utility: save all chat sessions for a user
-async function saveChatSessions(userEmail: string, sessions: any[]) {
-  const db = await getChatDB();
-  await db.put('sessions', sessions, userEmail);
-}
-
 export default function ChatPage() {
   const { data: session } = useSession();
   const userEmail = session?.user?.email || null;
+  if (!userEmail) {
+    return <div>Loading...</div>;
+  }
+  // const userEmail = "test3@test.com"
   const [sessions, setSessions] = useState<ChatSessionMeta[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -81,6 +59,7 @@ export default function ChatPage() {
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
@@ -118,6 +97,30 @@ export default function ChatPage() {
     // eslint-disable-next-line
   }, [userEmail, sessions.length]);
 
+  // Robust auto-create: Only after loading sessions from storage
+  useEffect(() => {
+    if (!userEmail) return;
+    (async () => {
+      const loadedSessions = await listSessions(userEmail);
+      setSessions(loadedSessions);
+      if (loadedSessions.length === 0) {
+        const id = uuidv4();
+        const now = Date.now();
+        const meta: ChatSessionMeta = {
+          id,
+          user: userEmail,
+          title: 'New Chat',
+          createdAt: now,
+          updatedAt: now,
+        };
+        await saveSession(meta);
+        setSessions([meta]);
+        setActiveSessionId(id);
+        setTimeout(() => inputRef.current?.focus(), 0);
+      }
+    })();
+  }, [userEmail]);
+
   // New chat
   const handleNewChat = async () => {
     if (!userEmail) return;
@@ -133,6 +136,7 @@ export default function ChatPage() {
     await saveSession(meta);
     setSessions(await listSessions(userEmail));
     setActiveSessionId(id);
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   // Rename chat
@@ -144,6 +148,7 @@ export default function ChatPage() {
       meta.updatedAt = Date.now();
       await saveSession(meta);
       setSessions(await listSessions(userEmail));
+      console.log('[ChatPage] Sidebar sessions after title update:', await listSessions(userEmail));
       setEditingTitleId(null);
     }
   };
@@ -179,6 +184,7 @@ export default function ChatPage() {
       };
       await saveSession(meta);
       setSessions(await listSessions(userEmail));
+      console.log('[ChatPage] Sidebar sessions after save:', await listSessions(userEmail));
       setActiveSessionId(sessionId);
       isNewSession = true;
     }
@@ -193,14 +199,16 @@ export default function ChatPage() {
     await saveMessage(msg);
     setMessages(await listMessages(userEmail, sessionId));
     setCurrentMessage("");
-    // Update session title if it's 'New Chat' and this is the first message
-    if (!isNewSession) {
+    // Always update session title to first message if this is the first message in the session
+    const sessionMessages = await listMessages(userEmail, sessionId);
+    if (sessionMessages.length === 1) {
       const meta = await getChatSession(userEmail, sessionId);
-      if (meta && meta.title === 'New Chat') {
+      if (meta) {
         meta.title = msg.content.slice(0, 30);
         meta.updatedAt = Date.now();
         await saveSession(meta);
         setSessions(await listSessions(userEmail));
+        console.log('[ChatPage] Sidebar sessions after title update:', await listSessions(userEmail));
       }
     }
     // Call backend for AI response
@@ -237,6 +245,7 @@ export default function ChatPage() {
         content: data.result || JSON.stringify(data),
         isUser: false,
         createdAt: Date.now(),
+        queriesAndResults: data.queries_and_results,
         meta: {
           datasetUrl: data.datasetUrl,
           sql: data.sql
@@ -254,6 +263,7 @@ export default function ChatPage() {
         }
         await saveSession(meta);
         setSessions(await listSessions(userEmail));
+        console.log('[ChatPage] Sidebar sessions after title update:', await listSessions(userEmail));
       }
     } catch (error) {
       // Optionally show error message
@@ -302,7 +312,8 @@ export default function ChatPage() {
         <div className="flex items-center mb-4">
           <span className="font-bold text-lg text-blue-700">Chats</span>
           <button
-            className="ml-auto px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-full text-xs font-semibold shadow"
+            className="ml-auto px-2 py-1 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 text-white text-xs font-bold shadow hover:from-blue-500 hover:to-blue-700 border-0 transition-all duration-150"
+            style={{ color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.18)' }}
             onClick={handleNewChat}
             title="New chat"
             disabled={isLoading || sessions.some(s => !messages.length && s.id === activeSessionId)}
@@ -357,9 +368,22 @@ export default function ChatPage() {
             onCloseSQLModal={handleCloseSQLModal}
           />
         </div>
+        {/* Duplicated New Chat button at the bottom */}
+        <div className="flex justify-center pb-2">
+          <button
+            className="px-4 py-1 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 text-white text-xs font-bold shadow hover:from-blue-500 hover:to-blue-700 border-0 transition-all duration-150"
+            style={{ color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.18)' }}
+            onClick={handleNewChat}
+            title="New chat"
+            disabled={isLoading || sessions.some(s => !messages.length && s.id === activeSessionId)}
+          >
+            +
+          </button>
+        </div>
         {/* Input bar */}
         <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100 flex items-center">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Type a message…"
             value={currentMessage}

@@ -8,7 +8,7 @@ export default function CatalogPage() {
     router.push(`/data?table=${encodeURIComponent(selection_code)}`);
   };
   return (
-    <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto">
       <CatalogTable onRowClick={handleCatalogRowClick} />
     </div>
   );
