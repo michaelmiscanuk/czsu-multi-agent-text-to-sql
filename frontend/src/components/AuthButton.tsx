@@ -1,7 +1,7 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
 
-export default function AuthButton() {
+export default function AuthButton({ compact = false }: { compact?: boolean } = {}) {
   const { data: session, status } = useSession();
   if (status === "loading") return <span className="text-xs text-gray-400">Loading...</span>;
   if (session) {
@@ -20,9 +20,22 @@ export default function AuthButton() {
       </div>
     );
   }
+  if (compact) {
+    // Header: Log In button styled as in the screenshot, with a more gray hover and more gradual transition
+    return (
+      <button
+        className="flex items-center px-7 py-2 bg-white rounded-full border border-gray-200 shadow-md text-[#172153] font-bold hover:bg-gray-200 hover:shadow-lg hover:border-gray-300 transition-all duration-300 focus:outline-none"
+        onClick={() => signIn('google')}
+        style={{ minWidth: 110 }}
+      >
+        Log In
+      </button>
+    );
+  }
+  // Main Google button
   return (
     <button
-      className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 transition-all duration-200 text-gray-700 font-medium text-base"
+      className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-blue-50 hover:shadow-lg hover:border-blue-400 transition-all duration-200 text-gray-700 font-medium text-base focus:outline-none"
       onClick={() => signIn("google")}
       style={{ minWidth: 220 }}
     >

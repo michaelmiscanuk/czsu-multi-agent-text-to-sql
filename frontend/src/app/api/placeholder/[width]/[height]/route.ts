@@ -5,7 +5,7 @@ export async function GET(
   req: NextRequest,
   context: any
 ) {
-  const { width, height } = context.params;
+  const { width, height } = await context.params;
   const w = parseInt(width, 10) || 100;
   const h = parseInt(height, 10) || 100;
 

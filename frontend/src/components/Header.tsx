@@ -43,7 +43,7 @@ const Header = () => {
             </Link>
           );
         })}
-        <div className="ml-4"><AuthButton /></div>
+        <div className="ml-4"><AuthButton compact={true} /></div>
       </div>
     </header>
   );
