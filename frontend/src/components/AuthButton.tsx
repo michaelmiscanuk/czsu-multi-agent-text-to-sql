@@ -3,12 +3,32 @@ import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function AuthButton({ compact = false }: { compact?: boolean } = {}) {
   const { data: session, status } = useSession();
+  if (typeof window !== 'undefined') {
+    console.log('[AuthButton] session:', session);
+  }
   if (status === "loading") return <span className="text-xs text-gray-400">Loading...</span>;
   if (session) {
     return (
       <div className="flex items-center space-x-2">
-        {session.user?.image && (
-          <img src={session.user.image} alt="avatar" className="w-7 h-7 rounded-full border border-gray-300" />
+        {session.user?.image ? (
+          <img
+            src={session.user.image}
+            alt={session.user?.name || session.user?.email || 'avatar'}
+            className="w-7 h-7 rounded-full border border-gray-300 bg-gray-100 object-cover"
+            onError={e => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.style.display = 'none';
+              const fallback = document.createElement('div');
+              fallback.className = 'w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-700';
+              fallback.innerText = (session.user?.name || session.user?.email || '?').split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase();
+              target.parentNode?.insertBefore(fallback, target.nextSibling);
+            }}
+          />
+        ) : (
+          <div className="w-7 h-7 rounded-full bg-gray-300 flex items-center justify-center text-xs font-bold text-gray-700">
+            {(session.user?.name || session.user?.email || '?').split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase()}
+          </div>
         )}
         <span className="text-xs text-white font-medium">{session.user?.name || session.user?.email}</span>
         <button

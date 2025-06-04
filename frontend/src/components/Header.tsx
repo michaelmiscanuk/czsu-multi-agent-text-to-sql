@@ -1,9 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import dynamic from 'next/dynamic';
-
-const AuthButton = dynamic(() => import('./AuthButton'), { ssr: false });
+import AuthButton from './AuthButton';
 
 const menuItems = [
   { label: 'HOME', href: '/' },
@@ -16,35 +14,35 @@ const menuItems = [
 const Header = () => {
   const pathname = usePathname();
   return (
-    <header className="relative flex items-center justify-between px-8 py-5 bg-gradient-to-r from-blue-700 to-blue-700 z-10">
+    <header className="relative flex items-center justify-between px-10 py-6 bg-white shadow-md z-20">
       <div className="absolute inset-0 bg-[url('/api/placeholder/100/100')] opacity-5 mix-blend-overlay pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
       <div className="flex items-center relative">
-        <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1.5 h-6 bg-teal-400 rounded-full opacity-80"></div>
-        <span className="font-bold text-white text-xl tracking-tight">CZSU - Multi-Agent Text-to-SQL</span>
+        <span className="font-extrabold text-[#181C3A] text-2xl tracking-tight" style={{fontFamily: 'var(--font-inter)'}}>CZSU - Multi-Agent Text-to-SQL</span>
       </div>
 
-      <div className="flex items-center space-x-1">
+      <nav className="flex items-center space-x-6">
         {menuItems.map(item => {
           const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               className={
-                `text-xs px-4 py-2 font-medium rounded-lg transition-all duration-200 cursor-pointer ` +
+                `text-base px-3 py-2 font-semibold rounded-lg transition-all duration-200 cursor-pointer ` +
                 (isActive
-                  ? 'text-white bg-white/10 '
-                  : 'text-white/80 hover:text-white hover:bg-white/10 ')
+                  ? 'text-[#181C3A] font-extrabold bg-gray-100 shadow-sm '
+                  : 'text-[#181C3A]/80 hover:text-[#181C3A] hover:bg-gray-50 ')
               }
+              style={{fontFamily: 'var(--font-inter)'}} 
               href={item.href}
             >
-              {item.label}
+              {item.label.charAt(0) + item.label.slice(1).toLowerCase()}
             </Link>
           );
         })}
-        <div className="ml-4"><AuthButton compact={true} /></div>
-      </div>
+        <div className="ml-6"><AuthButton compact={true} /></div>
+      </nav>
     </header>
   );
 }

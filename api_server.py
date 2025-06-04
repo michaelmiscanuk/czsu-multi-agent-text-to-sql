@@ -100,6 +100,7 @@ def get_catalog(
 @app.get("/data-tables")
 def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
     db_path = "data/czsu_data.db"
+    desc_db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
@@ -107,7 +108,22 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
     if q:
         q_lower = q.lower()
         tables = [t for t in tables if q_lower in t.lower()]
-    return {"tables": tables}
+    # Fetch short_descriptions from the other DB
+    desc_map = {}
+    try:
+        with sqlite3.connect(desc_db_path) as desc_conn:
+            desc_cursor = desc_conn.cursor()
+            desc_cursor.execute("SELECT selection_code, short_description FROM selection_descriptions")
+            for code, short_desc in desc_cursor.fetchall():
+                desc_map[code] = short_desc
+    except Exception as e:
+        print(f"[DEBUG] Error fetching short_descriptions: {e}")
+    # Build result list
+    result = [
+        {"selection_code": t, "short_description": desc_map.get(t, "")}
+        for t in tables
+    ]
+    return {"tables": result}
 
 @app.get("/data-table")
 def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
@@ -150,4 +166,26 @@ def save_chat_session(session: dict, user=Depends(get_current_user)):
         cursor.execute('CREATE TABLE IF NOT EXISTS chat_sessions (user_id TEXT, session_id TEXT, data TEXT)')
         cursor.execute('REPLACE INTO chat_sessions (user_id, session_id, data) VALUES (?, ?, ?)', (user_id, session_id, data))
         conn.commit()
-    return {'status': 'ok'} 
+    return {'status': 'ok'}
+
+@app.delete('/chat-sessions')
+def delete_chat_sessions(user=Depends(get_current_user)):
+    user_id = user['sub']
+    db_path = 'data/chat_sessions.db'
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute('CREATE TABLE IF NOT EXISTS chat_sessions (user_id TEXT, session_id TEXT, data TEXT)')
+        cursor.execute('DELETE FROM chat_sessions WHERE user_id = ?', (user_id,))
+        conn.commit()
+    return {'status': 'deleted'}
+
+@app.delete('/chat-sessions/{session_id}')
+def delete_chat_session(session_id: str, user=Depends(get_current_user)):
+    user_id = user['sub']
+    db_path = 'data/chat_sessions.db'
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute('CREATE TABLE IF NOT EXISTS chat_sessions (user_id TEXT, session_id TEXT, data TEXT)')
+        cursor.execute('DELETE FROM chat_sessions WHERE user_id = ? AND session_id = ?', (user_id, session_id))
+        conn.commit()
+    return {'status': 'deleted'} 

@@ -12905,3 +12905,751 @@ ORDER BY total_units DESC
 LIMIT 10;
   Result: [('Základní sídelní jednotka', 229736), ('Část obce', 151006), ('Katastrální území', 130800), ('Obec', 62575), ('Správní obvod obce s pověřeným obecním úřadem', 3880), ('Správní obvod obce s rozšířenou působností', 2050), ('Městský obvod (městská část) statutárních měst', 1420), ('Okres', 760)]
 ----------------------------------------------------------------------------
+Prompt: jaky je podil obyvatelstva v ceskych mestech?
+Result: Podíl obyvatelstva v českých městech podle velikostní skupiny obce je následující:
+
+- 100000 a více obyvatel: 22.49%
+- 20000 až 49999 obyvatel: 12.32%
+- 2000 až 4999 obyvatel: 12.28%
+- 1000 až 1999 obyvatel: 10.28%
+- 500 až 999 obyvatel: 9.13%
+- 10000 až 19999 obyvatel: 9.04%
+- 5000 až 9999 obyvatel: 8.96%
+- 50000 až 99999 obyvatel: 7.59%
+- 200 - 499 obyvatel: 6.22%
+- do 199 obyvatel: 1.69%
+Queries and Results:
+  Query: SELECT "Velikostní skupina obce", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" = 'Česká republika'
+GROUP BY "Velikostní skupina obce"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 2366802), ('20000 až 49999 obyvatel', 1296708), ('2000 až 4999 obyvatel', 1291906), ('1000 až 1999 obyvatel', 1082202), ('500 až 999 obyvatel', 961206), ('10000 až 19999 obyvatel', 951222), ('5000 až 9999 obyvatel', 943034), ('50000 až 99999 obyvatel', 798405), ('200 - 499 obyvatel', 654469), ('do 199 obyvatel', 178213)]
+  Query: SELECT "Velikostní skupina obce", SUM(value) * 100.0 / (SELECT SUM(value) 
+FROM SLD002T01 
+WHERE "Rok sčítání" = '2021' 
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)' 
+  AND "Pohlaví" = 'Celkem' 
+  AND "Území" = 'Česká republika') AS population_share
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" = 'Česká republika'
+GROUP BY "Velikostní skupina obce"
+ORDER BY population_share DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 22.489209834849635), ('20000 až 49999 obyvatel', 12.321241196571663), ('2000 až 4999 obyvatel', 12.275612882235714), ('1000 až 1999 obyvatel', 10.283018123904723), ('500 až 999 obyvatel', 9.133321430570229), ('10000 až 19999 obyvatel', 9.038454064820522), ('5000 až 9999 obyvatel', 8.960652182733321), ('50000 až 99999 obyvatel', 7.5863961489778715), ('200 - 499 obyvatel', 6.218724959419591), ('do 199 obyvatel', 1.6933691759167258)]
+  Query: SELECT "Velikostní skupina obce", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" = 'Česká republika'
+GROUP BY "Velikostní skupina obce"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 2366802), ('20000 až 49999 obyvatel', 1296708), ('2000 až 4999 obyvatel', 1291906), ('1000 až 1999 obyvatel', 1082202), ('500 až 999 obyvatel', 961206), ('10000 až 19999 obyvatel', 951222), ('5000 až 9999 obyvatel', 943034), ('50000 až 99999 obyvatel', 798405), ('200 - 499 obyvatel', 654469), ('do 199 obyvatel', 178213)]
+  Query: SELECT "Velikostní skupina obce", SUM(value) * 100.0 / (SELECT SUM(value) 
+FROM SLD002T01 
+WHERE "Rok sčítání" = '2021' 
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)' 
+  AND "Pohlaví" = 'Celkem' 
+  AND "Území" = 'Česká republika') AS population_share
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" = 'Česká republika'
+GROUP BY "Velikostní skupina obce"
+ORDER BY population_share DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 22.489209834849635), ('20000 až 49999 obyvatel', 12.321241196571663), ('2000 až 4999 obyvatel', 12.275612882235714), ('1000 až 1999 obyvatel', 10.283018123904723), ('500 až 999 obyvatel', 9.133321430570229), ('10000 až 19999 obyvatel', 9.038454064820522), ('5000 až 9999 obyvatel', 8.960652182733321), ('50000 až 99999 obyvatel', 7.5863961489778715), ('200 - 499 obyvatel', 6.218724959419591), ('do 199 obyvatel', 1.6933691759167258)]
+----------------------------------------------------------------------------
+Prompt: kolik rek je v cechach?
+Result: Není uveden žádný údaj o počtu řek v Česku.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_rivers
+FROM FIN03BANKDUK
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" LIKE '%řek%'
+  AND "Instituce" = 'Bankovní peněžní instituce';
+  Result: None
+  Query: SELECT "Ukazatel", SUM(value) AS total_value
+FROM FIN03BANKDUK
+WHERE "Území" = 'Česko'
+  AND "Instituce" = 'Bankovní peněžní instituce'
+GROUP BY "Ukazatel"
+LIMIT 10;
+  Result: [('Počet bankomatů a terminálů, k poslednímu dni sledovaného roku, ks', 25512.0), ('Přijaté dividendy a podíly na zisku - brutto', 90659.05), ('Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům)', 2554.9939999999997), ('Vyplacené dividendy a podíly na zisku nerezidentům', 147370.106), ('Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.', 177362.372)]
+  Query: SELECT "Roky", SUM(value) AS total_atms_and_terminals
+FROM FIN03BANKDUK
+WHERE "Území" = 'Česko'
+  AND "Instituce" = 'Bankovní peněžní instituce'
+  AND "Ukazatel" = 'Počet bankomatů a terminálů, k poslednímu dni sledovaného roku, ks'
+GROUP BY "Roky"
+LIMIT 10;
+  Result: [(2018, 5157.0), (2019, 5236.0), (2020, 5244.0), (2021, 5753.0), (2022, 4122.0)]
+  Query: SELECT SUM(value) AS total_rivers
+FROM FIN03BANKDUK
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" LIKE '%řek%'
+  AND "Instituce" = 'Bankovní peněžní instituce';
+  Result: None
+  Query: SELECT "Ukazatel", SUM(value) AS total_value
+FROM FIN03BANKDUK
+WHERE "Území" = 'Česko'
+  AND "Instituce" = 'Bankovní peněžní instituce'
+GROUP BY "Ukazatel"
+LIMIT 10;
+  Result: [('Počet bankomatů a terminálů, k poslednímu dni sledovaného roku, ks', 25512.0), ('Přijaté dividendy a podíly na zisku - brutto', 90659.05), ('Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům)', 2554.9939999999997), ('Vyplacené dividendy a podíly na zisku nerezidentům', 147370.106), ('Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.', 177362.372)]
+  Query: SELECT "Roky", SUM(value) AS total_atms_and_terminals
+FROM FIN03BANKDUK
+WHERE "Území" = 'Česko'
+  AND "Instituce" = 'Bankovní peněžní instituce'
+  AND "Ukazatel" = 'Počet bankomatů a terminálů, k poslednímu dni sledovaného roku, ks'
+GROUP BY "Roky"
+LIMIT 10;
+  Result: [(2018, 5157.0), (2019, 5236.0), (2020, 5244.0), (2021, 5753.0), (2022, 4122.0)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi je v praze?
+Result: V Praze je 1301432 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+----------------------------------------------------------------------------
+Prompt: jaka je inflace ?
+Result: Inflace v Česku se pohybuje kolem 3.1 v říjnu 2024, 4.4 v červenci 2024, 4.9 v červnu 2024, a průměrná inflace za poslední období je 3.38.
+Queries and Results:
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 3.1), ('červenec 2024', 4.4), ('červen 2024', 4.9), ('únor 2025', 2.5), ('září 2024', 3.5), ('srpen 2024', 3.9), ('prosinec 2024', 2.4), ('listopad 2024', 2.7), ('leden 2025', 2.5), ('květen 2024', 5.6)]
+  Query: SELECT "Ukazatel", AVG("value") AS "Average_Inflation" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+GROUP BY "Ukazatel" 
+ORDER BY "Average_Inflation" DESC;
+  Result: [('Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.68333333333334), ('Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.3833333333333333), ('Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.5166666666666666), ('Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.15833416666666666)]
+  Query: SELECT "Měsíce", "Ukazatel", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+ORDER BY "Měsíce", "Ukazatel";
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4), ('květen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('květen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 5.6), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1.3), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.0), ('leden 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('leden 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('listopad 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.7), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 3.0), ('prosinec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('srpen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.9), ('září 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.4), ('září 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.8), ('září 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('září 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.5), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.2), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.3), ('únor 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('únor 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.0), ('červen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.0), ('červen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.9), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.7), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('červenec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.4), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('říjen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.1)]
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" DESC 
+LIMIT 10;
+  Result: [('říjen 2024', 3.1), ('červenec 2024', 4.4), ('červen 2024', 4.9), ('únor 2025', 2.5), ('září 2024', 3.5), ('srpen 2024', 3.9), ('prosinec 2024', 2.4), ('listopad 2024', 2.7), ('leden 2025', 2.5), ('květen 2024', 5.6)]
+  Query: SELECT "Ukazatel", AVG("value") AS "Average_Inflation" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+GROUP BY "Ukazatel" 
+ORDER BY "Average_Inflation" DESC;
+  Result: [('Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.68333333333334), ('Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.3833333333333333), ('Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.5166666666666666), ('Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.15833416666666666)]
+  Query: SELECT "Měsíce", "Ukazatel", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+ORDER BY "Měsíce", "Ukazatel";
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4), ('květen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('květen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 5.6), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1.3), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.0), ('leden 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('leden 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('listopad 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.7), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 3.0), ('prosinec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('srpen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.9), ('září 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.4), ('září 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.8), ('září 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('září 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.5), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.2), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.3), ('únor 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('únor 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.0), ('červen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.0), ('červen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.9), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.7), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('červenec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.4), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('říjen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.1)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi je v praze?
+Result: V Praze je 1301432 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+----------------------------------------------------------------------------
+Prompt: describe the occupancy in czech.
+Result: V roce 2024 bylo v Česku celkem 22809595 hostů, což představuje nárůst o 831924 hostů oproti roku 2023, kdy bylo 21977671 hostů. V roce 2022 bylo 19424164 hostů, což znamená nárůst o 8040563 hostů oproti roku 2021, kdy bylo 11383601 hostů. V roce 2020 došlo k poklesu na 10836444 hostů, což je o 11161922 méně než v roce 2019, kdy bylo 21998366 hostů. Celkově se v posledních letech projevuje trend růstu počtu hostů, s výjimkou roku 2020.
+Queries and Results:
+  Query: SELECT "Roky", SUM("value") AS "Total Guests"
+FROM CRU02RT4
+WHERE "Ukazatel" = "Počet hostů"
+  AND "Kategorie ubytovacího zařízení" = "HUZ celkem"
+  AND "Rezidence" = "Celkem"
+  AND "ČR, kraje, okresy" = "Česko"
+GROUP BY "Roky"
+ORDER BY "Roky" DESC
+LIMIT 10;
+  Result: [(2024, 22809595), (2023, 21977671), (2022, 19424164), (2021, 11383601), (2020, 10836444), (2019, 21998366), (2018, 21247150), (2017, 20000561), (2016, 18388853), (2015, 17195550)]
+  Query: SELECT "ČR, kraje, okresy", "Roky", SUM("value") AS "Total Guests"
+FROM CRU02RT4
+WHERE "Ukazatel" = "Počet hostů"
+  AND "Kategorie ubytovacího zařízení" = "HUZ celkem"
+  AND "Rezidence" = "Celkem"
+GROUP BY "ČR, kraje, okresy", "Roky"
+ORDER BY "ČR, kraje, okresy", "Roky" DESC
+LIMIT 10;
+  Result: [('Česko', 2024, 22809595), ('Česko', 2023, 21977671), ('Česko', 2022, 19424164), ('Česko', 2021, 11383601), ('Česko', 2020, 10836444), ('Česko', 2019, 21998366), ('Česko', 2018, 21247150), ('Česko', 2017, 20000561), ('Česko', 2016, 18388853), ('Česko', 2015, 17195550)]
+  Query: SELECT "ČR, kraje, okresy", "Roky", SUM("value") AS "Total Guests", 
+       LAG(SUM("value")) OVER (PARTITION BY "ČR, kraje, okresy" ORDER BY "Roky") AS "Previous Year Guests",
+       (SUM("value") - LAG(SUM("value")) OVER (PARTITION BY "ČR, kraje, okresy" ORDER BY "Roky")) AS "Change in Guests"
+FROM CRU02RT4
+WHERE "Ukazatel" = "Počet hostů"
+  AND "Kategorie ubytovacího zařízení" = "HUZ celkem"
+  AND "Rezidence" = "Celkem"
+GROUP BY "ČR, kraje, okresy", "Roky"
+ORDER BY "ČR, kraje, okresy", "Roky" DESC
+LIMIT 10;
+  Result: [('Česko', 2024, 22809595, 21977671, 831924), ('Česko', 2023, 21977671, 19424164, 2553507), ('Česko', 2022, 19424164, 11383601, 8040563), ('Česko', 2021, 11383601, 10836444, 547157), ('Česko', 2020, 10836444, 21998366, -11161922), ('Česko', 2019, 21998366, 21247150, 751216), ('Česko', 2018, 21247150, 20000561, 1246589), ('Česko', 2017, 20000561, 18388853, 1611708), ('Česko', 2016, 18388853, 17195550, 1193303), ('Česko', 2015, 17195550, 15587076, 1608474)]
+  Query: SELECT "Roky", SUM("value") AS "Total Guests"
+FROM CRU02RT4
+WHERE "Ukazatel" = "Počet hostů"
+  AND "Kategorie ubytovacího zařízení" = "HUZ celkem"
+  AND "Rezidence" = "Celkem"
+  AND "ČR, kraje, okresy" = "Česko"
+GROUP BY "Roky"
+ORDER BY "Roky" DESC
+LIMIT 10;
+  Result: [(2024, 22809595), (2023, 21977671), (2022, 19424164), (2021, 11383601), (2020, 10836444), (2019, 21998366), (2018, 21247150), (2017, 20000561), (2016, 18388853), (2015, 17195550)]
+  Query: SELECT "ČR, kraje, okresy", "Roky", SUM("value") AS "Total Guests"
+FROM CRU02RT4
+WHERE "Ukazatel" = "Počet hostů"
+  AND "Kategorie ubytovacího zařízení" = "HUZ celkem"
+  AND "Rezidence" = "Celkem"
+GROUP BY "ČR, kraje, okresy", "Roky"
+ORDER BY "ČR, kraje, okresy", "Roky" DESC
+LIMIT 10;
+  Result: [('Česko', 2024, 22809595), ('Česko', 2023, 21977671), ('Česko', 2022, 19424164), ('Česko', 2021, 11383601), ('Česko', 2020, 10836444), ('Česko', 2019, 21998366), ('Česko', 2018, 21247150), ('Česko', 2017, 20000561), ('Česko', 2016, 18388853), ('Česko', 2015, 17195550)]
+  Query: SELECT "ČR, kraje, okresy", "Roky", SUM("value") AS "Total Guests", 
+       LAG(SUM("value")) OVER (PARTITION BY "ČR, kraje, okresy" ORDER BY "Roky") AS "Previous Year Guests",
+       (SUM("value") - LAG(SUM("value")) OVER (PARTITION BY "ČR, kraje, okresy" ORDER BY "Roky")) AS "Change in Guests"
+FROM CRU02RT4
+WHERE "Ukazatel" = "Počet hostů"
+  AND "Kategorie ubytovacího zařízení" = "HUZ celkem"
+  AND "Rezidence" = "Celkem"
+GROUP BY "ČR, kraje, okresy", "Roky"
+ORDER BY "ČR, kraje, okresy", "Roky" DESC
+LIMIT 10;
+  Result: [('Česko', 2024, 22809595, 21977671, 831924), ('Česko', 2023, 21977671, 19424164, 2553507), ('Česko', 2022, 19424164, 11383601, 8040563), ('Česko', 2021, 11383601, 10836444, 547157), ('Česko', 2020, 10836444, 21998366, -11161922), ('Česko', 2019, 21998366, 21247150, 751216), ('Česko', 2018, 21247150, 20000561, 1246589), ('Česko', 2017, 20000561, 18388853, 1611708), ('Česko', 2016, 18388853, 17195550, 1193303), ('Česko', 2015, 17195550, 15587076, 1608474)]
+----------------------------------------------------------------------------
+Prompt: describe me the inflation in recent years.
+Result: Inflace v posledních letech v Česku vykazuje variabilní trendy. V březnu 2025 byl přírůstek průměrného ročního indexu spotřebitelských cen 2.6, zatímco v dubnu 2025 klesl na 2.5. V květnu 2024 byl tento přírůstek výrazně vyšší, a to 5.6. 
+
+Přírůstky indexu spotřebitelských cen k předchozímu měsíci ukazují na pokles v dubnu 2025 (-0.1) a v prosinci 2024 (-0.3), což naznačuje deflační tlaky v těchto měsících. Naopak v lednu 2025 byl přírůstek 1.3, což ukazuje na oživení.
+
+Přírůstky ke stejnému měsíci předchozího roku se pohybovaly kolem 2.0 až 3.0, což naznačuje stabilní inflaci v porovnání s předchozími roky. Celkově lze říci, že inflace v Česku v posledních letech kolísala, s výskytem jak růstů, tak poklesů.
+Queries and Results:
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" ASC 
+LIMIT 10;
+  Result: [('březen 2025', 2.6), ('duben 2025', 2.5), ('květen 2024', 5.6), ('leden 2025', 2.5), ('listopad 2024', 2.7), ('prosinec 2024', 2.4), ('srpen 2024', 3.9), ('září 2024', 3.5), ('únor 2025', 2.5), ('červen 2024', 4.9)]
+  Query: SELECT "Měsíce", "Ukazatel", AVG("value") AS "Average_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+    'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční',
+    'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+    'Přírůstek indexu spotřebitelských cen k předchozímu měsíci',
+    'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC
+LIMIT 10;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4)]
+  Query: SELECT "Měsíce", "Ukazatel", SUM("value") AS "Total_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+    'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+    'Přírůstek indexu spotřebitelských cen k předchozímu měsíci'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1.3), ('leden 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 3.0), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('září 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.4), ('září 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.2), ('únor 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('červen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.0), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.7), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8)]
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" ASC 
+LIMIT 10;
+  Result: [('březen 2025', 2.6), ('duben 2025', 2.5), ('květen 2024', 5.6), ('leden 2025', 2.5), ('listopad 2024', 2.7), ('prosinec 2024', 2.4), ('srpen 2024', 3.9), ('září 2024', 3.5), ('únor 2025', 2.5), ('červen 2024', 4.9)]
+  Query: SELECT "Měsíce", "Ukazatel", AVG("value") AS "Average_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+    'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční',
+    'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+    'Přírůstek indexu spotřebitelských cen k předchozímu měsíci',
+    'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC
+LIMIT 10;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4)]
+  Query: SELECT "Měsíce", "Ukazatel", SUM("value") AS "Total_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+    'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+    'Přírůstek indexu spotřebitelských cen k předchozímu měsíci'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1.3), ('leden 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 3.0), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('září 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.4), ('září 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.2), ('únor 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3), ('červen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.0), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.7), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8)]
+----------------------------------------------------------------------------
+Prompt: describe the inflation in last years.
+Result: Inflace v posledních letech vykazuje kolísání. V květnu 2024 dosáhl přírůstek průměrného ročního indexu spotřebitelských cen 5.6, což je nejvyšší hodnota v uvedeném období. Následně se inflace snížila, s hodnotami 4.9 v červnu 2024 a 4.4 v červenci 2024. V listopadu 2024 byla inflace 2.7 a v prosinci 2024 klesla na 2.4. V roce 2025 se inflace pohybovala mezi 2.5 a 2.6 v prvních čtyřech měsících. V dubnu 2025 došlo k poklesu o 0.1 v porovnání s předchozím měsícem. Celkově se inflace v posledních letech snižovala po počátečním vrcholu v květnu 2024.
+Queries and Results:
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" ASC;
+  Result: [('březen 2025', 2.6), ('duben 2025', 2.5), ('květen 2024', 5.6), ('leden 2025', 2.5), ('listopad 2024', 2.7), ('prosinec 2024', 2.4), ('srpen 2024', 3.9), ('září 2024', 3.5), ('únor 2025', 2.5), ('červen 2024', 4.9), ('červenec 2024', 4.4), ('říjen 2024', 3.1)]
+  Query: SELECT "Měsíce", "Ukazatel", AVG("value") AS "Average_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+      'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční',
+      'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+      'Přírůstek indexu spotřebitelských cen k předchozímu měsíci',
+      'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC
+LIMIT 10;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4)]
+  Query: SELECT "Měsíce", "Ukazatel", MAX("value") AS "Max_Value", MIN("value") AS "Min_Value", AVG("value") AS "Average_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+      'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční',
+      'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+      'Přírůstek indexu spotřebitelských cen k předchozímu měsíci',
+      'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1, 0.1, 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4, 154.4, 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7, 2.7, 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6, 2.6, 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1, -0.1, -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2, 154.2, 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8, 1.8, 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5, 2.5, 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05, 1e-05, 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4, 151.4, 151.4), ('květen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6, 2.6, 2.6), ('květen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 5.6, 5.6, 5.6), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1.3, 1.3, 1.3), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.0, 154.0, 154.0), ('leden 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8, 2.8, 2.8), ('leden 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5, 2.5, 2.5), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1, 0.1, 0.1), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4, 152.4, 152.4), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8, 2.8, 2.8), ('listopad 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.7, 2.7, 2.7), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3, -0.3, -0.3), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0, 152.0, 152.0), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 3.0, 3.0, 3.0), ('prosinec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.4, 2.4, 2.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3, 0.3, 0.3), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4, 152.4, 152.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2, 2.2, 2.2), ('srpen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.9, 3.9, 3.9), ('září 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.4, -0.4, -0.4), ('září 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.8, 151.8, 151.8), ('září 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6, 2.6, 2.6), ('září 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.5, 3.5, 3.5), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.2, 0.2, 0.2), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.3, 154.3, 154.3), ('únor 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7, 2.7, 2.7), ('únor 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5, 2.5, 2.5), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3, -0.3, -0.3), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.0, 151.0, 151.0), ('červen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.0, 2.0, 2.0), ('červen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.9, 4.9, 4.9), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.7, 0.7, 0.7), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0, 152.0, 152.0), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2, 2.2, 2.2), ('červenec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.4, 4.4, 4.4), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3, 0.3, 0.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.3, 152.3, 152.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8, 2.8, 2.8), ('říjen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.1, 3.1, 3.1)]
+  Query: SELECT "Měsíce", "value" 
+FROM WCEN01T03 
+WHERE "Území" = 'Česko' 
+  AND "Ukazatel" = 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční' 
+ORDER BY "Měsíce" ASC;
+  Result: [('březen 2025', 2.6), ('duben 2025', 2.5), ('květen 2024', 5.6), ('leden 2025', 2.5), ('listopad 2024', 2.7), ('prosinec 2024', 2.4), ('srpen 2024', 3.9), ('září 2024', 3.5), ('únor 2025', 2.5), ('červen 2024', 4.9), ('červenec 2024', 4.4), ('říjen 2024', 3.1)]
+  Query: SELECT "Měsíce", "Ukazatel", AVG("value") AS "Average_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+      'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční',
+      'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+      'Přírůstek indexu spotřebitelských cen k předchozímu měsíci',
+      'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC
+LIMIT 10;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4)]
+  Query: SELECT "Měsíce", "Ukazatel", MAX("value") AS "Max_Value", MIN("value") AS "Min_Value", AVG("value") AS "Average_Value"
+FROM WCEN01T03
+WHERE "Území" = 'Česko'
+  AND "Ukazatel" IN (
+      'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční',
+      'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku',
+      'Přírůstek indexu spotřebitelských cen k předchozímu měsíci',
+      'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)'
+  )
+GROUP BY "Měsíce", "Ukazatel"
+ORDER BY "Měsíce" ASC;
+  Result: [('březen 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1, 0.1, 0.1), ('březen 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.4, 154.4, 154.4), ('březen 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7, 2.7, 2.7), ('březen 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.6, 2.6, 2.6), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.1, -0.1, -0.1), ('duben 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.2, 154.2, 154.2), ('duben 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 1.8, 1.8, 1.8), ('duben 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5, 2.5, 2.5), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1e-05, 1e-05, 1e-05), ('květen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.4, 151.4, 151.4), ('květen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6, 2.6, 2.6), ('květen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 5.6, 5.6, 5.6), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 1.3, 1.3, 1.3), ('leden 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.0, 154.0, 154.0), ('leden 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8, 2.8, 2.8), ('leden 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5, 2.5, 2.5), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.1, 0.1, 0.1), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4, 152.4, 152.4), ('listopad 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8, 2.8, 2.8), ('listopad 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.7, 2.7, 2.7), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3, -0.3, -0.3), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0, 152.0, 152.0), ('prosinec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 3.0, 3.0, 3.0), ('prosinec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.4, 2.4, 2.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3, 0.3, 0.3), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.4, 152.4, 152.4), ('srpen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2, 2.2, 2.2), ('srpen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.9, 3.9, 3.9), ('září 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.4, -0.4, -0.4), ('září 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.8, 151.8, 151.8), ('září 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.6, 2.6, 2.6), ('září 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.5, 3.5, 3.5), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.2, 0.2, 0.2), ('únor 2025', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 154.3, 154.3, 154.3), ('únor 2025', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.7, 2.7, 2.7), ('únor 2025', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 2.5, 2.5, 2.5), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', -0.3, -0.3, -0.3), ('červen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 151.0, 151.0, 151.0), ('červen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.0, 2.0, 2.0), ('červen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.9, 4.9, 4.9), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.7, 0.7, 0.7), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.0, 152.0, 152.0), ('červenec 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.2, 2.2, 2.2), ('červenec 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 4.4, 4.4, 4.4), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k předchozímu měsíci', 0.3, 0.3, 0.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen k základnímu období (průměr roku 2015=100)', 152.3, 152.3, 152.3), ('říjen 2024', 'Přírůstek indexu spotřebitelských cen ke stejnému měsíci předchozího roku', 2.8, 2.8, 2.8), ('říjen 2024', 'Přírůstek průměrného ročního indexu spotřebitelských cen - měsíční', 3.1, 3.1, 3.1)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi je v praze?
+Result: V Praze je 1301432 obyvatel.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population_by_gender
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+  Query: SELECT "Rok sčítání", SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Rok sčítání"
+ORDER BY "Rok sčítání";
+  Result: [(2021, 2602864)]
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population_by_gender
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+  Query: SELECT "Rok sčítání", SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Rok sčítání"
+ORDER BY "Rok sčítání";
+  Result: [(2021, 2602864)]
+----------------------------------------------------------------------------
+Prompt: kolik je lidi v bne?
+Result: V Brně je 402739 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "SO ORP" = 'Brno' 
+  AND "Ukazatel" = 'Počet obyvatel' 
+  AND "Roky" = '2024' 
+  AND "Velikostní skupina obcí" = 'Celkem';
+  Result: 402739.0
+  Query: SELECT SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "SO ORP" = 'Brno' 
+  AND "Ukazatel" = 'Počet obyvatel' 
+  AND "Roky" = '2024' 
+  AND "Velikostní skupina obcí" = 'Celkem';
+  Result: 402739.0
+----------------------------------------------------------------------------
+Prompt: kolik je lidi v bnrne?
+Result: V Brně je 402739 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "Ukazatel" = 'Počet obyvatel' 
+  AND "SO ORP" = 'Brno' 
+  AND "Roky" = '2024';
+  Result: 402739.0
+  Query: SELECT "Velikostní skupina obcí", SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "Ukazatel" = 'Počet obyvatel' 
+  AND "SO ORP" = 'Brno' 
+  AND "Roky" = '2024' 
+GROUP BY "Velikostní skupina obcí" 
+ORDER BY population DESC 
+LIMIT 10;
+  Result: [('Celkem', 402739.0), ('méně než 200', None), ('500 až 999', None), ('50 000 až 99 999', None), ('5 000 až 9 9999', None), ('200 až 499', None), ('20 000 až 49 999', None), ('2 000 až 4 999', None), ('100 000 a více', None), ('10 000 až 19 999', None)]
+  Query: SELECT "SO ORP", SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "Ukazatel" = 'Počet obyvatel' 
+  AND "Roky" = '2024' 
+GROUP BY "SO ORP" 
+ORDER BY population DESC 
+LIMIT 10;
+  Result: [('Brno', 402739.0), ('Ostrava', 316155.0), ('Plzeň', 208461.0), ('Olomouc', 169437.0), ('České Budějovice', 168393.0), ('Černošice', 161920.0), ('Liberec', 150640.0), ('Hradec Králové', 150287.0), ('Pardubice', 135598.0), ('Kladno', 128902.0)]
+  Query: SELECT SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "Ukazatel" = 'Počet obyvatel' 
+  AND "SO ORP" = 'Brno' 
+  AND "Roky" = '2024';
+  Result: 402739.0
+  Query: SELECT "Velikostní skupina obcí", SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "Ukazatel" = 'Počet obyvatel' 
+  AND "SO ORP" = 'Brno' 
+  AND "Roky" = '2024' 
+GROUP BY "Velikostní skupina obcí" 
+ORDER BY population DESC 
+LIMIT 10;
+  Result: [('Celkem', 402739.0), ('méně než 200', None), ('500 až 999', None), ('50 000 až 99 999', None), ('5 000 až 9 9999', None), ('200 až 499', None), ('20 000 až 49 999', None), ('2 000 až 4 999', None), ('100 000 a více', None), ('10 000 až 19 999', None)]
+  Query: SELECT "SO ORP", SUM(value) AS population 
+FROM RSO02A01ORPT1 
+WHERE "Ukazatel" = 'Počet obyvatel' 
+  AND "Roky" = '2024' 
+GROUP BY "SO ORP" 
+ORDER BY population DESC 
+LIMIT 10;
+  Result: [('Brno', 402739.0), ('Ostrava', 316155.0), ('Plzeň', 208461.0), ('Olomouc', 169437.0), ('České Budějovice', 168393.0), ('Černošice', 161920.0), ('Liberec', 150640.0), ('Hradec Králové', 150287.0), ('Pardubice', 135598.0), ('Kladno', 128902.0)]
+----------------------------------------------------------------------------
+Prompt: kolik je lidi v ceskych mestech>?
+Result: Celkový počet obyvatel v českých městech je 10524167.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" != 'Česká republika';
+  Result: 10524167
+  Query: SELECT "Velikostní skupina obce", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" != 'Česká republika'
+GROUP BY "Velikostní skupina obce"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 2366802), ('20000 až 49999 obyvatel', 1296708), ('2000 až 4999 obyvatel', 1291906), ('1000 až 1999 obyvatel', 1082202), ('500 až 999 obyvatel', 961206), ('10000 až 19999 obyvatel', 951222), ('5000 až 9999 obyvatel', 943034), ('50000 až 99999 obyvatel', 798405), ('200 - 499 obyvatel', 654469), ('do 199 obyvatel', 178213)]
+  Query: SELECT "Území", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" NOT IN ('Česká republika')
+GROUP BY "Území"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('Středočeský kraj', 1415463), ('Hlavní město Praha', 1301432), ('Jihomoravský kraj', 1197651), ('Moravskoslezský kraj', 1162841), ('Ústecký kraj', 789098), ('Jihočeský kraj', 631803), ('Olomoucký kraj', 619788), ('Plzeňský kraj', 581436), ('Zlínský kraj', 564331), ('Královéhradecký kraj', 538303)]
+  Query: SELECT SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" != 'Česká republika';
+  Result: 10524167
+  Query: SELECT "Velikostní skupina obce", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" != 'Česká republika'
+GROUP BY "Velikostní skupina obce"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 2366802), ('20000 až 49999 obyvatel', 1296708), ('2000 až 4999 obyvatel', 1291906), ('1000 až 1999 obyvatel', 1082202), ('500 až 999 obyvatel', 961206), ('10000 až 19999 obyvatel', 951222), ('5000 až 9999 obyvatel', 943034), ('50000 až 99999 obyvatel', 798405), ('200 - 499 obyvatel', 654469), ('do 199 obyvatel', 178213)]
+  Query: SELECT "Území", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" NOT IN ('Česká republika')
+GROUP BY "Území"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('Středočeský kraj', 1415463), ('Hlavní město Praha', 1301432), ('Jihomoravský kraj', 1197651), ('Moravskoslezský kraj', 1162841), ('Ústecký kraj', 789098), ('Jihočeský kraj', 631803), ('Olomoucký kraj', 619788), ('Plzeňský kraj', 581436), ('Zlínský kraj', 564331), ('Královéhradecký kraj', 538303)]
+----------------------------------------------------------------------------
+Prompt: kolik je lidi v ceskych mestech>? roskouskuj podle mest.
+Result: V českých městech je následující počet obyvatel podle krajů:
+
+1. Středočeský kraj: 1415463
+2. Hlavní město Praha: 1301432
+3. Jihomoravský kraj: 1197651
+4. Moravskoslezský kraj: 1162841
+5. Ústecký kraj: 789098
+6. Jihočeský kraj: 631803
+7. Olomoucký kraj: 619788
+8. Plzeňský kraj: 581436
+9. Zlínský kraj: 564331
+10. Královéhradecký kraj: 538303
+Queries and Results:
+  Query: SELECT "Území", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" NOT LIKE 'Česká republika'
+GROUP BY "Území"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('Středočeský kraj', 1415463), ('Hlavní město Praha', 1301432), ('Jihomoravský kraj', 1197651), ('Moravskoslezský kraj', 1162841), ('Ústecký kraj', 789098), ('Jihočeský kraj', 631803), ('Olomoucký kraj', 619788), ('Plzeňský kraj', 581436), ('Zlínský kraj', 564331), ('Královéhradecký kraj', 538303)]
+  Query: SELECT "Velikostní skupina obce", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+GROUP BY "Velikostní skupina obce"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 4733604), ('20000 až 49999 obyvatel', 2593416), ('2000 až 4999 obyvatel', 2583812), ('1000 až 1999 obyvatel', 2164404), ('500 až 999 obyvatel', 1922412), ('10000 až 19999 obyvatel', 1902444), ('5000 až 9999 obyvatel', 1886068), ('50000 až 99999 obyvatel', 1596810), ('200 - 499 obyvatel', 1308938), ('do 199 obyvatel', 356426)]
+  Query: SELECT "Území", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Velikostní skupina obce" IN ('10000 až 19999 obyvatel', '20000 až 49999 obyvatel', '50000 až 99999 obyvatel', '100000 a více obyvatel')
+GROUP BY "Území"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('Česká republika', 5413137), ('Hlavní město Praha', 1301432), ('Moravskoslezský kraj', 717389), ('Jihomoravský kraj', 565629), ('Ústecký kraj', 486138), ('Středočeský kraj', 448052), ('Olomoucký kraj', 281392), ('Plzeňský kraj', 243275), ('Zlínský kraj', 234892), ('Jihočeský kraj', 223697)]
+  Query: SELECT "Území", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Území" NOT LIKE 'Česká republika'
+GROUP BY "Území"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('Středočeský kraj', 1415463), ('Hlavní město Praha', 1301432), ('Jihomoravský kraj', 1197651), ('Moravskoslezský kraj', 1162841), ('Ústecký kraj', 789098), ('Jihočeský kraj', 631803), ('Olomoucký kraj', 619788), ('Plzeňský kraj', 581436), ('Zlínský kraj', 564331), ('Královéhradecký kraj', 538303)]
+  Query: SELECT "Velikostní skupina obce", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+GROUP BY "Velikostní skupina obce"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('100000 a více obyvatel', 4733604), ('20000 až 49999 obyvatel', 2593416), ('2000 až 4999 obyvatel', 2583812), ('1000 až 1999 obyvatel', 2164404), ('500 až 999 obyvatel', 1922412), ('10000 až 19999 obyvatel', 1902444), ('5000 až 9999 obyvatel', 1886068), ('50000 až 99999 obyvatel', 1596810), ('200 - 499 obyvatel', 1308938), ('do 199 obyvatel', 356426)]
+  Query: SELECT "Území", SUM(value) AS total_population
+FROM SLD002T01
+WHERE "Rok sčítání" = '2021'
+  AND "Ukazatel" = 'Počet obyvatel (obvyklý pobyt)'
+  AND "Pohlaví" = 'Celkem'
+  AND "Velikostní skupina obce" IN ('10000 až 19999 obyvatel', '20000 až 49999 obyvatel', '50000 až 99999 obyvatel', '100000 a více obyvatel')
+GROUP BY "Území"
+ORDER BY total_population DESC
+LIMIT 10;
+  Result: [('Česká republika', 5413137), ('Hlavní město Praha', 1301432), ('Moravskoslezský kraj', 717389), ('Jihomoravský kraj', 565629), ('Ústecký kraj', 486138), ('Středočeský kraj', 448052), ('Olomoucký kraj', 281392), ('Plzeňský kraj', 243275), ('Zlínský kraj', 234892), ('Jihočeský kraj', 223697)]
+----------------------------------------------------------------------------
+Prompt: kolik je lidi v praze?
+Result: V Praze je 1301432 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+----------------------------------------------------------------------------
+Prompt: kolik je lidi v brne?
+Result: V Brně je celkem 13619 lidí evidovaných jako uchazeči o zaměstnání.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_people
+FROM NEZ01T1
+WHERE "ČR, kraje, okresy" = 'Brno-město'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP - celkem'
+  AND "Roky" = 2023;
+  Result: 13619.0
+  Query: SELECT SUM(value) AS total_accessible_unemployed
+FROM NEZ01T1
+WHERE "ČR, kraje, okresy" = 'Brno-město'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP - dosažitelní'
+  AND "Roky" = 2023;
+  Result: 12486.0
+  Query: SELECT SUM(value) AS total_unemployed_with_disabilities
+FROM NEZ01T1
+WHERE "ČR, kraje, okresy" = 'Brno-město'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP se zdravotním postižením'
+  AND "Roky" = 2023;
+  Result: 1417.0
+  Query: SELECT SUM(value) AS total_people
+FROM NEZ01T1
+WHERE "ČR, kraje, okresy" = 'Brno-město'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP - celkem'
+  AND "Roky" = 2023;
+  Result: 13619.0
+  Query: SELECT SUM(value) AS total_accessible_unemployed
+FROM NEZ01T1
+WHERE "ČR, kraje, okresy" = 'Brno-město'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP - dosažitelní'
+  AND "Roky" = 2023;
+  Result: 12486.0
+  Query: SELECT SUM(value) AS total_unemployed_with_disabilities
+FROM NEZ01T1
+WHERE "ČR, kraje, okresy" = 'Brno-město'
+  AND "Ukazatel" = 'Uchazeči o zaměstnání v evidenci ÚP se zdravotním postižením'
+  AND "Roky" = 2023;
+  Result: 1417.0
+----------------------------------------------------------------------------
+Prompt: kolik je lidi v praze?
+Result: V Praze je 1301432 lidí.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+  Query: SELECT SUM(value) AS total_population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+  AND "Pohlaví" = 'celkem';
+  Result: 1301432
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM SLD0100M1
+WHERE "Rok sčítání" = 2021
+  AND "Území podle okresů" = 'Praha'
+  AND "Ukazatel" = 'Obyvatelstvo'
+GROUP BY "Pohlaví";
+  Result: [('celkem', 1301432), ('muž', 633449), ('žena', 667983)]
+----------------------------------------------------------------------------

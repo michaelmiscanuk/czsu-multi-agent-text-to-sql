@@ -42,10 +42,11 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   pendingTableSearch,
   setPendingTableSearch,
 }) => {
-  const [suggestions, setSuggestions] = React.useState<string[]>([]);
+  const [suggestions, setSuggestions] = React.useState<{ selection_code: string, short_description: string }[]>([]);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [tableLoading, setTableLoading] = React.useState(false);
+  const [allTables, setAllTables] = React.useState<{ selection_code: string, short_description: string }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
 
@@ -65,30 +66,46 @@ const DataTableView: React.FC<DataTableViewProps> = ({
     }
   }, [search, selectedTable, setSelectedTable]);
 
-  // Fetch table suggestions as user types
-  useEffect(() => {
-    if (search.trim() === '') {
-      setSuggestions([]);
-      return;
-    }
-    setLoading(true);
+  // Fetch all tables on mount (for combo box)
+  React.useEffect(() => {
     const getFetchOptions = () =>
       session?.id_token
         ? { headers: { Authorization: `Bearer ${session.id_token}` } }
         : undefined;
-    fetch(`${API_BASE}/data-tables?q=${encodeURIComponent(search)}`, getFetchOptions())
+    fetch(`${API_BASE}/data-tables`, getFetchOptions())
       .then(res => res.ok ? res.json() : Promise.reject(res))
-      .then(data => {
-        const normSearch = removeDiacritics(search.toLowerCase());
-        const filteredTables = (data.tables || []).filter((table: string) =>
-          removeDiacritics(table.toLowerCase()).startsWith(normSearch)
-        );
-        const sortedTables = filteredTables.slice().sort((a: string, b: string) => a.localeCompare(b, 'cs', { sensitivity: 'base' }));
-        setSuggestions(sortedTables);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [search, session?.id_token]);
+      .then(data => setAllTables(data.tables || []))
+      .catch(() => setAllTables([]));
+  }, [session?.id_token]);
+
+  // Fetch table suggestions as user types or when search is empty
+  useEffect(() => {
+    if (search.trim() === '') {
+      setSuggestions(allTables);
+      return;
+    }
+    setLoading(true);
+    let filteredTables: { selection_code: string, short_description: string }[];
+    let normWords: string[];
+    if (search.startsWith('*')) {
+      // Only search in selection_code
+      normWords = removeDiacritics(search.slice(1).toLowerCase()).split(/\s+/).filter(Boolean) as string[];
+      filteredTables = allTables.filter(table => {
+        const haystack = removeDiacritics(table.selection_code.toLowerCase());
+        return normWords.every((word: string) => haystack.includes(word));
+      });
+    } else {
+      // Search in both selection_code and short_description
+      normWords = removeDiacritics(search.toLowerCase()).split(/\s+/).filter(Boolean) as string[];
+      filteredTables = allTables.filter(table => {
+        const haystack = removeDiacritics((table.selection_code + ' ' + (table.short_description || '')).toLowerCase());
+        return normWords.every((word: string) => haystack.includes(word));
+      });
+    }
+    const sortedTables = filteredTables.slice().sort((a: { selection_code: string, short_description: string }, b: { selection_code: string, short_description: string }) => a.selection_code.localeCompare(b.selection_code, 'cs', { sensitivity: 'base' }));
+    setSuggestions(sortedTables);
+    setLoading(false);
+  }, [search, allTables]);
 
   // Fetch table data when a table is selected
   useEffect(() => {
@@ -126,10 +143,10 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   // Auto-select and load the table if pendingTableSearch matches a suggestion exactly
   React.useEffect(() => {
     if (pendingTableSearch && suggestions.length > 0) {
-      const match = suggestions.find(s => s === pendingTableSearch);
+      const match = suggestions.find(s => s.selection_code === pendingTableSearch);
       if (match) {
-        setSelectedTable(match);
-        setSearch(match);
+        setSelectedTable(match.selection_code);
+        setSearch(match.selection_code);
         setShowSuggestions(false);
         if (setPendingTableSearch) setPendingTableSearch(null);
       }
@@ -209,53 +226,66 @@ const DataTableView: React.FC<DataTableViewProps> = ({
 
   return (
     <div className="flex flex-col h-full p-6">
-      <div className="mb-4 relative flex items-center">
-        <input
-          ref={inputRef}
-          className="border border-gray-300 rounded px-3 py-2 w-96"
-          placeholder="Search for a table..."
-          aria-label="Search for a table"
-          value={search}
-          onChange={e => {
-            const value = e.target.value;
-            setSearch(value);
-            setShowSuggestions(true);
-            if (value.trim() === '') {
-              setSelectedTable(null);
-            }
-          }}
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={handleBlur}
-        />
-        {(selectedTable || Object.values(columnFilters).some(Boolean) || selectedColumn) && (
-          <button
-            className="ml-2 text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
-            title="Reset all"
-            aria-label="Reset all filters and selection"
-            tabIndex={0}
-            onClick={() => {
-              setSearch('');
-              setSelectedTable(null);
-              setColumns([]);
-              setRows([]);
-              setSelectedColumn(null);
-              setColumnFilters({});
-              if (setPendingTableSearch) setPendingTableSearch(null);
+      <div className="mb-4 flex flex-col relative">
+        <div className="flex items-center w-full">
+          <input
+            ref={inputRef}
+            className="border border-gray-300 rounded px-3 py-2 w-112 mr-2 shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+            placeholder="Search for a table..."
+            aria-label="Search for a table"
+            value={search}
+            onChange={e => {
+              const value = e.target.value;
+              setSearch(value);
+              setShowSuggestions(true);
+              if (value.trim() === '') {
+                setSuggestions(allTables);
+                setSelectedTable(null);
+              }
             }}
-            style={{ lineHeight: 1 }}
-          >
-            ×
-          </button>
-        )}
+            onFocus={() => {
+              setShowSuggestions(true);
+              if (!search.trim()) {
+                setSuggestions(allTables);
+              }
+            }}
+            onBlur={handleBlur}
+          />
+          {search && (
+            <button
+              className="text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none ml-2"
+              title="Clear filter"
+              aria-label="Clear filter"
+              tabIndex={0}
+              onClick={() => {
+                setSearch('');
+                setSelectedTable(null);
+                setSuggestions(allTables);
+              }}
+              style={{ lineHeight: 1 }}
+            >
+              ×
+            </button>
+          )}
+        </div>
+        <div className="flex items-center mt-2 space-x-4">
+          <span className="text-gray-400 text-[10px] block" style={{lineHeight: 1}} title="Starting with * searches only for codes.">
+            Starting with * searches only for codes.
+          </span>
+          <span className="text-gray-500 text-xs">{allTables.length} tables</span>
+        </div>
         {showSuggestions && suggestions.length > 0 && (
-          <ul className="absolute left-0 top-full z-10 bg-white border border-gray-200 rounded w-96 mt-1 max-h-60 overflow-auto shadow-lg">
+          <ul className="absolute left-0 top-full z-10 bg-white border border-gray-200 rounded w-112 mt-1 max-h-60 overflow-auto shadow-lg">
             {suggestions.map(table => (
               <li
-                key={table}
+                key={table.selection_code}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-                onMouseDown={() => handleSuggestionClick(table)}
+                onMouseDown={() => handleSuggestionClick(table.selection_code)}
               >
-                {table}
+                <span className="font-mono text-xs text-blue-900">{table.selection_code}</span>
+                {table.short_description && (
+                  <span className="ml-2 text-gray-700">- {table.short_description}</span>
+                )}
               </li>
             ))}
           </ul>
@@ -268,18 +298,6 @@ const DataTableView: React.FC<DataTableViewProps> = ({
         </div>
       )}
       {selectedTable && columns.length > 0 && (
-        <div className="mb-4 flex items-center space-x-2">
-          <button
-            className="text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
-            title="Clear all filters"
-            onClick={handleClearFilters}
-            style={{ lineHeight: 1 }}
-          >
-            × Clear all filters
-          </button>
-        </div>
-      )}
-      {selectedTable && (
         <div className="flex-1 overflow-auto">
           {tableLoading ? (
             <div className="text-center py-8">Loading table...</div>
