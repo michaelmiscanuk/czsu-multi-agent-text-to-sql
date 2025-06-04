@@ -110,6 +110,7 @@ async def main(prompt=None):
     # Create initial state with the user's prompt
     initial_state: DataAnalysisState = {
         "prompt": prompt,
+        "rewritten_prompt": None,
         "messages": [],
         "iteration": 0,
         "queries_and_results": [],

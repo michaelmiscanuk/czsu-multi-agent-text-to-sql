@@ -33,7 +33,8 @@ from .utils.nodes import (
     MAX_ITERATIONS,
     retrieve_similar_selections_node,
     relevant_selections_node,
-    debug_print
+    debug_print,
+    rewrite_query_node
 )
 
 # Load environment variables
@@ -66,7 +67,8 @@ def create_graph():
     #--------------------------------------------------------------------------
     # Add nodes - each handling a specific step in the process
     #--------------------------------------------------------------------------
-    # Add new retrieval and filtering nodes
+    # Add the new rewrite_query node as the first node
+    graph.add_node("rewrite_query", rewrite_query_node)
     graph.add_node("retrieve_similar_selections", retrieve_similar_selections_node)
     graph.add_node("relevant_selections", relevant_selections_node)
     
@@ -91,8 +93,9 @@ def create_graph():
     #--------------------------------------------------------------------------
     # Define the graph execution path
     #--------------------------------------------------------------------------
-    # New start: prompt -> retrieve -> relevant
-    graph.add_edge(START, "retrieve_similar_selections")
+    # Start: prompt -> rewrite_query -> retrieve -> relevant
+    graph.add_edge(START, "rewrite_query")
+    graph.add_edge("rewrite_query", "retrieve_similar_selections")
     graph.add_edge("retrieve_similar_selections", "relevant_selections")
 
     # Conditional edge from relevant_selections

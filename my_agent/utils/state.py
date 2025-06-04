@@ -30,6 +30,7 @@ class DataAnalysisState(TypedDict):
     - reflection_decision: Stores the last decision from the reflection node ("improve" or "answer")
     """
     prompt: str  # User query to analyze
+    rewritten_prompt: str  # Rewritten user query for downstream nodes
     messages: Annotated[List[BaseMessage], add]  # Conversation history with add reducer
     iteration: int  # Iteration counter for workflow loop prevention
     queries_and_results: Annotated[List[Tuple[str, str]], add]  # Collection of executed queries and their results with add reducer

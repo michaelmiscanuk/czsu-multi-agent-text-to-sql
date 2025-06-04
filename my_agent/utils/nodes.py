@@ -210,7 +210,7 @@ Do NOT wrap it in code fences and do NOT add explanations.
     
     schema = await load_schema(state)
     result = await llm.ainvoke(prompt.format_messages(
-        prompt=state["prompt"],
+        prompt=state.get("rewritten_prompt") or state["prompt"],
         schema=json.dumps(schema, ensure_ascii=False, indent=2),
         messages=messages_text
     ))
@@ -247,6 +247,7 @@ Do NOT wrap it in code fences and do NOT add explanations.
     # Return updated state without routing decision
     return {
         "prompt": state["prompt"],
+        "rewritten_prompt": state.get("rewritten_prompt"),
         "messages": new_messages,
         "iteration": state["iteration"],
         "queries_and_results": new_queries
@@ -320,7 +321,7 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
     
     result = await llm.ainvoke(
         prompt.format_messages(
-            question=state["prompt"],
+            question=state.get("rewritten_prompt") or state["prompt"],
             messages=messages_text,
             results=queries_results_text
         )
@@ -382,7 +383,7 @@ Bad: "The query shows X is 1,234,567"
 """
     
     # formatted_prompt = f"Question: {state['prompt']}\n\nQueries and Results:\n{queries_results_text}\n\nPlease answer the question based on the queries and results."
-    formatted_prompt = f"Question: {state['prompt']}\n\nContext: \n{state['queries_and_results']}\n\nPlease answer the question based on the queries and results."
+    formatted_prompt = f"Question: {state.get('rewritten_prompt') or state['prompt']}\n\nContext: \n{state['queries_and_results']}\n\nPlease answer the question based on the queries and results."
     
     chain = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -448,8 +449,8 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
 
 async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Retrieve most similar selection(s) from ChromaDB based on user prompt using Cohere rerank hybrid search. Returns selection codes and Cohere rerank scores."""
-    debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node (rerank hybrid)")
-    query = state["prompt"]
+    debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node (Cohere rerank)")
+    query = state.get("rewritten_prompt") or state["prompt"]
     n_results = state.get("n_results", 10)  # Allow override, default to 10
 
     # Check if ChromaDB directory exists
@@ -471,8 +472,7 @@ async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnal
             selection_code = doc.metadata.get("selection") if doc.metadata else None
             score = res.relevance_score
             most_similar.append((selection_code, score))
-        debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections (rerank hybrid): {most_similar}")
-        debug_print(f"{RETRIEVE_NODE_ID}: DEBUG most_similar_selections: {most_similar}")
+        debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections: {most_similar}")
         return {"most_similar_selections": most_similar}
     except Exception as e:
         debug_print(f"{RETRIEVE_NODE_ID}: Error in rerank hybrid search: {e}")
@@ -493,3 +493,43 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
             selection_code = top_selection
     debug_print(f"{RELEVANT_NODE_ID}: selection_with_possible_answer: {selection_code}")
     return {"selection_with_possible_answer": selection_code}
+
+async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Rewrite the user's prompt using an LLM for improved clarity or structure.
+    
+    This node takes the original user prompt and rewrites it according to LLM instructions.
+    The rewritten prompt is stored in the state as 'rewritten_prompt'.
+    """
+    debug_print("REWRITE: Enter rewrite_query_node")
+    
+    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
+    
+    # You can extend this prompt as needed for your rewriting instructions
+    system_prompt = """
+You are an expert in reformulation of questions to fit best for semantic search in a vector database. 
+Your task is to rewrite the user's question to make it clearer, more specific, and well-structured.
+Mainly to make it fit for our table description in a vector database, so that based on this query, corrent table will be found using vector database and semantic search, see example below.
+In my descriptions we have a basic table description about what can be found in a table, then it writes out all available columns and distinct values there. 
+Do also this:
+- Clarify ambiguous terms if possible.
+- Remove unnecessary filler words.
+- Make the question as precise as possible, but do not add information not present in the original prompt.
+MOST IMPORTANT:
+- Make it structured, so mentions what are the dimensions, what are the metrics, what is the time period, what is the geography, etc.
+Return only the rewritten question, with no extra commentary or formatting.
+"""
+    
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt),
+        ("human", "Original question: {prompt}")
+    ])
+    
+    result = await llm.ainvoke(
+        prompt.format_messages(prompt=state["prompt"])
+    )
+    
+    rewritten_prompt = result.content.strip()
+    debug_print(f"REWRITE: Rewritten prompt: {rewritten_prompt}")
+    
+    # Store the rewritten prompt in the state
+    return {"rewritten_prompt": rewritten_prompt, "messages": [result]}

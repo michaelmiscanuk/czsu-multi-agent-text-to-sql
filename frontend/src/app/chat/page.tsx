@@ -40,7 +40,7 @@ const INITIAL_MESSAGE = [
 ];
 
 export default function ChatPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const userEmail = session?.user?.email || null;
   if (!userEmail) {
     return <div>Loading...</div>;
@@ -213,7 +213,7 @@ export default function ChatPage() {
     }
     // Call backend for AI response
     try {
-      const freshSession = await getSession();
+      let freshSession = await getSession();
       if (!freshSession?.id_token) {
         signOut();
         setIsLoading(false);
@@ -224,15 +224,34 @@ export default function ChatPage() {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${freshSession.id_token}`
       };
-      const response = await fetch(API_URL, {
+      let response = await fetch(API_URL, {
         method: 'POST',
         headers,
         body: JSON.stringify({ prompt: msg.content })
       });
+      // If 401, try to force session refresh and retry once
       if (response.status === 401) {
-        signOut();
-        setIsLoading(false);
-        return;
+        // Force session update (refresh token)
+        const refreshedSession = await update();
+        if (!refreshedSession?.id_token) {
+          signOut();
+          setIsLoading(false);
+          return;
+        }
+        const retryHeaders = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${refreshedSession.id_token}`
+        };
+        response = await fetch(API_URL, {
+          method: 'POST',
+          headers: retryHeaders,
+          body: JSON.stringify({ prompt: msg.content })
+        });
+        if (response.status === 401) {
+          signOut();
+          setIsLoading(false);
+          return;
+        }
       }
       if (!response.ok) {
         throw new Error('Server error');

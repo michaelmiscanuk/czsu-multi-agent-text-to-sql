@@ -15151,3 +15151,253 @@ FROM FIN03BANKDUK
 WHERE "Území" = 'Česko';
   Result: Bankovní peněžní instituce
 ----------------------------------------------------------------------------
+Prompt: kolik zije obyvatel v praze?
+Result: V Praze žije 1392307 obyvatel v roce 2025.
+Queries and Results:
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025';
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky BETWEEN '2025' AND '2030';
+  Result: [(2025, 1392307.19438828), (2026, 1388069.67428263), (2027, 1383896.12342643), (2028, 1379800.81254149), (2029, 1389926.5403475), (2030, 1400357.20201328)]
+  Query: SELECT Roky, Ukazatel, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel IN ('Počet obyvatel ve věku 0 - 14 let', 'Počet obyvatel ve věku 15 - 64 let', 'Počet obyvatel ve věku 65 a více let') 
+  AND Roky BETWEEN '2025' AND '2030';
+  Result: [(2025, 'Počet obyvatel ve věku 0 - 14 let', 213421.17585477), (2026, 'Počet obyvatel ve věku 0 - 14 let', 206182.369407128), (2027, 'Počet obyvatel ve věku 0 - 14 let', 200097.592887484), (2028, 'Počet obyvatel ve věku 0 - 14 let', 194228.865962266), (2029, 'Počet obyvatel ve věku 0 - 14 let', 191625.68231121), (2030, 'Počet obyvatel ve věku 0 - 14 let', 188994.922203819), (2025, 'Počet obyvatel ve věku 15 - 64 let', 921784.648162841), (2026, 'Počet obyvatel ve věku 15 - 64 let', 924935.861973017), (2027, 'Počet obyvatel ve věku 15 - 64 let', 926890.446500779), (2028, 'Počet obyvatel ve věku 15 - 64 let', 928398.859172085), (2029, 'Počet obyvatel ve věku 15 - 64 let', 938423.598157008), (2030, 'Počet obyvatel ve věku 15 - 64 let', 948433.554694471), (2025, 'Počet obyvatel ve věku 65 a více let', 257101.370370666), (2026, 'Počet obyvatel ve věku 65 a více let', 256951.442902488), (2027, 'Počet obyvatel ve věku 65 a více let', 256908.084038171), (2028, 'Počet obyvatel ve věku 65 a více let', 257173.087407136), (2029, 'Počet obyvatel ve věku 65 a více let', 259877.259879283), (2030, 'Počet obyvatel ve věku 65 a více let', 262928.725114993)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025';
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky BETWEEN '2025' AND '2030';
+  Result: [(2025, 1392307.19438828), (2026, 1388069.67428263), (2027, 1383896.12342643), (2028, 1379800.81254149), (2029, 1389926.5403475), (2030, 1400357.20201328)]
+  Query: SELECT Roky, Ukazatel, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel IN ('Počet obyvatel ve věku 0 - 14 let', 'Počet obyvatel ve věku 15 - 64 let', 'Počet obyvatel ve věku 65 a více let') 
+  AND Roky BETWEEN '2025' AND '2030';
+  Result: [(2025, 'Počet obyvatel ve věku 0 - 14 let', 213421.17585477), (2026, 'Počet obyvatel ve věku 0 - 14 let', 206182.369407128), (2027, 'Počet obyvatel ve věku 0 - 14 let', 200097.592887484), (2028, 'Počet obyvatel ve věku 0 - 14 let', 194228.865962266), (2029, 'Počet obyvatel ve věku 0 - 14 let', 191625.68231121), (2030, 'Počet obyvatel ve věku 0 - 14 let', 188994.922203819), (2025, 'Počet obyvatel ve věku 15 - 64 let', 921784.648162841), (2026, 'Počet obyvatel ve věku 15 - 64 let', 924935.861973017), (2027, 'Počet obyvatel ve věku 15 - 64 let', 926890.446500779), (2028, 'Počet obyvatel ve věku 15 - 64 let', 928398.859172085), (2029, 'Počet obyvatel ve věku 15 - 64 let', 938423.598157008), (2030, 'Počet obyvatel ve věku 15 - 64 let', 948433.554694471), (2025, 'Počet obyvatel ve věku 65 a více let', 257101.370370666), (2026, 'Počet obyvatel ve věku 65 a více let', 256951.442902488), (2027, 'Počet obyvatel ve věku 65 a více let', 256908.084038171), (2028, 'Počet obyvatel ve věku 65 a více let', 257173.087407136), (2029, 'Počet obyvatel ve věku 65 a více let', 259877.259879283), (2030, 'Počet obyvatel ve věku 65 a více let', 262928.725114993)]
+----------------------------------------------------------------------------
+Prompt: jaka byla v cechach inflace?
+Result: Nemám k dispozici žádné údaje o inflaci v Čechách.
+Queries and Results:
+  Query: SELECT Roky, value 
+FROM CEN0101HT01 
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: Error: Query error: no such table: CEN0101HT01
+  Query: PRAGMA table_info(CEN0101HT01);
+  Result: No results found
+  Query: SELECT name FROM sqlite_master WHERE type='table';
+  Result: [('CEN0101CT01',), ('CEN0101CT02',), ('CEN0101LT01',), ('CEN01MT01',), ('CEN0201AT01',), ('CEN0201AT02',), ('CEN0201AT03',), ('CEN0201AT04',), ('CEN0201BT01',), ('CEN0201BT02',), ('CEN0201BT03',), ('CEN0201BT04A',), ('CEN0201CT01',), ('CEN0201ET01',), ('CEN0202AT01',), ('CEN0204AT01',), ('CEN0204AT02',), ('CEN0204AT03',), ('CEN0204AT04A',), ('CEN0204BT01',), ('CEN0204DT05',), ('CEN0301T01',), ('CEN0301T02',), ('CEN0301T03',), ('CEN0301T04',), ('CEN0301T05',), ('CEN0305T01',), ('CEN0401T01',), ('CEN0401T02',), ('CEN0402T01',), ('CEN0402T02',), ('CEN0402T03',), ('CEN0402T03A',), ('CEN0403T01',), ('CENPHMTT01',), ('CIZ01D',), ('CIZ03',), ('CRU01RDMOT1',), ('CRU01RDMOT2',), ('CRU01RDMOT3',), ('CRU01RDMOT4',), ('CRU01RDMOT5',), ('CRU01RDMOT6',), ('CRU01ROBCET1',), ('CRU01ROBCET2',), ('CRU01ROBCET3',), ('CRU01ROBCET4',), ('CRU01ROBCET5',), ('CRU01ROBCET6',), ('CRU01RT1',), ('CRU01RT2',), ('CRU01RT3',), ('CRU01RT4',), ('CRU01T1',), ('CRU02KQT1',), ('CRU02KQT2',), ('CRU02LUZPOK1',), ('CRU02LUZPOK2',), ('CRU02LUZPOK3',), ('CRU02MHOTT1',), ('CRU02MHOTT2',), ('CRU02MT1',), ('CRU02MT2',), ('CRU02QBULL',), ('CRU02QDMOT1',), ('CRU02QDMOT2',), ('CRU02QDMOT3',), ('CRU02QDMOT4',), ('CRU02QT1',), ('CRU02QT2',), ('CRU02QT3',), ('CRU02RDMOT1',), ('CRU02RDMOT2',), ('CRU02RDMOT3',), ('CRU02RDMOT4',), ('CRU02RDMOT5',), ('CRU02RDMOT6',), ('CRU02RDMOT7',), ('CRU02RDMOT8',), ('CRU02ROBCET1',), ('CRU02ROBCET2',), ('CRU02ROBCET3',), ('CRU02ROBCET4',), ('CRU02ROBCET5',), ('CRU02ROBCET6',), ('CRU02ROBCET7',), ('CRU02RT1',), ('CRU02RT2',), ('CRU02RT3',), ('CRU02RT4',), ('CRU02RT5',), ('CRU02RT6',), ('CRU02T1',), ('CRU03T1',), ('CRU03T2',), ('CRU03T3',), ('CRU03T4',), ('CRU04T1',), ('CRU04T2',), ('CRU04T3',), ('CRU04T4',), ('CRU04T5',), ('CRU05T1',), ('CRU05bT1',), ('CRU06AT1',), ('CRU06AT2',), ('CRU06AT3',), ('CRU06AT4',), ('CRU06AT5',), ('CRU06AT6',), ('CRU06AT7',), ('CRU06AT8',), ('CRU06AT9',), ('CRU06T1',), ('CRU06T2',), ('CRUHVD1T1',), ('CRUHVD1T2',), ('CRUHVD1T3',), ('CRUHVD2',), ('CRUHVD3',), ('ENE01WENET1',), ('ENE02T3',), ('ENE02T4',), ('ENE02T5',), ('EP801',), ('EP901T1',), ('FIN01A',), ('FIN01T1',), ('FIN01T2',), ('FIN01T3',), ('FIN01T4',), ('FIN01T5',), ('FIN03BANKAKT',), ('FIN03BANKDHM',), ('FIN03BANKDNM',), ('FIN03BANKDUK',), ('FIN03BANKFA',), ('FIN03BANKNAK',), ('FIN03BANKPAS',), ('FIN03BANKVYN',), ('FIN03BANKZAM',), ('FIN03CNBNTU',), ('FIN03CNBTRP',), ('FIN03CNBTUN',), ('FIN03CNBTUZ',), ('FIN03ISIFAKT',), ('FIN03ISIFDHM',), ('FIN03ISIFDNM',), ('FIN03ISIFDUK',), ('FIN03ISIFFA',), ('FIN03ISIFNAK',), ('FIN03ISIFPAS',), ('FIN03ISIFVYN',), ('FIN03ISIFZAM',), ('FIN03LEASAKT',), ('FIN03LEASDHM',), ('FIN03LEASDNM',), ('FIN03LEASFA',), ('FIN03LEASNAK',), ('FIN03LEASPAS',), ('FIN03LEASVYN',), ('FIN03LEASZAM',), ('FIN03NEBANKAKT',), ('FIN03NEBANKDHM',), ('FIN03NEBANKDNM',), ('FIN03NEBANKDUK',), ('FIN03NEBANKFA',), ('FIN03NEBANKNAK',), ('FIN03NEBANKPAS',), ('FIN03NEBANKVYN',), ('FIN03NEBANKZAM',), ('FIN03PODAKT',), ('FIN03PODDHM',), ('FIN03PODDNM',), ('FIN03PODFA',), ('FIN03PODNAK',), ('FIN03PODPAS',), ('FIN03PODVYN',), ('FIN03PODZAM',), ('FIN03POJAKT',), ('FIN03POJDUK',), ('FIN03POJFA',), ('FIN03POJPAS',), ('FIN03POJVUK',), ('FIN03POJZAM',), ('FIN03PSAKT',), ('FIN03PSDUK',), ('FIN03PSFA',), ('FIN03PSNAK',), ('FIN03PSPAS',), ('FIN03PSUPS',), ('FIN03PSVYN',), ('FIN03PSZAM',), ('ICT01T01',), ('ICT02T01',), ('ICT04T01',), ('ICT04T02',), ('ICT04T03',), ('ICT04T04',), ('KPR1T1',), ('KPR2T1',), ('KRI05T1',), ('KRI06T1',), ('LES0101T01',), ('LES0102T01',), ('LES0102T02',), ('LES0201T01',), ('LES0201T02',), ('MZDCRRT1',), ('MZDCRRT2',), ('MZDKQT1',), ('MZDKQT2',), ('MZDKQT3',), ('MZDKQT4',), ('MZDKQT5',), ('MZDMPKQT1',), ('MZDMPKQT2',), ('MZDMPKQT3',), ('MZDMPQT1',), ('MZDMPQT3',), ('MZDMPQT4',), ('MZDMPRT1',), ('MZDMPRT2',), ('MZDMPRT3',), ('MZDQ1T1',), ('MZDQ1T2',), ('MZDQ1T3',), ('MZDQ1T4',), ('MZDQ1T5',), ('MZDRT1',), ('MZDRT2',), ('MZDRT3',), ('MZDRT4',), ('MZDRT5',), ('NEZ01T1',), ('NEZ02T1',), ('NEZ02T2',), ('NEZ02T3',), ('NUC01ET01',), ('NUC06QT01',), ('NUC06QT02',), ('NUC06RT01',), ('NUC06RT02',), ('OBC01AT1',), ('OBC01AT2',), ('OBC01AT3',), ('OBC01BT1',), ('OBC01BT2',), ('OBC01BT3',), ('OBC01CT1',), ('OBC01CT2',), ('OBC01CT3',), ('OBC01T1',), ('OBC01T2',), ('OBC01T3',), ('OBC02AT1',), ('OBC02AT2',), ('OBC02AT3',), ('OBC02BT1',), ('OBC02BT2',), ('OBC02BT3',), ('OBC02T1',), ('OBC02T2',), ('OBC02T3',), ('OBC03T1',), ('OBY01AT01',), ('OBY01AT02',), ('OBY01B01T01',), ('OBY01BHVDT02',), ('OBY01BT01',), ('OBY01BT02',), ('OBY01CMT01',), ('OBY01CMT02',), ('OBY01CQT01',), ('OBY01CQT02',), ('OBY01CRGENT01',), ('OBY01CT01',), ('OBY01CT02',), ('OBY01CT03',), ('OBY01CT04',), ('OBY01PDT01',), ('OBY01PDT02',), ('OBY01PDT03',), ('OBY01PDT04',), ('OBY01PDT05',), ('OBY01PDT06',), ('OBY01PDT07',), ('OBY01PDT08',), ('OBY01PDT09',), ('OBY01PDT10',), ('OBY02AHVDT01',), ('OBY02AT01',), ('OBY02BHVDT01',), ('OBY02BT01',), ('OBY02DT01',), ('OBY02ET01',), ('OBY02FGEN',), ('OBY02FHVDT01',), ('OBY02FT01',), ('OBY02GHVDT01',), ('OBY02GT01',), ('OBY02GT02',), ('OBY02GT03',), ('OBY02PKT01',), ('OBY02PKT02',), ('OBY02PKT03',), ('OBY02PT01',), ('OBY02PT02',), ('OBY02PT03',), ('OBY03AT01',), ('OBY03BT01',), ('OBY03BT02',), ('OBY03CT01',), ('OBY03DHVDT01',), ('OBY03DT01',), ('OBY03DT02',), ('OBY03HVDT01',), ('OBY03T01',), ('OBY04AT01',), ('OBY04BGENTCR',), ('OBY04BHVDCRT01',), ('OBY04BHVDKT01',), ('OBY04BT01',), ('OBY04BT02',), ('OBY04BTCR',), ('OBY04BTK',), ('OBY04BTO',), ('OBY04BTOR',), ('OBY04BTRS',), ('OBY04CT01',), ('OBY04CT02',), ('OBY04D',), ('OBY04ET01',), ('OBY04ET02',), ('OBY04FT01',), ('OBY04ZEM01T01',), ('OBY04ZEM02T01',), ('OBY04ZEM02T02',), ('OBY04ZEM03T01',), ('OBY05A02T01',), ('OBY05A02T02',), ('OBY05A03T01',), ('OBY05AT01',), ('OBY05B01T01',), ('OBY05B01T02',), ('OBY05B02T01',), ('OBY05B02T02',), ('OBY05B03T01',), ('OBY05B03T02',), ('OBY05BT01',), ('OBY06AT01',), ('OBY06AT02',), ('OBY06BT01',), ('OBY06CT02',), ('OBY06DT01',), ('OBY06ET01',), ('OBY06T01',), ('OBY5A01T01',), ('OBY5A01T02',), ('PRU01AT1',), ('PRU01AT2',), ('PRU01AT3',), ('PRU01AT4',), ('PRU01AT5',), ('PRU01BT1',), ('PRU01BT2',), ('PRU01BT3',), ('PRU01BT4',), ('PRU01CT1',), ('PRU01CT2',), ('PRU01DT1',), ('PRU01DT2',), ('PRU01T1',), ('PRU01T2',), ('PRU03T1',), ('PRU07T1',), ('PRU09AT1',), ('PRU09AT2',), ('PRU09AT3',), ('PRU09AT4',), ('PRU09AT5',), ('PRU09BT1',), ('PRU09BT2',), ('PRU09BT3',), ('PRU09T1',), ('PRU09T2',), ('PRU10AT1',), ('PRU10AT2',), ('PRU10AT3',), ('PRU10AT4',), ('PRU10AT5',), ('PRU10BT1',), ('PRU10BT2',), ('PRU10BT3',), ('PRU10T1',), ('PRU10T2',), ('PRUM201T1',), ('PRUMCENEMOT1',), ('PRUMCENEMOT2',), ('RES01QOBCE',), ('RES01QT1',), ('RES01QT2',), ('RES01QT3',), ('RES01QT4',), ('RES01QT5',), ('RES01QT6',), ('RES01ROBCE',), ('RES01RT1',), ('RES01RT2',), ('RES01RT3',), ('RES01RT4',), ('RES01RT5',), ('RES01RT6',), ('RES02QOBCEt1',), ('RES02QT1',), ('RES02QT2',), ('RES02QT3',), ('RES02QT4',), ('RES02QT5',), ('RES02QT6',), ('RES02ROBCE',), ('RES02RT1',), ('RES02RT2',), ('RES02RT3',), ('RES02RT4',), ('RES02RT5',), ('RES02RT6',), ('RES03QOBCET1',), ('RES03QT1',), ('RES03QT2',), ('RES03QT3',), ('RES03QT4',), ('RES03QT5',), ('RES03QT6',), ('RES03ROBCE',), ('RES03RT1',), ('RES03RT2',), ('RES03RT3',), ('RES03RT4',), ('RES03RT5',), ('RES03RT6',), ('RES04QOBCET1',), ('RES04QT1',), ('RES04QT2',), ('RES04QT3',), ('RES04QT4',), ('RES04QT5',), ('RES04QT6',), ('RES04ROBCET1',), ('RES04RT1',), ('RES04RT2',), ('RES04RT3',), ('RES04RT4',), ('RES04RT5',), ('RES04RT6',), ('RES05T1',), ('RES05T2',), ('RES05T3',), ('RES05T4',), ('RES06T1',), ('RES06T2',), ('RESDP00T1',), ('RESDP00T2',), ('RESDP00T3',), ('RESDP01T1',), ('RESDP01T2',), ('RESDP01T3',), ('RESDP02T1',), ('RESDP03',), ('RESDP04',), ('RSO001',), ('RSO001OBCE',), ('RSO01T2',), ('RSO02A01ORPT1',), ('RSO02A01T1',), ('RSO02A01T1K',), ('RSO02A02T1',), ('RSO03',), ('RSO03K',), ('SILC01AT1',), ('SILC01BT1',), ('SILC01CT1',), ('SILC01DT1',), ('SILC01ET1',), ('SILC01FT1',), ('SILC02AT1',), ('SILC02BT1',), ('SILC02CT1',), ('SILC02DT1',), ('SILC02ET1',), ('SILC02FT1',), ('SILC03T1',), ('SLD001T02',), ('SLD001T03',), ('SLD001T04',), ('SLD002T01',), ('SLD002T02',), ('SLD002T02a',), ('SLD002T02b',), ('SLD002T03',), ('SLD002T04',), ('SLD003T02',), ('SLD003T03',), ('SLD003T04',), ('SLD004T02',), ('SLD004T04',), ('SLD005AT01',), ('SLD005T02',), ('SLD005T03',), ('SLD005T04',), ('SLD005T06',), ('SLD006T02',), ('SLD007T02',), ('SLD008T02',), ('SLD009T01',), ('SLD009T02',), ('SLD009T03',), ('SLD009T04',), ('SLD009T05',), ('SLD009T06',), ('SLD0100G1',), ('SLD0100M1',), ('SLD0100T1',), ('SLD0100T2',), ('SLD013T02',), ('SLD014T02',), ('SLD014T03',), ('SLD015T02',), ('SLD016T02',), ('SLD017T02',), ('SLD018T02',), ('SLD019T02',), ('SLD020T02',), ('SLD020T03',), ('SLD021T02',), ('SLD021T03',), ('SLD021T04',), ('SLD021T05',), ('SLD021T06',), ('SLD021T07',), ('SLD022T02',), ('SLD023T02',), ('SLD024T02',), ('SLD025T02A',), ('SLD025T02B',), ('SLD025T03',), ('SLD026T02',), ('SLD027T02A',), ('SLD027T02B',), ('SLD028T02A',), ('SLD028T02B',), ('SLD028T03',), ('SLD029T02A',), ('SLD029T02B',), ('SLD032T02',), ('SLD032T02a',), ('SLD032T03',), ('SLD033T04a',), ('SLD033T04b',), ('SLD033T05',), ('SLD034BT02',), ('SLD034CT01',), ('SLD035T01',), ('SLD035T02',), ('SLD035T03',), ('SLD035T04',), ('SLD036T01',), ('SLD036T02',), ('SLD037T01',), ('SLD037T02',), ('SLD038T01',), ('SLD038T02',), ('SLD039T01',), ('SLD039T02',), ('SLD040T01',), ('SLD041T01',), ('SLD041T02',), ('SLD042T01',), ('SLD042T02',), ('SLD042T03',), ('SLD043T01',), ('SLD043T02',), ('SLD044T01',), ('SLD044T02',), ('SLD045T02',), ('SLD046T01',), ('SLD046T02',), ('SLD047T01',), ('SLD047T02',), ('SLD048T01',), ('SLD049T01',), ('SLD050T01',), ('SLD050T02',), ('SLD051T01',), ('SLD051T02',), ('SLD052T01',), ('SLD053T01',), ('SLD053T02',), ('SLD054T02',), ('SLD055T01',), ('SLD056T03',), ('SLU01AT1',), ('SLU01AT2',), ('SLU01AT3',), ('SLU01BT1',), ('SLU01BT2',), ('SLU01BT3',), ('SLU01CT1',), ('SLU01CT2',), ('SLU01CT3',), ('SLU01T1',), ('SLU01T2',), ('SLU02T1',), ('SLU02T2',), ('SLU02T3',), ('SLU02T4',), ('SLU02T5',), ('SLU03AT1',), ('SLU03AT2',), ('SLU03AT3',), ('SLU03BT1',), ('SLU03BT2',), ('SLU03BT3',), ('SLU03CT1',), ('SLU03CT2',), ('SLU03CT3',), ('SLU03T1',), ('SLU03T2',), ('STA01T1',), ('STA02T1',), ('STA03AT1',), ('STA03AT3',), ('STA03AT4',), ('STA03T2',), ('STA03T5',), ('STA03T6',), ('STA04T1',), ('STA04T2',), ('STA04T3',), ('STA08A1T1',), ('STA08A2T2',), ('STA08B1T1',), ('STA08B2T2',), ('STA08T1',), ('STA08T2',), ('STA08T3',), ('STA08T4',), ('STA09AT1',), ('STA09AT2',), ('STA09AT3',), ('STA09AT4',), ('STA09BT2',), ('STA09BT3',), ('STAV112NZT1',), ('STAV112NZT2',), ('STAV112SZT1',), ('STAV112SZT2',), ('STAV501AT1',), ('STAV501AT2',), ('STAV501T1',), ('STAV799AT1',), ('STAV799BT1',), ('SZB01',), ('SZB01A',), ('SZB01AB',), ('SZB01B',), ('SZB02',), ('SZB02B',), ('SZB03',), ('SZB03K',), ('SZB04',), ('SZB06',), ('SZB06A',), ('SZB06AB',), ('SZB07A1',), ('SZB07B1',), ('SZB07C',), ('SZB08',), ('SZB08A',), ('SZB08AA',), ('SZB09',), ('SZB09A',), ('SZB09B',), ('UNP1AT1',), ('UNP1AT2',), ('UNP1AT3',), ('UNP1AT4',), ('UNP1BT1',), ('UNP1BT2',), ('UNP1BT3',), ('UNP2AT1',), ('UNP2AT2',), ('UNP2AT4',), ('UNP2BT1',), ('UNP2BT2',), ('UNP2T3',), ('UNP3AT1',), ('UNP3AT2',), ('UNP3At3',), ('UNP4T1',), ('UNP4T2',), ('VAV0101T01',), ('VAV02T01',), ('VAV0301T01',), ('VAV0301T02',), ('VOLEPT1',), ('VOLEPT2',), ('VOLKRT1',), ('VOLKRT2',), ('VOLOBT1',), ('VOLOBT2',), ('VOLPRT1',), ('VOLPRT2',), ('VOLPST1',), ('VOLPST2',), ('VZOOMT1',), ('VZOOMT2',), ('VZOOMT3',), ('VZOOMT4',), ('VZOOMT5',), ('VZOOMT6',), ('VZOOQT1',), ('VZOOQT2',), ('VZOOQT3',), ('VZOOQT4',), ('VZOOQT5',), ('VZOORT1',), ('VZOORT2',), ('VZOORT3',), ('VZOORT4',), ('VZOORT5',), ('VZOPPMT1',), ('VZOPPMT2',), ('VZOPPMT3',), ('VZOPPQT1',), ('VZOPPQT2',), ('VZOPPQT3',), ('VZOPPRT1',), ('VZOPPRT2',), ('VZOPPRT3',), ('VZOPPRT4',), ('WADMUPCRMCWUPT3',), ('WADMUPCRMCWUPT4',), ('WADMUPCRMCWUPT5',), ('WADMUPCRVNTEST',), ('WCEN01MT01',), ('WCEN01MT03',), ('WCEN01T01',), ('WCEN01T02',), ('WCEN01T03',), ('WCEN02T01',), ('WCEN02T02',), ('WCEN02T03',), ('WCEN03BT01',), ('WCEN03T01',), ('WCEN04T01',), ('WCEN04T02',), ('WCRU01G',), ('WCRU01M',), ('WCRU01T1',), ('WCRU01T2',), ('WCRU02G',), ('WCRU02M',), ('WCRU02T1',), ('WCRU02T2',), ('WCRU05G',), ('WCRU05T1',), ('WDOP1T1',), ('WDOP1T3',), ('WDOP2T2',), ('WENET1',), ('WESU01A',), ('WESU01AKR',), ('WESU01B',), ('WESU01BKR',), ('WESU01C',), ('WFIN01AT1',), ('WFIN01AT2',), ('WFIN02',), ('WFIN02A',), ('WFIN03T1',), ('WGEN01A',), ('WGEN01AK',), ('WGEN01B',), ('WGEN01BK',), ('WGEN01G1VN',), ('WGEN02AT01',), ('WGEN02AT02',), ('WGEN02BT01',), ('WGEN02BT02',), ('WGEN02BT03',), ('WGEN03C1T01',), ('WGEN03C1T02',), ('WGEN03C2T01',), ('WGEN03CT01',), ('WGEN03CT02',), ('WGEN07KRT01',), ('WGEN07KRT02',), ('WGEN07OBT01',), ('WGEN07OBT02',), ('WGEN07PST01',), ('WLES01KT02',), ('WLES01T01',), ('WLES02T01',), ('WNEJOBYR',), ('WNUC01BT01',), ('WNUC01CT01',), ('WNUC01DWNUC01T01',), ('WNUC01FT01',), ('WNUC01T01',), ('WNUC03AT01',), ('WNUC03BT01',), ('WNUC03CT01',), ('WNUC03DT01',), ('WNUC03ET01',), ('WNUC04T01',), ('WNUC05AT01',), ('WNUC05CT01',), ('WNUC05DT01',), ('WOBC03T1',), ('WOBCT1',), ('WOBY01A',), ('WOBY01B',), ('WOBY02A',), ('WOBY02B',), ('WOBY03',), ('WOBY04A',), ('WOBY04B',), ('WOBY04BK',), ('WOBY04C',), ('WOBY04M2',), ('WOBY05A',), ('WOBY05B',), ('WOBY06',), ('WOBY06K',), ('WOBYG',), ('WOBYNEJ',), ('WPPS01',), ('WPRACECRQT1',), ('WPRACECRQT2',), ('WPRACECRQT3',), ('WPRACECRT1',), ('WPRACECRT2',), ('WPRU02T1',), ('WPRUT1',), ('WREG01AT1',), ('WREG01AT2',), ('WREG01BT3',), ('WREG01CT4',), ('WREG01DT5',), ('WREG01ET6',), ('WREG01T1',), ('WREG01T2',), ('WREG01T3',), ('WREG01T4',), ('WREG01T5',), ('WREG01T6',), ('WREG02',), ('WREG0301',), ('WREG0302',), ('WREG0303',), ('WREG0304',), ('WREG0305',), ('WREG0306',), ('WREG03A01',), ('WREG03A02',), ('WREG03B03',), ('WREG03C04',), ('WREG03D05',), ('WREG0401',), ('WREG0402',), ('WREG0403',), ('WREG0404',), ('WREG04A01',), ('WREG04A02',), ('WREG04B03',), ('WRES00G',), ('WRES0A',), ('WRES0BT1',), ('WRESDPAT1',), ('WRESDPAT3',), ('WRESDPBT2',), ('WSBDZO1AT7',), ('WSBDZO1BT8',), ('WSBDZO1T9',), ('WSBDZOAT3',), ('WSBDZOBT1',), ('WSBDZOBT10',), ('WSBDZOBT4',), ('WSBDZOBT5',), ('WSBDZOBT6',), ('WSBDZOCT2',), ('WSEN01T01',), ('WSEN02T01',), ('WSLU01T5',), ('WSLU03T1',), ('WSTA01T2',), ('WSTA05T3',), ('WSTA05T4',), ('WSTA06T1',), ('WSTA06T2',), ('WSTAT1',), ('WSTAV501T1',), ('WUNP1T1',), ('WUNP2T1',), ('WVSPSAT1',), ('WVSPSAT2',), ('WVSPSAT3',), ('WVSPSBT1',), ('WVSPSCT1',), ('WVSPST1',), ('WVSPST2',), ('WZEM02AT01',), ('WZEM02T01',), ('WZEM02T02',), ('WZEM03A1T01',), ('WZEM03AT01',), ('WZEM03BT01',), ('WZEM05T01',), ('WZPR01G',), ('WZPR01KG',), ('WZPR01T01',), ('WZPR01T01K',), ('WZPR02T01',), ('WZPR02T01K',), ('WZPR03T01',), ('WZPR03T01G01',), ('WZPR03T01G02',), ('WZPR04G01',), ('WZPR04T01',), ('WZPR04T01K',), ('WZPR05T01',), ('WZPR05T01K',), ('ZAM01T1',), ('ZAM01T2',), ('ZAM02T1',), ('ZAM02T2',), ('ZAM02T3',), ('ZAM02T4',), ('ZAM02T5',), ('ZAM02T6',), ('ZAM03T1',), ('ZAM03T2',), ('ZAM03T3',), ('ZAM03T4',), ('ZAM04T1',), ('ZAM04T3',), ('ZAM04T4',), ('ZAM04T5',), ('ZAM05T1',), ('ZAM06AT1',), ('ZAM06AT2',), ('ZAM06BT1',), ('ZAM06BT2',), ('ZAMG01T1',), ('ZAMG03T1',), ('ZAMG07T1',), ('ZAMG07T2',), ('ZAMG08T1',), ('ZAMG08T2',), ('ZAMG08T3',), ('ZDR01T1',), ('ZDR02T1',), ('ZDR03T1',), ('ZEM0202AT01',), ('ZEM03AT01',), ('ZEM03AT02',), ('ZEM03CT01',), ('ZEM0502',), ('ZEM05T01',), ('ZUR01BT1',), ('ZUR01DT1',), ('ZUR01OT1',)]
+  Query: SELECT Roky, value 
+FROM CEN0101HT01 
+WHERE Území = 'Česko' AND Ukazatel = 'Průměrná roční míra inflace' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: Error: Query error: no such table: CEN0101HT01
+  Query: PRAGMA table_info(CEN0101HT01);
+  Result: No results found
+  Query: SELECT name FROM sqlite_master WHERE type='table';
+  Result: [('CEN0101CT01',), ('CEN0101CT02',), ('CEN0101LT01',), ('CEN01MT01',), ('CEN0201AT01',), ('CEN0201AT02',), ('CEN0201AT03',), ('CEN0201AT04',), ('CEN0201BT01',), ('CEN0201BT02',), ('CEN0201BT03',), ('CEN0201BT04A',), ('CEN0201CT01',), ('CEN0201ET01',), ('CEN0202AT01',), ('CEN0204AT01',), ('CEN0204AT02',), ('CEN0204AT03',), ('CEN0204AT04A',), ('CEN0204BT01',), ('CEN0204DT05',), ('CEN0301T01',), ('CEN0301T02',), ('CEN0301T03',), ('CEN0301T04',), ('CEN0301T05',), ('CEN0305T01',), ('CEN0401T01',), ('CEN0401T02',), ('CEN0402T01',), ('CEN0402T02',), ('CEN0402T03',), ('CEN0402T03A',), ('CEN0403T01',), ('CENPHMTT01',), ('CIZ01D',), ('CIZ03',), ('CRU01RDMOT1',), ('CRU01RDMOT2',), ('CRU01RDMOT3',), ('CRU01RDMOT4',), ('CRU01RDMOT5',), ('CRU01RDMOT6',), ('CRU01ROBCET1',), ('CRU01ROBCET2',), ('CRU01ROBCET3',), ('CRU01ROBCET4',), ('CRU01ROBCET5',), ('CRU01ROBCET6',), ('CRU01RT1',), ('CRU01RT2',), ('CRU01RT3',), ('CRU01RT4',), ('CRU01T1',), ('CRU02KQT1',), ('CRU02KQT2',), ('CRU02LUZPOK1',), ('CRU02LUZPOK2',), ('CRU02LUZPOK3',), ('CRU02MHOTT1',), ('CRU02MHOTT2',), ('CRU02MT1',), ('CRU02MT2',), ('CRU02QBULL',), ('CRU02QDMOT1',), ('CRU02QDMOT2',), ('CRU02QDMOT3',), ('CRU02QDMOT4',), ('CRU02QT1',), ('CRU02QT2',), ('CRU02QT3',), ('CRU02RDMOT1',), ('CRU02RDMOT2',), ('CRU02RDMOT3',), ('CRU02RDMOT4',), ('CRU02RDMOT5',), ('CRU02RDMOT6',), ('CRU02RDMOT7',), ('CRU02RDMOT8',), ('CRU02ROBCET1',), ('CRU02ROBCET2',), ('CRU02ROBCET3',), ('CRU02ROBCET4',), ('CRU02ROBCET5',), ('CRU02ROBCET6',), ('CRU02ROBCET7',), ('CRU02RT1',), ('CRU02RT2',), ('CRU02RT3',), ('CRU02RT4',), ('CRU02RT5',), ('CRU02RT6',), ('CRU02T1',), ('CRU03T1',), ('CRU03T2',), ('CRU03T3',), ('CRU03T4',), ('CRU04T1',), ('CRU04T2',), ('CRU04T3',), ('CRU04T4',), ('CRU04T5',), ('CRU05T1',), ('CRU05bT1',), ('CRU06AT1',), ('CRU06AT2',), ('CRU06AT3',), ('CRU06AT4',), ('CRU06AT5',), ('CRU06AT6',), ('CRU06AT7',), ('CRU06AT8',), ('CRU06AT9',), ('CRU06T1',), ('CRU06T2',), ('CRUHVD1T1',), ('CRUHVD1T2',), ('CRUHVD1T3',), ('CRUHVD2',), ('CRUHVD3',), ('ENE01WENET1',), ('ENE02T3',), ('ENE02T4',), ('ENE02T5',), ('EP801',), ('EP901T1',), ('FIN01A',), ('FIN01T1',), ('FIN01T2',), ('FIN01T3',), ('FIN01T4',), ('FIN01T5',), ('FIN03BANKAKT',), ('FIN03BANKDHM',), ('FIN03BANKDNM',), ('FIN03BANKDUK',), ('FIN03BANKFA',), ('FIN03BANKNAK',), ('FIN03BANKPAS',), ('FIN03BANKVYN',), ('FIN03BANKZAM',), ('FIN03CNBNTU',), ('FIN03CNBTRP',), ('FIN03CNBTUN',), ('FIN03CNBTUZ',), ('FIN03ISIFAKT',), ('FIN03ISIFDHM',), ('FIN03ISIFDNM',), ('FIN03ISIFDUK',), ('FIN03ISIFFA',), ('FIN03ISIFNAK',), ('FIN03ISIFPAS',), ('FIN03ISIFVYN',), ('FIN03ISIFZAM',), ('FIN03LEASAKT',), ('FIN03LEASDHM',), ('FIN03LEASDNM',), ('FIN03LEASFA',), ('FIN03LEASNAK',), ('FIN03LEASPAS',), ('FIN03LEASVYN',), ('FIN03LEASZAM',), ('FIN03NEBANKAKT',), ('FIN03NEBANKDHM',), ('FIN03NEBANKDNM',), ('FIN03NEBANKDUK',), ('FIN03NEBANKFA',), ('FIN03NEBANKNAK',), ('FIN03NEBANKPAS',), ('FIN03NEBANKVYN',), ('FIN03NEBANKZAM',), ('FIN03PODAKT',), ('FIN03PODDHM',), ('FIN03PODDNM',), ('FIN03PODFA',), ('FIN03PODNAK',), ('FIN03PODPAS',), ('FIN03PODVYN',), ('FIN03PODZAM',), ('FIN03POJAKT',), ('FIN03POJDUK',), ('FIN03POJFA',), ('FIN03POJPAS',), ('FIN03POJVUK',), ('FIN03POJZAM',), ('FIN03PSAKT',), ('FIN03PSDUK',), ('FIN03PSFA',), ('FIN03PSNAK',), ('FIN03PSPAS',), ('FIN03PSUPS',), ('FIN03PSVYN',), ('FIN03PSZAM',), ('ICT01T01',), ('ICT02T01',), ('ICT04T01',), ('ICT04T02',), ('ICT04T03',), ('ICT04T04',), ('KPR1T1',), ('KPR2T1',), ('KRI05T1',), ('KRI06T1',), ('LES0101T01',), ('LES0102T01',), ('LES0102T02',), ('LES0201T01',), ('LES0201T02',), ('MZDCRRT1',), ('MZDCRRT2',), ('MZDKQT1',), ('MZDKQT2',), ('MZDKQT3',), ('MZDKQT4',), ('MZDKQT5',), ('MZDMPKQT1',), ('MZDMPKQT2',), ('MZDMPKQT3',), ('MZDMPQT1',), ('MZDMPQT3',), ('MZDMPQT4',), ('MZDMPRT1',), ('MZDMPRT2',), ('MZDMPRT3',), ('MZDQ1T1',), ('MZDQ1T2',), ('MZDQ1T3',), ('MZDQ1T4',), ('MZDQ1T5',), ('MZDRT1',), ('MZDRT2',), ('MZDRT3',), ('MZDRT4',), ('MZDRT5',), ('NEZ01T1',), ('NEZ02T1',), ('NEZ02T2',), ('NEZ02T3',), ('NUC01ET01',), ('NUC06QT01',), ('NUC06QT02',), ('NUC06RT01',), ('NUC06RT02',), ('OBC01AT1',), ('OBC01AT2',), ('OBC01AT3',), ('OBC01BT1',), ('OBC01BT2',), ('OBC01BT3',), ('OBC01CT1',), ('OBC01CT2',), ('OBC01CT3',), ('OBC01T1',), ('OBC01T2',), ('OBC01T3',), ('OBC02AT1',), ('OBC02AT2',), ('OBC02AT3',), ('OBC02BT1',), ('OBC02BT2',), ('OBC02BT3',), ('OBC02T1',), ('OBC02T2',), ('OBC02T3',), ('OBC03T1',), ('OBY01AT01',), ('OBY01AT02',), ('OBY01B01T01',), ('OBY01BHVDT02',), ('OBY01BT01',), ('OBY01BT02',), ('OBY01CMT01',), ('OBY01CMT02',), ('OBY01CQT01',), ('OBY01CQT02',), ('OBY01CRGENT01',), ('OBY01CT01',), ('OBY01CT02',), ('OBY01CT03',), ('OBY01CT04',), ('OBY01PDT01',), ('OBY01PDT02',), ('OBY01PDT03',), ('OBY01PDT04',), ('OBY01PDT05',), ('OBY01PDT06',), ('OBY01PDT07',), ('OBY01PDT08',), ('OBY01PDT09',), ('OBY01PDT10',), ('OBY02AHVDT01',), ('OBY02AT01',), ('OBY02BHVDT01',), ('OBY02BT01',), ('OBY02DT01',), ('OBY02ET01',), ('OBY02FGEN',), ('OBY02FHVDT01',), ('OBY02FT01',), ('OBY02GHVDT01',), ('OBY02GT01',), ('OBY02GT02',), ('OBY02GT03',), ('OBY02PKT01',), ('OBY02PKT02',), ('OBY02PKT03',), ('OBY02PT01',), ('OBY02PT02',), ('OBY02PT03',), ('OBY03AT01',), ('OBY03BT01',), ('OBY03BT02',), ('OBY03CT01',), ('OBY03DHVDT01',), ('OBY03DT01',), ('OBY03DT02',), ('OBY03HVDT01',), ('OBY03T01',), ('OBY04AT01',), ('OBY04BGENTCR',), ('OBY04BHVDCRT01',), ('OBY04BHVDKT01',), ('OBY04BT01',), ('OBY04BT02',), ('OBY04BTCR',), ('OBY04BTK',), ('OBY04BTO',), ('OBY04BTOR',), ('OBY04BTRS',), ('OBY04CT01',), ('OBY04CT02',), ('OBY04D',), ('OBY04ET01',), ('OBY04ET02',), ('OBY04FT01',), ('OBY04ZEM01T01',), ('OBY04ZEM02T01',), ('OBY04ZEM02T02',), ('OBY04ZEM03T01',), ('OBY05A02T01',), ('OBY05A02T02',), ('OBY05A03T01',), ('OBY05AT01',), ('OBY05B01T01',), ('OBY05B01T02',), ('OBY05B02T01',), ('OBY05B02T02',), ('OBY05B03T01',), ('OBY05B03T02',), ('OBY05BT01',), ('OBY06AT01',), ('OBY06AT02',), ('OBY06BT01',), ('OBY06CT02',), ('OBY06DT01',), ('OBY06ET01',), ('OBY06T01',), ('OBY5A01T01',), ('OBY5A01T02',), ('PRU01AT1',), ('PRU01AT2',), ('PRU01AT3',), ('PRU01AT4',), ('PRU01AT5',), ('PRU01BT1',), ('PRU01BT2',), ('PRU01BT3',), ('PRU01BT4',), ('PRU01CT1',), ('PRU01CT2',), ('PRU01DT1',), ('PRU01DT2',), ('PRU01T1',), ('PRU01T2',), ('PRU03T1',), ('PRU07T1',), ('PRU09AT1',), ('PRU09AT2',), ('PRU09AT3',), ('PRU09AT4',), ('PRU09AT5',), ('PRU09BT1',), ('PRU09BT2',), ('PRU09BT3',), ('PRU09T1',), ('PRU09T2',), ('PRU10AT1',), ('PRU10AT2',), ('PRU10AT3',), ('PRU10AT4',), ('PRU10AT5',), ('PRU10BT1',), ('PRU10BT2',), ('PRU10BT3',), ('PRU10T1',), ('PRU10T2',), ('PRUM201T1',), ('PRUMCENEMOT1',), ('PRUMCENEMOT2',), ('RES01QOBCE',), ('RES01QT1',), ('RES01QT2',), ('RES01QT3',), ('RES01QT4',), ('RES01QT5',), ('RES01QT6',), ('RES01ROBCE',), ('RES01RT1',), ('RES01RT2',), ('RES01RT3',), ('RES01RT4',), ('RES01RT5',), ('RES01RT6',), ('RES02QOBCEt1',), ('RES02QT1',), ('RES02QT2',), ('RES02QT3',), ('RES02QT4',), ('RES02QT5',), ('RES02QT6',), ('RES02ROBCE',), ('RES02RT1',), ('RES02RT2',), ('RES02RT3',), ('RES02RT4',), ('RES02RT5',), ('RES02RT6',), ('RES03QOBCET1',), ('RES03QT1',), ('RES03QT2',), ('RES03QT3',), ('RES03QT4',), ('RES03QT5',), ('RES03QT6',), ('RES03ROBCE',), ('RES03RT1',), ('RES03RT2',), ('RES03RT3',), ('RES03RT4',), ('RES03RT5',), ('RES03RT6',), ('RES04QOBCET1',), ('RES04QT1',), ('RES04QT2',), ('RES04QT3',), ('RES04QT4',), ('RES04QT5',), ('RES04QT6',), ('RES04ROBCET1',), ('RES04RT1',), ('RES04RT2',), ('RES04RT3',), ('RES04RT4',), ('RES04RT5',), ('RES04RT6',), ('RES05T1',), ('RES05T2',), ('RES05T3',), ('RES05T4',), ('RES06T1',), ('RES06T2',), ('RESDP00T1',), ('RESDP00T2',), ('RESDP00T3',), ('RESDP01T1',), ('RESDP01T2',), ('RESDP01T3',), ('RESDP02T1',), ('RESDP03',), ('RESDP04',), ('RSO001',), ('RSO001OBCE',), ('RSO01T2',), ('RSO02A01ORPT1',), ('RSO02A01T1',), ('RSO02A01T1K',), ('RSO02A02T1',), ('RSO03',), ('RSO03K',), ('SILC01AT1',), ('SILC01BT1',), ('SILC01CT1',), ('SILC01DT1',), ('SILC01ET1',), ('SILC01FT1',), ('SILC02AT1',), ('SILC02BT1',), ('SILC02CT1',), ('SILC02DT1',), ('SILC02ET1',), ('SILC02FT1',), ('SILC03T1',), ('SLD001T02',), ('SLD001T03',), ('SLD001T04',), ('SLD002T01',), ('SLD002T02',), ('SLD002T02a',), ('SLD002T02b',), ('SLD002T03',), ('SLD002T04',), ('SLD003T02',), ('SLD003T03',), ('SLD003T04',), ('SLD004T02',), ('SLD004T04',), ('SLD005AT01',), ('SLD005T02',), ('SLD005T03',), ('SLD005T04',), ('SLD005T06',), ('SLD006T02',), ('SLD007T02',), ('SLD008T02',), ('SLD009T01',), ('SLD009T02',), ('SLD009T03',), ('SLD009T04',), ('SLD009T05',), ('SLD009T06',), ('SLD0100G1',), ('SLD0100M1',), ('SLD0100T1',), ('SLD0100T2',), ('SLD013T02',), ('SLD014T02',), ('SLD014T03',), ('SLD015T02',), ('SLD016T02',), ('SLD017T02',), ('SLD018T02',), ('SLD019T02',), ('SLD020T02',), ('SLD020T03',), ('SLD021T02',), ('SLD021T03',), ('SLD021T04',), ('SLD021T05',), ('SLD021T06',), ('SLD021T07',), ('SLD022T02',), ('SLD023T02',), ('SLD024T02',), ('SLD025T02A',), ('SLD025T02B',), ('SLD025T03',), ('SLD026T02',), ('SLD027T02A',), ('SLD027T02B',), ('SLD028T02A',), ('SLD028T02B',), ('SLD028T03',), ('SLD029T02A',), ('SLD029T02B',), ('SLD032T02',), ('SLD032T02a',), ('SLD032T03',), ('SLD033T04a',), ('SLD033T04b',), ('SLD033T05',), ('SLD034BT02',), ('SLD034CT01',), ('SLD035T01',), ('SLD035T02',), ('SLD035T03',), ('SLD035T04',), ('SLD036T01',), ('SLD036T02',), ('SLD037T01',), ('SLD037T02',), ('SLD038T01',), ('SLD038T02',), ('SLD039T01',), ('SLD039T02',), ('SLD040T01',), ('SLD041T01',), ('SLD041T02',), ('SLD042T01',), ('SLD042T02',), ('SLD042T03',), ('SLD043T01',), ('SLD043T02',), ('SLD044T01',), ('SLD044T02',), ('SLD045T02',), ('SLD046T01',), ('SLD046T02',), ('SLD047T01',), ('SLD047T02',), ('SLD048T01',), ('SLD049T01',), ('SLD050T01',), ('SLD050T02',), ('SLD051T01',), ('SLD051T02',), ('SLD052T01',), ('SLD053T01',), ('SLD053T02',), ('SLD054T02',), ('SLD055T01',), ('SLD056T03',), ('SLU01AT1',), ('SLU01AT2',), ('SLU01AT3',), ('SLU01BT1',), ('SLU01BT2',), ('SLU01BT3',), ('SLU01CT1',), ('SLU01CT2',), ('SLU01CT3',), ('SLU01T1',), ('SLU01T2',), ('SLU02T1',), ('SLU02T2',), ('SLU02T3',), ('SLU02T4',), ('SLU02T5',), ('SLU03AT1',), ('SLU03AT2',), ('SLU03AT3',), ('SLU03BT1',), ('SLU03BT2',), ('SLU03BT3',), ('SLU03CT1',), ('SLU03CT2',), ('SLU03CT3',), ('SLU03T1',), ('SLU03T2',), ('STA01T1',), ('STA02T1',), ('STA03AT1',), ('STA03AT3',), ('STA03AT4',), ('STA03T2',), ('STA03T5',), ('STA03T6',), ('STA04T1',), ('STA04T2',), ('STA04T3',), ('STA08A1T1',), ('STA08A2T2',), ('STA08B1T1',), ('STA08B2T2',), ('STA08T1',), ('STA08T2',), ('STA08T3',), ('STA08T4',), ('STA09AT1',), ('STA09AT2',), ('STA09AT3',), ('STA09AT4',), ('STA09BT2',), ('STA09BT3',), ('STAV112NZT1',), ('STAV112NZT2',), ('STAV112SZT1',), ('STAV112SZT2',), ('STAV501AT1',), ('STAV501AT2',), ('STAV501T1',), ('STAV799AT1',), ('STAV799BT1',), ('SZB01',), ('SZB01A',), ('SZB01AB',), ('SZB01B',), ('SZB02',), ('SZB02B',), ('SZB03',), ('SZB03K',), ('SZB04',), ('SZB06',), ('SZB06A',), ('SZB06AB',), ('SZB07A1',), ('SZB07B1',), ('SZB07C',), ('SZB08',), ('SZB08A',), ('SZB08AA',), ('SZB09',), ('SZB09A',), ('SZB09B',), ('UNP1AT1',), ('UNP1AT2',), ('UNP1AT3',), ('UNP1AT4',), ('UNP1BT1',), ('UNP1BT2',), ('UNP1BT3',), ('UNP2AT1',), ('UNP2AT2',), ('UNP2AT4',), ('UNP2BT1',), ('UNP2BT2',), ('UNP2T3',), ('UNP3AT1',), ('UNP3AT2',), ('UNP3At3',), ('UNP4T1',), ('UNP4T2',), ('VAV0101T01',), ('VAV02T01',), ('VAV0301T01',), ('VAV0301T02',), ('VOLEPT1',), ('VOLEPT2',), ('VOLKRT1',), ('VOLKRT2',), ('VOLOBT1',), ('VOLOBT2',), ('VOLPRT1',), ('VOLPRT2',), ('VOLPST1',), ('VOLPST2',), ('VZOOMT1',), ('VZOOMT2',), ('VZOOMT3',), ('VZOOMT4',), ('VZOOMT5',), ('VZOOMT6',), ('VZOOQT1',), ('VZOOQT2',), ('VZOOQT3',), ('VZOOQT4',), ('VZOOQT5',), ('VZOORT1',), ('VZOORT2',), ('VZOORT3',), ('VZOORT4',), ('VZOORT5',), ('VZOPPMT1',), ('VZOPPMT2',), ('VZOPPMT3',), ('VZOPPQT1',), ('VZOPPQT2',), ('VZOPPQT3',), ('VZOPPRT1',), ('VZOPPRT2',), ('VZOPPRT3',), ('VZOPPRT4',), ('WADMUPCRMCWUPT3',), ('WADMUPCRMCWUPT4',), ('WADMUPCRMCWUPT5',), ('WADMUPCRVNTEST',), ('WCEN01MT01',), ('WCEN01MT03',), ('WCEN01T01',), ('WCEN01T02',), ('WCEN01T03',), ('WCEN02T01',), ('WCEN02T02',), ('WCEN02T03',), ('WCEN03BT01',), ('WCEN03T01',), ('WCEN04T01',), ('WCEN04T02',), ('WCRU01G',), ('WCRU01M',), ('WCRU01T1',), ('WCRU01T2',), ('WCRU02G',), ('WCRU02M',), ('WCRU02T1',), ('WCRU02T2',), ('WCRU05G',), ('WCRU05T1',), ('WDOP1T1',), ('WDOP1T3',), ('WDOP2T2',), ('WENET1',), ('WESU01A',), ('WESU01AKR',), ('WESU01B',), ('WESU01BKR',), ('WESU01C',), ('WFIN01AT1',), ('WFIN01AT2',), ('WFIN02',), ('WFIN02A',), ('WFIN03T1',), ('WGEN01A',), ('WGEN01AK',), ('WGEN01B',), ('WGEN01BK',), ('WGEN01G1VN',), ('WGEN02AT01',), ('WGEN02AT02',), ('WGEN02BT01',), ('WGEN02BT02',), ('WGEN02BT03',), ('WGEN03C1T01',), ('WGEN03C1T02',), ('WGEN03C2T01',), ('WGEN03CT01',), ('WGEN03CT02',), ('WGEN07KRT01',), ('WGEN07KRT02',), ('WGEN07OBT01',), ('WGEN07OBT02',), ('WGEN07PST01',), ('WLES01KT02',), ('WLES01T01',), ('WLES02T01',), ('WNEJOBYR',), ('WNUC01BT01',), ('WNUC01CT01',), ('WNUC01DWNUC01T01',), ('WNUC01FT01',), ('WNUC01T01',), ('WNUC03AT01',), ('WNUC03BT01',), ('WNUC03CT01',), ('WNUC03DT01',), ('WNUC03ET01',), ('WNUC04T01',), ('WNUC05AT01',), ('WNUC05CT01',), ('WNUC05DT01',), ('WOBC03T1',), ('WOBCT1',), ('WOBY01A',), ('WOBY01B',), ('WOBY02A',), ('WOBY02B',), ('WOBY03',), ('WOBY04A',), ('WOBY04B',), ('WOBY04BK',), ('WOBY04C',), ('WOBY04M2',), ('WOBY05A',), ('WOBY05B',), ('WOBY06',), ('WOBY06K',), ('WOBYG',), ('WOBYNEJ',), ('WPPS01',), ('WPRACECRQT1',), ('WPRACECRQT2',), ('WPRACECRQT3',), ('WPRACECRT1',), ('WPRACECRT2',), ('WPRU02T1',), ('WPRUT1',), ('WREG01AT1',), ('WREG01AT2',), ('WREG01BT3',), ('WREG01CT4',), ('WREG01DT5',), ('WREG01ET6',), ('WREG01T1',), ('WREG01T2',), ('WREG01T3',), ('WREG01T4',), ('WREG01T5',), ('WREG01T6',), ('WREG02',), ('WREG0301',), ('WREG0302',), ('WREG0303',), ('WREG0304',), ('WREG0305',), ('WREG0306',), ('WREG03A01',), ('WREG03A02',), ('WREG03B03',), ('WREG03C04',), ('WREG03D05',), ('WREG0401',), ('WREG0402',), ('WREG0403',), ('WREG0404',), ('WREG04A01',), ('WREG04A02',), ('WREG04B03',), ('WRES00G',), ('WRES0A',), ('WRES0BT1',), ('WRESDPAT1',), ('WRESDPAT3',), ('WRESDPBT2',), ('WSBDZO1AT7',), ('WSBDZO1BT8',), ('WSBDZO1T9',), ('WSBDZOAT3',), ('WSBDZOBT1',), ('WSBDZOBT10',), ('WSBDZOBT4',), ('WSBDZOBT5',), ('WSBDZOBT6',), ('WSBDZOCT2',), ('WSEN01T01',), ('WSEN02T01',), ('WSLU01T5',), ('WSLU03T1',), ('WSTA01T2',), ('WSTA05T3',), ('WSTA05T4',), ('WSTA06T1',), ('WSTA06T2',), ('WSTAT1',), ('WSTAV501T1',), ('WUNP1T1',), ('WUNP2T1',), ('WVSPSAT1',), ('WVSPSAT2',), ('WVSPSAT3',), ('WVSPSBT1',), ('WVSPSCT1',), ('WVSPST1',), ('WVSPST2',), ('WZEM02AT01',), ('WZEM02T01',), ('WZEM02T02',), ('WZEM03A1T01',), ('WZEM03AT01',), ('WZEM03BT01',), ('WZEM05T01',), ('WZPR01G',), ('WZPR01KG',), ('WZPR01T01',), ('WZPR01T01K',), ('WZPR02T01',), ('WZPR02T01K',), ('WZPR03T01',), ('WZPR03T01G01',), ('WZPR03T01G02',), ('WZPR04G01',), ('WZPR04T01',), ('WZPR04T01K',), ('WZPR05T01',), ('WZPR05T01K',), ('ZAM01T1',), ('ZAM01T2',), ('ZAM02T1',), ('ZAM02T2',), ('ZAM02T3',), ('ZAM02T4',), ('ZAM02T5',), ('ZAM02T6',), ('ZAM03T1',), ('ZAM03T2',), ('ZAM03T3',), ('ZAM03T4',), ('ZAM04T1',), ('ZAM04T3',), ('ZAM04T4',), ('ZAM04T5',), ('ZAM05T1',), ('ZAM06AT1',), ('ZAM06AT2',), ('ZAM06BT1',), ('ZAM06BT2',), ('ZAMG01T1',), ('ZAMG03T1',), ('ZAMG07T1',), ('ZAMG07T2',), ('ZAMG08T1',), ('ZAMG08T2',), ('ZAMG08T3',), ('ZDR01T1',), ('ZDR02T1',), ('ZDR03T1',), ('ZEM0202AT01',), ('ZEM03AT01',), ('ZEM03AT02',), ('ZEM03CT01',), ('ZEM0502',), ('ZEM05T01',), ('ZUR01BT1',), ('ZUR01DT1',), ('ZUR01OT1',)]
+----------------------------------------------------------------------------
+Prompt: jaka byla v cechach inflace?
+Result: Míra inflace v České republice v roce 2023 byla 10.7.
+Queries and Results:
+  Query: SELECT value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Průměrná roční míra inflace' 
+  AND Roky = '2023';
+  Result: 10.7
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Průměrná roční míra inflace' 
+  AND Roky IN ('2022', '2021', '2020', '2019', '2018')
+ORDER BY Roky DESC;
+  Result: [(2022, 15.1), (2021, 3.8), (2020, 3.2), (2019, 2.8), (2018, 2.1)]
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Průměrná roční míra inflace' 
+  AND Roky >= '2015'
+ORDER BY Roky DESC;
+  Result: [(2024, 2.4), (2023, 10.7), (2022, 15.1), (2021, 3.8), (2020, 3.2), (2019, 2.8), (2018, 2.1), (2017, 2.5), (2016, 0.7), (2015, 0.3)]
+  Query: SELECT value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Průměrná roční míra inflace' 
+  AND Roky = '2023';
+  Result: 10.7
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Průměrná roční míra inflace' 
+  AND Roky IN ('2022', '2021', '2020', '2019', '2018')
+ORDER BY Roky DESC;
+  Result: [(2022, 15.1), (2021, 3.8), (2020, 3.2), (2019, 2.8), (2018, 2.1)]
+  Query: SELECT Roky, value 
+FROM WCEN01T02 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Průměrná roční míra inflace' 
+  AND Roky >= '2015'
+ORDER BY Roky DESC;
+  Result: [(2024, 2.4), (2023, 10.7), (2022, 15.1), (2021, 3.8), (2020, 3.2), (2019, 2.8), (2018, 2.1), (2017, 2.5), (2016, 0.7), (2015, 0.3)]
+----------------------------------------------------------------------------
+Prompt: kolik turistu navstivilo prahu?
+Result: V posledním roce navštívilo Prahu žádní turisté s přenocováním, protože nejsou k dispozici žádné výsledky pro tento region.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_tourists
+FROM WCRU05T1
+WHERE "Území" = 'Česko'
+  AND "Druh cestovního ruchu" = 'Příjezdový cestovní ruch'
+  AND "Ukazatel" = 'Turisté (s přenocováním)'
+  AND "Roky" = '2023';
+  Result: 13194486.0423872
+  Query: SELECT SUM(value) AS total_tourists
+FROM WCRU05T1
+WHERE "Území" = 'Praha'
+  AND "Druh cestovního ruchu" = 'Příjezdový cestovní ruch'
+  AND "Ukazatel" = 'Turisté (s přenocováním)'
+  AND "Roky" = '2023';
+  Result: None
+  Query: SELECT DISTINCT "Území"
+FROM WCRU05T1;
+  Result: Česko
+  Query: SELECT SUM(value) AS total_tourists
+FROM WCRU05T1
+WHERE "Území" = 'Česko'
+  AND "Druh cestovního ruchu" = 'Příjezdový cestovní ruch'
+  AND "Ukazatel" = 'Turisté (s přenocováním)'
+  AND "Roky" = '2023';
+  Result: 13194486.0423872
+  Query: SELECT SUM(value) AS total_tourists
+FROM WCRU05T1
+WHERE "Území" = 'Praha'
+  AND "Druh cestovního ruchu" = 'Příjezdový cestovní ruch'
+  AND "Ukazatel" = 'Turisté (s přenocováním)'
+  AND "Roky" = '2023';
+  Result: None
+  Query: SELECT DISTINCT "Území"
+FROM WCRU05T1;
+  Result: Česko
+----------------------------------------------------------------------------
+Prompt: kolik turistu navstivilo prahu?
+Result: Počet turistů, kteří navštívili Prahu v roce 2023, je 5556444.
+Queries and Results:
+  Query: SELECT SUM(value) AS pocet_turistu
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+  AND "Rezidence" = 'Celkem';
+  Result: 5556444.0
+  Query: SELECT "Kategorie ubytovacího zařízení", SUM(value) AS pocet_turistu
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+  AND "Rezidence" = 'Celkem'
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY pocet_turistu DESC
+LIMIT 10;
+  Result: [('HUZ celkem', 2805867.0), ('Hotel, motel, botel ****', 1246728.0), ('Hotel *****', 851846.0), ('Hotel, motel, botel ***', 409294.0), ('Ostatní HUZ', 132224.0), ('Turistická ubytovna', 88107.0), ('Penzion', 22378.0), ('Kemp', None), ('Hotel, motel, botel **', None), ('Hotel, motel, botel *', None)]
+  Query: SELECT "Rezidence", SUM(value) AS pocet_turistu
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Rezidence"
+ORDER BY pocet_turistu DESC
+LIMIT 10;
+  Result: [('Celkem', 5556444.0), ('Nerezidenti', 4858579.0), ('Rezidenti', 697865.0)]
+  Query: SELECT SUM(value) AS pocet_turistu
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+  AND "Rezidence" = 'Celkem';
+  Result: 5556444.0
+  Query: SELECT "Kategorie ubytovacího zařízení", SUM(value) AS pocet_turistu
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+  AND "Rezidence" = 'Celkem'
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY pocet_turistu DESC
+LIMIT 10;
+  Result: [('HUZ celkem', 2805867.0), ('Hotel, motel, botel ****', 1246728.0), ('Hotel *****', 851846.0), ('Hotel, motel, botel ***', 409294.0), ('Ostatní HUZ', 132224.0), ('Turistická ubytovna', 88107.0), ('Penzion', 22378.0), ('Kemp', None), ('Hotel, motel, botel **', None), ('Hotel, motel, botel *', None)]
+  Query: SELECT "Rezidence", SUM(value) AS pocet_turistu
+FROM CRU02ROBCET4
+WHERE "Správní obvody hl. města Prahy" = 'Praha 1'
+  AND "Roky" = '2023'
+  AND "Ukazatel" = 'Počet hostů'
+GROUP BY "Rezidence"
+ORDER BY pocet_turistu DESC
+LIMIT 10;
+  Result: [('Celkem', 5556444.0), ('Nerezidenti', 4858579.0), ('Rezidenti', 697865.0)]
+----------------------------------------------------------------------------
+Prompt: a kolik jich bylo v roce 2022?
+Result: V roce 2022 bylo zaznamenáno 58835 jednotek.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_units
+FROM RSO001
+WHERE "Ukazatel" = "Počet územních jednotek"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Roky" = 2022;
+  Result: 58835
+  Query: SELECT "Typ prostorové jednotky", SUM(value) AS total_units
+FROM RSO001
+WHERE "Ukazatel" = "Počet územních jednotek"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Roky" = 2022
+GROUP BY "Typ prostorové jednotky"
+ORDER BY total_units DESC
+LIMIT 10;
+  Result: [('Základní sídelní jednotka', 23584), ('Část obce', 15105), ('Katastrální území', 13077), ('Obec', 6258), ('Správní obvod obce s pověřeným obecním úřadem', 388), ('Správní obvod obce s rozšířenou působností', 205), ('Městský obvod (městská část) statutárních měst', 142), ('Okres', 76)]
+  Query: SELECT "Roky", SUM(value) AS total_units
+FROM RSO001
+WHERE "Ukazatel" = "Počet územních jednotek"
+  AND "ČR, kraje, okresy" = "Česko"
+GROUP BY "Roky"
+ORDER BY "Roky";
+  Result: [(2015, 57750), (2016, 57758), (2017, 57781), (2018, 57789), (2019, 57899), (2020, 57903), (2021, 58834), (2022, 58835), (2023, 58839), (2024, 58839)]
+  Query: SELECT SUM(value) AS total_units
+FROM RSO001
+WHERE "Ukazatel" = "Počet územních jednotek"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Roky" = 2022;
+  Result: 58835
+  Query: SELECT "Typ prostorové jednotky", SUM(value) AS total_units
+FROM RSO001
+WHERE "Ukazatel" = "Počet územních jednotek"
+  AND "ČR, kraje, okresy" = "Česko"
+  AND "Roky" = 2022
+GROUP BY "Typ prostorové jednotky"
+ORDER BY total_units DESC
+LIMIT 10;
+  Result: [('Základní sídelní jednotka', 23584), ('Část obce', 15105), ('Katastrální území', 13077), ('Obec', 6258), ('Správní obvod obce s pověřeným obecním úřadem', 388), ('Správní obvod obce s rozšířenou působností', 205), ('Městský obvod (městská část) statutárních měst', 142), ('Okres', 76)]
+  Query: SELECT "Roky", SUM(value) AS total_units
+FROM RSO001
+WHERE "Ukazatel" = "Počet územních jednotek"
+  AND "ČR, kraje, okresy" = "Česko"
+GROUP BY "Roky"
+ORDER BY "Roky";
+  Result: [(2015, 57750), (2016, 57758), (2017, 57781), (2018, 57789), (2019, 57899), (2020, 57903), (2021, 58834), (2022, 58835), (2023, 58839), (2024, 58839)]
+----------------------------------------------------------------------------
