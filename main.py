@@ -142,6 +142,7 @@ async def main(prompt=None, thread_id=None):
         initial_state: DataAnalysisState = {
             "prompt": prompt,
             "rewritten_prompt": None,
+            "rewritten_prompt_history": [],
             "messages": [],
             "iteration": 0,
             "queries_and_results": [],

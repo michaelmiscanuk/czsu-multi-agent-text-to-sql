@@ -49,6 +49,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   const [allTables, setAllTables] = React.useState<{ selection_code: string, short_description: string }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
+  const [sortConfig, setSortConfig] = React.useState<{ column: string | null; direction: 'asc' | 'desc' | null }>({ column: null, direction: null });
 
   // Prefill search box if pendingTableSearch changes
   React.useEffect(() => {
@@ -224,6 +225,40 @@ const DataTableView: React.FC<DataTableViewProps> = ({
     );
   }, [rows, columns, columnFilters]);
 
+  // Sorting logic
+  const sortedRows = React.useMemo(() => {
+    if (!sortConfig.column || !sortConfig.direction) return filteredRows;
+    const colIdx = columns.indexOf(sortConfig.column);
+    if (colIdx === -1) return filteredRows;
+    const sorted = [...filteredRows].sort((a, b) => {
+      const aVal = a[colIdx];
+      const bVal = b[colIdx];
+      // Try numeric sort if both are numbers
+      if (!isNaN(parseFloat(aVal)) && !isNaN(parseFloat(bVal))) {
+        return sortConfig.direction === 'asc'
+          ? parseFloat(aVal) - parseFloat(bVal)
+          : parseFloat(bVal) - parseFloat(aVal);
+      }
+      // Fallback to string sort (diacritics-insensitive)
+      const aStr = removeDiacritics(String(aVal)).toLowerCase();
+      const bStr = removeDiacritics(String(bVal)).toLowerCase();
+      if (aStr < bStr) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aStr > bStr) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [filteredRows, sortConfig, columns]);
+
+  // Handle sort click
+  const handleSort = (col: string) => {
+    setSortConfig(prev => {
+      if (prev.column !== col) return { column: col, direction: 'asc' };
+      if (prev.direction === 'asc') return { column: col, direction: 'desc' };
+      if (prev.direction === 'desc') return { column: null, direction: null };
+      return { column: col, direction: 'asc' };
+    });
+  };
+
   return (
     <div className="flex flex-col h-full p-6">
       <div className="mb-4 flex flex-col relative z-30">
@@ -313,8 +348,43 @@ const DataTableView: React.FC<DataTableViewProps> = ({
                 <thead className="bg-blue-100 sticky top-0 z-10">
                   <tr>
                     {columns.map(col => (
-                      <th key={col} className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap">
-                        {col}
+                      <th
+                        key={col}
+                        className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none group"
+                        onClick={() => handleSort(col)}
+                        tabIndex={0}
+                        aria-sort={
+                          sortConfig.column === col
+                            ? sortConfig.direction === 'asc'
+                              ? 'ascending'
+                              : sortConfig.direction === 'desc'
+                                ? 'descending'
+                                : 'none'
+                            : 'none'
+                        }
+                        title={`Sort by ${col}`}
+                        style={{ userSelect: 'none' }}
+                      >
+                        <span className="flex items-center">
+                          {col}
+                          <span className="ml-1">
+                            {sortConfig.column === col ? (
+                              sortConfig.direction === 'asc' ? (
+                                // ▲ black
+                                <svg width="12" height="12" viewBox="0 0 12 12" className="inline" aria-label="Sorted ascending"><polygon points="6,3 11,9 1,9" fill="black" /></svg>
+                              ) : sortConfig.direction === 'desc' ? (
+                                // ▼ black
+                                <svg width="12" height="12" viewBox="0 0 12 12" className="inline" aria-label="Sorted descending"><polygon points="1,3 11,3 6,9" fill="black" /></svg>
+                              ) : (
+                                // Neutral icon (gray)
+                                <svg width="12" height="12" viewBox="0 0 12 12" className="inline" aria-label="Not sorted"><polygon points="2,4 10,4 6,8" fill="#bbb" /></svg>
+                              )
+                            ) : (
+                              // Neutral icon (gray)
+                              <svg width="12" height="12" viewBox="0 0 12 12" className="inline" aria-label="Not sorted"><polygon points="2,4 10,4 6,8" fill="#bbb" /></svg>
+                            )}
+                          </span>
+                        </span>
                       </th>
                     ))}
                   </tr>
@@ -343,7 +413,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRows.map((row, i) => (
+                  {sortedRows.map((row, i) => (
                     <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
                       {row.map((cell, j) => (
                         <td key={j} className="px-4 py-2 border-b whitespace-pre-line text-gray-800">

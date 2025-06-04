@@ -8857,5 +8857,671 @@
         "result": "None"
       }
     ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "Aktuální počet obyvatel v Praze je 1301432.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      }
+    ]
+  },
+  {
+    "prompt": "a kolik v brne?",
+    "result": "Aktuální počet obyvatel v Brně v roce 2021 není v dostupných datech uveden. Mám pouze informace o počtu obyvatel v Jihomoravském kraji, který je 1197651, a v Praze, kde je 1301432.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      }
+    ]
+  },
+  {
+    "prompt": "dobre, tak jake dalsi kraje mas k dispozici?",
+    "result": "Další kraje v České republice, které mají k dispozici údaje o počtu obyvatel v roce 2021, zahrnují: Jihomoravský kraj, Jihočeský kraj, Plzeňský kraj, Karlovarský kraj, Ústecký kraj, Liberecký kraj, Královéhradecký kraj, Pardubický kraj, Kraj Vysočina, Moravskoslezský kraj, Olomoucký kraj, Zlínský kraj, Středočeský kraj, Jihovýchod, Severovýchod, Severozápad, Střední Morava a Jihozápad.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT DISTINCT \"Území podle okresů\"\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" NOT IN ('Česká republika');",
+        "result": "[('Praha',), ('Střední Čechy',), ('Jihozápad',), ('Severozápad',), ('Severovýchod',), ('Jihovýchod',), ('Střední Morava',), ('Moravskoslezsko',), ('Hlavní město Praha',), ('Středočeský kraj',), ('Jihočeský kraj',), ('Plzeňský kraj',), ('Karlovarský kraj',), ('Ústecký kraj',), ('Liberecký kraj',), ('Královéhradecký kraj',), ('Pardubický kraj',), ('Kraj Vysočina',), ('Jihomoravský kraj',), ('Olomoucký kraj',), ('Zlínský kraj',), ('Moravskoslezský kraj',)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Území podle okresů\"\nORDER BY pocet_obyvatel DESC\nLIMIT 10;",
+        "result": "[('Česká republika', 21048334), ('Jihovýchod', 3390624), ('Severovýchod', 2967120), ('Středočeský kraj', 2830926), ('Střední Čechy', 2830926), ('Praha', 2602864), ('Hlavní město Praha', 2602864), ('Jihozápad', 2426478), ('Jihomoravský kraj', 2395302), ('Střední Morava', 2368238)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Území podle okresů\", \"Pohlaví\"\nORDER BY \"Území podle okresů\", \"Pohlaví\";",
+        "result": "[('Hlavní město Praha', 'celkem', 1301432), ('Hlavní město Praha', 'muž', 633449), ('Hlavní město Praha', 'žena', 667983), ('Jihomoravský kraj', 'celkem', 1197651), ('Jihomoravský kraj', 'muž', 589553), ('Jihomoravský kraj', 'žena', 608098), ('Jihovýchod', 'celkem', 1695312), ('Jihovýchod', 'muž', 836921), ('Jihovýchod', 'žena', 858391), ('Jihozápad', 'celkem', 1213239), ('Jihozápad', 'muž', 601047), ('Jihozápad', 'žena', 612192), ('Jihočeský kraj', 'celkem', 631803), ('Jihočeský kraj', 'muž', 312168), ('Jihočeský kraj', 'žena', 319635), ('Karlovarský kraj', 'celkem', 279103), ('Karlovarský kraj', 'muž', 138110), ('Karlovarský kraj', 'žena', 140993), ('Kraj Vysočina', 'celkem', 497661), ('Kraj Vysočina', 'muž', 247368), ('Kraj Vysočina', 'žena', 250293), ('Královéhradecký kraj', 'celkem', 538303), ('Královéhradecký kraj', 'muž', 266017), ('Královéhradecký kraj', 'žena', 272286), ('Liberecký kraj', 'celkem', 435220), ('Liberecký kraj', 'muž', 215420), ('Liberecký kraj', 'žena', 219800), ('Moravskoslezsko', 'celkem', 1162841), ('Moravskoslezsko', 'muž', 570091), ('Moravskoslezsko', 'žena', 592750), ('Moravskoslezský kraj', 'celkem', 1162841), ('Moravskoslezský kraj', 'muž', 570091), ('Moravskoslezský kraj', 'žena', 592750), ('Olomoucký kraj', 'celkem', 619788), ('Olomoucký kraj', 'muž', 303895), ('Olomoucký kraj', 'žena', 315893), ('Pardubický kraj', 'celkem', 510037), ('Pardubický kraj', 'muž', 252946), ('Pardubický kraj', 'žena', 257091), ('Plzeňský kraj', 'celkem', 581436), ('Plzeňský kraj', 'muž', 288879), ('Plzeňský kraj', 'žena', 292557), ('Praha', 'celkem', 1301432), ('Praha', 'muž', 633449), ('Praha', 'žena', 667983), ('Severovýchod', 'celkem', 1483560), ('Severovýchod', 'muž', 734383), ('Severovýchod', 'žena', 749177), ('Severozápad', 'celkem', 1068201), ('Severozápad', 'muž', 527075), ('Severozápad', 'žena', 541126), ('Střední Morava', 'celkem', 1184119), ('Střední Morava', 'muž', 581041), ('Střední Morava', 'žena', 603078), ('Střední Čechy', 'celkem', 1415463), ('Střední Čechy', 'muž', 702541), ('Střední Čechy', 'žena', 712922), ('Středočeský kraj', 'celkem', 1415463), ('Středočeský kraj', 'muž', 702541), ('Středočeský kraj', 'žena', 712922), ('Zlínský kraj', 'celkem', 564331), ('Zlínský kraj', 'muž', 277146), ('Zlínský kraj', 'žena', 287185), ('Ústecký kraj', 'celkem', 789098), ('Ústecký kraj', 'muž', 388965), ('Ústecký kraj', 'žena', 400133), ('Česká republika', 'celkem', 10524167), ('Česká republika', 'muž', 5186548), ('Česká republika', 'žena', 5337619)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT \"Rok sčítání\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Území podle okresů\" = 'Praha'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Rok sčítání\"\nORDER BY \"Rok sčítání\";",
+        "result": "[(2021, 2602864)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Pohlaví\" = 'celkem';",
+        "result": "1197651"
+      },
+      {
+        "query": "SELECT \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Území podle okresů\" = 'Jihomoravský kraj'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Pohlaví\";",
+        "result": "[('celkem', 1197651), ('muž', 589553), ('žena', 608098)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" IN ('Jihomoravský kraj', 'Praha')\nGROUP BY \"Území podle okresů\";",
+        "result": "[('Jihomoravský kraj', 2395302), ('Praha', 2602864)]"
+      },
+      {
+        "query": "SELECT DISTINCT \"Území podle okresů\"\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\n  AND \"Území podle okresů\" NOT IN ('Česká republika');",
+        "result": "[('Praha',), ('Střední Čechy',), ('Jihozápad',), ('Severozápad',), ('Severovýchod',), ('Jihovýchod',), ('Střední Morava',), ('Moravskoslezsko',), ('Hlavní město Praha',), ('Středočeský kraj',), ('Jihočeský kraj',), ('Plzeňský kraj',), ('Karlovarský kraj',), ('Ústecký kraj',), ('Liberecký kraj',), ('Královéhradecký kraj',), ('Pardubický kraj',), ('Kraj Vysočina',), ('Jihomoravský kraj',), ('Olomoucký kraj',), ('Zlínský kraj',), ('Moravskoslezský kraj',)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Území podle okresů\"\nORDER BY pocet_obyvatel DESC\nLIMIT 10;",
+        "result": "[('Česká republika', 21048334), ('Jihovýchod', 3390624), ('Severovýchod', 2967120), ('Středočeský kraj', 2830926), ('Střední Čechy', 2830926), ('Praha', 2602864), ('Hlavní město Praha', 2602864), ('Jihozápad', 2426478), ('Jihomoravský kraj', 2395302), ('Střední Morava', 2368238)]"
+      },
+      {
+        "query": "SELECT \"Území podle okresů\", \"Pohlaví\", SUM(value) AS pocet_obyvatel\nFROM SLD0100M1\nWHERE \"Rok sčítání\" = '2021'\n  AND \"Ukazatel\" = 'Obyvatelstvo'\nGROUP BY \"Území podle okresů\", \"Pohlaví\"\nORDER BY \"Území podle okresů\", \"Pohlaví\";",
+        "result": "[('Hlavní město Praha', 'celkem', 1301432), ('Hlavní město Praha', 'muž', 633449), ('Hlavní město Praha', 'žena', 667983), ('Jihomoravský kraj', 'celkem', 1197651), ('Jihomoravský kraj', 'muž', 589553), ('Jihomoravský kraj', 'žena', 608098), ('Jihovýchod', 'celkem', 1695312), ('Jihovýchod', 'muž', 836921), ('Jihovýchod', 'žena', 858391), ('Jihozápad', 'celkem', 1213239), ('Jihozápad', 'muž', 601047), ('Jihozápad', 'žena', 612192), ('Jihočeský kraj', 'celkem', 631803), ('Jihočeský kraj', 'muž', 312168), ('Jihočeský kraj', 'žena', 319635), ('Karlovarský kraj', 'celkem', 279103), ('Karlovarský kraj', 'muž', 138110), ('Karlovarský kraj', 'žena', 140993), ('Kraj Vysočina', 'celkem', 497661), ('Kraj Vysočina', 'muž', 247368), ('Kraj Vysočina', 'žena', 250293), ('Královéhradecký kraj', 'celkem', 538303), ('Královéhradecký kraj', 'muž', 266017), ('Královéhradecký kraj', 'žena', 272286), ('Liberecký kraj', 'celkem', 435220), ('Liberecký kraj', 'muž', 215420), ('Liberecký kraj', 'žena', 219800), ('Moravskoslezsko', 'celkem', 1162841), ('Moravskoslezsko', 'muž', 570091), ('Moravskoslezsko', 'žena', 592750), ('Moravskoslezský kraj', 'celkem', 1162841), ('Moravskoslezský kraj', 'muž', 570091), ('Moravskoslezský kraj', 'žena', 592750), ('Olomoucký kraj', 'celkem', 619788), ('Olomoucký kraj', 'muž', 303895), ('Olomoucký kraj', 'žena', 315893), ('Pardubický kraj', 'celkem', 510037), ('Pardubický kraj', 'muž', 252946), ('Pardubický kraj', 'žena', 257091), ('Plzeňský kraj', 'celkem', 581436), ('Plzeňský kraj', 'muž', 288879), ('Plzeňský kraj', 'žena', 292557), ('Praha', 'celkem', 1301432), ('Praha', 'muž', 633449), ('Praha', 'žena', 667983), ('Severovýchod', 'celkem', 1483560), ('Severovýchod', 'muž', 734383), ('Severovýchod', 'žena', 749177), ('Severozápad', 'celkem', 1068201), ('Severozápad', 'muž', 527075), ('Severozápad', 'žena', 541126), ('Střední Morava', 'celkem', 1184119), ('Střední Morava', 'muž', 581041), ('Střední Morava', 'žena', 603078), ('Střední Čechy', 'celkem', 1415463), ('Střední Čechy', 'muž', 702541), ('Střední Čechy', 'žena', 712922), ('Středočeský kraj', 'celkem', 1415463), ('Středočeský kraj', 'muž', 702541), ('Středočeský kraj', 'žena', 712922), ('Zlínský kraj', 'celkem', 564331), ('Zlínský kraj', 'muž', 277146), ('Zlínský kraj', 'žena', 287185), ('Ústecký kraj', 'celkem', 789098), ('Ústecký kraj', 'muž', 388965), ('Ústecký kraj', 'žena', 400133), ('Česká republika', 'celkem', 10524167), ('Česká republika', 'muž', 5186548), ('Česká republika', 'žena', 5337619)]"
+      }
+    ]
   }
 ]

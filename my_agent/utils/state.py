@@ -31,6 +31,7 @@ class DataAnalysisState(TypedDict):
     """
     prompt: str  # User query to analyze
     rewritten_prompt: str  # Rewritten user query for downstream nodes
+    rewritten_prompt_history: Annotated[List[str], add]  # History of rewritten prompts for conversational context
     messages: Annotated[List[BaseMessage], add]  # Conversation history with add reducer
     iteration: int  # Iteration counter for workflow loop prevention
     queries_and_results: Annotated[List[Tuple[str, str]], add]  # Collection of executed queries and their results with add reducer

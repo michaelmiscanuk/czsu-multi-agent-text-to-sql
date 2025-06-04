@@ -499,37 +499,58 @@ async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
     
     This node takes the original user prompt and rewrites it according to LLM instructions.
     The rewritten prompt is stored in the state as 'rewritten_prompt'.
+    It also uses the previous rewritten prompt and queries_and_results as context for conversational disambiguation.
     """
     debug_print("REWRITE: Enter rewrite_query_node")
-    
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
-    
-    # You can extend this prompt as needed for your rewriting instructions
+
+    # Gather previous context
+    prev_rewritten = None
+    if "rewritten_prompt_history" in state and state["rewritten_prompt_history"]:
+        prev_rewritten = state["rewritten_prompt_history"][-1]
+    queries_and_results = state.get("queries_and_results", [])
+    queries_results_text = "\n\n".join(
+        f"Query {i+1}: {q}\nResult {i+1}: {r}" for i, (q, r) in enumerate(queries_and_results)
+    ) if queries_and_results else None
+
+    # Extended system prompt for conversational context
     system_prompt = """
-You are an expert in reformulation of questions to fit best for semantic search in a vector database. 
+You are an expert in reformulation of questions to fit best for semantic search in a vector database.
 Your task is to rewrite the user's question to make it clearer, more specific, and well-structured.
-Mainly to make it fit for our table description in a vector database, so that based on this query, corrent table will be found using vector database and semantic search, see example below.
-In my descriptions we have a basic table description about what can be found in a table, then it writes out all available columns and distinct values there. 
-Do also this:
+If the user question is a follow-up (e.g., 'and how many in Brno?'), use the previous rewritten question and previous queries/results as context to disambiguate and make the new question fully self-contained.
+
+- If previous rewritten prompt is provided, use it to resolve references like 'and', 'also', 'that', etc.
+- If queries_and_results are provided, use them to avoid repeating already answered questions and to clarify what the user might be referring to.
 - Clarify ambiguous terms if possible.
 - Remove unnecessary filler words.
 - Make the question as precise as possible, but do not add information not present in the original prompt.
-MOST IMPORTANT:
 - Make it structured, so mentions what are the dimensions, what are the metrics, what is the time period, what is the geography, etc.
 Return only the rewritten question, with no extra commentary or formatting.
 """
-    
+
+    # Compose the human message
+    human_parts = [f"Original question: {state['prompt']}"]
+    if prev_rewritten:
+        human_parts.append(f"Previous rewritten question: {prev_rewritten}")
+    if queries_results_text:
+        human_parts.append(f"Previous queries and results:\n{queries_results_text}")
+    human_message = "\n\n".join(human_parts)
+
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
-        ("human", "Original question: {prompt}")
+        ("human", human_message)
     ])
-    
+
     result = await llm.ainvoke(
-        prompt.format_messages(prompt=state["prompt"])
+        prompt.format_messages()
     )
-    
+
     rewritten_prompt = result.content.strip()
     debug_print(f"REWRITE: Rewritten prompt: {rewritten_prompt}")
-    
-    # Store the rewritten prompt in the state
-    return {"rewritten_prompt": rewritten_prompt, "messages": [result]}
+
+    # Update rewritten_prompt_history
+    new_history = list(state.get("rewritten_prompt_history", []))
+    new_history.append(rewritten_prompt)
+
+    # Store the rewritten prompt and updated history in the state
+    return {"rewritten_prompt": rewritten_prompt, "rewritten_prompt_history": new_history, "messages": [result]}
