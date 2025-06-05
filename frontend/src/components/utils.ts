@@ -6,7 +6,7 @@ export function removeDiacritics(str: string): string {
 // chatDb.ts - Modern IndexedDB utility for chat sessions/messages
 import { openDB, DBSchema } from 'idb';
 
-export interface ChatSessionMeta {
+export interface ChatThreadMeta {
   id: string;
   user: string; // user email
   title: string;
@@ -16,7 +16,7 @@ export interface ChatSessionMeta {
 
 export interface ChatMessage {
   id: string;
-  sessionId: string;
+  threadId: string;
   user: string;
   content: string;
   isUser: boolean;
@@ -27,65 +27,65 @@ export interface ChatMessage {
 }
 
 interface ChatDbSchema extends DBSchema {
-  sessions: {
-    key: string; // `${user}:${sessionId}`
-    value: ChatSessionMeta;
+  threads: {
+    key: string; // `${user}:${threadId}`
+    value: ChatThreadMeta;
     indexes: { 'by-user': string };
   };
   messages: {
-    key: string; // `${user}:${sessionId}:${messageId}`
+    key: string; // `${user}:${threadId}:${messageId}`
     value: ChatMessage;
-    indexes: { 'by-session': string, 'by-user': string };
+    indexes: { 'by-thread': string, 'by-user': string };
   };
 }
 
 export async function getChatDb() {
   return openDB<ChatDbSchema>('czsu-chat-modern', 3, {
     upgrade(db) {
-      if (db.objectStoreNames.contains('sessions')) {
-        db.deleteObjectStore('sessions');
+      if (db.objectStoreNames.contains('threads')) {
+        db.deleteObjectStore('threads');
       }
-      const sessionStore = db.createObjectStore('sessions', { keyPath: 'id' });
-      sessionStore.createIndex('by-user', 'user');
+      const threadStore = db.createObjectStore('threads', { keyPath: 'id' });
+      threadStore.createIndex('by-user', 'user');
 
       if (db.objectStoreNames.contains('messages')) {
         db.deleteObjectStore('messages');
       }
       const msgStore = db.createObjectStore('messages', { keyPath: 'id' });
-      msgStore.createIndex('by-session', 'sessionId');
+      msgStore.createIndex('by-thread', 'threadId');
       msgStore.createIndex('by-user', 'user');
     },
   });
 }
 
 // Session CRUD
-export async function listSessions(user: string): Promise<ChatSessionMeta[]> {
+export async function listThreads(user: string): Promise<ChatThreadMeta[]> {
   const db = await getChatDb();
-  const sessions = await db.getAllFromIndex('sessions', 'by-user', user);
-  console.log('[listSessions] For user:', user, 'Sessions:', JSON.stringify(sessions));
-  return sessions.sort((a, b) => b.updatedAt - a.updatedAt);
+  const threads = await db.getAllFromIndex('threads', 'by-user', user);
+  console.log('[listThreads] For user:', user, 'Threads:', JSON.stringify(threads));
+  return threads.sort((a, b) => b.updatedAt - a.updatedAt);
 }
-export async function getChatSession(user: string, id: string): Promise<ChatSessionMeta | undefined> {
+export async function getChatThread(user: string, id: string): Promise<ChatThreadMeta | undefined> {
   const db = await getChatDb();
-  return db.get('sessions', id);
+  return db.get('threads', id);
 }
-export async function saveSession(meta: ChatSessionMeta) {
+export async function saveThread(meta: ChatThreadMeta) {
   const db = await getChatDb();
-  await db.put('sessions', meta);
-  console.log('[saveSession] Saved:', JSON.stringify(meta));
+  await db.put('threads', meta);
+  console.log('[saveThread] Saved:', JSON.stringify(meta));
 }
-export async function deleteSession(user: string, id: string) {
+export async function deleteThread(user: string, id: string) {
   const db = await getChatDb();
-  await db.delete('sessions', id);
-  // Also delete all messages for this session
+  await db.delete('threads', id);
+  // Also delete all messages for this thread
   const msgs = await listMessages(user, id);
   await Promise.all(msgs.map(m => db.delete('messages', m.id)));
 }
 
 // Message CRUD
-export async function listMessages(user: string, sessionId: string): Promise<ChatMessage[]> {
+export async function listMessages(user: string, threadId: string): Promise<ChatMessage[]> {
   const db = await getChatDb();
-  const all = await db.getAllFromIndex('messages', 'by-session', sessionId);
+  const all = await db.getAllFromIndex('messages', 'by-thread', threadId);
   return all.filter(m => m.user === user).sort((a, b) => a.createdAt - b.createdAt);
 }
 export async function saveMessage(msg: ChatMessage) {

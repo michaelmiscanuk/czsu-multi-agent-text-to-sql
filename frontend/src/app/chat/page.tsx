@@ -6,13 +6,13 @@ import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
 import {
-  listSessions,
-  getChatSession,
-  saveSession,
-  deleteSession,
+  listThreads,
+  getChatThread,
+  saveThread,
+  deleteThread,
   listMessages,
   saveMessage,
-  ChatSessionMeta,
+  ChatThreadMeta,
   ChatMessage
 } from '@/components/utils';
 
@@ -46,8 +46,8 @@ export default function ChatPage() {
     return <div>Loading...</div>;
   }
   // const userEmail = "test3@test.com"
-  const [sessions, setSessions] = useState<ChatSessionMeta[]>([]);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [threads, setThreads] = useState<ChatThreadMeta[]>([]);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -66,56 +66,56 @@ export default function ChatPage() {
   // Load sessions on mount/user change
   useEffect(() => {
     if (!userEmail) return;
-    listSessions(userEmail).then(setSessions);
+    listThreads(userEmail).then(setThreads);
   }, [userEmail]);
 
   // Load messages for active session
   useEffect(() => {
-    if (!userEmail || !activeSessionId) {
+    if (!userEmail || !activeThreadId) {
       setMessages([]);
       return;
     }
-    listMessages(userEmail, activeSessionId).then(setMessages);
-  }, [userEmail, activeSessionId]);
+    listMessages(userEmail, activeThreadId).then(setMessages);
+  }, [userEmail, activeThreadId]);
 
   // Remember last active chat in localStorage
   useEffect(() => {
-    if (activeSessionId) {
-      localStorage.setItem('czsu-last-active-chat', activeSessionId);
+    if (activeThreadId) {
+      localStorage.setItem('czsu-last-active-chat', activeThreadId);
     }
-  }, [activeSessionId]);
+  }, [activeThreadId]);
 
   // Restore last active chat on mount
   useEffect(() => {
     if (!userEmail) return;
     const lastActive = localStorage.getItem('czsu-last-active-chat');
     if (lastActive) {
-      setActiveSessionId(lastActive);
-    } else if (sessions.length > 0 && !activeSessionId) {
-      setActiveSessionId(sessions[0].id);
+      setActiveThreadId(lastActive);
+    } else if (threads.length > 0 && !activeThreadId) {
+      setActiveThreadId(threads[0].id);
     }
     // eslint-disable-next-line
-  }, [userEmail, sessions.length]);
+  }, [userEmail, threads.length]);
 
   // Robust auto-create: Only after loading sessions from storage
   useEffect(() => {
     if (!userEmail) return;
     (async () => {
-      const loadedSessions = await listSessions(userEmail);
-      setSessions(loadedSessions);
-      if (loadedSessions.length === 0) {
+      const loadedThreads = await listThreads(userEmail);
+      setThreads(loadedThreads);
+      if (loadedThreads.length === 0) {
         const id = uuidv4();
         const now = Date.now();
-        const meta: ChatSessionMeta = {
+        const meta: ChatThreadMeta = {
           id,
           user: userEmail,
           title: 'New Chat',
           createdAt: now,
           updatedAt: now,
         };
-        await saveSession(meta);
-        setSessions([meta]);
-        setActiveSessionId(id);
+        await saveThread(meta);
+        setThreads([meta]);
+        setActiveThreadId(id);
         setTimeout(() => inputRef.current?.focus(), 0);
       }
     })();
@@ -126,29 +126,29 @@ export default function ChatPage() {
     if (!userEmail) return;
     const id = uuidv4();
     const now = Date.now();
-    const meta: ChatSessionMeta = {
+    const meta: ChatThreadMeta = {
       id,
       user: userEmail,
       title: 'New Chat',
       createdAt: now,
       updatedAt: now,
     };
-    await saveSession(meta);
-    setSessions(await listSessions(userEmail));
-    setActiveSessionId(id);
+    await saveThread(meta);
+    setThreads(await listThreads(userEmail));
+    setActiveThreadId(id);
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   // Rename chat
   const handleRename = async (id: string, title: string) => {
     if (!userEmail) return;
-    const meta = await getChatSession(userEmail, id);
+    const meta = await getChatThread(userEmail, id);
     if (meta) {
       meta.title = title;
       meta.updatedAt = Date.now();
-      await saveSession(meta);
-      setSessions(await listSessions(userEmail));
-      console.log('[ChatPage] Sidebar sessions after title update:', await listSessions(userEmail));
+      await saveThread(meta);
+      setThreads(await listThreads(userEmail));
+      console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
       setEditingTitleId(null);
     }
   };
@@ -156,11 +156,11 @@ export default function ChatPage() {
   // Delete chat
   const handleDelete = async (id: string) => {
     if (!userEmail) return;
-    await deleteSession(userEmail, id);
-    const updated = await listSessions(userEmail);
-    setSessions(updated);
-    if (activeSessionId === id) {
-      setActiveSessionId(updated[0]?.id || null);
+    await deleteThread(userEmail, id);
+    const updated = await listThreads(userEmail);
+    setThreads(updated);
+    if (activeThreadId === id) {
+      setActiveThreadId(updated[0]?.id || null);
     }
   };
 
@@ -169,46 +169,46 @@ export default function ChatPage() {
     e.preventDefault();
     if (!userEmail || !currentMessage.trim()) return;
     setIsLoading(true);
-    let sessionId = activeSessionId;
-    let isNewSession = false;
+    let threadId = activeThreadId;
+    let isNewThread = false;
     // If no session exists, create a new one
-    if (!sessionId) {
-      sessionId = uuidv4();
+    if (!threadId) {
+      threadId = uuidv4();
       const now = Date.now();
-      const meta: ChatSessionMeta = {
-        id: sessionId,
+      const meta: ChatThreadMeta = {
+        id: threadId,
         user: userEmail,
         title: currentMessage.slice(0, 30), // Use first message as title, max 30 chars, no ellipsis
         createdAt: now,
         updatedAt: now,
       };
-      await saveSession(meta);
-      setSessions(await listSessions(userEmail));
-      console.log('[ChatPage] Sidebar sessions after save:', await listSessions(userEmail));
-      setActiveSessionId(sessionId);
-      isNewSession = true;
+      await saveThread(meta);
+      setThreads(await listThreads(userEmail));
+      console.log('[ChatPage] Sidebar sessions after save:', await listThreads(userEmail));
+      setActiveThreadId(threadId);
+      isNewThread = true;
     }
     const msg: ChatMessage = {
       id: uuidv4(),
-      sessionId: sessionId,
+      threadId: threadId,
       user: userEmail,
       content: currentMessage,
       isUser: true,
       createdAt: Date.now(),
     };
     await saveMessage(msg);
-    setMessages(await listMessages(userEmail, sessionId));
+    setMessages(await listMessages(userEmail, threadId));
     setCurrentMessage("");
     // Always update session title to first message if this is the first message in the session
-    const sessionMessages = await listMessages(userEmail, sessionId);
-    if (sessionMessages.length === 1) {
-      const meta = await getChatSession(userEmail, sessionId);
+    const threadMessages = await listMessages(userEmail, threadId);
+    if (threadMessages.length === 1) {
+      const meta = await getChatThread(userEmail, threadId);
       if (meta) {
         meta.title = msg.content.slice(0, 30);
         meta.updatedAt = Date.now();
-        await saveSession(meta);
-        setSessions(await listSessions(userEmail));
-        console.log('[ChatPage] Sidebar sessions after title update:', await listSessions(userEmail));
+        await saveThread(meta);
+        setThreads(await listThreads(userEmail));
+        console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
       }
     }
     // Call backend for AI response
@@ -227,7 +227,7 @@ export default function ChatPage() {
       let response = await fetch(API_URL, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ prompt: msg.content, thread_id: sessionId })
+        body: JSON.stringify({ prompt: msg.content, thread_id: threadId })
       });
       // If 401, try to force session refresh and retry once
       if (response.status === 401) {
@@ -245,7 +245,7 @@ export default function ChatPage() {
         response = await fetch(API_URL, {
           method: 'POST',
           headers: retryHeaders,
-          body: JSON.stringify({ prompt: msg.content, thread_id: sessionId })
+          body: JSON.stringify({ prompt: msg.content, thread_id: threadId })
         });
         if (response.status === 401) {
           signOut();
@@ -259,7 +259,7 @@ export default function ChatPage() {
       const data = await response.json();
       const aiMsg: ChatMessage = {
         id: uuidv4(),
-        sessionId: sessionId,
+        threadId: threadId,
         user: userEmail,
         content: data.result || JSON.stringify(data),
         isUser: false,
@@ -271,18 +271,18 @@ export default function ChatPage() {
         }
       };
       await saveMessage(aiMsg);
-      setMessages(await listMessages(userEmail, sessionId));
+      setMessages(await listMessages(userEmail, threadId));
       // Update session updatedAt
-      const meta = await getChatSession(userEmail, sessionId);
+      const meta = await getChatThread(userEmail, threadId);
       if (meta) {
         meta.updatedAt = Date.now();
         // If this was a new session, update the title to the first message
-        if (isNewSession) {
+        if (isNewThread) {
           meta.title = msg.content.slice(0, 30);
         }
-        await saveSession(meta);
-        setSessions(await listSessions(userEmail));
-        console.log('[ChatPage] Sidebar sessions after title update:', await listSessions(userEmail));
+        await saveThread(meta);
+        setThreads(await listThreads(userEmail));
+        console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
       }
     } catch (error) {
       // Optionally show error message
@@ -335,17 +335,17 @@ export default function ChatPage() {
             style={{ color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.18)' }}
             onClick={handleNewChat}
             title="New chat"
-            disabled={isLoading || sessions.some(s => !messages.length && s.id === activeSessionId)}
+            disabled={isLoading || threads.some(s => !messages.length && s.id === activeThreadId)}
           >
             +
           </button>
         </div>
         <div className="flex-1 overflow-y-auto">
-          {sessions.length === 0 ? (
+          {threads.length === 0 ? (
             <div className="text-xs text-gray-400 mt-4">No chats yet</div>
           ) : (
-            sessions.map(s => (
-              <div key={s.id} className={`group flex items-center mb-1 rounded ${activeSessionId === s.id ? 'bg-blue-100' : 'hover:bg-gray-100'}`}>
+            threads.map(s => (
+              <div key={s.id} className={`group flex items-center mb-1 rounded ${activeThreadId === s.id ? 'bg-blue-100' : 'hover:bg-gray-100'}`}>
                 {editingTitleId === s.id ? (
                   <input
                     className="flex-1 px-2 py-1 text-xs rounded bg-white border border-blue-300 focus:outline-none"
@@ -357,8 +357,8 @@ export default function ChatPage() {
                   />
                 ) : (
                   <button
-                    className={`flex-1 text-left px-2 py-2 text-xs font-medium truncate ${activeSessionId === s.id ? 'text-blue-800 font-bold' : 'text-gray-700'}`}
-                    onClick={() => setActiveSessionId(s.id)}
+                    className={`flex-1 text-left px-2 py-2 text-xs font-medium truncate ${activeThreadId === s.id ? 'text-blue-800 font-bold' : 'text-gray-700'}`}
+                    onClick={() => setActiveThreadId(s.id)}
                     onDoubleClick={() => { setEditingTitleId(s.id); setNewTitle(s.title); }}
                   >
                     {s.title}
@@ -381,7 +381,7 @@ export default function ChatPage() {
         <div className="flex-1 overflow-y-auto p-8">
           <MessageArea
             messages={messages}
-            chatId={activeSessionId}
+            threadId={activeThreadId}
             onSQLClick={handleSQLButtonClick}
             openSQLModalForMsgId={openSQLModalForMsgId}
             onCloseSQLModal={handleCloseSQLModal}
@@ -394,7 +394,7 @@ export default function ChatPage() {
             style={{ color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.18)' }}
             onClick={handleNewChat}
             title="New chat"
-            disabled={isLoading || sessions.some(s => !messages.length && s.id === activeSessionId)}
+            disabled={isLoading || threads.some(s => !messages.length && s.id === activeThreadId)}
           >
             +
           </button>

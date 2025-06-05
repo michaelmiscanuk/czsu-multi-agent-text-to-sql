@@ -18,7 +18,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from typing import List
 from langchain_core.messages import BaseMessage, SystemMessage, AIMessage
-from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from langgraph.checkpoint.memory import InMemorySaver
 # from my_agent.utils.instrument import instrument, Framework
 import os
 import sys
@@ -121,71 +121,64 @@ async def main(prompt=None, thread_id=None):
     # This is crucial for production deployments to track execution paths
     # instrument(project_name="LangGraph_czsu-multi-agent-text-to-sql", framework=Framework.LANGGRAPH)
     
-    # Create the LangGraph execution graph with AsyncSqliteSaver for persistent short-term memory
-    print("[DEBUG] BASE_DIR:", BASE_DIR)
-    DB_PATH = BASE_DIR / "data" / "langgraph_checkpoints.db"
-    print("[DEBUG] DB_PATH:", DB_PATH)
-    print("[DEBUG] data dir exists:", (BASE_DIR / "data").exists())
-    print("[DEBUG] DB file exists:", DB_PATH.exists())
-    conn_str = str(DB_PATH)
-    print("[DEBUG] DB file path (not URI):", conn_str)
-    async with AsyncSqliteSaver.from_conn_string(conn_str) as checkpointer:
-        await checkpointer.setup()
-        graph = create_graph(checkpointer=checkpointer)
+    # Create the LangGraph execution graph with InMemorySaver for persistent short-term memory
+    # (No DB file needed for InMemorySaver)
+    checkpointer = InMemorySaver()
+    graph = create_graph(checkpointer=checkpointer)
         
-        print(f"Processing prompt: {prompt} (thread_id={thread_id})")
+    print(f"Processing prompt: {prompt} (thread_id={thread_id})")
         
-        # Retrieve previous messages for this thread (short-term memory)
-        # For InMemorySaver, this is handled by LangGraph automatically when using the same thread_id
-        # So we just need to pass the thread_id in config
+    # Retrieve previous messages for this thread (short-term memory)
+    # For InMemorySaver, this is handled by LangGraph automatically when using the same thread_id
+    # So we just need to pass the thread_id in config
 
-        # Initial state: messages is always a two-item list: [SystemMessage (summary), AIMessage (last_message)].
-        # This is a placeholder; the workflow will update it to always keep only the summary and the latest message.
-        initial_state: DataAnalysisState = {
-            "prompt": prompt,
-            "rewritten_prompt": None,
-            "rewritten_prompt_history": [],
-            "messages": [SystemMessage(content=""), AIMessage(content="")],
-            "iteration": 0,
-            "queries_and_results": [],
-            "chromadb_missing": False
-        }
+    # Initial state: messages is always a two-item list: [SystemMessage (summary), AIMessage (last_message)].
+    # This is a placeholder; the workflow will update it to always keep only the summary and the latest message.
+    initial_state: DataAnalysisState = {
+        "prompt": prompt,
+        "rewritten_prompt": None,
+        "rewritten_prompt_history": [],
+        "messages": [SystemMessage(content=""), AIMessage(content="")],
+        "iteration": 0,
+        "queries_and_results": [],
+        "chromadb_missing": False
+    }
         
-        # Execute the graph with checkpoint configuration asynchronously
-        # Checkpoints allow resuming execution if interrupted
-        result = await graph.ainvoke(
-            initial_state,
-            config={"configurable": {"thread_id": thread_id}}
-        )
+    # Execute the graph with checkpoint configuration asynchronously
+    # Checkpoints allow resuming execution if interrupted
+    result = await graph.ainvoke(
+        initial_state,
+        config={"configurable": {"thread_id": thread_id}}
+    )
         
-        # Extract values from the graph result dictionary         
-        # The graph now uses a messages list: [summary (SystemMessage), last_message (AIMessage)]
-        queries_and_results = result["queries_and_results"]
-        final_answer = result["messages"][-1].content if result.get("messages") and len(result["messages"]) > 1 else ""
-        selection_with_possible_answer = result.get("selection_with_possible_answer")
+    # Extract values from the graph result dictionary         
+    # The graph now uses a messages list: [summary (SystemMessage), last_message (AIMessage)]
+    queries_and_results = result["queries_and_results"]
+    final_answer = result["messages"][-1].content if result.get("messages") and len(result["messages"]) > 1 else ""
+    selection_with_possible_answer = result.get("selection_with_possible_answer")
 
-        # Extract SQL from the last query, if available
-        sql_query = queries_and_results[-1][0] if queries_and_results else None
-        # Construct dataset URL (customize as needed)
-        dataset_url = None
-        if selection_with_possible_answer:
-            dataset_url = f"/datasets/{selection_with_possible_answer}"
+    # Extract SQL from the last query, if available
+    sql_query = queries_and_results[-1][0] if queries_and_results else None
+    # Construct dataset URL (customize as needed)
+    dataset_url = None
+    if selection_with_possible_answer:
+        dataset_url = f"/datasets/{selection_with_possible_answer}"
 
-        # Convert the result to a JSON-serializable format
-        serializable_result = {
-            "prompt": prompt,
-            "result": final_answer,
-            "queries_and_results": queries_and_results,
-            "thread_id": thread_id,
-            "selection_with_possible_answer": selection_with_possible_answer,
-            "iteration": result.get("iteration", 0),
-            "max_iterations": MAX_ITERATIONS,
-            "sql": sql_query,
-            "datasetUrl": dataset_url
-        }
+    # Convert the result to a JSON-serializable format
+    serializable_result = {
+        "prompt": prompt,
+        "result": final_answer,
+        "queries_and_results": queries_and_results,
+        "thread_id": thread_id,
+        "selection_with_possible_answer": selection_with_possible_answer,
+        "iteration": result.get("iteration", 0),
+        "max_iterations": MAX_ITERATIONS,
+        "sql": sql_query,
+        "datasetUrl": dataset_url
+    }
         
-        print(f"Result: {final_answer}")
-        return serializable_result
+    print(f"Result: {final_answer}")
+    return serializable_result
 
 #==============================================================================
 # SCRIPT ENTRY POINT

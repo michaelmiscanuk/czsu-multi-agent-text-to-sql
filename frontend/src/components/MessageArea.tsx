@@ -46,20 +46,20 @@ const SimpleProgressBar = ({ messageId, startedAt }: SimpleProgressBarProps) => 
 
 interface MessageAreaProps {
     messages: any[];
-    chatId: string | null;
+    threadId: string | null;
     onSQLClick: (msgId: string) => void;
     openSQLModalForMsgId: string | null;
     onCloseSQLModal: () => void;
 }
 
-const MessageArea = ({ messages, chatId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal }: MessageAreaProps) => {
+const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal }: MessageAreaProps) => {
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     React.useEffect(() => {
         const container = containerRef.current;
         if (!container || !bottomRef.current) return;
         bottomRef.current.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, chatId]);
+    }, [messages, threadId]);
     return (
         <div ref={containerRef} className="flex-grow overflow-y-auto bg-[#FCFCF8] border-b border-gray-100" style={{ minHeight: 0 }} aria-live="polite" role="log">
             <div className="max-w-4xl mx-auto p-6 w-full">

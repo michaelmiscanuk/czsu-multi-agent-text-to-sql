@@ -10691,5 +10691,113 @@
         "result": "653227"
       }
     ]
+  },
+  {
+    "prompt": "kolik lidi zije ve stredoceskem kraji?",
+    "result": "Aktuální počet obyvatel Středočeského kraje je 1466215.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "a v praze?",
+    "result": "The dataset provided does not contain information about tourist attractions or places to visit in Prague. It focuses on demographic data such as population statistics. Therefore, it is not possible to answer the user's question using this dataset.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "The dataset provided does not contain information about tourist attractions or places to visit in Prague. It focuses on demographic data such as population, age distribution, and gender statistics. Therefore, it is not possible to answer the user's question using this dataset.",
+        "result": "Error: Query error: near \"The\": syntax error"
+      },
+      {
+        "query": "The current dataset does not contain information about tourist attractions in Prague. It focuses solely on demographic data. No SQL query can be generated to answer the user's question about the best places to visit in Prague using this dataset. A dataset with tourism-related information is required.",
+        "result": "Error: Query error: near \"The\": syntax error"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1466215.0"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Středočeský kraj' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky\nORDER BY Roky DESC;",
+        "result": "[(2024, 1466215.0)]"
+      },
+      {
+        "query": "The dataset provided does not contain information about tourist attractions or places to visit in Prague. It focuses on demographic data such as population, age distribution, and gender statistics. Therefore, it is not possible to answer the user's question using this dataset.",
+        "result": "Error: Query error: near \"The\": syntax error"
+      },
+      {
+        "query": "The current dataset does not contain information about tourist attractions in Prague. It focuses solely on demographic data. No SQL query can be generated to answer the user's question about the best places to visit in Prague using this dataset. A dataset with tourism-related information is required.",
+        "result": "Error: Query error: near \"The\": syntax error"
+      }
+    ]
   }
 ]

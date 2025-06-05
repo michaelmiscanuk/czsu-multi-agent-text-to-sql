@@ -111,52 +111,32 @@ def format_sql_query(query: str) -> str:
 # NODE FUNCTIONS
 #==============================================================================
 async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Rewrite the user's prompt using an LLM for improved clarity or structure.
-    The messages list is always set to [summary, last_message] (summary first, last_message second).
+    """Node: Rewrite the user's prompt using an LLM, using only the summary and the current prompt.
+    The messages list is always set to [summary, rewritten_message].
     """
-    debug_print("REWRITE: Enter rewrite_query_node")
+    debug_print("REWRITE: Enter rewrite_query_node (simplified)")
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
-    prev_rewritten = state.get("rewritten_prompt_history", [])[-1] if state.get("rewritten_prompt_history") else None
-    queries_and_results = state.get("queries_and_results", [])
-    queries_results_text = "\n\n".join(
-        f"Query {i+1}: {q}\nResult {i+1}: {r}" for i, (q, r) in enumerate(queries_and_results)
-    ) if queries_and_results else None
+    messages = state.get("messages", [])
+    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
+    prompt_text = state["prompt"]
     system_prompt = """
-You are an expert in reformulation of questions to fit best for semantic search in a vector database.
-Your task is to rewrite the user's question to make it clearer, more specific, and well-structured.
-If the user question is a follow-up (e.g., 'and how many in Brno?'), use the previous rewritten question and previous queries/results as context to disambiguate and make the new question fully self-contained.
-
-- If previous rewritten prompt is provided, use it to resolve references like 'and', 'also', 'that', etc.
-- If queries_and_results are provided, use them to avoid repeating already answered questions and to clarify what the user might be referring to.
-- Clarify ambiguous terms if possible.
-- Remove unnecessary filler words.
-- Make the question as precise as possible, but do not add information not present in the original prompt.
-- Make it structured, so mentions what are the dimensions, what are the metrics, what is the time period, what is the geography, etc.
+You are an expert in reformulation of questions for semantic search in a vector database.
+Rewrite the user's question to make it clearer, more specific, and well-structured, using the provided summary for context if needed.
 Return only the rewritten question, with no extra commentary or formatting.
 """
-    human_parts = [f"Original question: {state['prompt']}"]
-    if prev_rewritten:
-        human_parts.append(f"Previous rewritten question: {prev_rewritten}")
-    if queries_results_text:
-        human_parts.append(f"Previous queries and results:\n{queries_results_text}")
-    human_message = "\n\n".join(human_parts)
+    human_prompt = f"Summary of conversation so far:\n{summary.content}\n\nOriginal question:\n{prompt_text}"
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
-        ("human", human_message)
+        ("human", human_prompt)
     ])
     result = await llm.ainvoke(prompt.format_messages())
     rewritten_prompt = result.content.strip()
     debug_print(f"REWRITE: Rewritten prompt: {rewritten_prompt}")
-    new_history = list(state.get("rewritten_prompt_history", []))
-    new_history.append(rewritten_prompt)
-    messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content=state["prompt"], id="summary")
     if not hasattr(result, "id") or not result.id:
         result.id = "rewrite_query"
     messages = [summary, result]
     return {
         "rewritten_prompt": rewritten_prompt,
-        "rewritten_prompt_history": new_history,
         "messages": messages
     }
 
@@ -166,7 +146,7 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     schema = await load_schema(state)
     msg = AIMessage(content=f"Schema details: {schema}", id="schema_details")
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="", id="summary")
+    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     messages = [summary, msg]
     return {"messages": messages}
 
@@ -178,7 +158,7 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     tools = await create_mcp_server()
     sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="", id="summary")
+    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
     last_message_content = last_message.content if last_message else ""
     system_prompt = """
@@ -269,7 +249,7 @@ Do NOT wrap it in code fences and do NOT add explanations.
             error_msg = f"Error executing query: {str(tool_result)}"
             debug_print(f"{QUERY_GEN_ID}: {error_msg}")
             new_queries.append((query, f"Error: {str(tool_result)}"))
-            last_message = AIMessage(content=error_msg, id="query_error")
+            last_message = AIMessage(content=error_msg)
         else:
             debug_print(f"{QUERY_GEN_ID}: Successfully executed query: {query}")
             debug_print(f"{QUERY_GEN_ID}: Query result: {tool_result}")
@@ -281,7 +261,7 @@ Do NOT wrap it in code fences and do NOT add explanations.
         error_msg = f"Error executing query: {str(e)}"
         debug_print(f"{QUERY_GEN_ID}: {error_msg}")
         new_queries.append((query, f"Error: {str(e)}"))
-        last_message = AIMessage(content=error_msg, id="query_error")
+        last_message = AIMessage(content=error_msg)
     debug_print(f"{QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}")
     messages = [summary, last_message]
     return {
@@ -298,7 +278,7 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     debug_print(f"{ROUTE_DECISION_ID}: Enter reflect_node")
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="", id="summary")
+    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
     last_message_content = last_message.content if last_message else ""
     queries_results_text = "\n\n".join(
@@ -415,7 +395,7 @@ Bad: "The query shows X is 1,234,567"
     )
     debug_print(f"{FORMAT_ANSWER_ID}: Analysis completed")
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="", id="summary")
+    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     if not hasattr(result, "id") or not result.id:
         result.id = "format_answer"
     messages = [summary, result]
@@ -516,7 +496,7 @@ async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState
     debug_print("SUMMARY: Enter summarize_messages_node")
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="", id="summary")
+    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
     prev_summary = summary.content
     last_message_content = last_message.content if last_message else ""
@@ -544,7 +524,7 @@ Do not include any meta-commentary or formatting, just the summary text."""
     result = await llm.ainvoke(prompt.format_messages())
     new_summary = result.content.strip()
     debug_print(f"SUMMARY: Updated summary: {new_summary}")
-    summary_msg = SystemMessage(content=new_summary, id="summary")
+    summary_msg = SystemMessage(content=new_summary)
     if last_message:
         messages = [summary_msg, last_message]
     else:

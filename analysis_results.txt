@@ -18591,3 +18591,149 @@ FROM WGEN01G1VN
 WHERE Roky = '2024' AND Kraje = 'Jihočeský kraj';
   Result: 653227
 ----------------------------------------------------------------------------
+Prompt: kolik lidi zije ve stredoceskem kraji?
+Result: Aktuální počet obyvatel Středočeského kraje je 1466215.
+Queries and Results:
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+----------------------------------------------------------------------------
+Prompt: a v praze?
+Result: The dataset provided does not contain information about tourist attractions or places to visit in Prague. It focuses on demographic data such as population statistics. Therefore, it is not possible to answer the user's question using this dataset.
+Queries and Results:
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: The dataset provided does not contain information about tourist attractions or places to visit in Prague. It focuses on demographic data such as population, age distribution, and gender statistics. Therefore, it is not possible to answer the user's question using this dataset.
+  Result: Error: Query error: near "The": syntax error
+  Query: The current dataset does not contain information about tourist attractions in Prague. It focuses solely on demographic data. No SQL query can be generated to answer the user's question about the best places to visit in Prague using this dataset. A dataset with tourism-related information is required.
+  Result: Error: Query error: near "The": syntax error
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: SELECT SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Roky = '2024' 
+  AND Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';
+  Result: 1466215.0
+  Query: SELECT Roky, SUM(value) AS pocet_obyvatel
+FROM WGEN01AK
+WHERE Území = 'Středočeský kraj' 
+  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'
+GROUP BY Roky
+ORDER BY Roky DESC;
+  Result: [(2024, 1466215.0)]
+  Query: The dataset provided does not contain information about tourist attractions or places to visit in Prague. It focuses on demographic data such as population, age distribution, and gender statistics. Therefore, it is not possible to answer the user's question using this dataset.
+  Result: Error: Query error: near "The": syntax error
+  Query: The current dataset does not contain information about tourist attractions in Prague. It focuses solely on demographic data. No SQL query can be generated to answer the user's question about the best places to visit in Prague using this dataset. A dataset with tourism-related information is required.
+  Result: Error: Query error: near "The": syntax error
+----------------------------------------------------------------------------
