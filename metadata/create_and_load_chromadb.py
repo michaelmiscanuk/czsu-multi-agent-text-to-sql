@@ -616,7 +616,7 @@ def hybrid_search(chroma, query: str, k: int = 5):
         search_type="similarity",
         search_kwargs={'k': k}
     )
-    ensemble_retriever = EnsembleRetriever(retrievers=[similarity_search_retriever, bm25_retriever], weights=[0.5, 0.5])
+    ensemble_retriever = EnsembleRetriever(retrievers=[similarity_search_retriever, bm25_retriever], weights=[0.75, 0.25])
     return ensemble_retriever.invoke(query)
 
 def cohere_rerank(query, docs, top_n):

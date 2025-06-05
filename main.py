@@ -17,7 +17,7 @@ import argparse
 from pathlib import Path
 from dotenv import load_dotenv
 from typing import List
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, SystemMessage, AIMessage
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 # from my_agent.utils.instrument import instrument, Framework
 import os
@@ -139,11 +139,13 @@ async def main(prompt=None, thread_id=None):
         # For InMemorySaver, this is handled by LangGraph automatically when using the same thread_id
         # So we just need to pass the thread_id in config
 
+        # Initial state: messages is always a two-item list: [SystemMessage (summary), AIMessage (last_message)].
+        # This is a placeholder; the workflow will update it to always keep only the summary and the latest message.
         initial_state: DataAnalysisState = {
             "prompt": prompt,
             "rewritten_prompt": None,
             "rewritten_prompt_history": [],
-            "messages": [],
+            "messages": [SystemMessage(content=""), AIMessage(content="")],
             "iteration": 0,
             "queries_and_results": [],
             "chromadb_missing": False
@@ -157,9 +159,9 @@ async def main(prompt=None, thread_id=None):
         )
         
         # Extract values from the graph result dictionary         
-        messages = result["messages"]
+        # The graph now uses a messages list: [summary (SystemMessage), last_message (AIMessage)]
         queries_and_results = result["queries_and_results"]
-        final_answer = messages[-1].content if messages else ""
+        final_answer = result["messages"][-1].content if result.get("messages") and len(result["messages"]) > 1 else ""
         selection_with_possible_answer = result.get("selection_with_possible_answer")
 
         # Extract SQL from the last query, if available

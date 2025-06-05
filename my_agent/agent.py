@@ -19,7 +19,6 @@ flow that prevents common failure modes in LLM-based systems.
 from dotenv import load_dotenv
 from langgraph.graph import END, START, StateGraph
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.prebuilt import ToolNode
 from typing import Literal
 
 from .utils.state import DataAnalysisState
@@ -34,7 +33,8 @@ from .utils.nodes import (
     retrieve_similar_selections_node,
     relevant_selections_node,
     debug_print,
-    rewrite_query_node
+    rewrite_query_node,
+    summarize_messages_node
 )
 
 # Load environment variables
@@ -67,35 +67,27 @@ def create_graph(checkpointer=None):
     #--------------------------------------------------------------------------
     # Add nodes - each handling a specific step in the process
     #--------------------------------------------------------------------------
-    # Add the new rewrite_query node as the first node
     graph.add_node("rewrite_query", rewrite_query_node)
     graph.add_node("retrieve_similar_selections", retrieve_similar_selections_node)
     graph.add_node("relevant_selections", relevant_selections_node)
-    
-    # Schema retrieval provides context about available data
     graph.add_node("get_schema", get_schema_node)
-    
-    # Query generation converts natural language to executable code
     graph.add_node("query_gen", query_node)
-    
-    # Reflection on current state and feedback
     graph.add_node("reflect", reflect_node)
-    
-    # Natural language formatting of query results
     graph.add_node("format_answer", format_answer_node)
-    
-    # Final answer formatting creates user-friendly responses
     graph.add_node("submit_final_answer", submit_final_answer_node)
-    
-    # Result persistence ensures we don't lose completed analyses
     graph.add_node("save", save_node)
+    graph.add_node("summarize_messages_rewrite", summarize_messages_node)
+    graph.add_node("summarize_messages_query", summarize_messages_node)
+    graph.add_node("summarize_messages_reflect", summarize_messages_node)
+    graph.add_node("summarize_messages_format", summarize_messages_node)
 
     #--------------------------------------------------------------------------
     # Define the graph execution path
     #--------------------------------------------------------------------------
-    # Start: prompt -> rewrite_query -> retrieve -> relevant
+    # Start: prompt -> rewrite_query -> summarize_messages -> retrieve -> relevant
     graph.add_edge(START, "rewrite_query")
-    graph.add_edge("rewrite_query", "retrieve_similar_selections")
+    graph.add_edge("rewrite_query", "summarize_messages_rewrite")
+    graph.add_edge("summarize_messages_rewrite", "retrieve_similar_selections")
     graph.add_edge("retrieve_similar_selections", "relevant_selections")
 
     # Conditional edge from relevant_selections
@@ -118,19 +110,19 @@ def create_graph(checkpointer=None):
         }
     )
 
-    # Start by loading the schema to understand available data
+    # get_schema -> query_gen (no summarize_messages_schema)
     graph.add_edge("get_schema", "query_gen")
-    
-    # After query generation, decide whether to reflect or format answer
+
+    # query_gen -> summarize_messages -> reflect/format_answer
+    graph.add_edge("query_gen", "summarize_messages_query")
     def route_after_query(state: DataAnalysisState) -> Literal["reflect", "format_answer"]:
         print(f"Routing decision, iteration={state.get('iteration', 0)}")
         if state.get("iteration", 0) >= MAX_ITERATIONS:
             return "format_answer"
         else:
             return "reflect"
-
     graph.add_conditional_edges(
-        "query_gen",
+        "summarize_messages_query",
         route_after_query,
         {
             "reflect": "reflect",
@@ -138,17 +130,16 @@ def create_graph(checkpointer=None):
         }
     )
 
-    # After reflection, decide whether to continue iterating or format the answer
+    # reflect -> summarize_messages -> query_gen/format_answer
+    graph.add_edge("reflect", "summarize_messages_reflect")
     def route_after_reflect(state: DataAnalysisState) -> Literal["query_gen", "format_answer"]:
-        # The reflect_node now returns a 'reflection_decision' key
         decision = state.get("reflection_decision", "improve")
         if decision == "answer":
             return "format_answer"
         else:
             return "query_gen"
-
     graph.add_conditional_edges(
-        "reflect",
+        "summarize_messages_reflect",
         route_after_reflect,
         {
             "query_gen": "query_gen",
@@ -156,14 +147,14 @@ def create_graph(checkpointer=None):
         }
     )
 
-    # Continue with final answer formatting
-    graph.add_edge("format_answer", "submit_final_answer")
+    # format_answer -> summarize_messages -> submit_final_answer
+    graph.add_edge("format_answer", "summarize_messages_format")
+    graph.add_edge("summarize_messages_format", "submit_final_answer")
     graph.add_edge("submit_final_answer", "save")
     graph.add_edge("save", END)
 
     # Compile with memory-based checkpointing for execution persistence
     # This enables resuming interrupted runs and improves reliability
     if checkpointer is None:
-        from langgraph.checkpoint.memory import MemorySaver
         checkpointer = MemorySaver()
     return graph.compile(checkpointer=checkpointer)

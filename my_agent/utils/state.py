@@ -18,12 +18,11 @@ class DataAnalysisState(TypedDict):
     """State for the data analysis graph.
     
     This model tracks the state of the data analysis workflow,
-    including the user prompt, conversation messages, results,
+    including the user prompt, a concise two-item messages list, results,
     and iteration counter for loop prevention.
-    
-    The state uses Annotated types with reducers to properly handle
-    state updates:
-    - messages: Uses add reducer to append new messages
+
+    - messages: Always a list of at most two items: [summary (SystemMessage), last_message (AIMessage or HumanMessage)].
+      After each summarization, only these two are kept. No reducer is used; the list is always overwritten.
     - queries_and_results: Uses add reducer to append new query results
     - iteration: Uses default override behavior
     - prompt: Uses default override behavior
@@ -31,8 +30,8 @@ class DataAnalysisState(TypedDict):
     """
     prompt: str  # User query to analyze
     rewritten_prompt: str  # Rewritten user query for downstream nodes
-    rewritten_prompt_history: Annotated[List[str], add]  # History of rewritten prompts for conversational context
-    messages: Annotated[List[BaseMessage], add]  # Conversation history with add reducer
+    rewritten_prompt_history: List[str]  # History of rewritten prompts for conversational context
+    messages: List[BaseMessage]  # Always [summary (SystemMessage), last_message (AIMessage or HumanMessage)]
     iteration: int  # Iteration counter for workflow loop prevention
     queries_and_results: Annotated[List[Tuple[str, str]], add]  # Collection of executed queries and their results with add reducer
     reflection_decision: str  # Last decision from the reflection node: "improve" or "answer"

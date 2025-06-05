@@ -9523,5 +9523,1173 @@
         "result": "[('Hlavní město Praha', 'celkem', 1301432), ('Hlavní město Praha', 'muž', 633449), ('Hlavní město Praha', 'žena', 667983), ('Jihomoravský kraj', 'celkem', 1197651), ('Jihomoravský kraj', 'muž', 589553), ('Jihomoravský kraj', 'žena', 608098), ('Jihovýchod', 'celkem', 1695312), ('Jihovýchod', 'muž', 836921), ('Jihovýchod', 'žena', 858391), ('Jihozápad', 'celkem', 1213239), ('Jihozápad', 'muž', 601047), ('Jihozápad', 'žena', 612192), ('Jihočeský kraj', 'celkem', 631803), ('Jihočeský kraj', 'muž', 312168), ('Jihočeský kraj', 'žena', 319635), ('Karlovarský kraj', 'celkem', 279103), ('Karlovarský kraj', 'muž', 138110), ('Karlovarský kraj', 'žena', 140993), ('Kraj Vysočina', 'celkem', 497661), ('Kraj Vysočina', 'muž', 247368), ('Kraj Vysočina', 'žena', 250293), ('Královéhradecký kraj', 'celkem', 538303), ('Královéhradecký kraj', 'muž', 266017), ('Královéhradecký kraj', 'žena', 272286), ('Liberecký kraj', 'celkem', 435220), ('Liberecký kraj', 'muž', 215420), ('Liberecký kraj', 'žena', 219800), ('Moravskoslezsko', 'celkem', 1162841), ('Moravskoslezsko', 'muž', 570091), ('Moravskoslezsko', 'žena', 592750), ('Moravskoslezský kraj', 'celkem', 1162841), ('Moravskoslezský kraj', 'muž', 570091), ('Moravskoslezský kraj', 'žena', 592750), ('Olomoucký kraj', 'celkem', 619788), ('Olomoucký kraj', 'muž', 303895), ('Olomoucký kraj', 'žena', 315893), ('Pardubický kraj', 'celkem', 510037), ('Pardubický kraj', 'muž', 252946), ('Pardubický kraj', 'žena', 257091), ('Plzeňský kraj', 'celkem', 581436), ('Plzeňský kraj', 'muž', 288879), ('Plzeňský kraj', 'žena', 292557), ('Praha', 'celkem', 1301432), ('Praha', 'muž', 633449), ('Praha', 'žena', 667983), ('Severovýchod', 'celkem', 1483560), ('Severovýchod', 'muž', 734383), ('Severovýchod', 'žena', 749177), ('Severozápad', 'celkem', 1068201), ('Severozápad', 'muž', 527075), ('Severozápad', 'žena', 541126), ('Střední Morava', 'celkem', 1184119), ('Střední Morava', 'muž', 581041), ('Střední Morava', 'žena', 603078), ('Střední Čechy', 'celkem', 1415463), ('Střední Čechy', 'muž', 702541), ('Střední Čechy', 'žena', 712922), ('Středočeský kraj', 'celkem', 1415463), ('Středočeský kraj', 'muž', 702541), ('Středočeský kraj', 'žena', 712922), ('Zlínský kraj', 'celkem', 564331), ('Zlínský kraj', 'muž', 277146), ('Zlínský kraj', 'žena', 287185), ('Ústecký kraj', 'celkem', 789098), ('Ústecký kraj', 'muž', 388965), ('Ústecký kraj', 'žena', 400133), ('Česká republika', 'celkem', 10524167), ('Česká republika', 'muž', 5186548), ('Česká republika', 'žena', 5337619)]"
       }
     ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "Aktuální počet obyvatel v Praze je 1397880.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "Aktuální počet obyvatel v Praze je 1397880.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \nGROUP BY Ukazatel\nLIMIT 10;",
+        "result": "[('Cizinci (k 31. 12.)', None), ('Počet obyvatel (k 31. 12.)', 1397880.0), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 215285.0), ('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 925154.0), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 257441.0), ('Průměrný věk (k 31. 12.; roky)', 83.6467568)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \nGROUP BY Ukazatel\nLIMIT 10;",
+        "result": "[('Cizinci (k 31. 12.)', None), ('Počet obyvatel (k 31. 12.)', 1397880.0), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 215285.0), ('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 925154.0), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 257441.0), ('Průměrný věk (k 31. 12.; roky)', 83.6467568)]"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "Aktuální počet obyvatel v Praze k 31. prosinci 2024 je 1397880. Muži tvoří 679162 a ženy 718718.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "ok, and what about Brno?",
+    "result": "Aktuální počet obyvatel v Brně k 31. prosinci 2024 není dostupný.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Jihomoravský kraj'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1229343.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Jihomoravský kraj'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\n  AND Pohlaví IN ('ženy', 'muži');",
+        "result": "1229343.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Brno'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\n  AND Pohlaví IN ('ženy', 'muži');",
+        "result": "None"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024' \n  AND Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 679162.0), ('ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS \"Celkový počet obyvatel\" \nFROM WGEN01AK \nWHERE \"Území\" = \"Hlavní město Praha\" \n  AND \"Ukazatel\" = \"Počet obyvatel (k 31. 12.)\" \nGROUP BY \"Roky\", \"Ukazatel\" \nORDER BY \"Roky\" DESC \nLIMIT 10;",
+        "result": "[(2024, 'Počet obyvatel (k 31. 12.)', 1397880.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Hlavní město Praha'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1397880.0"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT Roky, Pohlaví, SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Území = 'Hlavní město Praha' \n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\nGROUP BY Roky, Pohlaví\nORDER BY Roky DESC, Pohlaví\nLIMIT 10;",
+        "result": "[(2024, 'muži', 679162.0), (2024, 'ženy', 718718.0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Jihomoravský kraj'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)';",
+        "result": "1229343.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Jihomoravský kraj'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\n  AND Pohlaví IN ('ženy', 'muži');",
+        "result": "1229343.0"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obyvatel\nFROM WGEN01AK\nWHERE Roky = '2024'\n  AND Území = 'Brno'\n  AND Ukazatel = 'Počet obyvatel (k 31. 12.)'\n  AND Pohlaví IN ('ženy', 'muži');",
+        "result": "None"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije na morave?",
+    "result": "Kolik lidí žije v Moravě v roce 2023?",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "50.071126737"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "50.071126737"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije na morave?",
+    "result": "",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = '2023' \n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "50.071126737"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "50.071126737"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = '2023' \n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "50.071126737"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "50.071126737"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije na morave?",
+    "result": "",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM OBY01BHVDT02\nWHERE \"Roky\" = 2023\n  AND \"ČR, Reg. soudržnosti, Kraje\" IN ('Střední Morava', 'Moravskoslezsko', 'Jihovýchod')\n  AND \"Ukazatel\" = 'Živě narození na 1 000 obyvatel';",
+        "result": "25.183591987"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije ve stredoceskem kraji?",
+    "result": "Není k dispozici žádný údaj o počtu obyvatel ve Středočeském kraji.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY01BHVDT02 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" AND \"Ukazatel\" = \"Živě narození na 1 000 obyvatel\" AND \"Roky\" = 2023 LIMIT 10;",
+        "result": "8.44537876"
+      },
+      {
+        "query": "SELECT value FROM OBY01BHVDT02 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" AND \"Ukazatel\" = \"Živě narození na 1 000 obyvatel\" AND \"Roky\" = 2023 LIMIT 10;",
+        "result": "8.44537876"
+      },
+      {
+        "query": "SELECT value FROM OBY01BHVDT02 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" AND \"Ukazatel\" = \"Živě narození na 1 000 obyvatel\" AND \"Roky\" = 2023 LIMIT 10;",
+        "result": "8.44537876"
+      },
+      {
+        "query": "SELECT value FROM OBY01BHVDT02 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" AND \"Ukazatel\" = \"Živě narození na 1 000 obyvatel\" AND \"Roky\" = 2023 LIMIT 10;",
+        "result": "8.44537876"
+      },
+      {
+        "query": "SELECT value FROM OBY01BHVDT02 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" AND \"Ukazatel\" = \"Živě narození na 1 000 obyvatel\" AND \"Roky\" = 2023 LIMIT 10;",
+        "result": "8.44537876"
+      },
+      {
+        "query": "SELECT value FROM OBY01BHVDT02 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" AND \"Ukazatel\" = \"Živě narození na 1 000 obyvatel\" AND \"Roky\" = 2023 LIMIT 10;",
+        "result": "8.44537876"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije ve stredoceskem kraji?",
+    "result": "Ve Středočeském kraji žije 1466215 obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      }
+    ]
+  },
+  {
+    "prompt": "a kolik v praze?",
+    "result": "V roce 2024 žije v Praze 1397880 obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Roky = '2024' AND Kraje = 'Hlavní město Praha';",
+        "result": "1397880"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Roky = '2024' AND Kraje = 'Hlavní město Praha';",
+        "result": "1397880"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije ve stredoceskem kraji?",
+    "result": "Ve Středočeském kraji žije 1466215 obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      }
+    ]
+  },
+  {
+    "prompt": "a kolik v praze?",
+    "result": "V Praze žije v roce 2024 celkem 1397880 obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Roky = '2024' AND Kraje = 'Hlavní město Praha';",
+        "result": "1397880"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Roky = '2024' AND Kraje = 'Hlavní město Praha';",
+        "result": "1397880"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije ve stredoceskem kraji?",
+    "result": "Ve Středočeském kraji žije 1466215 obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 720810), ('ženy', 745405)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT Pohlaví, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Pohlaví;",
+        "result": "[('muži', 720810), ('ženy', 745405)]"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije ve stredoceskem kraji?",
+    "result": "Ve Středočeském kraji v roce 2023 žije přibližně 11.410 obyvatel na 1 000 obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 11.41012108)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" \n  AND \"Ukazatel\" LIKE \"%obyvatel%\" \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 'Živě narození na 1 000 obyvatel', 8.44537876), ('Středočeský kraj', 'Zemřelí na 1 000 obyvatel', 9.490622796), ('Středočeský kraj', 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.045244036), ('Středočeský kraj', 'Přistěhovalí na 1 000 obyvatel', 31.46901603), ('Středočeský kraj', 'Vystěhovalí na 1 000 obyvatel', 19.01365091), ('Středočeský kraj', 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 12.45536511), ('Středočeský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 11.41012108), ('Středočeský kraj', 'Sňatky na 1 000 obyvatel', 4.261644715), ('Středočeský kraj', 'Rozvody na 1 000 obyvatel', 1.901571934)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 11.41012108)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Středočeský kraj\" \n  AND \"Ukazatel\" LIKE \"%obyvatel%\" \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 'Živě narození na 1 000 obyvatel', 8.44537876), ('Středočeský kraj', 'Zemřelí na 1 000 obyvatel', 9.490622796), ('Středočeský kraj', 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.045244036), ('Středočeský kraj', 'Přistěhovalí na 1 000 obyvatel', 31.46901603), ('Středočeský kraj', 'Vystěhovalí na 1 000 obyvatel', 19.01365091), ('Středočeský kraj', 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 12.45536511), ('Středočeský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 11.41012108), ('Středočeský kraj', 'Sňatky na 1 000 obyvatel', 4.261644715), ('Středočeský kraj', 'Rozvody na 1 000 obyvatel', 1.901571934)]"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije ve stredoceskem kraji?",
+    "result": "Ve Středočeském kraji žije 1466215 obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      }
+    ]
+  },
+  {
+    "prompt": "a v jihoceskem?",
+    "result": "Celková populace v Jihočeském kraji v roce 2024 je 653227.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Roky = '2024' AND Kraje = 'Jihočeský kraj';",
+        "result": "653227"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj'\n  AND Roky = '2024';",
+        "result": "1466215"
+      },
+      {
+        "query": "SELECT Ukazatel, SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Kraje = 'Středočeský kraj' AND Roky = '2024'\nGROUP BY Ukazatel\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Počet obyvatel ve věku 15 - 64 let (k 31. 12.)', 939165), ('Počet obyvatel ve věku 65 a více let (k 31. 12.)', 275321), ('Počet obyvatel ve věku 0 - 14 let (k 31. 12.)', 251729)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population\nFROM WGEN01G1VN\nWHERE Roky = '2024' AND Kraje = 'Jihočeský kraj';",
+        "result": "653227"
+      }
+    ]
   }
 ]
