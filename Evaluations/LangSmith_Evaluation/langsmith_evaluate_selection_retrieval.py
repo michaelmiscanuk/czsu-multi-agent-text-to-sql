@@ -136,7 +136,7 @@ def example_to_state(inputs: dict) -> dict:
         "queries_and_results": [],
         "reflection_decision": "",
         "most_similar_selections": [],
-        "selection_with_possible_answer": None
+        "top_selection_codes": []
     }
 
 # --- Retry wrapper for node evaluation ---

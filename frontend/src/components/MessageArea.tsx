@@ -85,19 +85,37 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                 )}
                             </div>
                             {/* Dataset used and SQL button for AI answers */}
-                            {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.sql) && (
-                                <div className="mt-3 flex items-center space-x-3" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
-                                    {(message.selectionCode || message.meta?.datasetUrl) && (
-                                        <div>
-                                            <span className="text-xs text-gray-500 mr-1">Dataset used:</span>
-                                            <Link
-                                                href={`/data?table=${encodeURIComponent(message.selectionCode || message.meta?.datasetUrl.replace('/datasets/', ''))}`}
-                                                className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
-                                                style={{ textDecoration: 'none' }}
-                                            >
-                                                {message.selectionCode || (message.meta?.datasetUrl ? message.meta.datasetUrl.replace('/datasets/', '') : '')}
-                                            </Link>
+                            {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetCodes?.length || message.meta?.sql) && (
+                                <div className="mt-3 flex items-center space-x-3 flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
+                                    {/* Show multiple dataset codes if available */}
+                                    {message.meta?.datasetCodes && message.meta.datasetCodes.length > 0 ? (
+                                        <div className="flex items-center space-x-2 flex-wrap">
+                                            <span className="text-xs text-gray-500 mr-1">Dataset{message.meta.datasetCodes.length > 1 ? 's' : ''} used:</span>
+                                            {message.meta.datasetCodes.map((code: string, index: number) => (
+                                                <Link
+                                                    key={index}
+                                                    href={`/data?table=${encodeURIComponent(code)}`}
+                                                    className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
+                                                    style={{ textDecoration: 'none' }}
+                                                >
+                                                    {code}
+                                                </Link>
+                                            ))}
                                         </div>
+                                    ) : (
+                                        /* Fallback to old single dataset approach for backward compatibility */
+                                        (message.selectionCode || message.meta?.datasetUrl) && (
+                                            <div>
+                                                <span className="text-xs text-gray-500 mr-1">Dataset used:</span>
+                                                <Link
+                                                    href={`/data?table=${encodeURIComponent(message.selectionCode || message.meta?.datasetUrl.replace('/datasets/', ''))}`}
+                                                    className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
+                                                    style={{ textDecoration: 'none' }}
+                                                >
+                                                    {message.selectionCode || (message.meta?.datasetUrl ? message.meta.datasetUrl.replace('/datasets/', '') : '')}
+                                                </Link>
+                                            </div>
+                                        )
                                     )}
                                     {message.meta?.sql && (
                                         <button

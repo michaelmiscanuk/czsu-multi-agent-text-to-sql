@@ -53,7 +53,7 @@ from metadata.create_and_load_chromadb import (
 from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini
 
 
-MAX_ITERATIONS = 1  # Reduced from 3 to prevent excessive looping
+MAX_ITERATIONS = 2  # Reduced from 3 to prevent excessive looping
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 ROUTE_DECISION_ID = 11  # ID for routing decision function
 REFLECT_NODE_ID = 12
@@ -76,30 +76,33 @@ def debug_print(msg: str) -> None:
         print(msg)
 
 async def load_schema(state=None):
-    """Load the schema metadata from the SQLite database based on selection_code in state."""
-    if state and state.get("selection_with_possible_answer"):
-        selection_code = state["selection_with_possible_answer"]
+    """Load the schema metadata from the SQLite database based on top_selection_codes in state."""
+    if state and state.get("top_selection_codes"):
+        selection_codes = state["top_selection_codes"]
         db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / "selection_descriptions.db"
+        schemas = []
         try:
             conn = sqlite3.connect(str(db_path))
             cursor = conn.cursor()
-            cursor.execute(
-                """
-                SELECT extended_description FROM selection_descriptions
-                WHERE selection_code = ? AND extended_description IS NOT NULL AND extended_description != ''
-                """,
-                (selection_code,)
-            )
-            row = cursor.fetchone()
-            if row:
-                return f"Dataset: {selection_code}.\n" + row[0]  # Prepend dataset info
-            else:
-                return f"No schema found for selection_code {selection_code}."
+            for selection_code in selection_codes:
+                cursor.execute(
+                    """
+                    SELECT extended_description FROM selection_descriptions
+                    WHERE selection_code = ? AND extended_description IS NOT NULL AND extended_description != ''
+                    """,
+                    (selection_code,)
+                )
+                row = cursor.fetchone()
+                if row:
+                    schemas.append(f"Dataset: {selection_code}.\n" + row[0])
+                else:
+                    schemas.append(f"No schema found for selection_code {selection_code}.")
         except Exception as e:
-            return f"Error loading schema from DB: {e}"
+            schemas.append(f"Error loading schema from DB: {e}")
         finally:
             if 'conn' in locals():
                 conn.close()
+        return "\n**************\n".join(schemas)
     # fallback
     return "No selection_code provided in state."
 
@@ -111,7 +114,7 @@ async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
     The messages list is always set to [summary, rewritten_message].
     """
     debug_print("REWRITE: Enter rewrite_query_node (simplified)")
-    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
+    llm = get_azure_llm_gpt_4o(temperature=0.0)
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     prompt_text = state["prompt"]
@@ -124,13 +127,14 @@ CRITICAL RULES:
 3. If the follow up question changes the topic or corrects something ("but I meant..."), follow the NEW topic from the follow up question
 4. If you do not see any chat history, return the follow up question as is
 5. Always preserve the user's intent from the follow up question
+6. The rewritten question MUST NOT introduce, suggest, or add any information, examples, or details that were not explicitly present in the original question or chat history. Do not expand with examples or specifics unless they were directly asked for.
 
 VECTOR SEARCH OPTIMIZATION:
-6. Expand brief/vague questions into more detailed, searchable queries
-7. Add relevant context terms that would help vector search find related documents
-8. Include specific domains, locations, time periods, or categories when implied
-9. Use complete sentences with clear subject-verb-object structure
-10. Add synonyms or related terms that might appear in documents
+7. Expand brief/vague questions into more detailed, searchable queries
+8. Add relevant context terms that would help vector search find related documents
+9. Include specific domains, locations, time periods, or categories when implied
+10. Use complete sentences with clear subject-verb-object structure
+11. Add synonyms or related terms that might appear in documents
 
 EXAMPLES:
 
@@ -547,20 +551,14 @@ async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnal
         return {"most_similar_selections": []}
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Select the top reranked selection if its Cohere relevance score exceeds the threshold (0.35)."""
+    """Node: Select the top 3 reranked selections if their Cohere relevance score exceeds the threshold (0.0005)."""
     debug_print(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
     SIMILARITY_THRESHOLD = 0.0005  # Minimum Cohere rerank score required
     most_similar = state.get("most_similar_selections", [])
-    selection_code = None
-    if most_similar:
-        top_selection, top_similarity = most_similar[0]
-        if top_similarity is None:
-            # Accept the top result without thresholding (should not happen with rerank)
-            selection_code = top_selection
-        elif top_selection is not None and top_similarity >= SIMILARITY_THRESHOLD:
-            selection_code = top_selection
-    debug_print(f"{RELEVANT_NODE_ID}: selection_with_possible_answer: {selection_code}")
-    return {"selection_with_possible_answer": selection_code}
+    # Select up to 3 top selections above threshold
+    top_selection_codes = [sel for sel, score in most_similar if sel is not None and score is not None and score >= SIMILARITY_THRESHOLD][:3]
+    debug_print(f"{RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}")
+    return {"top_selection_codes": top_selection_codes}
 
 async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Summarize the conversation so far, always setting messages to [summary, last_message]."""

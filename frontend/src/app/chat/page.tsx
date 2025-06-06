@@ -26,6 +26,7 @@ interface Message {
   queriesAndResults?: [string, string][];
   meta?: {
     datasetUrl?: string;
+    datasetCodes?: string[];  // Array of dataset codes actually used in queries
     sql?: string;
   };
 }
@@ -267,6 +268,7 @@ export default function ChatPage() {
         queriesAndResults: data.queries_and_results,
         meta: {
           datasetUrl: data.datasetUrl,
+          datasetCodes: data.top_selection_codes || [],  // Extract used selection codes
           sql: data.sql
         }
       };
@@ -325,7 +327,7 @@ export default function ChatPage() {
 
   // UI
   return (
-    <div className="flex h-[80vh] w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="flex flex-1 min-h-0 w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
       {/* Sidebar */}
       <aside className="w-60 bg-gradient-to-b from-blue-50 to-white border-r border-gray-200 flex flex-col p-3">
         <div className="flex items-center mb-4">

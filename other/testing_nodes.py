@@ -33,7 +33,7 @@ state = DataAnalysisState({
     "queries_and_results": [],
     "reflection_decision": None,
     "most_similar_selections": [],
-    "selection_with_possible_answer": None,
+    "top_selection_codes": [],
     "chromadb_missing": False
 })
 

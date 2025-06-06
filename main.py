@@ -14,7 +14,9 @@ different deployment scenarios.
 import uuid
 import asyncio
 import argparse
+import re
 from pathlib import Path
+from typing import List
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage, SystemMessage, AIMessage
 from langgraph.checkpoint.memory import InMemorySaver
@@ -71,7 +73,76 @@ if str(BASE_DIR) not in sys.path:
 DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
 # DEFAULT_PROMPT = "Jaký byl podíl osob používajících internet v Česku ve věku 16 a vice v roce 2023?"
 
+#==============================================================================
+# HELPER FUNCTIONS
+#==============================================================================
 
+def extract_table_names_from_sql(sql_query: str) -> List[str]:
+    """Extract table names from SQL query FROM clauses.
+    
+    Args:
+        sql_query: The SQL query string
+        
+    Returns:
+        List of table names found in FROM clauses
+    """
+    # Remove comments and normalize whitespace
+    sql_clean = re.sub(r'--.*?(?=\n|$)', '', sql_query, flags=re.MULTILINE)
+    sql_clean = re.sub(r'/\*.*?\*/', '', sql_clean, flags=re.DOTALL)
+    sql_clean = ' '.join(sql_clean.split())
+    
+    # Pattern to match FROM clause with table names
+    # This handles: FROM table_name, FROM schema.table_name, FROM "table_name", etc.
+    from_pattern = r'\bFROM\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1(?:\s*,\s*(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\3)*'
+    
+    table_names = []
+    matches = re.finditer(from_pattern, sql_clean, re.IGNORECASE)
+    
+    for match in matches:
+        # Extract the main table name (group 2)
+        if match.group(2):
+            table_names.append(match.group(2).upper())
+        # Extract additional table names if comma-separated (group 4)
+        if match.group(4):
+            table_names.append(match.group(4).upper())
+    
+    # Also handle JOIN clauses
+    join_pattern = r'\bJOIN\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1'
+    join_matches = re.finditer(join_pattern, sql_clean, re.IGNORECASE)
+    
+    for match in join_matches:
+        if match.group(2):
+            table_names.append(match.group(2).upper())
+    
+    return list(set(table_names))  # Remove duplicates
+
+def get_used_selection_codes(queries_and_results: list, top_selection_codes: List[str]) -> List[str]:
+    """Filter top_selection_codes to only include those actually used in queries.
+    
+    Args:
+        queries_and_results: List of (query, result) tuples
+        top_selection_codes: List of all candidate selection codes
+        
+    Returns:
+        List of selection codes that were actually used in the queries
+    """
+    if not queries_and_results or not top_selection_codes:
+        return []
+    
+    # Extract all table names used in queries
+    used_table_names = set()
+    for query, _ in queries_and_results:
+        if query:
+            table_names = extract_table_names_from_sql(query)
+            used_table_names.update(table_names)
+    
+    # Filter selection codes to only include those that match used table names
+    used_selection_codes = []
+    for selection_code in top_selection_codes:
+        if selection_code.upper() in used_table_names:
+            used_selection_codes.append(selection_code)
+    
+    return used_selection_codes
 
 #==============================================================================
 # MAIN FUNCTION
@@ -174,14 +245,17 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
     # The graph now uses a messages list: [summary (SystemMessage), last_message (AIMessage)]
     queries_and_results = result["queries_and_results"]
     final_answer = result["messages"][-1].content if result.get("messages") and len(result["messages"]) > 1 else ""
-    selection_with_possible_answer = result.get("selection_with_possible_answer")
 
-    # Extract SQL from the last query, if available
+    # Use top_selection_codes for dataset reference (use first if available)
+    top_selection_codes = result.get("top_selection_codes", [])
     sql_query = queries_and_results[-1][0] if queries_and_results else None
-    # Construct dataset URL (customize as needed)
+    
+    # Filter to only include selection codes actually used in queries
+    used_selection_codes = get_used_selection_codes(queries_and_results, top_selection_codes)
+    
     dataset_url = None
-    if selection_with_possible_answer:
-        dataset_url = f"/datasets/{selection_with_possible_answer}"
+    if used_selection_codes:
+        dataset_url = f"/datasets/{used_selection_codes[0]}"
 
     # Convert the result to a JSON-serializable format
     serializable_result = {
@@ -189,7 +263,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
         "result": final_answer,
         "queries_and_results": queries_and_results,
         "thread_id": thread_id,
-        "selection_with_possible_answer": selection_with_possible_answer,
+        "top_selection_codes": used_selection_codes,  # Return only codes actually used in queries
         "iteration": result.get("iteration", 0),
         "max_iterations": MAX_ITERATIONS,
         "sql": sql_query,

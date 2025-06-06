@@ -92,7 +92,7 @@ def create_graph(checkpointer=None):
 
     # Conditional edge from relevant_selections
     def route_after_relevant(state: DataAnalysisState):
-        if state.get("selection_with_possible_answer"):
+        if state.get("top_selection_codes") and len(state["top_selection_codes"]) > 0:
             return "get_schema"
         elif state.get("chromadb_missing"):
             print("ERROR: ChromaDB directory is missing. Please unzip or create the ChromaDB at 'metadata/czsu_chromadb'.")

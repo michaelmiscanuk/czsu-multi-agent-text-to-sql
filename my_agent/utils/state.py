@@ -32,6 +32,6 @@ class DataAnalysisState(TypedDict):
     iteration: int  # Iteration counter for workflow loop prevention
     queries_and_results: Annotated[List[Tuple[str, str]], add]  # Collection of executed queries and their results with add reducer
     reflection_decision: str  # Last decision from the reflection node: "improve" or "answer"
-    most_similar_selections: Annotated[List[Tuple[str, float]], add]  # List of (selection_code, cosine_similarity)
-    selection_with_possible_answer: str  # Name of selection_code with possible answer, or None
+    most_similar_selections: Annotated[List[Tuple[str, float]], add]  # List of (selection_code, cosine_similarity
+    top_selection_codes: List[str]  # List of top N selection codes (e.g., top 3)
     chromadb_missing: bool  # True if ChromaDB directory is missing, else False or not present
