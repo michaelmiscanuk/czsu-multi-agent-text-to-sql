@@ -116,11 +116,86 @@ async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     prompt_text = state["prompt"]
     system_prompt = """
-You are an expert in reformulation of questions for semantic search in a vector database.
-Rewrite the user's question to make it clearer, more specific, and well-structured, using the provided summary for context if needed.
-Return only the rewritten question, with no extra commentary or formatting.
+Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language, that can be used to query a vector database.
+
+CRITICAL RULES:
+1. Your PRIMARY task is to rephrase the FOLLOW UP QUESTION, not to continue or repeat topics from chat history
+2. Use the chat history ONLY to resolve pronouns and references in the follow up question
+3. If the follow up question changes the topic or corrects something ("but I meant..."), follow the NEW topic from the follow up question
+4. If you do not see any chat history, return the follow up question as is
+5. Always preserve the user's intent from the follow up question
+
+VECTOR SEARCH OPTIMIZATION:
+6. Expand brief/vague questions into more detailed, searchable queries
+7. Add relevant context terms that would help vector search find related documents
+8. Include specific domains, locations, time periods, or categories when implied
+9. Use complete sentences with clear subject-verb-object structure
+10. Add synonyms or related terms that might appear in documents
+
+EXAMPLES:
+
+Example 1 - No history:
+```
+Summary of conversation so far: (empty)
+Original question: How is Prague's population?
+Standalone Question: How is Prague's population?
+```
+
+Example 2 - Reference resolution:
+```
+Summary of conversation so far: 
+User asked about Prague's population and received information that Prague has 1.3 million inhabitants in 2023.
+Original question: What about hotels there?
+Standalone Question: What is the number and capacity of hotels in Prague?
+```
+
+Example 3 - Topic correction (MOST IMPORTANT):
+```
+Summary of conversation so far:
+User asked about Prague's population and received information that Prague has 1.3 million inhabitants in 2023.
+Original question: but I meant hotels
+Standalone Question: How many hotels are there in Prague and what is their capacity?
+```
+
+Example 4 - Year reference with expansion:
+```
+Summary of conversation so far:
+User asked about Prague's population in 2023 and received information that Prague had 1.3 million inhabitants in 2023.
+Original question: what about 2024?
+Standalone Question: What was Prague's population in 2024 compared to 2023?
+```
+
+Example 5 - Brief question expansion:
+```
+Summary of conversation so far: (empty)
+Original question: hotels
+Standalone Question: What is the number of hotels, hotel capacity, and accommodation facilities available?
+```
+
+Example 6 - Vague question improvement:
+```
+Summary of conversation so far:
+User asked about Prague tourism and received information that Prague is a popular tourist destination with various attractions and services.
+Original question: trends
+Standalone Question: What are the current tourism trends, visitor statistics, and development patterns in Prague?
+```
+
+Example 7 - Vector search optimization (IMPORTANT):
+```
+Summary of conversation so far:
+User asked about current population in Pilsen. Received data for 2023 showing that in Pilsen region the total population change per 1,000 inhabitants is 13.08862768. However, this data does not answer the question about actual population of Pilsen city. Need to get specific population number for Pilsen city in 2023, not just regional statistics.
+Original question: but I meant hotels
+Standalone Question: What is the total number of hotels and accommodation facilities in Pilsen, including their capacity in rooms and beds and occupancy statistics?
+```
+
+IMPORTANT: 
+- If the follow up question is a correction, clarification, or topic change, prioritize the NEW intent over the chat history topic
+- For brief questions (1-2 words), expand them into complete, searchable questions with relevant context
+- Always maintain the original language and core intent while making the question more search-friendly
+
+Now process this conversation:
 """
-    human_prompt = f"Summary of conversation so far:\n{summary.content}\n\nOriginal question:\n{prompt_text}"
+    human_prompt = f"Summary of conversation so far:\n{summary.content}\n\nOriginal question: {prompt_text}\nStandalone Question:"
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", human_prompt)

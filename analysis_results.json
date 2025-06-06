@@ -11281,5 +11281,113 @@
         "result": "[('Služby v oblasti zaměstnání', 141.0677419354839), ('Služby agentur zprostředkujících pracovníky na přechodnou dobu', 140.6508064516129), ('Poštovní služby poskytované na základě poštovní licence', 139.73225806451612), ('Služby realitních agentur na základě smlouvy nebo dohody', 139.55564516129033), ('Služby agentur zprostředkujících zaměstnání', 135.59032258064516), ('Zprostředkování prodeje reklamního prostoru nebo času v televizi \\nnebo v rozhlase', 133.51290322580644), ('Soukromé bezpečnostní služby', 132.60967741935482), ('Bezpečnostní a pátrací služby', 128.97096774193548), ('Pronájem a leasing ostatních strojů, zařízení a výrobků j. n.', 126.36875), ('Tvorba programů a vysílání', 126.31875)]"
       }
     ]
+  },
+  {
+    "prompt": "kolik je v plzni?",
+    "result": "Aktuální populace v Plzni není k dispozici, protože nebyly nalezeny žádné výsledky.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "ale ja myslel hotelu",
+    "result": "Aktuální populace města Plzeň v roce 2023 není k dispozici, protože nebyly nalezeny žádné výsledky.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = 'Plzeňský kraj' \n  AND \"Ukazatel\" LIKE '%obyvatel%' \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Živě narození na 1 000 obyvatel', 8.099674177), ('Plzeňský kraj', 'Zemřelí na 1 000 obyvatel', 10.01560277), ('Plzeňský kraj', 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.915928594), ('Plzeňský kraj', 'Přistěhovalí na 1 000 obyvatel', 30.51063021), ('Plzeňský kraj', 'Vystěhovalí na 1 000 obyvatel', 15.50607394), ('Plzeňský kraj', 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 15.00455627), ('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768), ('Plzeňský kraj', 'Sňatky na 1 000 obyvatel', 4.310429601), ('Plzeňský kraj', 'Rozvody na 1 000 obyvatel', 1.812674958)]"
+      },
+      {
+        "query": "SELECT \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = 'Plzeňský kraj' \n  AND \"Ukazatel\" LIKE '%obyvatel%' \nLIMIT 10;",
+        "result": "[('Živě narození na 1 000 obyvatel', 8.099674177), ('Zemřelí na 1 000 obyvatel', 10.01560277), ('Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.915928594), ('Přistěhovalí na 1 000 obyvatel', 30.51063021), ('Vystěhovalí na 1 000 obyvatel', 15.50607394), ('Přírůstek/úbytek stěhováním na 1 000 obyvatel', 15.00455627), ('Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768), ('Sňatky na 1 000 obyvatel', 4.310429601), ('Rozvody na 1 000 obyvatel', 1.812674958)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeňský kraj\" \n  AND \"Ukazatel\" = \"Celkový přírůstek/úbytek na 1 000 obyvatel\" \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768)]"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = \"Plzeň\" \n  AND \"Ukazatel\" = \"Celková populace\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"ČR, Reg. soudržnosti, Kraje\", \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = 'Plzeňský kraj' \n  AND \"Ukazatel\" LIKE '%obyvatel%' \nLIMIT 10;",
+        "result": "[('Plzeňský kraj', 'Živě narození na 1 000 obyvatel', 8.099674177), ('Plzeňský kraj', 'Zemřelí na 1 000 obyvatel', 10.01560277), ('Plzeňský kraj', 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.915928594), ('Plzeňský kraj', 'Přistěhovalí na 1 000 obyvatel', 30.51063021), ('Plzeňský kraj', 'Vystěhovalí na 1 000 obyvatel', 15.50607394), ('Plzeňský kraj', 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 15.00455627), ('Plzeňský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768), ('Plzeňský kraj', 'Sňatky na 1 000 obyvatel', 4.310429601), ('Plzeňský kraj', 'Rozvody na 1 000 obyvatel', 1.812674958)]"
+      },
+      {
+        "query": "SELECT \"Ukazatel\", value \nFROM OBY01BHVDT02 \nWHERE \"Roky\" = 2023 \n  AND \"ČR, Reg. soudržnosti, Kraje\" = 'Plzeňský kraj' \n  AND \"Ukazatel\" LIKE '%obyvatel%' \nLIMIT 10;",
+        "result": "[('Živě narození na 1 000 obyvatel', 8.099674177), ('Zemřelí na 1 000 obyvatel', 10.01560277), ('Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.915928594), ('Přistěhovalí na 1 000 obyvatel', 30.51063021), ('Vystěhovalí na 1 000 obyvatel', 15.50607394), ('Přírůstek/úbytek stěhováním na 1 000 obyvatel', 15.00455627), ('Celkový přírůstek/úbytek na 1 000 obyvatel', 13.08862768), ('Sňatky na 1 000 obyvatel', 4.310429601), ('Rozvody na 1 000 obyvatel', 1.812674958)]"
+      }
+    ]
   }
 ]
