@@ -9,8 +9,9 @@ including schema loading, query generation, execution, and result formatting.
 #==============================================================================
 import os
 import json
+import sqlite3
 from pathlib import Path
-from langchain_core.messages import AIMessage, SystemMessage, RemoveMessage
+from langchain_core.messages import AIMessage, SystemMessage
 from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -55,6 +56,8 @@ from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_min
 MAX_ITERATIONS = 1  # Reduced from 3 to prevent excessive looping
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 ROUTE_DECISION_ID = 11  # ID for routing decision function
+REFLECT_NODE_ID = 12
+INCREMENT_ITERATION_ID = 13
 CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
 CHROMA_COLLECTION_NAME = "czsu_selections_chromadb"
 EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
@@ -99,13 +102,6 @@ async def load_schema(state=None):
                 conn.close()
     # fallback
     return "No selection_code provided in state."
-
-def format_sql_query(query: str) -> str:
-    """Format SQL query for better readability."""
-    # Split the query into lines and remove extra whitespace
-    lines = [line.strip() for line in query.split('\n')]
-    # Join with proper indentation
-    return '\n'.join('    ' + line for line in lines)
 
 #==============================================================================
 # NODE FUNCTIONS
@@ -152,7 +148,7 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
 
 
 async def query_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Generate pandas query based on question and schema. Messages list is always [summary, last_message]."""
+    """Node: Generate SQL query based on question and schema. Messages list is always [summary, last_message]."""
     debug_print(f"{QUERY_GEN_ID}: Enter query_node")
     llm = get_azure_llm_gpt_4o(temperature=0.0)
     tools = await create_mcp_server()
@@ -254,9 +250,9 @@ Do NOT wrap it in code fences and do NOT add explanations.
             debug_print(f"{QUERY_GEN_ID}: Successfully executed query: {query}")
             debug_print(f"{QUERY_GEN_ID}: Query result: {tool_result}")
             new_queries.append((query, tool_result))
-            if not hasattr(result, "id") or not result.id:
-                result.id = "query_result"
-            last_message = result
+            # Format the last message to include both query and result
+            formatted_content = f"Query:\n{query}\n\nResult:\n{tool_result}"
+            last_message = AIMessage(content=formatted_content, id="query_result")
     except Exception as e:
         error_msg = f"Error executing query: {str(e)}"
         debug_print(f"{QUERY_GEN_ID}: {error_msg}")
@@ -275,7 +271,7 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Reflect on the current state and provide feedback for next query or decide to answer.
     Messages list is always [summary, last_message].
     """
-    debug_print(f"{ROUTE_DECISION_ID}: Enter reflect_node")
+    debug_print(f"{REFLECT_NODE_ID}: Enter reflect_node")
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
@@ -403,7 +399,7 @@ Bad: "The query shows X is 1,234,567"
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Increment the iteration counter and return updated state."""
-    debug_print(f"{ROUTE_DECISION_ID}: Enter increment_iteration_node")
+    debug_print(f"{INCREMENT_ITERATION_ID}: Enter increment_iteration_node")
     return {"iteration": state.get("iteration", 0) + 1}
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:

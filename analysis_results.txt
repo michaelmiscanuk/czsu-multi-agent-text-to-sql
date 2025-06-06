@@ -18737,3 +18737,756 @@ ORDER BY Roky DESC;
   Query: The current dataset does not contain information about tourist attractions in Prague. It focuses solely on demographic data. No SQL query can be generated to answer the user's question about the best places to visit in Prague using this dataset. A dataset with tourism-related information is required.
   Result: Error: Query error: near "The": syntax error
 ----------------------------------------------------------------------------
+Prompt: kolik lidi je v praze?
+Result: Aktuální počet obyvatel v Praze v roce 2025 je 1392307.
+Queries and Results:
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky;
+  Result: [(2025, 1392307.19438828)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi je v praze?
+Result: Aktuální počet obyvatel v Praze v roce 2025 je 1392307.
+Queries and Results:
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024') 
+ORDER BY Roky DESC 
+LIMIT 1;
+  Result: No results found
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024') 
+ORDER BY Roky DESC 
+LIMIT 1;
+  Result: No results found
+----------------------------------------------------------------------------
+Prompt: a kolik na morave?
+Result: Na Moravě nebyly nalezeny žádné výsledky týkající se ceny nebo nákladů na produkci průmyslových výrobků.
+Queries and Results:
+  Query: SELECT Roky, SUM(value) AS total_cost 
+FROM PRU07T1 
+WHERE Území = 'Česko' AND Ukazatel = 'Produkce průmyslových výrobků' 
+GROUP BY Roky 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2022, 17013617.12957), (2021, 17099961.0), (2020, 16369449.9), (2019, 16718261.8), (2018, 16467265.0), (2017, 16156924.0), (2016, 15870793.0), (2015, 15640521.0), (2014, 14309210.0), (2013, 14074849.0)]
+  Query: SELECT Roky, SUM(value) AS total_cost 
+FROM PRU07T1 
+WHERE Území LIKE '%Morava%' AND Ukazatel = 'Produkce průmyslových výrobků' 
+GROUP BY Roky 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: No results found
+  Query: SELECT Roky, SUM(value) AS total_cost 
+FROM PRU07T1 
+WHERE Území = 'Česko' AND Ukazatel = 'Produkce průmyslových výrobků' 
+GROUP BY Roky 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2022, 17013617.12957), (2021, 17099961.0), (2020, 16369449.9), (2019, 16718261.8), (2018, 16467265.0), (2017, 16156924.0), (2016, 15870793.0), (2015, 15640521.0), (2014, 14309210.0), (2013, 14074849.0)]
+  Query: SELECT Roky, SUM(value) AS total_cost 
+FROM PRU07T1 
+WHERE Území LIKE '%Morava%' AND Ukazatel = 'Produkce průmyslových výrobků' 
+GROUP BY Roky 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: No results found
+----------------------------------------------------------------------------
+Prompt: Test initial message
+Result: The initial message serves to provide a detailed schema and metadata about the dataset, which is essential for understanding its organization and for constructing precise SQL queries to extract relevant data.
+Queries and Results:
+  Query: The initial message in this context serves to provide a detailed schema and metadata about the dataset, including its structure, dimensions, and available values. This information is essential for understanding the dataset's organization and for constructing precise SQL queries to extract relevant data. It ensures clarity and accuracy in data analysis tasks.
+  Result: Error: Query error: near "The": syntax error
+  Query: SELECT DISTINCT "Ukazatel" FROM PRUM201T1 LIMIT 10;
+  Result: [('Objem produkce - celková produkce',), ('Objem produkce - prodaná produkce celkem',), ('Objem produkce - prodaná produkce vlastní a průmyslové služby',), ('Objem produkce - prodaná produkce v režimu práce ve mzdě',), ('Hodnota produkce v tis. Kč - prodaná produkce celkem',), ('Hodnota produkce v tis. Kč - prodaná produkce vlastní a průmyslové služby',), ('Hodnota produkce v tis. Kč - Prodaná produkce v režimu práce ve mzdě',)]
+  Query: The initial message in this context serves to provide a detailed schema and metadata about the dataset, including its structure, dimensions, and available values. This information is essential for understanding the dataset's organization and for constructing precise SQL queries to extract relevant data. It ensures clarity and accuracy in data analysis tasks.
+  Result: Error: Query error: near "The": syntax error
+  Query: SELECT DISTINCT "Ukazatel" FROM PRUM201T1 LIMIT 10;
+  Result: [('Objem produkce - celková produkce',), ('Objem produkce - prodaná produkce celkem',), ('Objem produkce - prodaná produkce vlastní a průmyslové služby',), ('Objem produkce - prodaná produkce v režimu práce ve mzdě',), ('Hodnota produkce v tis. Kč - prodaná produkce celkem',), ('Hodnota produkce v tis. Kč - prodaná produkce vlastní a průmyslové služby',), ('Hodnota produkce v tis. Kč - Prodaná produkce v režimu práce ve mzdě',)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi zije na morave?
+Result: Aktuální počet obyvatel Moravy není k dispozici, protože nebyly nalezeny žádné výsledky pro celkový počet obyvatel v daných krajích.
+Queries and Results:
+  Query: SELECT "ČR, Reg. soudržnosti, Kraje", SUM(value) AS total_population
+FROM OBY01BHVDT02
+WHERE "Roky" = 2023
+  AND "ČR, Reg. soudržnosti, Kraje" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')
+  AND "Ukazatel" = 'Živě narození na 1 000 obyvatel'
+GROUP BY "ČR, Reg. soudržnosti, Kraje"
+LIMIT 10;
+  Result: [('Jihomoravský kraj', 8.722746018), ('Moravskoslezsko', 8.090624404), ('Moravskoslezský kraj', 8.090624404), ('Olomoucký kraj', 8.41037311), ('Střední Morava', 8.389659866), ('Zlínský kraj', 8.367098935)]
+  Query: SELECT SUM(value) AS total_population
+FROM OBY01BHVDT02
+WHERE "Roky" = 2023
+  AND "ČR, Reg. soudržnosti, Kraje" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')
+  AND "Ukazatel" = 'Celkový počet obyvatel';
+  Result: None
+  Query: SELECT "ČR, Reg. soudržnosti, Kraje", SUM(value) AS total_population
+FROM OBY01BHVDT02
+WHERE "Roky" = 2023
+  AND "ČR, Reg. soudržnosti, Kraje" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')
+  AND "Ukazatel" = 'Živě narození na 1 000 obyvatel'
+GROUP BY "ČR, Reg. soudržnosti, Kraje"
+LIMIT 10;
+  Result: [('Jihomoravský kraj', 8.722746018), ('Moravskoslezsko', 8.090624404), ('Moravskoslezský kraj', 8.090624404), ('Olomoucký kraj', 8.41037311), ('Střední Morava', 8.389659866), ('Zlínský kraj', 8.367098935)]
+  Query: SELECT SUM(value) AS total_population
+FROM OBY01BHVDT02
+WHERE "Roky" = 2023
+  AND "ČR, Reg. soudržnosti, Kraje" IN ('Střední Morava', 'Moravskoslezsko', 'Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj')
+  AND "Ukazatel" = 'Celkový počet obyvatel';
+  Result: None
+----------------------------------------------------------------------------
+Prompt: no a kolik jich zije v nejakem z regionu na Morave, vyber si nejaky.
+Result: V Jihomoravském kraji je 8.722746018 živě narozených na 1 000 obyvatel. Další údaje o počtu obyvatel nejsou k dispozici.
+Queries and Results:
+  Query: SELECT "ČR, Reg. soudržnosti, Kraje", "Ukazatel", value 
+FROM OBY01BHVDT02 
+WHERE "Roky" = 2023 
+  AND "ČR, Reg. soudržnosti, Kraje" = 'Jihomoravský kraj' 
+  AND "Ukazatel" = 'Živě narození na 1 000 obyvatel' 
+LIMIT 10;
+  Result: [('Jihomoravský kraj', 'Živě narození na 1 000 obyvatel', 8.722746018)]
+  Query: SELECT "ČR, Reg. soudržnosti, Kraje", "Ukazatel", value 
+FROM OBY01BHVDT02 
+WHERE "Roky" = 2023 
+  AND "ČR, Reg. soudržnosti, Kraje" IN ('Jihomoravský kraj', 'Zlínský kraj', 'Olomoucký kraj', 'Moravskoslezský kraj') 
+  AND "Ukazatel" LIKE '%obyvatel%' 
+LIMIT 10;
+  Result: [('Jihomoravský kraj', 'Živě narození na 1 000 obyvatel', 8.722746018), ('Jihomoravský kraj', 'Zemřelí na 1 000 obyvatel', 10.07747375), ('Jihomoravský kraj', 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.35472773), ('Jihomoravský kraj', 'Přistěhovalí na 1 000 obyvatel', 21.2815708), ('Jihomoravský kraj', 'Vystěhovalí na 1 000 obyvatel', 12.11978507), ('Jihomoravský kraj', 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 9.161785722), ('Jihomoravský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 7.807057992), ('Jihomoravský kraj', 'Sňatky na 1 000 obyvatel', 4.560453396), ('Jihomoravský kraj', 'Rozvody na 1 000 obyvatel', 1.703016211), ('Olomoucký kraj', 'Živě narození na 1 000 obyvatel', 8.41037311)]
+  Query: SELECT "ČR, Reg. soudržnosti, Kraje", "Ukazatel", value 
+FROM OBY01BHVDT02 
+WHERE "Roky" = 2023 
+  AND "ČR, Reg. soudržnosti, Kraje" = 'Jihomoravský kraj' 
+  AND "Ukazatel" = 'Živě narození na 1 000 obyvatel' 
+LIMIT 10;
+  Result: [('Jihomoravský kraj', 'Živě narození na 1 000 obyvatel', 8.722746018)]
+  Query: SELECT "ČR, Reg. soudržnosti, Kraje", "Ukazatel", value 
+FROM OBY01BHVDT02 
+WHERE "Roky" = 2023 
+  AND "ČR, Reg. soudržnosti, Kraje" IN ('Jihomoravský kraj', 'Zlínský kraj', 'Olomoucký kraj', 'Moravskoslezský kraj') 
+  AND "Ukazatel" LIKE '%obyvatel%' 
+LIMIT 10;
+  Result: [('Jihomoravský kraj', 'Živě narození na 1 000 obyvatel', 8.722746018), ('Jihomoravský kraj', 'Zemřelí na 1 000 obyvatel', 10.07747375), ('Jihomoravský kraj', 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -1.35472773), ('Jihomoravský kraj', 'Přistěhovalí na 1 000 obyvatel', 21.2815708), ('Jihomoravský kraj', 'Vystěhovalí na 1 000 obyvatel', 12.11978507), ('Jihomoravský kraj', 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 9.161785722), ('Jihomoravský kraj', 'Celkový přírůstek/úbytek na 1 000 obyvatel', 7.807057992), ('Jihomoravský kraj', 'Sňatky na 1 000 obyvatel', 4.560453396), ('Jihomoravský kraj', 'Rozvody na 1 000 obyvatel', 1.703016211), ('Olomoucký kraj', 'Živě narození na 1 000 obyvatel', 8.41037311)]
+----------------------------------------------------------------------------
+Prompt: First question about Prague population
+Result: The current population of Prague is 1397880.
+Queries and Results:
+  Query: SELECT SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 1397880
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem"
+GROUP BY "Pohlaví";
+  Result: [('Celkem', 1397880)]
+  Query: SELECT SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 1397880
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem"
+GROUP BY "Pohlaví";
+  Result: [('Celkem', 1397880)]
+----------------------------------------------------------------------------
+Prompt: What is the population of Prague?
+Result: The current population of Prague is 1397880.
+Queries and Results:
+  Query: SELECT SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 1397880
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem"
+GROUP BY "Pohlaví";
+  Result: [('Celkem', 1397880)]
+  Query: SELECT SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 1397880
+  Query: SELECT "Pohlaví", SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem"
+GROUP BY "Pohlaví";
+  Result: [('Celkem', 1397880)]
+----------------------------------------------------------------------------
+Prompt: What about Brno?
+Result: In Brno, the total number of collective accommodation facilities in 2023 is as follows: 
+
+- Brno-město has a total of 134, with categories including:
+  - HUZ celkem: 134
+  - Penzion: 47
+  - Hotel, motel, botel ***: 27
+  - Ostatní HUZ: 24
+  - Hotel, motel, botel ****: 20
+
+- Brno-venkov has a total of 118, with categories including:
+  - HUZ celkem: 118
+  - Penzion: 58
+  - Hotel, motel, botel ***: 20
+  - Ostatní HUZ: 10
+  - Kemp: 9
+
+For specific categories of collective accommodation in Brno, the total is:
+- Ostatní HUZ: 34
+- Kemp: 10
+Queries and Results:
+  Query: SELECT "Území", "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+  AND "Roky" = '2023'
+GROUP BY "Území", "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('Brno-město', 'HUZ celkem', 134.0), ('Brno-venkov', 'HUZ celkem', 118.0), ('Brno-venkov', 'Penzion', 58.0), ('Brno-město', 'Penzion', 47.0), ('Brno-město', 'Hotel, motel, botel ***', 27.0), ('Brno-město', 'Ostatní HUZ', 24.0), ('Brno-město', 'Hotel, motel, botel ****', 20.0), ('Brno-venkov', 'Hotel, motel, botel ***', 20.0), ('Brno-venkov', 'Ostatní HUZ', 10.0), ('Brno-venkov', 'Kemp', 9.0)]
+  Query: SELECT "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+  AND "Kategorie ubytovacího zařízení" IN ('Ostatní HUZ', 'Kemp')
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC;
+  Result: [('Ostatní HUZ', 34.0), ('Kemp', 10.0)]
+  Query: SELECT "Území", "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+  AND "Roky" = '2023'
+GROUP BY "Území", "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('Brno-město', 'HUZ celkem', 134.0), ('Brno-venkov', 'HUZ celkem', 118.0), ('Brno-venkov', 'Penzion', 58.0), ('Brno-město', 'Penzion', 47.0), ('Brno-město', 'Hotel, motel, botel ***', 27.0), ('Brno-město', 'Ostatní HUZ', 24.0), ('Brno-město', 'Hotel, motel, botel ****', 20.0), ('Brno-venkov', 'Hotel, motel, botel ***', 20.0), ('Brno-venkov', 'Ostatní HUZ', 10.0), ('Brno-venkov', 'Kemp', 9.0)]
+  Query: SELECT "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+  AND "Kategorie ubytovacího zařízení" IN ('Ostatní HUZ', 'Kemp')
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC;
+  Result: [('Ostatní HUZ', 34.0), ('Kemp', 10.0)]
+----------------------------------------------------------------------------
+Prompt: kolik hotelu je v praze?
+Result: Není možné určit počet hotelů v Praze, protože dotaz obsahuje chybu a neexistuje sloupec s názvem "Kategorie_ubytovacího_zařízení".
+Queries and Results:
+  Query: SELECT SUM(value) AS pocet_hotelu
+FROM CRU01T1
+WHERE Ukazatel = 'Počet hromadných ubytovacích zařízení'
+  AND Roky = '2023'
+  AND Území = 'Hlavní město Praha'
+  AND Kategorie_ubytovacího_zařízení LIKE 'Hotel%';
+  Result: Error: Query error: no such column: Kategorie_ubytovacího_zařízení
+  Query: PRAGMA table_info(CRU01T1);
+  Result: [(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Roky', 'INTEGER', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Kategorie ubytovacího zařízení', 'TEXT', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]
+  Query: SELECT SUM(value) AS pocet_hotelu
+FROM CRU01T1
+WHERE Ukazatel = 'Počet hromadných ubytovacích zařízení'
+  AND Roky = '2023'
+  AND Území = 'Hlavní město Praha'
+  AND Kategorie_ubytovacího_zařízení LIKE 'Hotel%';
+  Result: Error: Query error: no such column: Kategorie_ubytovacího_zařízení
+  Query: PRAGMA table_info(CRU01T1);
+  Result: [(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Roky', 'INTEGER', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Kategorie ubytovacího zařízení', 'TEXT', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]
+----------------------------------------------------------------------------
+Prompt: skus to znovu, pouzij presny nazev sloupce jako ve schematu: "Kategorie ubytovacího zařízení"
+Result: Přesný název sloupce pro "Kategorie ubytovacího zařízení" je "Kategorie ubytovacího zařízení".
+Queries and Results:
+  Query: Kategorie ubytovacího zařízení
+  Result: Error: Query error: near "Kategorie": syntax error
+  Query: PRAGMA table_info(CRU01T1);
+  Result: [(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Roky', 'INTEGER', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Kategorie ubytovacího zařízení', 'TEXT', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]
+  Query: Kategorie ubytovacího zařízení
+  Result: Error: Query error: near "Kategorie": syntax error
+  Query: PRAGMA table_info(CRU01T1);
+  Result: [(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Roky', 'INTEGER', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Kategorie ubytovacího zařízení', 'TEXT', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]
+----------------------------------------------------------------------------
+Prompt: kolik lidi zije v praze?
+Result: Aktuální počet obyvatel v Praze v roce 2025 je 1392307.
+Queries and Results:
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+----------------------------------------------------------------------------
+Prompt: a kolik v brne?
+Result: Aktuální počet obyvatel v Brně není k dispozici, protože nebyly nalezeny žádné výsledky pro Jihomoravský kraj v roce 2023.
+Queries and Results:
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Jihomoravský kraj' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2023' 
+LIMIT 10;
+  Result: No results found
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT Roky, value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky IN ('2023', '2024', '2025') 
+ORDER BY Roky DESC;
+  Result: [(2025, 1392307.19438828)]
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Hlavní město Praha' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2025' 
+LIMIT 10;
+  Result: 1392307.19438828
+  Query: SELECT value 
+FROM OBY02PKT01 
+WHERE Kraje = 'Jihomoravský kraj' 
+  AND Ukazatel = 'Počet obyvatel - celkem' 
+  AND Roky = '2023' 
+LIMIT 10;
+  Result: No results found
+----------------------------------------------------------------------------
+Prompt: a kolik v plzni?
+Result: V Plzni jsou průměrné jednotkové kupní ceny nemovitostí následující:
+
+- Rodinné domy v Plzni-město:
+  - 2019-2021: 48805 Kč/m2
+  - 2020-2022: 55657 Kč/m2
+  - 2021-2023: 63066 Kč/m2
+
+- Byty v Plzni-město:
+  - 2019-2021: 44638 Kč/m2
+  - 2020-2022: 52727 Kč/m2
+  - 2021-2023: 57391 Kč/m2
+
+- Rodinné domy v Plzeňském kraji:
+  - 2019-2021: 34428 Kč/m2
+  - 2020-2022: 38120 Kč/m2
+  - 2021-2023: 42055 Kč/m2
+
+- Byty v Plzeňském kraji:
+  - 2019-2021: 36112 Kč/m2
+  - 2020-2022: 42675 Kč/m2
+  - 2021-2023: 47262 Kč/m2
+Queries and Results:
+  Query: SELECT "Území", "Druh nemovitosti", "Tříleté období", value 
+FROM CEN0402T01 
+WHERE "Území" LIKE 'Plzeň%' 
+  AND "Ukazatel" = 'Průměrná jednotková kupní cena nemovitosti' 
+LIMIT 10;
+  Result: [('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2019-2021', 34428), ('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2020-2022', 38120), ('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2021-2023', 42055), ('Plzeňský kraj', 'Byty [Kč/m2]', '2019-2021', 36112), ('Plzeňský kraj', 'Byty [Kč/m2]', '2020-2022', 42675), ('Plzeňský kraj', 'Byty [Kč/m2]', '2021-2023', 47262), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2019-2021', 48805), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2020-2022', 55657), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2021-2023', 63066), ('Plzeň-město', 'Byty [Kč/m2]', '2019-2021', 44638)]
+  Query: SELECT "Území", "Druh nemovitosti", "Tříleté období", value, 
+       (value - LAG(value) OVER (PARTITION BY "Území", "Druh nemovitosti" ORDER BY "Tříleté období")) / LAG(value) OVER (PARTITION BY "Území", "Druh nemovitosti" ORDER BY "Tříleté období") * 100 AS percentage_change
+FROM CEN0402T01
+WHERE "Území" IN ('Plzeň-město', 'Plzeňský kraj') 
+  AND "Ukazatel" = 'Průměrná jednotková kupní cena nemovitosti'
+  AND "Druh nemovitosti" IN ('Rodinné domy [Kč/m2]', 'Byty [Kč/m2]')
+ORDER BY "Území", "Druh nemovitosti", "Tříleté období"
+LIMIT 10;
+  Result: [('Plzeň-město', 'Byty [Kč/m2]', '2019-2021', 44638, None), ('Plzeň-město', 'Byty [Kč/m2]', '2020-2022', 52727, 0), ('Plzeň-město', 'Byty [Kč/m2]', '2021-2023', 57391, 0), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2019-2021', 48805, None), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2020-2022', 55657, 0), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2021-2023', 63066, 0), ('Plzeňský kraj', 'Byty [Kč/m2]', '2019-2021', 36112, None), ('Plzeňský kraj', 'Byty [Kč/m2]', '2020-2022', 42675, 0), ('Plzeňský kraj', 'Byty [Kč/m2]', '2021-2023', 47262, 0), ('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2019-2021', 34428, None)]
+  Query: SELECT "Území", "Druh nemovitosti", "Tříleté období", value 
+FROM CEN0402T01 
+WHERE "Území" LIKE 'Plzeň%' 
+  AND "Ukazatel" = 'Průměrná jednotková kupní cena nemovitosti' 
+LIMIT 10;
+  Result: [('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2019-2021', 34428), ('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2020-2022', 38120), ('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2021-2023', 42055), ('Plzeňský kraj', 'Byty [Kč/m2]', '2019-2021', 36112), ('Plzeňský kraj', 'Byty [Kč/m2]', '2020-2022', 42675), ('Plzeňský kraj', 'Byty [Kč/m2]', '2021-2023', 47262), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2019-2021', 48805), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2020-2022', 55657), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2021-2023', 63066), ('Plzeň-město', 'Byty [Kč/m2]', '2019-2021', 44638)]
+  Query: SELECT "Území", "Druh nemovitosti", "Tříleté období", value, 
+       (value - LAG(value) OVER (PARTITION BY "Území", "Druh nemovitosti" ORDER BY "Tříleté období")) / LAG(value) OVER (PARTITION BY "Území", "Druh nemovitosti" ORDER BY "Tříleté období") * 100 AS percentage_change
+FROM CEN0402T01
+WHERE "Území" IN ('Plzeň-město', 'Plzeňský kraj') 
+  AND "Ukazatel" = 'Průměrná jednotková kupní cena nemovitosti'
+  AND "Druh nemovitosti" IN ('Rodinné domy [Kč/m2]', 'Byty [Kč/m2]')
+ORDER BY "Území", "Druh nemovitosti", "Tříleté období"
+LIMIT 10;
+  Result: [('Plzeň-město', 'Byty [Kč/m2]', '2019-2021', 44638, None), ('Plzeň-město', 'Byty [Kč/m2]', '2020-2022', 52727, 0), ('Plzeň-město', 'Byty [Kč/m2]', '2021-2023', 57391, 0), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2019-2021', 48805, None), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2020-2022', 55657, 0), ('Plzeň-město', 'Rodinné domy [Kč/m2]', '2021-2023', 63066, 0), ('Plzeňský kraj', 'Byty [Kč/m2]', '2019-2021', 36112, None), ('Plzeňský kraj', 'Byty [Kč/m2]', '2020-2022', 42675, 0), ('Plzeňský kraj', 'Byty [Kč/m2]', '2021-2023', 47262, 0), ('Plzeňský kraj', 'Rodinné domy [Kč/m2]', '2019-2021', 34428, None)]
+----------------------------------------------------------------------------
+Prompt: dobre, ale chci spis vedet kolik je tam lidi.
+Result: K 1. 7. 2024 se v Česku nachází 10886531 lidí, zatímco k 31. 12. 2024 je počet obyvatel 10909500.
+Queries and Results:
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Počet obyvatel k 1. 7. (střední stav)' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 10886531.0), (2023, 10878042.0), (2022, 10759525.0), (2021, 10500850.0), (2020, 10700155.0), (2019, 10669324.0), (2018, 10626430.0), (2017, 10589526.0), (2016, 10565284.0), (2015, 10542942.0)]
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Počet obyvatel k 31. 12. (koncový stav)' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 10909500.0), (2023, 10900555.0), (2022, 10827529.0), (2021, 10516707.0), (2020, 10701777.0), (2019, 10693939.0), (2018, 10649800.0), (2017, 10610055.0), (2016, 10578820.0), (2015, 10553843.0)]
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Počet obyvatel k 1. 7. (střední stav)' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 10886531.0), (2023, 10878042.0), (2022, 10759525.0), (2021, 10500850.0), (2020, 10700155.0), (2019, 10669324.0), (2018, 10626430.0), (2017, 10589526.0), (2016, 10565284.0), (2015, 10542942.0)]
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' 
+  AND Ukazatel = 'Počet obyvatel k 31. 12. (koncový stav)' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 10909500.0), (2023, 10900555.0), (2022, 10827529.0), (2021, 10516707.0), (2020, 10701777.0), (2019, 10693939.0), (2018, 10649800.0), (2017, 10610055.0), (2016, 10578820.0), (2015, 10553843.0)]
+----------------------------------------------------------------------------
+Prompt: What is the population of Prague?
+Result: The current population of Prague is 1397880.
+Queries and Results:
+  Query: SELECT SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 1397880
+  Query: SELECT Rok, SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Pohlaví" = "Celkem"
+  AND "Věkové skupiny" = "Celkem"
+GROUP BY Rok
+ORDER BY Rok DESC
+LIMIT 5;
+  Result: [(2024, 1397880)]
+  Query: SELECT SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "Pohlaví" = "Celkem"
+  AND "Rok" = 2024
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Věkové skupiny" = "Celkem";
+  Result: 1397880
+  Query: SELECT Rok, SUM(value) AS population
+FROM OBY02ET01
+WHERE "Ukazatel" = "Počet obyvatel k 31. 12."
+  AND "ČR, kraje" = "Hlavní město Praha"
+  AND "Pohlaví" = "Celkem"
+  AND "Věkové skupiny" = "Celkem"
+GROUP BY Rok
+ORDER BY Rok DESC
+LIMIT 5;
+  Result: [(2024, 1397880)]
+----------------------------------------------------------------------------
+Prompt: What about Brno?
+Result: In Brno, the total number of collective accommodation facilities in 2023 is 252. The breakdown is as follows: 
+
+- Brno-město has 134 facilities, categorized as:
+  - HUZ celkem: 134
+  - Penzion: 47
+  - Hotel, motel, botel ***: 27
+  - Ostatní HUZ: 24
+  - Hotel, motel, botel ****: 20
+
+- Brno-venkov has 118 facilities, categorized as:
+  - HUZ celkem: 118
+  - Penzion: 58
+  - Hotel, motel, botel ***: 20
+  - Ostatní HUZ: 10
+  - Kemp: 9
+Queries and Results:
+  Query: SELECT "Území", "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+  AND "Roky" = '2023'
+GROUP BY "Území", "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('Brno-město', 'HUZ celkem', 134.0), ('Brno-venkov', 'HUZ celkem', 118.0), ('Brno-venkov', 'Penzion', 58.0), ('Brno-město', 'Penzion', 47.0), ('Brno-město', 'Hotel, motel, botel ***', 27.0), ('Brno-město', 'Ostatní HUZ', 24.0), ('Brno-město', 'Hotel, motel, botel ****', 20.0), ('Brno-venkov', 'Hotel, motel, botel ***', 20.0), ('Brno-venkov', 'Ostatní HUZ', 10.0), ('Brno-venkov', 'Kemp', 9.0)]
+  Query: SELECT "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('HUZ celkem', 252.0), ('Penzion', 105.0), ('Hotel, motel, botel ***', 47.0), ('Ostatní HUZ', 34.0), ('Hotel, motel, botel ****', 26.0), ('Kemp', 10.0), ('Chatová osada', 9.0), ('Turistická ubytovna', 8.0), ('Hotel garni', 7.0), ('Hotel, motel, botel **', 3.0)]
+  Query: SELECT "Území", "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+  AND "Roky" = '2023'
+GROUP BY "Území", "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('Brno-město', 'HUZ celkem', 134.0), ('Brno-venkov', 'HUZ celkem', 118.0), ('Brno-venkov', 'Penzion', 58.0), ('Brno-město', 'Penzion', 47.0), ('Brno-město', 'Hotel, motel, botel ***', 27.0), ('Brno-město', 'Ostatní HUZ', 24.0), ('Brno-město', 'Hotel, motel, botel ****', 20.0), ('Brno-venkov', 'Hotel, motel, botel ***', 20.0), ('Brno-venkov', 'Ostatní HUZ', 10.0), ('Brno-venkov', 'Kemp', 9.0)]
+  Query: SELECT "Kategorie ubytovacího zařízení", SUM(value) AS total_value
+FROM CRU01T1
+WHERE "Území" IN ('Brno-město', 'Brno-venkov') 
+  AND "Ukazatel" = 'Počet hromadných ubytovacích zařízení'
+GROUP BY "Kategorie ubytovacího zařízení"
+ORDER BY total_value DESC
+LIMIT 10;
+  Result: [('HUZ celkem', 252.0), ('Penzion', 105.0), ('Hotel, motel, botel ***', 47.0), ('Ostatní HUZ', 34.0), ('Hotel, motel, botel ****', 26.0), ('Kemp', 10.0), ('Chatová osada', 9.0), ('Turistická ubytovna', 8.0), ('Hotel garni', 7.0), ('Hotel, motel, botel **', 3.0)]
+----------------------------------------------------------------------------
+Prompt: What is the population of Ostrava?
+Result: The dataset does not contain information about the population of Ostrava or any specific city. Therefore, it is not possible to answer the question about the current population of Ostrava using this dataset.
+Queries and Results:
+  Query: The dataset provided does not contain information about the population of Ostrava or any specific city. It focuses on deaths by week and five-year age group for the territory of "Česko" (Czech Republic). Therefore, it is not possible to answer the question about the current population of Ostrava using this dataset.
+  Result: Error: Query error: near "The": syntax error
+  Query: SELECT population 
+FROM city_population 
+WHERE city_name = 'Ostrava';
+  Result: Error: Query error: no such table: city_population
+  Query: The dataset provided does not contain information about the population of Ostrava or any specific city. It focuses on deaths by week and five-year age group for the territory of "Česko" (Czech Republic). Therefore, it is not possible to answer the question about the current population of Ostrava using this dataset.
+  Result: Error: Query error: near "The": syntax error
+  Query: SELECT population 
+FROM city_population 
+WHERE city_name = 'Ostrava';
+  Result: Error: Query error: no such table: city_population
+----------------------------------------------------------------------------
+Prompt: Hello, this is a new conversation
+Result: Můžeme diskutovat o následujících tématech týkajících se indexu cen za poskytnutí tržních služeb v Česku: 
+
+1. Služby v oblasti zaměstnání
+2. Služby agentur zprostředkujících pracovníky na přechodnou dobu
+3. Poštovní služby poskytované na základě poštovní licence
+4. Služby realitních agentur na základě smlouvy nebo dohody
+5. Služby agentur zprostředkujících zaměstnání
+6. Zprostředkování prodeje reklamního prostoru nebo času v televizi nebo v rozhlase
+7. Soukromé bezpečnostní služby
+8. Bezpečnostní a pátrací služby
+9. Pronájem a leasing ostatních strojů, zařízení a výrobků j. n.
+10. Tvorba programů a vysílání
+Queries and Results:
+  Query: SELECT DISTINCT "Klasifikace CZ-CPA" 
+FROM CEN0204AT03 
+WHERE "Ukazatel" = "Index cen za poskytnutí tržních služeb (%)" 
+AND "Typ indexu" = "Bazický index (2015 = 100)" 
+AND "Území" = "Česko" 
+LIMIT 10;
+  Result: [('Index cen tržních služeb',), ('Tržní služby bez reklam',), ('Pozemní a potrubní doprava',), ('Vodní doprava',), ('Skladování a podpůrné služby v dopravě',), ('Poštovní a kurýrní služby',), ('Vydavatelské služby',), ('Činnosti v oblasti filmů, videozáznamů a televizních programů, pořizování zvukových nahrávek a hudební vydavatelské činnosti',), ('Tvorba programů a vysílání',), ('Telekomunikační služby',)]
+  Query: SELECT "Klasifikace CZ-CPA", AVG("value") AS "Average Value"
+FROM CEN0204AT03
+WHERE "Ukazatel" = "Index cen za poskytnutí tržních služeb (%)"
+AND "Typ indexu" = "Bazický index (2015 = 100)"
+AND "Území" = "Česko"
+GROUP BY "Klasifikace CZ-CPA"
+ORDER BY "Average Value" DESC
+LIMIT 10;
+  Result: [('Služby v oblasti zaměstnání', 141.0677419354839), ('Služby agentur zprostředkujících pracovníky na přechodnou dobu', 140.6508064516129), ('Poštovní služby poskytované na základě poštovní licence', 139.73225806451612), ('Služby realitních agentur na základě smlouvy nebo dohody', 139.55564516129033), ('Služby agentur zprostředkujících zaměstnání', 135.59032258064516), ('Zprostředkování prodeje reklamního prostoru nebo času v televizi \nnebo v rozhlase', 133.51290322580644), ('Soukromé bezpečnostní služby', 132.60967741935482), ('Bezpečnostní a pátrací služby', 128.97096774193548), ('Pronájem a leasing ostatních strojů, zařízení a výrobků j. n.', 126.36875), ('Tvorba programů a vysílání', 126.31875)]
+  Query: SELECT DISTINCT "Klasifikace CZ-CPA" 
+FROM CEN0204AT03 
+WHERE "Ukazatel" = "Index cen za poskytnutí tržních služeb (%)" 
+AND "Typ indexu" = "Bazický index (2015 = 100)" 
+AND "Území" = "Česko" 
+LIMIT 10;
+  Result: [('Index cen tržních služeb',), ('Tržní služby bez reklam',), ('Pozemní a potrubní doprava',), ('Vodní doprava',), ('Skladování a podpůrné služby v dopravě',), ('Poštovní a kurýrní služby',), ('Vydavatelské služby',), ('Činnosti v oblasti filmů, videozáznamů a televizních programů, pořizování zvukových nahrávek a hudební vydavatelské činnosti',), ('Tvorba programů a vysílání',), ('Telekomunikační služby',)]
+  Query: SELECT "Klasifikace CZ-CPA", AVG("value") AS "Average Value"
+FROM CEN0204AT03
+WHERE "Ukazatel" = "Index cen za poskytnutí tržních služeb (%)"
+AND "Typ indexu" = "Bazický index (2015 = 100)"
+AND "Území" = "Česko"
+GROUP BY "Klasifikace CZ-CPA"
+ORDER BY "Average Value" DESC
+LIMIT 10;
+  Result: [('Služby v oblasti zaměstnání', 141.0677419354839), ('Služby agentur zprostředkujících pracovníky na přechodnou dobu', 140.6508064516129), ('Poštovní služby poskytované na základě poštovní licence', 139.73225806451612), ('Služby realitních agentur na základě smlouvy nebo dohody', 139.55564516129033), ('Služby agentur zprostředkujících zaměstnání', 135.59032258064516), ('Zprostředkování prodeje reklamního prostoru nebo času v televizi \nnebo v rozhlase', 133.51290322580644), ('Soukromé bezpečnostní služby', 132.60967741935482), ('Bezpečnostní a pátrací služby', 128.97096774193548), ('Pronájem a leasing ostatních strojů, zařízení a výrobků j. n.', 126.36875), ('Tvorba programů a vysílání', 126.31875)]
+----------------------------------------------------------------------------

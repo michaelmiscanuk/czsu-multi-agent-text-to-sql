@@ -16,13 +16,10 @@ import asyncio
 import argparse
 from pathlib import Path
 from dotenv import load_dotenv
-from typing import List
 from langchain_core.messages import BaseMessage, SystemMessage, AIMessage
 from langgraph.checkpoint.memory import InMemorySaver
-# from my_agent.utils.instrument import instrument, Framework
 import os
 import sys
-from urllib.parse import quote
 
 # Load environment variables
 load_dotenv()
@@ -79,7 +76,7 @@ DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 202
 #==============================================================================
 # MAIN FUNCTION
 #==============================================================================
-async def main(prompt=None, thread_id=None):
+async def main(prompt=None, thread_id=None, checkpointer=None):
     """Main entry point for the application.
     
     This async function serves as the central coordinator for the data analysis process.
@@ -93,6 +90,8 @@ async def main(prompt=None, thread_id=None):
                                directly, will attempt to get from command line args.
         thread_id (str, optional): The conversation thread ID for memory. If None and script is run
                                    directly, a new thread ID will be generated.
+        checkpointer (optional): External checkpointer instance for shared memory. If None,
+                                creates a new InMemorySaver instance.
     
     Returns:
         dict: A dictionary containing the prompt, result, and thread_id for downstream
@@ -122,33 +121,53 @@ async def main(prompt=None, thread_id=None):
     # instrument(project_name="LangGraph_czsu-multi-agent-text-to-sql", framework=Framework.LANGGRAPH)
     
     # Create the LangGraph execution graph with InMemorySaver for persistent short-term memory
-    # (No DB file needed for InMemorySaver)
-    checkpointer = InMemorySaver()
+    if checkpointer is None:
+        checkpointer = InMemorySaver()
     graph = create_graph(checkpointer=checkpointer)
         
     print(f"Processing prompt: {prompt} (thread_id={thread_id})")
-        
-    # Retrieve previous messages for this thread (short-term memory)
-    # For InMemorySaver, this is handled by LangGraph automatically when using the same thread_id
-    # So we just need to pass the thread_id in config
-
-    # Initial state: messages is always a two-item list: [SystemMessage (summary), AIMessage (last_message)].
-    # This is a placeholder; the workflow will update it to always keep only the summary and the latest message.
-    initial_state: DataAnalysisState = {
-        "prompt": prompt,
-        "rewritten_prompt": None,
-        "rewritten_prompt_history": [],
-        "messages": [SystemMessage(content=""), AIMessage(content="")],
-        "iteration": 0,
-        "queries_and_results": [],
-        "chromadb_missing": False
-    }
-        
+    
+    # Configuration for thread-level persistence
+    config = {"configurable": {"thread_id": thread_id}}
+    
+    # Check if there's existing state for this thread to determine if this is a new or continuing conversation
+    try:
+        existing_state = graph.get_state(config)
+        is_continuing_conversation = (
+            existing_state and 
+            existing_state.values and 
+            existing_state.values.get("messages") and 
+            len(existing_state.values.get("messages", [])) > 0
+        )
+    except Exception:
+        is_continuing_conversation = False
+    
+    # Prepare input state based on whether this is a new or continuing conversation
+    if is_continuing_conversation:
+        # For continuing conversations, pass only the fields that need to be updated
+        # The checkpointer will merge this with the existing state
+        input_state = {
+            "prompt": prompt,
+            "rewritten_prompt": None,
+            "iteration": 0,  # Reset for new question
+        }
+    else:
+        # For new conversations, initialize with complete state
+        input_state = {
+            "prompt": prompt,
+            "rewritten_prompt": None,
+            "rewritten_prompt_history": [],
+            "messages": [SystemMessage(content=""), AIMessage(content="")],  # Initialize for new conversation
+            "iteration": 0,
+            "queries_and_results": [],
+            "chromadb_missing": False
+        }
+    
     # Execute the graph with checkpoint configuration asynchronously
-    # Checkpoints allow resuming execution if interrupted
+    # Checkpoints allow resuming execution if interrupted and maintaining conversation memory
     result = await graph.ainvoke(
-        initial_state,
-        config={"configurable": {"thread_id": thread_id}}
+        input_state,
+        config=config
     )
         
     # Extract values from the graph result dictionary         

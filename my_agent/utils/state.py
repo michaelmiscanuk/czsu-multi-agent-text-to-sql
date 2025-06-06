@@ -17,16 +17,13 @@ from langchain_core.messages import BaseMessage
 class DataAnalysisState(TypedDict):
     """State for the data analysis graph.
     
-    This model tracks the state of the data analysis workflow,
-    including the user prompt, a concise two-item messages list, results,
-    and iteration counter for loop prevention.
-
-    - messages: Always a list of at most two items: [summary (SystemMessage), last_message (AIMessage or HumanMessage)].
-      After each summarization, only these two are kept. No reducer is used; the list is always overwritten.
+    This tracks the state of the data analysis workflow, including the user prompt,
+    conversation messages, query results, and iteration counter for loop prevention.
+    
+    Key features:
+    - messages: Always [summary (SystemMessage), last_message (AIMessage/HumanMessage)]
     - queries_and_results: Uses add reducer to append new query results
-    - iteration: Uses default override behavior
-    - prompt: Uses default override behavior
-    - reflection_decision: Stores the last decision from the reflection node ("improve" or "answer")
+    - iteration: Loop prevention counter
     """
     prompt: str  # User query to analyze
     rewritten_prompt: str  # Rewritten user query for downstream nodes

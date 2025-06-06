@@ -40,7 +40,7 @@ interface ChatDbSchema extends DBSchema {
 }
 
 export async function getChatDb() {
-  return openDB<ChatDbSchema>('czsu-chat-modern', 3, {
+  return openDB<ChatDbSchema>('czsu-chat-modern', 4, {
     upgrade(db) {
       if (db.objectStoreNames.contains('threads')) {
         db.deleteObjectStore('threads');

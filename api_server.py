@@ -1,20 +1,24 @@
-from fastapi import FastAPI, Request, Query, HTTPException, Header, Depends
+from fastapi import FastAPI, Query, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
-import asyncio
-from main import main as analysis_main
-import sqlite3
 from typing import List, Optional
+import asyncio
+import sqlite3
 import requests
 import jwt
-import os
-import time
-from jwt.algorithms import RSAAlgorithm
-from fastapi import Security
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import json
+import os
+from jwt.algorithms import RSAAlgorithm
+from langgraph.checkpoint.memory import InMemorySaver
+
+from main import main as analysis_main
 
 app = FastAPI()
+
+# Global shared checkpointer for conversation memory across API requests
+# This ensures that conversation state is preserved between frontend requests
+GLOBAL_CHECKPOINTER = InMemorySaver()
 
 # Allow CORS for local frontend dev
 app.add_middleware(
@@ -60,7 +64,7 @@ def get_current_user(authorization: str = Header(None)):
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
-    result = await analysis_main(request.prompt, thread_id=request.thread_id)
+    result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=GLOBAL_CHECKPOINTER)
     return result 
 
 @app.get("/catalog")

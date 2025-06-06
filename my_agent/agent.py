@@ -1,10 +1,10 @@
-"""Agent graph graph definition module.
+"""Agent graph definition module.
 
 This module defines the data analysis graph using LangGraph. It implements a 
 multi-step process that:
 
 1. Retrieves database schema information
-2. Generates a pandas query from natural language
+2. Generates a SQL query from natural language
 3. Reflects on whether we have enough information
 4. Either generates more queries or formats the answer
 5. Returns the final analysis
