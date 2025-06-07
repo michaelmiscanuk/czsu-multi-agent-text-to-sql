@@ -19,7 +19,14 @@ const Header = () => {
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
       <div className="flex items-center relative">
-        <span className="font-extrabold text-[#181C3A] text-2xl tracking-tight" style={{fontFamily: 'var(--font-inter)'}}>CZSU - Multi-Agent Text-to-SQL</span>
+        <Link 
+          href="/chat"
+          className="font-extrabold text-[#181C3A] text-2xl tracking-tight hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+          style={{fontFamily: 'var(--font-inter)'}}
+          title="Go to CHAT"
+        >
+          CZSU - Multi-Agent Text-to-SQL
+        </Link>
       </div>
 
       <nav className="flex items-center space-x-6">

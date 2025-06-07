@@ -53,7 +53,8 @@ from metadata.create_and_load_chromadb import (
 from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini
 
 
-MAX_ITERATIONS = 2  # Reduced from 3 to prevent excessive looping
+# Configurable iteration limit to prevent excessive looping
+MAX_ITERATIONS = int(os.environ.get('MAX_ITERATIONS', '2'))  # Configurable via environment variable, default 2
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 ROUTE_DECISION_ID = 11  # ID for routing decision function
 REFLECT_NODE_ID = 12
@@ -72,8 +73,12 @@ def debug_print(msg: str) -> None:
         msg: The message to print
     """
     # Always check environment variable directly to respect runtime changes
-    if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
-        print(msg)
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG] {msg}")
+        # Flush immediately to ensure output appears
+        import sys
+        sys.stdout.flush()
 
 async def load_schema(state=None):
     """Load the schema metadata from the SQLite database based on top_selection_codes in state."""
@@ -229,13 +234,34 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
 async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Generate SQL query based on question and schema. Messages list is always [summary, last_message]."""
     debug_print(f"{QUERY_GEN_ID}: Enter query_node")
+    
+    # Log current state for debugging
+    current_iteration = state.get("iteration", 0)
+    existing_queries = state.get("queries_and_results", [])
+    debug_print(f"{QUERY_GEN_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries)}")
+    
+    # Check for potential query loops by examining recent queries
+    if len(existing_queries) >= 3:
+        recent_queries = [q for q, r in existing_queries[-3:]]
+        debug_print(f"{QUERY_GEN_ID}: Recent queries: {recent_queries}")
+    
     llm = get_azure_llm_gpt_4o(temperature=0.0)
     tools = await create_mcp_server()
     sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
-    last_message_content = last_message.content if last_message else ""
+    
+    # Skip last message if it's schema details to avoid duplication
+    # (schema is already included separately in the prompt)
+    if last_message and hasattr(last_message, 'id') and last_message.id == "schema_details":
+        last_message_content = ""
+    else:
+        last_message_content = last_message.content if last_message else ""
+    
+    # Load schema before building the prompt
+    schema = await load_schema(state)
+    
     system_prompt = """
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
 Your task is to translate the user's natural-language question into a SQL query and execute it using the sqlite_query tool.
@@ -244,11 +270,11 @@ To accomplish this, follow these steps:
 
 1. Read and analyze the provided inputs:
 - User prompt (can be in Czech or English)
-- Read schema carefully to you can understand how the data are laid, 
+- Read provided schemas carefully to you can understand how the data are laid, 
     layout can be non standard, but you have a loot of information there.
-- Previous summary of the conversation
-- The last message in the conversation
-- Any feedback from the reflection agent, if any.
+- Read Previous summary of the conversation
+- Read The last message in the conversation
+- Read Any feedback from the reflection agent, often in last message.
 
 2. Process the prompt by:
 - Identifying key terms in either language
@@ -257,10 +283,11 @@ To accomplish this, follow these steps:
 - Converting concepts between languages
 
 3. Construct an appropriate SQL query by:
+- Choosing the correct dataset and its schema
 - Using exact column names from the schema (can be Czech or English)
 - Matching user prompt terms to correct data values
 - Ensuring proper string matching for Czech characters
-- GENERATING A NEW QUERY THAT PROVIDES ADDITIONAL INFORMATION that is not already present in the previously executed queries
+- Generating a NEW QUERY THAT PROVIDES ADDITIONAL INFORMATION that is not already present in the previously executed queries
 
 4. Use the sqlite_query tool to execute the query.
 
@@ -268,56 +295,61 @@ To accomplish this, follow these steps:
 
 7. Be mindful about technical statistical terms - for example if someone asks about momentum, result should be some kind of rate of change.
 
-Important Schema Details:
-- "dimensions" key contains several other keys, which are columns in the table.
--- Each of them contains "values" key with list of distinct values in that column.
--- If there is a column of type "metric", it means that it is a column that contains names of metrics, not values - it can be used in WHERE clause to filter.
-- Then there is key "value_column" with name of the column that contains the values for metric names, they can be used in aggregations, like sum, etc.
+Important Schema Details for one dataset:
+- "dimensions" key contains several other keys, which are columns in the table
+- Each of those columns under "dimensions" key contain "values" key with list of distinct values in that column
+- If there is a column of type "metric / ukazatel", it means that it is a column that contains names of metrics, not values - it can be used in WHERE clause for filtering
+- Column "value" is always the column that contains the numeric values for the metrics, it can be used in aggregations, like sum, etc.
 
 HERE IS THE MOST IMPORTANT PART:
-Always read carefully all distinct values of dimensions, 
-and do some thinking to choose the best ones to fit our question. 
-Your can use LIKE and regex to filter them, if it is necessary by our question. 
-For example, if user asks about "female", but dimensional value are "start_period_female" and "end_period_female", just filter for %female%, if it makes sense.
+- Always read carefully all distinct values of dimensions, and do some thinking to choose the best ones to fit our question
+- Use use LIKE or regex when filtering the dimensional values, if it is necessary for our question
+- For example, if user asks about "female", but dimensional value are "start_period_female" and "end_period_female", just filter for %female%, if it makes sense
 
-IMPORTANT note about total records: 
-The dataset contains statistical records that include total rows for certain dimension values. 
-These total rows, which may have been generated by SQL clauses such as GROUP BY WITH TOTALS or GROUP BY ROLLUP, 
-should be ignored in calculations. 
-For instance, if the data includes regions within a republic, 
-there may also be rows representing total values for the entire republic, 
-further split by dimensions like male/female. When performing analyses such as distribution by regions, 
-including these total records will result in percentage values being inaccurately halved. 
-Additionally, failing to exclude these totals during summarization will lead to double counting. 
-Always calculate using only the relevant data and separate pieces, ensuring accuracy in statistical results.
+IMPORTANT notes about TOTAL records: 
+- The dataset contains statistical records that include TOTAL ROWS for certain dimension values.
+- These total rows, which may have been generated by SQL clauses such as GROUP BY WITH TOTALS or GROUP BY ROLLUP, should be ignored in calculations. 
+- For instance, if the data includes regions within a republic, there may also be rows representing total values for the entire republic, which can be further split by dimensions like male/female. 
+- When performing analyses such as distribution by regions, including these total records will result in percentage values being inaccurately halved. 
+- Additionally, failing to exclude these totals during summarization will lead to double counting. 
+- Always calculate using only the relevant data and separate pieces (excluding the rows with TOTALS), ensuring accuracy in statistical results.
 
-When generating the query:
+IMPORTANT notes about SQL query generation:
 - Return ONLY the SQL expression that answers the question.
-- Limit the output to at most 10 rows using LIMIT unless the user specifies otherwise - but first think if you dont need to group it somehow so it returns reasonable 5 rows.
+- Limit the output to at most 10 rows using LIMIT unless the user specifies otherwise - but first think if you dont need to group it somehow so it returns reasonable 10 rows.
 - Select only the necessary columns, never all columns.
 - Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
 - Column to Aggregate or extract numeric values is always called "value"! Never use different one or assume how its called.
 - Do NOT modify the database.
-- Always examine the schema to see how the data are laid out - column names and its concrete values. 
+- Always examine the ALL Schema to see how the data are laid out - column names and its concrete dimensional values. 
 - If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name.
 
 === IMPORTANT RULE ===
-Return ONLY the final SQL query that should be executed, with nothing else around it. 
-Do NOT wrap it in code fences and do NOT add explanations.
+- Return ONLY the final SQL query that should be executed, with nothing else around it. 
+- Do NOT wrap it in code fences and do NOT add explanations.
 """
+    # Build human prompt conditionally to avoid empty "Last message:" section
+    human_prompt_parts = [
+        f"User question: {state.get('rewritten_prompt') or state['prompt']}",
+        f"Schema: {schema}",
+        f"Summary of conversation:\n{summary.content}"
+    ]
+    
+    if last_message_content:
+        human_prompt_parts.append(f"Last message:\n{last_message_content}")
+    
+    human_prompt = "\n".join(human_prompt_parts)
+    
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
-        ("human", "User question: {prompt}\nSchema: {schema}\nSummary of conversation:\n{summary}\nLast message:\n{last_message}")
+        ("human", human_prompt)
     ])
-    schema = await load_schema(state)
-    result = await llm.ainvoke(prompt.format_messages(
-        prompt=state.get("rewritten_prompt") or state["prompt"],
-        schema=json.dumps(schema, ensure_ascii=False, indent=2),
-        summary=summary.content,
-        last_message=last_message_content
-    ))
+    result = await llm.ainvoke(prompt.format_messages())
     new_queries = []
     query = result.content.strip()
+    
+    debug_print(f"{QUERY_GEN_ID}: Generated query: {query}")
+    
     try:
         tool_result = await sqlite_tool.ainvoke({"query": query})
         if isinstance(tool_result, Exception):
@@ -351,15 +383,52 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     Messages list is always [summary, last_message].
     """
     debug_print(f"{REFLECT_NODE_ID}: Enter reflect_node")
+    
+    # Check current iteration and total queries to prevent excessive looping
+    current_iteration = state.get("iteration", 0)
+    total_queries = len(state.get("queries_and_results", []))
+    
+    debug_print(f"{REFLECT_NODE_ID}: Current iteration: {current_iteration}, Total queries: {total_queries}")
+    
+    # Force answer if we've hit iteration limit or have too many queries
+    if current_iteration >= MAX_ITERATIONS:
+        debug_print(f"{REFLECT_NODE_ID}: Forcing answer due to iteration limit ({current_iteration} >= {MAX_ITERATIONS})")
+        # Create a simple reflection message
+        messages = state.get("messages", [])
+        summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
+        from langchain_core.messages import AIMessage
+        result = AIMessage(content="Maximum iterations reached. Proceeding to answer with available data.", id="reflect_forced")
+        return {
+            "messages": [summary, result],
+            "reflection_decision": "answer",
+            "iteration": current_iteration
+        }
+    
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
     last_message_content = last_message.content if last_message else ""
+    
+    # Limit the queries_results_text to prevent token overflow
+    queries_and_results = state.get("queries_and_results", [])
+    
+    # Only include the last few queries to prevent token overflow
+    max_queries_for_reflection = 5  # Show only last 5 queries in reflection
+    recent_queries = queries_and_results[-max_queries_for_reflection:] if len(queries_and_results) > max_queries_for_reflection else queries_and_results
+    
     queries_results_text = "\n\n".join(
         f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
-        for i, (query, result) in enumerate(state["queries_and_results"])
+        for i, (query, result) in enumerate(recent_queries)
     )
+    
+    # Add summary if we're showing limited queries
+    if len(queries_and_results) > max_queries_for_reflection:
+        total_queries_note = f"\n[Note: Showing last {max_queries_for_reflection} of {len(queries_and_results)} total queries]"
+        queries_results_text = total_queries_note + "\n\n" + queries_results_text
+    
+    debug_print(f"{REFLECT_NODE_ID}: Processing {len(recent_queries)} queries for reflection (total: {len(queries_and_results)})")
+    
     system_prompt = """
 You are a data analysis reflection agent.
 Your task is to analyze the current state and provide detailed feedback to guide the next query.
@@ -385,6 +454,7 @@ Guidelines:
   - For comparison questions, ensure we have data for all entities being compared.
   - For trend analysis, ensure we have data across all relevant time periods.
   - For distribution questions, ensure we have complete coverage of all categories.
+  - If you see repetitive or very similar queries, strongly consider answering with current data.
 
 Your response should be detailed and specific, helping guide the next query. 
 But it also must be to the point and not too long, max 400 words.
@@ -410,9 +480,12 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
     content = result.content if hasattr(result, 'content') else str(result)
     if "DECISION: answer" in content:
         reflection_decision = "answer"
+        debug_print(f"{REFLECT_NODE_ID}: Decision: answer")
     else:
         reflection_decision = "improve"
-        state["iteration"] = state.get("iteration", 0) + 1
+        # Increment iteration when deciding to improve
+        current_iteration += 1
+        debug_print(f"{REFLECT_NODE_ID}: Decision: improve (iteration will be: {current_iteration})")
     if not hasattr(result, "id") or not result.id:
         result.id = "reflect"
     if last_message:
@@ -422,7 +495,7 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
     return {
         "messages": messages,
         "reflection_decision": reflection_decision,
-        "iteration": state.get("iteration", 0)
+        "iteration": current_iteration
     }
 
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
@@ -450,13 +523,16 @@ You are a bilingual (Czech/English) data analyst. Respond strictly using provide
    - Never hallucinate, if you are not sure about the answer or if the answer is not in the results, just say so.
    - Be careful not to say that something was 0 when you got no results from SQL.
    - Again read carefully the question, and provide answer using the QUERIES and its RESULTS, only if those answer the question. For example if question is about cinemas, dont answer about houses.
+   
 
 3. **Style Rules**:
    - No query/results references
    - No filler phrases
    - No unsupported commentary
    - Logical structure (e.g., highest-to-lowest)
+   - Make output more structured, instead of making one long sentence.
 
+Example regarding numeric output:
 Good: "X is 1234567 while Y is 7654321"
 Bad: "The query shows X is 1,234,567"
 """

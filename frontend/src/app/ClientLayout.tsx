@@ -17,15 +17,19 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }
   }, [status, router, pathname]);
 
+  const isChatPage = pathname === "/chat";
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200 flex flex-col">
       <div className="sticky top-0 z-50"><Header /></div>
-      <main className="flex justify-center flex-1 py-8 px-2">
+      <main className={`flex justify-center flex-1 ${isChatPage ? 'py-4 px-2' : 'py-8 px-2'}`}>
         <AuthGuard>{children}</AuthGuard>
       </main>
-      <footer className="w-full text-center text-gray-400 text-sm py-4 mt-4">
-        &copy; {new Date().getFullYear()} Michael Miscanuk. Data from the Czech Statistical Office (CZSU).
-      </footer>
+      {!isChatPage && (
+        <footer className="w-full text-center text-gray-400 text-sm py-4 mt-4">
+          &copy; {new Date().getFullYear()} Michael Miscanuk. Data from the Czech Statistical Office (CZSU).
+        </footer>
+      )}
     </div>
   );
 } 

@@ -12,6 +12,7 @@ import {
   deleteThread,
   listMessages,
   saveMessage,
+  deleteMessage,
   ChatThreadMeta,
   ChatMessage
 } from '@/components/utils';
@@ -61,7 +62,8 @@ export default function ChatPage() {
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
   const inputRef = React.useRef<HTMLInputElement>(null);
-
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
+  
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
   // Load sessions on mount/user change
@@ -97,6 +99,13 @@ export default function ChatPage() {
     }
     // eslint-disable-next-line
   }, [userEmail, threads.length]);
+
+  // Auto-scroll sidebar to top when entering chat menu
+  useEffect(() => {
+    if (sidebarRef.current) {
+      sidebarRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
 
   // Robust auto-create: Only after loading sessions from storage
   useEffect(() => {
@@ -198,11 +207,25 @@ export default function ChatPage() {
       createdAt: Date.now(),
     };
     await saveMessage(msg);
+    
+    // Create a loading message that will appear while waiting for response
+    const loadingMsg: ChatMessage = {
+      id: uuidv4(),
+      threadId: threadId,
+      user: userEmail,
+      content: "",
+      isUser: false,
+      createdAt: Date.now(),
+      isLoading: true,
+      startedAt: Date.now(),
+    };
+    await saveMessage(loadingMsg);
     setMessages(await listMessages(userEmail, threadId));
     setCurrentMessage("");
+    
     // Always update session title to first message if this is the first message in the session
     const threadMessages = await listMessages(userEmail, threadId);
-    if (threadMessages.length === 1) {
+    if (threadMessages.filter(m => m.isUser).length === 1) {
       const meta = await getChatThread(userEmail, threadId);
       if (meta) {
         meta.title = msg.content.slice(0, 30);
@@ -212,6 +235,7 @@ export default function ChatPage() {
         console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
       }
     }
+    
     // Call backend for AI response
     try {
       let freshSession = await getSession();
@@ -254,10 +278,17 @@ export default function ChatPage() {
           return;
         }
       }
+      
       if (!response.ok) {
-        throw new Error('Server error');
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
       }
+      
       const data = await response.json();
+      
+      // Remove the loading message
+      await deleteMessage(userEmail, loadingMsg.id);
+      
+      // Create the actual AI response message
       const aiMsg: ChatMessage = {
         id: uuidv4(),
         threadId: threadId,
@@ -272,8 +303,15 @@ export default function ChatPage() {
           sql: data.sql
         }
       };
+      
+      // Add warning if persistent memory is temporarily unavailable
+      if (data.warning) {
+        aiMsg.content = `⚠️ ${data.warning}\n\n${aiMsg.content}`;
+      }
+      
       await saveMessage(aiMsg);
       setMessages(await listMessages(userEmail, threadId));
+      
       // Update session updatedAt
       const meta = await getChatThread(userEmail, threadId);
       if (meta) {
@@ -287,7 +325,24 @@ export default function ChatPage() {
         console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
       }
     } catch (error) {
-      // Optionally show error message
+      console.error('Error sending message:', error);
+      
+      // Remove the loading message
+      await deleteMessage(userEmail, loadingMsg.id);
+      
+      // Create an error message
+      const errorMsg: ChatMessage = {
+        id: uuidv4(),
+        threadId: threadId,
+        user: userEmail,
+        content: `❌ Sorry, there was an error processing your request. Please try again.\n\nError details: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        isUser: false,
+        createdAt: Date.now(),
+        isError: true,
+      };
+      
+      await saveMessage(errorMsg);
+      setMessages(await listMessages(userEmail, threadId));
     } finally {
       setIsLoading(false);
     }
@@ -327,30 +382,32 @@ export default function ChatPage() {
 
   // UI
   return (
-    <div className="flex flex-1 min-h-0 w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-60 bg-gradient-to-b from-blue-50 to-white border-r border-gray-200 flex flex-col p-3">
-        <div className="flex items-center mb-4">
+    <div className="chat-container flex w-full max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+      {/* Sidebar with its own scroll */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
           <span className="font-bold text-lg text-blue-700">Chats</span>
           <button
-            className="ml-auto px-2 py-1 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 text-white text-xs font-bold shadow hover:from-blue-500 hover:to-blue-700 border-0 transition-all duration-150"
-            style={{ color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.18)' }}
+            className="px-3 py-1.5 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleNewChat}
             title="New chat"
             disabled={isLoading || threads.some(s => !messages.length && s.id === activeThreadId)}
           >
-            +
+            + New Chat
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        
+        {/* Sidebar Chat List with Scroll */}
+        <div ref={sidebarRef} className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-1 chat-scrollbar">
           {threads.length === 0 ? (
-            <div className="text-xs text-gray-400 mt-4">No chats yet</div>
+            <div className="text-sm text-gray-500 mt-8 text-center">No chats yet</div>
           ) : (
             threads.map(s => (
-              <div key={s.id} className={`group flex items-center mb-1 rounded ${activeThreadId === s.id ? 'bg-blue-100' : 'hover:bg-gray-100'}`}>
+              <div key={s.id} className="group">
                 {editingTitleId === s.id ? (
                   <input
-                    className="flex-1 px-2 py-1 text-xs rounded bg-white border border-blue-300 focus:outline-none"
+                    className="w-full px-3 py-2 text-sm rounded-lg bg-white border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     value={newTitle}
                     onChange={e => setNewTitle(e.target.value)}
                     onBlur={() => handleRename(s.id, newTitle)}
@@ -358,68 +415,79 @@ export default function ChatPage() {
                     autoFocus
                   />
                 ) : (
-                  <button
-                    className={`flex-1 text-left px-2 py-2 text-xs font-medium truncate ${activeThreadId === s.id ? 'text-blue-800 font-bold' : 'text-gray-700'}`}
-                    onClick={() => setActiveThreadId(s.id)}
-                    onDoubleClick={() => { setEditingTitleId(s.id); setNewTitle(s.title); }}
-                  >
-                    {s.title}
-                  </button>
+                  <div className="flex items-center min-w-0">
+                    <button
+                      className={
+                        `flex-1 text-left text-sm px-3 py-2 font-semibold rounded-lg transition-all duration-200 cursor-pointer min-w-0 ` +
+                        (activeThreadId === s.id
+                          ? 'font-extrabold light-blue-theme '
+                          : 'text-[#181C3A]/80 hover:text-gray-300 hover:bg-gray-100 ')
+                      }
+                      style={{fontFamily: 'var(--font-inter)'}}
+                      onClick={() => setActiveThreadId(s.id)}
+                      onDoubleClick={() => { setEditingTitleId(s.id); setNewTitle(s.title); }}
+                      title={s.title}
+                    >
+                      <span className="truncate block">{s.title}</span>
+                    </button>
+                    <button
+                      className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors"
+                      title="Delete chat"
+                      onClick={() => handleDelete(s.id)}
+                    >
+                      ×
+                    </button>
+                  </div>
                 )}
-                <button
-                  className="ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-1"
-                  title="Delete chat"
-                  onClick={() => handleDelete(s.id)}
-                >
-                  ×
-                </button>
               </div>
             ))
           )}
         </div>
       </aside>
-      {/* Main chat area */}
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-white to-blue-50">
-        <div className="flex-1 overflow-y-auto p-8">
+
+      {/* Main Chat Container */}
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-white to-blue-50/30 relative">
+        {/* Chat Messages Area with its own scroll */}
+        <div className="flex-1 overflow-hidden">
           <MessageArea
             messages={messages}
             threadId={activeThreadId}
             onSQLClick={handleSQLButtonClick}
             openSQLModalForMsgId={openSQLModalForMsgId}
             onCloseSQLModal={handleCloseSQLModal}
+            onNewChat={handleNewChat}
+            isLoading={isLoading}
           />
         </div>
-        {/* Duplicated New Chat button at the bottom */}
-        <div className="flex justify-center pb-2">
-          <button
-            className="px-4 py-1 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 text-white text-xs font-bold shadow hover:from-blue-500 hover:to-blue-700 border-0 transition-all duration-150"
-            style={{ color: '#fff', textShadow: '0 1px 4px rgba(0,0,0,0.18)' }}
-            onClick={handleNewChat}
-            title="New chat"
-            disabled={isLoading || threads.some(s => !messages.length && s.id === activeThreadId)}
-          >
-            +
-          </button>
+        
+        {/* Stationary Input Field */}
+        <div className="bg-white border-t border-gray-200 shadow-lg">
+          <form onSubmit={handleSend} className="p-4 flex items-center gap-3 max-w-4xl mx-auto">
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Type your message here..."
+              value={currentMessage}
+              onChange={e => setCurrentMessage(e.target.value)}
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200"
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              className="px-6 py-3 light-blue-theme rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              disabled={isLoading || !currentMessage.trim()}
+            >
+              {isLoading ? (
+                <span className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin"></div>
+                  Sending...
+                </span>
+              ) : (
+                <span>Send</span>
+              )}
+            </button>
+          </form>
         </div>
-        {/* Input bar */}
-        <form onSubmit={handleSend} className="p-4 bg-white border-t border-gray-100 flex items-center">
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Type a message…"
-            value={currentMessage}
-            onChange={e => setCurrentMessage(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 text-gray-700 bg-blue-50"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            className="ml-2 px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full font-semibold shadow disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading || !currentMessage.trim()}
-          >
-            Send
-          </button>
-        </form>
       </div>
     </div>
   );

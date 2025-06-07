@@ -48,3 +48,47 @@ p, li, span, div, td, th, label, input, button {
   border-radius: 1.5rem;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.04);
 }
+
+/* Unified light blue theme class */
+.light-blue-theme {
+  background-color: rgb(219 234 254); /* bg-blue-100 */
+  color: #181C3A;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+}
+
+/* Darker blue hover state for light-blue-theme buttons */
+.light-blue-theme:hover:not(:disabled) {
+  background-color: rgb(59 130 246); /* blue-500 */
+  color: white !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+}
+
+/* Ensure child elements inherit hover text color */
+.light-blue-theme:hover:not(:disabled) * {
+  color: white !important;
+}
+
+/* Custom scrollbar styles for chat interface */
+.chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+/* Ensure proper height calculations */
+.chat-container {
+  height: calc(100vh - 8rem);
+  max-height: calc(100vh - 8rem);
+}

@@ -223,6 +223,8 @@ dependencies = [
     "aiosqlite",
     "typing-inspection",
     "langgraph-checkpoint-sqlite",
+    "langgraph-checkpoint-postgres==2.0.21",
+    "psycopg[binary]==3.2.4"
 ]
 
 [project.optional-dependencies]

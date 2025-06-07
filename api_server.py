@@ -1,24 +1,63 @@
+import sys
+import asyncio
+from contextlib import asynccontextmanager
+
+# Configure asyncio event loop policy for Windows compatibility with psycopg
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 from fastapi import FastAPI, Query, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 from typing import List, Optional
-import asyncio
 import sqlite3
 import requests
 import jwt
 import json
 import os
 from jwt.algorithms import RSAAlgorithm
-from langgraph.checkpoint.memory import InMemorySaver
 
 from main import main as analysis_main
-
-app = FastAPI()
+from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer
 
 # Global shared checkpointer for conversation memory across API requests
-# This ensures that conversation state is preserved between frontend requests
-GLOBAL_CHECKPOINTER = InMemorySaver()
+# This ensures that conversation state is preserved between frontend requests using PostgreSQL
+GLOBAL_CHECKPOINTER = None
+
+async def initialize_checkpointer():
+    """Initialize the global PostgreSQL checkpointer on startup."""
+    global GLOBAL_CHECKPOINTER
+    if GLOBAL_CHECKPOINTER is None:
+        try:
+            GLOBAL_CHECKPOINTER = await get_postgres_checkpointer()
+            print("✓ Global PostgreSQL checkpointer initialized successfully")
+        except Exception as e:
+            print(f"✗ Failed to initialize PostgreSQL checkpointer: {e}")
+            # Fallback to InMemorySaver for development/testing
+            from langgraph.checkpoint.memory import InMemorySaver
+            GLOBAL_CHECKPOINTER = InMemorySaver()
+            print("⚠ Falling back to InMemorySaver")
+
+async def cleanup_checkpointer():
+    """Clean up resources on app shutdown."""
+    global GLOBAL_CHECKPOINTER
+    if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'pool') and GLOBAL_CHECKPOINTER.pool:
+        try:
+            await GLOBAL_CHECKPOINTER.pool.close()
+            print("✓ PostgreSQL connection pool closed cleanly")
+        except Exception as e:
+            print(f"⚠ Error closing connection pool: {e}")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await initialize_checkpointer()
+    yield
+    # Shutdown
+    await cleanup_checkpointer()
+
+app = FastAPI(lifespan=lifespan)
 
 # Allow CORS for local frontend dev
 app.add_middleware(
@@ -64,8 +103,35 @@ def get_current_user(authorization: str = Header(None)):
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
-    result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=GLOBAL_CHECKPOINTER)
-    return result 
+    """Analyze request with robust error handling for checkpointer issues."""
+    try:
+        result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=GLOBAL_CHECKPOINTER)
+        return result
+    except Exception as e:
+        error_msg = str(e)
+        
+        # Handle specific database connection errors
+        if any(keyword in error_msg.lower() for keyword in ["ssl error", "connection", "timeout", "operational error"]):
+            print(f"⚠ Database connection error: {e}")
+            print("⚠ Attempting to use fallback InMemorySaver...")
+            
+            # Fallback to InMemorySaver for this request
+            from langgraph.checkpoint.memory import InMemorySaver
+            fallback_checkpointer = InMemorySaver()
+            
+            try:
+                result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=fallback_checkpointer)
+                # Add warning to the result
+                if isinstance(result, dict):
+                    result["warning"] = "Persistent memory temporarily unavailable - using session-only memory"
+                return result
+            except Exception as fallback_error:
+                print(f"✗ Fallback also failed: {fallback_error}")
+                raise HTTPException(status_code=500, detail=f"Analysis failed: {fallback_error}")
+        else:
+            # Re-raise non-connection errors
+            print(f"✗ Analysis error: {e}")
+            raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
 
 @app.get("/catalog")
 def get_catalog(

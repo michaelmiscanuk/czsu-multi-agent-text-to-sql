@@ -24,6 +24,9 @@ export interface ChatMessage {
   error?: string;
   meta?: Record<string, any>;
   queriesAndResults?: [string, string][];
+  isLoading?: boolean;
+  startedAt?: number;
+  isError?: boolean;
 }
 
 interface ChatDbSchema extends DBSchema {
@@ -91,4 +94,8 @@ export async function listMessages(user: string, threadId: string): Promise<Chat
 export async function saveMessage(msg: ChatMessage) {
   const db = await getChatDb();
   await db.put('messages', msg);
+}
+export async function deleteMessage(user: string, messageId: string) {
+  const db = await getChatDb();
+  await db.delete('messages', messageId);
 } 

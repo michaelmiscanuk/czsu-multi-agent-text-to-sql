@@ -18,7 +18,6 @@ flow that prevents common failure modes in LLM-based systems.
 #==============================================================================
 from dotenv import load_dotenv
 from langgraph.graph import END, START, StateGraph
-from langgraph.checkpoint.memory import MemorySaver
 from typing import Literal
 
 from .utils.state import DataAnalysisState
@@ -57,6 +56,10 @@ def create_graph(checkpointer=None):
     The resulting graph manages the complete process from natural language understanding
     to query execution and result formatting, with built-in safeguards against
     common failure modes.
+    
+    Args:
+        checkpointer: Optional checkpointer instance. If None, defaults to InMemorySaver
+                     for backward compatibility. In production, should use AsyncPostgresSaver.
     
     Returns:
         A compiled StateGraph ready for execution
@@ -153,8 +156,11 @@ def create_graph(checkpointer=None):
     graph.add_edge("submit_final_answer", "save")
     graph.add_edge("save", END)
 
-    # Compile with memory-based checkpointing for execution persistence
+    # Compile with checkpointing for execution persistence
     # This enables resuming interrupted runs and improves reliability
     if checkpointer is None:
-        checkpointer = MemorySaver()
+        # Import here to avoid circular imports and provide fallback
+        from langgraph.checkpoint.memory import InMemorySaver
+        checkpointer = InMemorySaver()
+        print("⚠ Using InMemorySaver fallback - consider using AsyncPostgresSaver for production")
     return graph.compile(checkpointer=checkpointer)

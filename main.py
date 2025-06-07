@@ -11,17 +11,21 @@ different deployment scenarios.
 #==============================================================================
 # IMPORTS
 #==============================================================================
-import uuid
+import sys
 import asyncio
+
+# Configure asyncio event loop policy for Windows compatibility with psycopg
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+import uuid
 import argparse
 import re
 from pathlib import Path
 from typing import List
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage, SystemMessage, AIMessage
-from langgraph.checkpoint.memory import InMemorySaver
 import os
-import sys
 
 # Load environment variables
 load_dotenv()
@@ -29,6 +33,7 @@ load_dotenv()
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
 from my_agent.utils.nodes import MAX_ITERATIONS
+from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer
 
 # Robust BASE_DIR logic for project root
 try:
@@ -191,9 +196,17 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
     # This is crucial for production deployments to track execution paths
     # instrument(project_name="LangGraph_czsu-multi-agent-text-to-sql", framework=Framework.LANGGRAPH)
     
-    # Create the LangGraph execution graph with InMemorySaver for persistent short-term memory
+    # Create the LangGraph execution graph with AsyncPostgresSaver for persistent checkpointing
     if checkpointer is None:
-        checkpointer = InMemorySaver()
+        try:
+            checkpointer = await get_postgres_checkpointer()
+        except Exception as e:
+            print(f"⚠ Failed to initialize PostgreSQL checkpointer: {e}")
+            # Fallback to InMemorySaver to ensure application still works
+            from langgraph.checkpoint.memory import InMemorySaver
+            checkpointer = InMemorySaver()
+            print("⚠ Using InMemorySaver fallback")
+    
     graph = create_graph(checkpointer=checkpointer)
         
     print(f"Processing prompt: {prompt} (thread_id={thread_id})")
@@ -203,14 +216,19 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
     
     # Check if there's existing state for this thread to determine if this is a new or continuing conversation
     try:
-        existing_state = graph.get_state(config)
+        existing_state = await graph.aget_state(config)
         is_continuing_conversation = (
             existing_state and 
             existing_state.values and 
             existing_state.values.get("messages") and 
             len(existing_state.values.get("messages", [])) > 0
         )
-    except Exception:
+        print(f"DEBUG: Found existing state: {existing_state is not None}")
+        if existing_state and existing_state.values:
+            print(f"DEBUG: Message count: {len(existing_state.values.get('messages', []))}")
+        print(f"DEBUG: Continuing conversation: {is_continuing_conversation}")
+    except Exception as e:
+        print(f"DEBUG: Error checking existing state: {e}")
         is_continuing_conversation = False
     
     # Prepare input state based on whether this is a new or continuing conversation

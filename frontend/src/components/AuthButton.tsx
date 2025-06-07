@@ -30,9 +30,9 @@ export default function AuthButton({ compact = false }: { compact?: boolean } = 
             {(session.user?.name || session.user?.email || '?').split(' ').map(s => s[0]).join('').slice(0,2).toUpperCase()}
           </div>
         )}
-        <span className="text-xs text-white font-medium">{session.user?.name || session.user?.email}</span>
+        <span className="text-xs text-gray-700 font-medium">{session.user?.name || session.user?.email}</span>
         <button
-          className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded font-semibold text-gray-700 border border-gray-300 transition-all duration-200"
+          className="px-3 py-1.5 text-xs bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded-lg font-semibold text-gray-700 border border-gray-300 transition-all duration-200 shadow-sm"
           onClick={() => signOut()}
         >
           Sign out
