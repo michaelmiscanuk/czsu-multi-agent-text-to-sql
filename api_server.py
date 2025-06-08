@@ -49,6 +49,37 @@ async def cleanup_checkpointer():
         except Exception as e:
             print(f"⚠ Error closing connection pool: {e}")
 
+async def get_healthy_checkpointer():
+    """Get a healthy checkpointer instance, recreating if necessary."""
+    global GLOBAL_CHECKPOINTER
+    
+    # Check if current checkpointer is healthy
+    if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'pool'):
+        try:
+            # Quick health check
+            async with GLOBAL_CHECKPOINTER.pool.connection() as conn:
+                await conn.execute("SELECT 1")
+            return GLOBAL_CHECKPOINTER
+        except Exception as e:
+            print(f"⚠ Checkpointer unhealthy, recreating: {e}")
+            # Try to cleanup old pool
+            try:
+                if GLOBAL_CHECKPOINTER.pool:
+                    await GLOBAL_CHECKPOINTER.pool.close()
+            except:
+                pass
+            GLOBAL_CHECKPOINTER = None
+    
+    # Create new checkpointer
+    try:
+        GLOBAL_CHECKPOINTER = await get_postgres_checkpointer()
+        return GLOBAL_CHECKPOINTER
+    except Exception as e:
+        print(f"⚠ Failed to recreate checkpointer: {e}")
+        from langgraph.checkpoint.memory import InMemorySaver
+        GLOBAL_CHECKPOINTER = InMemorySaver()
+        return GLOBAL_CHECKPOINTER
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
@@ -104,18 +135,25 @@ def get_current_user(authorization: str = Header(None)):
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     """Analyze request with robust error handling for checkpointer issues."""
+    
+    # Get a healthy checkpointer
+    checkpointer = await get_healthy_checkpointer()
+    
     try:
-        result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=GLOBAL_CHECKPOINTER)
+        result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer)
         return result
     except Exception as e:
         error_msg = str(e)
         
         # Handle specific database connection errors
-        if any(keyword in error_msg.lower() for keyword in ["ssl error", "connection", "timeout", "operational error"]):
-            print(f"⚠ Database connection error: {e}")
-            print("⚠ Attempting to use fallback InMemorySaver...")
+        if any(keyword in error_msg.lower() for keyword in [
+            "ssl error", "connection", "timeout", "operational error", 
+            "server closed", "bad connection", "consuming input failed"
+        ]):
+            print(f"⚠ Database connection error detected: {e}")
+            print("⚠ Attempting to use fresh InMemorySaver...")
             
-            # Fallback to InMemorySaver for this request
+            # Use a completely fresh InMemorySaver for this request
             from langgraph.checkpoint.memory import InMemorySaver
             fallback_checkpointer = InMemorySaver()
             

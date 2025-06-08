@@ -264,7 +264,7 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     
     system_prompt = """
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
-Your task is to translate the user's natural-language question into a SQL query and execute it using the sqlite_query tool.
+Your task is to translate the user's natural-language question into a SQLITE SQL query and execute it using the sqlite_query tool.
 
 To accomplish this, follow these steps:
 
@@ -282,12 +282,12 @@ To accomplish this, follow these steps:
 - Handling Czech diacritics and special characters
 - Converting concepts between languages
 
-3. Construct an appropriate SQL query by:
+3. Construct an appropriate SQLITE SQL query by:
 - Choosing the correct dataset and its schema
-- Using exact column names from the schema (can be Czech or English)
-- Matching user prompt terms to correct data values
+- Using exact column names from the schema provided (can be Czech or English)
+- Matching user prompt terms to correct dimension values provided as a distinct list of values
 - Ensuring proper string matching for Czech characters
-- Generating a NEW QUERY THAT PROVIDES ADDITIONAL INFORMATION that is not already present in the previously executed queries
+- Generating a NEW SQLITE QUERY THAT PROVIDES ADDITIONAL INFORMATION that is not already present in the previously executed queries
 
 4. Use the sqlite_query tool to execute the query.
 
