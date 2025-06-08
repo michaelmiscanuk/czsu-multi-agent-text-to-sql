@@ -104,7 +104,7 @@ async def setup_rls_for_supabase():
             rls_status = await conn.execute("""
                 SELECT schemaname, tablename, rowsecurity 
                 FROM pg_tables 
-                WHERE tablename IN ('checkpoints', 'checkpoint_writes')
+                WHERE tablename IN ('checkpoints', 'checkpoint_writes', 'checkpoint_blobs', 'checkpoint_migrations')
                 AND schemaname = 'public'
             """)
             
@@ -118,7 +118,7 @@ async def setup_rls_for_supabase():
             policies = await conn.execute("""
                 SELECT tablename, policyname, cmd, qual, with_check
                 FROM pg_policies 
-                WHERE tablename IN ('checkpoints', 'checkpoint_writes')
+                WHERE tablename IN ('checkpoints', 'checkpoint_writes', 'checkpoint_blobs', 'checkpoint_migrations')
             """)
             
             policy_count = 0
