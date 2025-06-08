@@ -1,19 +1,111 @@
-"""Simple PostgreSQL checkpointer for AsyncPostgresSaver."""
+#!/usr/bin/env python3
+"""
+PostgreSQL checkpointer module using the official langgraph checkpoint postgres functionality.
+This uses the correct table schemas and implementation from the langgraph library.
+"""
 
-import os
-import sys
 import asyncio
+import platform
+import os
 from typing import Optional
-from psycopg_pool import AsyncConnectionPool
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-from dotenv import load_dotenv
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver  # Correct async import
+from langgraph.checkpoint.postgres import PostgresSaver  # Correct sync import
+from psycopg_pool import AsyncConnectionPool, ConnectionPool
 
-# Load environment variables
-load_dotenv()
-
-# Windows compatibility
-if sys.platform == "win32":
+# Fix for Windows ProactorEventLoop issue with psycopg
+if platform.system() == "Windows":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Database connection parameters
+database_pool: Optional[AsyncConnectionPool] = None
+
+def get_db_config():
+    """Get database configuration from environment variables."""
+    return {
+        'user': os.getenv('user'),
+        'password': os.getenv('password'),  
+        'host': os.getenv('host'),
+        'port': os.getenv('port', '5432'),
+        'dbname': os.getenv('dbname')
+    }
+
+def get_connection_string():
+    """Get PostgreSQL connection string from environment variables."""
+    config = get_db_config()
+    return f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}?sslmode=require"
+
+async def get_postgres_checkpointer():
+    """
+    Get a PostgreSQL checkpointer using the official langgraph PostgreSQL implementation.
+    This ensures we use the correct table schemas and implementation.
+    """
+    global database_pool
+    
+    try:
+        if database_pool is None:
+            connection_string = get_connection_string()
+            
+            # Create connection pool
+            database_pool = AsyncConnectionPool(
+                conninfo=connection_string,
+                max_size=3,
+                min_size=1,
+                kwargs={
+                    "autocommit": True,
+                    "prepare_threshold": 0,
+                }
+            )
+            
+            print("🔗 Creating PostgreSQL checkpointer with official library...")
+            
+        # Create checkpointer with the connection pool
+        checkpointer = AsyncPostgresSaver(database_pool)
+        
+        # Setup tables (this creates all required tables with correct schemas)
+        await checkpointer.setup()
+        
+        print("✅ Official PostgreSQL checkpointer initialized successfully")
+        return checkpointer
+        
+    except Exception as e:
+        print(f"❌ Error creating PostgreSQL checkpointer: {str(e)}")
+        raise
+
+def get_sync_postgres_checkpointer():
+    """
+    Get a synchronous PostgreSQL checkpointer using the official library.
+    """
+    try:
+        connection_string = get_connection_string()
+        
+        # Create sync connection pool
+        pool = ConnectionPool(
+            conninfo=connection_string,
+            max_size=3,
+            min_size=1,
+            kwargs={
+                "autocommit": True,
+                "prepare_threshold": 0,
+            }
+        )
+        
+        # Create checkpointer with the connection pool
+        checkpointer = PostgresSaver(pool)
+        
+        # Setup tables (this creates all required tables with correct schemas)
+        checkpointer.setup()
+        
+        print("✅ Sync PostgreSQL checkpointer initialized successfully")
+        return checkpointer
+        
+    except Exception as e:
+        print(f"❌ Error creating sync PostgreSQL checkpointer: {str(e)}")
+        raise
+
+# For backward compatibility
+async def create_postgres_checkpointer():
+    """Backward compatibility wrapper."""
+    return await get_postgres_checkpointer()
 
 async def setup_rls_policies(pool: AsyncConnectionPool):
     """Setup Row Level Security policies for checkpointer tables in Supabase."""
@@ -21,31 +113,44 @@ async def setup_rls_policies(pool: AsyncConnectionPool):
         async with pool.connection() as conn:
             await conn.set_autocommit(True)
             
-            # Enable RLS on checkpoints table
-            await conn.execute("ALTER TABLE checkpoints ENABLE ROW LEVEL SECURITY")
+            # Enable RLS on all checkpointer tables
+            tables = ["checkpoints", "checkpoint_writes", "checkpoint_blobs", "checkpoint_migrations"]
             
-            # Enable RLS on checkpoint_writes table  
-            await conn.execute("ALTER TABLE checkpoint_writes ENABLE ROW LEVEL SECURITY")
+            for table in tables:
+                try:
+                    await conn.execute(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY")
+                    print(f"✓ RLS enabled on {table}")
+                except Exception as e:
+                    if "already enabled" in str(e).lower() or "does not exist" in str(e).lower():
+                        print(f"⚠ RLS already enabled on {table} or table doesn't exist")
+                    else:
+                        print(f"⚠ Warning: Could not enable RLS on {table}: {e}")
             
-            # Drop existing policies if they exist (separate statements)
-            await conn.execute('DROP POLICY IF EXISTS "Allow service role full access" ON checkpoints')
-            await conn.execute('DROP POLICY IF EXISTS "Allow service role full access" ON checkpoint_writes')
+            # Drop existing policies if they exist
+            for table in tables:
+                try:
+                    await conn.execute(f'DROP POLICY IF EXISTS "Allow service role full access" ON {table}')
+                except Exception as e:
+                    print(f"⚠ Could not drop existing policy on {table}: {e}")
             
             # Create permissive policies for authenticated users
-            await conn.execute("""
-                CREATE POLICY "Allow service role full access" ON checkpoints
-                FOR ALL USING (true) WITH CHECK (true)
-            """)
+            for table in tables:
+                try:
+                    await conn.execute(f"""
+                        CREATE POLICY "Allow service role full access" ON {table}
+                        FOR ALL USING (true) WITH CHECK (true)
+                    """)
+                    print(f"✓ RLS policy created for {table}")
+                except Exception as e:
+                    if "already exists" in str(e).lower():
+                        print(f"⚠ RLS policy already exists for {table}")
+                    else:
+                        print(f"⚠ Could not create RLS policy for {table}: {e}")
             
-            await conn.execute("""
-                CREATE POLICY "Allow service role full access" ON checkpoint_writes
-                FOR ALL USING (true) WITH CHECK (true)
-            """)
-            
-        print("✓ Row Level Security policies configured successfully")
+        print("✓ Row Level Security setup completed (with any warnings noted above)")
     except Exception as e:
         print(f"⚠ Warning: Could not setup RLS policies: {e}")
-        # Don't fail the entire setup if RLS setup fails
+        # Don't fail the entire setup if RLS setup fails - this is not critical for basic functionality
 
 async def monitor_connection_health(pool: AsyncConnectionPool, interval: int = 60):
     """Monitor connection pool health in the background."""
@@ -77,149 +182,6 @@ def log_connection_info(host: str, port: str, dbname: str, user: str):
     print(f"   Database: {dbname}")
     print(f"   User: {user}")
     print(f"   SSL: Required")
-
-async def create_postgres_checkpointer() -> AsyncPostgresSaver:
-    """Create AsyncPostgresSaver with robust connection settings for Supabase."""
-    
-    # Get connection parameters
-    user = os.getenv("user")
-    password = os.getenv("password") 
-    host = os.getenv("host")
-    port = os.getenv("port", "5432")
-    dbname = os.getenv("dbname")
-    
-    # Check required parameters
-    if not all([user, password, host, dbname]):
-        missing = [k for k, v in {"user": user, "password": password, "host": host, "dbname": dbname}.items() if not v]
-        raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
-    
-    # Log connection info for debugging
-    log_connection_info(host, port, dbname, user)
-    
-    # Create connection string with optimized parameters for Supabase
-    connection_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
-    
-    # Optimized connection kwargs for Supabase stability
-    connection_kwargs = {
-        "sslmode": "require",
-        "connect_timeout": 10,  # Connection timeout
-        "application_name": "czsu-langgraph-checkpointer",
-        # Disable autocommit for better transaction control
-        "autocommit": False,
-        # Connection pool specific optimizations
-        "prepare_threshold": 0,  # Disable prepared statements for better compatibility
-    }
-    
-    print(f"⚙️  Pool Configuration:")
-    print(f"   Max Size: 3")
-    print(f"   Min Size: 1") 
-    print(f"   Max Idle: 300s")
-    print(f"   Max Lifetime: 1800s")
-    print(f"   Timeout: 10s")
-    
-    # Create connection pool with conservative settings for stability
-    pool = AsyncConnectionPool(
-        conninfo=connection_string,
-        max_size=3,  # Further reduced to avoid overwhelming Supabase
-        min_size=1,
-        max_idle=300,  # 5 minutes - shorter idle time
-        max_lifetime=1800,  # 30 minutes - shorter lifetime
-        timeout=10,  # Shorter pool timeout
-        kwargs=connection_kwargs,
-        open=False
-    )
-    
-    # Open pool manually with retry logic
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            print(f"🔄 Opening connection pool (attempt {attempt + 1}/{max_retries})...")
-            await pool.open()
-            print(f"✅ Connection pool opened successfully")
-            break
-        except Exception as e:
-            print(f"⚠ Pool open attempt {attempt + 1} failed: {e}")
-            if attempt == max_retries - 1:
-                raise
-            await asyncio.sleep(2 ** attempt)  # Exponential backoff
-    
-    checkpointer = AsyncPostgresSaver(pool)
-    
-    # Setup tables with proper error handling for concurrent access
-    try:
-        print("🔨 Setting up checkpointer tables...")
-        await checkpointer.setup()
-        print("✓ Checkpointer tables setup completed")
-    except Exception as e:
-        error_str = str(e)
-        if "CREATE INDEX CONCURRENTLY cannot run inside a transaction block" in error_str:
-            # Handle the specific case where concurrent index creation fails
-            print("⚠ Handling concurrent index creation issue...")
-            # Let's try a manual setup with non-concurrent indexes
-            async with pool.connection() as conn:
-                await conn.set_autocommit(True)
-                
-                # Create tables without concurrent indexes
-                await conn.execute("""
-                    CREATE TABLE IF NOT EXISTS checkpoints (
-                        thread_id TEXT NOT NULL,
-                        checkpoint_ns TEXT NOT NULL DEFAULT '',
-                        checkpoint_id TEXT NOT NULL,
-                        parent_checkpoint_id TEXT,
-                        type TEXT,
-                        checkpoint JSONB NOT NULL,
-                        metadata JSONB NOT NULL DEFAULT '{}',
-                        PRIMARY KEY (thread_id, checkpoint_ns, checkpoint_id)
-                    );
-                """)
-                
-                await conn.execute("""
-                    CREATE TABLE IF NOT EXISTS checkpoint_writes (
-                        thread_id TEXT NOT NULL,
-                        checkpoint_ns TEXT NOT NULL DEFAULT '',
-                        checkpoint_id TEXT NOT NULL,
-                        task_id TEXT NOT NULL,
-                        idx INTEGER NOT NULL,
-                        channel TEXT NOT NULL,
-                        type TEXT,
-                        value JSONB,
-                        PRIMARY KEY (thread_id, checkpoint_ns, checkpoint_id, task_id, idx)
-                    );
-                """)
-                
-                # Create regular (non-concurrent) indexes
-                await conn.execute("""
-                    CREATE INDEX IF NOT EXISTS ix_checkpoints_thread_id 
-                    ON checkpoints (thread_id, checkpoint_ns);
-                """)
-                
-                await conn.execute("""
-                    CREATE INDEX IF NOT EXISTS ix_checkpoint_writes_thread_id 
-                    ON checkpoint_writes (thread_id, checkpoint_ns, checkpoint_id);
-                """)
-                print("✓ Database tables created successfully")
-        elif "already exists" in error_str.lower():
-            print("✓ Tables already exist, continuing...")
-        else:
-            # Re-raise other setup errors
-            raise
-    
-    # Setup Row Level Security policies
-    await setup_rls_policies(pool)
-    
-    return checkpointer
-
-async def get_postgres_checkpointer() -> AsyncPostgresSaver:
-    """Get PostgreSQL checkpointer with fallback to InMemorySaver."""
-    try:
-        checkpointer = await create_postgres_checkpointer()
-        print("✓ Connected to PostgreSQL for persistent checkpointing")
-        return checkpointer
-    except Exception as e:
-        print(f"⚠ PostgreSQL failed: {e}")
-        print("⚠ Using InMemorySaver (non-persistent)")
-        from langgraph.checkpoint.memory import InMemorySaver
-        return InMemorySaver()
 
 # Test and health check functions
 async def test_connection_health():

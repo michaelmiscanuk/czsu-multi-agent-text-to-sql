@@ -166,11 +166,49 @@ export default function ChatPage() {
   // Delete chat
   const handleDelete = async (id: string) => {
     if (!userEmail) return;
-    await deleteThread(userEmail, id);
-    const updated = await listThreads(userEmail);
-    setThreads(updated);
-    if (activeThreadId === id) {
-      setActiveThreadId(updated[0]?.id || null);
+    
+    try {
+      // First delete from local IndexedDB
+      await deleteThread(userEmail, id);
+      
+      // Then delete PostgreSQL checkpoint records
+      try {
+        let freshSession = await getSession();
+        if (freshSession?.id_token) {
+          const API_URL = `${API_BASE}/chat/${id}`;
+          const response = await fetch(API_URL, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${freshSession.id_token}`
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('✓ PostgreSQL checkpoint records deleted:', data);
+          } else {
+            console.warn('⚠ Failed to delete PostgreSQL checkpoint records:', response.status, response.statusText);
+          }
+        }
+      } catch (backendError) {
+        // Don't fail the entire delete operation if backend cleanup fails
+        console.warn('⚠ Backend checkpoint cleanup failed:', backendError);
+      }
+      
+      // Update the UI
+      const updated = await listThreads(userEmail);
+      setThreads(updated);
+      if (activeThreadId === id) {
+        setActiveThreadId(updated[0]?.id || null);
+      }
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+      // Still try to update the UI even if there was an error
+      const updated = await listThreads(userEmail);
+      setThreads(updated);
+      if (activeThreadId === id) {
+        setActiveThreadId(updated[0]?.id || null);
+      }
     }
   };
 

@@ -42,9 +42,9 @@ async def initialize_checkpointer():
 async def cleanup_checkpointer():
     """Clean up resources on app shutdown."""
     global GLOBAL_CHECKPOINTER
-    if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'pool') and GLOBAL_CHECKPOINTER.pool:
+    if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
         try:
-            await GLOBAL_CHECKPOINTER.pool.close()
+            await GLOBAL_CHECKPOINTER.conn.close()
             print("✓ PostgreSQL connection pool closed cleanly")
         except Exception as e:
             print(f"⚠ Error closing connection pool: {e}")
@@ -54,18 +54,18 @@ async def get_healthy_checkpointer():
     global GLOBAL_CHECKPOINTER
     
     # Check if current checkpointer is healthy
-    if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'pool'):
+    if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
         try:
             # Quick health check
-            async with GLOBAL_CHECKPOINTER.pool.connection() as conn:
+            async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
                 await conn.execute("SELECT 1")
             return GLOBAL_CHECKPOINTER
         except Exception as e:
             print(f"⚠ Checkpointer unhealthy, recreating: {e}")
             # Try to cleanup old pool
             try:
-                if GLOBAL_CHECKPOINTER.pool:
-                    await GLOBAL_CHECKPOINTER.pool.close()
+                if GLOBAL_CHECKPOINTER.conn:
+                    await GLOBAL_CHECKPOINTER.conn.close()
             except:
                 pass
             GLOBAL_CHECKPOINTER = None
@@ -170,6 +170,81 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             # Re-raise non-connection errors
             print(f"✗ Analysis error: {e}")
             raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
+
+@app.delete("/chat/{thread_id}")
+async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)):
+    """Delete all PostgreSQL checkpoint records for a specific thread_id."""
+    
+    # Get a healthy checkpointer
+    checkpointer = await get_healthy_checkpointer()
+    
+    # Check if we have a PostgreSQL checkpointer (not InMemorySaver)
+    if not hasattr(checkpointer, 'conn'):
+        return {"message": "No PostgreSQL checkpointer available - nothing to delete"}
+    
+    try:
+        # Access the connection pool through the conn attribute
+        pool = checkpointer.conn
+        
+        async with pool.connection() as conn:
+            await conn.set_autocommit(True)
+            
+            # Delete from all checkpoint tables
+            tables = ["checkpoint_blobs", "checkpoint_writes", "checkpoints"]
+            deleted_counts = {}
+            
+            for table in tables:
+                try:
+                    # First check if the table exists
+                    result = await conn.execute("""
+                        SELECT EXISTS (
+                            SELECT FROM information_schema.tables 
+                            WHERE table_name = %s
+                        )
+                    """, (table,))
+                    
+                    table_exists = await result.fetchone()
+                    if not table_exists or not table_exists[0]:
+                        print(f"⚠ Table {table} does not exist, skipping")
+                        deleted_counts[table] = 0
+                        continue
+                    
+                    # Delete records for this thread_id
+                    result = await conn.execute(
+                        f"DELETE FROM {table} WHERE thread_id = %s",
+                        (thread_id,)
+                    )
+                    
+                    deleted_counts[table] = result.rowcount if hasattr(result, 'rowcount') else 0
+                    print(f"✓ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}")
+                    
+                except Exception as table_error:
+                    print(f"⚠ Error deleting from table {table}: {table_error}")
+                    deleted_counts[table] = f"Error: {str(table_error)}"
+            
+            return {
+                "message": f"Checkpoint records deleted for thread_id: {thread_id}",
+                "deleted_counts": deleted_counts,
+                "thread_id": thread_id
+            }
+            
+    except Exception as e:
+        error_msg = str(e)
+        print(f"✗ Failed to delete checkpoint records: {e}")
+        
+        # If it's a connection error, don't treat it as a failure since it means 
+        # there are likely no records to delete anyway
+        if any(keyword in error_msg.lower() for keyword in [
+            "ssl error", "connection", "timeout", "operational error", 
+            "server closed", "bad connection", "consuming input failed"
+        ]):
+            return {
+                "message": "PostgreSQL connection unavailable - no records to delete", 
+                "thread_id": thread_id,
+                "warning": "Database connection issues"
+            }
+        else:
+            raise HTTPException(status_code=500, detail=f"Failed to delete checkpoint records: {e}")
 
 @app.get("/catalog")
 def get_catalog(

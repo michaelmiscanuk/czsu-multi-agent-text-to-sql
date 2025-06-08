@@ -50,7 +50,7 @@ from metadata.create_and_load_chromadb import (
     get_langchain_chroma_vectorstore,
     cohere_rerank
 )
-from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini
+from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini, get_ollama_llm
 
 
 # Configurable iteration limit to prevent excessive looping
@@ -246,6 +246,7 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
         debug_print(f"{QUERY_GEN_ID}: Recent queries: {recent_queries}")
     
     llm = get_azure_llm_gpt_4o(temperature=0.0)
+    # llm = get_ollama_llm("qwen:7b")
     tools = await create_mcp_server()
     sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
     messages = state.get("messages", [])
@@ -267,6 +268,12 @@ You are a Bilingual Data Query Specialist proficient in both Czech and English a
 Your task is to translate the user's natural-language question into a SQLITE SQL query and execute it using the sqlite_query tool.
 
 To accomplish this, follow these steps:
+
+=== OUTPUT - MOST IMPORTANT AND CRITICAL RULE FOR IT TO WORK!!!!!!!! ===
+- Return ONLY the final SQLITE SQL QUERY that should be executed, with nothing else around it. 
+- Do NOT wrap it in code fences, like ``` ``` and do NOT add explanations, only the SQLITE query.
+- Do NOT add any other text or comments, only the SQLITE query.
+- REMEMBER, only SQLITE SQL QUERY is allowed to be returned, nothing else, or tool called with it will fail.
 
 1. Read and analyze the provided inputs:
 - User prompt (can be in Czech or English)
@@ -324,9 +331,12 @@ IMPORTANT notes about SQL query generation:
 - Always examine the ALL Schema to see how the data are laid out - column names and its concrete dimensional values. 
 - If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name.
 
-=== IMPORTANT RULE ===
-- Return ONLY the final SQL query that should be executed, with nothing else around it. 
-- Do NOT wrap it in code fences and do NOT add explanations.
+=== OUTPUT - MOST IMPORTANT AND CRITICAL RULE FOR IT TO WORK!!!!!!!! ===
+- Return ONLY the final SQLITE SQL QUERY that should be executed, with nothing else around it. 
+- Do NOT wrap it in code fences, like ``` ``` and do NOT add explanations, only the SQLITE query.
+- Do NOT add any other text or comments, only the SQLITE query.
+- REMEMBER, only SQLITE SQL QUERY is allowed to be returned, nothing else, or tool called with it will fail.
+
 """
     # Build human prompt conditionally to avoid empty "Last message:" section
     human_prompt_parts = [

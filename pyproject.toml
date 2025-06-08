@@ -224,7 +224,8 @@ dependencies = [
     "typing-inspection",
     "langgraph-checkpoint-sqlite",
     "langgraph-checkpoint-postgres==2.0.21",
-    "psycopg[binary]==3.2.4"
+    "psycopg[binary]==3.2.4",
+    "langgraph_checkpoint_postgres"
 ]
 
 [project.optional-dependencies]

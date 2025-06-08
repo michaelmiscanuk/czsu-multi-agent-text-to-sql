@@ -5,7 +5,7 @@ used throughout the application, with support for both sync and async operations
 """
 
 import os
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from openai import AzureOpenAI
 
 
@@ -109,6 +109,57 @@ def get_azure_llm_gpt_4o_mini_test():
     
     
 #===============================================================================
+# Local OLLAMA Models  
+#===============================================================================
+def get_ollama_llm(model_name="llama3.2:1b", base_url="http://localhost:11434/v1", temperature=0.0):
+    """Get an instance of local OLLAMA LLM with standard configuration.
+    
+    Uses LangChain's ChatOpenAI with local OLLAMA endpoint for compatibility.
+    
+    Args:
+        model_name (str): The OLLAMA model name (e.g., "llama3.2:1b", "smollm:latest", "qwen:7b")
+        base_url (str): The base URL for the local OLLAMA server (with /v1 endpoint)
+        temperature (float): Temperature setting for generation randomness
+        
+    Returns:
+        ChatOpenAI: Configured OLLAMA LLM instance compatible with LangChain
+    """
+    # Set a dummy API key for local OLLAMA (required by ChatOpenAI but not used)
+    os.environ["OPENAI_API_KEY"] = "ollama-local-dummy-key"
+    
+    return ChatOpenAI(
+        model=model_name,
+        base_url=base_url,
+        temperature=temperature,
+        api_key="ollama-local-dummy-key"  # Required but not used for local OLLAMA
+    )
+
+def get_ollama_llm_test():
+    """Test the OLLAMA LLM with a simple message"""
+    print("\nTesting get_ollama_llm()...")
+    
+    try:
+        llm = get_ollama_llm()
+        print(f"✓ OLLAMA LLM instance created successfully!")
+        print(f"Model: {llm.model_name}")
+        print(f"Base URL: {llm.openai_api_base}")
+        print(f"Temperature: {llm.temperature}")
+        
+        # Test with a simple prompt
+        print("\nSending test prompt: 'Hi'")
+        response = llm.invoke("Hi")
+        print(f"\nResponse from OLLAMA:\n{response.content}")
+        print("\n✓ Test completed successfully!")
+        
+    except Exception as e:
+        print(f"\n❌ Error testing OLLAMA LLM: {str(e)}")
+        print("Make sure:")
+        print("1. OLLAMA is running (ollama serve)")
+        print("2. You have a model downloaded (ollama pull llama3.2)")
+        print("3. The model name matches what you have installed")
+
+
+#===============================================================================
 # Azure Embedding Models
 #===============================================================================
 def get_azure_embedding_model():
@@ -169,8 +220,14 @@ def get_langchain_azure_embedding_model_test():
 if __name__ == "__main__":
     # get_azure_embedding_model_test()
     # get_azure_llm_gpt_4o_test()
-    get_azure_llm_gpt_4o_mini_test()
+    # get_azure_llm_gpt_4o_mini_test()
 
+
+    llm = get_ollama_llm("qwen:7b")
+
+    # Then use it like any LangChain model
+    response = llm.invoke("Hi")
+    print(response.content)
 
 
 
