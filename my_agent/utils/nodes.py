@@ -133,6 +133,7 @@ CRITICAL RULES:
 4. If you do not see any chat history, return the follow up question as is
 5. Always preserve the user's intent from the follow up question
 6. The rewritten question MUST NOT introduce, suggest, or add any information, examples, or details that were not explicitly present in the original question or chat history. Do not expand with examples or specifics unless they were directly asked for.
+7. If a user provides an instruction instead of a question, combine the instruction with the original question or lastest summary context and rewrite the whole thing as a standalone question which is a followup based on latest summary discussion.
 
 VECTOR SEARCH OPTIMIZATION:
 7. Expand brief/vague questions into more detailed, searchable queries
