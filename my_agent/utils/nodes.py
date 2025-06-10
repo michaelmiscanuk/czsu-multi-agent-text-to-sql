@@ -54,7 +54,7 @@ from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_min
 
 
 # Configurable iteration limit to prevent excessive looping
-MAX_ITERATIONS = int(os.environ.get('MAX_ITERATIONS', '2'))  # Configurable via environment variable, default 2
+MAX_ITERATIONS = int(os.environ.get('MAX_ITERATIONS', '1'))  # Configurable via environment variable, default 2
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 ROUTE_DECISION_ID = 11  # ID for routing decision function
 REFLECT_NODE_ID = 12

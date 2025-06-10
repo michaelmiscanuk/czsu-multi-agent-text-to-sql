@@ -5,17 +5,29 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
-import {
-  listThreads,
-  getChatThread,
-  saveThread,
-  deleteThread,
-  listMessages,
-  saveMessage,
-  deleteMessage,
-  ChatThreadMeta,
-  ChatMessage
-} from '@/components/utils';
+
+// Types for PostgreSQL-based chat management
+interface ChatThreadMeta {
+  thread_id: string;
+  latest_timestamp: string;
+  run_count: number;
+  title?: string; // We'll derive this from the first message or set a default
+}
+
+interface ChatMessage {
+  id: string;
+  threadId: string;
+  user: string;
+  content: string;
+  isUser: boolean;
+  createdAt: number;
+  error?: string;
+  meta?: Record<string, any>;
+  queriesAndResults?: [string, string][];
+  isLoading?: boolean;
+  startedAt?: number;
+  isError?: boolean;
+}
 
 interface Message {
   id: number;
@@ -42,12 +54,38 @@ const INITIAL_MESSAGE = [
 ];
 
 export default function ChatPage() {
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
   const userEmail = session?.user?.email || null;
-  if (!userEmail) {
-    return <div>Loading...</div>;
+  
+  // Show loading while session is being fetched
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="text-gray-600">Loading your session...</div>
+        </div>
+      </div>
+    );
   }
-  // const userEmail = "test3@test.com"
+  
+  // Redirect to login if not authenticated
+  if (status === "unauthenticated" || !userEmail) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="text-gray-600 mb-4">Please sign in to access your chats</div>
+          <button 
+            onClick={() => window.location.href = '/api/auth/signin'}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Sign In
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
   const [threads, setThreads] = useState<ChatThreadMeta[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -58,6 +96,9 @@ export default function ChatPage() {
   const [openSQLModalForMsgId, setOpenSQLModalForMsgId] = useState<string | null>(null);
   const [iteration, setIteration] = useState(0);
   const [maxIterations, setMaxIterations] = useState(2); // default fallback
+  const [threadsLoaded, setThreadsLoaded] = useState(false);
+  const [threadsLoading, setThreadsLoading] = useState(false);
+  
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
@@ -66,25 +107,304 @@ export default function ChatPage() {
   
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
 
-  // Load sessions on mount/user change
-  useEffect(() => {
-    if (!userEmail) return;
-    listThreads(userEmail).then(setThreads);
-  }, [userEmail]);
+  // PostgreSQL API functions
+  const loadThreadsFromPostgreSQL = async () => {
+    console.log('[ChatPage-PostgreSQL] 🔄 Loading threads from PostgreSQL for user:', userEmail);
+    
+    if (!userEmail) {
+      console.log('[ChatPage-PostgreSQL] ❌ No user email, skipping thread load');
+      return;
+    }
 
-  // Load messages for active session
+    if (threadsLoading) {
+      console.log('[ChatPage-PostgreSQL] ⏳ Threads already loading, skipping...');
+      return;
+    }
+
+    setThreadsLoading(true);
+
+    try {
+      console.log('[ChatPage-PostgreSQL] 🔍 Getting fresh session for API call...');
+      let freshSession = await getSession();
+      
+      console.log('[ChatPage-PostgreSQL] 📊 Session debug info:', {
+        hasSession: !!freshSession,
+        hasIdToken: !!freshSession?.id_token,
+        userEmail: freshSession?.user?.email,
+        sessionKeys: freshSession ? Object.keys(freshSession) : [],
+        tokenPreview: freshSession?.id_token ? freshSession.id_token.slice(0, 50) + '...' : 'none'
+      });
+      
+      if (!freshSession?.id_token) {
+        console.log('[ChatPage-PostgreSQL] ❌ No valid session token');
+        console.log('[ChatPage-PostgreSQL] 🔍 Session object:', freshSession);
+        setThreadsLoaded(true);
+        setThreadsLoading(false);
+        return;
+      }
+
+      console.log('[ChatPage-PostgreSQL] 🔗 Making API call to load threads...');
+      console.log('[ChatPage-PostgreSQL] 📍 API URL:', `${API_BASE}/chat-threads`);
+      console.log('[ChatPage-PostgreSQL] 🔑 Using token:', freshSession.id_token.slice(0, 50) + '...');
+      
+      const response = await fetch(`${API_BASE}/chat-threads`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${freshSession.id_token}`
+        }
+      });
+
+      console.log('[ChatPage-PostgreSQL] 📥 API Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: {
+          'content-type': response.headers.get('content-type'),
+          'content-length': response.headers.get('content-length')
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[ChatPage-PostgreSQL] ❌ API Error Response:', errorText);
+        throw new Error(`Failed to get chat threads: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const postgresThreads = await response.json();
+      console.log('[ChatPage-PostgreSQL] ✅ Loaded threads from PostgreSQL:', postgresThreads);
+      console.log('[ChatPage-PostgreSQL] 📊 Raw API response details:', {
+        isArray: Array.isArray(postgresThreads),
+        length: postgresThreads?.length || 0,
+        firstItem: postgresThreads?.[0] || null,
+        type: typeof postgresThreads
+      });
+      
+      // Convert PostgreSQL format to our frontend format
+      const convertedThreads: ChatThreadMeta[] = postgresThreads.map((t: any) => ({
+        thread_id: t.thread_id,
+        latest_timestamp: t.latest_timestamp,
+        run_count: t.run_count,
+        title: `Chat ${t.thread_id.slice(-8)}` // Default title, will be updated
+      }));
+
+      console.log('[ChatPage-PostgreSQL] 🔄 Converted threads:', convertedThreads);
+
+      setThreads(convertedThreads);
+      setThreadsLoaded(true);
+      
+      console.log('[ChatPage-PostgreSQL] 📊 Thread loading summary:');
+      console.log(`  - Total threads loaded: ${convertedThreads.length}`);
+      console.log(`  - User email: ${userEmail}`);
+      console.log(`  - API Base: ${API_BASE}`);
+      console.log(`  - Frontend state updated successfully`);
+      
+      // If no threads exist, automatically create a new one silently
+      if (convertedThreads.length === 0) {
+        console.log('[ChatPage-PostgreSQL] 📝 No threads found, auto-creating first chat silently');
+        const newThreadId = uuidv4();
+        
+        // Create the thread object and add it to the list
+        const firstThread: ChatThreadMeta = {
+          thread_id: newThreadId,
+          latest_timestamp: new Date().toISOString(),
+          run_count: 0,
+          title: 'New Chat'
+        };
+        
+        setThreads([firstThread]);
+        setActiveThreadId(newThreadId);
+        setMessages([]); // Clear messages for new chat
+        console.log('[ChatPage-PostgreSQL] ✅ Auto-created first thread:', newThreadId);
+        console.log('[ChatPage-PostgreSQL] ℹ️ Thread will be created in PostgreSQL when first message is sent');
+        
+        // Focus input for immediate use
+        setTimeout(() => inputRef.current?.focus(), 100);
+        setThreadsLoading(false);
+        return;
+      }
+      
+      // If no active thread and we have threads, select the most recent one
+      if (!activeThreadId && convertedThreads.length > 0) {
+        setActiveThreadId(convertedThreads[0].thread_id);
+        console.log('[ChatPage-PostgreSQL] 🎯 Auto-selected active thread:', convertedThreads[0].thread_id);
+      }
+      
+    } catch (error) {
+      console.error('[ChatPage-PostgreSQL] ❌ Error loading threads from PostgreSQL:', error);
+      console.error('[ChatPage-PostgreSQL] 🔍 Error details:', {
+        name: (error as Error)?.name || 'Unknown',
+        message: (error as Error)?.message || String(error),
+        stack: (error as Error)?.stack || 'No stack trace available'
+      });
+      
+      setThreadsLoaded(true); // Still mark as loaded even on error
+      
+      // If error loading and no threads, create first chat anyway
+      if (threads.length === 0) {
+        console.log('[ChatPage-PostgreSQL] 📝 Error loading but no threads, auto-creating first chat silently');
+        const newThreadId = uuidv4();
+        
+        // Create the thread object and add it to the list
+        const firstThread: ChatThreadMeta = {
+          thread_id: newThreadId,
+          latest_timestamp: new Date().toISOString(),
+          run_count: 0,
+          title: 'New Chat'
+        };
+        
+        setThreads([firstThread]);
+        setActiveThreadId(newThreadId);
+        setMessages([]);
+        setTimeout(() => inputRef.current?.focus(), 100);
+      }
+    } finally {
+      setThreadsLoading(false);
+      console.log('[ChatPage-PostgreSQL] 🏁 Thread loading process completed');
+    }
+  };
+
+  const deleteThreadFromPostgreSQL = async (threadId: string) => {
+    console.log('[ChatPage-PostgreSQL] 🗑️ Deleting thread from PostgreSQL:', threadId);
+    
+    try {
+      let freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        console.log('[ChatPage-PostgreSQL] ❌ No valid session token for deletion');
+        return false;
+      }
+
+      const response = await fetch(`${API_BASE}/chat/${threadId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${freshSession.id_token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.error('[ChatPage-PostgreSQL] ❌ Failed to delete thread:', response.status);
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('[ChatPage-PostgreSQL] ✅ Thread deleted from PostgreSQL:', result);
+      return true;
+      
+    } catch (error) {
+      console.error('[ChatPage-PostgreSQL] ❌ Error deleting thread:', error);
+      return false;
+    }
+  };
+
+  // Load threads from PostgreSQL when user email is available
+  useEffect(() => {
+    // Only attempt to load threads when session is authenticated and we have userEmail
+    if (status !== "authenticated" || !userEmail) {
+      console.log('[ChatPage-PostgreSQL] ⏳ Waiting for authentication... Status:', status, 'UserEmail:', !!userEmail);
+      return;
+    }
+    
+    if (!threadsLoaded && !threadsLoading) {
+      console.log('[ChatPage-PostgreSQL] 🚀 Initial thread load triggered - authenticated user:', userEmail);
+      loadThreadsFromPostgreSQL();
+    }
+  }, [status, userEmail, threadsLoaded, threadsLoading]);
+
+  // Debug: log session changes
+  useEffect(() => {
+    console.log('[ChatPage-PostgreSQL] 🔍 Session status changed:', {
+      status,
+      userEmail: userEmail || 'not available',
+      threadsLoaded,
+      threadsLoading,
+      threadsCount: threads.length
+    });
+  }, [status, userEmail, threadsLoaded, threadsLoading, threads.length]);
+
+  // Load messages for active session from PostgreSQL checkpoints
+  const loadMessagesFromCheckpoint = async (threadId: string) => {
+    if (!userEmail || !threadId) {
+      setMessages([]);
+      return;
+    }
+
+    console.log('[ChatPage-PostgreSQL] 📄 Loading messages from checkpoint for thread:', threadId);
+    
+    try {
+      let session = await getSession();
+      if (!session?.id_token) {
+        console.error('[ChatPage-PostgreSQL] ❌ No session token available');
+        setMessages([]);
+        return;
+      }
+
+      // Fix: Use the correct API_BASE URL instead of /api/
+      let response = await fetch(`${API_BASE}/chat/${threadId}/messages`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.id_token}`
+        }
+      });
+
+      // Handle token refresh if needed
+      if (response.status === 401) {
+        console.log('[ChatPage-PostgreSQL] 🔄 Token expired during message load, refreshing...');
+        const refreshedSession = await update();
+        if (!refreshedSession?.id_token) {
+          console.error('[ChatPage-PostgreSQL] ❌ Failed to refresh token');
+          setMessages([]);
+          return;
+        }
+        
+        response = await fetch(`${API_BASE}/chat/${threadId}/messages`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${refreshedSession.id_token}`
+          }
+        });
+      }
+
+      if (!response.ok) {
+        console.error('[ChatPage-PostgreSQL] ❌ Failed to load messages:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('[ChatPage-PostgreSQL] ❌ Error response body:', errorText);
+        setMessages([]);
+        return;
+      }
+
+      const chatMessages = await response.json();
+      console.log('[ChatPage-PostgreSQL] ✅ Loaded messages from checkpoint:', chatMessages.length);
+      
+      if (Array.isArray(chatMessages)) {
+        setMessages(chatMessages);
+      } else {
+        console.error('[ChatPage-PostgreSQL] ❌ Invalid response format - expected array, got:', typeof chatMessages);
+        setMessages([]);
+      }
+      
+    } catch (error) {
+      console.error('[ChatPage-PostgreSQL] ❌ Error loading messages from checkpoint:', error);
+      setMessages([]);
+    }
+  };
+
+  // Load messages for active session (now using PostgreSQL checkpoints)
   useEffect(() => {
     if (!userEmail || !activeThreadId) {
       setMessages([]);
       return;
     }
-    listMessages(userEmail, activeThreadId).then(setMessages);
+    
+    console.log('[ChatPage-PostgreSQL] 📄 Loading messages for thread:', activeThreadId);
+    loadMessagesFromCheckpoint(activeThreadId);
   }, [userEmail, activeThreadId]);
 
   // Remember last active chat in localStorage
   useEffect(() => {
     if (activeThreadId) {
       localStorage.setItem('czsu-last-active-chat', activeThreadId);
+      console.log('[ChatPage-PostgreSQL] 💾 Saved active thread to localStorage:', activeThreadId);
     }
   }, [activeThreadId]);
 
@@ -92,12 +412,20 @@ export default function ChatPage() {
   useEffect(() => {
     if (!userEmail) return;
     const lastActive = localStorage.getItem('czsu-last-active-chat');
-    if (lastActive) {
-      setActiveThreadId(lastActive);
-    } else if (threads.length > 0 && !activeThreadId) {
-      setActiveThreadId(threads[0].id);
+    if (lastActive && threads.length > 0) {
+      // Check if the last active thread still exists
+      const threadExists = threads.some(t => t.thread_id === lastActive);
+      if (threadExists) {
+        setActiveThreadId(lastActive);
+        console.log('[ChatPage-PostgreSQL] 🔄 Restored active thread from localStorage:', lastActive);
+      } else {
+        console.log('[ChatPage-PostgreSQL] ⚠️ Last active thread no longer exists, clearing localStorage');
+        localStorage.removeItem('czsu-last-active-chat');
+      }
+    } else if (!activeThreadId && threads.length > 0) {
+      setActiveThreadId(threads[0].thread_id);
+      console.log('[ChatPage-PostgreSQL] 🎯 Auto-selected first available thread:', threads[0].thread_id);
     }
-    // eslint-disable-next-line
   }, [userEmail, threads.length]);
 
   // Auto-scroll sidebar to top when entering chat menu
@@ -107,108 +435,82 @@ export default function ChatPage() {
     }
   }, []);
 
-  // Robust auto-create: Only after loading sessions from storage
+  // Auto-create first chat if none exist (after threads are loaded)
   useEffect(() => {
-    if (!userEmail) return;
-    (async () => {
-      const loadedThreads = await listThreads(userEmail);
-      setThreads(loadedThreads);
-      if (loadedThreads.length === 0) {
-        const id = uuidv4();
-        const now = Date.now();
-        const meta: ChatThreadMeta = {
-          id,
-          user: userEmail,
-          title: 'New Chat',
-          createdAt: now,
-          updatedAt: now,
-        };
-        await saveThread(meta);
-        setThreads([meta]);
-        setActiveThreadId(id);
-        setTimeout(() => inputRef.current?.focus(), 0);
-      }
-    })();
-  }, [userEmail]);
+    if (!userEmail || !threadsLoaded) return;
+    
+    if (threads.length === 0) {
+      console.log('[ChatPage-PostgreSQL] 🆕 No threads found, will create one on first message');
+      // We'll create the thread automatically when the user sends their first message
+    }
+  }, [userEmail, threadsLoaded, threads.length]);
 
   // New chat
   const handleNewChat = async () => {
     if (!userEmail) return;
-    const id = uuidv4();
-    const now = Date.now();
-    const meta: ChatThreadMeta = {
-      id,
-      user: userEmail,
-      title: 'New Chat',
-      createdAt: now,
-      updatedAt: now,
+    
+    // Prevent creating multiple empty chats
+    const hasEmptyChat = threads.some(t => t.run_count === 0 || !t.run_count);
+    if (hasEmptyChat) {
+      console.log('[ChatPage-PostgreSQL] ⚠️ Empty chat already exists, not creating another');
+      return;
+    }
+    
+    console.log('[ChatPage-PostgreSQL] ➕ Creating new chat...');
+    const newThreadId = uuidv4();
+    
+    // Create a new thread entry in the threads list
+    const newThread: ChatThreadMeta = {
+      thread_id: newThreadId,
+      latest_timestamp: new Date().toISOString(),
+      run_count: 0,
+      title: `New Chat`
     };
-    await saveThread(meta);
-    setThreads(await listThreads(userEmail));
-    setActiveThreadId(id);
+    
+    // Add to threads list and set as active
+    setThreads(prev => [newThread, ...prev]);
+    setActiveThreadId(newThreadId);
+    setMessages([]); // Clear messages for new chat
+    
+    console.log('[ChatPage-PostgreSQL] ✅ New thread created and added to sidebar:', newThreadId);
+    
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  // Rename chat
-  const handleRename = async (id: string, title: string) => {
-    if (!userEmail) return;
-    const meta = await getChatThread(userEmail, id);
-    if (meta) {
-      meta.title = title;
-      meta.updatedAt = Date.now();
-      await saveThread(meta);
-      setThreads(await listThreads(userEmail));
-      console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
-      setEditingTitleId(null);
-    }
+  // Rename chat - we'll implement this later as it needs thread metadata storage
+  const handleRename = async (threadId: string, title: string) => {
+    console.log('[ChatPage-PostgreSQL] ✏️ Chat renaming not yet implemented for PostgreSQL backend');
+    // TODO: Implement thread title storage in PostgreSQL
+    setEditingTitleId(null);
   };
 
   // Delete chat
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (threadId: string) => {
     if (!userEmail) return;
     
+    console.log('[ChatPage-PostgreSQL] 🗑️ Deleting chat:', threadId);
+    
     try {
-      // First delete from local IndexedDB
-      await deleteThread(userEmail, id);
+      const success = await deleteThreadFromPostgreSQL(threadId);
       
-      // Then delete PostgreSQL checkpoint records
-      try {
-        let freshSession = await getSession();
-        if (freshSession?.id_token) {
-          const API_URL = `${API_BASE}/chat/${id}`;
-          const response = await fetch(API_URL, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${freshSession.id_token}`
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            console.log('✓ PostgreSQL checkpoint records deleted:', data);
-          } else {
-            console.warn('⚠ Failed to delete PostgreSQL checkpoint records:', response.status, response.statusText);
-          }
+      if (success) {
+        console.log('[ChatPage-PostgreSQL] ✅ Thread deleted successfully, reloading thread list');
+        
+        // Reload threads from PostgreSQL
+        await loadThreadsFromPostgreSQL();
+        
+        // If we deleted the active thread, switch to another one
+        if (activeThreadId === threadId) {
+          const remainingThreads = threads.filter(t => t.thread_id !== threadId);
+          const newActiveThread = remainingThreads.length > 0 ? remainingThreads[0].thread_id : null;
+          setActiveThreadId(newActiveThread);
+          console.log('[ChatPage-PostgreSQL] 🎯 Switched to new active thread:', newActiveThread);
         }
-      } catch (backendError) {
-        // Don't fail the entire delete operation if backend cleanup fails
-        console.warn('⚠ Backend checkpoint cleanup failed:', backendError);
-      }
-      
-      // Update the UI
-      const updated = await listThreads(userEmail);
-      setThreads(updated);
-      if (activeThreadId === id) {
-        setActiveThreadId(updated[0]?.id || null);
+      } else {
+        console.error('[ChatPage-PostgreSQL] ❌ Failed to delete thread');
       }
     } catch (error) {
-      console.error('Error deleting chat:', error);
-      // Still try to update the UI even if there was an error
-      const updated = await listThreads(userEmail);
-      setThreads(updated);
-      if (activeThreadId === id) {
-        setActiveThreadId(updated[0]?.id || null);
-      }
+      console.error('[ChatPage-PostgreSQL] ❌ Error deleting chat:', error);
     }
   };
 
@@ -216,65 +518,47 @@ export default function ChatPage() {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userEmail || !currentMessage.trim()) return;
-    setIsLoading(true);
-    let threadId = activeThreadId;
-    let isNewThread = false;
-    // If no session exists, create a new one
-    if (!threadId) {
-      threadId = uuidv4();
-      const now = Date.now();
-      const meta: ChatThreadMeta = {
-        id: threadId,
-        user: userEmail,
-        title: currentMessage.slice(0, 30), // Use first message as title, max 30 chars, no ellipsis
-        createdAt: now,
-        updatedAt: now,
-      };
-      await saveThread(meta);
-      setThreads(await listThreads(userEmail));
-      console.log('[ChatPage] Sidebar sessions after save:', await listThreads(userEmail));
-      setActiveThreadId(threadId);
-      isNewThread = true;
-    }
-    const msg: ChatMessage = {
-      id: uuidv4(),
-      threadId: threadId,
-      user: userEmail,
-      content: currentMessage,
-      isUser: true,
-      createdAt: Date.now(),
-    };
-    await saveMessage(msg);
     
-    // Create a loading message that will appear while waiting for response
-    const loadingMsg: ChatMessage = {
-      id: uuidv4(),
+    console.log('[ChatPage-PostgreSQL] 📤 Sending message:', currentMessage.slice(0, 50) + '...');
+    setIsLoading(true);
+    
+    let threadId = activeThreadId;
+    
+    // If no active thread OR no threads exist at all, create a new one
+    // This ensures we always have a parent chat item for any question
+    if (!threadId || threads.length === 0) {
+      threadId = uuidv4();
+      setActiveThreadId(threadId);
+      console.log('[ChatPage-PostgreSQL] 🆕 Auto-created thread for message (ensuring parent chat item):', threadId);
+    }
+
+    // Store the current message and clear input immediately
+    const userMessageContent = currentMessage;
+    setCurrentMessage("");
+    
+    // Add optimistic UI updates - show user message and loading immediately
+    const tempUserMessage: ChatMessage = {
+      id: `temp-user-${Date.now()}`,
       threadId: threadId,
       user: userEmail,
-      content: "",
+      content: userMessageContent,
+      isUser: true,
+      createdAt: Date.now()
+    };
+    
+    const tempLoadingMessage: ChatMessage = {
+      id: `temp-ai-${Date.now()}`,
+      threadId: threadId,
+      user: 'AI',
+      content: '',
       isUser: false,
       createdAt: Date.now(),
       isLoading: true,
-      startedAt: Date.now(),
+      startedAt: Date.now()
     };
-    await saveMessage(loadingMsg);
-    setMessages(await listMessages(userEmail, threadId));
-    setCurrentMessage("");
     
-    // Always update session title to first message if this is the first message in the session
-    const threadMessages = await listMessages(userEmail, threadId);
-    if (threadMessages.filter(m => m.isUser).length === 1) {
-      const meta = await getChatThread(userEmail, threadId);
-      if (meta) {
-        meta.title = msg.content.slice(0, 30);
-        meta.updatedAt = Date.now();
-        await saveThread(meta);
-        setThreads(await listThreads(userEmail));
-        console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
-      }
-    }
-    
-    // Call backend for AI response
+    setMessages(prev => [...prev, tempUserMessage, tempLoadingMessage]);
+
     try {
       let freshSession = await getSession();
       if (!freshSession?.id_token) {
@@ -282,19 +566,24 @@ export default function ChatPage() {
         setIsLoading(false);
         return;
       }
+      
       const API_URL = `${API_BASE}/analyze`;
       const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${freshSession.id_token}`
       };
+      
+      console.log('[ChatPage-PostgreSQL] 🚀 Calling analyze API with thread_id:', threadId);
+      
       let response = await fetch(API_URL, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ prompt: msg.content, thread_id: threadId })
+        body: JSON.stringify({ prompt: userMessageContent, thread_id: threadId })
       });
-      // If 401, try to force session refresh and retry once
+      
+      // Handle token refresh if needed
       if (response.status === 401) {
-        // Force session update (refresh token)
+        console.log('[ChatPage-PostgreSQL] 🔄 Token expired, refreshing...');
         const refreshedSession = await update();
         if (!refreshedSession?.id_token) {
           signOut();
@@ -308,7 +597,7 @@ export default function ChatPage() {
         response = await fetch(API_URL, {
           method: 'POST',
           headers: retryHeaders,
-          body: JSON.stringify({ prompt: msg.content, thread_id: threadId })
+          body: JSON.stringify({ prompt: userMessageContent, thread_id: threadId })
         });
         if (response.status === 401) {
           signOut();
@@ -322,65 +611,45 @@ export default function ChatPage() {
       }
       
       const data = await response.json();
+      console.log('[ChatPage-PostgreSQL] ✅ Received response, run_id:', data.run_id);
       
-      // Remove the loading message
-      await deleteMessage(userEmail, loadingMsg.id);
+      // Instead of manually updating messages, reload from checkpoint
+      // This ensures we get the complete conversation as stored by LangGraph
+      console.log('[ChatPage-PostgreSQL] 🔄 Reloading messages from checkpoint after API response');
       
-      // Create the actual AI response message
-      const aiMsg: ChatMessage = {
-        id: uuidv4(),
-        threadId: threadId,
-        user: userEmail,
-        content: data.result || JSON.stringify(data),
-        isUser: false,
-        createdAt: Date.now(),
-        queriesAndResults: data.queries_and_results,
-        meta: {
-          datasetUrl: data.datasetUrl,
-          datasetCodes: data.top_selection_codes || [],  // Extract used selection codes
-          sql: data.sql
-        }
-      };
+      // Add a small delay to ensure the checkpoint is fully written
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Add warning if persistent memory is temporarily unavailable
-      if (data.warning) {
-        aiMsg.content = `⚠️ ${data.warning}\n\n${aiMsg.content}`;
-      }
+      // Reload messages from checkpoint
+      await loadMessagesFromCheckpoint(threadId);
       
-      await saveMessage(aiMsg);
-      setMessages(await listMessages(userEmail, threadId));
+      // Reload threads to get updated information (this will show the newly created thread)
+      console.log('[ChatPage-PostgreSQL] 🔄 Reloading threads after message sent');
+      await loadThreadsFromPostgreSQL();
       
-      // Update session updatedAt
-      const meta = await getChatThread(userEmail, threadId);
-      if (meta) {
-        meta.updatedAt = Date.now();
-        // If this was a new session, update the title to the first message
-        if (isNewThread) {
-          meta.title = msg.content.slice(0, 30);
-        }
-        await saveThread(meta);
-        setThreads(await listThreads(userEmail));
-        console.log('[ChatPage] Sidebar sessions after title update:', await listThreads(userEmail));
-      }
+      // Show success message temporarily
+      console.log('[ChatPage-PostgreSQL] 🎉 Message sent successfully');
+      
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('[ChatPage-PostgreSQL] ❌ Error sending message:', error);
       
-      // Remove the loading message
-      await deleteMessage(userEmail, loadingMsg.id);
+      // On error, still reload from checkpoint to get accurate state
+      // Then add an error message if needed
+      await loadMessagesFromCheckpoint(threadId);
       
-      // Create an error message
-      const errorMsg: ChatMessage = {
-        id: uuidv4(),
+      // Add a temporary error message
+      const errorMessage: ChatMessage = {
+        id: `error-${Date.now()}`,
         threadId: threadId,
-        user: userEmail,
-        content: `❌ Sorry, there was an error processing your request. Please try again.\n\nError details: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        user: 'System',
+        content: `Error: ${error}`,
         isUser: false,
         createdAt: Date.now(),
-        isError: true,
+        isLoading: false,
+        isError: true
       };
       
-      await saveMessage(errorMsg);
-      setMessages(await listMessages(userEmail, threadId));
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -388,7 +657,7 @@ export default function ChatPage() {
 
   // Debug: log session on mount and when it changes
   useEffect(() => {
-    console.log('[ChatPage] Session:', JSON.stringify(session, null, 2));
+    console.log('[ChatPage-PostgreSQL] 👤 Session updated:', JSON.stringify(session, null, 2));
   }, [session]);
 
   // Sync isLoading across tabs/windows
@@ -430,7 +699,7 @@ export default function ChatPage() {
             className="px-3 py-1.5 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleNewChat}
             title="New chat"
-            disabled={isLoading || threads.some(s => !messages.length && s.id === activeThreadId)}
+            disabled={isLoading || threads.some(s => !messages.length && s.thread_id === activeThreadId)}
           >
             + New Chat
           </button>
@@ -438,18 +707,26 @@ export default function ChatPage() {
         
         {/* Sidebar Chat List with Scroll */}
         <div ref={sidebarRef} className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-1 chat-scrollbar">
-          {threads.length === 0 ? (
-            <div className="text-sm text-gray-500 mt-8 text-center">No chats yet</div>
+          {threadsLoading ? (
+            <div className="text-center py-8">
+              <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+              <div className="text-sm text-gray-500">Loading your chats...</div>
+            </div>
+          ) : threads.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-sm text-gray-500 mb-2">No chats yet</div>
+              <div className="text-xs text-gray-400">Click "New Chat" to start</div>
+            </div>
           ) : (
             threads.map(s => (
-              <div key={s.id} className="group">
-                {editingTitleId === s.id ? (
+              <div key={s.thread_id} className="group">
+                {editingTitleId === s.thread_id ? (
                   <input
                     className="w-full px-3 py-2 text-sm rounded-lg bg-white border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
                     value={newTitle}
                     onChange={e => setNewTitle(e.target.value)}
-                    onBlur={() => handleRename(s.id, newTitle)}
-                    onKeyDown={e => { if (e.key === 'Enter') handleRename(s.id, newTitle); }}
+                    onBlur={() => handleRename(s.thread_id, newTitle)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleRename(s.thread_id, newTitle); }}
                     autoFocus
                   />
                 ) : (
@@ -457,21 +734,22 @@ export default function ChatPage() {
                     <button
                       className={
                         `flex-1 text-left text-sm px-3 py-2 font-semibold rounded-lg transition-all duration-200 cursor-pointer min-w-0 ` +
-                        (activeThreadId === s.id
+                        (activeThreadId === s.thread_id
                           ? 'font-extrabold light-blue-theme '
                           : 'text-[#181C3A]/80 hover:text-gray-300 hover:bg-gray-100 ')
                       }
                       style={{fontFamily: 'var(--font-inter)'}}
-                      onClick={() => setActiveThreadId(s.id)}
-                      onDoubleClick={() => { setEditingTitleId(s.id); setNewTitle(s.title); }}
-                      title={s.title}
+                      onClick={() => setActiveThreadId(s.thread_id)}
+                      onDoubleClick={() => { setEditingTitleId(s.thread_id); setNewTitle(s.title || ''); }}
+                      title={`${s.title} (${s.run_count} messages)`}
                     >
-                      <span className="truncate block">{s.title}</span>
+                      <div className="truncate block">{s.title}</div>
+                      <div className="text-xs text-gray-400 truncate">{s.run_count} messages</div>
                     </button>
                     <button
                       className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors"
                       title="Delete chat"
-                      onClick={() => handleDelete(s.id)}
+                      onClick={() => handleDelete(s.thread_id)}
                     >
                       ×
                     </button>

@@ -1,64 +1,85 @@
 #!/usr/bin/env python3
 """
-Test script to verify chat functionality works with the fixed checkpoint tables.
+Test script to validate the complete chat functionality including PostgreSQL checkpoints.
 """
 
 import asyncio
-import platform
-import os
-from dotenv import load_dotenv
-from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer
+import sys
+import uuid
+from api_server import get_healthy_checkpointer, create_thread_run_entry, get_chat_messages
+from main import main as analysis_main
+from unittest.mock import MagicMock
 
-# Fix for Windows ProactorEventLoop issue with psycopg
-if platform.system() == "Windows":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+class MockUser:
+    """Mock user for testing."""
+    def get(self, key):
+        if key == "email":
+            return "test@example.com"
+        return None
 
-load_dotenv()
-
-async def test_chat_functionality():
-    """Test that chat functionality works with the checkpoint tables."""
-    print("🧪 Testing chat functionality with PostgreSQL checkpointer...")
+async def test_complete_chat_flow():
+    """Test the complete chat flow: send message -> store in checkpoint -> retrieve messages."""
+    
+    print("🧪 Testing complete chat flow...")
     
     try:
-        # Get the checkpointer (this should work now with all tables created)
-        checkpointer = await get_postgres_checkpointer()
-        print(f"✓ Checkpointer type: {type(checkpointer).__name__}")
+        # Generate a unique thread ID for this test
+        test_thread_id = f"test-{uuid.uuid4().hex[:8]}"
+        test_prompt = "Tell me about Prague population"
+        mock_user = MockUser()
         
-        # Verify it's using PostgreSQL (not InMemorySaver fallback)
-        if hasattr(checkpointer, 'conn'):
-            print("✅ Using PostgreSQL checkpointer (persistent storage)")
+        print(f"🔍 Testing with thread: {test_thread_id}")
+        print(f"📝 Test prompt: {test_prompt}")
+        
+        # Step 1: Get healthy checkpointer
+        print("\n1️⃣ Getting healthy checkpointer...")
+        checkpointer = await get_healthy_checkpointer()
+        print("✅ Checkpointer ready")
+        
+        # Step 2: Create thread run entry (simulating frontend API call)
+        print("\n2️⃣ Creating thread run entry...")
+        run_id = await create_thread_run_entry("test@example.com", test_thread_id)
+        print(f"✅ Thread run entry created: {run_id}")
+        
+        # Step 3: Run analysis (simulating backend processing)
+        print("\n3️⃣ Running analysis...")
+        result = await analysis_main(test_prompt, thread_id=test_thread_id, checkpointer=checkpointer)
+        print(f"✅ Analysis completed: {result['result'][:100]}...")
+        
+        # Step 4: Retrieve messages from checkpoint (simulating frontend loading)
+        print("\n4️⃣ Retrieving messages from checkpoint...")
+        messages = await get_chat_messages(test_thread_id, mock_user)
+        print(f"✅ Retrieved {len(messages)} messages from checkpoint")
+        
+        # Step 5: Validate messages
+        print("\n5️⃣ Validating messages...")
+        
+        if len(messages) >= 2:  # Should have at least user message and AI response
+            user_messages = [m for m in messages if m.isUser]
+            ai_messages = [m for m in messages if not m.isUser]
             
-            # Quick verification that we can access the database
-            async with checkpointer.conn.connection() as conn:
-                result = await conn.execute("SELECT COUNT(*) as count FROM checkpoints")
-                row = await result.fetchone()
-                print(f"✓ Current checkpoints count: {row[0] if row else 0}")
+            print(f"  👤 User messages: {len(user_messages)}")
+            print(f"  🤖 AI messages: {len(ai_messages)}")
+            
+            if len(user_messages) >= 1:
+                print(f"  📄 User message content: {user_messages[0].content}")
                 
-                # Check that checkpoint_blobs table exists and is accessible
-                result = await conn.execute("SELECT COUNT(*) as count FROM checkpoint_blobs")
-                row = await result.fetchone()
-                print(f"✓ Current checkpoint_blobs count: {row[0] if row else 0}")
+            if len(ai_messages) >= 1:
+                print(f"  📄 AI response content: {ai_messages[-1].content[:100]}...")
                 
+            print("✅ Message validation successful")
         else:
-            print("⚠ Using InMemorySaver fallback (non-persistent)")
+            print(f"⚠️ Expected at least 2 messages, got {len(messages)}")
             
-        print("✅ Chat functionality test passed! Ready for use.")
+        print("\n🎉 Complete chat flow test PASSED")
         return True
         
     except Exception as e:
-        print(f"❌ Chat functionality test failed: {e}")
+        print(f"\n❌ Complete chat flow test FAILED: {e}")
         import traceback
         traceback.print_exc()
         return False
-    
-    finally:
-        # Close the checkpointer connection pool
-        if 'checkpointer' in locals() and hasattr(checkpointer, 'conn'):
-            try:
-                await checkpointer.conn.close()
-                print("🔒 Connection pool closed")
-            except Exception as e:
-                print(f"⚠ Warning: Could not close connection pool: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(test_chat_functionality()) 
+    success = asyncio.run(test_complete_chat_flow())
+    sys.exit(0 if success else 1) 
