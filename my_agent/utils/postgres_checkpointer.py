@@ -36,27 +36,75 @@ def get_connection_string():
     config = get_db_config()
     return f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}?sslmode=require"
 
-async def setup_users_threads_runs_table():
-    """Setup the users_threads_runs table for chat management."""
+async def is_pool_healthy(pool: Optional[AsyncConnectionPool]) -> bool:
+    """Check if a connection pool is healthy and open."""
+    if pool is None:
+        return False
+    try:
+        # Check if pool is closed
+        if pool.closed:
+            print(f"[Pool-Health] ⚠ Pool is marked as closed")
+            return False
+        
+        # Try a quick connection test
+        async with pool.connection() as conn:
+            await conn.execute("SELECT 1")
+        return True
+    except Exception as e:
+        print(f"[Pool-Health] ⚠ Pool health check failed: {e}")
+        return False
+
+async def create_fresh_connection_pool() -> AsyncConnectionPool:
+    """Create a new connection pool."""
+    connection_string = get_connection_string()
+    
+    pool = AsyncConnectionPool(
+        conninfo=connection_string,
+        max_size=3,
+        min_size=1,
+        kwargs={
+            "autocommit": True,
+            "prepare_threshold": 0,
+        },
+        open=False  # Fix deprecation warning
+    )
+    
+    # Explicitly open the pool
+    await pool.open()
+    print("🔗 Created fresh PostgreSQL connection pool")
+    return pool
+
+async def get_healthy_pool() -> AsyncConnectionPool:
+    """Get a healthy connection pool, creating a new one if needed."""
     global database_pool
     
-    if database_pool is None:
-        connection_string = get_connection_string()
-        database_pool = AsyncConnectionPool(
-            conninfo=connection_string,
-            max_size=3,
-            min_size=1,
-            kwargs={
-                "autocommit": True,
-                "prepare_threshold": 0,
-            },
-            open=False  # Fix deprecation warning
-        )
-        # Explicitly open the pool
-        await database_pool.open()
+    # Check if current pool is healthy
+    if await is_pool_healthy(database_pool):
+        return database_pool
+    
+    # Pool is unhealthy or doesn't exist, close old one if needed
+    if database_pool is not None:
+        try:
+            print(f"[Pool-Health] 🔄 Closing unhealthy pool...")
+            await database_pool.close()
+        except Exception as e:
+            print(f"[Pool-Health] ⚠ Error closing old pool: {e}")
+        finally:
+            database_pool = None
+    
+    # Create new pool
+    print(f"[Pool-Health] 🆕 Creating new connection pool...")
+    database_pool = await create_fresh_connection_pool()
+    return database_pool
+
+async def setup_users_threads_runs_table():
+    """Setup the users_threads_runs table for chat management."""
+    
+    # Get a healthy pool
+    pool = await get_healthy_pool()
     
     try:
-        async with database_pool.connection() as conn:
+        async with pool.connection() as conn:
             await conn.set_autocommit(True)
             
             # Create users_threads_runs table with all 5 columns including prompt (50 char limit)
@@ -134,7 +182,6 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
     Returns:
         The run_id that was created or provided
     """
-    global database_pool
     
     if run_id is None:
         run_id = str(uuid.uuid4())
@@ -150,7 +197,10 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
             truncated_prompt = prompt
     
     try:
-        async with database_pool.connection() as conn:
+        # Get a healthy pool
+        pool = await get_healthy_pool()
+        
+        async with pool.connection() as conn:
             await conn.set_autocommit(True)
             
             # Insert new entry with truncated prompt - run_id is primary key so must be unique
@@ -174,21 +224,18 @@ async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[s
     
     Args:
         email: User's email address
-        connection_pool: Optional connection pool to use (defaults to global database_pool)
+        connection_pool: Optional connection pool to use (defaults to healthy pool)
     
     Returns:
         List of dictionaries with thread information including first prompt as title:
         [{"thread_id": str, "latest_timestamp": datetime, "run_count": int, "title": str, "full_prompt": str}, ...]
     """
-    global database_pool
     
-    # Use provided pool or global pool
-    pool_to_use = connection_pool or database_pool
-    
-    if pool_to_use is None:
-        print(f"[PostgreSQL-Debug] ⚠ No connection pool available - initializing new one")
-        await setup_users_threads_runs_table()
-        pool_to_use = database_pool
+    # Use provided pool or get a healthy pool
+    if connection_pool:
+        pool_to_use = connection_pool
+    else:
+        pool_to_use = await get_healthy_pool()
     
     try:
         async with pool_to_use.connection() as conn:
@@ -273,24 +320,26 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
     Args:
         email: User's email address
         thread_id: Thread ID to delete
-        connection_pool: Optional connection pool to use (defaults to global database_pool)
+        connection_pool: Optional connection pool to use (defaults to healthy pool)
     
     Returns:
         Dictionary with deletion results
     """
-    global database_pool
     
-    # Use provided pool or global pool
-    pool_to_use = connection_pool or database_pool
-    
-    if pool_to_use is None:
-        print(f"[PostgreSQL-Debug] ⚠ No connection pool available for deletion")
-        return {
-            "deleted_count": 0,
-            "email": email,
-            "thread_id": thread_id,
-            "error": "No connection pool available"
-        }
+    # Use provided pool or get a healthy pool
+    if connection_pool:
+        pool_to_use = connection_pool
+    else:
+        try:
+            pool_to_use = await get_healthy_pool()
+        except Exception as e:
+            print(f"[PostgreSQL-Debug] ⚠ Could not get healthy pool for deletion: {e}")
+            return {
+                "deleted_count": 0,
+                "email": email,
+                "thread_id": thread_id,
+                "error": f"No connection pool available: {e}"
+            }
     
     try:
         async with pool_to_use.connection() as conn:
@@ -326,30 +375,15 @@ async def get_postgres_checkpointer():
     Get a PostgreSQL checkpointer using the official langgraph PostgreSQL implementation.
     This ensures we use the correct table schemas and implementation.
     """
-    global database_pool
     
     try:
-        if database_pool is None:
-            connection_string = get_connection_string()
-            
-            # Create connection pool
-            database_pool = AsyncConnectionPool(
-                conninfo=connection_string,
-                max_size=3,
-                min_size=1,
-                kwargs={
-                    "autocommit": True,
-                    "prepare_threshold": 0,
-                },
-                open=False  # Fix deprecation warning
-            )
-            # Explicitly open the pool
-            await database_pool.open()
-            
-            print("🔗 Creating PostgreSQL checkpointer with official library...")
-            
+        # Get a healthy connection pool
+        pool = await get_healthy_pool()
+        
+        print("🔗 Creating PostgreSQL checkpointer with official library...")
+        
         # Create checkpointer with the connection pool
-        checkpointer = AsyncPostgresSaver(database_pool)
+        checkpointer = AsyncPostgresSaver(pool)
         
         # Setup tables (this creates all required tables with correct schemas)
         await checkpointer.setup()
@@ -629,6 +663,61 @@ def log_connection_info(host: str, port: str, dbname: str, user: str):
     print(f"   SSL: Required")
 
 # Test and health check functions
+async def test_pool_connection():
+    """Test creating and using a connection pool."""
+    try:
+        print("🔍 Testing pool connection...")
+        
+        # Test pool creation
+        pool = await create_fresh_connection_pool()
+        print(f"✅ Pool created successfully: closed={pool.closed}")
+        
+        # Test pool usage
+        async with pool.connection() as conn:
+            result = await conn.execute("SELECT 1 as test, NOW() as current_time")
+            row = await result.fetchone()
+            print(f"✅ Pool query successful: {row}")
+        
+        # Test pool health check
+        is_healthy = await is_pool_healthy(pool)
+        print(f"✅ Pool health check: {is_healthy}")
+        
+        # Cleanup
+        await pool.close()
+        print(f"✅ Pool closed: closed={pool.closed}")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ Pool connection test failed: {e}")
+        return False
+
+async def debug_pool_status():
+    """Debug function to show current pool status."""
+    global database_pool
+    
+    print(f"🔍 Pool Status Debug:")
+    print(f"   Global pool exists: {database_pool is not None}")
+    
+    if database_pool:
+        print(f"   Pool closed: {database_pool.closed}")
+        try:
+            # Try to get pool stats if available
+            if hasattr(database_pool, 'get_stats'):
+                stats = database_pool.get_stats()
+                print(f"   Pool stats: {stats}")
+            else:
+                print(f"   Pool stats: Not available")
+                
+            # Test health
+            is_healthy = await is_pool_healthy(database_pool)
+            print(f"   Pool healthy: {is_healthy}")
+            
+        except Exception as e:
+            print(f"   Pool status error: {e}")
+    
+    return database_pool
+
 async def test_connection_health():
     """Test the health of the PostgreSQL connection."""
     try:

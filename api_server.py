@@ -1,6 +1,7 @@
 import sys
 import asyncio
 from contextlib import asynccontextmanager
+from datetime import datetime
 
 # Configure asyncio event loop policy for Windows compatibility with psycopg
 if sys.platform == "win32":
@@ -39,25 +40,46 @@ async def initialize_checkpointer():
     if GLOBAL_CHECKPOINTER is None:
         try:
             print("🔗 Initializing PostgreSQL checkpointer and chat system...")
+            print(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
+            
             GLOBAL_CHECKPOINTER = await get_postgres_checkpointer()
+            
+            # Verify the checkpointer is healthy
+            if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
+                print(f"✓ Checkpointer has connection pool: closed={GLOBAL_CHECKPOINTER.conn.closed}")
+            else:
+                print("⚠ Checkpointer does not have connection pool")
+            
             print("✓ Global PostgreSQL checkpointer initialized successfully")
             print("✓ users_threads_runs table verified/created")
         except Exception as e:
             print(f"✗ Failed to initialize PostgreSQL checkpointer: {e}")
+            print(f"🔍 Error type: {type(e).__name__}")
+            import traceback
+            print(f"🔍 Full traceback: {traceback.format_exc()}")
+            
             # Fallback to InMemorySaver for development/testing
             from langgraph.checkpoint.memory import InMemorySaver
             GLOBAL_CHECKPOINTER = InMemorySaver()
             print("⚠ Falling back to InMemorySaver")
+    else:
+        print("⚠ Global checkpointer already exists - skipping initialization")
 
 async def cleanup_checkpointer():
     """Clean up resources on app shutdown."""
     global GLOBAL_CHECKPOINTER
     if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
         try:
-            await GLOBAL_CHECKPOINTER.conn.close()
-            print("✓ PostgreSQL connection pool closed cleanly")
+            # Check if pool is already closed before trying to close it
+            if not GLOBAL_CHECKPOINTER.conn.closed:
+                await GLOBAL_CHECKPOINTER.conn.close()
+                print("✓ PostgreSQL connection pool closed cleanly")
+            else:
+                print("⚠ PostgreSQL connection pool was already closed")
         except Exception as e:
             print(f"⚠ Error closing connection pool: {e}")
+        finally:
+            GLOBAL_CHECKPOINTER = None
 
 async def get_healthy_checkpointer():
     """Get a healthy checkpointer instance, recreating if necessary."""
@@ -66,28 +88,37 @@ async def get_healthy_checkpointer():
     # Check if current checkpointer is healthy
     if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
         try:
-            # Quick health check
-            async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
-                await conn.execute("SELECT 1")
-            return GLOBAL_CHECKPOINTER
+            # Check if the pool is closed (this is the key issue)
+            if hasattr(GLOBAL_CHECKPOINTER.conn, 'closed') and GLOBAL_CHECKPOINTER.conn.closed:
+                print(f"⚠ Checkpointer pool is closed, recreating...")
+                GLOBAL_CHECKPOINTER = None
+            else:
+                # Quick health check
+                async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
+                    await conn.execute("SELECT 1")
+                return GLOBAL_CHECKPOINTER
         except Exception as e:
             print(f"⚠ Checkpointer unhealthy, recreating: {e}")
             # Try to cleanup old pool
             try:
-                if GLOBAL_CHECKPOINTER.conn:
+                if GLOBAL_CHECKPOINTER.conn and not GLOBAL_CHECKPOINTER.conn.closed:
                     await GLOBAL_CHECKPOINTER.conn.close()
-            except:
-                pass
-            GLOBAL_CHECKPOINTER = None
+            except Exception as cleanup_error:
+                print(f"⚠ Error during cleanup: {cleanup_error}")
+            finally:
+                GLOBAL_CHECKPOINTER = None
     
     # Create new checkpointer
     try:
+        print("🔄 Creating fresh checkpointer...")
         GLOBAL_CHECKPOINTER = await get_postgres_checkpointer()
+        print("✅ Fresh checkpointer created successfully")
         return GLOBAL_CHECKPOINTER
     except Exception as e:
         print(f"⚠ Failed to recreate checkpointer: {e}")
         from langgraph.checkpoint.memory import InMemorySaver
         GLOBAL_CHECKPOINTER = InMemorySaver()
+        print("⚠ Falling back to InMemorySaver")
         return GLOBAL_CHECKPOINTER
 
 @asynccontextmanager
@@ -173,7 +204,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     
     print(f"[API-PostgreSQL] 📥 Analysis request - User: {user_email}, Thread: {request.thread_id}")
     
-    # Get a healthy checkpointer
+    # Get a healthy checkpointer first (this will create fresh pools if needed)
     checkpointer = await get_healthy_checkpointer()
     
     try:
@@ -196,7 +227,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         # Handle specific database connection errors
         if any(keyword in error_msg.lower() for keyword in [
             "ssl error", "connection", "timeout", "operational error", 
-            "server closed", "bad connection", "consuming input failed"
+            "server closed", "bad connection", "consuming input failed", "pool", "closed"
         ]):
             print(f"[API-PostgreSQL] ⚠ Database connection error detected: {e}")
             print("[API-PostgreSQL] ⚠ Attempting to use fresh InMemorySaver...")
@@ -231,13 +262,15 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
     print(f"[API-PostgreSQL] 📥 Loading chat threads for user: {user_email}")
     
     try:
-        # Add debug info about database connection state
-        if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
+        # First try to use the checkpointer's connection pool
+        checkpointer = await get_healthy_checkpointer()
+        
+        if hasattr(checkpointer, 'conn') and checkpointer.conn and not checkpointer.conn.closed:
             print(f"[API-PostgreSQL-Debug] 🔍 Using checkpointer connection pool")
-            # Use the same connection pool as the checkpointer
-            threads = await get_user_chat_threads(user_email, GLOBAL_CHECKPOINTER.conn)
+            threads = await get_user_chat_threads(user_email, checkpointer.conn)
         else:
-            print(f"[API-PostgreSQL-Debug] ⚠ No checkpointer connection pool available")
+            print(f"[API-PostgreSQL-Debug] ⚠ Checkpointer connection pool not available, using direct connection")
+            # Fallback to direct connection (this will create its own healthy pool)
             threads = await get_user_chat_threads(user_email)
         
         print(f"[API-PostgreSQL] ✅ Retrieved {len(threads)} threads for user {user_email}")
@@ -265,6 +298,30 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
         print(f"[API-PostgreSQL] ❌ Failed to get chat threads for user {user_email}: {e}")
         import traceback
         print(f"[API-PostgreSQL-Debug] 🔍 Full traceback: {traceback.format_exc()}")
+        
+        # If this is a pool-related error, try one more time with completely fresh connection
+        error_msg = str(e)
+        if any(keyword in error_msg.lower() for keyword in [
+            "pool", "closed", "connection", "timeout", "operational error"
+        ]):
+            print(f"[API-PostgreSQL] 🔄 Attempting one final retry with fresh connection...")
+            try:
+                # This should create a completely fresh pool
+                threads = await get_user_chat_threads(user_email)
+                response_threads = []
+                for thread in threads:
+                    response_threads.append(ChatThreadResponse(
+                        thread_id=thread["thread_id"],
+                        latest_timestamp=thread["latest_timestamp"].isoformat(),
+                        run_count=thread["run_count"],
+                        title=thread["title"],
+                        full_prompt=thread["full_prompt"]
+                    ))
+                print(f"[API-PostgreSQL] ✅ Retry successful - returning {len(response_threads)} threads")
+                return response_threads
+            except Exception as retry_error:
+                print(f"[API-PostgreSQL] ❌ Retry also failed: {retry_error}")
+        
         raise HTTPException(status_code=500, detail=f"Failed to get chat threads: {e}")
 
 @app.delete("/chat/{thread_id}")
@@ -726,4 +783,54 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
         
     except Exception as e:
         print(f"[DEBUG] ❌ Error inspecting checkpoints: {e}")
-        return {"error": str(e)} 
+        return {"error": str(e)}
+
+@app.get("/debug/pool-status")
+async def debug_pool_status():
+    """Debug endpoint to check pool and checkpointer status (no auth required)."""
+    global GLOBAL_CHECKPOINTER
+    
+    try:
+        status = {
+            "global_checkpointer_exists": GLOBAL_CHECKPOINTER is not None,
+            "checkpointer_type": type(GLOBAL_CHECKPOINTER).__name__ if GLOBAL_CHECKPOINTER else None,
+            "has_connection_pool": False,
+            "pool_closed": None,
+            "pool_healthy": None,
+            "can_query": False,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
+            status["has_connection_pool"] = True
+            
+            if GLOBAL_CHECKPOINTER.conn:
+                status["pool_closed"] = GLOBAL_CHECKPOINTER.conn.closed
+                
+                # Test if we can execute a simple query
+                try:
+                    async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
+                        await conn.execute("SELECT 1")
+                    status["can_query"] = True
+                    status["pool_healthy"] = True
+                except Exception as e:
+                    status["can_query"] = False
+                    status["pool_healthy"] = False
+                    status["query_error"] = str(e)
+        
+        # Try to get a healthy checkpointer
+        try:
+            healthy_checkpointer = await get_healthy_checkpointer()
+            status["healthy_checkpointer_type"] = type(healthy_checkpointer).__name__
+            status["healthy_checkpointer_available"] = True
+        except Exception as e:
+            status["healthy_checkpointer_available"] = False
+            status["healthy_checkpointer_error"] = str(e)
+        
+        return status
+        
+    except Exception as e:
+        return {
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        } 
