@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { removeDiacritics } from './utils';
 import { useSession } from "next-auth/react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
 type DataTableViewProps = {
   search: string;

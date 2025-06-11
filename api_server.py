@@ -117,6 +117,8 @@ class ChatThreadResponse(BaseModel):
     thread_id: str
     latest_timestamp: str
     run_count: int
+    title: str  # Now includes the title from first prompt
+    full_prompt: str  # Full prompt text for tooltip
 
 class ChatMessage(BaseModel):
     id: str
@@ -175,9 +177,9 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     checkpointer = await get_healthy_checkpointer()
     
     try:
-        # Create thread run entry before analysis
-        print(f"[API-PostgreSQL] 🔄 Creating thread run entry for user {user_email}, thread {request.thread_id}")
-        run_id = await create_thread_run_entry(user_email, request.thread_id)
+        # Create thread run entry before analysis - now including the user's prompt
+        print(f"[API-PostgreSQL] 🔄 Creating thread run entry for user {user_email}, thread {request.thread_id}, prompt: {request.prompt[:50]}...")
+        run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
         print(f"[API-PostgreSQL] ✅ Thread run entry created with run_id: {run_id}")
         
         result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer)
@@ -229,16 +231,31 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
     print(f"[API-PostgreSQL] 📥 Loading chat threads for user: {user_email}")
     
     try:
-        threads = await get_user_chat_threads(user_email)
+        # Add debug info about database connection state
+        if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
+            print(f"[API-PostgreSQL-Debug] 🔍 Using checkpointer connection pool")
+            # Use the same connection pool as the checkpointer
+            threads = await get_user_chat_threads(user_email, GLOBAL_CHECKPOINTER.conn)
+        else:
+            print(f"[API-PostgreSQL-Debug] ⚠ No checkpointer connection pool available")
+            threads = await get_user_chat_threads(user_email)
+        
         print(f"[API-PostgreSQL] ✅ Retrieved {len(threads)} threads for user {user_email}")
+        
+        if len(threads) == 0:
+            print(f"[API-PostgreSQL-Debug] 🔍 No threads found - this might be expected for new users")
+            print(f"[API-PostgreSQL-Debug] 🔍 User email: '{user_email}'")
         
         # Convert to response format
         response_threads = []
         for thread in threads:
+            print(f"[API-PostgreSQL-Debug] 🔍 Processing thread: {thread}")
             response_threads.append(ChatThreadResponse(
                 thread_id=thread["thread_id"],
                 latest_timestamp=thread["latest_timestamp"].isoformat(),
-                run_count=thread["run_count"]
+                run_count=thread["run_count"],
+                title=thread["title"],
+                full_prompt=thread["full_prompt"]
             ))
         
         print(f"[API-PostgreSQL] 📤 Returning {len(response_threads)} threads to frontend")
@@ -246,6 +263,8 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
         
     except Exception as e:
         print(f"[API-PostgreSQL] ❌ Failed to get chat threads for user {user_email}: {e}")
+        import traceback
+        print(f"[API-PostgreSQL-Debug] 🔍 Full traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to get chat threads: {e}")
 
 @app.delete("/chat/{thread_id}")
@@ -308,10 +327,27 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
                     print(f"[API-PostgreSQL] ⚠ Error deleting from table {table}: {table_error}")
                     deleted_counts[table] = f"Error: {str(table_error)}"
             
-            # Delete from users_threads_runs table
-            print(f"[API-PostgreSQL] 🔄 Deleting thread entries for user {user_email}, thread {thread_id}")
-            thread_entries_result = await delete_user_thread_entries(user_email, thread_id)
-            print(f"[API-PostgreSQL] ✅ Thread entries deletion result: {thread_entries_result}")
+            # Delete from users_threads_runs table directly within the same transaction
+            print(f"[API-PostgreSQL] 🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
+            try:
+                result = await conn.execute("""
+                    DELETE FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s
+                """, (user_email, thread_id))
+                
+                users_threads_runs_deleted = result.rowcount if hasattr(result, 'rowcount') else 0
+                print(f"[API-PostgreSQL] ✅ Deleted {users_threads_runs_deleted} entries from users_threads_runs for user {user_email}, thread {thread_id}")
+                
+                deleted_counts["users_threads_runs"] = users_threads_runs_deleted
+                
+            except Exception as e:
+                print(f"[API-PostgreSQL] ❌ Error deleting from users_threads_runs: {e}")
+                deleted_counts["users_threads_runs"] = f"Error: {str(e)}"
+            
+            # Also call the helper function for additional cleanup (backward compatibility)
+            print(f"[API-PostgreSQL] 🔄 Additional cleanup via helper function...")
+            thread_entries_result = await delete_user_thread_entries(user_email, thread_id, pool)
+            print(f"[API-PostgreSQL] ✅ Helper function deletion result: {thread_entries_result}")
             
             result_data = {
                 "message": f"Checkpoint records and thread entries deleted for thread_id: {thread_id}",
@@ -467,10 +503,76 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
                 channel_values = state_snapshot.checkpoint.get("channel_values", {})
                 top_selection_codes = channel_values.get("top_selection_codes", [])
                 
-                # Add datasets used information
-                if top_selection_codes:
+                # Filter to only include selection codes actually used in queries (same logic as main.py)
+                if top_selection_codes and queries_and_results:
+                    # Import the filtering function from main.py
+                    import sys
+                    from pathlib import Path
+                    
+                    # Get the filtering logic
+                    def extract_table_names_from_sql(sql_query: str):
+                        """Extract table names from SQL query FROM clauses."""
+                        import re
+                        
+                        # Remove comments and normalize whitespace
+                        sql_clean = re.sub(r'--.*?(?=\n|$)', '', sql_query, flags=re.MULTILINE)
+                        sql_clean = re.sub(r'/\*.*?\*/', '', sql_clean, flags=re.DOTALL)
+                        sql_clean = ' '.join(sql_clean.split())
+                        
+                        # Pattern to match FROM clause with table names
+                        from_pattern = r'\bFROM\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1(?:\s*,\s*(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\3)*'
+                        
+                        table_names = []
+                        matches = re.finditer(from_pattern, sql_clean, re.IGNORECASE)
+                        
+                        for match in matches:
+                            # Extract the main table name (group 2)
+                            if match.group(2):
+                                table_names.append(match.group(2).upper())
+                            # Extract additional table names if comma-separated (group 4)
+                            if match.group(4):
+                                table_names.append(match.group(4).upper())
+                        
+                        # Also handle JOIN clauses
+                        join_pattern = r'\bJOIN\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1'
+                        join_matches = re.finditer(join_pattern, sql_clean, re.IGNORECASE)
+                        
+                        for match in join_matches:
+                            if match.group(2):
+                                table_names.append(match.group(2).upper())
+                        
+                        return list(set(table_names))  # Remove duplicates
+                    
+                    def get_used_selection_codes(queries_and_results, top_selection_codes):
+                        """Filter top_selection_codes to only include those actually used in queries."""
+                        if not queries_and_results or not top_selection_codes:
+                            return []
+                        
+                        # Extract all table names used in queries
+                        used_table_names = set()
+                        for query, _ in queries_and_results:
+                            if query:
+                                table_names = extract_table_names_from_sql(query)
+                                used_table_names.update(table_names)
+                        
+                        # Filter selection codes to only include those that match used table names
+                        used_selection_codes = []
+                        for selection_code in top_selection_codes:
+                            if selection_code.upper() in used_table_names:
+                                used_selection_codes.append(selection_code)
+                        
+                        return used_selection_codes
+                    
+                    # Apply the filtering
+                    used_selection_codes = get_used_selection_codes(queries_and_results, top_selection_codes)
+                    
+                    # Use filtered codes if available, otherwise fallback to all top_selection_codes
+                    datasets_used = used_selection_codes if used_selection_codes else top_selection_codes
+                    print(f"[API-PostgreSQL] 📊 Found datasets used (filtered): {datasets_used} (from {len(top_selection_codes)} total)")
+                elif top_selection_codes:
+                    # If no queries yet, use all top_selection_codes
                     datasets_used = top_selection_codes
-                    print(f"[API-PostgreSQL] 📊 Found datasets used: {datasets_used}")
+                    print(f"[API-PostgreSQL] 📊 Found datasets used (unfiltered): {datasets_used}")
                 
                 # Extract SQL query from queries_and_results for SQL button
                 if queries_and_results:
@@ -555,4 +657,73 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
             print(f"[API-PostgreSQL] ⚠ Database connection error - returning empty messages")
             return []
         else:
-            raise HTTPException(status_code=500, detail=f"Failed to load checkpoint messages: {e}") 
+            raise HTTPException(status_code=500, detail=f"Failed to load checkpoint messages: {e}")
+
+@app.get("/debug/chat/{thread_id}/checkpoints")
+async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
+    """Debug endpoint to inspect raw checkpoint data for a thread."""
+    
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+    
+    print(f"[DEBUG] 🔍 Inspecting checkpoints for thread: {thread_id}")
+    
+    try:
+        checkpointer = await get_healthy_checkpointer()
+        
+        if not hasattr(checkpointer, 'conn'):
+            return {"error": "No PostgreSQL checkpointer available"}
+        
+        config = {"configurable": {"thread_id": thread_id}}
+        
+        # Get all checkpoints for this thread
+        checkpoint_tuples = []
+        async for checkpoint_tuple in checkpointer.alist(config):
+            checkpoint_tuples.append(checkpoint_tuple)
+        
+        debug_data = {
+            "thread_id": thread_id,
+            "total_checkpoints": len(checkpoint_tuples),
+            "checkpoints": []
+        }
+        
+        for i, checkpoint_tuple in enumerate(checkpoint_tuples):
+            checkpoint = checkpoint_tuple.checkpoint
+            metadata = checkpoint_tuple.metadata or {}
+            
+            checkpoint_info = {
+                "index": i,
+                "checkpoint_id": checkpoint_tuple.config.get("configurable", {}).get("checkpoint_id", "unknown"),
+                "has_checkpoint": bool(checkpoint),
+                "has_metadata": bool(metadata),
+                "metadata_writes": metadata.get("writes", {}),
+                "channel_values": {}
+            }
+            
+            if checkpoint and "channel_values" in checkpoint:
+                channel_values = checkpoint["channel_values"]
+                messages = channel_values.get("messages", [])
+                
+                checkpoint_info["channel_values"] = {
+                    "message_count": len(messages),
+                    "messages": []
+                }
+                
+                for j, msg in enumerate(messages):
+                    msg_info = {
+                        "index": j,
+                        "type": type(msg).__name__,
+                        "id": getattr(msg, 'id', None),
+                        "content_preview": getattr(msg, 'content', str(msg))[:200] + "..." if hasattr(msg, 'content') and len(getattr(msg, 'content', '')) > 200 else getattr(msg, 'content', str(msg)),
+                        "content_length": len(getattr(msg, 'content', ''))
+                    }
+                    checkpoint_info["channel_values"]["messages"].append(msg_info)
+            
+            debug_data["checkpoints"].append(checkpoint_info)
+        
+        return debug_data
+        
+    except Exception as e:
+        print(f"[DEBUG] ❌ Error inspecting checkpoints: {e}")
+        return {"error": str(e)} 

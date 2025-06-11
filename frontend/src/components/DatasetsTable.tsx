@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 
 // To support both local dev and production, set NEXT_PUBLIC_API_BASE in .env.local to your backend URL (e.g., http://localhost:8000) for local dev.
 // In production, leave it unset to use relative paths.
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
 interface CatalogRow {
   selection_code: string;

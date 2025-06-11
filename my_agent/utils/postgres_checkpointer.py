@@ -49,21 +49,25 @@ async def setup_users_threads_runs_table():
             kwargs={
                 "autocommit": True,
                 "prepare_threshold": 0,
-            }
+            },
+            open=False  # Fix deprecation warning
         )
+        # Explicitly open the pool
+        await database_pool.open()
     
     try:
         async with database_pool.connection() as conn:
             await conn.set_autocommit(True)
             
-            # Create users_threads_runs table with only 4 columns as requested
+            # Create users_threads_runs table with all 5 columns including prompt (50 char limit)
             # Use IF NOT EXISTS to preserve existing data on server restarts
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS users_threads_runs (
                     timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                     email VARCHAR(255) NOT NULL,
                     thread_id VARCHAR(255) NOT NULL,
-                    run_id VARCHAR(255) PRIMARY KEY
+                    run_id VARCHAR(255) PRIMARY KEY,
+                    prompt VARCHAR(50)
                 );
             """)
             
@@ -81,6 +85,11 @@ async def setup_users_threads_runs_table():
             await conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_users_threads_runs_email_timestamp 
                 ON users_threads_runs(email, timestamp DESC);
+            """)
+            
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_users_threads_runs_email_thread_timestamp 
+                ON users_threads_runs(email, thread_id, timestamp);
             """)
             
             # Enable RLS if this is Supabase
@@ -107,18 +116,19 @@ async def setup_users_threads_runs_table():
                 else:
                     print(f"⚠ Could not create RLS policy for users_threads_runs: {e}")
             
-            print("✅ users_threads_runs table verified/created (4 columns: timestamp, email, thread_id, run_id)")
+            print("✅ users_threads_runs table verified/created (5 columns: timestamp, email, thread_id, run_id, prompt)")
             
     except Exception as e:
         print(f"❌ Error setting up users_threads_runs table: {str(e)}")
         raise
 
-async def create_thread_run_entry(email: str, thread_id: str, run_id: str = None) -> str:
+async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None, run_id: str = None) -> str:
     """Create a new entry in users_threads_runs table.
     
     Args:
         email: User's email address
         thread_id: Thread ID for the conversation
+        prompt: The user's prompt/question for this run (will be truncated to 50 chars)
         run_id: Optional run ID, will generate UUID if not provided
     
     Returns:
@@ -129,78 +139,161 @@ async def create_thread_run_entry(email: str, thread_id: str, run_id: str = None
     if run_id is None:
         run_id = str(uuid.uuid4())
     
+    # Truncate prompt to 50 characters to fit database constraint
+    truncated_prompt = None
+    was_truncated = False
+    if prompt:
+        if len(prompt) > 50:
+            truncated_prompt = prompt[:50]
+            was_truncated = True
+        else:
+            truncated_prompt = prompt
+    
     try:
         async with database_pool.connection() as conn:
             await conn.set_autocommit(True)
             
-            # Insert new entry - run_id is primary key so must be unique
+            # Insert new entry with truncated prompt - run_id is primary key so must be unique
             await conn.execute("""
-                INSERT INTO users_threads_runs (timestamp, email, thread_id, run_id)
-                VALUES (NOW(), %s, %s, %s)
-            """, (email, thread_id, run_id))
+                INSERT INTO users_threads_runs (timestamp, email, thread_id, run_id, prompt)
+                VALUES (NOW(), %s, %s, %s, %s)
+            """, (email, thread_id, run_id, truncated_prompt))
             
+            original_length = len(prompt) if prompt else 0
+            truncated_length = len(truncated_prompt) if truncated_prompt else 0
             print(f"✓ Created thread run entry: email={email}, thread_id={thread_id}, run_id={run_id}")
+            print(f"  prompt: '{truncated_prompt}' (original: {original_length} chars, stored: {truncated_length} chars, truncated: {was_truncated})")
             return run_id
             
     except Exception as e:
         print(f"❌ Error creating thread run entry: {str(e)}")
         raise
 
-async def get_user_chat_threads(email: str) -> List[Dict[str, Any]]:
-    """Get all chat threads for a user, sorted by latest timestamp.
+async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[str, Any]]:
+    """Get all chat threads for a user with first prompt as title, sorted by latest timestamp.
     
     Args:
         email: User's email address
+        connection_pool: Optional connection pool to use (defaults to global database_pool)
     
     Returns:
-        List of dictionaries with thread information:
-        [{"thread_id": str, "latest_timestamp": datetime, "run_count": int}, ...]
+        List of dictionaries with thread information including first prompt as title:
+        [{"thread_id": str, "latest_timestamp": datetime, "run_count": int, "title": str, "full_prompt": str}, ...]
     """
     global database_pool
     
+    # Use provided pool or global pool
+    pool_to_use = connection_pool or database_pool
+    
+    if pool_to_use is None:
+        print(f"[PostgreSQL-Debug] ⚠ No connection pool available - initializing new one")
+        await setup_users_threads_runs_table()
+        pool_to_use = database_pool
+    
     try:
-        async with database_pool.connection() as conn:
-            # Get unique threads with their latest timestamp and run count
-            result = await conn.execute("""
-                SELECT 
-                    thread_id,
-                    MAX(timestamp) as latest_timestamp,
-                    COUNT(*) as run_count
-                FROM users_threads_runs 
-                WHERE email = %s 
-                GROUP BY thread_id
-                ORDER BY MAX(timestamp) DESC
+        async with pool_to_use.connection() as conn:
+            # First, let's check if we have any data for this user
+            count_result = await conn.execute("""
+                SELECT COUNT(*) FROM users_threads_runs WHERE email = %s
             """, (email,))
+            
+            count_row = await count_result.fetchone()
+            total_records = count_row[0] if count_row else 0
+            print(f"[PostgreSQL-Debug] 🔍 Total records for user {email}: {total_records}")
+            
+            if total_records == 0:
+                print(f"[PostgreSQL-Debug] ⚠ No records found for user {email}")
+                return []
+            
+            # Get unique threads with their latest timestamp, run count, and first prompt as title
+            # We need to get the ORIGINAL prompt from the first run to show proper tooltip
+            result = await conn.execute("""
+                WITH thread_stats AS (
+                    SELECT 
+                        thread_id,
+                        MAX(timestamp) as latest_timestamp,
+                        COUNT(*) as run_count
+                    FROM users_threads_runs 
+                    WHERE email = %s 
+                    GROUP BY thread_id
+                ),
+                first_prompts AS (
+                    SELECT DISTINCT ON (thread_id)
+                        thread_id,
+                        prompt as first_prompt
+                    FROM users_threads_runs 
+                    WHERE email = %s AND prompt IS NOT NULL AND prompt != ''
+                    ORDER BY thread_id, timestamp ASC
+                )
+                SELECT 
+                    ts.thread_id,
+                    ts.latest_timestamp,
+                    ts.run_count,
+                    COALESCE(fp.first_prompt, 'New Chat') as full_prompt
+                FROM thread_stats ts
+                LEFT JOIN first_prompts fp ON ts.thread_id = fp.thread_id
+                ORDER BY ts.latest_timestamp DESC
+            """, (email, email))
             
             threads = []
             async for row in result:
-                threads.append({
+                print(f"[PostgreSQL-Debug] 🔍 Raw row: {row}")
+                
+                # Get the full prompt from database (already truncated to 50 chars)
+                full_prompt = row[3] if row[3] else 'New Chat'
+                
+                # Create display title (truncate to 47 chars + "..." for UI layout)
+                display_title = full_prompt
+                if len(full_prompt) > 47:
+                    display_title = full_prompt[:47] + "..."
+                
+                thread_info = {
                     "thread_id": row[0],
                     "latest_timestamp": row[1],
-                    "run_count": row[2]
-                })
+                    "run_count": row[2],
+                    "title": display_title,
+                    "full_prompt": full_prompt  # For tooltip
+                }
+                
+                print(f"[PostgreSQL-Debug] 🔍 Thread info: title='{display_title}', full_prompt='{full_prompt}'")
+                threads.append(thread_info)
             
             print(f"✓ Retrieved {len(threads)} chat threads for user: {email}")
             return threads
             
     except Exception as e:
         print(f"❌ Error retrieving user chat threads: {str(e)}")
+        import traceback
+        print(f"[PostgreSQL-Debug] 🔍 Full traceback: {traceback.format_exc()}")
         return []
 
-async def delete_user_thread_entries(email: str, thread_id: str) -> Dict[str, Any]:
+async def delete_user_thread_entries(email: str, thread_id: str, connection_pool=None) -> Dict[str, Any]:
     """Delete all entries for a specific user's thread.
     
     Args:
         email: User's email address
         thread_id: Thread ID to delete
+        connection_pool: Optional connection pool to use (defaults to global database_pool)
     
     Returns:
         Dictionary with deletion results
     """
     global database_pool
     
+    # Use provided pool or global pool
+    pool_to_use = connection_pool or database_pool
+    
+    if pool_to_use is None:
+        print(f"[PostgreSQL-Debug] ⚠ No connection pool available for deletion")
+        return {
+            "deleted_count": 0,
+            "email": email,
+            "thread_id": thread_id,
+            "error": "No connection pool available"
+        }
+    
     try:
-        async with database_pool.connection() as conn:
+        async with pool_to_use.connection() as conn:
             await conn.set_autocommit(True)
             
             # Delete entries for this user's thread
@@ -211,7 +304,7 @@ async def delete_user_thread_entries(email: str, thread_id: str) -> Dict[str, An
             
             deleted_count = result.rowcount if hasattr(result, 'rowcount') else 0
             
-            print(f"✓ Deleted {deleted_count} thread entries for user: {email}, thread_id: {thread_id}")
+            print(f"✓ Deleted {deleted_count} thread entries from users_threads_runs for user: {email}, thread_id: {thread_id}")
             
             return {
                 "deleted_count": deleted_count,
@@ -220,7 +313,7 @@ async def delete_user_thread_entries(email: str, thread_id: str) -> Dict[str, An
             }
             
     except Exception as e:
-        print(f"❌ Error deleting user thread entries: {str(e)}")
+        print(f"❌ Error deleting user thread entries from users_threads_runs: {str(e)}")
         return {
             "deleted_count": 0,
             "email": email,
@@ -247,8 +340,11 @@ async def get_postgres_checkpointer():
                 kwargs={
                     "autocommit": True,
                     "prepare_threshold": 0,
-                }
+                },
+                open=False  # Fix deprecation warning
             )
+            # Explicitly open the pool
+            await database_pool.open()
             
             print("🔗 Creating PostgreSQL checkpointer with official library...")
             
@@ -305,33 +401,23 @@ async def create_postgres_checkpointer():
     return await get_postgres_checkpointer()
 
 async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: str) -> List[Dict[str, Any]]:
-    """Get conversation messages from the LangChain PostgreSQL checkpoint history.
+    """Get the COMPLETE conversation messages from the LangChain PostgreSQL checkpoint history.
     
-    This extracts both user questions and final AI responses for proper chat display:
-    - User messages: for right-side blue display
-    - AI messages: for left-side white display
+    This extracts ALL user questions and ALL AI responses for proper chat display:
+    - All user messages: for right-side blue display
+    - All AI messages: for left-side white display using the explicit final_answer from state
     
     Args:
         checkpointer: The PostgreSQL checkpointer instance
         thread_id: Thread ID for the conversation
     
     Returns:
-        List of message dictionaries in chronological order (user questions + AI answers)
+        List of message dictionaries in chronological order (complete conversation history)
     """
     try:
-        print(f"[API-PostgreSQL] 🔍 Retrieving checkpoint history for thread: {thread_id}")
+        print(f"[API-PostgreSQL] 🔍 Retrieving COMPLETE checkpoint history for thread: {thread_id}")
         
         config = {"configurable": {"thread_id": thread_id}}
-        
-        # First, get the latest state to extract the original prompt
-        latest_state = None
-        try:
-            state_snapshot = await checkpointer.aget_tuple(config)
-            if state_snapshot and state_snapshot.checkpoint:
-                latest_state = state_snapshot.checkpoint.get("channel_values", {})
-                print(f"[API-PostgreSQL] 📊 Retrieved latest state with keys: {list(latest_state.keys())}")
-        except Exception as e:
-            print(f"[API-PostgreSQL] ⚠ Could not get latest state: {e}")
         
         # Get all checkpoints for this thread using alist()
         checkpoint_tuples = []
@@ -344,120 +430,90 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         
         print(f"[API-PostgreSQL] 📄 Found {len(checkpoint_tuples)} checkpoints")
         
-        # Extract conversation messages chronologically
-        conversation_messages = []
-        
-        # Sort checkpoints chronologically (oldest first) using checkpoint order
+        # Sort checkpoints chronologically (oldest first)
         checkpoint_tuples.sort(key=lambda x: x.config.get("configurable", {}).get("checkpoint_id", ""))
         
-        # Track seen content to avoid duplicates
-        seen_user_prompts = set()
-        seen_final_answers = set()
+        # Extract conversation messages chronologically
+        conversation_messages = []
+        seen_prompts = set()
+        seen_answers = set()
         
-        # STEP 1: Extract the original user prompt from the latest state or first checkpoint
-        original_prompt = None
+        # Extract all user prompts and AI responses from checkpoint history
+        print(f"[API-PostgreSQL] 🔍 Extracting ALL user questions and AI responses...")
         
-        # Try to get prompt from latest state first
-        if latest_state and "prompt" in latest_state:
-            original_prompt = latest_state["prompt"]
-            print(f"[API-PostgreSQL] 📝 Found original prompt from latest state: '{original_prompt}'")
-        
-        # If not found in latest state, try first checkpoint metadata
-        if not original_prompt and checkpoint_tuples:
-            first_checkpoint = checkpoint_tuples[0]
-            metadata = first_checkpoint.metadata or {}
+        for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
+            checkpoint = checkpoint_tuple.checkpoint
+            metadata = checkpoint_tuple.metadata or {}
             
+            if not checkpoint:
+                continue
+                
+            # METHOD 1: Extract user prompts from checkpoint writes (new questions)
             if "writes" in metadata and isinstance(metadata["writes"], dict):
                 writes = metadata["writes"]
-                if "__start__" in writes and isinstance(writes["__start__"], dict):
-                    start_data = writes["__start__"]
-                    if "prompt" in start_data:
-                        original_prompt = start_data["prompt"]
-                        print(f"[API-PostgreSQL] 📝 Found original prompt from first checkpoint: '{original_prompt}'")
-        
-        # Add the original user prompt as the first message
-        if original_prompt and original_prompt.strip():
-            user_message = {
-                "id": "user_1",
-                "content": original_prompt.strip(),
-                "is_user": True,
-                "timestamp": datetime.now(),
-                "checkpoint_order": 0,
-                "message_order": 1
-            }
-            conversation_messages.append(user_message)
-            seen_user_prompts.add(original_prompt.strip())
-            print(f"[API-PostgreSQL] 👤 Added original user prompt: {original_prompt}")
-        else:
-            print(f"[API-PostgreSQL] ⚠ Could not find original user prompt in state or checkpoints")
-        
-        # STEP 2: Extract ONLY final formatted answers (with id starting with "run--")
-        print(f"[API-PostgreSQL] 🔍 Extracting AI responses from checkpoints...")
-        
-        # Only look at the LAST few checkpoints to get the final answer
-        # The final answer should be in one of the last checkpoints after format_answer_node
-        last_checkpoints = checkpoint_tuples[-5:] if len(checkpoint_tuples) > 5 else checkpoint_tuples
-        
-        for i, checkpoint_tuple in enumerate(last_checkpoints):
-            checkpoint = checkpoint_tuple.checkpoint
-            if checkpoint and "channel_values" in checkpoint:
-                channel_values = checkpoint["channel_values"]
-                messages = channel_values.get("messages", [])
                 
-                if messages and len(messages) > 1:
-                    # LangGraph state has [summary (SystemMessage), last_message]
-                    last_message = messages[-1] if messages else None
-                    
-                    if last_message:
-                        msg_type = type(last_message).__name__
-                        msg_content = getattr(last_message, 'content', str(last_message))
-                        msg_id = getattr(last_message, 'id', None)
-                        
-                        # More strict filtering for ONLY the final answer from format_answer_node
-                        is_final_answer = (
-                            msg_type == "AIMessage" and
-                            msg_id and msg_id.startswith("run--") and
-                            len(msg_content.strip()) > 10 and
-                            msg_content.strip() not in seen_final_answers and
-                            # Must NOT contain intermediate patterns
-                            not any(keyword in msg_content.lower() for keyword in [
-                                "query:", "result:", "select ", "from ", "where ", 
-                                "executed a query", "decision:", "schema details", "kolik lidí žije",
-                                "how many people live", "analysis:", "breakdown:", "summary:"
-                            ]) and
-                            # Must be a direct answer (not a question or instruction)
-                            not msg_content.strip().endswith('?') and
-                            # Should contain actual data/numbers (typical of final answers)
-                            any(char.isdigit() for char in msg_content)
-                        )
-                        
-                        if is_final_answer:
-                            seen_final_answers.add(msg_content.strip())
-                            ai_message = {
-                                "id": f"ai_{len(conversation_messages) + 1}",
-                                "content": msg_content.strip(),
-                                "is_user": False,
-                                "timestamp": datetime.now(),
-                                "checkpoint_order": len(checkpoint_tuples) + i,  # Ensure it comes after user message
+                # Look for user prompts in different node writes
+                for node_name, node_data in writes.items():
+                    if isinstance(node_data, dict):
+                        # Check for new prompts (excluding rewritten prompts)
+                        prompt = node_data.get("prompt")
+                        if (prompt and 
+                            prompt.strip() and 
+                            prompt.strip() not in seen_prompts and
+                            len(prompt.strip()) > 5 and
+                            # Filter out rewritten prompts (they usually contain references to previous context)
+                            not any(indicator in prompt.lower() for indicator in [
+                                "standalone question:", "rephrase", "follow up", "conversation so far"
+                            ])):
+                            
+                            seen_prompts.add(prompt.strip())
+                            user_message = {
+                                "id": f"user_{len(conversation_messages) + 1}",
+                                "content": prompt.strip(),
+                                "is_user": True,
+                                "timestamp": datetime.fromtimestamp(1700000000 + checkpoint_index * 1000),  # Use stable timestamp for sorting
+                                "checkpoint_order": checkpoint_index,
                                 "message_order": len(conversation_messages) + 1
                             }
-                            conversation_messages.append(ai_message)
-                            print(f"[API-PostgreSQL] 🤖 Final answer extracted (id={msg_id}): {msg_content[:50]}...")
-                            
-                            # Only take the FIRST (most recent) final answer we find
-                            break
+                            conversation_messages.append(user_message)
+                            print(f"[API-PostgreSQL] 👤 Found user prompt in checkpoint {checkpoint_index}: {prompt[:50]}...")
+            
+            # METHOD 2: Extract AI responses directly from final_answer in channel_values
+            if "channel_values" in checkpoint:
+                channel_values = checkpoint["channel_values"]
+                
+                # NEW: Use explicit final_answer from state instead of trying to filter messages
+                final_answer = channel_values.get("final_answer")
+                
+                if (final_answer and 
+                    isinstance(final_answer, str) and 
+                    final_answer.strip() and 
+                    len(final_answer.strip()) > 20 and 
+                    final_answer.strip() not in seen_answers):
+                    
+                    seen_answers.add(final_answer.strip())
+                    ai_message = {
+                        "id": f"ai_{len(conversation_messages) + 1}",
+                        "content": final_answer.strip(),
+                        "is_user": False,
+                        "timestamp": datetime.fromtimestamp(1700000000 + checkpoint_index * 1000 + 500),  # Stable timestamp slightly after user message
+                        "checkpoint_order": checkpoint_index,
+                        "message_order": len(conversation_messages) + 1
+                    }
+                    conversation_messages.append(ai_message)
+                    print(f"[API-PostgreSQL] 🤖 ✅ Found final_answer in checkpoint {checkpoint_index}: {final_answer[:100]}...")
         
-        # Sort all messages by checkpoint order to ensure proper chronological order
-        conversation_messages.sort(key=lambda x: (x.get("checkpoint_order", 0), x.get("message_order", 0)))
+        # Sort all messages by timestamp to ensure proper chronological order
+        conversation_messages.sort(key=lambda x: x.get("timestamp", datetime.now()))
         
-        # Re-assign message order after sorting
+        # Re-assign sequential IDs and message order after sorting
         for i, msg in enumerate(conversation_messages):
             msg["message_order"] = i + 1
             msg["id"] = f"{'user' if msg['is_user'] else 'ai'}_{i + 1}"
         
-        print(f"[API-PostgreSQL] ✅ Extracted {len(conversation_messages)} conversation messages")
+        print(f"[API-PostgreSQL] ✅ Extracted {len(conversation_messages)} conversation messages from COMPLETE history")
         
-        # Debug: Log the actual messages found
+        # Debug: Log all messages found
         for i, msg in enumerate(conversation_messages):
             msg_type = "👤 User" if msg["is_user"] else "🤖 AI"
             print(f"[API-PostgreSQL] {i+1}. {msg_type}: {msg['content'][:50]}...")
@@ -465,7 +521,9 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         return conversation_messages
         
     except Exception as e:
-        print(f"[API-PostgreSQL] ❌ Error retrieving messages from checkpoints: {str(e)}")
+        print(f"[API-PostgreSQL] ❌ Error retrieving COMPLETE messages from checkpoints: {str(e)}")
+        import traceback
+        print(f"[API-PostgreSQL] 🔍 Full traceback: {traceback.format_exc()}")
         return []
 
 async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id: str) -> List[List[str]]:
@@ -485,7 +543,7 @@ async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id
         if state_snapshot and state_snapshot.checkpoint:
             channel_values = state_snapshot.checkpoint.get("channel_values", {})
             queries_and_results = channel_values.get("queries_and_results", [])
-            print(f"[API-PostgreSQL] �� Found {len(queries_and_results)} queries from latest checkpoint")
+            print(f"[API-PostgreSQL] ✅ Found {len(queries_and_results)} queries from latest checkpoint")
             return [[query, result] for query, result in queries_and_results]
         
         return []

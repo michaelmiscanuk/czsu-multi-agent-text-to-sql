@@ -116,13 +116,13 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                     )}
                                 </div>
                                 {/* Dataset used and SQL button for AI answers */}
-                                {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetCodes?.length || message.meta?.sql) && (
+                                {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery) && (
                                     <div className="mt-3 flex items-center space-x-3 flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
                                         {/* Show multiple dataset codes if available */}
-                                        {message.meta?.datasetCodes && message.meta.datasetCodes.length > 0 ? (
+                                        {message.meta?.datasetsUsed && message.meta.datasetsUsed.length > 0 ? (
                                             <div className="flex items-center space-x-2 flex-wrap">
-                                                <span className="text-xs text-gray-500 mr-1">Dataset{message.meta.datasetCodes.length > 1 ? 's' : ''} used:</span>
-                                                {message.meta.datasetCodes.map((code: string, index: number) => (
+                                                <span className="text-xs text-gray-500 mr-1">Dataset{message.meta.datasetsUsed.length > 1 ? 's' : ''} used:</span>
+                                                {message.meta.datasetsUsed.map((code: string, index: number) => (
                                                     <Link
                                                         key={index}
                                                         href={`/data?table=${encodeURIComponent(code)}`}
@@ -148,7 +148,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 </div>
                                             )
                                         )}
-                                        {message.meta?.sql && (
+                                        {message.meta?.sqlQuery && (
                                             <button
                                                 className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
                                                 onClick={() => onSQLClick(message.id)}

@@ -556,12 +556,23 @@ Bad: "The query shows X is 1,234,567"
         chain.format_messages(input=formatted_prompt)
     )
     debug_print(f"{FORMAT_ANSWER_ID}: Analysis completed")
+    
+    # Extract the final answer content
+    final_answer_content = result.content if hasattr(result, 'content') else str(result)
+    debug_print(f"{FORMAT_ANSWER_ID}: Final answer: {final_answer_content[:100]}...")
+    
+    # Update messages state (existing logic)
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     if not hasattr(result, "id") or not result.id:
         result.id = "format_answer"
     messages = [summary, result]
-    return {"messages": messages}
+    
+    # Return both messages and final_answer states
+    return {
+        "messages": messages,
+        "final_answer": final_answer_content
+    }
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Increment the iteration counter and return updated state."""

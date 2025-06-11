@@ -50,6 +50,7 @@ class DataAnalysisState(TypedDict):
     - messages: Always [summary (SystemMessage), last_message (AIMessage/HumanMessage)]
     - queries_and_results: Uses limited_queries_reducer to keep only recent queries
     - iteration: Loop prevention counter
+    - final_answer: Explicitly tracked final formatted answer string
     """
     prompt: str  # User query to analyze
     rewritten_prompt: str  # Rewritten user query for downstream nodes
@@ -61,3 +62,4 @@ class DataAnalysisState(TypedDict):
     most_similar_selections: Annotated[List[Tuple[str, float]], add]  # List of (selection_code, cosine_similarity
     top_selection_codes: List[str]  # List of top N selection codes (e.g., top 3)
     chromadb_missing: bool  # True if ChromaDB directory is missing, else False or not present
+    final_answer: str  # Explicitly tracked final formatted answer string

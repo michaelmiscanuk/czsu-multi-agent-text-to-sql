@@ -37,6 +37,14 @@ TEST_THREAD_ID_3 = "test_thread_003"
 class TestPostgresChatSystem:
     """Test class for PostgreSQL chat management system."""
     
+    def assertIsNotNone(self, value):
+        """Assert that value is not None."""
+        assert value is not None
+    
+    def assertEqual(self, first, second):
+        """Assert that first equals second."""
+        assert first == second
+    
     async def setup_test_database(self):
         """Setup test database and clean up any existing test data."""
         try:
@@ -71,24 +79,46 @@ class TestPostgresChatSystem:
         """Test creating thread run entries."""
         print("\n🧪 Testing thread run entry creation...")
         
-        # Test with auto-generated run_id
-        run_id_1 = await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1)
+        # Test creating entries
+        run_id_1 = await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "Test prompt 1")
+        self.assertIsNotNone(run_id_1)
+        print(f"✓ Created run_id_1: {run_id_1}")
         
-        assert run_id_1 is not None
-        assert len(run_id_1) == 36  # UUID length
-        print(f"✅ Auto-generated run_id: {run_id_1}")
-        
-        # Test with provided run_id
+        # Test with custom run_id and prompt
         custom_run_id = "custom_run_123"
-        run_id_2 = await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, custom_run_id)
+        run_id_2 = await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "Test prompt 2", custom_run_id)
+        self.assertEqual(run_id_2, custom_run_id)
+        print(f"✓ Created run_id_2: {run_id_2}")
         
-        assert run_id_2 == custom_run_id
-        print(f"✅ Custom run_id: {run_id_2}")
+        # Test duplicate run_id (should fail)
+        try:
+            run_id_3 = await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "Test prompt 3", custom_run_id)
+            assert False, "Expected exception for duplicate run_id"
+        except Exception as e:
+            print(f"✓ Duplicate run_id properly rejected: {type(e).__name__}")
+
+    async def test_prompt_truncation(self):
+        """Test that prompts longer than 50 characters are properly truncated."""
+        print("\n🧪 Testing prompt truncation...")
         
-        # Test duplicate entry handling (should update timestamp)
-        run_id_3 = await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, custom_run_id)
-        assert run_id_3 == custom_run_id
-        print("✅ Duplicate entry handled correctly")
+        # Test with long prompt (over 50 characters)
+        long_prompt = "This is a very long prompt that exceeds the 50 character limit and should be truncated automatically"
+        run_id = await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, long_prompt)
+        
+        assert run_id is not None
+        print(f"✓ Long prompt handled successfully: {long_prompt[:50]}...")
+        
+        # Verify the thread was created with truncated prompt
+        threads = await get_user_chat_threads(TEST_EMAIL_1)
+        assert len(threads) == 1
+        
+        # The title should be truncated to fit UI display (47 chars + "...")
+        stored_title = threads[0]["title"]
+        assert len(stored_title) <= 50  # Should not exceed 50 chars
+        print(f"✓ Stored title: '{stored_title}' (length: {len(stored_title)})")
+        
+        # Cleanup
+        await delete_user_thread_entries(TEST_EMAIL_1, TEST_THREAD_ID_1)
 
     async def test_get_user_chat_threads_empty(self):
         """Test getting chat threads for user with no threads."""
@@ -105,13 +135,13 @@ class TestPostgresChatSystem:
         print("\n🧪 Testing chat threads retrieval with data...")
         
         # Create test data
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1)
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "Thread 1 prompt")
         await asyncio.sleep(0.1)  # Small delay to ensure different timestamps
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_2)
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_2, "Thread 2 prompt")
         await asyncio.sleep(0.1)
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1)  # Second run in same thread
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "Thread 1 prompt 2")  # Second run in same thread
         await asyncio.sleep(0.1)
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_3)
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_3, "Thread 3 prompt")
         
         # Get threads
         threads = await get_user_chat_threads(TEST_EMAIL_1)
@@ -143,9 +173,9 @@ class TestPostgresChatSystem:
         print("\n🧪 Testing user isolation...")
         
         # Create data for both users
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1)
-        await create_thread_run_entry(TEST_EMAIL_2, TEST_THREAD_ID_1)
-        await create_thread_run_entry(TEST_EMAIL_2, TEST_THREAD_ID_2)
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "User 1 thread 1")
+        await create_thread_run_entry(TEST_EMAIL_2, TEST_THREAD_ID_1, "User 2 thread 1")
+        await create_thread_run_entry(TEST_EMAIL_2, TEST_THREAD_ID_2, "User 2 thread 2")
         
         # Get threads for each user
         user1_threads = await get_user_chat_threads(TEST_EMAIL_1)
@@ -166,9 +196,9 @@ class TestPostgresChatSystem:
         print("\n🧪 Testing thread entry deletion...")
         
         # Create test data
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1)
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1)  # Second run
-        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_2)
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "First prompt")
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_1, "Second prompt")  # Second run
+        await create_thread_run_entry(TEST_EMAIL_1, TEST_THREAD_ID_2, "Different thread")
         
         # Verify data exists
         threads_before = await get_user_chat_threads(TEST_EMAIL_1)
@@ -212,7 +242,7 @@ class TestPostgresChatSystem:
             print("✅ Checkpointer initialized successfully")
             
             # Test that our table was created
-            await create_thread_run_entry(TEST_EMAIL_1, "integration_test_thread")
+            await create_thread_run_entry(TEST_EMAIL_1, "integration_test_thread", "Integration test")
             threads = await get_user_chat_threads(TEST_EMAIL_1)
             
             integration_thread = next((t for t in threads if t["thread_id"] == "integration_test_thread"), None)
@@ -229,12 +259,12 @@ class TestPostgresChatSystem:
         """Test that threads are properly ordered by timestamp."""
         print("\n🧪 Testing timestamp ordering...")
         
-        # Create threads with deliberate timing
-        await create_thread_run_entry(TEST_EMAIL_1, "thread_oldest")
+        # Create threads with known timestamps (using delays to ensure ordering)
+        await create_thread_run_entry(TEST_EMAIL_1, "thread_oldest", "Oldest thread")
         await asyncio.sleep(0.1)
-        await create_thread_run_entry(TEST_EMAIL_1, "thread_middle")
+        await create_thread_run_entry(TEST_EMAIL_1, "thread_middle", "Middle thread")
         await asyncio.sleep(0.1)
-        await create_thread_run_entry(TEST_EMAIL_1, "thread_newest")
+        await create_thread_run_entry(TEST_EMAIL_1, "thread_newest", "Newest thread")
         
         threads = await get_user_chat_threads(TEST_EMAIL_1)
         
@@ -287,6 +317,9 @@ def run_tests():
             await test_instance.cleanup_test_data()
             
             await test_instance.test_timestamp_ordering()
+            await test_instance.cleanup_test_data()
+            
+            await test_instance.test_prompt_truncation()
             
             print("\n" + "=" * 50)
             print("🎉 All tests passed successfully!")

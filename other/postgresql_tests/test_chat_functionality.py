@@ -37,9 +37,9 @@ async def test_complete_chat_flow():
         print("✅ Checkpointer ready")
         
         # Step 2: Create thread run entry (simulating frontend API call)
-        print("\n2️⃣ Creating thread run entry...")
-        run_id = await create_thread_run_entry("test@example.com", test_thread_id)
-        print(f"✅ Thread run entry created: {run_id}")
+        print("\n🧪 Test 1: Creating thread run entry...")
+        run_id = await create_thread_run_entry("test@example.com", test_thread_id, "Test data analysis")
+        print(f"✅ Created run_id: {run_id}")
         
         # Step 3: Run analysis (simulating backend processing)
         print("\n3️⃣ Running analysis...")

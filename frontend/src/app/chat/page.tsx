@@ -11,7 +11,8 @@ interface ChatThreadMeta {
   thread_id: string;
   latest_timestamp: string;
   run_count: number;
-  title?: string; // We'll derive this from the first message or set a default
+  title: string;
+  full_prompt: string; // For tooltip display
 }
 
 interface ChatMessage {
@@ -39,8 +40,8 @@ interface Message {
   queriesAndResults?: [string, string][];
   meta?: {
     datasetUrl?: string;
-    datasetCodes?: string[];  // Array of dataset codes actually used in queries
-    sql?: string;
+    datasetsUsed?: string[];  // Array of dataset codes actually used in queries
+    sqlQuery?: string;
   };
 }
 
@@ -99,15 +100,90 @@ export default function ChatPage() {
   const [threadsLoaded, setThreadsLoaded] = useState(false);
   const [threadsLoading, setThreadsLoading] = useState(false);
   
+  // NEW: Simplified caching state - no force refresh flags needed
+  const [threadsCache, setThreadsCache] = useState<ChatThreadMeta[]>([]);
+  const [messageCache, setMessageCache] = useState<Record<string, ChatMessage[]>>({});
+  const [threadsCacheTimestamp, setThreadsCacheTimestamp] = useState<number>(0);
+  const [messageCacheTimestamps, setMessageCacheTimestamps] = useState<Record<string, number>>({});
+  
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || '';
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
-  // PostgreSQL API functions
+  // Cache duration in milliseconds (longer since we update cache directly)
+  const THREADS_CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
+  const MESSAGES_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+  // Helper function to check if cache is still valid
+  const isCacheValid = (timestamp: number, duration: number): boolean => {
+    return Date.now() - timestamp < duration;
+  };
+
+  // Helper functions to update cache directly (chatbot-style)
+  const addMessageToCache = (threadId: string, message: ChatMessage) => {
+    setMessageCache(prev => ({
+      ...prev,
+      [threadId]: [...(prev[threadId] || []), message]
+    }));
+    setMessages(prev => [...prev, message]);
+  };
+
+  const updateMessageInCache = (threadId: string, messageId: string, updatedMessage: ChatMessage) => {
+    setMessageCache(prev => ({
+      ...prev,
+      [threadId]: (prev[threadId] || []).map(msg => 
+        msg.id === messageId ? updatedMessage : msg
+      )
+    }));
+    setMessages(prev => prev.map(msg => 
+      msg.id === messageId ? updatedMessage : msg
+    ));
+  };
+
+  const invalidateMessageCache = (threadId: string) => {
+    console.log('[ChatPage-Cache] 🗑️ Invalidating message cache for thread:', threadId);
+    setMessageCacheTimestamps(prev => {
+      const updated = { ...prev };
+      delete updated[threadId]; // Remove timestamp to invalidate cache
+      return updated;
+    });
+  };
+
+  const addThreadToCache = (thread: ChatThreadMeta) => {
+    setThreadsCache(prev => [thread, ...prev]);
+    setThreads(prev => [thread, ...prev]);
+  };
+
+  const removeThreadFromCache = (threadId: string) => {
+    setThreadsCache(prev => prev.filter(t => t.thread_id !== threadId));
+    setThreads(prev => prev.filter(t => t.thread_id !== threadId));
+    // Also remove messages cache for this thread
+    setMessageCache(prev => {
+      const updated = { ...prev };
+      delete updated[threadId];
+      return updated;
+    });
+    setMessageCacheTimestamps(prev => {
+      const updated = { ...prev };
+      delete updated[threadId];
+      return updated;
+    });
+  };
+
+  const updateThreadInCache = (threadId: string, updates: Partial<ChatThreadMeta>) => {
+    setThreadsCache(prev => prev.map(t => 
+      t.thread_id === threadId ? { ...t, ...updates } : t
+    ));
+    setThreads(prev => prev.map(t => 
+      t.thread_id === threadId ? { ...t, ...updates } : t
+    ));
+  };
+
+  // PostgreSQL API functions with simplified caching (chatbot-style)
   const loadThreadsFromPostgreSQL = async () => {
     console.log('[ChatPage-PostgreSQL] 🔄 Loading threads from PostgreSQL for user:', userEmail);
     
@@ -115,6 +191,16 @@ export default function ChatPage() {
       console.log('[ChatPage-PostgreSQL] ❌ No user email, skipping thread load');
       return;
     }
+
+    // Check cache first
+    const cacheValid = isCacheValid(threadsCacheTimestamp, THREADS_CACHE_DURATION);
+    if (cacheValid && threadsCache.length > 0) {
+      console.log('[ChatPage-Cache] 💾 Using cached threads data');
+      setThreads(threadsCache);
+      setThreadsLoaded(true);
+      return;
+    }
+    console.log('[ChatPage-Cache] ⏰ Threads cache expired or empty, fetching fresh data');
 
     if (threadsLoading) {
       console.log('[ChatPage-PostgreSQL] ⏳ Threads already loading, skipping...');
@@ -184,14 +270,19 @@ export default function ChatPage() {
         thread_id: t.thread_id,
         latest_timestamp: t.latest_timestamp,
         run_count: t.run_count,
-        title: `Chat ${t.thread_id.slice(-8)}` // Default title, will be updated
+        title: t.title,
+        full_prompt: t.full_prompt
       }));
 
       console.log('[ChatPage-PostgreSQL] 🔄 Converted threads:', convertedThreads);
 
+      // Update both display state and cache
       setThreads(convertedThreads);
+      setThreadsCache(convertedThreads);
+      setThreadsCacheTimestamp(Date.now());
       setThreadsLoaded(true);
       
+      console.log('[ChatPage-Cache] 💾 Threads cached successfully');
       console.log('[ChatPage-PostgreSQL] 📊 Thread loading summary:');
       console.log(`  - Total threads loaded: ${convertedThreads.length}`);
       console.log(`  - User email: ${userEmail}`);
@@ -208,10 +299,13 @@ export default function ChatPage() {
           thread_id: newThreadId,
           latest_timestamp: new Date().toISOString(),
           run_count: 0,
-          title: 'New Chat'
+          title: 'New Chat',
+          full_prompt: ''
         };
         
-        setThreads([firstThread]);
+        const newThreadsList = [firstThread];
+        setThreads(newThreadsList);
+        setThreadsCache(newThreadsList); // Also update cache
         setActiveThreadId(newThreadId);
         setMessages([]); // Clear messages for new chat
         console.log('[ChatPage-PostgreSQL] ✅ Auto-created first thread:', newThreadId);
@@ -249,10 +343,13 @@ export default function ChatPage() {
           thread_id: newThreadId,
           latest_timestamp: new Date().toISOString(),
           run_count: 0,
-          title: 'New Chat'
+          title: 'New Chat',
+          full_prompt: ''
         };
         
-        setThreads([firstThread]);
+        const newThreadsList = [firstThread];
+        setThreads(newThreadsList);
+        setThreadsCache(newThreadsList); // Also update cache
         setActiveThreadId(newThreadId);
         setMessages([]);
         setTimeout(() => inputRef.current?.focus(), 100);
@@ -263,71 +360,26 @@ export default function ChatPage() {
     }
   };
 
-  const deleteThreadFromPostgreSQL = async (threadId: string) => {
-    console.log('[ChatPage-PostgreSQL] 🗑️ Deleting thread from PostgreSQL:', threadId);
-    
-    try {
-      let freshSession = await getSession();
-      if (!freshSession?.id_token) {
-        console.log('[ChatPage-PostgreSQL] ❌ No valid session token for deletion');
-        return false;
-      }
-
-      const response = await fetch(`${API_BASE}/chat/${threadId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${freshSession.id_token}`
-        }
-      });
-
-      if (!response.ok) {
-        console.error('[ChatPage-PostgreSQL] ❌ Failed to delete thread:', response.status);
-        return false;
-      }
-
-      const result = await response.json();
-      console.log('[ChatPage-PostgreSQL] ✅ Thread deleted from PostgreSQL:', result);
-      return true;
-      
-    } catch (error) {
-      console.error('[ChatPage-PostgreSQL] ❌ Error deleting thread:', error);
-      return false;
-    }
-  };
-
-  // Load threads from PostgreSQL when user email is available
-  useEffect(() => {
-    // Only attempt to load threads when session is authenticated and we have userEmail
-    if (status !== "authenticated" || !userEmail) {
-      console.log('[ChatPage-PostgreSQL] ⏳ Waiting for authentication... Status:', status, 'UserEmail:', !!userEmail);
-      return;
-    }
-    
-    if (!threadsLoaded && !threadsLoading) {
-      console.log('[ChatPage-PostgreSQL] 🚀 Initial thread load triggered - authenticated user:', userEmail);
-      loadThreadsFromPostgreSQL();
-    }
-  }, [status, userEmail, threadsLoaded, threadsLoading]);
-
-  // Debug: log session changes
-  useEffect(() => {
-    console.log('[ChatPage-PostgreSQL] 🔍 Session status changed:', {
-      status,
-      userEmail: userEmail || 'not available',
-      threadsLoaded,
-      threadsLoading,
-      threadsCount: threads.length
-    });
-  }, [status, userEmail, threadsLoaded, threadsLoading, threads.length]);
-
-  // Load messages for active session from PostgreSQL checkpoints
+  // Load messages for active session from PostgreSQL checkpoints with simplified caching
   const loadMessagesFromCheckpoint = async (threadId: string) => {
     if (!userEmail || !threadId) {
       setMessages([]);
       return;
     }
 
-    console.log('[ChatPage-PostgreSQL] 📄 Loading messages from checkpoint for thread:', threadId);
+    console.log('[ChatPage-PostgreSQL] 📄 Loading COMPLETE messages from checkpoint for thread:', threadId);
+    
+    // Check cache first
+    const cacheTimestamp = messageCacheTimestamps[threadId] || 0;
+    const cacheValid = isCacheValid(cacheTimestamp, MESSAGES_CACHE_DURATION);
+    const cachedMessages = messageCache[threadId];
+    
+    if (cacheValid && cachedMessages && cachedMessages.length > 0) {
+      console.log('[ChatPage-Cache] 💾 Using cached COMPLETE messages for thread:', threadId, `(${cachedMessages.length} messages)`);
+      setMessages(cachedMessages);
+      return;
+    }
+    console.log('[ChatPage-Cache] ⏰ Message cache expired or empty for thread:', threadId, 'fetching COMPLETE conversation history');
     
     try {
       let session = await getSession();
@@ -374,22 +426,98 @@ export default function ChatPage() {
       }
 
       const chatMessages = await response.json();
-      console.log('[ChatPage-PostgreSQL] ✅ Loaded messages from checkpoint:', chatMessages.length);
+      console.log('[ChatPage-PostgreSQL] ✅ Loaded COMPLETE conversation from checkpoint:', chatMessages.length, 'messages');
       
       if (Array.isArray(chatMessages)) {
-        setMessages(chatMessages);
+        // Filter out any temporary loading messages since we now have the complete conversation
+        const realMessages = chatMessages.filter(msg => !msg.isLoading && !msg.id.startsWith('temp-'));
+        
+        console.log('[ChatPage-PostgreSQL] 📋 Complete conversation history loaded:', {
+          totalMessages: realMessages.length,
+          userMessages: realMessages.filter(m => m.isUser).length,
+          aiMessages: realMessages.filter(m => !m.isUser).length
+        });
+        
+        // Update both display state and cache with complete conversation
+        setMessages(realMessages);
+        setMessageCache(prev => ({
+          ...prev,
+          [threadId]: realMessages
+        }));
+        setMessageCacheTimestamps(prev => ({
+          ...prev,
+          [threadId]: Date.now()
+        }));
+        console.log('[ChatPage-Cache] 💾 COMPLETE conversation cached for thread:', threadId);
       } else {
         console.error('[ChatPage-PostgreSQL] ❌ Invalid response format - expected array, got:', typeof chatMessages);
         setMessages([]);
       }
       
     } catch (error) {
-      console.error('[ChatPage-PostgreSQL] ❌ Error loading messages from checkpoint:', error);
+      console.error('[ChatPage-PostgreSQL] ❌ Error loading COMPLETE conversation from checkpoint:', error);
       setMessages([]);
     }
   };
 
-  // Load messages for active session (now using PostgreSQL checkpoints)
+  const deleteThreadFromPostgreSQL = async (threadId: string) => {
+    console.log('[ChatPage-PostgreSQL] 🗑️ Deleting thread from PostgreSQL:', threadId);
+    
+    try {
+      let freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        console.log('[ChatPage-PostgreSQL] ❌ No valid session token for deletion');
+        return false;
+      }
+
+      const response = await fetch(`${API_BASE}/chat/${threadId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${freshSession.id_token}`
+        }
+      });
+
+      if (!response.ok) {
+        console.error('[ChatPage-PostgreSQL] ❌ Failed to delete thread:', response.status);
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('[ChatPage-PostgreSQL] ✅ Thread deleted from PostgreSQL:', result);
+      return true;
+      
+    } catch (error) {
+      console.error('[ChatPage-PostgreSQL] ❌ Error deleting thread:', error);
+      return false;
+    }
+  };
+
+  // Load threads from PostgreSQL when user email is available (with simplified caching)
+  useEffect(() => {
+    // Only attempt to load threads when session is authenticated and we have userEmail
+    if (status !== "authenticated" || !userEmail) {
+      console.log('[ChatPage-PostgreSQL] ⏳ Waiting for authentication... Status:', status, 'UserEmail:', !!userEmail);
+      return;
+    }
+    
+    if (!threadsLoaded && !threadsLoading) {
+      console.log('[ChatPage-PostgreSQL] 🚀 Initial thread load triggered - authenticated user:', userEmail);
+      loadThreadsFromPostgreSQL();
+    }
+  }, [status, userEmail, threadsLoaded, threadsLoading]);
+
+  // Debug: log session changes
+  useEffect(() => {
+    console.log('[ChatPage-PostgreSQL] 🔍 Session status changed:', {
+      status,
+      userEmail: userEmail || 'not available',
+      threadsLoaded,
+      threadsLoading,
+      threadsCount: threads.length
+    });
+  }, [status, userEmail, threadsLoaded, threadsLoading, threads.length]);
+
+  // Load messages for active session (now using PostgreSQL checkpoints with simplified caching)
   useEffect(() => {
     if (!userEmail || !activeThreadId) {
       setMessages([]);
@@ -445,6 +573,68 @@ export default function ChatPage() {
     }
   }, [userEmail, threadsLoaded, threads.length]);
 
+  // Clear caches when user changes (reset everything for new user)
+  useEffect(() => {
+    if (userEmail) {
+      console.log('[ChatPage-Cache] 👤 User changed, clearing all caches');
+      setThreadsCacheTimestamp(0);
+      setMessageCacheTimestamps({});
+      setThreadsCache([]);
+      setMessageCache({});
+    }
+  }, [userEmail]);
+
+  // CRITICAL: Force cache invalidation on page load/refresh (F5)
+  // This ensures fresh data is always loaded from PostgreSQL checkpoints
+  useEffect(() => {
+    console.log('[ChatPage-Cache] 🔄 Page loaded - invalidating ALL caches to ensure fresh data on F5');
+    setThreadsCacheTimestamp(0);
+    setMessageCacheTimestamps({});
+    setThreadsCache([]);
+    setMessageCache({});
+  }, []); // Empty dependency array = runs only on component mount (page load)
+
+  // Debug: log session on mount and when it changes
+  useEffect(() => {
+    console.log('[ChatPage-PostgreSQL] 👤 Session updated:', JSON.stringify(session, null, 2));
+  }, [session]);
+
+  // Clear all caches on component mount to ensure fresh data on page refresh (F5)
+  useEffect(() => {
+    console.log('[ChatPage-Cache] 🗑️ Clearing all caches on component mount to ensure fresh data');
+    setThreadsCache([]);
+    setMessageCache({});
+    setThreadsCacheTimestamp(0);
+    setMessageCacheTimestamps({});
+  }, []); // Empty dependency array = runs only on mount
+
+  // Sync isLoading across tabs/windows
+  useEffect(() => {
+    function handleStorage(e: StorageEvent) {
+      if (e.key === 'czsu-chat-isLoading') {
+        setIsLoading(e.newValue === 'true');
+      }
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) {
+      localStorage.setItem('czsu-chat-isLoading', 'true');
+    } else {
+      localStorage.setItem('czsu-chat-isLoading', 'false');
+    }
+  }, [isLoading]);
+
+  const handleSQLButtonClick = (msgId: string) => {
+    setOpenSQLModalForMsgId(msgId);
+  };
+
+  const handleCloseSQLModal = () => {
+    setOpenSQLModalForMsgId(null);
+  };
+
   // New chat
   const handleNewChat = async () => {
     if (!userEmail) return;
@@ -464,11 +654,12 @@ export default function ChatPage() {
       thread_id: newThreadId,
       latest_timestamp: new Date().toISOString(),
       run_count: 0,
-      title: `New Chat`
+      title: 'New Chat',
+      full_prompt: ''
     };
     
-    // Add to threads list and set as active
-    setThreads(prev => [newThread, ...prev]);
+    // Add to cache directly (chatbot-style)
+    addThreadToCache(newThread);
     setActiveThreadId(newThreadId);
     setMessages([]); // Clear messages for new chat
     
@@ -494,10 +685,10 @@ export default function ChatPage() {
       const success = await deleteThreadFromPostgreSQL(threadId);
       
       if (success) {
-        console.log('[ChatPage-PostgreSQL] ✅ Thread deleted successfully, reloading thread list');
+        console.log('[ChatPage-PostgreSQL] ✅ Thread deleted successfully');
         
-        // Reload threads from PostgreSQL
-        await loadThreadsFromPostgreSQL();
+        // Update cache directly (chatbot-style)
+        removeThreadFromCache(threadId);
         
         // If we deleted the active thread, switch to another one
         if (activeThreadId === threadId) {
@@ -519,7 +710,7 @@ export default function ChatPage() {
     e.preventDefault();
     if (!userEmail || !currentMessage.trim()) return;
     
-    console.log('[ChatPage-PostgreSQL] 📤 Sending message:', currentMessage.slice(0, 50) + '...');
+    console.log('[ChatPage-PostgreSQL] 📤 Sending message to existing conversation thread:', currentMessage.slice(0, 50) + '...');
     setIsLoading(true);
     
     let threadId = activeThreadId;
@@ -557,7 +748,9 @@ export default function ChatPage() {
       startedAt: Date.now()
     };
     
+    // Append to existing conversation (don't replace)
     setMessages(prev => [...prev, tempUserMessage, tempLoadingMessage]);
+    console.log('[ChatPage-PostgreSQL] 💬 Added user message and loading state to existing conversation');
 
     try {
       let freshSession = await getSession();
@@ -573,7 +766,7 @@ export default function ChatPage() {
         Authorization: `Bearer ${freshSession.id_token}`
       };
       
-      console.log('[ChatPage-PostgreSQL] 🚀 Calling analyze API with thread_id:', threadId);
+      console.log('[ChatPage-PostgreSQL] 🚀 Calling analyze API for follow-up message with thread_id:', threadId);
       
       let response = await fetch(API_URL, {
         method: 'POST',
@@ -613,78 +806,114 @@ export default function ChatPage() {
       const data = await response.json();
       console.log('[ChatPage-PostgreSQL] ✅ Received response, run_id:', data.run_id);
       
-      // Instead of manually updating messages, reload from checkpoint
-      // This ensures we get the complete conversation as stored by LangGraph
-      console.log('[ChatPage-PostgreSQL] 🔄 Reloading messages from checkpoint after API response');
+      // IMMEDIATE: Display the final answer from backend response without delay
+      console.log('[ChatPage-PostgreSQL] 🎯 Displaying final answer immediately from backend response');
       
-      // Add a small delay to ensure the checkpoint is fully written
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Remove the temporary loading message and add the real AI response
+      setMessages(prev => {
+        // Filter out temporary messages
+        const withoutTemp = prev.filter(msg => !msg.id.startsWith('temp-ai-'));
+        
+        // Add the real AI response with data from backend
+        const aiResponse: ChatMessage = {
+          id: `ai-${Date.now()}`,
+          threadId: threadId,
+          user: 'AI',
+          content: data.result || 'No response received',
+          isUser: false,
+          createdAt: Date.now(),
+          isLoading: false,
+          meta: {
+            datasetsUsed: data.top_selection_codes || [],
+            sqlQuery: data.sql || null,
+            datasetUrl: data.datasetUrl || null
+          },
+          queriesAndResults: data.queries_and_results || []
+        };
+        
+        return [...withoutTemp, aiResponse];
+      });
       
-      // Reload messages from checkpoint
-      await loadMessagesFromCheckpoint(threadId);
+      console.log('[ChatPage-PostgreSQL] ✅ Final answer displayed immediately to user');
       
-      // Reload threads to get updated information (this will show the newly created thread)
-      console.log('[ChatPage-PostgreSQL] 🔄 Reloading threads after message sent');
-      await loadThreadsFromPostgreSQL();
+      // BACKGROUND: Refresh caches for consistency (don't make user wait)
+      console.log('[ChatPage-PostgreSQL] 🔄 Refreshing caches in background for consistency...');
       
-      // Show success message temporarily
-      console.log('[ChatPage-PostgreSQL] 🎉 Message sent successfully');
+      // Clear caches and refresh in background (without await to not block UI)
+      Promise.resolve().then(async () => {
+        try {
+          // Small delay to let checkpoint settle
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // Clear message cache for this thread
+          setMessageCache(prev => {
+            const updated = { ...prev };
+            delete updated[threadId];
+            return updated;
+          });
+          setMessageCacheTimestamps(prev => {
+            const updated = { ...prev };
+            delete updated[threadId];
+            return updated;
+          });
+          
+          // Refresh thread cache to update message counts and titles
+          setThreadsCacheTimestamp(0);
+          await loadThreadsFromPostgreSQL();
+          
+          console.log('[ChatPage-PostgreSQL] ✅ Background cache refresh completed');
+        } catch (error) {
+          console.error('[ChatPage-PostgreSQL] ⚠ Background cache refresh failed:', error);
+        }
+      });
+      
+      // Show success message
+      console.log('[ChatPage-PostgreSQL] 🎉 Message sent successfully - answer displayed immediately');
       
     } catch (error) {
       console.error('[ChatPage-PostgreSQL] ❌ Error sending message:', error);
       
-      // On error, still reload from checkpoint to get accurate state
-      // Then add an error message if needed
-      await loadMessagesFromCheckpoint(threadId);
+      // Remove temporary loading message and show error immediately
+      setMessages(prev => {
+        // Filter out temporary loading messages
+        const withoutTempLoading = prev.filter(msg => !msg.id.startsWith('temp-ai-'));
+        
+        // Add error message
+        const errorMessage: ChatMessage = {
+          id: `error-${Date.now()}`,
+          threadId: threadId,
+          user: 'System',
+          content: `Error: ${error}`,
+          isUser: false,
+          createdAt: Date.now(),
+          isLoading: false,
+          isError: true
+        };
+        
+        return [...withoutTempLoading, errorMessage];
+      });
       
-      // Add a temporary error message
-      const errorMessage: ChatMessage = {
-        id: `error-${Date.now()}`,
-        threadId: threadId,
-        user: 'System',
-        content: `Error: ${error}`,
-        isUser: false,
-        createdAt: Date.now(),
-        isLoading: false,
-        isError: true
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
+      // Background cache cleanup (don't block UI)
+      Promise.resolve().then(async () => {
+        try {
+          setMessageCache(prev => {
+            const updated = { ...prev };
+            delete updated[threadId];
+            return updated;
+          });
+          setMessageCacheTimestamps(prev => {
+            const updated = { ...prev };
+            delete updated[threadId];
+            return updated;
+          });
+          console.log('[ChatPage-PostgreSQL] ✅ Background error cleanup completed');
+        } catch (cleanupError) {
+          console.error('[ChatPage-PostgreSQL] ⚠ Background cleanup failed:', cleanupError);
+        }
+      });
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Debug: log session on mount and when it changes
-  useEffect(() => {
-    console.log('[ChatPage-PostgreSQL] 👤 Session updated:', JSON.stringify(session, null, 2));
-  }, [session]);
-
-  // Sync isLoading across tabs/windows
-  useEffect(() => {
-    function handleStorage(e: StorageEvent) {
-      if (e.key === 'czsu-chat-isLoading') {
-        setIsLoading(e.newValue === 'true');
-      }
-    }
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
-
-  useEffect(() => {
-    if (isLoading) {
-      localStorage.setItem('czsu-chat-isLoading', 'true');
-    } else {
-      localStorage.setItem('czsu-chat-isLoading', 'false');
-    }
-  }, [isLoading]);
-
-  const handleSQLButtonClick = (msgId: string) => {
-    setOpenSQLModalForMsgId(msgId);
-  };
-
-  const handleCloseSQLModal = () => {
-    setOpenSQLModalForMsgId(null);
   };
 
   // UI
@@ -741,10 +970,10 @@ export default function ChatPage() {
                       style={{fontFamily: 'var(--font-inter)'}}
                       onClick={() => setActiveThreadId(s.thread_id)}
                       onDoubleClick={() => { setEditingTitleId(s.thread_id); setNewTitle(s.title || ''); }}
-                      title={`${s.title} (${s.run_count} messages)`}
+                      title={`${s.full_prompt || s.title || 'New Chat'}${s.full_prompt && s.full_prompt.length === 50 ? '...' : ''} (${s.run_count} messages)`}
                     >
-                      <div className="truncate block">{s.title}</div>
-                      <div className="text-xs text-gray-400 truncate">{s.run_count} messages</div>
+                      <div className="truncate block leading-tight">{s.title || 'New Chat'}</div>
+                      <div className="text-xs text-gray-400 truncate mt-1">{s.run_count} messages</div>
                     </button>
                     <button
                       className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors"
@@ -807,4 +1036,4 @@ export default function ChatPage() {
       </div>
     </div>
   );
-} 
+}

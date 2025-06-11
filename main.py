@@ -249,7 +249,8 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
             "messages": [SystemMessage(content=""), AIMessage(content="")],  # Initialize for new conversation
             "iteration": 0,
             "queries_and_results": [],
-            "chromadb_missing": False
+            "chromadb_missing": False,
+            "final_answer": ""  # Initialize final_answer field
         }
     
     # Execute the graph with checkpoint configuration asynchronously
