@@ -44,6 +44,120 @@ const SimpleProgressBar = ({ messageId, startedAt }: SimpleProgressBarProps) => 
     );
 };
 
+interface FeedbackComponentProps {
+    messageId: string;
+    threadId: string;
+    onFeedbackSubmit: (messageId: string, feedback: number, comment?: string) => void;
+    feedbackState: { [key: string]: { feedback: number | null; hasSubmitted: boolean } };
+}
+
+const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackState }: FeedbackComponentProps) => {
+    const [showCommentBox, setShowCommentBox] = React.useState(false);
+    const [comment, setComment] = React.useState('');
+    const commentButtonRef = React.useRef<HTMLButtonElement>(null);
+    const messageFeedback = feedbackState[messageId] || { feedback: null, hasSubmitted: false };
+
+    const handleFeedback = (feedback: number) => {
+        if (messageFeedback.hasSubmitted) return; // Prevent multiple submissions
+        onFeedbackSubmit(messageId, feedback, comment || undefined);
+        setShowCommentBox(false);
+        setComment('');
+    };
+
+    const handleCommentSubmit = () => {
+        if (messageFeedback.hasSubmitted) return;
+        // Submit with last selected feedback or default to neutral
+        const feedbackValue = messageFeedback.feedback !== null ? messageFeedback.feedback : 1;
+        onFeedbackSubmit(messageId, feedbackValue, comment || undefined);
+        setShowCommentBox(false);
+        setComment('');
+    };
+
+    if (messageFeedback.hasSubmitted) {
+        // Show submitted state
+        return (
+            <div className="flex items-center space-x-2 text-xs text-gray-500">
+                <span>
+                    {messageFeedback.feedback === 1 ? '👍' : '👎'} Feedback submitted
+                </span>
+            </div>
+        );
+    }
+
+    return (
+        <div className="flex items-center space-x-2 relative">
+            {/* Thumbs up */}
+            <button
+                onClick={() => handleFeedback(1)}
+                className={`p-1 rounded transition-colors ${
+                    messageFeedback.feedback === 1 
+                        ? 'text-blue-600 bg-blue-50' 
+                        : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                }`}
+                title="Good response"
+            >
+                👍
+            </button>
+            
+            {/* Thumbs down */}
+            <button
+                onClick={() => handleFeedback(0)}
+                className={`p-1 rounded transition-colors ${
+                    messageFeedback.feedback === 0 
+                        ? 'text-blue-600 bg-blue-50' 
+                        : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                }`}
+                title="Poor response"
+            >
+                👎
+            </button>
+            
+            {/* Comment button */}
+            <button
+                ref={commentButtonRef}
+                onClick={() => setShowCommentBox(!showCommentBox)}
+                className={`p-1 rounded transition-colors ${
+                    showCommentBox 
+                        ? 'text-blue-600 bg-blue-50' 
+                        : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                }`}
+                title="Add comment"
+            >
+                💬
+            </button>
+            
+            {/* Comment box - positioned above the comment icon */}
+            {showCommentBox && (
+                <div className="absolute bottom-full right-0 mb-2 p-3 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[300px] z-20">
+                    <textarea
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        placeholder="Share your feedback..."
+                        className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
+                        rows={3}
+                        autoFocus
+                    />
+                    <div className="flex justify-end space-x-2 mt-2">
+                        <button
+                            onClick={() => setShowCommentBox(false)}
+                            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleCommentSubmit}
+                            className="px-4 py-2 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={!comment.trim()}
+                        >
+                            Submit
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
 interface MessageAreaProps {
     messages: any[];
     threadId: string | null;
@@ -58,12 +172,117 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     
+    // State for feedback functionality
+    const [feedbackState, setFeedbackState] = React.useState<{ [key: string]: { feedback: number | null; hasSubmitted: boolean } }>({});
+    const [runIds, setRunIds] = React.useState<{ [key: string]: string }>({});
+    
     // Auto-scroll to bottom when messages change or thread changes
     React.useEffect(() => {
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages, threadId]);
+
+    // Load run_ids for feedback when thread changes
+    React.useEffect(() => {
+        if (threadId && messages.length > 0) { // Only load when we have both thread and messages
+            loadRunIds(threadId);
+        }
+    }, [threadId, messages.length]); // Added messages.length dependency
+
+    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
+
+    const loadRunIds = async (currentThreadId: string) => {
+        try {
+            // Get fresh session token
+            const session = await fetch('/api/auth/session').then(res => res.json());
+            if (!session?.id_token) {
+                console.error('[MessageArea] No valid session for run_id loading');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE}/chat/${currentThreadId}/run-ids`, {
+                headers: {
+                    'Authorization': `Bearer ${session.id_token}`
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                const runIdMap: { [key: string]: string } = {};
+                
+                // More sophisticated mapping - match by message content or order
+                const aiMessages = messages.filter(msg => !msg.isUser && !msg.isLoading);
+                
+                data.run_ids.forEach((item: any, index: number) => {
+                    if (aiMessages[index]) {
+                        runIdMap[aiMessages[index].id] = item.run_id;
+                    }
+                });
+                
+                setRunIds(runIdMap);
+                console.log('[MessageArea] Loaded run_ids:', runIdMap);
+            }
+        } catch (error) {
+            console.error('[MessageArea] Failed to load run_ids:', error);
+        }
+    };
+
+    const handleFeedbackSubmit = async (messageId: string, feedback: number, comment?: string) => {
+        // First try to get run_id from message meta, then from runIds state
+        const message = messages.find(msg => msg.id === messageId);
+        let runId = message?.meta?.run_id || runIds[messageId];
+        
+        if (!runId) {
+            console.error('[MessageArea] No run_id found for message:', messageId);
+            // Try to reload run_ids if missing
+            if (threadId) {
+                await loadRunIds(threadId);
+                runId = runIds[messageId];
+                if (!runId) {
+                    console.error('[MessageArea] Still no run_id after reload');
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
+
+        try {
+            // Get fresh session token
+            const session = await fetch('/api/auth/session').then(res => res.json());
+            if (!session?.id_token) {
+                console.error('[MessageArea] No valid session for feedback submission');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE}/feedback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.id_token}`
+                },
+                body: JSON.stringify({
+                    run_id: runId,
+                    feedback: feedback,
+                    comment: comment
+                })
+            });
+
+            if (response.ok) {
+                console.log('[MessageArea] Feedback submitted successfully for run_id:', runId);
+                // Update feedback state to show submission
+                setFeedbackState(prev => ({
+                    ...prev,
+                    [messageId]: { feedback, hasSubmitted: true }
+                }));
+            } else {
+                console.error('[MessageArea] Failed to submit feedback:', response.status);
+            }
+        } catch (error) {
+            console.error('[MessageArea] Error submitting feedback:', error);
+        }
+    };
 
     return (
         <div 
@@ -117,45 +336,58 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                 </div>
                                 {/* Dataset used and SQL button for AI answers */}
                                 {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery) && (
-                                    <div className="mt-3 flex items-center space-x-3 flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
-                                        {/* Show multiple dataset codes if available */}
-                                        {message.meta?.datasetsUsed && message.meta.datasetsUsed.length > 0 ? (
-                                            <div className="flex items-center space-x-2 flex-wrap">
-                                                <span className="text-xs text-gray-500 mr-1">Dataset{message.meta.datasetsUsed.length > 1 ? 's' : ''} used:</span>
-                                                {message.meta.datasetsUsed.map((code: string, index: number) => (
-                                                    <Link
-                                                        key={index}
-                                                        href={`/data?table=${encodeURIComponent(code)}`}
-                                                        className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
-                                                        style={{ textDecoration: 'none' }}
-                                                    >
-                                                        {code}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            /* Fallback to old single dataset approach for backward compatibility */
-                                            (message.selectionCode || message.meta?.datasetUrl) && (
-                                                <div>
-                                                    <span className="text-xs text-gray-500 mr-1">Dataset used:</span>
-                                                    <Link
-                                                        href={`/data?table=${encodeURIComponent(message.selectionCode || message.meta?.datasetUrl.replace('/datasets/', ''))}`}
-                                                        className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
-                                                        style={{ textDecoration: 'none' }}
-                                                    >
-                                                        {message.selectionCode || (message.meta?.datasetUrl ? message.meta.datasetUrl.replace('/datasets/', '') : '')}
-                                                    </Link>
+                                    <div className="mt-3 flex items-center justify-between flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
+                                        <div className="flex items-center space-x-3 flex-wrap">
+                                            {/* Show multiple dataset codes if available */}
+                                            {message.meta?.datasetsUsed && message.meta.datasetsUsed.length > 0 ? (
+                                                <div className="flex items-center space-x-2 flex-wrap">
+                                                    <span className="text-xs text-gray-500 mr-1">Dataset{message.meta.datasetsUsed.length > 1 ? 's' : ''} used:</span>
+                                                    {message.meta.datasetsUsed.map((code: string, index: number) => (
+                                                        <Link
+                                                            key={index}
+                                                            href={`/data?table=${encodeURIComponent(code)}`}
+                                                            className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
+                                                            style={{ textDecoration: 'none' }}
+                                                        >
+                                                            {code}
+                                                        </Link>
+                                                    ))}
                                                 </div>
-                                            )
+                                            ) : (
+                                                /* Fallback to old single dataset approach for backward compatibility */
+                                                (message.selectionCode || message.meta?.datasetUrl) && (
+                                                    <div>
+                                                        <span className="text-xs text-gray-500 mr-1">Dataset used:</span>
+                                                        <Link
+                                                            href={`/data?table=${encodeURIComponent(message.selectionCode || message.meta?.datasetUrl.replace('/datasets/', ''))}`}
+                                                            className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
+                                                            style={{ textDecoration: 'none' }}
+                                                        >
+                                                            {message.selectionCode || (message.meta?.datasetUrl ? message.meta.datasetUrl.replace('/datasets/', '') : '')}
+                                                        </Link>
+                                                    </div>
+                                                )
+                                            )}
+                                            {message.meta?.sqlQuery && (
+                                                <button
+                                                    className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
+                                                    onClick={() => onSQLClick(message.id)}
+                                                >
+                                                    SQL
+                                                </button>
+                                            )}
+                                        </div>
+                                        
+                                        {/* Feedback component aligned to the right */}
+                                        {threadId && (
+                                            <FeedbackComponent
+                                                messageId={message.id}
+                                                threadId={threadId}
+                                                onFeedbackSubmit={handleFeedbackSubmit}
+                                                feedbackState={feedbackState}
+                                            />
                                         )}
-                                        {message.meta?.sqlQuery && (
-                                            <button
-                                                className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
-                                                onClick={() => onSQLClick(message.id)}
-                                            >
-                                                SQL
-                                            </button>
-                                        )}
+                                        
                                         {/* SQL Modal for this message */}
                                         {openSQLModalForMsgId === message.id && (
                                             <Modal open={true} onClose={onCloseSQLModal}>
@@ -193,6 +425,18 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 </div>
                                             </Modal>
                                         )}
+                                    </div>
+                                )}
+                                
+                                {/* Show feedback component even when no datasets/SQL - for messages without metadata */}
+                                {!message.isUser && !message.isLoading && threadId && !(message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery) && (
+                                    <div className="mt-3 flex justify-end">
+                                        <FeedbackComponent
+                                            messageId={message.id}
+                                            threadId={threadId}
+                                            onFeedbackSubmit={handleFeedbackSubmit}
+                                            feedbackState={feedbackState}
+                                        />
                                     </div>
                                 )}
                             </div>

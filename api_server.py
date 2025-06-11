@@ -2,6 +2,7 @@ import sys
 import asyncio
 from contextlib import asynccontextmanager
 from datetime import datetime
+import uuid
 
 # Configure asyncio event loop policy for Windows compatibility with psycopg
 if sys.platform == "win32":
@@ -19,6 +20,7 @@ import json
 import os
 from jwt.algorithms import RSAAlgorithm
 from langchain_core.messages import BaseMessage
+from langsmith import Client
 
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
@@ -144,6 +146,11 @@ class AnalyzeRequest(BaseModel):
     prompt: str
     thread_id: str
 
+class FeedbackRequest(BaseModel):
+    run_id: str
+    feedback: int  # 1 for thumbs up, 0 for thumbs down
+    comment: Optional[str] = None
+
 class ChatThreadResponse(BaseModel):
     thread_id: str
     latest_timestamp: str
@@ -208,14 +215,14 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     checkpointer = await get_healthy_checkpointer()
     
     try:
-        # Create thread run entry before analysis - now including the user's prompt
+        # Create thread run entry before analysis - this generates the run_id we'll use for LangSmith
         print(f"[API-PostgreSQL] 🔄 Creating thread run entry for user {user_email}, thread {request.thread_id}, prompt: {request.prompt[:50]}...")
         run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
         print(f"[API-PostgreSQL] ✅ Thread run entry created with run_id: {run_id}")
         
-        result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer)
+        result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id)
         
-        # Add run_id to result
+        # Add run_id to result so frontend can use it for feedback
         result["run_id"] = run_id
         print(f"[API-PostgreSQL] 🎉 Analysis completed successfully for run_id: {run_id}")
         
@@ -237,10 +244,13 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             fallback_checkpointer = InMemorySaver()
             
             try:
-                result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=fallback_checkpointer)
+                # For fallback, still generate a run_id for consistency
+                fallback_run_id = str(uuid.uuid4())
+                result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=fallback_checkpointer, run_id=fallback_run_id)
                 # Add warning to the result
                 if isinstance(result, dict):
                     result["warning"] = "Persistent memory temporarily unavailable - using session-only memory"
+                    result["run_id"] = fallback_run_id
                 print(f"[API-PostgreSQL] ✅ Fallback analysis completed for thread {request.thread_id}")
                 return result
             except Exception as fallback_error:
@@ -250,6 +260,35 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             # Re-raise non-connection errors
             print(f"[API-PostgreSQL] ✗ Analysis error: {e}")
             raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
+
+@app.post("/feedback")
+async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
+    """Submit feedback for a specific run_id to LangSmith."""
+    
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+    
+    print(f"[API-LangSmith] 📥 Feedback request - User: {user_email}, Run ID: {request.run_id}, Feedback: {request.feedback}")
+    
+    try:
+        # Initialize LangSmith client
+        client = Client()
+        
+        # Create feedback with SENTIMENT key as requested
+        client.create_feedback(
+            request.run_id,
+            key="SENTIMENT",
+            score=request.feedback,  # 1 for thumbs up, 0 for thumbs down
+            comment=request.comment if request.comment else None
+        )
+        
+        print(f"[API-LangSmith] ✅ Feedback submitted successfully for run_id: {request.run_id}")
+        return {"message": "Feedback submitted successfully", "run_id": request.run_id}
+        
+    except Exception as e:
+        print(f"[API-LangSmith] ❌ Failed to submit feedback for run_id {request.run_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {e}")
 
 @app.get("/chat-threads")
 async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadResponse]:
@@ -833,4 +872,46 @@ async def debug_pool_status():
         return {
             "error": str(e),
             "timestamp": datetime.now().isoformat()
-        } 
+        }
+
+@app.get("/chat/{thread_id}/run-ids")
+async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
+    """Get run_ids for messages in a thread to enable feedback submission."""
+    
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+    
+    print(f"[API-LangSmith] 📥 Getting run_ids for thread: {thread_id}, user: {user_email}")
+    
+    try:
+        # Get a healthy pool
+        pool = await get_healthy_checkpointer()
+        pool = pool.conn if hasattr(pool, 'conn') else None
+        
+        if not pool:
+            return {"run_ids": []}
+        
+        async with pool.connection() as conn:
+            # Get all run_ids for this thread and user, ordered by timestamp
+            result = await conn.execute("""
+                SELECT run_id, prompt, timestamp
+                FROM users_threads_runs 
+                WHERE email = %s AND thread_id = %s
+                ORDER BY timestamp ASC
+            """, (user_email, thread_id))
+            
+            run_id_data = []
+            async for row in result:
+                run_id_data.append({
+                    "run_id": row[0],
+                    "prompt": row[1],
+                    "timestamp": row[2].isoformat()
+                })
+            
+            print(f"[API-LangSmith] ✅ Found {len(run_id_data)} run_ids for thread {thread_id}")
+            return {"run_ids": run_id_data}
+            
+    except Exception as e:
+        print(f"[API-LangSmith] ❌ Failed to get run_ids for thread {thread_id}: {e}")
+        return {"run_ids": []} 

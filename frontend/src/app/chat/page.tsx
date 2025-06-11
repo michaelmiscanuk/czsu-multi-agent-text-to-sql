@@ -58,8 +58,11 @@ export default function ChatPage() {
   const { data: session, status, update } = useSession();
   const userEmail = session?.user?.email || null;
   
+  console.log('[ChatPage-DEBUG] 🔄 Component render - Status:', status, 'UserEmail:', !!userEmail, 'Timestamp:', new Date().toISOString());
+  
   // Show loading while session is being fetched
   if (status === "loading") {
+    console.log('[ChatPage-DEBUG] ⏳ Session loading state');
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -72,6 +75,7 @@ export default function ChatPage() {
   
   // Redirect to login if not authenticated
   if (status === "unauthenticated" || !userEmail) {
+    console.log('[ChatPage-DEBUG] ❌ Not authenticated - Status:', status, 'UserEmail:', !!userEmail);
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -105,6 +109,15 @@ export default function ChatPage() {
   const [messageCache, setMessageCache] = useState<Record<string, ChatMessage[]>>({});
   const [threadsCacheTimestamp, setThreadsCacheTimestamp] = useState<number>(0);
   const [messageCacheTimestamps, setMessageCacheTimestamps] = useState<Record<string, number>>({});
+  
+  // NEW: Cache restoration state to prevent race conditions
+  const [cacheRestored, setCacheRestored] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+  
+  // Debug logging for state changes
+  React.useEffect(() => {
+    console.log('[ChatPage-DEBUG] 📊 State Update - threads:', threads.length, 'activeThreadId:', activeThreadId, 'messages:', messages.length, 'threadsLoaded:', threadsLoaded, 'threadsLoading:', threadsLoading, 'cacheRestored:', cacheRestored);
+  }, [threads.length, activeThreadId, messages.length, threadsLoaded, threadsLoading, cacheRestored]);
   
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
@@ -185,6 +198,7 @@ export default function ChatPage() {
 
   // PostgreSQL API functions with simplified caching (chatbot-style)
   const loadThreadsFromPostgreSQL = async () => {
+    console.log('[ChatPage-DEBUG] ⏱️ loadThreadsFromPostgreSQL called at:', new Date().toISOString());
     console.log('[ChatPage-PostgreSQL] 🔄 Loading threads from PostgreSQL for user:', userEmail);
     
     if (!userEmail) {
@@ -192,13 +206,17 @@ export default function ChatPage() {
       return;
     }
 
-    // Check cache first
+    // Check cache first - if valid, use it immediately and exit
     const cacheValid = isCacheValid(threadsCacheTimestamp, THREADS_CACHE_DURATION);
+    console.log('[ChatPage-DEBUG] 📊 Cache check in loadThreads - timestamp:', threadsCacheTimestamp, 'valid:', cacheValid, 'threadsCache.length:', threadsCache.length);
+    
     if (cacheValid && threadsCache.length > 0) {
-      console.log('[ChatPage-Cache] 💾 Using cached threads data');
+      console.log('[ChatPage-Cache] 💾 Using cached threads data - instant load');
       setThreads(threadsCache);
       setThreadsLoaded(true);
-      return;
+      setThreadsLoading(false);
+      console.log('[ChatPage-DEBUG] ✅ loadThreads completed with cache');
+      return; // Exit early - no API call needed
     }
     console.log('[ChatPage-Cache] ⏰ Threads cache expired or empty, fetching fresh data');
 
@@ -207,6 +225,7 @@ export default function ChatPage() {
       return;
     }
 
+    console.log('[ChatPage-DEBUG] 🔄 Setting threadsLoading = true');
     setThreadsLoading(true);
 
     try {
@@ -377,8 +396,10 @@ export default function ChatPage() {
     if (cacheValid && cachedMessages && cachedMessages.length > 0) {
       console.log('[ChatPage-Cache] 💾 Using cached COMPLETE messages for thread:', threadId, `(${cachedMessages.length} messages)`);
       setMessages(cachedMessages);
-      return;
+      return; // Exit early - no API call needed
     }
+    
+    // Only show loading behavior if we don't have valid cache
     console.log('[ChatPage-Cache] ⏰ Message cache expired or empty for thread:', threadId, 'fetching COMPLETE conversation history');
     
     try {
@@ -494,17 +515,28 @@ export default function ChatPage() {
 
   // Load threads from PostgreSQL when user email is available (with simplified caching)
   useEffect(() => {
+    console.log('[ChatPage-DEBUG] 🔄 Thread loading useEffect triggered - Status:', status, 'UserEmail:', !!userEmail, 'threadsLoaded:', threadsLoaded, 'threadsLoading:', threadsLoading, 'cacheRestored:', cacheRestored);
+    
     // Only attempt to load threads when session is authenticated and we have userEmail
     if (status !== "authenticated" || !userEmail) {
       console.log('[ChatPage-PostgreSQL] ⏳ Waiting for authentication... Status:', status, 'UserEmail:', !!userEmail);
       return;
     }
     
+    // IMPORTANT: Don't trigger loading if cache was already restored during navigation
+    if (cacheRestored) {
+      console.log('[ChatPage-PostgreSQL] ✅ Cache already restored, skipping API load');
+      return;
+    }
+    
+    // Don't load if already loaded or currently loading
     if (!threadsLoaded && !threadsLoading) {
       console.log('[ChatPage-PostgreSQL] 🚀 Initial thread load triggered - authenticated user:', userEmail);
       loadThreadsFromPostgreSQL();
+    } else {
+      console.log('[ChatPage-DEBUG] ⏭️ Skipping thread load - threadsLoaded:', threadsLoaded, 'threadsLoading:', threadsLoading);
     }
-  }, [status, userEmail, threadsLoaded, threadsLoading]);
+  }, [status, userEmail, threadsLoaded, threadsLoading, cacheRestored]);
 
   // Debug: log session changes
   useEffect(() => {
@@ -519,14 +551,30 @@ export default function ChatPage() {
 
   // Load messages for active session (now using PostgreSQL checkpoints with simplified caching)
   useEffect(() => {
-    if (!userEmail || !activeThreadId) {
-      setMessages([]);
+    console.log('[ChatPage-DEBUG] 📄 Message loading useEffect triggered - UserEmail:', !!userEmail, 'activeThreadId:', activeThreadId, 'threadsLoaded:', threadsLoaded, 'cacheRestored:', cacheRestored, 'messages.length:', messages.length);
+    
+    if (!userEmail || !activeThreadId || !threadsLoaded) {
+      console.log('[ChatPage-PostgreSQL] ⏳ Not ready to load messages:', {
+        userEmail: !!userEmail,
+        activeThreadId: !!activeThreadId,
+        threadsLoaded
+      });
+      if (!activeThreadId) {
+        console.log('[ChatPage-DEBUG] 🗑️ Clearing messages - no active thread');
+        setMessages([]); // Clear messages when no active thread
+      }
+      return;
+    }
+    
+    // IMPORTANT: If cache was restored and we already have messages, don't reload
+    if (cacheRestored && messages.length > 0) {
+      console.log('[ChatPage-PostgreSQL] ✅ Messages already restored from cache, skipping API load');
       return;
     }
     
     console.log('[ChatPage-PostgreSQL] 📄 Loading messages for thread:', activeThreadId);
     loadMessagesFromCheckpoint(activeThreadId);
-  }, [userEmail, activeThreadId]);
+  }, [userEmail, activeThreadId, threadsLoaded, cacheRestored]); // Added cacheRestored dependency
 
   // Remember last active chat in localStorage
   useEffect(() => {
@@ -538,23 +586,39 @@ export default function ChatPage() {
 
   // Restore last active chat on mount
   useEffect(() => {
-    if (!userEmail) return;
+    if (!userEmail || !threadsLoaded) return; // Wait for threads to be loaded
+    
+    // IMPORTANT: Don't override activeThreadId if cache restoration already set it
+    if (cacheRestored && activeThreadId) {
+      console.log('[ChatPage-PostgreSQL] ✅ Active thread already restored from cache:', activeThreadId);
+      return;
+    }
+    
     const lastActive = localStorage.getItem('czsu-last-active-chat');
     if (lastActive && threads.length > 0) {
       // Check if the last active thread still exists
       const threadExists = threads.some(t => t.thread_id === lastActive);
-      if (threadExists) {
-        setActiveThreadId(lastActive);
+      if (threadExists && activeThreadId !== lastActive) { // Only set if different
         console.log('[ChatPage-PostgreSQL] 🔄 Restored active thread from localStorage:', lastActive);
-      } else {
+        setActiveThreadId(lastActive);
+        // Small delay to ensure proper loading order
+        setTimeout(() => {
+          console.log('[ChatPage-PostgreSQL] 📄 Triggering message reload after thread restoration');
+        }, 100);
+      } else if (!threadExists) {
         console.log('[ChatPage-PostgreSQL] ⚠️ Last active thread no longer exists, clearing localStorage');
         localStorage.removeItem('czsu-last-active-chat');
+        // Select first available thread
+        if (!activeThreadId && threads.length > 0) {
+          setActiveThreadId(threads[0].thread_id);
+          console.log('[ChatPage-PostgreSQL] 🎯 Auto-selected first available thread after invalid restore:', threads[0].thread_id);
+        }
       }
     } else if (!activeThreadId && threads.length > 0) {
       setActiveThreadId(threads[0].thread_id);
       console.log('[ChatPage-PostgreSQL] 🎯 Auto-selected first available thread:', threads[0].thread_id);
     }
-  }, [userEmail, threads.length]);
+  }, [userEmail, threads.length, threadsLoaded, cacheRestored]); // Added cacheRestored dependency
 
   // Auto-scroll sidebar to top when entering chat menu
   useEffect(() => {
@@ -586,41 +650,162 @@ export default function ChatPage() {
 
   // Smart cache invalidation: Only clear on actual page refresh, not on navigation
   useEffect(() => {
+    console.log('[ChatPage-DEBUG] 🚀 Cache invalidation useEffect triggered - Start timestamp:', new Date().toISOString());
+    
     const isPageRefresh = () => {
-      // Method 1: Check navigation type (most reliable)
-      if (typeof window !== 'undefined' && window.performance) {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-        if (navigation) {
-          // navigation.type === 'reload' means F5/Ctrl+R refresh
-          return navigation.type === 'reload';
-        }
-      }
+      console.log('[ChatPage-DEBUG] 🔍 Checking if page refresh...');
       
-      // Method 2: Fallback using sessionStorage
-      const sessionKey = 'czsu-chat-navigation-marker';
-      const wasNavigated = sessionStorage.getItem(sessionKey);
+      // Method 1: Check if this is the first render after a hard refresh
+      // Use a combination of sessionStorage and performance timing
+      const sessionKey = 'czsu-chat-session-active';
+      const pageLoadKey = 'czsu-chat-page-load-time';
+      const currentTime = Date.now();
       
-      if (!wasNavigated) {
-        // First visit in this session - likely a page refresh or new tab
+      // Check if session storage exists (survives navigation but not refresh)
+      const sessionActive = sessionStorage.getItem(sessionKey);
+      const lastPageLoad = sessionStorage.getItem(pageLoadKey);
+      
+      console.log('[ChatPage-DEBUG] 📊 Session check - sessionActive:', !!sessionActive, 'lastPageLoad:', lastPageLoad);
+      
+      // If no session marker, this is likely a fresh page load (F5, new tab, direct URL)
+      if (!sessionActive) {
         sessionStorage.setItem(sessionKey, 'true');
+        sessionStorage.setItem(pageLoadKey, currentTime.toString());
+        console.log('[ChatPage-DEBUG] 📊 No session marker - treating as page refresh');
         return true;
       }
       
-      // Subsequent visits are navigation within the app
+      // If session exists, check if this is a very recent page load (within 1 second)
+      // This catches F5 refreshes where sessionStorage might persist briefly
+      if (lastPageLoad) {
+        const timeSinceLoad = currentTime - parseInt(lastPageLoad);
+        console.log('[ChatPage-DEBUG] 📊 Time since last load:', timeSinceLoad, 'ms');
+        
+        if (timeSinceLoad < 1000) { // Less than 1 second = likely a refresh
+          sessionStorage.setItem(pageLoadKey, currentTime.toString());
+          console.log('[ChatPage-DEBUG] 📊 Recent page load detected - treating as page refresh');
+          return true;
+        }
+      }
+      
+      // Method 2: Check navigation timing as secondary indicator
+      if (typeof window !== 'undefined' && window.performance) {
+        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        if (navigation) {
+          console.log('[ChatPage-DEBUG] 📊 Navigation type detected:', navigation.type);
+          
+          // Only trust 'reload' type if we don't have session markers indicating navigation
+          if (navigation.type === 'reload' && !sessionActive) {
+            console.log('[ChatPage-DEBUG] 📊 Navigation API confirms page refresh');
+            return true;
+          }
+        }
+      }
+      
+      // Method 3: Check document.referrer for navigation context
+      if (typeof document !== 'undefined' && document.referrer) {
+        const referrer = new URL(document.referrer);
+        const current = new URL(window.location.href);
+        
+        // If referrer is from the same origin and different path, it's likely navigation
+        if (referrer.origin === current.origin && referrer.pathname !== current.pathname) {
+          console.log('[ChatPage-DEBUG] 📊 Same-origin navigation detected from:', referrer.pathname, 'to:', current.pathname);
+          sessionStorage.setItem(pageLoadKey, currentTime.toString());
+          return false; // This is navigation, not refresh
+        }
+      }
+      
+      // Default: if we have session markers, treat as navigation
+      console.log('[ChatPage-DEBUG] 📊 Session markers exist - treating as navigation');
+      sessionStorage.setItem(pageLoadKey, currentTime.toString());
       return false;
     };
 
     const shouldClearCache = isPageRefresh();
+    console.log('[ChatPage-DEBUG] 🎯 Cache decision - shouldClearCache:', shouldClearCache);
     
     if (shouldClearCache) {
       console.log('[ChatPage-Cache] 🔄 Actual page refresh detected - invalidating caches for fresh data');
+      console.log('[ChatPage-DEBUG] 🗑️ Clearing all cache states...');
       setThreadsCacheTimestamp(0);
       setMessageCacheTimestamps({});
       setThreadsCache([]);
       setMessageCache({});
+      setThreadsLoaded(false); // Reset loading state for fresh data
+      setCacheRestored(false);
+      setIsNavigating(false);
+      console.log('[ChatPage-DEBUG] ✅ Cache cleared for fresh data');
     } else {
-      console.log('[ChatPage-Cache] 🚀 Navigation detected - preserving cached data');
+      console.log('[ChatPage-Cache] 🚀 Navigation detected - IMMEDIATE cache restoration');
+      console.log('[ChatPage-DEBUG] ⏱️ Starting navigation cache restoration at:', new Date().toISOString());
+      setIsNavigating(true);
+      
+      // IMMEDIATE: Check if we have valid cached data
+      const cacheValid = isCacheValid(threadsCacheTimestamp, THREADS_CACHE_DURATION);
+      console.log('[ChatPage-DEBUG] 📊 Cache validation - timestamp:', threadsCacheTimestamp, 'valid:', cacheValid, 'threadsCache.length:', threadsCache.length);
+      
+      if (cacheValid && threadsCache.length > 0) {
+        console.log('[ChatPage-Cache] ⚡ INSTANT cache restoration - no loading states allowed');
+        console.log('[ChatPage-DEBUG] 🔄 Restoring threads cache:', threadsCache.length, 'threads');
+        
+        // Set ALL states immediately in a single batch to prevent any loading UI
+        setThreads(threadsCache);
+        setThreadsLoaded(true);
+        setThreadsLoading(false);
+        setCacheRestored(true);
+        console.log('[ChatPage-DEBUG] ✅ Basic states restored');
+        
+        // Immediately restore active thread and messages
+        const lastActive = localStorage.getItem('czsu-last-active-chat');
+        console.log('[ChatPage-DEBUG] 📊 LastActive from localStorage:', lastActive);
+        
+        if (lastActive && threadsCache.some(t => t.thread_id === lastActive)) {
+          console.log('[ChatPage-DEBUG] 🎯 Restoring active thread:', lastActive);
+          setActiveThreadId(lastActive);
+          
+          // Also immediately restore messages if cached
+          const msgCacheTimestamp = messageCacheTimestamps[lastActive] || 0;
+          const msgCacheValid = isCacheValid(msgCacheTimestamp, MESSAGES_CACHE_DURATION);
+          const cachedMessages = messageCache[lastActive];
+          console.log('[ChatPage-DEBUG] 📊 Message cache check - timestamp:', msgCacheTimestamp, 'valid:', msgCacheValid, 'messages:', cachedMessages?.length || 0);
+          
+          if (msgCacheValid && cachedMessages) {
+            console.log('[ChatPage-Cache] ⚡ INSTANT message restoration for thread:', lastActive);
+            setMessages(cachedMessages);
+            console.log('[ChatPage-DEBUG] ✅ Messages restored:', cachedMessages.length);
+          }
+          
+          console.log('[ChatPage-Cache] ✅ Complete instant restoration - thread and messages');
+        } else if (threadsCache.length > 0) {
+          const firstThread = threadsCache[0].thread_id;
+          console.log('[ChatPage-DEBUG] 🎯 Setting first thread as active:', firstThread);
+          setActiveThreadId(firstThread);
+          
+          // Also restore messages for first thread if available
+          const msgCacheTimestamp = messageCacheTimestamps[firstThread] || 0;
+          const msgCacheValid = isCacheValid(msgCacheTimestamp, MESSAGES_CACHE_DURATION);
+          const cachedMessages = messageCache[firstThread];
+          console.log('[ChatPage-DEBUG] 📊 First thread message cache check - valid:', msgCacheValid, 'messages:', cachedMessages?.length || 0);
+          
+          if (msgCacheValid && cachedMessages) {
+            console.log('[ChatPage-Cache] ⚡ INSTANT message restoration for first thread:', firstThread);
+            setMessages(cachedMessages);
+            console.log('[ChatPage-DEBUG] ✅ First thread messages restored:', cachedMessages.length);
+          }
+          
+          console.log('[ChatPage-Cache] ✅ Set first thread as active with instant restoration');
+        }
+      } else {
+        console.log('[ChatPage-Cache] ⚠️ No valid cache available for navigation');
+        console.log('[ChatPage-DEBUG] 📊 Cache invalid - timestamp:', threadsCacheTimestamp, 'valid:', cacheValid, 'threadsCache.length:', threadsCache.length);
+        setCacheRestored(false);
+      }
+      
+      setIsNavigating(false);
+      console.log('[ChatPage-DEBUG] ⏱️ Navigation cache restoration completed at:', new Date().toISOString());
     }
+    
+    console.log('[ChatPage-DEBUG] 🏁 Cache invalidation useEffect completed');
   }, []); // Empty dependency array = runs only on component mount
 
   // Debug: log session on mount and when it changes
@@ -846,7 +1031,8 @@ export default function ChatPage() {
           meta: {
             datasetsUsed: data.top_selection_codes || [],
             sqlQuery: data.sql || null,
-            datasetUrl: data.datasetUrl || null
+            datasetUrl: data.datasetUrl || null,
+            run_id: data.run_id // Store run_id for feedback
           },
           queriesAndResults: data.queries_and_results || []
         };
@@ -956,7 +1142,7 @@ export default function ChatPage() {
         
         {/* Sidebar Chat List with Scroll */}
         <div ref={sidebarRef} className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-1 chat-scrollbar">
-          {threadsLoading ? (
+          {(threadsLoading && !cacheRestored) ? (
             <div className="text-center py-8">
               <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
               <div className="text-sm text-gray-500">Loading your chats...</div>
@@ -990,10 +1176,9 @@ export default function ChatPage() {
                       style={{fontFamily: 'var(--font-inter)'}}
                       onClick={() => setActiveThreadId(s.thread_id)}
                       onDoubleClick={() => { setEditingTitleId(s.thread_id); setNewTitle(s.title || ''); }}
-                      title={`${s.full_prompt || s.title || 'New Chat'}${s.full_prompt && s.full_prompt.length === 50 ? '...' : ''} (${s.run_count} messages)`}
+                      title={`${s.full_prompt || s.title || 'New Chat'}${s.full_prompt && s.full_prompt.length === 50 ? '...' : ''}`}
                     >
                       <div className="truncate block leading-tight">{s.title || 'New Chat'}</div>
-                      <div className="text-xs text-gray-400 truncate mt-1">{s.run_count} messages</div>
                     </button>
                     <button
                       className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors"

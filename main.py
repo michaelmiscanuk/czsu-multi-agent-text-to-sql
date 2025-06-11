@@ -152,7 +152,7 @@ def get_used_selection_codes(queries_and_results: list, top_selection_codes: Lis
 #==============================================================================
 # MAIN FUNCTION
 #==============================================================================
-async def main(prompt=None, thread_id=None, checkpointer=None):
+async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     """Main entry point for the application.
     
     This async function serves as the central coordinator for the data analysis process.
@@ -168,6 +168,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
                                    directly, a new thread ID will be generated.
         checkpointer (optional): External checkpointer instance for shared memory. If None,
                                 creates a new InMemorySaver instance.
+        run_id (str, optional): The run ID for LangSmith tracing. If None, will generate one.
     
     Returns:
         dict: A dictionary containing the prompt, result, and thread_id for downstream
@@ -180,9 +181,11 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
         parser.add_argument('prompt', nargs='?', default=DEFAULT_PROMPT,
                            help=f'Analysis prompt (default: "{DEFAULT_PROMPT}")')
         parser.add_argument('--thread_id', type=str, default=None, help='Conversation thread ID for memory')
+        parser.add_argument('--run_id', type=str, default=None, help='Run ID for LangSmith tracing')
         args = parser.parse_args()
         prompt = args.prompt
         thread_id = args.thread_id
+        run_id = args.run_id
     
     # Ensure we always have a valid prompt to avoid None-type errors downstream
     if prompt is None:
@@ -191,6 +194,10 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
     # Use a thread_id for short-term memory (thread-level persistence)
     if thread_id is None:
         thread_id = f"data_analysis_{uuid.uuid4().hex[:8]}"
+    
+    # Generate run_id if not provided (for command-line usage)
+    if run_id is None:
+        run_id = str(uuid.uuid4())
     
     # Initialize tracing for debugging and performance monitoring
     # This is crucial for production deployments to track execution paths
@@ -209,14 +216,14 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
     
     graph = create_graph(checkpointer=checkpointer)
         
-    print(f"Processing prompt: {prompt} (thread_id={thread_id})")
+    print(f"Processing prompt: {prompt} (thread_id={thread_id}, run_id={run_id})")
     
-    # Configuration for thread-level persistence
-    config = {"configurable": {"thread_id": thread_id}}
+    # Configuration for thread-level persistence and LangSmith tracing
+    config = {"configurable": {"thread_id": thread_id}, "run_id": run_id}
     
     # Check if there's existing state for this thread to determine if this is a new or continuing conversation
     try:
-        existing_state = await graph.aget_state(config)
+        existing_state = await graph.aget_state({"configurable": {"thread_id": thread_id}})
         is_continuing_conversation = (
             existing_state and 
             existing_state.values and 
@@ -253,7 +260,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None):
             "final_answer": ""  # Initialize final_answer field
         }
     
-    # Execute the graph with checkpoint configuration asynchronously
+    # Execute the graph with checkpoint configuration and run_id for LangSmith tracing
     # Checkpoints allow resuming execution if interrupted and maintaining conversation memory
     result = await graph.ainvoke(
         input_state,
