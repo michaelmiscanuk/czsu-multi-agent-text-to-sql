@@ -584,29 +584,49 @@ export default function ChatPage() {
     }
   }, [userEmail]);
 
-  // CRITICAL: Force cache invalidation on page load/refresh (F5)
-  // This ensures fresh data is always loaded from PostgreSQL checkpoints
+  // Smart cache invalidation: Only clear on actual page refresh, not on navigation
   useEffect(() => {
-    console.log('[ChatPage-Cache] 🔄 Page loaded - invalidating ALL caches to ensure fresh data on F5');
-    setThreadsCacheTimestamp(0);
-    setMessageCacheTimestamps({});
-    setThreadsCache([]);
-    setMessageCache({});
-  }, []); // Empty dependency array = runs only on component mount (page load)
+    const isPageRefresh = () => {
+      // Method 1: Check navigation type (most reliable)
+      if (typeof window !== 'undefined' && window.performance) {
+        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        if (navigation) {
+          // navigation.type === 'reload' means F5/Ctrl+R refresh
+          return navigation.type === 'reload';
+        }
+      }
+      
+      // Method 2: Fallback using sessionStorage
+      const sessionKey = 'czsu-chat-navigation-marker';
+      const wasNavigated = sessionStorage.getItem(sessionKey);
+      
+      if (!wasNavigated) {
+        // First visit in this session - likely a page refresh or new tab
+        sessionStorage.setItem(sessionKey, 'true');
+        return true;
+      }
+      
+      // Subsequent visits are navigation within the app
+      return false;
+    };
+
+    const shouldClearCache = isPageRefresh();
+    
+    if (shouldClearCache) {
+      console.log('[ChatPage-Cache] 🔄 Actual page refresh detected - invalidating caches for fresh data');
+      setThreadsCacheTimestamp(0);
+      setMessageCacheTimestamps({});
+      setThreadsCache([]);
+      setMessageCache({});
+    } else {
+      console.log('[ChatPage-Cache] 🚀 Navigation detected - preserving cached data');
+    }
+  }, []); // Empty dependency array = runs only on component mount
 
   // Debug: log session on mount and when it changes
   useEffect(() => {
     console.log('[ChatPage-PostgreSQL] 👤 Session updated:', JSON.stringify(session, null, 2));
   }, [session]);
-
-  // Clear all caches on component mount to ensure fresh data on page refresh (F5)
-  useEffect(() => {
-    console.log('[ChatPage-Cache] 🗑️ Clearing all caches on component mount to ensure fresh data');
-    setThreadsCache([]);
-    setMessageCache({});
-    setThreadsCacheTimestamp(0);
-    setMessageCacheTimestamps({});
-  }, []); // Empty dependency array = runs only on mount
 
   // Sync isLoading across tabs/windows
   useEffect(() => {
