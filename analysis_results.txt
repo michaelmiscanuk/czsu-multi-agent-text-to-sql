@@ -49202,3 +49202,15 @@ ORDER BY "Týdny" ASC
 LIMIT 10;
   Result: [(' 01. týden 2024', '0-14', 0.3472708562), (' 01. týden 2024', '15-44', 1.5104506545), (' 01. týden 2024', '45-64', 10.1341671299), (' 01. týden 2024', '65-74', 40.3327451475), (' 01. týden 2024', '75-84', 103.0151395236), (' 01. týden 2024', '85 a více', 356.2741941009), (' 01. týden 2024', 'celkem', 22.1181398562), (' 02. týden 2024', '0-14', 0.5209062843), (' 02. týden 2024', '15-44', 1.6640558058), (' 02. týden 2024', '45-64', 9.969115548)]
 ----------------------------------------------------------------------------
+Prompt: how many people live in prague?
+Result: The total number of people living in Prague is not available as there are no results found for that query.
+Queries and Results:
+  Query: SELECT value FROM OBY01BHVDT02 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Živě narození na 1 000 obyvatel" AND "Roky" = 2023 LIMIT 10;
+  Result: 9.149886418
+  Query: SELECT value FROM OBY01BHVDT02 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Celkový počet obyvatel" AND "Roky" = 2023 LIMIT 10;
+  Result: No results found
+  Query: SELECT value FROM OBY01BHVDT02 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Živě narození na 1 000 obyvatel" AND "Roky" = 2023 LIMIT 10;
+  Result: 9.149886418
+  Query: SELECT value FROM OBY01BHVDT02 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Celkový počet obyvatel" AND "Roky" = 2023 LIMIT 10;
+  Result: No results found
+----------------------------------------------------------------------------

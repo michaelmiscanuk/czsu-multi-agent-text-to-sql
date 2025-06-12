@@ -57,35 +57,62 @@ interface FeedbackComponentProps {
 const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackState }: FeedbackComponentProps) => {
     const [showCommentBox, setShowCommentBox] = React.useState(false);
     const [comment, setComment] = React.useState('');
+    const [hasProvidedComment, setHasProvidedComment] = React.useState(false);
     const commentButtonRef = React.useRef<HTMLButtonElement>(null);
+    const commentBoxRef = React.useRef<HTMLDivElement>(null);
     const messageFeedback = feedbackState[messageId] || { feedback: null, hasSubmitted: false };
 
+    // Click outside to close comment box
+    React.useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (showCommentBox && 
+                commentBoxRef.current && 
+                commentButtonRef.current &&
+                !commentBoxRef.current.contains(event.target as Node) &&
+                !commentButtonRef.current.contains(event.target as Node)) {
+                setShowCommentBox(false);
+            }
+        };
+
+        if (showCommentBox) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showCommentBox]);
+
     const handleFeedback = (feedback: number) => {
-        if (messageFeedback.hasSubmitted) return; // Prevent multiple submissions
+        // Allow changing feedback even after previous submission
         onFeedbackSubmit(messageId, feedback, comment || undefined);
         setShowCommentBox(false);
         setComment('');
     };
 
     const handleCommentSubmit = () => {
-        if (messageFeedback.hasSubmitted) return;
         // Submit with last selected feedback or default to neutral
         const feedbackValue = messageFeedback.feedback !== null ? messageFeedback.feedback : 1;
         onFeedbackSubmit(messageId, feedbackValue, comment || undefined);
         setShowCommentBox(false);
+        setHasProvidedComment(true); // Mark that a comment was provided
         setComment('');
     };
 
-    if (messageFeedback.hasSubmitted) {
-        // Show submitted state
-        return (
-            <div className="flex items-center space-x-2 text-xs text-gray-500">
-                <span>
-                    {messageFeedback.feedback === 1 ? '👍' : '👎'} Feedback submitted
-                </span>
-            </div>
-        );
-    }
+    // Comment icon with checkmark overlay when comment provided
+    const CommentIcon = () => {
+        if (hasProvidedComment) {
+            return (
+                <div className="relative">
+                    <span>💬</span>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs leading-none">✓</span>
+                    </div>
+                </div>
+            );
+        }
+        return <span>💬</span>;
+    };
 
     return (
         <div className="flex items-center space-x-2 relative">
@@ -94,7 +121,7 @@ const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackStat
                 onClick={() => handleFeedback(1)}
                 className={`p-1 rounded transition-colors ${
                     messageFeedback.feedback === 1 
-                        ? 'text-blue-600 bg-blue-50' 
+                        ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
                         : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
                 title="Good response"
@@ -107,7 +134,7 @@ const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackStat
                 onClick={() => handleFeedback(0)}
                 className={`p-1 rounded transition-colors ${
                     messageFeedback.feedback === 0 
-                        ? 'text-blue-600 bg-blue-50' 
+                        ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
                         : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
                 title="Poor response"
@@ -115,48 +142,55 @@ const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackStat
                 👎
             </button>
             
-            {/* Comment button */}
-            <button
-                ref={commentButtonRef}
-                onClick={() => setShowCommentBox(!showCommentBox)}
-                className={`p-1 rounded transition-colors ${
-                    showCommentBox 
-                        ? 'text-blue-600 bg-blue-50' 
-                        : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
-                }`}
-                title="Add comment"
-            >
-                💬
-            </button>
-            
-            {/* Comment box - positioned above the comment icon */}
-            {showCommentBox && (
-                <div className="absolute bottom-full right-0 mb-2 p-3 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[300px] z-20">
-                    <textarea
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        placeholder="Share your feedback..."
-                        className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
-                        rows={3}
-                        autoFocus
-                    />
-                    <div className="flex justify-end space-x-2 mt-2">
-                        <button
-                            onClick={() => setShowCommentBox(false)}
-                            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleCommentSubmit}
-                            className="px-4 py-2 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={!comment.trim()}
-                        >
-                            Submit
-                        </button>
+            {/* Comment button with fixed positioning context */}
+            <div className="relative">
+                <button
+                    ref={commentButtonRef}
+                    onClick={() => setShowCommentBox(!showCommentBox)}
+                    className={`p-1 rounded transition-colors ${
+                        showCommentBox 
+                            ? 'text-blue-600 bg-blue-50' 
+                            : hasProvidedComment
+                            ? 'text-green-600 hover:text-green-700 hover:bg-green-50'
+                            : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                    title={hasProvidedComment ? "Comment provided - click to edit" : "Add comment"}
+                >
+                    <CommentIcon />
+                </button>
+                
+                {/* Comment box - positioned relative to comment button wrapper */}
+                {showCommentBox && (
+                    <div 
+                        ref={commentBoxRef}
+                        className="absolute bottom-full right-0 mb-2 p-3 bg-white border border-gray-200 rounded-lg shadow-lg min-w-[300px] z-20"
+                    >
+                        <textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="Share your feedback..."
+                            className="w-full p-2 border border-gray-300 rounded text-sm resize-none"
+                            rows={3}
+                            autoFocus
+                        />
+                        <div className="flex justify-end space-x-2 mt-2">
+                            <button
+                                onClick={() => setShowCommentBox(false)}
+                                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleCommentSubmit}
+                                className="px-4 py-2 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={!comment.trim()}
+                            >
+                                Submit
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };
