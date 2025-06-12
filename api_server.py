@@ -209,57 +209,24 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[API-PostgreSQL] 📥 Analysis request - User: {user_email}, Thread: {request.thread_id}")
-    
-    # Get a healthy checkpointer first (this will create fresh pools if needed)
-    checkpointer = await get_healthy_checkpointer()
+    print(f"[FEEDBACK-FLOW] 📝 New analysis request - Thread: {request.thread_id}")
     
     try:
-        # Create thread run entry before analysis - this generates the run_id we'll use for LangSmith
-        print(f"[API-PostgreSQL] 🔄 Creating thread run entry for user {user_email}, thread {request.thread_id}, prompt: {request.prompt[:50]}...")
+        checkpointer = await get_healthy_checkpointer()
+        
+        print(f"[FEEDBACK-FLOW] 🔄 Creating thread run entry")
         run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
-        print(f"[API-PostgreSQL] ✅ Thread run entry created with run_id: {run_id}")
+        print(f"[FEEDBACK-FLOW] ✅ Generated new run_id: {run_id}")
         
         result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id)
         
-        # Add run_id to result so frontend can use it for feedback
         result["run_id"] = run_id
-        print(f"[API-PostgreSQL] 🎉 Analysis completed successfully for run_id: {run_id}")
+        print(f"[FEEDBACK-FLOW] 📤 Returning analysis result with run_id: {run_id}")
         
         return result
     except Exception as e:
-        error_msg = str(e)
-        print(f"[API-PostgreSQL] ❌ Analysis error for user {user_email}, thread {request.thread_id}: {error_msg}")
-        
-        # Handle specific database connection errors
-        if any(keyword in error_msg.lower() for keyword in [
-            "ssl error", "connection", "timeout", "operational error", 
-            "server closed", "bad connection", "consuming input failed", "pool", "closed"
-        ]):
-            print(f"[API-PostgreSQL] ⚠ Database connection error detected: {e}")
-            print("[API-PostgreSQL] ⚠ Attempting to use fresh InMemorySaver...")
-            
-            # Use a completely fresh InMemorySaver for this request
-            from langgraph.checkpoint.memory import InMemorySaver
-            fallback_checkpointer = InMemorySaver()
-            
-            try:
-                # For fallback, still generate a run_id for consistency
-                fallback_run_id = str(uuid.uuid4())
-                result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=fallback_checkpointer, run_id=fallback_run_id)
-                # Add warning to the result
-                if isinstance(result, dict):
-                    result["warning"] = "Persistent memory temporarily unavailable - using session-only memory"
-                    result["run_id"] = fallback_run_id
-                print(f"[API-PostgreSQL] ✅ Fallback analysis completed for thread {request.thread_id}")
-                return result
-            except Exception as fallback_error:
-                print(f"[API-PostgreSQL] ✗ Fallback also failed: {fallback_error}")
-                raise HTTPException(status_code=500, detail=f"Analysis failed: {fallback_error}")
-        else:
-            # Re-raise non-connection errors
-            print(f"[API-PostgreSQL] ✗ Analysis error: {e}")
-            raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
+        print(f"[FEEDBACK-FLOW] 🚨 Analysis error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
@@ -269,25 +236,56 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[API-LangSmith] 📥 Feedback request - User: {user_email}, Run ID: {request.run_id}, Feedback: {request.feedback}")
+    print(f"[FEEDBACK-FLOW] 📥 Incoming feedback request:")
+    print(f"[FEEDBACK-FLOW] 👤 User: {user_email}")
+    print(f"[FEEDBACK-FLOW] 🔑 Run ID: '{request.run_id}'")
+    print(f"[FEEDBACK-FLOW] 🔑 Run ID type: {type(request.run_id).__name__}, length: {len(request.run_id) if request.run_id else 0}")
+    print(f"[FEEDBACK-FLOW] 👍/👎 Feedback: {request.feedback}")
     
     try:
-        # Initialize LangSmith client
+        try:
+            print(f"[FEEDBACK-FLOW] 🔍 Validating UUID format for: '{request.run_id}'")
+            # Debug check if it resembles a UUID at all
+            if not request.run_id or len(request.run_id) < 32:
+                print(f"[FEEDBACK-FLOW] ⚠️ Run ID is suspiciously short for a UUID: '{request.run_id}'")
+            
+            # Try to convert to UUID to validate format
+            try:
+            run_uuid = str(uuid.UUID(request.run_id))
+                print(f"[FEEDBACK-FLOW] ✅ UUID validation successful: '{run_uuid}'")
+            except ValueError as uuid_error:
+                print(f"[FEEDBACK-FLOW] 🚨 UUID ValueError details: {str(uuid_error)}")
+                # More detailed diagnostic about the input
+                for i, char in enumerate(request.run_id):
+                    if not (char.isalnum() or char == '-'):
+                        print(f"[FEEDBACK-FLOW] 🚨 Invalid character at position {i}: '{char}' (ord={ord(char)})")
+                raise
+        except ValueError:
+            print(f"[FEEDBACK-FLOW] ❌ UUID validation failed for: '{request.run_id}'")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid run_id format. Expected UUID, got: {request.run_id}"
+            )
+        
+        print("[FEEDBACK-FLOW] 🔄 Initializing LangSmith client")
         client = Client()
         
-        # Create feedback with SENTIMENT key as requested
+        print(f"[FEEDBACK-FLOW] 📤 Submitting feedback to LangSmith - run_id: '{run_uuid}'")
         client.create_feedback(
-            request.run_id,
+            run_uuid,
             key="SENTIMENT",
-            score=request.feedback,  # 1 for thumbs up, 0 for thumbs down
+            score=request.feedback,
             comment=request.comment if request.comment else None
         )
         
-        print(f"[API-LangSmith] ✅ Feedback submitted successfully for run_id: {request.run_id}")
-        return {"message": "Feedback submitted successfully", "run_id": request.run_id}
+        print(f"[FEEDBACK-FLOW] ✅ Feedback successfully submitted to LangSmith")
+        return {"message": "Feedback submitted successfully", "run_id": run_uuid}
         
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"[API-LangSmith] ❌ Failed to submit feedback for run_id {request.run_id}: {e}")
+        print(f"[FEEDBACK-FLOW] 🚨 LangSmith feedback submission error: {str(e)}")
+        print(f"[FEEDBACK-FLOW] 🔍 Error type: {type(e).__name__}")
         raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {e}")
 
 @app.get("/chat-threads")
@@ -882,18 +880,18 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[API-LangSmith] 📥 Getting run_ids for thread: {thread_id}, user: {user_email}")
+    print(f"[FEEDBACK-FLOW] 🔍 Fetching run_ids for thread {thread_id}")
     
     try:
-        # Get a healthy pool
         pool = await get_healthy_checkpointer()
         pool = pool.conn if hasattr(pool, 'conn') else None
         
         if not pool:
+            print("[FEEDBACK-FLOW] ⚠ No pool available for run_id lookup")
             return {"run_ids": []}
         
         async with pool.connection() as conn:
-            # Get all run_ids for this thread and user, ordered by timestamp
+            print(f"[FEEDBACK-FLOW] 📊 Executing SQL query for thread {thread_id}")
             result = await conn.execute("""
                 SELECT run_id, prompt, timestamp
                 FROM users_threads_runs 
@@ -903,15 +901,80 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
             
             run_id_data = []
             async for row in result:
-                run_id_data.append({
-                    "run_id": row[0],
-                    "prompt": row[1],
-                    "timestamp": row[2].isoformat()
-                })
+                print(f"[FEEDBACK-FLOW] 📝 Processing database row - run_id: {row[0]}, prompt: {row[1][:50]}...")
+                try:
+                    run_uuid = str(uuid.UUID(row[0])) if row[0] else None
+                    if run_uuid:
+                        run_id_data.append({
+                            "run_id": run_uuid,
+                            "prompt": row[1],
+                            "timestamp": row[2].isoformat()
+                        })
+                        print(f"[FEEDBACK-FLOW] ✅ Valid UUID found: {run_uuid}")
+                    else:
+                        print(f"[FEEDBACK-FLOW] ⚠ Null run_id found for prompt: {row[1][:50]}...")
+                except ValueError:
+                    print(f"[FEEDBACK-FLOW] ❌ Invalid UUID in database: {row[0]}")
+                    continue
             
-            print(f"[API-LangSmith] ✅ Found {len(run_id_data)} run_ids for thread {thread_id}")
+            print(f"[FEEDBACK-FLOW] 📊 Total valid run_ids found: {len(run_id_data)}")
             return {"run_ids": run_id_data}
             
     except Exception as e:
-        print(f"[API-LangSmith] ❌ Failed to get run_ids for thread {thread_id}: {e}")
+        print(f"[FEEDBACK-FLOW] 🚨 Error fetching run_ids: {str(e)}")
         return {"run_ids": []} 
+
+@app.get("/debug/run-id/{run_id}")
+async def debug_run_id(run_id: str, user=Depends(get_current_user)):
+    """Debug endpoint to check if a run_id exists in the database."""
+    
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+    
+    print(f"[DEBUG-RUN-ID] 🔍 Checking run_id: '{run_id}'")
+    
+    result = {
+        "run_id": run_id,
+        "run_id_type": type(run_id).__name__,
+        "run_id_length": len(run_id) if run_id else 0,
+        "is_valid_uuid_format": False,
+        "exists_in_database": False,
+        "database_details": None
+    }
+    
+    # Check if it's a valid UUID format
+    try:
+        uuid_obj = uuid.UUID(run_id)
+        result["is_valid_uuid_format"] = True
+        result["uuid_parsed"] = str(uuid_obj)
+    except ValueError as e:
+        result["uuid_error"] = str(e)
+    
+    # Check if it exists in the database
+    try:
+        pool = await get_healthy_checkpointer()
+        pool = pool.conn if hasattr(pool, 'conn') else None
+        
+        if pool:
+            async with pool.connection() as conn:
+                # Check in users_threads_runs table
+                db_result = await conn.execute("""
+                    SELECT email, thread_id, prompt, timestamp
+                    FROM users_threads_runs 
+                    WHERE run_id = %s
+                """, (run_id,))
+                
+                row = await db_result.fetchone()
+                if row:
+                    result["exists_in_database"] = True
+                    result["database_details"] = {
+                        "email": row[0],
+                        "thread_id": row[1],
+                        "prompt": row[2],
+                        "timestamp": row[3].isoformat() if row[3] else None
+                    }
+    except Exception as e:
+        result["database_error"] = str(e)
+    
+    return result 

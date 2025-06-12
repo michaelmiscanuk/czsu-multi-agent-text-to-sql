@@ -49,18 +49,46 @@ const SimpleProgressBar = ({ messageId, startedAt }: SimpleProgressBarProps) => 
 
 interface FeedbackComponentProps {
     messageId: string;
+    runId?: string;
     threadId: string;
-    onFeedbackSubmit: (messageId: string, feedback: number, comment?: string) => void;
-    feedbackState: { [key: string]: { feedback: number | null; hasSubmitted: boolean } };
+    onFeedbackSubmit: (runId: string, feedback: number, comment?: string) => void;
+    feedbackState: { [key: string]: { feedback: number | null; comment?: string } };
 }
 
-const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackState }: FeedbackComponentProps) => {
+const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedbackState }: FeedbackComponentProps) => {
     const [showCommentBox, setShowCommentBox] = React.useState(false);
     const [comment, setComment] = React.useState('');
     const [hasProvidedComment, setHasProvidedComment] = React.useState(false);
     const commentButtonRef = React.useRef<HTMLButtonElement>(null);
     const commentBoxRef = React.useRef<HTMLDivElement>(null);
-    const messageFeedback = feedbackState[messageId] || { feedback: null, hasSubmitted: false };
+    const messageFeedback = feedbackState[runId || messageId] || { feedback: null, comment: undefined };
+    // Local state for persistent feedback
+    const [persistentFeedback, setPersistentFeedback] = React.useState<number | null>(null);
+
+    // Load persisted feedback for this specific message on component mount
+    React.useEffect(() => {
+        const fetchPersistedFeedback = () => {
+            try {
+                const storageKey = 'czsu-persistent-feedback';
+                const savedFeedback = localStorage.getItem(storageKey);
+                
+                if (savedFeedback) {
+                    const feedbackData = JSON.parse(savedFeedback);
+                    // Check if we have feedback for this message
+                    if (feedbackData[messageId]) {
+                        const storedFeedback = feedbackData[messageId].feedbackValue;
+                        console.log('[FEEDBACK-STORAGE] Found persisted feedback for message:', 
+                            { messageId, feedback: storedFeedback });
+                        setPersistentFeedback(storedFeedback);
+                    }
+                }
+            } catch (err) {
+                console.error('[FEEDBACK-STORAGE] Error loading persisted feedback for message:', err);
+            }
+        };
+        
+        fetchPersistedFeedback();
+    }, [messageId]);
 
     // Click outside to close comment box
     React.useEffect(() => {
@@ -83,17 +111,60 @@ const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackStat
         };
     }, [showCommentBox]);
 
+    // Save feedback to separate localStorage for persistence
+    const saveFeedbackToLocalStorage = (id: string, feedbackValue: number) => {
+        try {
+            // Use a separate localStorage key that won't be affected by cache invalidations
+            const storageKey = 'czsu-persistent-feedback';
+            
+            // Get existing feedback data or initialize empty object
+            const existingData = localStorage.getItem(storageKey);
+            const feedbackData = existingData ? JSON.parse(existingData) : {};
+            
+            // Store feedback data with message ID and run ID (if available)
+            feedbackData[messageId] = {
+                feedbackValue, 
+                timestamp: Date.now(),
+                threadId,
+                runId: runId || null
+            };
+            
+            // Save back to localStorage
+            localStorage.setItem(storageKey, JSON.stringify(feedbackData));
+            
+            // Update local state
+            setPersistentFeedback(feedbackValue);
+            
+            console.log('[FEEDBACK-STORAGE] Saved feedback to persistent localStorage:', 
+                { messageId, runId: runId || null, feedbackValue });
+        } catch (err) {
+            console.error('[FEEDBACK-STORAGE] Error saving feedback to localStorage:', err);
+        }
+    };
+
     const handleFeedback = (feedback: number) => {
-        // Allow changing feedback even after previous submission
-        onFeedbackSubmit(messageId, feedback, comment || undefined);
+        // Use runId if available, otherwise fallback to messageId
+        console.log('[FEEDBACK-DEBUG] FeedbackComponent.handleFeedback - using runId:', runId, 'messageId:', messageId);
+        
+        // Save to separate localStorage for persistence
+        saveFeedbackToLocalStorage(runId || messageId, feedback);
+        
+        // Call the original onFeedbackSubmit function
+        onFeedbackSubmit(runId || messageId, feedback, comment || undefined);
         setShowCommentBox(false);
         setComment('');
     };
 
     const handleCommentSubmit = () => {
-        // Submit with last selected feedback or default to neutral
+        // Use runId if available, otherwise fallback to messageId
+        console.log('[FEEDBACK-DEBUG] FeedbackComponent.handleCommentSubmit - using runId:', runId, 'messageId:', messageId);
         const feedbackValue = messageFeedback.feedback !== null ? messageFeedback.feedback : 1;
-        onFeedbackSubmit(messageId, feedbackValue, comment || undefined);
+        
+        // Save to localStorage along with comment
+        saveFeedbackToLocalStorage(runId || messageId, feedbackValue);
+        
+        // Call the original onFeedbackSubmit function
+        onFeedbackSubmit(runId || messageId, feedbackValue, comment || undefined);
         setShowCommentBox(false);
         setHasProvidedComment(true); // Mark that a comment was provided
         setComment('');
@@ -114,13 +185,16 @@ const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackStat
         return <span>💬</span>;
     };
 
+    // Use either API feedback state or persistent localStorage feedback
+    const effectiveFeedbackValue = messageFeedback.feedback !== null ? messageFeedback.feedback : persistentFeedback;
+
     return (
         <div className="flex items-center space-x-2 relative">
             {/* Thumbs up */}
             <button
                 onClick={() => handleFeedback(1)}
                 className={`p-1 rounded transition-colors ${
-                    messageFeedback.feedback === 1 
+                    effectiveFeedbackValue === 1 
                         ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
                         : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
@@ -133,7 +207,7 @@ const FeedbackComponent = ({ messageId, threadId, onFeedbackSubmit, feedbackStat
             <button
                 onClick={() => handleFeedback(0)}
                 className={`p-1 rounded transition-colors ${
-                    messageFeedback.feedback === 0 
+                    effectiveFeedbackValue === 0 
                         ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
                         : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
@@ -208,13 +282,25 @@ interface MessageAreaProps {
     activeThreadId?: string | null;
 }
 
+// Add a global utility function to get all persisted feedback
+const getPersistedFeedbackData = (): { [key: string]: any } => {
+    try {
+        const storageKey = 'czsu-persistent-feedback';
+        const savedFeedback = localStorage.getItem(storageKey);
+        return savedFeedback ? JSON.parse(savedFeedback) : {};
+    } catch (err) {
+        console.error('[FEEDBACK-STORAGE] Error getting persisted feedback data:', err);
+        return {};
+    }
+};
+
 const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal, onNewChat, isLoading, isAnyLoading, threads, activeThreadId }: MessageAreaProps) => {
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     
     // State for feedback functionality
-    const [feedbackState, setFeedbackState] = React.useState<{ [key: string]: { feedback: number | null; hasSubmitted: boolean } }>({});
-    const [runIds, setRunIds] = React.useState<{ [key: string]: string }>({});
+    const [feedbackState, setFeedbackState] = React.useState<{ [runId: string]: { feedback: number | null; comment?: string } }>({});
+    const [messageRunIds, setMessageRunIds] = React.useState<{[messageId: string]: string}>({});
     
     // Auto-scroll to bottom when messages change or thread changes
     React.useEffect(() => {
@@ -223,86 +309,178 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
         }
     }, [messages, threadId]);
 
+    // Fetch run_ids for the current thread when it changes
+    React.useEffect(() => {
+        const fetchRunIds = async () => {
+            if (!threadId) return;
+            
+            try {
+                console.log('[FEEDBACK-DEBUG] Fetching run_ids for thread:', threadId);
+                const freshSession = await getSession();
+                if (!freshSession?.id_token) {
+                    console.log('[FEEDBACK-DEBUG] No id_token available for run_id fetch');
+                    return;
+                }
+                
+                const data = await authApiFetch<{run_ids: Array<{run_id: string, prompt: string, timestamp: string}>}>(`/chat/${threadId}/run-ids`, freshSession.id_token);
+                console.log('[FEEDBACK-DEBUG] Received run_ids:', JSON.stringify(data.run_ids));
+                
+                // Match run_ids with messages based on content/prompt similarity
+                if (data.run_ids && data.run_ids.length > 0) {
+                    const newMessageRunIds: {[messageId: string]: string} = {};
+                    
+                    // For each non-user message, try to find a matching run_id
+                    messages.forEach(message => {
+                        if (!message.isUser) {
+                            // Skip if message already has run_id in meta
+                            if (message.meta?.run_id) {
+                                console.log('[FEEDBACK-DEBUG] Message already has run_id in meta:', message.meta.run_id);
+                                newMessageRunIds[message.id] = message.meta.run_id;
+                                return;
+                            }
+                            
+                            // Otherwise try to match by finding the closest run_id by timestamp
+                            // This is a simplistic approach - in a real system we would have better matching
+                            if (data.run_ids.length > 0) {
+                                const runIdEntry = data.run_ids[data.run_ids.length - 1]; // Use the last run_id
+                                newMessageRunIds[message.id] = runIdEntry.run_id;
+                                console.log('[FEEDBACK-DEBUG] Assigned run_id to message:', 
+                                    {messageId: message.id, runId: runIdEntry.run_id});
+                            }
+                        }
+                    });
+                    
+                    setMessageRunIds(newMessageRunIds);
+                }
+            } catch (error) {
+                console.error('[FEEDBACK-DEBUG] Error fetching run_ids:', error);
+            }
+        };
+        
+        fetchRunIds();
+    }, [threadId, messages]);
+
     // Session and authentication
     const { data: session } = useSession();
     const userEmail = session?.user?.email || null;
 
-    // Load feedback data for current thread and update runIds
-    React.useEffect(() => {
-        const loadFeedbackData = async () => {
-            if (!threadId || !userEmail || !session?.id_token) return;
-            
-            try {
-                const data = await authApiFetch<{run_ids: Array<{run_id: string, prompt: string, timestamp: string}>}>(`/chat/${threadId}/run-ids`, session.id_token);
-                
-                // Update runIds for legacy compatibility
-                const runIdMap: { [key: string]: string } = {};
-                const aiMessages = messages.filter(msg => !msg.isUser && !msg.isLoading);
-                
-                data.run_ids.forEach((item, index) => {
-                    if (aiMessages[index]) {
-                        runIdMap[aiMessages[index].id] = item.run_id;
-                    }
-                });
-                
-                setRunIds(runIdMap);
-                
-                // Update feedback state with proper structure
-                const feedbackData: { [key: string]: { feedback: number | null; hasSubmitted: boolean } } = {};
-                data.run_ids.forEach((item, index) => {
-                    const messageKey = `msg_${index + 1}`;
-                    feedbackData[messageKey] = {
-                        feedback: null,
-                        hasSubmitted: false
-                    };
-                });
-                
-                setFeedbackState(feedbackData);
-            } catch (error) {
-                console.error('[MessageArea] Error loading feedback data:', error);
-            }
-        };
-
-        if (threadId && messages.length > 0) {
-            loadFeedbackData();
-        }
-    }, [threadId, userEmail, session?.id_token, messages.length]);
-
-    const handleFeedbackSubmit = async (messageId: string, feedback: number, comment?: string) => {
-        // First try to get run_id from message meta, then from runIds state
-        const message = messages.find(msg => msg.id === messageId);
-        let runId = message?.meta?.run_id || runIds[messageId];
+    const handleFeedbackSubmit = async (runId: string, feedback: number) => {
+        console.log('[FEEDBACK-DEBUG] handleFeedbackSubmit called:', JSON.stringify({ runId, feedback }));
+        console.log('[FEEDBACK-DEBUG] runId type:', typeof runId, 'runId value:', `"${runId}"`, 'runId length:', runId ? runId.length : 0);
         
         if (!runId) {
-            console.error('[MessageArea] No run_id found for message:', messageId);
+            console.log('[FEEDBACK-DEBUG] Skipping feedback submit: missing runId');
             return;
         }
-
+        
+        if (feedbackState[runId]?.feedback !== undefined) {
+            console.log('[FEEDBACK-DEBUG] Skipping feedback submit: already submitted for runId:', runId);
+            return;
+        }
+        
         try {
-            // Get fresh session token
             const freshSession = await getSession();
             if (!freshSession?.id_token) {
-                console.error('[MessageArea] No valid session for feedback submission');
+                console.log('[FEEDBACK-DEBUG] No id_token available for feedback submit');
                 return;
             }
-
-            await authApiFetch('/feedback', freshSession.id_token, {
-                method: 'POST',
-                body: JSON.stringify({
-                    run_id: runId,
-                    feedback: feedback,
-                    comment: comment
-                })
-            });
-
-            console.log('[MessageArea] Feedback submitted successfully for run_id:', runId);
-            // Update feedback state to show submission
-            setFeedbackState(prev => ({
-                ...prev,
-                [messageId]: { feedback, hasSubmitted: true }
-            }));
+            
+            // Check if this looks like a UUID before sending
+            const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidPattern.test(runId)) {
+                console.log('[FEEDBACK-DEBUG] ⚠️ Warning: runId does not appear to be a valid UUID format:', runId);
+            }
+            
+            console.log('[FEEDBACK-DEBUG] Sending feedback to backend:', JSON.stringify({ run_id: runId, feedback }));
+            
+            try {
+                await authApiFetch('/feedback', freshSession.id_token, {
+                    method: 'POST',
+                    body: JSON.stringify({ run_id: runId, feedback })
+                });
+                console.log('[FEEDBACK-DEBUG] Feedback submitted successfully for runId:', runId);
+                
+                // Update the feedback state 
+                setFeedbackState(prev => ({ ...prev, [runId]: { ...prev[runId], feedback } }));
+            } catch (fetchError) {
+                console.error('[FEEDBACK-DEBUG] Fetch error details:', fetchError);
+                if (fetchError instanceof Response) {
+                    const errorText = await fetchError.text();
+                    console.error('[FEEDBACK-DEBUG] Error response body:', errorText);
+                }
+                throw fetchError; // Re-throw to be caught by outer catch
+            }
         } catch (error) {
-            console.error('[MessageArea] Error submitting feedback:', error);
+            console.error('[FEEDBACK-DEBUG] Error submitting feedback:', error);
+            console.error('[FEEDBACK-DEBUG] For runId:', runId, 'feedback:', feedback);
+            if (error instanceof Error) {
+                console.error('[FEEDBACK-DEBUG] Error name:', error.name, 'message:', error.message);
+            }
+        }
+    };
+
+    const handleCommentSubmit = async (runId: string, comment: string) => {
+        console.log('[FEEDBACK-DEBUG] handleCommentSubmit called:', JSON.stringify({ 
+            runId, 
+            comment, 
+            feedback: feedbackState[runId]?.feedback 
+        }));
+        console.log('[FEEDBACK-DEBUG] Comment runId type:', typeof runId, 'value:', `"${runId}"`);
+        
+        if (!runId) {
+            console.log('[FEEDBACK-DEBUG] Skipping comment submit: missing runId');
+            return;
+        }
+        
+        if (feedbackState[runId]?.comment) {
+            console.log('[FEEDBACK-DEBUG] Skipping comment submit: already commented for runId:', runId);
+            return;
+        }
+        
+        try {
+            const freshSession = await getSession();
+            if (!freshSession?.id_token) {
+                console.log('[FEEDBACK-DEBUG] No id_token available for comment submit');
+                return;
+            }
+            
+            // Check if this looks like a UUID before sending
+            const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            if (!uuidPattern.test(runId)) {
+                console.log('[FEEDBACK-DEBUG] ⚠️ Warning: comment runId does not appear to be a valid UUID format:', runId);
+            }
+            
+            console.log('[FEEDBACK-DEBUG] Sending comment to backend:', JSON.stringify({ 
+                run_id: runId, 
+                feedback: feedbackState[runId]?.feedback ?? null, 
+                comment 
+            }));
+            
+            try {
+                await authApiFetch('/feedback', freshSession.id_token, {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        run_id: runId, 
+                        feedback: feedbackState[runId]?.feedback ?? null, 
+                        comment 
+                    })
+                });
+                console.log('[FEEDBACK-DEBUG] Comment submitted successfully for runId:', runId);
+                setFeedbackState(prev => ({ ...prev, [runId]: { ...prev[runId], comment } }));
+            } catch (fetchError) {
+                console.error('[FEEDBACK-DEBUG] Comment fetch error details:', fetchError);
+                if (fetchError instanceof Response) {
+                    const errorText = await fetchError.text();
+                    console.error('[FEEDBACK-DEBUG] Comment error response body:', errorText);
+                }
+                throw fetchError;
+            }
+        } catch (error) {
+            console.error('[FEEDBACK-DEBUG] Error submitting comment:', error);
+            console.error('[FEEDBACK-DEBUG] For runId:', runId, 'comment length:', comment?.length);
+            if (error instanceof Error) {
+                console.error('[FEEDBACK-DEBUG] Comment error name:', error.name, 'message:', error.message);
+            }
         }
     };
 
@@ -355,6 +533,12 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                             <span className="text-gray-400 text-xs italic">Waiting for response...</span>
                                         )
                                     )}
+                                    {message.isUser ? null : console.log('[FEEDBACK-DEBUG] Message meta:', JSON.stringify({
+                                        id: message.id,
+                                        has_meta: !!message.meta,
+                                        run_id: message.meta?.run_id || 'none',
+                                        meta_keys: message.meta ? Object.keys(message.meta) : []
+                                    }))}
                                 </div>
                                 {/* Dataset used and SQL button for AI answers */}
                                 {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery) && (
@@ -404,6 +588,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                         {threadId && (
                                             <FeedbackComponent
                                                 messageId={message.id}
+                                                runId={message.meta?.run_id || messageRunIds[message.id]}
                                                 threadId={threadId}
                                                 onFeedbackSubmit={handleFeedbackSubmit}
                                                 feedbackState={feedbackState}
@@ -455,6 +640,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                     <div className="mt-3 flex justify-end">
                                         <FeedbackComponent
                                             messageId={message.id}
+                                            runId={message.meta?.run_id || messageRunIds[message.id]}
                                             threadId={threadId}
                                             onFeedbackSubmit={handleFeedbackSubmit}
                                             feedbackState={feedbackState}

@@ -65,39 +65,6 @@ export default function ChatPage() {
     setUserEmail
   } = useChatCache();
   
-  console.log('[ChatPage-DEBUG] 🔄 Component render - Status:', status, 'UserEmail:', !!userEmail, 'IsPageRefresh:', isPageRefresh, 'Timestamp:', new Date().toISOString());
-  
-  // Show loading while session is being fetched
-  if (status === "loading") {
-    console.log('[ChatPage-DEBUG] ⏳ Session loading state');
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading your session...</div>
-        </div>
-      </div>
-    );
-  }
-  
-  // Redirect to login if not authenticated
-  if (status === "unauthenticated" || !userEmail) {
-    console.log('[ChatPage-DEBUG] ❌ Not authenticated - Status:', status, 'UserEmail:', !!userEmail);
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="text-gray-600 mb-4">Please sign in to access your chats</div>
-          <button 
-            onClick={() => window.location.href = '/api/auth/signin'}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Sign In
-          </button>
-        </div>
-      </div>
-    );
-  }
-  
   // Local component state
   const [currentMessage, setCurrentMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -113,23 +80,6 @@ export default function ChatPage() {
   // This ensures loading state persists across navigation AND across browser tabs for the same user
   const isAnyLoading = isLoading || cacheLoading || isUserLoading;
   
-  // Debug logging for state changes
-  React.useEffect(() => {
-    console.log('[ChatPage-DEBUG] 📊 State Update - threads:', threads.length, 'activeThreadId:', activeThreadId, 'messages:', messages.length, 'threadsLoaded:', threadsLoaded, 'threadsLoading:', threadsLoading);
-  }, [threads.length, activeThreadId, messages.length, threadsLoaded, threadsLoading]);
-  
-  // Debug logging for loading states
-  React.useEffect(() => {
-    console.log('[ChatPage-DEBUG] 🔄 Loading State Update - localLoading:', isLoading, 'contextLoading:', cacheLoading, 'userLoading:', isUserLoading, 'combinedLoading:', isAnyLoading, 'userEmail:', userEmail);
-    
-    // Additional debug: Check localStorage directly
-    if (userEmail && typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      const key = `czsu-user-loading-state:${userEmail}`;
-      const stored = localStorage.getItem(key);
-      console.log('[ChatPage-DEBUG] 🔍 Direct localStorage check for', userEmail, ':', stored);
-    }
-  }, [isLoading, cacheLoading, isUserLoading, isAnyLoading, userEmail]);
-  
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
@@ -139,7 +89,6 @@ export default function ChatPage() {
   // PostgreSQL API functions with new cache context
   const loadThreadsFromPostgreSQL = async () => {
     if (!userEmail) {
-      console.log('[ChatPage-loadThreads] ❌ No user email available');
       return;
     }
 
@@ -195,7 +144,6 @@ export default function ChatPage() {
 
   const loadMessagesFromCheckpoint = async (threadId: string) => {
     if (!threadId || !userEmail) {
-      console.log('[ChatPage-loadMessages] ❌ Missing threadId or userEmail');
       return;
     }
 
@@ -235,7 +183,6 @@ export default function ChatPage() {
 
   const deleteThreadFromPostgreSQL = async (threadId: string) => {
     if (!threadId || !userEmail) {
-      console.log('[ChatPage-deleteThread] ❌ Missing threadId or userEmail');
       return false;
     }
     
@@ -358,7 +305,6 @@ export default function ChatPage() {
 
   const handleNewChat = async () => {
     if (!userEmail) {
-      console.log('[ChatPage-newChat] ❌ No user email available');
       return;
     }
 
@@ -516,6 +462,8 @@ export default function ChatPage() {
         }),
       });
       
+      console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
+      
       // Update loading message with response
       const responseMessage: ChatMessage = {
         id: loadingMessageId,
@@ -528,10 +476,13 @@ export default function ChatPage() {
         meta: {
           datasetsUsed: data.top_selection_codes || [],
           sqlQuery: data.sql || null,
-          datasetUrl: data.datasetUrl || null
+          datasetUrl: data.datasetUrl || null,
+          run_id: data.run_id  // Store run_id in meta for feedback
         },
         queriesAndResults: data.queries_and_results || []
       };
+      
+      console.log('[ChatPage-send] ✅ Attaching run_id to message meta:', data.run_id);
       
       updateMessage(currentThreadId, loadingMessageId, responseMessage);
       

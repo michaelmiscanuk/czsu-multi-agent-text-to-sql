@@ -36,6 +36,13 @@
    If there isome problem with libraries, delete these items in frontend folder
    node_modules folder, .next folder and package-lock file
    Run commands above.
+   
+   If more problems, try again deleting same folders as above and try with China Registry:
+   
+   ```
+   npm set registry https://registry.npmmirror.com/
+   npm install --verbose
+   ```
 
 ---
 
