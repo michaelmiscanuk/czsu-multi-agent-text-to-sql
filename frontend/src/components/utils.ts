@@ -5,34 +5,23 @@ export function removeDiacritics(str: string): string {
 
 // chatDb.ts - Modern IndexedDB utility for chat sessions/messages
 import { openDB, DBSchema } from 'idb';
+import { ChatMessage as SharedChatMessage, ChatThreadMeta as SharedChatThreadMeta } from '@/types';
 
-export interface ChatThreadMeta {
+// Local interface for IndexedDB (extends the base ChatThreadMeta)
+export interface LocalChatThreadMeta extends Omit<SharedChatThreadMeta, 'thread_id' | 'latest_timestamp' | 'run_count' | 'full_prompt'> {
   id: string;
   user: string; // user email
-  title: string;
   createdAt: number;
   updatedAt: number;
 }
 
-export interface ChatMessage {
-  id: string;
-  threadId: string;
-  user: string;
-  content: string;
-  isUser: boolean;
-  createdAt: number;
-  error?: string;
-  meta?: Record<string, any>;
-  queriesAndResults?: [string, string][];
-  isLoading?: boolean;
-  startedAt?: number;
-  isError?: boolean;
-}
+// Use the shared ChatMessage interface
+export type ChatMessage = SharedChatMessage;
 
 interface ChatDbSchema extends DBSchema {
   threads: {
     key: string; // `${user}:${threadId}`
-    value: ChatThreadMeta;
+    value: LocalChatThreadMeta;
     indexes: { 'by-user': string };
   };
   messages: {
@@ -62,17 +51,17 @@ export async function getChatDb() {
 }
 
 // Session CRUD
-export async function listThreads(user: string): Promise<ChatThreadMeta[]> {
+export async function listThreads(user: string): Promise<LocalChatThreadMeta[]> {
   const db = await getChatDb();
   const threads = await db.getAllFromIndex('threads', 'by-user', user);
   console.log('[listThreads] For user:', user, 'Threads:', JSON.stringify(threads));
   return threads.sort((a, b) => b.updatedAt - a.updatedAt);
 }
-export async function getChatThread(user: string, id: string): Promise<ChatThreadMeta | undefined> {
+export async function getChatThread(user: string, id: string): Promise<LocalChatThreadMeta | undefined> {
   const db = await getChatDb();
   return db.get('threads', id);
 }
-export async function saveThread(meta: ChatThreadMeta) {
+export async function saveThread(meta: LocalChatThreadMeta) {
   const db = await getChatDb();
   await db.put('threads', meta);
   console.log('[saveThread] Saved:', JSON.stringify(meta));

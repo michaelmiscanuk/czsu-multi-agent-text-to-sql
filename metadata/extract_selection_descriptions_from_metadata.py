@@ -20,7 +20,7 @@ def fetch_json(url):
         headers = {"Accept-Language": "en"}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        time.sleep(0.1)  # Be nice to the API (rate limiting)
+        time.sleep(0.1)  # rate limiting
         return response.json()
     except Exception as e:
         print(f"Error fetching {url}: {e}")

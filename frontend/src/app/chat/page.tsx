@@ -6,30 +6,8 @@ import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
 import { useChatCache } from '@/contexts/ChatCacheContext';
-
-// Types for PostgreSQL-based chat management
-interface ChatThreadMeta {
-  thread_id: string;
-  latest_timestamp: string;
-  run_count: number;
-  title: string;
-  full_prompt: string; // For tooltip display
-}
-
-interface ChatMessage {
-  id: string;
-  threadId: string;
-  user: string;
-  content: string;
-  isUser: boolean;
-  createdAt: number;
-  error?: string;
-  meta?: Record<string, any>;
-  queriesAndResults?: [string, string][];
-  isLoading?: boolean;
-  startedAt?: number;
-  isError?: boolean;
-}
+import { ChatThreadMeta, ChatMessage, AnalyzeResponse, ChatThreadResponse } from '@/types';
+import { API_CONFIG, authApiFetch } from '@/lib/api';
 
 interface Message {
   id: number;
@@ -78,7 +56,9 @@ export default function ChatPage() {
     isDataStale,
     setLoading,
     isPageRefresh,
-    forceAPIRefresh
+    forceAPIRefresh,
+    hasMessagesForThread,
+    resetPageRefresh
   } = useChatCache();
   
   console.log('[ChatPage-DEBUG] 🔄 Component render - Status:', status, 'UserEmail:', !!userEmail, 'IsPageRefresh:', isPageRefresh, 'Timestamp:', new Date().toISOString());
@@ -136,8 +116,6 @@ export default function ChatPage() {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
-
   // PostgreSQL API functions with new cache context
   const loadThreadsFromPostgreSQL = async () => {
     if (!userEmail) {
@@ -171,16 +149,8 @@ export default function ChatPage() {
       }
 
       console.log('[ChatPage-loadThreads] 📡 Making API call to PostgreSQL...');
-      const response = await fetch(`${API_BASE}/chat-threads`, {
-        headers: {
-          'Authorization': `Bearer ${freshSession.id_token}`
-        }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const data = await authApiFetch<ChatThreadResponse[]>('/chat-threads', freshSession.id_token);
       
-      const data = await response.json();
       console.log('[ChatPage-loadThreads] ✅ Loaded threads from PostgreSQL API:', data.length);
       
       // Update cache through context - this will sync localStorage with PostgreSQL data
@@ -189,6 +159,9 @@ export default function ChatPage() {
       
       if (isPageRefresh) {
         console.log('[ChatPage-loadThreads] ✅ F5 refresh completed - localStorage now synced with PostgreSQL');
+        // IMPORTANT: Reset page refresh flag after successful F5 sync
+        // This allows subsequent navigation to use cache instead of always hitting API
+        resetPageRefresh();
       } else {
         console.log('[ChatPage-loadThreads] ✅ Navigation completed - cache populated from API');
       }
@@ -208,11 +181,18 @@ export default function ChatPage() {
 
     console.log('[ChatPage-loadMessages] 🔄 Loading messages for thread:', threadId);
 
-    // If messages are already cached for this thread, use them
-    if (activeThreadId === threadId && messages.length > 0) {
-      console.log('[ChatPage-loadMessages] ✅ Using cached messages');
+    // CHECK CACHE FIRST: Use the new context method to check if messages exist for this thread
+    const hasCachedMessages = hasMessagesForThread(threadId);
+    
+    // Use cached messages if available AND it's not a page refresh
+    if (hasCachedMessages && !isPageRefresh) {
+      console.log('[ChatPage-loadMessages] ✅ Using cached messages for thread:', threadId);
+      setActiveThreadId(threadId);
       return;
     }
+
+    // Only make API call if no cached messages OR it's a page refresh (to sync with PostgreSQL)
+    console.log('[ChatPage-loadMessages] 📡 Making API call for thread:', threadId, 'reason:', !hasCachedMessages ? 'no cache' : 'page refresh');
 
     try {
       // Get fresh session for authentication
@@ -221,16 +201,8 @@ export default function ChatPage() {
         throw new Error('No authentication token available');
       }
 
-      const response = await fetch(`${API_BASE}/chat/${threadId}/messages`, {
-        headers: {
-          'Authorization': `Bearer ${freshSession.id_token}`
-        }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const data = await authApiFetch<ChatMessage[]>(`/chat/${threadId}/messages`, freshSession.id_token);
       
-      const data = await response.json();
       console.log('[ChatPage-loadMessages] ✅ Loaded messages from API:', data.length);
       
       // Update cache through context
@@ -246,7 +218,7 @@ export default function ChatPage() {
       console.log('[ChatPage-deleteThread] ❌ Missing threadId or userEmail');
       return false;
     }
-
+    
     try {
       // Get fresh session for authentication
       const freshSession = await getSession();
@@ -254,16 +226,9 @@ export default function ChatPage() {
         throw new Error('No authentication token available');
       }
 
-      const response = await fetch(`${API_BASE}/chat/${threadId}`, {
+      await authApiFetch(`/chat/${threadId}`, freshSession.id_token, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${freshSession.id_token}`
-        }
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
 
       console.log('[ChatPage-deleteThread] ✅ Thread deleted successfully');
       
@@ -452,34 +417,28 @@ export default function ChatPage() {
         throw new Error('No authentication token available');
       }
 
-      const response = await fetch(`${API_BASE}/analyze`, {
+      const data = await authApiFetch<AnalyzeResponse>('/analyze', freshSession.id_token, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${freshSession.id_token}`
-        },
         body: JSON.stringify({
           prompt: messageText,
           thread_id: currentThreadId
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
       
       // Update loading message with response
       const responseMessage: ChatMessage = {
         id: loadingMessageId,
         threadId: currentThreadId,
         user: 'assistant',
-        content: data.result || data.content || 'No response received',
+        content: data.result || 'No response received',
         isUser: false,
         createdAt: Date.now(),
         isLoading: false,
-        meta: data.meta || {},
+        meta: {
+          datasetsUsed: data.top_selection_codes || [],
+          sqlQuery: data.sql || null,
+          datasetUrl: data.datasetUrl || null
+        },
         queriesAndResults: data.queries_and_results || []
       };
       
@@ -493,8 +452,27 @@ export default function ChatPage() {
       
       console.log('[ChatPage-send] ✅ Message sent and localStorage synced with new response');
       
+      // IMPORTANT: After receiving response from langgraph, reload messages from PostgreSQL to ensure sync
+      console.log('[ChatPage-send] 🔄 Reloading messages from PostgreSQL to sync with langgraph response');
+      try {
+        const freshSession = await getSession();
+        if (freshSession?.id_token) {
+          const freshMessages = await authApiFetch<ChatMessage[]>(`/chat/${currentThreadId}/messages`, freshSession.id_token);
+          console.log('[ChatPage-send] ✅ Reloaded', freshMessages.length, 'messages from PostgreSQL after langgraph response');
+          setMessages(currentThreadId, freshMessages);
+        }
+      } catch (refreshError) {
+        console.error('[ChatPage-send] ⚠️ Failed to refresh messages from PostgreSQL:', refreshError);
+        // Don't fail the whole operation if refresh fails
+      }
     } catch (error) {
       console.error('[ChatPage-send] ❌ Error sending message:', error);
+      console.error('[ChatPage-send] ❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack trace',
+        type: typeof error,
+        error: error
+      });
       
       // Update loading message with error
       const errorMessage: ChatMessage = {

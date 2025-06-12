@@ -1,30 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
-
-// Types
-interface ChatThreadMeta {
-  thread_id: string;
-  latest_timestamp: string;
-  run_count: number;
-  title: string;
-  full_prompt: string;
-}
-
-interface ChatMessage {
-  id: string;
-  threadId: string;
-  user: string;
-  content: string;
-  isUser: boolean;
-  createdAt: number;
-  error?: string;
-  meta?: Record<string, any>;
-  queriesAndResults?: [string, string][];
-  isLoading?: boolean;
-  startedAt?: number;
-  isError?: boolean;
-}
+import { ChatThreadMeta, ChatMessage } from '@/types'
 
 interface CacheData {
   threads: ChatThreadMeta[];
@@ -64,6 +41,12 @@ interface ChatCacheContextType {
   
   // NEW: Force API refresh on F5
   forceAPIRefresh: () => Promise<void>;
+  
+  // NEW: Check if messages exist for a specific thread
+  hasMessagesForThread: (threadId: string) => boolean;
+  
+  // NEW: Reset page refresh state
+  resetPageRefresh: () => void;
 }
 
 const ChatCacheContext = createContext<ChatCacheContextType | undefined>(undefined)
@@ -90,6 +73,9 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
 
   // Page refresh detection logic - fix to distinguish F5 from navigation
   useEffect(() => {
+    // Ensure we're on the client side
+    if (typeof window === 'undefined') return;
+    
     console.log('[ChatCache] 🔄 Component mounted, checking if page refresh...');
     
     const now = Date.now();
@@ -97,12 +83,12 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     // More robust page refresh detection
     const isPageReload = () => {
       // Method 1: Performance navigation API (most reliable)
-      if (performance.navigation && performance.navigation.type === 1) {
+      if (typeof performance !== 'undefined' && performance.navigation && performance.navigation.type === 1) {
         return true;
       }
       
       // Method 2: Performance getEntriesByType (modern browsers)
-      if (performance.getEntriesByType) {
+      if (typeof performance !== 'undefined' && performance.getEntriesByType) {
         const entries = performance.getEntriesByType('navigation');
         if (entries.length > 0) {
           const navigationEntry = entries[0] as PerformanceNavigationTiming;
@@ -113,13 +99,15 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       }
       
       // Method 3: Check sessionStorage flag that persists only during session
-      const refreshTimestamp = sessionStorage.getItem(PAGE_REFRESH_FLAG_KEY);
-      
-      if (refreshTimestamp) {
-        const timeDiff = now - parseInt(refreshTimestamp, 10);
-        // If less than 1 second since flag was set, it's likely a reload
-        if (timeDiff < 1000) {
-          return true;
+      if (typeof sessionStorage !== 'undefined') {
+        const refreshTimestamp = sessionStorage.getItem(PAGE_REFRESH_FLAG_KEY);
+        
+        if (refreshTimestamp) {
+          const timeDiff = now - parseInt(refreshTimestamp, 10);
+          // If less than 1 second since flag was set, it's likely a reload
+          if (timeDiff < 1000) {
+            return true;
+          }
         }
       }
       
@@ -127,7 +115,7 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     };
 
     // Check if localStorage has data (previous session)
-    const hasLocalStorageData = !!localStorage.getItem(CACHE_KEY);
+    const hasLocalStorageData = typeof localStorage !== 'undefined' && !!localStorage.getItem(CACHE_KEY);
     
     // Final decision logic - be more conservative about detecting refresh
     const actualPageRefresh = isPageReload();
@@ -136,9 +124,9 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     const finalDecision = actualPageRefresh && hasLocalStorageData;
     
     console.log('[ChatCache] 🔍 Page refresh detection: ', {
-      performanceNavType: performance.navigation?.type,
-      performanceEntries: (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type,
-      sessionStorageFlag: !!sessionStorage.getItem(PAGE_REFRESH_FLAG_KEY),
+      performanceNavType: typeof performance !== 'undefined' ? performance.navigation?.type : 'undefined',
+      performanceEntries: typeof performance !== 'undefined' ? (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type : 'undefined',
+      sessionStorageFlag: typeof sessionStorage !== 'undefined' ? !!sessionStorage.getItem(PAGE_REFRESH_FLAG_KEY) : false,
       hasLocalStorageData,
       actualPageRefresh,
       finalDecision
@@ -147,7 +135,9 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     setIsPageRefresh(finalDecision);
     
     // Set sessionStorage flag for next potential refresh detection
-    sessionStorage.setItem(PAGE_REFRESH_FLAG_KEY, now.toString());
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem(PAGE_REFRESH_FLAG_KEY, now.toString());
+    }
     
     // Load initial data
     if (finalDecision) {
@@ -156,9 +146,15 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       console.log('[ChatCache] 🔄 Navigation detected - loading from localStorage cache');
       loadFromStorage();
     }
+    
+    // Mark as hydrated after initial setup
+    hasBeenHydrated.current = true;
   }, []);
 
   const loadFromStorage = useCallback(() => {
+    // Ensure we're on the client side
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    
     try {
       const stored = localStorage.getItem(CACHE_KEY)
       const activeThread = localStorage.getItem(ACTIVE_THREAD_KEY)
@@ -193,6 +189,9 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       console.log('[ChatCache] ⏳ Skipping save - not yet hydrated')
       return
     }
+
+    // Ensure we're on the client side
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
 
     try {
       const existingData = localStorage.getItem(CACHE_KEY)
@@ -323,9 +322,12 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   const forceAPIRefresh = useCallback(async () => {
     console.log('[ChatCache] 🔄 Force API refresh (F5) - clearing cache and forcing PostgreSQL sync')
     
-    // Clear all cache data
-    localStorage.removeItem(CACHE_KEY)
-    localStorage.removeItem(ACTIVE_THREAD_KEY)
+    // Ensure we're on the client side
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      // Clear all cache data
+      localStorage.removeItem(CACHE_KEY)
+      localStorage.removeItem(ACTIVE_THREAD_KEY)
+    }
     
     // Reset state
     setThreadsState([])
@@ -335,6 +337,10 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     // Mark that we need fresh data from API
     setIsLoading(true)
     
+    // IMPORTANT: Reset isPageRefresh to false after clearing cache
+    // This ensures subsequent navigation uses cache instead of always hitting API
+    setIsPageRefresh(false)
+    
     console.log('[ChatCache] ✅ Cache cleared - ready for fresh API data')
   }, [])
 
@@ -342,6 +348,12 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     // If this is a page refresh, always consider data stale to force API call
     if (isPageRefresh) {
       console.log('[ChatCache] 🔍 Data is stale (page refresh detected)')
+      return true
+    }
+    
+    // Ensure we're on the client side
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      console.log('[ChatCache] 🔍 Data is stale (no localStorage access)')
       return true
     }
     
@@ -403,7 +415,18 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     isPageRefresh,
     
     // NEW: Force API refresh on F5
-    forceAPIRefresh
+    forceAPIRefresh,
+    
+    // NEW: Check if messages exist for a specific thread
+    hasMessagesForThread: (threadId: string) => {
+      return !!messages[threadId] && messages[threadId].length > 0;
+    },
+    
+    // NEW: Reset page refresh state
+    resetPageRefresh: () => {
+      console.log('[ChatCache] 🔄 Resetting page refresh flag - future navigation will use cache');
+      setIsPageRefresh(false);
+    }
   }
 
   return (

@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSession, getSession } from "next-auth/react";
 import Modal from './Modal';
 import Link from 'next/link';
+import { ChatMessage } from '@/types';
+import { API_CONFIG, authApiFetch } from '@/lib/api';
 
 const PROGRESS_DURATION = 20000; // 20 seconds
 
@@ -183,50 +186,50 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
         }
     }, [messages, threadId]);
 
-    // Load run_ids for feedback when thread changes
+    // Session and authentication
+    const { data: session } = useSession();
+    const userEmail = session?.user?.email || null;
+
+    // Load feedback data for current thread and update runIds
     React.useEffect(() => {
-        if (threadId && messages.length > 0) { // Only load when we have both thread and messages
-            loadRunIds(threadId);
-        }
-    }, [threadId, messages.length]); // Added messages.length dependency
-
-    const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
-
-    const loadRunIds = async (currentThreadId: string) => {
-        try {
-            // Get fresh session token
-            const session = await fetch('/api/auth/session').then(res => res.json());
-            if (!session?.id_token) {
-                console.error('[MessageArea] No valid session for run_id loading');
-                return;
-            }
-
-            const response = await fetch(`${API_BASE}/chat/${currentThreadId}/run-ids`, {
-                headers: {
-                    'Authorization': `Bearer ${session.id_token}`
-                }
-            });
+        const loadFeedbackData = async () => {
+            if (!threadId || !userEmail || !session?.id_token) return;
             
-            if (response.ok) {
-                const data = await response.json();
-                const runIdMap: { [key: string]: string } = {};
+            try {
+                const data = await authApiFetch<{run_ids: Array<{run_id: string, prompt: string, timestamp: string}>}>(`/chat/${threadId}/run-ids`, session.id_token);
                 
-                // More sophisticated mapping - match by message content or order
+                // Update runIds for legacy compatibility
+                const runIdMap: { [key: string]: string } = {};
                 const aiMessages = messages.filter(msg => !msg.isUser && !msg.isLoading);
                 
-                data.run_ids.forEach((item: any, index: number) => {
+                data.run_ids.forEach((item, index) => {
                     if (aiMessages[index]) {
                         runIdMap[aiMessages[index].id] = item.run_id;
                     }
                 });
                 
                 setRunIds(runIdMap);
-                console.log('[MessageArea] Loaded run_ids:', runIdMap);
+                
+                // Update feedback state with proper structure
+                const feedbackData: { [key: string]: { feedback: number | null; hasSubmitted: boolean } } = {};
+                data.run_ids.forEach((item, index) => {
+                    const messageKey = `msg_${index + 1}`;
+                    feedbackData[messageKey] = {
+                        feedback: null,
+                        hasSubmitted: false
+                    };
+                });
+                
+                setFeedbackState(feedbackData);
+            } catch (error) {
+                console.error('[MessageArea] Error loading feedback data:', error);
             }
-        } catch (error) {
-            console.error('[MessageArea] Failed to load run_ids:', error);
+        };
+
+        if (threadId && messages.length > 0) {
+            loadFeedbackData();
         }
-    };
+    }, [threadId, userEmail, session?.id_token, messages.length]);
 
     const handleFeedbackSubmit = async (messageId: string, feedback: number, comment?: string) => {
         // First try to get run_id from message meta, then from runIds state
@@ -235,33 +238,19 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
         
         if (!runId) {
             console.error('[MessageArea] No run_id found for message:', messageId);
-            // Try to reload run_ids if missing
-            if (threadId) {
-                await loadRunIds(threadId);
-                runId = runIds[messageId];
-                if (!runId) {
-                    console.error('[MessageArea] Still no run_id after reload');
-                    return;
-                }
-            } else {
-                return;
-            }
+            return;
         }
 
         try {
             // Get fresh session token
-            const session = await fetch('/api/auth/session').then(res => res.json());
-            if (!session?.id_token) {
+            const freshSession = await getSession();
+            if (!freshSession?.id_token) {
                 console.error('[MessageArea] No valid session for feedback submission');
                 return;
             }
 
-            const response = await fetch(`${API_BASE}/feedback`, {
+            await authApiFetch('/feedback', freshSession.id_token, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${session.id_token}`
-                },
                 body: JSON.stringify({
                     run_id: runId,
                     feedback: feedback,
@@ -269,16 +258,12 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                 })
             });
 
-            if (response.ok) {
-                console.log('[MessageArea] Feedback submitted successfully for run_id:', runId);
-                // Update feedback state to show submission
-                setFeedbackState(prev => ({
-                    ...prev,
-                    [messageId]: { feedback, hasSubmitted: true }
-                }));
-            } else {
-                console.error('[MessageArea] Failed to submit feedback:', response.status);
-            }
+            console.log('[MessageArea] Feedback submitted successfully for run_id:', runId);
+            // Update feedback state to show submission
+            setFeedbackState(prev => ({
+                ...prev,
+                [messageId]: { feedback, hasSubmitted: true }
+            }));
         } catch (error) {
             console.error('[MessageArea] Error submitting feedback:', error);
         }
