@@ -47,6 +47,12 @@ interface ChatCacheContextType {
   
   // NEW: Reset page refresh state
   resetPageRefresh: () => void;
+  
+  // NEW: Cross-tab loading state management
+  isUserLoading: boolean;
+  setUserLoadingState: (email: string, loading: boolean) => void;
+  checkUserLoadingState: (email: string) => boolean;
+  setUserEmail: (email: string | null) => void;
 }
 
 const ChatCacheContext = createContext<ChatCacheContextType | undefined>(undefined)
@@ -56,6 +62,7 @@ const CACHE_KEY = 'czsu-chat-cache'
 const ACTIVE_THREAD_KEY = 'czsu-last-active-chat'
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes in milliseconds
 const PAGE_REFRESH_FLAG_KEY = 'czsu-page-refresh-flag'
+const USER_LOADING_STATE_KEY = 'czsu-user-loading-state' // NEW: Cross-tab loading state
 
 export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   // Internal state
@@ -66,6 +73,9 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isPageRefresh, setIsPageRefresh] = useState(false)
+  
+  // NEW: Cross-tab loading state tied to user email
+  const [isUserLoading, setIsUserLoading] = useState(false)
   
   // Track if this is the initial mount to detect page refresh
   const isInitialMount = useRef(true)
@@ -385,8 +395,128 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(loading)
   }, [])
 
+  // NEW: Function to set user email from components
+  const setUserEmailContext = useCallback((email: string | null) => {
+    console.log('[ChatCache] 👤 Setting user email in context:', email);
+    setUserEmail(email);
+  }, []);
+
   // Get current messages for active thread
   const currentMessages = activeThreadId ? messages[activeThreadId] || [] : []
+
+  // NEW: Functions for cross-tab loading state management
+  const getUserLoadingKey = useCallback((email: string) => {
+    return `${USER_LOADING_STATE_KEY}:${email}`;
+  }, []);
+
+  const setUserLoadingState = useCallback((email: string, loading: boolean) => {
+    if (!email || typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+    
+    try {
+      const key = getUserLoadingKey(email);
+      if (loading) {
+        const loadingData = {
+          email,
+          loading: true,
+          timestamp: Date.now(),
+          tabId: Math.random().toString(36).substr(2, 9) // Unique tab identifier
+        };
+        localStorage.setItem(key, JSON.stringify(loadingData));
+        console.log('[ChatCache] 🔒 User loading state set for:', email, 'across all tabs');
+        
+        // IMPORTANT: Also update local state immediately in current tab
+        setIsUserLoading(true);
+        
+        // Force a custom storage event for current tab (since storage events don't fire in the same tab)
+        window.dispatchEvent(new CustomEvent('userLoadingChange', { 
+          detail: { email, loading: true } 
+        }));
+      } else {
+        localStorage.removeItem(key);
+        console.log('[ChatCache] 🔓 User loading state cleared for:', email, 'across all tabs');
+        
+        // IMPORTANT: Also update local state immediately in current tab
+        setIsUserLoading(false);
+        
+        // Force a custom storage event for current tab
+        window.dispatchEvent(new CustomEvent('userLoadingChange', { 
+          detail: { email, loading: false } 
+        }));
+      }
+    } catch (error) {
+      console.error('[ChatCache] ❌ Error setting user loading state:', error);
+    }
+  }, [getUserLoadingKey]);
+
+  const checkUserLoadingState = useCallback((email: string) => {
+    if (!email || typeof window === 'undefined' || typeof localStorage === 'undefined') return false;
+    
+    try {
+      const key = getUserLoadingKey(email);
+      const stored = localStorage.getItem(key);
+      
+      if (stored) {
+        const data = JSON.parse(stored);
+        const age = Date.now() - data.timestamp;
+        
+        // Clear stale loading states (older than 5 minutes - prevent stuck states)
+        if (age > 5 * 60 * 1000) {
+          localStorage.removeItem(key);
+          console.log('[ChatCache] 🧹 Cleared stale loading state for:', email);
+          return false;
+        }
+        
+        console.log('[ChatCache] 🔍 User loading state check for:', email, '- loading:', data.loading);
+        return data.loading === true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[ChatCache] ❌ Error checking user loading state:', error);
+      return false;
+    }
+  }, [getUserLoadingKey]);
+
+  // NEW: Better cross-tab loading state synchronization
+  useEffect(() => {
+    if (!userEmail || typeof window === 'undefined') return;
+
+    // Handle storage events from OTHER tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (!e.key || !e.key.startsWith(USER_LOADING_STATE_KEY)) return;
+      
+      // Check if this change affects the current user
+      const expectedKey = getUserLoadingKey(userEmail);
+      if (e.key !== expectedKey) return;
+      
+      console.log('[ChatCache] 📡 Cross-tab loading state change detected from ANOTHER tab for:', userEmail);
+      
+      // Update local state based on storage change
+      const isCurrentlyLoading = checkUserLoadingState(userEmail);
+      setIsUserLoading(isCurrentlyLoading);
+    };
+
+    // Handle custom events from CURRENT tab (since storage events don't fire in same tab)
+    const handleCustomLoadingChange = (e: CustomEvent) => {
+      if (e.detail.email === userEmail) {
+        console.log('[ChatCache] 📡 Loading state change detected in CURRENT tab for:', userEmail, '- loading:', e.detail.loading);
+        setIsUserLoading(e.detail.loading);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userLoadingChange', handleCustomLoadingChange as EventListener);
+    
+    // Initial check when user email changes
+    const initialLoadingState = checkUserLoadingState(userEmail);
+    setIsUserLoading(initialLoadingState);
+    console.log('[ChatCache] 🔍 Initial loading state check for:', userEmail, '- loading:', initialLoadingState);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLoadingChange', handleCustomLoadingChange as EventListener);
+    };
+  }, [userEmail, getUserLoadingKey, checkUserLoadingState]);
 
   const contextValue: ChatCacheContextType = {
     // State
@@ -426,7 +556,13 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     resetPageRefresh: () => {
       console.log('[ChatCache] 🔄 Resetting page refresh flag - future navigation will use cache');
       setIsPageRefresh(false);
-    }
+    },
+    
+    // NEW: Cross-tab loading state management
+    isUserLoading,
+    setUserLoadingState,
+    checkUserLoadingState,
+    setUserEmail: setUserEmailContext
   }
 
   return (

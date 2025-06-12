@@ -25099,5 +25099,299 @@
         "result": "[(10374.4618285262, 2014), (6795.4392755608, 2015), (8736.4435024275, 2016), (6379.290609981, 2017), (8383.027219081, 2018), (8530.767, 2019), (8501.18, 2020), (9176.803, 2021), (15666.078, 2022)]"
       }
     ]
+  },
+  {
+    "prompt": "can you compare these 2 datasets? OBY01BHVDT02 an OBY01BT02",
+    "result": "There are no results for the datasets OBY01BHVDT02 and OBY01BT02, so a comparison cannot be made.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Čtvrtletí\", \"Ukazatel\", SUM(value) AS total_value\nFROM VZOPPQT3\nWHERE \"Ukazatel\" IN ('OBY01BHVDT02', 'OBY01BT02')\nGROUP BY \"Čtvrtletí\", \"Ukazatel\"\nORDER BY \"Čtvrtletí\" DESC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT DISTINCT \"Ukazatel\" FROM VZOPPQT3;",
+        "result": "[('Pohyb zboží z ČR (v mil. Kč, FOB)',), ('Pohyb zboží do ČR (v mil. Kč, CIF)',), ('Bilance - pohyb zboží (v mil. Kč)',), ('Obrat - pohyb zboží (v mil. Kč)',), ('Pohyb zboží z ČR (meziroční index )',), ('Pohyb zboží do ČR (meziroční index)',), ('Obrat pohybu zboží (meziroční index)',)]"
+      },
+      {
+        "query": "SELECT \"Čtvrtletí\", \"Ukazatel\", SUM(value) AS total_value\nFROM VZOPPQT3\nWHERE \"Ukazatel\" IN ('OBY01BHVDT02', 'OBY01BT02')\nGROUP BY \"Čtvrtletí\", \"Ukazatel\"\nORDER BY \"Čtvrtletí\" DESC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT DISTINCT \"Ukazatel\" FROM VZOPPQT3;",
+        "result": "[('Pohyb zboží z ČR (v mil. Kč, FOB)',), ('Pohyb zboží do ČR (v mil. Kč, CIF)',), ('Bilance - pohyb zboží (v mil. Kč)',), ('Obrat - pohyb zboží (v mil. Kč)',), ('Pohyb zboží z ČR (meziroční index )',), ('Pohyb zboží do ČR (meziroční index)',), ('Obrat pohybu zboží (meziroční index)',)]"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije na venkovech?",
+    "result": "Není k dispozici žádný údaj o počtu lidí žijících na venkovech.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "V roce 2024 nebyly nalezeny žádné výsledky pro celkový počet obyvatel v Praze.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Podíl obyvatel ve věku 0 - 14 let (%)\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "15.40082124"
+      },
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Celkový počet obyvatel\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Podíl obyvatel ve věku 0 - 14 let (%)\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "15.40082124"
+      },
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Celkový počet obyvatel\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "a kolik ve mestech?",
+    "result": "Podle dostupných dat nejsou k dispozici žádné informace o počtu lidí žijících ve městech ani o trendech v městské populaci v průběhu let.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY Roky\nORDER BY Roky ASC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY \"Roky\"\nORDER BY \"Roky\" ASC;",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "a co v krajich?",
+    "result": "The population distribution across regions in the dataset `OBY01CT02` for the year 2024 is as follows:\n\n1. Hlavní město Praha: 123.44722399620001\n2. Středočeský kraj: 88.9701121862\n3. Plzeňský kraj: 76.4354538334\n4. Jihomoravský kraj: 65.20824088330001\n5. Pardubický kraj: 61.1894550173\n6. Kraj Vysočina: 59.991527604\n7. Karlovarský kraj: 56.744601557\n8. Královéhradecký kraj: 55.6432695371\n9. Liberecký kraj: 55.176388644700005\n10. Jihočeský kraj: 49.8315776579\n\nRegarding indicators or trends related to regional populations, the dataset includes the following metrics for 2024:\n\n- Celkový přírůstek/úbytek na 1 000 obyvatel: 0.8216575142\n- Přirozený přírůstek/úbytek na 1 000 obyvatel: -2.5627998487\n- Přistěhovalí na 1 000 obyvatel: 11.1902496764\n- Přírůstek/úbytek stěhováním na 1 000 obyvatel: 3.384457363\n- Rozvody na 1 000 obyvatel: 1.9102503819\n- Sňatky na 1 000 obyvatel: 4.0863338377\n- Vystěhovalí na 1 000 obyvatel: 7.8057923135\n- Zemřelí na 1 000 obyvatel: 10.307323793\n\nThese indicators suggest a complex demographic situation with both natural population decline and migration trends.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY Roky\nORDER BY Roky ASC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY \"Roky\"\nORDER BY \"Roky\" ASC;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS total_value\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%obyvatel%' AND \"Území\" = 'Česko'\nGROUP BY \"Roky\", \"Ukazatel\"\nORDER BY \"Roky\" DESC\nLIMIT 10;",
+        "result": "[(2024, 'Celkový přírůstek/úbytek na 1 000 obyvatel', 0.8216575142), (2024, 'Potraty na 1 000 obyvatel', None), (2024, 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -2.5627998487), (2024, 'Přistěhovalí na 1 000 obyvatel', 11.1902496764), (2024, 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 3.384457363), (2024, 'Rozvody na 1 000 obyvatel', 1.9102503819), (2024, 'Sňatky na 1 000 obyvatel', 4.0863338377), (2024, 'UPT na 1 000 obyvatel', None), (2024, 'Vystěhovalí na 1 000 obyvatel', 7.8057923135), (2024, 'Zemřelí na 1 000 obyvatel', 10.307323793)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(\"value\") AS total_population\nFROM OBY01BT02\nWHERE \"Ukazatel\" LIKE '%obyvatel%' AND \"Roky\" = '2024'\nGROUP BY \"ČR, kraje\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 123.44722399620001), ('Středočeský kraj', 88.9701121862), ('Plzeňský kraj', 76.4354538334), ('Jihomoravský kraj', 65.20824088330001), ('Pardubický kraj', 61.1894550173), ('Kraj Vysočina', 59.991527604), ('Karlovarský kraj', 56.744601557), ('Královéhradecký kraj', 55.6432695371), ('Liberecký kraj', 55.176388644700005), ('Jihočeský kraj', 49.8315776579)]"
+      }
+    ]
+  },
+  {
+    "prompt": "to nedava smysl. Skus to znovu",
+    "result": "Pro rok 2024 je populace v České republice podle krajů následující:\n\n1. Hlavní město Praha: 125.68139859280001\n2. Středočeský kraj: 91.5199710333\n3. Plzeňský kraj: 80.5939130149\n4. Jihomoravský kraj: 68.5523835668\n5. Pardubický kraj: 65.2361105755\n6. Kraj Vysočina: 63.337607909899994\n7. Královéhradecký kraj: 59.9889962392\n8. Karlovarský kraj: 58.3984053056\n9. Liberecký kraj: 56.0986142826\n10. Jihočeský kraj: 54.1605819869\n11. Olomoucký kraj: 53.615086863\n12. Ústecký kraj: 51.912812623499995\n13. Zlínský kraj: 47.9458635781\n14. Moravskoslezský kraj: 39.5523463001\n\nToto jsou agregované údaje o populaci podle krajů pro rok 2024.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY Roky\nORDER BY Roky ASC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY \"Roky\"\nORDER BY \"Roky\" ASC;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS total_value\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%obyvatel%' AND \"Území\" = 'Česko'\nGROUP BY \"Roky\", \"Ukazatel\"\nORDER BY \"Roky\" DESC\nLIMIT 10;",
+        "result": "[(2024, 'Celkový přírůstek/úbytek na 1 000 obyvatel', 0.8216575142), (2024, 'Potraty na 1 000 obyvatel', None), (2024, 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -2.5627998487), (2024, 'Přistěhovalí na 1 000 obyvatel', 11.1902496764), (2024, 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 3.384457363), (2024, 'Rozvody na 1 000 obyvatel', 1.9102503819), (2024, 'Sňatky na 1 000 obyvatel', 4.0863338377), (2024, 'UPT na 1 000 obyvatel', None), (2024, 'Vystěhovalí na 1 000 obyvatel', 7.8057923135), (2024, 'Zemřelí na 1 000 obyvatel', 10.307323793)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(\"value\") AS total_population\nFROM OBY01BT02\nWHERE \"Ukazatel\" LIKE '%obyvatel%' AND \"Roky\" = '2024'\nGROUP BY \"ČR, kraje\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 123.44722399620001), ('Středočeský kraj', 88.9701121862), ('Plzeňský kraj', 76.4354538334), ('Jihomoravský kraj', 65.20824088330001), ('Pardubický kraj', 61.1894550173), ('Kraj Vysočina', 59.991527604), ('Karlovarský kraj', 56.744601557), ('Královéhradecký kraj', 55.6432695371), ('Liberecký kraj', 55.176388644700005), ('Jihočeský kraj', 49.8315776579)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) AS total_population\nFROM OBY01BT02\nWHERE \"Roky\" = '2024' AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 125.68139859280001), ('Středočeský kraj', 91.5199710333), ('Plzeňský kraj', 80.5939130149), ('Jihomoravský kraj', 68.5523835668), ('Pardubický kraj', 65.2361105755), ('Kraj Vysočina', 63.337607909899994), ('Královéhradecký kraj', 59.9889962392), ('Karlovarský kraj', 58.3984053056), ('Liberecký kraj', 56.0986142826), ('Jihočeský kraj', 54.1605819869)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) AS total_population\nFROM OBY01BT02\nWHERE \"Roky\" = '2024' AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nORDER BY total_population DESC;",
+        "result": "[('Hlavní město Praha', 125.68139859280001), ('Středočeský kraj', 91.5199710333), ('Plzeňský kraj', 80.5939130149), ('Jihomoravský kraj', 68.5523835668), ('Pardubický kraj', 65.2361105755), ('Kraj Vysočina', 63.337607909899994), ('Královéhradecký kraj', 59.9889962392), ('Karlovarský kraj', 58.3984053056), ('Liberecký kraj', 56.0986142826), ('Jihočeský kraj', 54.1605819869), ('Olomoucký kraj', 53.615086863), ('Ústecký kraj', 51.912812623499995), ('Zlínský kraj', 47.9458635781), ('Moravskoslezský kraj', 39.5523463001)]"
+      }
+    ]
+  },
+  {
+    "prompt": "asdasd",
+    "result": "The provided context does not contain a clear question to answer. Please provide a specific question related to the data for a relevant response.",
+    "queries_and_results": [
+      {
+        "query": "SELECT * FROM VZOPPRT1 LIMIT 10",
+        "result": "[('Česko', 2024, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 6107424.520503), ('Česko', 2024, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5409961.124892), ('Česko', 2024, 'Bilance - pohyb zboží (v mil. Kč)', 697463.395611), ('Česko', 2024, 'Obrat - pohyb zboží (v mil. Kč)', 11517385.645395), ('Česko', 2024, 'Pohyb zboží z ČR (meziroční index )', 107.6210230082), ('Česko', 2024, 'Pohyb zboží do ČR (meziroční index)', 105.0786535732), ('Česko', 2024, 'Obrat pohybu zboží (meziroční index)', 106.4116684455), ('Česko', 2023, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 5674936.318006), ('Česko', 2023, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5148487.291118), ('Česko', 2023, 'Bilance - pohyb zboží (v mil. Kč)', 526449.026888)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS total_value\nFROM VZOPPRT1\nWHERE \"Ukazatel\" IN ('Pohyb zboží z ČR (v mil. Kč, FOB)', 'Pohyb zboží do ČR (v mil. Kč, CIF)', 'Bilance - pohyb zboží (v mil. Kč)', 'Obrat - pohyb zboží (v mil. Kč)')\nGROUP BY \"Roky\", \"Ukazatel\"\nORDER BY \"Roky\" DESC, total_value DESC\nLIMIT 10;",
+        "result": "[(2024, 'Obrat - pohyb zboží (v mil. Kč)', 11517385.645395), (2024, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 6107424.520503), (2024, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5409961.124892), (2024, 'Bilance - pohyb zboží (v mil. Kč)', 697463.395611), (2023, 'Obrat - pohyb zboží (v mil. Kč)', 10823423.609124), (2023, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 5674936.318006), (2023, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5148487.291118), (2023, 'Bilance - pohyb zboží (v mil. Kč)', 526449.026888), (2022, 'Obrat - pohyb zboží (v mil. Kč)', 11187078.154473), (2022, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 5655563.2789)]"
+      },
+      {
+        "query": "SELECT * FROM VZOPPRT1 LIMIT 10",
+        "result": "[('Česko', 2024, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 6107424.520503), ('Česko', 2024, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5409961.124892), ('Česko', 2024, 'Bilance - pohyb zboží (v mil. Kč)', 697463.395611), ('Česko', 2024, 'Obrat - pohyb zboží (v mil. Kč)', 11517385.645395), ('Česko', 2024, 'Pohyb zboží z ČR (meziroční index )', 107.6210230082), ('Česko', 2024, 'Pohyb zboží do ČR (meziroční index)', 105.0786535732), ('Česko', 2024, 'Obrat pohybu zboží (meziroční index)', 106.4116684455), ('Česko', 2023, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 5674936.318006), ('Česko', 2023, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5148487.291118), ('Česko', 2023, 'Bilance - pohyb zboží (v mil. Kč)', 526449.026888)]"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS total_value\nFROM VZOPPRT1\nWHERE \"Ukazatel\" IN ('Pohyb zboží z ČR (v mil. Kč, FOB)', 'Pohyb zboží do ČR (v mil. Kč, CIF)', 'Bilance - pohyb zboží (v mil. Kč)', 'Obrat - pohyb zboží (v mil. Kč)')\nGROUP BY \"Roky\", \"Ukazatel\"\nORDER BY \"Roky\" DESC, total_value DESC\nLIMIT 10;",
+        "result": "[(2024, 'Obrat - pohyb zboží (v mil. Kč)', 11517385.645395), (2024, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 6107424.520503), (2024, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5409961.124892), (2024, 'Bilance - pohyb zboží (v mil. Kč)', 697463.395611), (2023, 'Obrat - pohyb zboží (v mil. Kč)', 10823423.609124), (2023, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 5674936.318006), (2023, 'Pohyb zboží do ČR (v mil. Kč, CIF)', 5148487.291118), (2023, 'Bilance - pohyb zboží (v mil. Kč)', 526449.026888), (2022, 'Obrat - pohyb zboží (v mil. Kč)', 11187078.154473), (2022, 'Pohyb zboží z ČR (v mil. Kč, FOB)', 5655563.2789)]"
+      }
+    ]
+  },
+  {
+    "prompt": "dobre, ale ty nemuzes prece takto agregovat hodnoty, kazdy radek je jiny ukazatel. Skus to znovu, a vrat mi smysluplnou oodpoved.",
+    "result": "V roce 2024 byly následující agregované hodnoty podle jednotlivých ukazatelů:\n\n1. **Celkový přírůstek/úbytek na 1 000 obyvatel**: 0.8216575142\n2. **Potraty na 1 000 obyvatel**: None\n3. **Přirozený přírůstek/úbytek na 1 000 obyvatel**: -2.5627998487\n4. **Přistěhovalí na 1 000 obyvatel**: 11.1902496764\n5. **Přírůstek/úbytek stěhováním na 1 000 obyvatel**: 3.384457363\n6. **Rozvody na 1 000 obyvatel**: 1.9102503819\n7. **Sňatky na 1 000 obyvatel**: 4.0863338377\n8. **UPT na 1 000 obyvatel**: None\n9. **Vystěhovalí na 1 000 obyvatel**: 7.8057923135\n10. **Zemřelí na 1 000 obyvatel**: 10.307323793\n\nNejvyšší hodnoty byly zaznamenány u \"Přistěhovalí na 1 000 obyvatel\" a \"Zemřelí na 1 000 obyvatel\". Naopak \"Potraty na 1 000 obyvatel\" a \"UPT na 1 000 obyvatel\" nemají dostupné hodnoty.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS total_population FROM OBY01BT02 WHERE \"Ukazatel\" LIKE '%venkov%' AND \"Roky\" = '2024';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population \nFROM OBY01BT02 \nWHERE \"Ukazatel\" LIKE '%venkov%' \nGROUP BY \"Roky\" \nORDER BY \"Roky\";",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT Roky, SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY Roky\nORDER BY Roky ASC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Roky\", SUM(value) AS total_population\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%město%'\nGROUP BY \"Roky\"\nORDER BY \"Roky\" ASC;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Roky\", \"Ukazatel\", SUM(\"value\") AS total_value\nFROM OBY01CT02\nWHERE \"Ukazatel\" LIKE '%obyvatel%' AND \"Území\" = 'Česko'\nGROUP BY \"Roky\", \"Ukazatel\"\nORDER BY \"Roky\" DESC\nLIMIT 10;",
+        "result": "[(2024, 'Celkový přírůstek/úbytek na 1 000 obyvatel', 0.8216575142), (2024, 'Potraty na 1 000 obyvatel', None), (2024, 'Přirozený přírůstek/úbytek na 1 000 obyvatel', -2.5627998487), (2024, 'Přistěhovalí na 1 000 obyvatel', 11.1902496764), (2024, 'Přírůstek/úbytek stěhováním na 1 000 obyvatel', 3.384457363), (2024, 'Rozvody na 1 000 obyvatel', 1.9102503819), (2024, 'Sňatky na 1 000 obyvatel', 4.0863338377), (2024, 'UPT na 1 000 obyvatel', None), (2024, 'Vystěhovalí na 1 000 obyvatel', 7.8057923135), (2024, 'Zemřelí na 1 000 obyvatel', 10.307323793)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(\"value\") AS total_population\nFROM OBY01BT02\nWHERE \"Ukazatel\" LIKE '%obyvatel%' AND \"Roky\" = '2024'\nGROUP BY \"ČR, kraje\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 123.44722399620001), ('Středočeský kraj', 88.9701121862), ('Plzeňský kraj', 76.4354538334), ('Jihomoravský kraj', 65.20824088330001), ('Pardubický kraj', 61.1894550173), ('Kraj Vysočina', 59.991527604), ('Karlovarský kraj', 56.744601557), ('Královéhradecký kraj', 55.6432695371), ('Liberecký kraj', 55.176388644700005), ('Jihočeský kraj', 49.8315776579)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) AS total_population\nFROM OBY01BT02\nWHERE \"Roky\" = '2024' AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nORDER BY total_population DESC\nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 125.68139859280001), ('Středočeský kraj', 91.5199710333), ('Plzeňský kraj', 80.5939130149), ('Jihomoravský kraj', 68.5523835668), ('Pardubický kraj', 65.2361105755), ('Kraj Vysočina', 63.337607909899994), ('Královéhradecký kraj', 59.9889962392), ('Karlovarský kraj', 58.3984053056), ('Liberecký kraj', 56.0986142826), ('Jihočeský kraj', 54.1605819869)]"
+      },
+      {
+        "query": "SELECT \"ČR, kraje\", SUM(value) AS total_population\nFROM OBY01BT02\nWHERE \"Roky\" = '2024' AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"ČR, kraje\"\nORDER BY total_population DESC;",
+        "result": "[('Hlavní město Praha', 125.68139859280001), ('Středočeský kraj', 91.5199710333), ('Plzeňský kraj', 80.5939130149), ('Jihomoravský kraj', 68.5523835668), ('Pardubický kraj', 65.2361105755), ('Kraj Vysočina', 63.337607909899994), ('Královéhradecký kraj', 59.9889962392), ('Karlovarský kraj', 58.3984053056), ('Liberecký kraj', 56.0986142826), ('Jihočeský kraj', 54.1605819869), ('Olomoucký kraj', 53.615086863), ('Ústecký kraj', 51.912812623499995), ('Zlínský kraj', 47.9458635781), ('Moravskoslezský kraj', 39.5523463001)]"
+      },
+      {
+        "query": "SELECT \"Ukazatel\", SUM(\"value\") AS total_value\nFROM OBY01BT02\nWHERE \"Roky\" = '2024' AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"Ukazatel\"\nORDER BY total_value DESC\nLIMIT 10",
+        "result": "[('Přistěhovalí na 1 000 obyvatel', 285.7943215672), ('Vystěhovalí na 1 000 obyvatel', 252.5027292467), ('Zemřelí na 1 000 obyvatel', 147.3452973308), ('Živě narození na 1 000 obyvatel', 106.79667840249999), ('Sňatky na 1 000 obyvatel', 56.849339668), ('Přírůstek/úbytek stěhováním na 1 000 obyvatel', 33.2915923202), ('Kojenecká úmrtnost', 32.2724405691), ('Rozvody na 1 000 obyvatel', 26.977059591), ('Novorozenecká úmrtnost', 22.5702787132), ('Celkový přírůstek/úbytek na 1 000 obyvatel', -7.2570266081)]"
+      },
+      {
+        "query": "SELECT \"Ukazatel\", SUM(\"value\") AS total_value\nFROM OBY01BT02\nWHERE \"Roky\" = '2024' AND \"ČR, kraje\" != 'Česko'\nGROUP BY \"Ukazatel\"\nORDER BY total_value DESC\nLIMIT 10;",
+        "result": "[('Přistěhovalí na 1 000 obyvatel', 285.7943215672), ('Vystěhovalí na 1 000 obyvatel', 252.5027292467), ('Zemřelí na 1 000 obyvatel', 147.3452973308), ('Živě narození na 1 000 obyvatel', 106.79667840249999), ('Sňatky na 1 000 obyvatel', 56.849339668), ('Přírůstek/úbytek stěhováním na 1 000 obyvatel', 33.2915923202), ('Kojenecká úmrtnost', 32.2724405691), ('Rozvody na 1 000 obyvatel', 26.977059591), ('Novorozenecká úmrtnost', 22.5702787132), ('Celkový přírůstek/úbytek na 1 000 obyvatel', -7.2570266081)]"
+      }
+    ]
+  },
+  {
+    "prompt": "dfsdsfsdfsf",
+    "result": "The question is unclear and does not provide specific information to respond to. Please provide a clear question for an accurate answer.",
+    "queries_and_results": [
+      {
+        "query": "SELECT * FROM OBY04ZEM02T02 LIMIT 10;",
+        "result": "[('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', 'celkem', 21.320015357), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '0-14', 0.5787847604), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '15-44', 1.1776394933), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '45-64', 9.3749298531), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '65-74', 36.0914048839), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '75-84', 103.7810513416), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '85 a více', 352.3590930668), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 51. týden 2024', 'celkem', 21.2099292192), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 51. týden 2024', '0-14', 0.5209062843), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 51. týden 2024', '15-44', 1.5616523716)]"
+      },
+      {
+        "query": "SELECT \"Týdny\", \"Věkové skupiny (roky)\", AVG(value) as avg_mortality_rate\nFROM OBY04ZEM02T02\nWHERE \"Území\" = \"Česko\" \n  AND \"Ukazatel\" = \"Míra úmrtnosti (na 100 000 obyvatel k 1.1.)\"\n  AND \"Týdny\" LIKE \"%2024\"\nGROUP BY \"Týdny\", \"Věkové skupiny (roky)\"\nORDER BY \"Týdny\" ASC\nLIMIT 10;",
+        "result": "[(' 01. týden 2024', '0-14', 0.3472708562), (' 01. týden 2024', '15-44', 1.5104506545), (' 01. týden 2024', '45-64', 10.1341671299), (' 01. týden 2024', '65-74', 40.3327451475), (' 01. týden 2024', '75-84', 103.0151395236), (' 01. týden 2024', '85 a více', 356.2741941009), (' 01. týden 2024', 'celkem', 22.1181398562), (' 02. týden 2024', '0-14', 0.5209062843), (' 02. týden 2024', '15-44', 1.6640558058), (' 02. týden 2024', '45-64', 9.969115548)]"
+      },
+      {
+        "query": "SELECT * FROM OBY04ZEM02T02 LIMIT 10;",
+        "result": "[('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', 'celkem', 21.320015357), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '0-14', 0.5787847604), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '15-44', 1.1776394933), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '45-64', 9.3749298531), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '65-74', 36.0914048839), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '75-84', 103.7810513416), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 52. týden 2024', '85 a více', 352.3590930668), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 51. týden 2024', 'celkem', 21.2099292192), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 51. týden 2024', '0-14', 0.5209062843), ('Česko', 'Míra úmrtnosti (na 100 000 obyvatel k 1.1.)', ' 51. týden 2024', '15-44', 1.5616523716)]"
+      },
+      {
+        "query": "SELECT \"Týdny\", \"Věkové skupiny (roky)\", AVG(value) as avg_mortality_rate\nFROM OBY04ZEM02T02\nWHERE \"Území\" = \"Česko\" \n  AND \"Ukazatel\" = \"Míra úmrtnosti (na 100 000 obyvatel k 1.1.)\"\n  AND \"Týdny\" LIKE \"%2024\"\nGROUP BY \"Týdny\", \"Věkové skupiny (roky)\"\nORDER BY \"Týdny\" ASC\nLIMIT 10;",
+        "result": "[(' 01. týden 2024', '0-14', 0.3472708562), (' 01. týden 2024', '15-44', 1.5104506545), (' 01. týden 2024', '45-64', 10.1341671299), (' 01. týden 2024', '65-74', 40.3327451475), (' 01. týden 2024', '75-84', 103.0151395236), (' 01. týden 2024', '85 a více', 356.2741941009), (' 01. týden 2024', 'celkem', 22.1181398562), (' 02. týden 2024', '0-14', 0.5209062843), (' 02. týden 2024', '15-44', 1.6640558058), (' 02. týden 2024', '45-64', 9.969115548)]"
+      }
+    ]
   }
 ]

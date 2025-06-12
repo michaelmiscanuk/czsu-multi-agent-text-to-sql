@@ -58,7 +58,11 @@ export default function ChatPage() {
     isPageRefresh,
     forceAPIRefresh,
     hasMessagesForThread,
-    resetPageRefresh
+    resetPageRefresh,
+    isUserLoading,
+    setUserLoadingState,
+    checkUserLoadingState,
+    setUserEmail
   } = useChatCache();
   
   console.log('[ChatPage-DEBUG] 🔄 Component render - Status:', status, 'UserEmail:', !!userEmail, 'IsPageRefresh:', isPageRefresh, 'Timestamp:', new Date().toISOString());
@@ -105,10 +109,26 @@ export default function ChatPage() {
   const [threadsLoaded, setThreadsLoaded] = useState(false);
   const [threadsLoading, setThreadsLoading] = useState(false);
   
+  // Combined loading state: local loading OR global context loading OR cross-tab user loading
+  // This ensures loading state persists across navigation AND across browser tabs for the same user
+  const isAnyLoading = isLoading || cacheLoading || isUserLoading;
+  
   // Debug logging for state changes
   React.useEffect(() => {
     console.log('[ChatPage-DEBUG] 📊 State Update - threads:', threads.length, 'activeThreadId:', activeThreadId, 'messages:', messages.length, 'threadsLoaded:', threadsLoaded, 'threadsLoading:', threadsLoading);
   }, [threads.length, activeThreadId, messages.length, threadsLoaded, threadsLoading]);
+  
+  // Debug logging for loading states
+  React.useEffect(() => {
+    console.log('[ChatPage-DEBUG] 🔄 Loading State Update - localLoading:', isLoading, 'contextLoading:', cacheLoading, 'userLoading:', isUserLoading, 'combinedLoading:', isAnyLoading, 'userEmail:', userEmail);
+    
+    // Additional debug: Check localStorage directly
+    if (userEmail && typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const key = `czsu-user-loading-state:${userEmail}`;
+      const stored = localStorage.getItem(key);
+      console.log('[ChatPage-DEBUG] 🔍 Direct localStorage check for', userEmail, ':', stored);
+    }
+  }, [isLoading, cacheLoading, isUserLoading, isAnyLoading, userEmail]);
   
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
@@ -255,6 +275,21 @@ export default function ChatPage() {
     }
   }, [userEmail, status]);
 
+  // NEW: Initialize user email in context and check for existing loading state
+  useEffect(() => {
+    if (userEmail && status === "authenticated") {
+      // Set user email in context for localStorage operations
+      console.log('[ChatPage-useEffect] 👤 Setting user email in context:', userEmail);
+      setUserEmail(userEmail);
+      
+      // Check if user already has a loading state from another tab
+      const existingLoadingState = checkUserLoadingState(userEmail);
+      if (existingLoadingState) {
+        console.log('[ChatPage-useEffect] 🔒 Found existing loading state for user:', userEmail, '- blocking new requests');
+      }
+    }
+  }, [userEmail, status, checkUserLoadingState, setUserEmail]);
+
   // Load messages when active thread changes (when user clicks a thread)
   useEffect(() => {
     if (activeThreadId && threadsLoaded) {
@@ -297,6 +332,21 @@ export default function ChatPage() {
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
+
+  // NEW: Cleanup effect for cross-tab loading state
+  useEffect(() => {
+    // Cleanup function when user changes or component unmounts
+    return () => {
+      if (userEmail) {
+        console.log('[ChatPage-cleanup] 🧹 Component unmounting, checking if we should clean up loading state for:', userEmail);
+        // Only clean up if this tab/component is actually loading
+        if (isLoading && userEmail) {
+          setUserLoadingState(userEmail, false);
+          console.log('[ChatPage-cleanup] ✅ Cleaned up loading state for:', userEmail);
+        }
+      }
+    };
+  }, [userEmail, isLoading, setUserLoadingState]);
 
   const handleSQLButtonClick = (msgId: string) => {
     setOpenSQLModalForMsgId(msgId);
@@ -360,13 +410,29 @@ export default function ChatPage() {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!currentMessage.trim() || isLoading || !userEmail) return;
+    if (!currentMessage.trim() || isAnyLoading || !userEmail) return;
+    
+    // CRITICAL: Block if user is already loading in ANY tab before doing anything else
+    const existingLoadingState = checkUserLoadingState(userEmail);
+    if (existingLoadingState) {
+      console.log('[ChatPage-send] 🚫 BLOCKED: User', userEmail, 'is already processing a request in another tab');
+      return; // Exit immediately - don't allow concurrent requests
+    }
+    
+    console.log('[ChatPage-send] ✅ No existing loading state found, proceeding with request for user:', userEmail);
     
     const messageText = currentMessage.trim();
     setCurrentMessage("");
+    
+    // Set loading state in BOTH local and context to ensure persistence across navigation
     setIsLoading(true);
+    setLoading(true); // Context loading state - persists across navigation
+    
+    // NEW: Set cross-tab loading state tied to user email IMMEDIATELY
+    setUserLoadingState(userEmail, true);
     
     let currentThreadId = activeThreadId;
+    let shouldUpdateTitle = false;
     
     // Create new thread if none exists
     if (!currentThreadId) {
@@ -381,6 +447,31 @@ export default function ChatPage() {
       
       addThread(newThread);
       setActiveThreadId(currentThreadId);
+      console.log('[ChatPage-send] ✅ Created new thread with title:', newThread.title);
+    } else {
+      // Check if existing thread needs title update
+      const currentThread = threads.find(t => t.thread_id === currentThreadId);
+      const currentMessages = messages.filter(msg => msg.isUser); // Count only user messages
+      
+      // Update title if:
+      // 1. Current title is generic ("New Chat" or empty)
+      // 2. OR this is the first user message in the thread
+      // 3. OR the full_prompt is empty/missing
+      if (currentThread && 
+          (currentThread.title === 'New Chat' || !currentThread.title || 
+           currentMessages.length === 0 || !currentThread.full_prompt)) {
+        shouldUpdateTitle = true;
+        const newTitle = messageText.slice(0, 50) + (messageText.length > 50 ? '...' : '');
+        
+        // IMMEDIATELY update thread title in frontend state and localStorage
+        updateThread(currentThreadId, {
+          title: newTitle,
+          full_prompt: messageText,
+          latest_timestamp: new Date().toISOString()
+        });
+        
+        console.log('[ChatPage-send] ✅ Immediately updated existing thread title to:', newTitle);
+      }
     }
     
     // Add user message to cache
@@ -444,11 +535,21 @@ export default function ChatPage() {
       
       updateMessage(currentThreadId, loadingMessageId, responseMessage);
       
-      // Update thread metadata and sync localStorage
-      updateThread(currentThreadId, {
+      // Update thread metadata after response - this ensures any PostgreSQL changes are reflected
+      const updatedMetadata: Partial<ChatThreadMeta> = {
         latest_timestamp: new Date().toISOString(),
         run_count: (threads.find(t => t.thread_id === currentThreadId)?.run_count || 0) + 1
-      });
+      };
+      
+      // If we updated the title earlier, make sure to preserve it in case PostgreSQL response overwrites
+      if (shouldUpdateTitle) {
+        const newTitle = messageText.slice(0, 50) + (messageText.length > 50 ? '...' : '');
+        updatedMetadata.title = newTitle;
+        updatedMetadata.full_prompt = messageText;
+        console.log('[ChatPage-send] ✅ Preserving updated title after response:', newTitle);
+      }
+      
+      updateThread(currentThreadId, updatedMetadata);
       
       console.log('[ChatPage-send] ✅ Message sent and localStorage synced with new response');
       
@@ -490,6 +591,10 @@ export default function ChatPage() {
       updateMessage(currentThreadId, loadingMessageId, errorMessage);
     } finally {
       setIsLoading(false);
+      setLoading(false); // Clear context loading state as well
+      
+      // NEW: Clear cross-tab loading state tied to user email
+      setUserLoadingState(userEmail, false);
     }
   };
 
@@ -520,7 +625,7 @@ export default function ChatPage() {
             className="px-3 py-1.5 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleNewChat}
             title="New chat"
-            disabled={isLoading || threads.some(s => !messages.length && s.thread_id === activeThreadId)}
+            disabled={isAnyLoading || threads.some(s => !messages.length && s.thread_id === activeThreadId)}
           >
             + New Chat
           </button>
@@ -592,7 +697,10 @@ export default function ChatPage() {
             openSQLModalForMsgId={openSQLModalForMsgId}
             onCloseSQLModal={handleCloseSQLModal}
             onNewChat={handleNewChat}
-            isLoading={isLoading}
+            isLoading={isAnyLoading}
+            isAnyLoading={isAnyLoading}
+            threads={threads}
+            activeThreadId={activeThreadId}
           />
         </div>
         
@@ -606,14 +714,14 @@ export default function ChatPage() {
               value={currentMessage}
               onChange={e => setCurrentMessage(e.target.value)}
               className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200"
-              disabled={isLoading}
+              disabled={isAnyLoading}
             />
             <button
               type="submit"
               className="px-6 py-3 light-blue-theme rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              disabled={isLoading || !currentMessage.trim()}
+              disabled={isAnyLoading || !currentMessage.trim()}
             >
-              {isLoading ? (
+              {isAnyLoading ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin"></div>
                   Sending...
