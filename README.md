@@ -4,6 +4,8 @@
 
 ### Option 1: Automated Setup
 - To set up all backend and frontend dependencies, run `setup.bat` from the root folder.
+-- If you already have dependencies install, and want to do clean setup - remove there items first:
+--- in the root: .venv folder; in frontend folder: node_modules folder, .next folder and package-lock file
 - To start the backend, run `start_backend.bat` from the root folder.
 - To start the frontend, run `start_frontend.bat` from the `frontend` folder.
 
@@ -20,6 +22,9 @@
    uv pip install .[dev]
    uvicorn api_server:app --reload --reload-exclude .venv
    ```
+   
+   If there is some problem with libraries, delete .venv folder and run commands above
+   
 3. **Frontend Setup (from frontend folder)**
    Run the following commands:
    ```
@@ -27,6 +32,10 @@
    npm run build
    npm run dev
    ```
+
+   If there isome problem with libraries, delete these items in frontend folder
+   node_modules folder, .next folder and package-lock file
+   Run commands above.
 
 ---
 
@@ -51,6 +60,9 @@
    pip install .[dev]
    uvicorn api_server:app --reload --reload-exclude .venv
    ```
+   
+   If there is some problem with libraries, delete .venv folder and run commands above
+   
 3. **Frontend Setup (from frontend folder)**
    Run the following commands:
    ```
@@ -59,6 +71,9 @@
    npm run dev
    ```
 
+   If there isome problem with libraries, delete these items in frontend folder
+   node_modules folder, .next folder and package-lock file
+   Run commands above.
 ---
 
 ## Running Notebooks
