@@ -83,7 +83,7 @@ export default function ChatPage() {
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   
   // PostgreSQL API functions with new cache context
@@ -549,6 +549,20 @@ export default function ChatPage() {
     }
   };
 
+  // Add keyboard handler for SHIFT+ENTER vs ENTER
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      // Only submit if there's content and not loading
+      if (currentMessage.trim() && !isAnyLoading) {
+        const syntheticEvent = new Event('submit') as any;
+        syntheticEvent.preventDefault = () => {};
+        handleSend(syntheticEvent);
+      }
+    }
+    // SHIFT+ENTER will naturally create a new line due to default textarea behavior
+  };
+
   // Auto-scroll when new messages arrive
   React.useEffect(() => {
     if (activeThreadId !== prevChatIdRef.current || messages.length !== prevMsgCountRef.current) {
@@ -563,6 +577,15 @@ export default function ChatPage() {
       prevMsgCountRef.current = messages.length;
     }
   }, [activeThreadId, messages.length]);
+
+  // Auto-resize textarea when currentMessage changes programmatically
+  React.useEffect(() => {
+    if (inputRef.current) {
+      const textarea = inputRef.current;
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
+    }
+  }, [currentMessage]);
 
   // UI
   return (
@@ -657,19 +680,31 @@ export default function ChatPage() {
         
         {/* Stationary Input Field */}
         <div className="bg-white border-t border-gray-200 shadow-lg">
-          <form onSubmit={handleSend} className="p-4 flex items-center gap-3 max-w-4xl mx-auto">
-            <input
+          <form onSubmit={handleSend} className="p-4 flex items-start gap-3 max-w-4xl mx-auto">
+            <textarea
               ref={inputRef}
-              type="text"
-              placeholder="Type your message here..."
+              placeholder="Type your message here... (SHIFT+ENTER for new line)"
               value={currentMessage}
               onChange={e => setCurrentMessage(e.target.value)}
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200"
+              onKeyDown={handleKeyDown}
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200 resize-none min-h-[48px] max-h-[200px]"
               disabled={isAnyLoading}
+              rows={1}
+              style={{
+                height: 'auto',
+                minHeight: '48px',
+                maxHeight: '200px'
+              }}
+              onInput={(e) => {
+                // Auto-resize textarea based on content
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = 'auto';
+                target.style.height = Math.min(target.scrollHeight, 200) + 'px';
+              }}
             />
             <button
               type="submit"
-              className="px-6 py-3 light-blue-theme rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="px-6 py-3 light-blue-theme rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 mt-1"
               disabled={isAnyLoading || !currentMessage.trim()}
             >
               {isAnyLoading ? (
