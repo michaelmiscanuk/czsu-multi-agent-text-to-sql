@@ -1,0 +1,15 @@
+fastapi==0.115.9
+uvicorn==0.34.2
+pydantic==2.11.5
+langchain==0.3.25
+langchain-openai==0.3.18
+langchain-community==0.3.24
+langgraph==0.4.7
+chromadb==1.0.11
+python-dotenv==1.1.0
+httpx==0.28.1
+pydantic-settings==2.9.1
+psycopg[binary]==3.2.4
+pandas==2.2.3
+numpy==2.2.5
+openai==1.82.1 
