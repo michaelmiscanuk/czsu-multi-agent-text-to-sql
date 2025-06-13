@@ -49214,3 +49214,15 @@ Queries and Results:
   Query: SELECT value FROM OBY01BHVDT02 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Celkový počet obyvatel" AND "Roky" = 2023 LIMIT 10;
   Result: No results found
 ----------------------------------------------------------------------------
+Prompt: kolik lidi zije v praze?
+Result: V roce 2024 nebyly nalezeny žádné výsledky pro celkový počet obyvatel v Praze.
+Queries and Results:
+  Query: SELECT value FROM OBY02FHVDT01 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Podíl obyvatel ve věku 0 - 14 let (%)" AND "Rok" = 2024 LIMIT 10;
+  Result: 15.40082124
+  Query: SELECT value FROM OBY02FHVDT01 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Celkový počet obyvatel" AND "Rok" = 2024 LIMIT 10;
+  Result: No results found
+  Query: SELECT value FROM OBY02FHVDT01 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Podíl obyvatel ve věku 0 - 14 let (%)" AND "Rok" = 2024 LIMIT 10;
+  Result: 15.40082124
+  Query: SELECT value FROM OBY02FHVDT01 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Celkový počet obyvatel" AND "Rok" = 2024 LIMIT 10;
+  Result: No results found
+----------------------------------------------------------------------------

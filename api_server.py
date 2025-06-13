@@ -251,7 +251,7 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
             
             # Try to convert to UUID to validate format
             try:
-            run_uuid = str(uuid.UUID(request.run_id))
+                run_uuid = str(uuid.UUID(request.run_id))
                 print(f"[FEEDBACK-FLOW] ✅ UUID validation successful: '{run_uuid}'")
             except ValueError as uuid_error:
                 print(f"[FEEDBACK-FLOW] 🚨 UUID ValueError details: {str(uuid_error)}")

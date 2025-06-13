@@ -25415,5 +25415,27 @@
         "result": "No results found"
       }
     ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "V roce 2024 nebyly nalezeny žádné výsledky pro celkový počet obyvatel v Praze.",
+    "queries_and_results": [
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Podíl obyvatel ve věku 0 - 14 let (%)\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "15.40082124"
+      },
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Celkový počet obyvatel\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Podíl obyvatel ve věku 0 - 14 let (%)\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "15.40082124"
+      },
+      {
+        "query": "SELECT value FROM OBY02FHVDT01 WHERE \"ČR, Reg. soudržnosti, Kraje\" = \"Praha\" AND \"Ukazatel\" = \"Celkový počet obyvatel\" AND \"Rok\" = 2024 LIMIT 10;",
+        "result": "No results found"
+      }
+    ]
   }
 ]
