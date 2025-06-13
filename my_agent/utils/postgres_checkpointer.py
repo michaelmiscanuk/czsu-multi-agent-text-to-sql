@@ -20,6 +20,21 @@ if platform.system() == "Windows":
 
 # Database connection parameters
 database_pool: Optional[AsyncConnectionPool] = None
+_pool_lock = asyncio.Lock()  # Add global lock to prevent multiple pool creation
+
+async def force_close_all_connections():
+    """Force close all connections - useful when hitting connection limits."""
+    global database_pool
+    
+    if database_pool is not None:
+        try:
+            print("🧹 Force closing all database connections...")
+            await database_pool.close()
+            print("✓ All connections force closed")
+        except Exception as e:
+            print(f"⚠ Error force closing connections: {e}")
+        finally:
+            database_pool = None
 
 def get_db_config():
     """Get database configuration from environment variables."""
@@ -58,44 +73,56 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     """Create a new connection pool."""
     connection_string = get_connection_string()
     
+    # Use only 1 connection to avoid hitting PostgreSQL limits
     pool = AsyncConnectionPool(
         conninfo=connection_string,
-        max_size=10,
-        min_size=2,
+        max_size=1,  # Only 1 connection - most conservative approach
+        min_size=1,  # Start with 1 connection
+        timeout=30,  # Increased timeout to 30 seconds
         kwargs={
             "autocommit": True,
-            "prepare_threshold": 0,
+            "prepare_threshold": None,  # Disable automatic prepared statements to avoid conflicts
+            "connect_timeout": 15,  # Increased connection timeout
         },
         open=False  # Fix deprecation warning
     )
     
-    # Explicitly open the pool
-    await pool.open()
-    print("🔗 Created fresh PostgreSQL connection pool")
-    return pool
+    # Explicitly open the pool with longer timeout
+    try:
+        await asyncio.wait_for(pool.open(), timeout=30)  # Increased to 30 seconds
+        print("🔗 Created fresh PostgreSQL connection pool (max_size=1)")
+        return pool
+    except asyncio.TimeoutError:
+        print("❌ Timeout opening connection pool")
+        raise
+    except Exception as e:
+        print(f"❌ Error opening connection pool: {e}")
+        raise
 
 async def get_healthy_pool() -> AsyncConnectionPool:
     """Get a healthy connection pool, creating a new one if needed."""
     global database_pool
     
-    # Check if current pool is healthy
-    if await is_pool_healthy(database_pool):
+    # Use global lock to prevent multiple pool creation
+    async with _pool_lock:
+        # Check if current pool is healthy
+        if await is_pool_healthy(database_pool):
+            return database_pool
+        
+        # Pool is unhealthy or doesn't exist, close old one if needed
+        if database_pool is not None:
+            try:
+                print(f"[Pool-Health] 🔄 Closing unhealthy pool...")
+                await database_pool.close()
+            except Exception as e:
+                print(f"[Pool-Health] ⚠ Error closing old pool: {e}")
+            finally:
+                database_pool = None
+        
+        # Create new pool
+        print(f"[Pool-Health] 🆕 Creating new connection pool...")
+        database_pool = await create_fresh_connection_pool()
         return database_pool
-    
-    # Pool is unhealthy or doesn't exist, close old one if needed
-    if database_pool is not None:
-        try:
-            print(f"[Pool-Health] 🔄 Closing unhealthy pool...")
-            await database_pool.close()
-        except Exception as e:
-            print(f"[Pool-Health] ⚠ Error closing old pool: {e}")
-        finally:
-            database_pool = None
-    
-    # Create new pool
-    print(f"[Pool-Health] 🆕 Creating new connection pool...")
-    database_pool = await create_fresh_connection_pool()
-    return database_pool
 
 async def setup_users_threads_runs_table():
     """Setup the users_threads_runs table for chat management."""
@@ -452,6 +479,56 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
             "error": str(e)
         }
 
+def check_postgres_env_vars():
+    """Check if all required PostgreSQL environment variables are present."""
+    required_vars = ['user', 'password', 'host', 'dbname']
+    missing_vars = []
+    
+    config = get_db_config()
+    
+    for var in required_vars:
+        if not config.get(var):
+            missing_vars.append(var)
+    
+    if missing_vars:
+        print(f"❌ Missing required environment variables: {missing_vars}")
+        return False
+    
+    print(f"✅ All required PostgreSQL environment variables present")
+    return True
+
+async def test_basic_postgres_connection():
+    """Test basic PostgreSQL connectivity without pools or langgraph."""
+    try:
+        import psycopg
+        
+        config = get_db_config()
+        connection_string = get_connection_string()
+        
+        print(f"🔍 Testing basic PostgreSQL connection...")
+        print(f"🔍 Host: {config['host']}")
+        print(f"🔍 Port: {config['port']}")
+        print(f"🔍 Database: {config['dbname']}")
+        print(f"🔍 User: {config['user']}")
+        
+        # Test basic connection with short timeout
+        async with await psycopg.AsyncConnection.connect(
+            connection_string,
+            autocommit=True,
+            connect_timeout=10
+        ) as conn:
+            # Simple query test
+            async with conn.cursor() as cur:
+                await cur.execute("SELECT 1 as test, NOW() as current_time")
+                result = await cur.fetchone()
+                print(f"✅ Basic PostgreSQL connection successful: {result}")
+                return True
+                
+    except Exception as e:
+        print(f"❌ Basic PostgreSQL connection failed: {e}")
+        print(f"🔍 Error type: {type(e).__name__}")
+        return False
+
 async def get_postgres_checkpointer():
     """
     Get a PostgreSQL checkpointer using the official langgraph PostgreSQL implementation.
@@ -459,17 +536,35 @@ async def get_postgres_checkpointer():
     """
     
     try:
+        # First check environment variables
+        print("🔍 Step 0: Checking environment variables...")
+        if not check_postgres_env_vars():
+            raise Exception("Missing required PostgreSQL environment variables")
+        
+        # First test basic PostgreSQL connectivity
+        print("🔍 Step 1: Testing basic PostgreSQL connectivity...")
+        basic_connection_ok = await test_basic_postgres_connection()
+        
+        if not basic_connection_ok:
+            print("❌ Basic PostgreSQL connectivity failed - cannot proceed")
+            raise Exception("PostgreSQL server is not reachable")
+        
+        print("✅ Basic PostgreSQL connectivity confirmed")
+        
         # Get a healthy connection pool
+        print("🔍 Step 2: Creating connection pool...")
         pool = await get_healthy_pool()
         
-        print("🔗 Creating PostgreSQL checkpointer with official library...")
+        print("🔍 Step 3: Creating PostgreSQL checkpointer with official library...")
         
         # Create checkpointer with the connection pool
         checkpointer = AsyncPostgresSaver(pool)
         
+        print("🔍 Step 4: Setting up langgraph tables...")
         # Setup tables (this creates all required tables with correct schemas)
         await checkpointer.setup()
         
+        print("🔍 Step 5: Setting up custom users_threads_runs table...")
         # Setup our custom users_threads_runs table
         await setup_users_threads_runs_table()
         
@@ -487,14 +582,16 @@ def get_sync_postgres_checkpointer():
     try:
         connection_string = get_connection_string()
         
-        # Create sync connection pool
+        # Create sync connection pool with single connection
         pool = ConnectionPool(
             conninfo=connection_string,
-            max_size=3,
-            min_size=1,
+            max_size=10,  # Only 1 connection
+            min_size=3,  # Start with 1
+            timeout=30,  # Increased timeout
             kwargs={
                 "autocommit": True,
-                "prepare_threshold": 0,
+                "prepare_threshold": None,  # Disable automatic prepared statements to avoid conflicts
+                "connect_timeout": 15,  # Increased connection timeout
             }
         )
         
@@ -504,7 +601,7 @@ def get_sync_postgres_checkpointer():
         # Setup tables (this creates all required tables with correct schemas)
         checkpointer.setup()
         
-        print("✅ Sync PostgreSQL checkpointer initialized successfully")
+        print("✅ Sync PostgreSQL checkpointer initialized successfully (max_size=1)")
         return checkpointer
         
     except Exception as e:

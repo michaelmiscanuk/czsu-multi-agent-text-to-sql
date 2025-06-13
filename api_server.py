@@ -29,7 +29,8 @@ from my_agent.utils.postgres_checkpointer import (
     get_user_chat_threads,
     delete_user_thread_entries,
     get_conversation_messages_from_checkpoints,
-    get_queries_and_results_from_latest_checkpoint
+    get_queries_and_results_from_latest_checkpoint,
+    force_close_all_connections
 )
 
 # Additional imports for sentiment functionality
@@ -50,7 +51,11 @@ async def initialize_checkpointer():
             print("🔗 Initializing PostgreSQL checkpointer and chat system...")
             print(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
             
-            GLOBAL_CHECKPOINTER = await get_postgres_checkpointer()
+            # Add timeout to initialization to fail faster
+            GLOBAL_CHECKPOINTER = await asyncio.wait_for(
+                get_postgres_checkpointer(), 
+                timeout=45  # Increased from 30 to 45 seconds
+            )
             
             # Verify the checkpointer is healthy
             if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
@@ -60,6 +65,14 @@ async def initialize_checkpointer():
             
             print("✓ Global PostgreSQL checkpointer initialized successfully")
             print("✓ users_threads_runs table verified/created")
+        except asyncio.TimeoutError:
+            print("✗ Failed to initialize PostgreSQL checkpointer: initialization timeout")
+            print("⚠ This usually means PostgreSQL connection pool is exhausted")
+            
+            # Fallback to InMemorySaver for development/testing
+            from langgraph.checkpoint.memory import InMemorySaver
+            GLOBAL_CHECKPOINTER = InMemorySaver()
+            print("⚠ Falling back to InMemorySaver")
         except Exception as e:
             print(f"✗ Failed to initialize PostgreSQL checkpointer: {e}")
             print(f"🔍 Error type: {type(e).__name__}")
