@@ -154,7 +154,7 @@ class AnalyzeRequest(BaseModel):
 
 class FeedbackRequest(BaseModel):
     run_id: str
-    feedback: int  # 1 for thumbs up, 0 for thumbs down
+    feedback: Optional[int] = None  # 1 for thumbs up, 0 for thumbs down, None if only comment
     comment: Optional[str] = None
 
 class SentimentRequest(BaseModel):
@@ -251,6 +251,14 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
     print(f"[FEEDBACK-FLOW] 🔑 Run ID: '{request.run_id}'")
     print(f"[FEEDBACK-FLOW] 🔑 Run ID type: {type(request.run_id).__name__}, length: {len(request.run_id) if request.run_id else 0}")
     print(f"[FEEDBACK-FLOW] 👍/👎 Feedback: {request.feedback}")
+    print(f"[FEEDBACK-FLOW] 💬 Comment: {request.comment}")
+    
+    # Validate that at least one of feedback or comment is provided
+    if request.feedback is None and not request.comment:
+        raise HTTPException(
+            status_code=400,
+            detail="At least one of 'feedback' or 'comment' must be provided"
+        )
     
     try:
         try:
@@ -280,16 +288,32 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         print("[FEEDBACK-FLOW] 🔄 Initializing LangSmith client")
         client = Client()
         
-        print(f"[FEEDBACK-FLOW] 📤 Submitting feedback to LangSmith - run_id: '{run_uuid}'")
-        client.create_feedback(
-            run_uuid,
-            key="SENTIMENT",
-            score=request.feedback,
-            comment=request.comment if request.comment else None
-        )
+        # Prepare feedback data for LangSmith
+        feedback_kwargs = {
+            "run_id": run_uuid,
+            "key": "SENTIMENT"
+        }
+        
+        # Only add score if feedback is provided
+        if request.feedback is not None:
+            feedback_kwargs["score"] = request.feedback
+            print(f"[FEEDBACK-FLOW] 📤 Submitting feedback with score to LangSmith - run_id: '{run_uuid}', score: {request.feedback}")
+        else:
+            print(f"[FEEDBACK-FLOW] 📤 Submitting comment-only feedback to LangSmith - run_id: '{run_uuid}'")
+        
+        # Only add comment if provided
+        if request.comment:
+            feedback_kwargs["comment"] = request.comment
+        
+        client.create_feedback(**feedback_kwargs)
         
         print(f"[FEEDBACK-FLOW] ✅ Feedback successfully submitted to LangSmith")
-        return {"message": "Feedback submitted successfully", "run_id": run_uuid}
+        return {
+            "message": "Feedback submitted successfully", 
+            "run_id": run_uuid,
+            "feedback": request.feedback,
+            "comment": request.comment
+        }
         
     except HTTPException:
         raise

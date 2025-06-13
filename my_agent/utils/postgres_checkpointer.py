@@ -60,8 +60,8 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     
     pool = AsyncConnectionPool(
         conninfo=connection_string,
-        max_size=3,
-        min_size=1,
+        max_size=10,
+        min_size=2,
         kwargs={
             "autocommit": True,
             "prepare_threshold": 0,

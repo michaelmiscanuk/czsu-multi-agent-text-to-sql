@@ -203,31 +203,34 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCom
 
     return (
         <div className="flex items-center space-x-2 relative">
-            {/* Thumbs up */}
-            <button
-                onClick={() => handleFeedback(1)}
-                className={`p-1 rounded transition-colors ${
-                    currentSentiment === true 
-                        ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
-                        : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
-                }`}
-                title="Good response"
-            >
-                👍
-            </button>
-            
-            {/* Thumbs down */}
-            <button
-                onClick={() => handleFeedback(0)}
-                className={`p-1 rounded transition-colors ${
-                    currentSentiment === false 
-                        ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
-                        : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
-                }`}
-                title="Poor response"
-            >
-                👎
-            </button>
+            {/* Show "selected" message if sentiment is already chosen */}
+            {currentSentiment !== null ? (
+                <div className="flex items-center space-x-1 px-2 py-1 rounded bg-blue-50 text-blue-700 text-sm font-medium">
+                    <span>selected:</span>
+                    <span>{currentSentiment === true ? '👍' : '👎'}</span>
+                </div>
+            ) : (
+                // Show clickable thumbs if no sentiment is selected
+                <>
+                    {/* Thumbs up */}
+                    <button
+                        onClick={() => handleFeedback(1)}
+                        className="p-1 rounded transition-colors text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                        title="Good response"
+                    >
+                        👍
+                    </button>
+                    
+                    {/* Thumbs down */}
+                    <button
+                        onClick={() => handleFeedback(0)}
+                        className="p-1 rounded transition-colors text-gray-400 hover:text-blue-600 hover:bg-blue-50"
+                        title="Poor response"
+                    >
+                        👎
+                    </button>
+                </>
+            )}
             
             {/* Comment button with fixed positioning context */}
             <div className="relative">
@@ -318,12 +321,20 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     // Add sentiment functionality
     const { sentiments, updateSentiment, loadSentiments, getSentimentForRunId } = useSentiment();
     
+    // Track which run_ids have already sent feedback to LangSmith to prevent duplicates
+    const [langsmithFeedbackSent, setLangsmithFeedbackSent] = React.useState<Set<string>>(new Set());
+    
     // Auto-scroll to bottom when messages change or thread changes
     React.useEffect(() => {
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages, threadId]);
+
+    // Reset LangSmith feedback tracking when thread changes
+    React.useEffect(() => {
+        setLangsmithFeedbackSent(new Set());
+    }, [threadId]);
 
     // Fetch run_ids for the current thread when it changes
     React.useEffect(() => {
@@ -399,8 +410,9 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
             return;
         }
         
-        if (feedbackState[runId]?.feedback !== undefined && !comment) {
-            console.log('[FEEDBACK-DEBUG] Skipping feedback submit: already submitted for runId:', runId);
+        // Check if we've already sent feedback to LangSmith for this run_id
+        if (langsmithFeedbackSent.has(runId) && !comment) {
+            console.log('[FEEDBACK-DEBUG] Skipping LangSmith feedback submit: already sent for runId:', runId);
             return;
         }
         
@@ -417,7 +429,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                 console.log('[FEEDBACK-DEBUG] ⚠️ Warning: runId does not appear to be a valid UUID format:', runId);
             }
             
-            console.log('[FEEDBACK-DEBUG] Sending feedback to backend:', JSON.stringify({ run_id: runId, feedback, comment }));
+            console.log('[FEEDBACK-DEBUG] Sending feedback to LangSmith:', JSON.stringify({ run_id: runId, feedback, comment }));
             
             try {
                 const body: any = { run_id: runId, feedback };
@@ -429,7 +441,10 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                     method: 'POST',
                     body: JSON.stringify(body)
                 });
-                console.log('[FEEDBACK-DEBUG] Feedback submitted successfully for runId:', runId);
+                console.log('[FEEDBACK-DEBUG] Feedback submitted successfully to LangSmith for runId:', runId);
+                
+                // Mark this run_id as having sent feedback to LangSmith
+                setLangsmithFeedbackSent(prev => new Set([...prev, runId]));
                 
                 // Update the feedback state 
                 setFeedbackState(prev => ({ 
@@ -483,30 +498,39 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                 console.log('[FEEDBACK-DEBUG] ⚠️ Warning: comment runId does not appear to be a valid UUID format:', runId);
             }
             
-            // Get existing feedback score or default to 1 for positive comment
-            const existingFeedback = feedbackState[runId]?.feedback ?? 1;
+            // Only send score if user actually provided one (clicked thumbs up/down)
+            const existingFeedback = feedbackState[runId]?.feedback;
+            const hasScore = existingFeedback !== null && existingFeedback !== undefined;
             
-            console.log('[FEEDBACK-DEBUG] Sending comment to backend:', JSON.stringify({ 
+            console.log('[FEEDBACK-DEBUG] Sending comment to LangSmith:', JSON.stringify({ 
                 run_id: runId, 
-                feedback: existingFeedback, 
-                comment 
+                feedback: hasScore ? existingFeedback : 'no score provided', 
+                comment,
+                hasScore
             }));
             
             try {
+                const body: any = { run_id: runId, comment };
+                
+                // Only include feedback score if user actually provided one
+                if (hasScore) {
+                    body.feedback = existingFeedback;
+                }
+                
                 await authApiFetch('/feedback', freshSession.id_token, {
                     method: 'POST',
-                    body: JSON.stringify({ 
-                        run_id: runId, 
-                        feedback: existingFeedback, 
-                        comment 
-                    })
+                    body: JSON.stringify(body)
                 });
-                console.log('[FEEDBACK-DEBUG] Comment submitted successfully for runId:', runId);
+                console.log('[FEEDBACK-DEBUG] Comment submitted successfully to LangSmith for runId:', runId);
+                
+                // Mark this run_id as having sent feedback to LangSmith
+                setLangsmithFeedbackSent(prev => new Set([...prev, runId]));
+                
                 setFeedbackState(prev => ({ 
                     ...prev, 
                     [runId]: { 
                         ...prev[runId], 
-                        feedback: existingFeedback,
+                        ...(hasScore && { feedback: existingFeedback }),
                         comment 
                     } 
                 }));

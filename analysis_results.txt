@@ -49610,3 +49610,155 @@ GROUP BY "Nejvyšší dosažené vzdělání"
 ORDER BY total_population DESC;
   Result: [('Střední vč. vyučení (bez maturity)', 2736983), ('Úplné střední (s maturitou), vč. nástavbového a pomaturitního', 2729091), ('Vysokoškolské', 1552407), ('Základní vč. neukončeného', 1107860), ('Nezjištěno', 511378), ('Vyšší odborné, konzervatoř', 138588), ('Bez vzdělání', 56100)]
 ----------------------------------------------------------------------------
+Prompt: jake odvetvi ma nejvyssi prumerne mzdy?
+Result: Žádná odvětví ekonomické činnosti nemají uvedené průměrné mzdy.
+Queries and Results:
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_salary
+FROM MZDCRRT1
+WHERE "Ukazatel" = "Průměrná hrubá mzda na zaměstnance (Kč)"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_salary DESC
+LIMIT 10;
+  Result: No results found
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDCRRT1 
+WHERE "Ukazatel" = "Průměrná hrubá mzda na zaměstnance (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+ORDER BY "Průměrná mzda" DESC 
+LIMIT 10;
+  Result: No results found
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_salary
+FROM MZDCRRT1
+WHERE "Ukazatel" = "Průměrná hrubá mzda na zaměstnance (Kč)"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_salary DESC
+LIMIT 10;
+  Result: No results found
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDCRRT1 
+WHERE "Ukazatel" = "Průměrná hrubá mzda na zaměstnance (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+ORDER BY "Průměrná mzda" DESC 
+LIMIT 10;
+  Result: No results found
+----------------------------------------------------------------------------
+Prompt: jake odvetvi ekonomicke cinnosti ma nejvyssi mesicni mzdu?
+Result: Odvětvím ekonomické činnosti s nejvyšší měsíční mzdou je "J - Informační a komunikační činnosti" s průměrnou hrubou měsíční mzdou 78158.685.
+Queries and Results:
+  Query: SELECT "Odvětví ekonomické činnosti", MAX(value) AS max_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY max_mzda DESC
+LIMIT 1;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_mzda DESC
+LIMIT 5;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]
+  Query: SELECT "Odvětví ekonomické činnosti", MAX(value) AS max_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY max_mzda DESC
+LIMIT 1;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_mzda DESC
+LIMIT 5;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]
+----------------------------------------------------------------------------
+Prompt: jake odvetvi ekonomicke cinnosti ma nejvyssi mesicni mzdu?
+Result: Odvětví ekonomické činnosti s nejvyšší průměrnou hrubou měsíční mzdou je "J - Informační a komunikační činnosti" s průměrnou mzdou 78158.6851121037 Kč.
+Queries and Results:
+  Query: SELECT "Odvětví ekonomické činnosti", MAX(value) AS max_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY max_mzda DESC
+LIMIT 1;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_mzda DESC
+LIMIT 5;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]
+  Query: SELECT "Odvětví ekonomické činnosti", MAX(value) AS max_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY max_mzda DESC
+LIMIT 1;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_mzda DESC
+LIMIT 5;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]
+  Query: SELECT "Odvětví ekonomické činnosti", MAX(value) AS max_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY max_mzda DESC
+LIMIT 1;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_mzda DESC
+LIMIT 5;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]
+  Query: SELECT "Odvětví ekonomické činnosti", MAX(value) AS max_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY max_mzda DESC
+LIMIT 1;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS avg_mzda
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY avg_mzda DESC
+LIMIT 5;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDRT2 
+WHERE "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)" 
+AND "Území" = "Česko" 
+GROUP BY "Odvětví ekonomické činnosti" 
+ORDER BY "Průměrná mzda" DESC 
+LIMIT 10;
+  Result: [('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497), ('Q - Zdravotní a sociální péče', 46400.3488918375), ('O - Veřejná správa a obrana; povinné sociální zabezpečení', 45965.9818333451), ('P - Vzdělávání', 43222.206805965), ('Celkem', 43120.4942893915), ('B-E - Průmysl celkem', 42667.149314547)]
+  Query: SELECT "Odvětví ekonomické činnosti", SUM("value") AS "Počet zaměstnanců"
+FROM MZDRT2
+WHERE "Ukazatel" = "Průměrný evidenční počet zaměstnanců přepočtený (tis. osob)"
+AND "Území" = "Česko"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY "Počet zaměstnanců" DESC
+LIMIT 10;
+  Result: [('Celkem', 4023.8313255741), ('B-E - Průmysl celkem', 1182.1122774331), ('C - Zpracovatelský průmysl', 1076.9932867227), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 500.1969772721), ('Q - Zdravotní a sociální péče', 344.9277319535), ('P - Vzdělávání', 337.6286859376), ('O - Veřejná správa a obrana; povinné sociální zabezpečení', 295.3200633051), ('H - Doprava a skladování', 256.8846478141), ('F - Stavebnictví', 211.7501343521), ('N - Administrativní a podpůrné činnosti', 183.3257518099)]
+----------------------------------------------------------------------------

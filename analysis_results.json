@@ -25731,5 +25731,95 @@
         "result": "[('Střední vč. vyučení (bez maturity)', 2736983), ('Úplné střední (s maturitou), vč. nástavbového a pomaturitního', 2729091), ('Vysokoškolské', 1552407), ('Základní vč. neukončeného', 1107860), ('Nezjištěno', 511378), ('Vyšší odborné, konzervatoř', 138588), ('Bez vzdělání', 56100)]"
       }
     ]
+  },
+  {
+    "prompt": "jake odvetvi ma nejvyssi prumerne mzdy?",
+    "result": "Žádná odvětví ekonomické činnosti nemají uvedené průměrné mzdy.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_salary\nFROM MZDCRRT1\nWHERE \"Ukazatel\" = \"Průměrná hrubá mzda na zaměstnance (Kč)\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_salary DESC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS \"Průměrná mzda\" \nFROM MZDCRRT1 \nWHERE \"Ukazatel\" = \"Průměrná hrubá mzda na zaměstnance (Kč)\" \nGROUP BY \"Odvětví ekonomické činnosti\" \nORDER BY \"Průměrná mzda\" DESC \nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_salary\nFROM MZDCRRT1\nWHERE \"Ukazatel\" = \"Průměrná hrubá mzda na zaměstnance (Kč)\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_salary DESC\nLIMIT 10;",
+        "result": "No results found"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS \"Průměrná mzda\" \nFROM MZDCRRT1 \nWHERE \"Ukazatel\" = \"Průměrná hrubá mzda na zaměstnance (Kč)\" \nGROUP BY \"Odvětví ekonomické činnosti\" \nORDER BY \"Průměrná mzda\" DESC \nLIMIT 10;",
+        "result": "No results found"
+      }
+    ]
+  },
+  {
+    "prompt": "jake odvetvi ekonomicke cinnosti ma nejvyssi mesicni mzdu?",
+    "result": "Odvětvím ekonomické činnosti s nejvyšší měsíční mzdou je \"J - Informační a komunikační činnosti\" s průměrnou hrubou měsíční mzdou 78158.685.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", MAX(value) AS max_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY max_mzda DESC\nLIMIT 1;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_mzda DESC\nLIMIT 5;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", MAX(value) AS max_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY max_mzda DESC\nLIMIT 1;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_mzda DESC\nLIMIT 5;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]"
+      }
+    ]
+  },
+  {
+    "prompt": "jake odvetvi ekonomicke cinnosti ma nejvyssi mesicni mzdu?",
+    "result": "Odvětví ekonomické činnosti s nejvyšší průměrnou hrubou měsíční mzdou je \"J - Informační a komunikační činnosti\" s průměrnou mzdou 78158.6851121037 Kč.",
+    "queries_and_results": [
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", MAX(value) AS max_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY max_mzda DESC\nLIMIT 1;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_mzda DESC\nLIMIT 5;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", MAX(value) AS max_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY max_mzda DESC\nLIMIT 1;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_mzda DESC\nLIMIT 5;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", MAX(value) AS max_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY max_mzda DESC\nLIMIT 1;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_mzda DESC\nLIMIT 5;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", MAX(value) AS max_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY max_mzda DESC\nLIMIT 1;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS avg_mzda\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY avg_mzda DESC\nLIMIT 5;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", AVG(value) AS \"Průměrná mzda\" \nFROM MZDRT2 \nWHERE \"Ukazatel\" = \"Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)\" \nAND \"Území\" = \"Česko\" \nGROUP BY \"Odvětví ekonomické činnosti\" \nORDER BY \"Průměrná mzda\" DESC \nLIMIT 10;",
+        "result": "[('J - Informační a komunikační činnosti', 78158.6851121037), ('K - Peněžnictví a pojišťovnictví', 71910.1480091694), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 67647.4609789239), ('M - Profesní, vědecké a technické činnosti', 52719.1088184884), ('B - Těžba a dobývání', 47410.2913367497), ('Q - Zdravotní a sociální péče', 46400.3488918375), ('O - Veřejná správa a obrana; povinné sociální zabezpečení', 45965.9818333451), ('P - Vzdělávání', 43222.206805965), ('Celkem', 43120.4942893915), ('B-E - Průmysl celkem', 42667.149314547)]"
+      },
+      {
+        "query": "SELECT \"Odvětví ekonomické činnosti\", SUM(\"value\") AS \"Počet zaměstnanců\"\nFROM MZDRT2\nWHERE \"Ukazatel\" = \"Průměrný evidenční počet zaměstnanců přepočtený (tis. osob)\"\nAND \"Území\" = \"Česko\"\nGROUP BY \"Odvětví ekonomické činnosti\"\nORDER BY \"Počet zaměstnanců\" DESC\nLIMIT 10;",
+        "result": "[('Celkem', 4023.8313255741), ('B-E - Průmysl celkem', 1182.1122774331), ('C - Zpracovatelský průmysl', 1076.9932867227), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 500.1969772721), ('Q - Zdravotní a sociální péče', 344.9277319535), ('P - Vzdělávání', 337.6286859376), ('O - Veřejná správa a obrana; povinné sociální zabezpečení', 295.3200633051), ('H - Doprava a skladování', 256.8846478141), ('F - Stavebnictví', 211.7501343521), ('N - Administrativní a podpůrné činnosti', 183.3257518099)]"
+      }
+    ]
   }
 ]
