@@ -53,12 +53,13 @@ interface FeedbackComponentProps {
     runId?: string;
     threadId: string;
     onFeedbackSubmit: (runId: string, feedback: number, comment?: string) => void;
+    onCommentSubmit: (runId: string, comment: string) => void;
     feedbackState: { [key: string]: { feedback: number | null; comment?: string } };
     currentSentiment?: boolean | null;
     onSentimentUpdate: (runId: string, sentiment: boolean | null) => void;
 }
 
-const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedbackState, currentSentiment, onSentimentUpdate }: FeedbackComponentProps) => {
+const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCommentSubmit, feedbackState, currentSentiment, onSentimentUpdate }: FeedbackComponentProps) => {
     const [showCommentBox, setShowCommentBox] = React.useState(false);
     const [comment, setComment] = React.useState('');
     const [hasProvidedComment, setHasProvidedComment] = React.useState(false);
@@ -159,7 +160,7 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedb
         }
         
         // Call the original onFeedbackSubmit function (existing LangSmith feedback)
-        onFeedbackSubmit(runId || messageId, feedback, comment || undefined);
+        onFeedbackSubmit(runId || messageId, feedback);
         setShowCommentBox(false);
         setComment('');
     };
@@ -172,8 +173,11 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedb
         // Save to localStorage along with comment
         saveFeedbackToLocalStorage(runId || messageId, feedbackValue);
         
-        // Call the original onFeedbackSubmit function
-        onFeedbackSubmit(runId || messageId, feedbackValue, comment || undefined);
+        // Call the comment submit function from MessageArea
+        if (runId && comment.trim()) {
+            onCommentSubmit(runId, comment.trim());
+        }
+        
         setShowCommentBox(false);
         setHasProvidedComment(true); // Mark that a comment was provided
         setComment('');
@@ -386,8 +390,8 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     const { data: session } = useSession();
     const userEmail = session?.user?.email || null;
 
-    const handleFeedbackSubmit = async (runId: string, feedback: number) => {
-        console.log('[FEEDBACK-DEBUG] handleFeedbackSubmit called:', JSON.stringify({ runId, feedback }));
+    const handleFeedbackSubmit = async (runId: string, feedback: number, comment?: string) => {
+        console.log('[FEEDBACK-DEBUG] handleFeedbackSubmit called:', JSON.stringify({ runId, feedback, comment }));
         console.log('[FEEDBACK-DEBUG] runId type:', typeof runId, 'runId value:', `"${runId}"`, 'runId length:', runId ? runId.length : 0);
         
         if (!runId) {
@@ -395,7 +399,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
             return;
         }
         
-        if (feedbackState[runId]?.feedback !== undefined) {
+        if (feedbackState[runId]?.feedback !== undefined && !comment) {
             console.log('[FEEDBACK-DEBUG] Skipping feedback submit: already submitted for runId:', runId);
             return;
         }
@@ -413,17 +417,29 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                 console.log('[FEEDBACK-DEBUG] ⚠️ Warning: runId does not appear to be a valid UUID format:', runId);
             }
             
-            console.log('[FEEDBACK-DEBUG] Sending feedback to backend:', JSON.stringify({ run_id: runId, feedback }));
+            console.log('[FEEDBACK-DEBUG] Sending feedback to backend:', JSON.stringify({ run_id: runId, feedback, comment }));
             
             try {
+                const body: any = { run_id: runId, feedback };
+                if (comment) {
+                    body.comment = comment;
+                }
+                
                 await authApiFetch('/feedback', freshSession.id_token, {
                     method: 'POST',
-                    body: JSON.stringify({ run_id: runId, feedback })
+                    body: JSON.stringify(body)
                 });
                 console.log('[FEEDBACK-DEBUG] Feedback submitted successfully for runId:', runId);
                 
                 // Update the feedback state 
-                setFeedbackState(prev => ({ ...prev, [runId]: { ...prev[runId], feedback } }));
+                setFeedbackState(prev => ({ 
+                    ...prev, 
+                    [runId]: { 
+                        ...prev[runId], 
+                        feedback,
+                        ...(comment && { comment })
+                    } 
+                }));
             } catch (fetchError) {
                 console.error('[FEEDBACK-DEBUG] Fetch error details:', fetchError);
                 if (fetchError instanceof Response) {
@@ -434,7 +450,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
             }
         } catch (error) {
             console.error('[FEEDBACK-DEBUG] Error submitting feedback:', error);
-            console.error('[FEEDBACK-DEBUG] For runId:', runId, 'feedback:', feedback);
+            console.error('[FEEDBACK-DEBUG] For runId:', runId, 'feedback:', feedback, 'comment:', comment);
             if (error instanceof Error) {
                 console.error('[FEEDBACK-DEBUG] Error name:', error.name, 'message:', error.message);
             }
@@ -454,11 +470,6 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
             return;
         }
         
-        if (feedbackState[runId]?.comment) {
-            console.log('[FEEDBACK-DEBUG] Skipping comment submit: already commented for runId:', runId);
-            return;
-        }
-        
         try {
             const freshSession = await getSession();
             if (!freshSession?.id_token) {
@@ -472,9 +483,12 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                 console.log('[FEEDBACK-DEBUG] ⚠️ Warning: comment runId does not appear to be a valid UUID format:', runId);
             }
             
+            // Get existing feedback score or default to 1 for positive comment
+            const existingFeedback = feedbackState[runId]?.feedback ?? 1;
+            
             console.log('[FEEDBACK-DEBUG] Sending comment to backend:', JSON.stringify({ 
                 run_id: runId, 
-                feedback: feedbackState[runId]?.feedback ?? null, 
+                feedback: existingFeedback, 
                 comment 
             }));
             
@@ -483,12 +497,19 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                     method: 'POST',
                     body: JSON.stringify({ 
                         run_id: runId, 
-                        feedback: feedbackState[runId]?.feedback ?? null, 
+                        feedback: existingFeedback, 
                         comment 
                     })
                 });
                 console.log('[FEEDBACK-DEBUG] Comment submitted successfully for runId:', runId);
-                setFeedbackState(prev => ({ ...prev, [runId]: { ...prev[runId], comment } }));
+                setFeedbackState(prev => ({ 
+                    ...prev, 
+                    [runId]: { 
+                        ...prev[runId], 
+                        feedback: existingFeedback,
+                        comment 
+                    } 
+                }));
             } catch (fetchError) {
                 console.error('[FEEDBACK-DEBUG] Comment fetch error details:', fetchError);
                 if (fetchError instanceof Response) {
@@ -613,6 +634,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 runId={message.meta?.run_id || messageRunIds[message.id]}
                                                 threadId={threadId}
                                                 onFeedbackSubmit={handleFeedbackSubmit}
+                                                onCommentSubmit={handleCommentSubmit}
                                                 feedbackState={feedbackState}
                                                 currentSentiment={getSentimentForRunId(message.meta?.run_id || messageRunIds[message.id] || '')}
                                                 onSentimentUpdate={updateSentiment}
@@ -667,6 +689,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                             runId={message.meta?.run_id || messageRunIds[message.id]}
                                             threadId={threadId}
                                             onFeedbackSubmit={handleFeedbackSubmit}
+                                            onCommentSubmit={handleCommentSubmit}
                                             feedbackState={feedbackState}
                                             currentSentiment={getSentimentForRunId(message.meta?.run_id || messageRunIds[message.id] || '')}
                                             onSentimentUpdate={updateSentiment}
