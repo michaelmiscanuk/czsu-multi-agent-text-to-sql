@@ -49,6 +49,15 @@ export interface FeedbackRequest {
   comment?: string;
 }
 
+export interface SentimentRequest {
+  run_id: string;
+  sentiment: boolean | null; // true for thumbs up, false for thumbs down, null to clear
+}
+
+export interface SentimentResponse {
+  sentiments: { [run_id: string]: boolean | null };
+}
+
 export interface ChatThreadResponse {
   thread_id: string;
   latest_timestamp: string;

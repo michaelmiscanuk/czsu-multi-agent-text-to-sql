@@ -115,7 +115,8 @@ async def setup_users_threads_runs_table():
                     email VARCHAR(255) NOT NULL,
                     thread_id VARCHAR(255) NOT NULL,
                     run_id VARCHAR(255) PRIMARY KEY,
-                    prompt VARCHAR(50)
+                    prompt VARCHAR(50),
+                    sentiment BOOLEAN DEFAULT NULL
                 );
             """)
             
@@ -138,6 +139,12 @@ async def setup_users_threads_runs_table():
             await conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_users_threads_runs_email_thread_timestamp 
                 ON users_threads_runs(email, thread_id, timestamp);
+            """)
+            
+            # Index on run_id for feedback/sentiment functionality (explicit, though PK already provides this)
+            await conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_users_threads_runs_run_id 
+                ON users_threads_runs(run_id);
             """)
             
             # Enable RLS if this is Supabase
@@ -164,7 +171,7 @@ async def setup_users_threads_runs_table():
                 else:
                     print(f"⚠ Could not create RLS policy for users_threads_runs: {e}")
             
-            print("✅ users_threads_runs table verified/created (5 columns: timestamp, email, thread_id, run_id, prompt)")
+            print("✅ users_threads_runs table verified/created (6 columns: timestamp, email, thread_id, run_id, prompt, sentiment)")
             
     except Exception as e:
         print(f"❌ Error setting up users_threads_runs table: {str(e)}")
@@ -218,6 +225,81 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
     except Exception as e:
         print(f"❌ Error creating thread run entry: {str(e)}")
         raise
+
+async def update_thread_run_sentiment(run_id: str, sentiment: bool) -> bool:
+    """Update sentiment for a specific run_id.
+    
+    Args:
+        run_id: The run ID to update
+        sentiment: True for thumbs up, False for thumbs down, None to clear
+    
+    Returns:
+        True if update was successful, False otherwise
+    """
+    
+    try:
+        # Get a healthy pool
+        pool = await get_healthy_pool()
+        
+        async with pool.connection() as conn:
+            await conn.set_autocommit(True)
+            
+            # Update sentiment for this run_id
+            result = await conn.execute("""
+                UPDATE users_threads_runs 
+                SET sentiment = %s 
+                WHERE run_id = %s
+            """, (sentiment, run_id))
+            
+            updated_count = result.rowcount if hasattr(result, 'rowcount') else 0
+            
+            if updated_count > 0:
+                print(f"✓ Updated sentiment for run_id {run_id}: {sentiment}")
+                return True
+            else:
+                print(f"⚠ No rows updated for run_id {run_id} - run_id may not exist")
+                return False
+                
+    except Exception as e:
+        print(f"❌ Error updating sentiment for run_id {run_id}: {str(e)}")
+        return False
+
+async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, bool]:
+    """Get all sentiment values for a user's thread.
+    
+    Args:
+        email: User's email address
+        thread_id: Thread ID to get sentiments for
+    
+    Returns:
+        Dictionary mapping run_id to sentiment value (True/False/None)
+    """
+    
+    try:
+        # Get a healthy pool
+        pool = await get_healthy_pool()
+        
+        async with pool.connection() as conn:
+            # Get all run_ids and their sentiments for this thread
+            result = await conn.execute("""
+                SELECT run_id, sentiment 
+                FROM users_threads_runs 
+                WHERE email = %s AND thread_id = %s
+                ORDER BY timestamp ASC
+            """, (email, thread_id))
+            
+            sentiments = {}
+            async for row in result:
+                run_id = row[0]
+                sentiment = row[1]  # This will be True, False, or None
+                sentiments[run_id] = sentiment
+            
+            print(f"✓ Retrieved {len(sentiments)} sentiment values for thread {thread_id}")
+            return sentiments
+            
+    except Exception as e:
+        print(f"❌ Error retrieving sentiments for thread {thread_id}: {str(e)}")
+        return {}
 
 async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[str, Any]]:
     """Get all chat threads for a user with first prompt as title, sorted by latest timestamp.

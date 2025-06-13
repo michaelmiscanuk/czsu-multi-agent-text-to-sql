@@ -4,6 +4,7 @@ import Modal from './Modal';
 import Link from 'next/link';
 import { ChatMessage } from '@/types';
 import { API_CONFIG, authApiFetch } from '@/lib/api';
+import { useSentiment } from '@/lib/useSentiment';
 
 const PROGRESS_DURATION = 20000; // 20 seconds
 
@@ -53,9 +54,11 @@ interface FeedbackComponentProps {
     threadId: string;
     onFeedbackSubmit: (runId: string, feedback: number, comment?: string) => void;
     feedbackState: { [key: string]: { feedback: number | null; comment?: string } };
+    currentSentiment?: boolean | null;
+    onSentimentUpdate: (runId: string, sentiment: boolean | null) => void;
 }
 
-const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedbackState }: FeedbackComponentProps) => {
+const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedbackState, currentSentiment, onSentimentUpdate }: FeedbackComponentProps) => {
     const [showCommentBox, setShowCommentBox] = React.useState(false);
     const [comment, setComment] = React.useState('');
     const [hasProvidedComment, setHasProvidedComment] = React.useState(false);
@@ -149,7 +152,13 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedb
         // Save to separate localStorage for persistence
         saveFeedbackToLocalStorage(runId || messageId, feedback);
         
-        // Call the original onFeedbackSubmit function
+        // Update sentiment if we have a runId (new sentiment system)
+        if (runId) {
+            const sentiment = feedback === 1 ? true : false;
+            onSentimentUpdate(runId, sentiment);
+        }
+        
+        // Call the original onFeedbackSubmit function (existing LangSmith feedback)
         onFeedbackSubmit(runId || messageId, feedback, comment || undefined);
         setShowCommentBox(false);
         setComment('');
@@ -194,7 +203,7 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedb
             <button
                 onClick={() => handleFeedback(1)}
                 className={`p-1 rounded transition-colors ${
-                    effectiveFeedbackValue === 1 
+                    currentSentiment === true 
                         ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
                         : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
@@ -207,7 +216,7 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, feedb
             <button
                 onClick={() => handleFeedback(0)}
                 className={`p-1 rounded transition-colors ${
-                    effectiveFeedbackValue === 0 
+                    currentSentiment === false 
                         ? 'text-white bg-blue-500 hover:bg-blue-600 shadow-md' 
                         : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                 }`}
@@ -302,6 +311,9 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     const [feedbackState, setFeedbackState] = React.useState<{ [runId: string]: { feedback: number | null; comment?: string } }>({});
     const [messageRunIds, setMessageRunIds] = React.useState<{[messageId: string]: string}>({});
     
+    // Add sentiment functionality
+    const { sentiments, updateSentiment, loadSentiments, getSentimentForRunId } = useSentiment();
+    
     // Auto-scroll to bottom when messages change or thread changes
     React.useEffect(() => {
         if (bottomRef.current) {
@@ -329,24 +341,26 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                 if (data.run_ids && data.run_ids.length > 0) {
                     const newMessageRunIds: {[messageId: string]: string} = {};
                     
-                    // For each non-user message, try to find a matching run_id
-                    messages.forEach(message => {
-                        if (!message.isUser) {
-                            // Skip if message already has run_id in meta
-                            if (message.meta?.run_id) {
-                                console.log('[FEEDBACK-DEBUG] Message already has run_id in meta:', message.meta.run_id);
-                                newMessageRunIds[message.id] = message.meta.run_id;
-                                return;
-                            }
-                            
-                            // Otherwise try to match by finding the closest run_id by timestamp
-                            // This is a simplistic approach - in a real system we would have better matching
-                            if (data.run_ids.length > 0) {
-                                const runIdEntry = data.run_ids[data.run_ids.length - 1]; // Use the last run_id
-                                newMessageRunIds[message.id] = runIdEntry.run_id;
-                                console.log('[FEEDBACK-DEBUG] Assigned run_id to message:', 
-                                    {messageId: message.id, runId: runIdEntry.run_id});
-                            }
+                    // Get all non-user messages (AI responses) in order
+                    const aiMessages = messages.filter(message => !message.isUser);
+                    
+                    // For each AI message, try to find a matching run_id
+                    aiMessages.forEach((message, index) => {
+                        // Skip if message already has run_id in meta
+                        if (message.meta?.run_id) {
+                            console.log('[FEEDBACK-DEBUG] Message already has run_id in meta:', message.meta.run_id);
+                            newMessageRunIds[message.id] = message.meta.run_id;
+                            return;
+                        }
+                        
+                        // Match by index (first AI message gets first run_id, etc.)
+                        if (index < data.run_ids.length) {
+                            const runIdEntry = data.run_ids[index];
+                            newMessageRunIds[message.id] = runIdEntry.run_id;
+                            console.log('[FEEDBACK-DEBUG] Assigned run_id to message by index:', 
+                                {messageId: message.id, runId: runIdEntry.run_id, index});
+                        } else {
+                            console.log('[FEEDBACK-DEBUG] No run_id available for message at index:', index);
                         }
                     });
                     
@@ -359,6 +373,14 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
         
         fetchRunIds();
     }, [threadId, messages]);
+
+    // Load sentiments when thread or messageRunIds change
+    React.useEffect(() => {
+        if (threadId) {
+            console.log('[SENTIMENT-DEBUG] Loading sentiments for thread:', threadId, 'messageRunIds:', messageRunIds);
+            loadSentiments(threadId);
+        }
+    }, [threadId, messageRunIds, loadSentiments]);
 
     // Session and authentication
     const { data: session } = useSession();
@@ -592,6 +614,8 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 threadId={threadId}
                                                 onFeedbackSubmit={handleFeedbackSubmit}
                                                 feedbackState={feedbackState}
+                                                currentSentiment={getSentimentForRunId(message.meta?.run_id || messageRunIds[message.id] || '')}
+                                                onSentimentUpdate={updateSentiment}
                                             />
                                         )}
                                         
@@ -644,6 +668,8 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                             threadId={threadId}
                                             onFeedbackSubmit={handleFeedbackSubmit}
                                             feedbackState={feedbackState}
+                                            currentSentiment={getSentimentForRunId(message.meta?.run_id || messageRunIds[message.id] || '')}
+                                            onSentimentUpdate={updateSentiment}
                                         />
                                     </div>
                                 )}

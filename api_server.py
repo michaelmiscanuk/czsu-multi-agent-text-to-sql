@@ -32,6 +32,12 @@ from my_agent.utils.postgres_checkpointer import (
     get_queries_and_results_from_latest_checkpoint
 )
 
+# Additional imports for sentiment functionality
+from my_agent.utils.postgres_checkpointer import (
+    update_thread_run_sentiment,
+    get_thread_run_sentiments
+)
+
 # Global shared checkpointer for conversation memory across API requests
 # This ensures that conversation state is preserved between frontend requests using PostgreSQL
 GLOBAL_CHECKPOINTER = None
@@ -150,6 +156,10 @@ class FeedbackRequest(BaseModel):
     run_id: str
     feedback: int  # 1 for thumbs up, 0 for thumbs down
     comment: Optional[str] = None
+
+class SentimentRequest(BaseModel):
+    run_id: str
+    sentiment: Optional[bool]  # True for thumbs up, False for thumbs down, None to clear
 
 class ChatThreadResponse(BaseModel):
     thread_id: str
@@ -287,6 +297,75 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         print(f"[FEEDBACK-FLOW] 🚨 LangSmith feedback submission error: {str(e)}")
         print(f"[FEEDBACK-FLOW] 🔍 Error type: {type(e).__name__}")
         raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {e}")
+
+@app.post("/sentiment")
+async def update_sentiment(request: SentimentRequest, user=Depends(get_current_user)):
+    """Update sentiment for a specific run_id."""
+    
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+    
+    print(f"[SENTIMENT-FLOW] 📥 Incoming sentiment update request:")
+    print(f"[SENTIMENT-FLOW] 👤 User: {user_email}")
+    print(f"[SENTIMENT-FLOW] 🔑 Run ID: '{request.run_id}'")
+    print(f"[SENTIMENT-FLOW] 👍/👎 Sentiment: {request.sentiment}")
+    
+    try:
+        # Validate UUID format
+        try:
+            run_uuid = str(uuid.UUID(request.run_id))
+            print(f"[SENTIMENT-FLOW] ✅ UUID validation successful: '{run_uuid}'")
+        except ValueError:
+            print(f"[SENTIMENT-FLOW] ❌ UUID validation failed for: '{request.run_id}'")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid run_id format. Expected UUID, got: {request.run_id}"
+            )
+        
+        # Update sentiment in database
+        success = await update_thread_run_sentiment(run_uuid, request.sentiment)
+        
+        if success:
+            print(f"[SENTIMENT-FLOW] ✅ Sentiment successfully updated")
+            return {
+                "message": "Sentiment updated successfully", 
+                "run_id": run_uuid,
+                "sentiment": request.sentiment
+            }
+        else:
+            print(f"[SENTIMENT-FLOW] ❌ Failed to update sentiment - run_id may not exist")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Run ID not found: {run_uuid}"
+            )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[SENTIMENT-FLOW] 🚨 Sentiment update error: {str(e)}")
+        print(f"[SENTIMENT-FLOW] 🔍 Error type: {type(e).__name__}")
+        raise HTTPException(status_code=500, detail=f"Failed to update sentiment: {e}")
+
+@app.get("/chat/{thread_id}/sentiments")
+async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
+    """Get all sentiment values for a specific thread."""
+    
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+    
+    print(f"[SENTIMENT-FLOW] 📥 Getting sentiments for thread {thread_id}, user: {user_email}")
+    
+    try:
+        sentiments = await get_thread_run_sentiments(user_email, thread_id)
+        
+        print(f"[SENTIMENT-FLOW] ✅ Retrieved {len(sentiments)} sentiment values")
+        return {"sentiments": sentiments}
+        
+    except Exception as e:
+        print(f"[SENTIMENT-FLOW] ❌ Failed to get sentiments for thread {thread_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to get sentiments: {e}")
 
 @app.get("/chat-threads")
 async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadResponse]:

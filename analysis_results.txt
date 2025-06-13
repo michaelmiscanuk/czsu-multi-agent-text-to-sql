@@ -49226,3 +49226,188 @@ Queries and Results:
   Query: SELECT value FROM OBY02FHVDT01 WHERE "ČR, Reg. soudržnosti, Kraje" = "Praha" AND "Ukazatel" = "Celkový počet obyvatel" AND "Rok" = 2024 LIMIT 10;
   Result: No results found
 ----------------------------------------------------------------------------
+Prompt: jake jsou platy v praze?
+Result: Není k dispozici žádný výsledek pro průměrné platy v Praze.
+Queries and Results:
+  Query: SELECT Roky, Odvětví ekonomické činnosti, value AS Průměrný_plat FROM MZDCRRT2 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Průměrný evidenční počet zaměstnanců přepočtený (tis. osob)" LIMIT 10;
+  Result: Error: Query error: near "činnosti": syntax error
+  Query: SELECT Roky, "Odvětví ekonomické činnosti", value AS Průměrný_plat 
+FROM MZDCRRT2 
+WHERE Kraje = "Hlavní město Praha" 
+AND Ukazatel LIKE "%plat%" 
+LIMIT 10;
+  Result: No results found
+  Query: SELECT Roky, Odvětví ekonomické činnosti, value AS Průměrný_plat FROM MZDCRRT2 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Průměrný evidenční počet zaměstnanců přepočtený (tis. osob)" LIMIT 10;
+  Result: Error: Query error: near "činnosti": syntax error
+  Query: SELECT Roky, "Odvětví ekonomické činnosti", value AS Průměrný_plat 
+FROM MZDCRRT2 
+WHERE Kraje = "Hlavní město Praha" 
+AND Ukazatel LIKE "%plat%" 
+LIMIT 10;
+  Result: No results found
+----------------------------------------------------------------------------
+Prompt: kolik je obyvatel v praze?
+Result: Počet obyvatel v Praze je 1943319.63198751.
+Queries and Results:
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" LIMIT 10
+  Result: [(1392307.19438828,), (1388069.67428263,), (1383896.12342643,), (1379800.81254149,), (1389926.5403475,), (1400357.20201328,), (1411110.64564294,), (1421976.8460553,), (1432975.62382207,), (1444121.95875915,)]
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" ORDER BY Roky DESC LIMIT 1
+  Result: 1943319.63198751
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" LIMIT 10
+  Result: [(1392307.19438828,), (1388069.67428263,), (1383896.12342643,), (1379800.81254149,), (1389926.5403475,), (1400357.20201328,), (1411110.64564294,), (1421976.8460553,), (1432975.62382207,), (1444121.95875915,)]
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" ORDER BY Roky DESC LIMIT 1
+  Result: 1943319.63198751
+----------------------------------------------------------------------------
+Prompt: a kolik na morave?
+Result: Celkový počet obyvatel na Moravě podle nejnovějších dostupných údajů je 3629561.
+Queries and Results:
+  Query: SELECT SUM(value) AS total_population FROM WREG01AT1 WHERE Roky = '2023' AND Území IN ('Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj') AND Ukazatel = 'Počet obyvatel - celkem';
+  Result: 3629561.0
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" LIMIT 10
+  Result: [(1392307.19438828,), (1388069.67428263,), (1383896.12342643,), (1379800.81254149,), (1389926.5403475,), (1400357.20201328,), (1411110.64564294,), (1421976.8460553,), (1432975.62382207,), (1444121.95875915,)]
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" ORDER BY Roky DESC LIMIT 1
+  Result: 1943319.63198751
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" LIMIT 10
+  Result: [(1392307.19438828,), (1388069.67428263,), (1383896.12342643,), (1379800.81254149,), (1389926.5403475,), (1400357.20201328,), (1411110.64564294,), (1421976.8460553,), (1432975.62382207,), (1444121.95875915,)]
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" ORDER BY Roky DESC LIMIT 1
+  Result: 1943319.63198751
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" LIMIT 10
+  Result: [(1392307.19438828,), (1388069.67428263,), (1383896.12342643,), (1379800.81254149,), (1389926.5403475,), (1400357.20201328,), (1411110.64564294,), (1421976.8460553,), (1432975.62382207,), (1444121.95875915,)]
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" ORDER BY Roky DESC LIMIT 1
+  Result: 1943319.63198751
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" LIMIT 10
+  Result: [(1392307.19438828,), (1388069.67428263,), (1383896.12342643,), (1379800.81254149,), (1389926.5403475,), (1400357.20201328,), (1411110.64564294,), (1421976.8460553,), (1432975.62382207,), (1444121.95875915,)]
+  Query: SELECT value FROM OBY02PKT01 WHERE Kraje = "Hlavní město Praha" AND Ukazatel = "Počet obyvatel - celkem" ORDER BY Roky DESC LIMIT 1
+  Result: 1943319.63198751
+  Query: SELECT SUM(value) AS total_population FROM WREG01AT1 WHERE Roky = '2023' AND Území IN ('Jihomoravský kraj', 'Olomoucký kraj', 'Zlínský kraj', 'Moravskoslezský kraj') AND Ukazatel = 'Počet obyvatel - celkem';
+  Result: 3629561.0
+----------------------------------------------------------------------------
+Prompt: jake jsou mesicni mzdy v cechach?
+Result: Průměrné měsíční mzdy v Čechách podle odvětví ekonomické činnosti jsou následující:
+
+- Zemědělství, lesnictví, rybářství: 39472.61 Kč
+- Těžba a dobývání: 54593.15 Kč
+- Průmysl celkem: 48167.83 Kč
+- Zpracovatelský průmysl: 47330.88 Kč
+- Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu: 72424.43 Kč
+- Zásobování vodou a související činnosti: 46511.94 Kč
+- Stavebnictví: 42530.93 Kč
+- Velkoobchod a maloobchod: 45206.60 Kč
+- Doprava a skladování: 45043.02 Kč
+
+Celková průměrná mzda v Čechách je 50629.24 Kč.
+Queries and Results:
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDQ1T2 
+WHERE "Území" = "Česko" 
+AND "Čtvrtletí" = "4. čtvrtletí 2024" 
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+LIMIT 10;
+  Result: [('A - Zemědělství, lesnictví, rybářství', 39472.6066759757), ('B - Těžba a dobývání', 54593.1538736636), ('B-E - Průmysl celkem', 48167.8342396012), ('C - Zpracovatelský průmysl', 47330.8837425885), ('Celkem', 49228.5154016238), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi', 46511.9425483068), ('F - Stavebnictví', 42530.9256707393), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 45206.6023898333), ('H - Doprava a skladování', 45043.0213585713)]
+  Query: SELECT AVG(value) AS "Celková průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko"
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)";
+  Result: 50629.24269141392
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDQ1T2 
+WHERE "Území" = "Česko" 
+AND "Čtvrtletí" = "4. čtvrtletí 2024" 
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+LIMIT 10;
+  Result: [('A - Zemědělství, lesnictví, rybářství', 39472.6066759757), ('B - Těžba a dobývání', 54593.1538736636), ('B-E - Průmysl celkem', 48167.8342396012), ('C - Zpracovatelský průmysl', 47330.8837425885), ('Celkem', 49228.5154016238), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi', 46511.9425483068), ('F - Stavebnictví', 42530.9256707393), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 45206.6023898333), ('H - Doprava a skladování', 45043.0213585713)]
+  Query: SELECT AVG(value) AS "Celková průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko"
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)";
+  Result: 50629.24269141392
+----------------------------------------------------------------------------
+Prompt: a muzes mit to seradit od nejvyssi, podle oboru?
+Result: Průměrné měsíční mzdy v Čechách podle odvětví od nejvyšší k nejnižší jsou následující:
+
+1. J - Informační a komunikační činnosti: 85270.2698944339
+2. K - Peněžnictví a pojišťovnictví: 74614.6790468131
+3. D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu: 72424.4339865265
+4. M - Profesní, vědecké a technické činnosti: 62786.5701643143
+5. Q - Zdravotní a sociální péče: 54935.4279774525
+6. B - Těžba a dobývání: 54593.1538736636
+7. P - Vzdělávání: 52548.7019608339
+8. O - Veřejná správa a obrana; povinné sociální zabezpečení: 50047.2316768456
+9. B-E - Průmysl celkem: 48167.8342396012
+10. L - Činnosti v oblasti nemovitostí: 47941.7135219579
+
+Další odvětví s nižšími průměrnými mzdami zahrnují C - Zpracovatelský průmysl (47330.8837425885) a E - Zásobování vodou (46511.9425483068).
+Queries and Results:
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDQ1T2 
+WHERE "Území" = "Česko" 
+AND "Čtvrtletí" = "4. čtvrtletí 2024" 
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+LIMIT 10;
+  Result: [('A - Zemědělství, lesnictví, rybářství', 39472.6066759757), ('B - Těžba a dobývání', 54593.1538736636), ('B-E - Průmysl celkem', 48167.8342396012), ('C - Zpracovatelský průmysl', 47330.8837425885), ('Celkem', 49228.5154016238), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi', 46511.9425483068), ('F - Stavebnictví', 42530.9256707393), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 45206.6023898333), ('H - Doprava a skladování', 45043.0213585713)]
+  Query: SELECT AVG(value) AS "Celková průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko"
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)";
+  Result: 50629.24269141392
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDQ1T2 
+WHERE "Území" = "Česko" 
+AND "Čtvrtletí" = "4. čtvrtletí 2024" 
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+LIMIT 10;
+  Result: [('A - Zemědělství, lesnictví, rybářství', 39472.6066759757), ('B - Těžba a dobývání', 54593.1538736636), ('B-E - Průmysl celkem', 48167.8342396012), ('C - Zpracovatelský průmysl', 47330.8837425885), ('Celkem', 49228.5154016238), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi', 46511.9425483068), ('F - Stavebnictví', 42530.9256707393), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 45206.6023898333), ('H - Doprava a skladování', 45043.0213585713)]
+  Query: SELECT AVG(value) AS "Celková průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko"
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)";
+  Result: 50629.24269141392
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDQ1T2 
+WHERE "Území" = "Česko" 
+AND "Čtvrtletí" = "4. čtvrtletí 2024" 
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+LIMIT 10;
+  Result: [('A - Zemědělství, lesnictví, rybářství', 39472.6066759757), ('B - Těžba a dobývání', 54593.1538736636), ('B-E - Průmysl celkem', 48167.8342396012), ('C - Zpracovatelský průmysl', 47330.8837425885), ('Celkem', 49228.5154016238), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi', 46511.9425483068), ('F - Stavebnictví', 42530.9256707393), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 45206.6023898333), ('H - Doprava a skladování', 45043.0213585713)]
+  Query: SELECT AVG(value) AS "Celková průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko"
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)";
+  Result: 50629.24269141392
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda" 
+FROM MZDQ1T2 
+WHERE "Území" = "Česko" 
+AND "Čtvrtletí" = "4. čtvrtletí 2024" 
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)" 
+GROUP BY "Odvětví ekonomické činnosti" 
+LIMIT 10;
+  Result: [('A - Zemědělství, lesnictví, rybářství', 39472.6066759757), ('B - Těžba a dobývání', 54593.1538736636), ('B-E - Průmysl celkem', 48167.8342396012), ('C - Zpracovatelský průmysl', 47330.8837425885), ('Celkem', 49228.5154016238), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi', 46511.9425483068), ('F - Stavebnictví', 42530.9256707393), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 45206.6023898333), ('H - Doprava a skladování', 45043.0213585713)]
+  Query: SELECT AVG(value) AS "Celková průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko"
+AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)";
+  Result: 50629.24269141392
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko" 
+  AND "Čtvrtletí" = "4. čtvrtletí 2024" 
+  AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+  AND "Odvětví ekonomické činnosti" != "Celkem"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY "Průměrná mzda" DESC
+LIMIT 10;
+  Result: [('J - Informační a komunikační činnosti', 85270.2698944339), ('K - Peněžnictví a pojišťovnictví', 74614.6790468131), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('M - Profesní, vědecké a technické činnosti', 62786.5701643143), ('Q - Zdravotní a sociální péče', 54935.4279774525), ('B - Těžba a dobývání', 54593.1538736636), ('P - Vzdělávání', 52548.7019608339), ('O - Veřejná správa a obrana; povinné sociální zabezpečení', 50047.2316768456), ('B-E - Průmysl celkem', 48167.8342396012), ('L - Činnosti v oblasti nemovitostí', 47941.7135219579)]
+  Query: SELECT "Odvětví ekonomické činnosti", AVG(value) AS "Průměrná mzda"
+FROM MZDQ1T2
+WHERE "Území" = "Česko" 
+  AND "Ukazatel" = "Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč)"
+  AND "Odvětví ekonomické činnosti" != "Celkem"
+GROUP BY "Odvětví ekonomické činnosti"
+ORDER BY "Průměrná mzda" DESC;
+  Result: [('J - Informační a komunikační činnosti', 85270.2698944339), ('K - Peněžnictví a pojišťovnictví', 74614.6790468131), ('D - Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu', 72424.4339865265), ('M - Profesní, vědecké a technické činnosti', 62786.5701643143), ('Q - Zdravotní a sociální péče', 54935.4279774525), ('B - Těžba a dobývání', 54593.1538736636), ('P - Vzdělávání', 52548.7019608339), ('O - Veřejná správa a obrana; povinné sociální zabezpečení', 50047.2316768456), ('B-E - Průmysl celkem', 48167.8342396012), ('L - Činnosti v oblasti nemovitostí', 47941.7135219579), ('C - Zpracovatelský průmysl', 47330.8837425885), ('E - Zásobování vodou; činnosti související s odpadními vodami, odpady a sanacemi', 46511.9425483068), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 45206.6023898333), ('H - Doprava a skladování', 45043.0213585713), ('R - Kulturní, zábavní a rekreační činnosti', 43297.6218264113), ('F - Stavebnictví', 42530.9256707393), ('A - Zemědělství, lesnictví, rybářství', 39472.6066759757), ('S - Ostatní činnosti', 38372.2283674326), ('N - Administrativní a podpůrné činnosti', 33763.2862442141), ('I - Ubytování, stravování a pohostinství', 29126.4459515531)]
+----------------------------------------------------------------------------
