@@ -15,6 +15,38 @@
     {
       "source": "/api/data-table",
       "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/data-table"
+    },
+    {
+      "source": "/api/query",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/query"
+    },
+    {
+      "source": "/api/execute",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/execute"
+    },
+    {
+      "source": "/api/schema",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/schema"
+    },
+    {
+      "source": "/api/validate",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/validate"
+    },
+    {
+      "source": "/api/history",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/history"
+    },
+    {
+      "source": "/api/health",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/health"
+    },
+    {
+      "source": "/api/agents/:path*",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/agents/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/:path*"
     }
   ]
 }
