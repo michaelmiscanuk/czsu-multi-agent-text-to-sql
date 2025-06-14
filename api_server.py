@@ -232,24 +232,40 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[FEEDBACK-FLOW] 📝 New analysis request - Thread: {request.thread_id}")
+    print(f"[FEEDBACK-FLOW] 📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
     
-    try:
-        checkpointer = await get_healthy_checkpointer()
-        
-        print(f"[FEEDBACK-FLOW] 🔄 Creating thread run entry")
-        run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
-        print(f"[FEEDBACK-FLOW] ✅ Generated new run_id: {run_id}")
-        
-        result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id)
-        
-        result["run_id"] = run_id
-        print(f"[FEEDBACK-FLOW] 📤 Returning analysis result with run_id: {run_id}")
-        
-        return result
-    except Exception as e:
-        print(f"[FEEDBACK-FLOW] 🚨 Analysis error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
+    # Retry logic for handling concurrent connection issues
+    max_retries = 2
+    for attempt in range(max_retries):
+        try:
+            checkpointer = await get_healthy_checkpointer()
+            
+            print(f"[FEEDBACK-FLOW] 🔄 Creating thread run entry (attempt {attempt + 1})")
+            run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
+            print(f"[FEEDBACK-FLOW] ✅ Generated new run_id: {run_id}")
+            
+            result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id)
+            
+            result["run_id"] = run_id
+            print(f"[FEEDBACK-FLOW] 📤 Returning analysis result with run_id: {run_id}")
+            
+            return result
+            
+        except Exception as e:
+            error_msg = str(e)
+            print(f"[FEEDBACK-FLOW] 🚨 Analysis error (attempt {attempt + 1}): {error_msg}")
+            
+            # Check if it's a connection/pipeline related error and we have retries left
+            if (attempt < max_retries - 1 and 
+                ("pipeline mode" in error_msg.lower() or 
+                 "connection" in error_msg.lower() or 
+                 "pool" in error_msg.lower())):
+                print(f"[FEEDBACK-FLOW] 🔄 Retrying due to connection issue...")
+                await asyncio.sleep(0.1 * (attempt + 1))  # Small delay before retry
+                continue
+            
+            # Final attempt failed or non-recoverable error
+            raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):

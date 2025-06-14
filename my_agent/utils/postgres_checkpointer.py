@@ -73,11 +73,11 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     """Create a new connection pool."""
     connection_string = get_connection_string()
     
-    # Use only 1 connection to avoid hitting PostgreSQL limits
+    # Use 5 connections to handle concurrent requests (increased from 1)
     pool = AsyncConnectionPool(
         conninfo=connection_string,
-        max_size=1,  # Only 1 connection - most conservative approach
-        min_size=1,  # Start with 1 connection
+        max_size=5,  # Increased from 1 to 5 to handle concurrent requests
+        min_size=2,  # Start with 2 connections (increased from 1)
         timeout=30,  # Increased timeout to 30 seconds
         kwargs={
             "autocommit": True,
@@ -90,7 +90,7 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     # Explicitly open the pool with longer timeout
     try:
         await asyncio.wait_for(pool.open(), timeout=30)  # Increased to 30 seconds
-        print("🔗 Created fresh PostgreSQL connection pool (max_size=1)")
+        print("🔗 Created fresh PostgreSQL connection pool (max_size=5, min_size=2)")
         return pool
     except asyncio.TimeoutError:
         print("❌ Timeout opening connection pool")
@@ -608,11 +608,11 @@ def get_sync_postgres_checkpointer():
     try:
         connection_string = get_connection_string()
         
-        # Create sync connection pool with single connection
+        # Create sync connection pool with multiple connections for concurrency
         pool = ConnectionPool(
             conninfo=connection_string,
-            max_size=10,  # Only 1 connection
-            min_size=3,  # Start with 1
+            max_size=5,  # Increased from 10 to match async pool
+            min_size=2,  # Reduced from 3 to match async pool
             timeout=30,  # Increased timeout
             kwargs={
                 "autocommit": True,
@@ -627,7 +627,7 @@ def get_sync_postgres_checkpointer():
         # Setup tables (this creates all required tables with correct schemas)
         checkpointer.setup()
         
-        print("✅ Sync PostgreSQL checkpointer initialized successfully (max_size=1)")
+        print("✅ Sync PostgreSQL checkpointer initialized successfully (max_size=5)")
         return checkpointer
         
     except Exception as e:
