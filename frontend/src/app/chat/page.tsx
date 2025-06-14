@@ -62,7 +62,8 @@ export default function ChatPage() {
     isUserLoading,
     setUserLoadingState,
     checkUserLoadingState,
-    setUserEmail
+    setUserEmail,
+    clearCacheForUserChange
   } = useChatCache();
   
   // Local component state
@@ -218,9 +219,41 @@ export default function ChatPage() {
   useEffect(() => {
     if (userEmail && status === "authenticated") {
       console.log('[ChatPage-useEffect] 🔄 User authenticated, loading threads');
+      
+      // 🔒 SECURITY & CLEAN STATE: Clear localStorage when user logs in to ensure no data from previous user
+      // This ensures that each user gets a clean slate, just like pressing F5
+      console.log('[ChatPage-useEffect] 🧹 User authenticated - clearing localStorage for clean state');
+      
+      // Check if localStorage contains data from a different user
+      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+        try {
+          const existingCache = localStorage.getItem('czsu-chat-cache');
+          if (existingCache) {
+            const cacheData = JSON.parse(existingCache);
+            if (cacheData.userEmail && cacheData.userEmail !== userEmail) {
+              console.log('[ChatPage-useEffect] 🔄 Different user detected - clearing previous user data');
+              console.log('[ChatPage-useEffect] 👤 Previous user:', cacheData.userEmail, '→ Current user:', userEmail);
+              
+              // Use comprehensive cache clearing function for user change
+              clearCacheForUserChange(userEmail);
+              
+              console.log('[ChatPage-useEffect] ✅ Previous user data cleared - loading fresh data for current user');
+            } else {
+              console.log('[ChatPage-useEffect] ✅ Same user login detected - keeping existing cache');
+            }
+          } else {
+            console.log('[ChatPage-useEffect] ✅ No existing cache - fresh login');
+          }
+        } catch (error) {
+          console.error('[ChatPage-useEffect] ⚠ Error checking existing cache:', error);
+          // If there's any issue parsing cache, clear it for safety
+          clearCacheForUserChange(userEmail);
+        }
+      }
+      
       loadThreadsFromPostgreSQL();
     }
-  }, [userEmail, status]);
+  }, [userEmail, status, clearCacheForUserChange]);
 
   // NEW: Initialize user email in context and check for existing loading state
   useEffect(() => {

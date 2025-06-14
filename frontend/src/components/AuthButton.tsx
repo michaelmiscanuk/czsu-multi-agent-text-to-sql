@@ -1,11 +1,35 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
+import { useChatCache } from '@/contexts/ChatCacheContext';
 
 export default function AuthButton({ compact = false }: { compact?: boolean } = {}) {
   const { data: session, status } = useSession();
+  const { clearCacheForUserChange } = useChatCache();
+  
   if (typeof window !== 'undefined') {
     console.log('[AuthButton] session:', session);
   }
+  
+  // Handle logout with localStorage cleanup
+  const handleSignOut = async () => {
+    try {
+      console.log('[AuthButton] 🚪 Signing out - clearing localStorage for clean state');
+      
+      // Use the comprehensive cache clearing function for user changes
+      clearCacheForUserChange(null); // null = no new user (logout)
+      
+      console.log('[AuthButton] ✅ Cache cleanup completed - next user will have clean state');
+      
+      // Now perform the actual sign out
+      await signOut();
+      
+    } catch (error) {
+      console.error('[AuthButton] ❌ Error during sign out cleanup:', error);
+      // Still perform sign out even if cleanup fails
+      await signOut();
+    }
+  };
+  
   if (status === "loading") return <span className="text-xs text-gray-400">Loading...</span>;
   if (session) {
     return (
@@ -33,7 +57,7 @@ export default function AuthButton({ compact = false }: { compact?: boolean } = 
         <span className="text-xs text-gray-700 font-medium">{session.user?.name || session.user?.email}</span>
         <button
           className="px-3 py-1.5 text-xs bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 rounded-lg font-semibold text-gray-700 border border-gray-300 transition-all duration-200 shadow-sm"
-          onClick={() => signOut()}
+          onClick={handleSignOut}
         >
           Sign out
         </button>

@@ -53,6 +53,9 @@ interface ChatCacheContextType {
   setUserLoadingState: (email: string, loading: boolean) => void;
   checkUserLoadingState: (email: string) => boolean;
   setUserEmail: (email: string | null) => void;
+  
+  // NEW: Clear cache for user changes (logout/login)
+  clearCacheForUserChange: (newUserEmail?: string | null) => void;
 }
 
 const ChatCacheContext = createContext<ChatCacheContextType | undefined>(undefined)
@@ -401,6 +404,42 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     setUserEmail(email);
   }, []);
 
+  // NEW: Clear cache when user changes (for logout/login scenarios)
+  const clearCacheForUserChange = useCallback((newUserEmail: string | null = null) => {
+    console.log('[ChatCache] 🔄 User change detected - clearing cache for clean state');
+    console.log('[ChatCache] 👤 Previous user:', userEmail, '→ New user:', newUserEmail);
+    
+    // Ensure we're on the client side
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      // Clear all czsu-related localStorage items
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('czsu-') || key.startsWith('chat-'))) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        console.log('[ChatCache] 🧹 Cleared localStorage key for user change:', key);
+      });
+      
+      console.log('[ChatCache] ✅ localStorage cleanup completed for user change');
+    }
+    
+    // Reset all state
+    setThreadsState([])
+    setMessagesState({})
+    setActiveThreadIdState(null)
+    setUserEmail(newUserEmail)
+    setIsLoading(false)
+    setIsPageRefresh(false)
+    setIsUserLoading(false)
+    
+    console.log('[ChatCache] ✅ Cache state reset for user change');
+  }, [userEmail]);
+
   // Get current messages for active thread
   const currentMessages = activeThreadId ? messages[activeThreadId] || [] : []
 
@@ -562,7 +601,10 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     isUserLoading,
     setUserLoadingState,
     checkUserLoadingState,
-    setUserEmail: setUserEmailContext
+    setUserEmail: setUserEmailContext,
+    
+    // NEW: Clear cache for user changes (logout/login)
+    clearCacheForUserChange
   }
 
   return (

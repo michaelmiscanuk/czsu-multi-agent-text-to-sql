@@ -49762,3 +49762,485 @@ ORDER BY "Počet zaměstnanců" DESC
 LIMIT 10;
   Result: [('Celkem', 4023.8313255741), ('B-E - Průmysl celkem', 1182.1122774331), ('C - Zpracovatelský průmysl', 1076.9932867227), ('G - Velkoobchod a maloobchod; opravy a údržba motorových vozidel', 500.1969772721), ('Q - Zdravotní a sociální péče', 344.9277319535), ('P - Vzdělávání', 337.6286859376), ('O - Veřejná správa a obrana; povinné sociální zabezpečení', 295.3200633051), ('H - Doprava a skladování', 256.8846478141), ('F - Stavebnictví', 211.7501343521), ('N - Administrativní a podpůrné činnosti', 183.3257518099)]
 ----------------------------------------------------------------------------
+Prompt: compare counts of married and non-married people.
+Result: The count of married people is 15700962, while the count of non-married people is 2011498. 
+
+In comparison, the married population constitutes approximately 88.64% of the total population, whereas the non-married population makes up about 11.36%.
+Queries and Results:
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+----------------------------------------------------------------------------
+Prompt: a muzes mi to dat pro rok 2021?
+Result: V roce 2021 v Česku bylo 46778 ženatých osob a 21107 neženatých osob. Procenta jsou následující: 68.91% ženatých a 31.09% neženatých.
+Queries and Results:
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    CASE 
+        WHEN Ukazatel LIKE '%ženat%' THEN 'Married'
+        WHEN Ukazatel LIKE '%neženat%' THEN 'Not Married'
+    END AS Marital_Status,
+    SUM(value) AS Count,
+    ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')), 2) AS Percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')
+GROUP BY Marital_Status
+LIMIT 10;
+  Result: No results found
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021';
+  Result: [(46778.0, 21107.0, 68.90771157103926, 31.092288428960742)]
+----------------------------------------------------------------------------
+Prompt: dobre, ale "snatky" neznamena "celkem zenati/vdani", skus to znova a lepe
+Result: V roce 2021 bylo v Česku 46778 ženatých/vdaných osob a 21107 neženatých/neprovdaných osob.
+Queries and Results:
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    CASE 
+        WHEN Ukazatel LIKE '%ženat%' THEN 'Married'
+        WHEN Ukazatel LIKE '%neženat%' THEN 'Not Married'
+    END AS Marital_Status,
+    SUM(value) AS Count,
+    ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')), 2) AS Percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')
+GROUP BY Marital_Status
+LIMIT 10;
+  Result: No results found
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021';
+  Result: [(46778.0, 21107.0, 68.90771157103926, 31.092288428960742)]
+  Query: SELECT SUM(value) AS total_married FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND Ukazatel LIKE '%ženatých/vdaných%';
+  Result: None
+  Query: SELECT Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021'
+GROUP BY Ukazatel
+ORDER BY Ukazatel;
+  Result: [('Celkový přírůstek/úbytek', 21871.0), ('Mrtvě narození', 404.0), ('Narození', 112197.0), ('Potraty', 27959.0), ('Počet obyvatel k 1. 1. (počáteční stav)', 10494836.0), ('Počet obyvatel k 1. 7. (střední stav)', 10500850.0), ('Počet obyvatel k 31. 12. (koncový stav)', 10516707.0), ('Přirozený přírůstek/úbytek', -28098.0), ('Přistěhovalí', 69201.0), ('Přírůstek/úbytek stěhováním', 49969.0), ('Rozvody', 21107.0), ('Sňatky', 46778.0), ('UPT', 15492.0), ('Vystěhovalí', 19232.0), ('Zemřelí', 139891.0), ('Zemřelí do 1 roku', 246.0), ('Zemřelí do 28 dnů', 152.0), ('Živě narození', 111793.0), ('Živě narození mimo manželství', 54203.0)]
+----------------------------------------------------------------------------
+Prompt: skus dataset, ktery ma primo ukazatel zenati/vdani.
+Result: V datasetu pro Českou republiku je počet ženatých osob (sňatků) v roce 2021 46778, zatímco počet rozvodů (neženatých) je 21107. Celkový počet obyvatel v roce 2021 činí 17712460. Procento ženatých osob je 68.91%, zatímco procento neženatých osob je 31.09%.
+Queries and Results:
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    CASE 
+        WHEN Ukazatel LIKE '%ženat%' THEN 'Married'
+        WHEN Ukazatel LIKE '%neženat%' THEN 'Not Married'
+    END AS Marital_Status,
+    SUM(value) AS Count,
+    ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')), 2) AS Percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')
+GROUP BY Marital_Status
+LIMIT 10;
+  Result: No results found
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021';
+  Result: [(46778.0, 21107.0, 68.90771157103926, 31.092288428960742)]
+  Query: SELECT SUM(value) AS total_married FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND Ukazatel LIKE '%ženatých/vdaných%';
+  Result: None
+  Query: SELECT Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021'
+GROUP BY Ukazatel
+ORDER BY Ukazatel;
+  Result: [('Celkový přírůstek/úbytek', 21871.0), ('Mrtvě narození', 404.0), ('Narození', 112197.0), ('Potraty', 27959.0), ('Počet obyvatel k 1. 1. (počáteční stav)', 10494836.0), ('Počet obyvatel k 1. 7. (střední stav)', 10500850.0), ('Počet obyvatel k 31. 12. (koncový stav)', 10516707.0), ('Přirozený přírůstek/úbytek', -28098.0), ('Přistěhovalí', 69201.0), ('Přírůstek/úbytek stěhováním', 49969.0), ('Rozvody', 21107.0), ('Sňatky', 46778.0), ('UPT', 15492.0), ('Vystěhovalí', 19232.0), ('Zemřelí', 139891.0), ('Zemřelí do 1 roku', 246.0), ('Zemřelí do 28 dnů', 152.0), ('Živě narození', 111793.0), ('Živě narození mimo manželství', 54203.0)]
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT Roky, Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%'
+GROUP BY Roky, Ukazatel
+ORDER BY Roky DESC
+LIMIT 10;
+  Result: [(2024, 'Sňatky', 44486.0), (2023, 'Sňatky', 48268.0), (2022, 'Sňatky', 54820.0), (2021, 'Sňatky', 46778.0), (2020, 'Sňatky', 45415.0), (2019, 'Sňatky', 54870.0), (2018, 'Sňatky', 54470.0), (2017, 'Sňatky', 52567.0), (2016, 'Sňatky', 50768.0), (2015, 'Sňatky', 48191.0)]
+----------------------------------------------------------------------------
+Prompt: popis mi co tento dataset ukazuje.
+Result: Dataset ukazuje následující informace o počtu ženatých a svobodných osob v Česku:
+
+1. **Počet sňatků**: V roce 2021 bylo uzavřeno 46778 sňatků.
+2. **Počet rozvodů**: V roce 2021 bylo evidováno 21107 rozvodů.
+3. **Celková populace**: V roce 2021 byla celková populace v Česku 10516707.
+4. **Procenta**:
+   - Procento ženatých (sňatky) činí přibližně 68.91%.
+   - Procento rozvedených (rozvody) činí přibližně 31.09%.
+
+Tento dataset ukazuje, že většina populace v Česku je ženatá, zatímco menší část tvoří rozvedení.
+Queries and Results:
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0)]
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END)) AS total_population,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko';
+  Result: [(15700962.0, 2011498.0, 17712460.0, 88.6435989128557, 11.356401087144304)]
+  Query: SELECT 
+    CASE 
+        WHEN Ukazatel LIKE '%ženat%' THEN 'Married'
+        WHEN Ukazatel LIKE '%neženat%' THEN 'Not Married'
+    END AS Marital_Status,
+    SUM(value) AS Count,
+    ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')), 2) AS Percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')
+GROUP BY Marital_Status
+LIMIT 10;
+  Result: No results found
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021';
+  Result: [(46778.0, 21107.0, 68.90771157103926, 31.092288428960742)]
+  Query: SELECT SUM(value) AS total_married FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND Ukazatel LIKE '%ženatých/vdaných%';
+  Result: None
+  Query: SELECT Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021'
+GROUP BY Ukazatel
+ORDER BY Ukazatel;
+  Result: [('Celkový přírůstek/úbytek', 21871.0), ('Mrtvě narození', 404.0), ('Narození', 112197.0), ('Potraty', 27959.0), ('Počet obyvatel k 1. 1. (počáteční stav)', 10494836.0), ('Počet obyvatel k 1. 7. (střední stav)', 10500850.0), ('Počet obyvatel k 31. 12. (koncový stav)', 10516707.0), ('Přirozený přírůstek/úbytek', -28098.0), ('Přistěhovalí', 69201.0), ('Přírůstek/úbytek stěhováním', 49969.0), ('Rozvody', 21107.0), ('Sňatky', 46778.0), ('UPT', 15492.0), ('Vystěhovalí', 19232.0), ('Zemřelí', 139891.0), ('Zemřelí do 1 roku', 246.0), ('Zemřelí do 28 dnů', 152.0), ('Živě narození', 111793.0), ('Živě narození mimo manželství', 54203.0)]
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT Roky, Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%'
+GROUP BY Roky, Ukazatel
+ORDER BY Roky DESC
+LIMIT 10;
+  Result: [(2024, 'Sňatky', 44486.0), (2023, 'Sňatky', 48268.0), (2022, 'Sňatky', 54820.0), (2021, 'Sňatky', 46778.0), (2020, 'Sňatky', 45415.0), (2019, 'Sňatky', 54870.0), (2018, 'Sňatky', 54470.0), (2017, 'Sňatky', 52567.0), (2016, 'Sňatky', 50768.0), (2015, 'Sňatky', 48191.0)]
+  Query: SELECT Roky, SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS Pocet_zenatych, SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS Pocet_rozvedenych FROM OBY01CT01 WHERE Území = 'Česko' GROUP BY Roky ORDER BY Roky DESC LIMIT 10;
+  Result: [(2024, 44486.0, 20796.0), (2023, 48268.0, 19453.0), (2022, 54820.0, 19846.0), (2021, 46778.0, 21107.0), (2020, 45415.0, 21734.0), (2019, 54870.0, 24141.0), (2018, 54470.0, 24313.0), (2017, 52567.0, 25755.0), (2016, 50768.0, 24996.0), (2015, 48191.0, 26083.0)]
+  Query: SELECT Roky, SUM(value) AS Total_Population 
+FROM OBY01CT01 
+WHERE Území = 'Česko' AND Ukazatel = 'Počet obyvatel k 31. 12. (koncový stav)' 
+GROUP BY Roky 
+ORDER BY Roky DESC;
+  Result: [(2024, 10909500.0), (2023, 10900555.0), (2022, 10827529.0), (2021, 10516707.0), (2020, 10701777.0), (2019, 10693939.0), (2018, 10649800.0), (2017, 10610055.0), (2016, 10578820.0), (2015, 10553843.0), (2014, 10538275.0), (2013, 10512419.0), (2012, 10516125.0), (2011, 10505445.0), (2010, 10532770.0), (2009, 10506813.0), (2008, 10467542.0), (2007, 10381130.0), (2006, 10287189.0), (2005, 10251079.0), (2004, 10220577.0), (2003, 10211455.0), (2002, 10203269.0), (2001, 10206436.0), (2000, 10266546.0), (1999, 10278098.0), (1998, 10289621.0), (1997, 10299125.0), (1996, 10309137.0), (1995, 10321344.0), (1994, 10333161.0), (1993, 10334013.0), (1992, 10325697.0), (1991, 10312548.0), (1990, 10304607.0), (1989, 10362102.0), (1988, 10360034.0), (1987, 10350517.0), (1986, 10344119.0), (1985, 10340335.0), (1984, 10333900.0), (1983, 10326526.0), (1982, 10321186.0), (1981, 10308465.0), (1980, 10292717.0), (1979, 10315669.0), (1978, 10269012.0), (1977, 10215183.0), (1976, 10158327.0), (1975, 10093551.0), (1974, 10023688.0), (1973, 9953230.0), (1972, 9891302.0), (1971, 9843962.0), (1970, 9809667.0), (1969, 9906474.0), (1968, 9886686.0), (1967, 9866006.0), (1966, 9839792.0), (1965, 9802287.0), (1964, 9756429.0), (1963, 9699179.0), (1962, 9642191.0), (1961, 9607129.0), (1960, 9566172.0), (1959, 9637840.0), (1958, 9597963.0), (1957, 9543780.0), (1956, 9480206.0), (1955, 9405047.0), (1954, 9329036.0), (1953, 9262646.0), (1952, 9177611.0), (1951, 9074172.0), (1950, 8978854.0), (1949, 8892449.0), (1948, 8893180.0), (1947, 8840287.0), (1946, None), (1945, None), (1944, None), (1943, None), (1942, None), (1941, None), (1940, None), (1939, None), (1938, None), (1937, None), (1936, None), (1935, None), (1934, None), (1933, None), (1932, None), (1931, None), (1930, None), (1929, None), (1928, None), (1927, None), (1926, None), (1925, None), (1924, None), (1923, None), (1922, None), (1921, None), (1920, None), (1919, None), (1918, None), (1917, None), (1916, None), (1915, None), (1914, None), (1913, None), (1912, None), (1911, None), (1910, 10076727.0), (1909, None), (1908, None), (1907, None), (1906, None), (1905, None), (1904, None), (1903, None), (1902, None), (1901, None), (1900, 9374028.0), (1899, None), (1898, None), (1897, None), (1896, None), (1895, None), (1894, None), (1893, None), (1892, None), (1891, None), (1890, 8666456.0), (1889, None), (1888, None), (1887, None), (1886, None), (1885, None), (1884, None), (1883, None), (1882, None), (1881, None), (1880, 8223227.0), (1879, None), (1878, None), (1877, None), (1876, None), (1875, None), (1874, None), (1873, None), (1872, None), (1871, None), (1870, None), (1869, 7565463.0), (1868, None), (1867, None), (1866, None), (1865, None), (1864, None), (1863, None), (1862, None), (1861, None), (1860, None), (1859, None), (1858, None), (1857, None), (1856, None), (1855, None), (1854, None), (1853, None), (1852, None), (1851, None), (1850, None), (1849, None), (1848, None), (1847, None), (1846, None), (1845, None), (1844, None), (1843, None), (1842, None), (1841, None), (1840, None), (1839, None), (1838, None), (1837, None), (1836, None), (1835, None), (1834, None), (1833, None), (1832, None), (1831, None), (1830, None), (1829, None), (1828, None), (1827, None), (1826, None), (1825, None), (1824, None), (1823, None), (1822, None), (1821, None), (1820, None), (1819, None), (1818, None), (1817, None), (1816, None), (1815, None), (1814, None), (1813, None), (1812, None), (1811, None), (1810, None), (1809, None), (1808, None), (1807, None), (1806, None), (1805, None), (1804, None), (1803, None), (1802, None), (1801, None), (1800, None), (1799, None), (1798, None), (1797, None), (1796, None), (1795, None), (1794, None), (1793, None), (1792, None), (1791, None), (1790, None), (1789, None), (1788, None), (1787, None), (1786, None), (1785, None)]
+----------------------------------------------------------------------------
+Prompt: ale sňatky neznamena celkem zenatych. Skus jiny dataset.
+Result: Není k dispozici žádný dataset, který by obsahoval celkový počet ženatých a vdaných osob v Česku. Všechny pokusy o získání těchto informací vedly k prázdným výsledkům.
+Queries and Results:
+  Query: SELECT 
+    CASE 
+        WHEN Ukazatel LIKE '%ženat%' THEN 'Married'
+        WHEN Ukazatel LIKE '%neženat%' THEN 'Not Married'
+    END AS Marital_Status,
+    SUM(value) AS Count,
+    ROUND(SUM(value) * 100.0 / (SELECT SUM(value) FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')), 2) AS Percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021' AND (Ukazatel LIKE '%ženat%' OR Ukazatel LIKE '%neženat%')
+GROUP BY Marital_Status
+LIMIT 10;
+  Result: No results found
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021';
+  Result: [(46778.0, 21107.0, 68.90771157103926, 31.092288428960742)]
+  Query: SELECT SUM(value) AS total_married FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND Ukazatel LIKE '%ženatých/vdaných%';
+  Result: None
+  Query: SELECT Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021'
+GROUP BY Ukazatel
+ORDER BY Ukazatel;
+  Result: [('Celkový přírůstek/úbytek', 21871.0), ('Mrtvě narození', 404.0), ('Narození', 112197.0), ('Potraty', 27959.0), ('Počet obyvatel k 1. 1. (počáteční stav)', 10494836.0), ('Počet obyvatel k 1. 7. (střední stav)', 10500850.0), ('Počet obyvatel k 31. 12. (koncový stav)', 10516707.0), ('Přirozený přírůstek/úbytek', -28098.0), ('Přistěhovalí', 69201.0), ('Přírůstek/úbytek stěhováním', 49969.0), ('Rozvody', 21107.0), ('Sňatky', 46778.0), ('UPT', 15492.0), ('Vystěhovalí', 19232.0), ('Zemřelí', 139891.0), ('Zemřelí do 1 roku', 246.0), ('Zemřelí do 28 dnů', 152.0), ('Živě narození', 111793.0), ('Živě narození mimo manželství', 54203.0)]
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT Roky, Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%'
+GROUP BY Roky, Ukazatel
+ORDER BY Roky DESC
+LIMIT 10;
+  Result: [(2024, 'Sňatky', 44486.0), (2023, 'Sňatky', 48268.0), (2022, 'Sňatky', 54820.0), (2021, 'Sňatky', 46778.0), (2020, 'Sňatky', 45415.0), (2019, 'Sňatky', 54870.0), (2018, 'Sňatky', 54470.0), (2017, 'Sňatky', 52567.0), (2016, 'Sňatky', 50768.0), (2015, 'Sňatky', 48191.0)]
+  Query: SELECT Roky, SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS Pocet_zenatych, SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS Pocet_rozvedenych FROM OBY01CT01 WHERE Území = 'Česko' GROUP BY Roky ORDER BY Roky DESC LIMIT 10;
+  Result: [(2024, 44486.0, 20796.0), (2023, 48268.0, 19453.0), (2022, 54820.0, 19846.0), (2021, 46778.0, 21107.0), (2020, 45415.0, 21734.0), (2019, 54870.0, 24141.0), (2018, 54470.0, 24313.0), (2017, 52567.0, 25755.0), (2016, 50768.0, 24996.0), (2015, 48191.0, 26083.0)]
+  Query: SELECT Roky, SUM(value) AS Total_Population 
+FROM OBY01CT01 
+WHERE Území = 'Česko' AND Ukazatel = 'Počet obyvatel k 31. 12. (koncový stav)' 
+GROUP BY Roky 
+ORDER BY Roky DESC;
+  Result: [(2024, 10909500.0), (2023, 10900555.0), (2022, 10827529.0), (2021, 10516707.0), (2020, 10701777.0), (2019, 10693939.0), (2018, 10649800.0), (2017, 10610055.0), (2016, 10578820.0), (2015, 10553843.0), (2014, 10538275.0), (2013, 10512419.0), (2012, 10516125.0), (2011, 10505445.0), (2010, 10532770.0), (2009, 10506813.0), (2008, 10467542.0), (2007, 10381130.0), (2006, 10287189.0), (2005, 10251079.0), (2004, 10220577.0), (2003, 10211455.0), (2002, 10203269.0), (2001, 10206436.0), (2000, 10266546.0), (1999, 10278098.0), (1998, 10289621.0), (1997, 10299125.0), (1996, 10309137.0), (1995, 10321344.0), (1994, 10333161.0), (1993, 10334013.0), (1992, 10325697.0), (1991, 10312548.0), (1990, 10304607.0), (1989, 10362102.0), (1988, 10360034.0), (1987, 10350517.0), (1986, 10344119.0), (1985, 10340335.0), (1984, 10333900.0), (1983, 10326526.0), (1982, 10321186.0), (1981, 10308465.0), (1980, 10292717.0), (1979, 10315669.0), (1978, 10269012.0), (1977, 10215183.0), (1976, 10158327.0), (1975, 10093551.0), (1974, 10023688.0), (1973, 9953230.0), (1972, 9891302.0), (1971, 9843962.0), (1970, 9809667.0), (1969, 9906474.0), (1968, 9886686.0), (1967, 9866006.0), (1966, 9839792.0), (1965, 9802287.0), (1964, 9756429.0), (1963, 9699179.0), (1962, 9642191.0), (1961, 9607129.0), (1960, 9566172.0), (1959, 9637840.0), (1958, 9597963.0), (1957, 9543780.0), (1956, 9480206.0), (1955, 9405047.0), (1954, 9329036.0), (1953, 9262646.0), (1952, 9177611.0), (1951, 9074172.0), (1950, 8978854.0), (1949, 8892449.0), (1948, 8893180.0), (1947, 8840287.0), (1946, None), (1945, None), (1944, None), (1943, None), (1942, None), (1941, None), (1940, None), (1939, None), (1938, None), (1937, None), (1936, None), (1935, None), (1934, None), (1933, None), (1932, None), (1931, None), (1930, None), (1929, None), (1928, None), (1927, None), (1926, None), (1925, None), (1924, None), (1923, None), (1922, None), (1921, None), (1920, None), (1919, None), (1918, None), (1917, None), (1916, None), (1915, None), (1914, None), (1913, None), (1912, None), (1911, None), (1910, 10076727.0), (1909, None), (1908, None), (1907, None), (1906, None), (1905, None), (1904, None), (1903, None), (1902, None), (1901, None), (1900, 9374028.0), (1899, None), (1898, None), (1897, None), (1896, None), (1895, None), (1894, None), (1893, None), (1892, None), (1891, None), (1890, 8666456.0), (1889, None), (1888, None), (1887, None), (1886, None), (1885, None), (1884, None), (1883, None), (1882, None), (1881, None), (1880, 8223227.0), (1879, None), (1878, None), (1877, None), (1876, None), (1875, None), (1874, None), (1873, None), (1872, None), (1871, None), (1870, None), (1869, 7565463.0), (1868, None), (1867, None), (1866, None), (1865, None), (1864, None), (1863, None), (1862, None), (1861, None), (1860, None), (1859, None), (1858, None), (1857, None), (1856, None), (1855, None), (1854, None), (1853, None), (1852, None), (1851, None), (1850, None), (1849, None), (1848, None), (1847, None), (1846, None), (1845, None), (1844, None), (1843, None), (1842, None), (1841, None), (1840, None), (1839, None), (1838, None), (1837, None), (1836, None), (1835, None), (1834, None), (1833, None), (1832, None), (1831, None), (1830, None), (1829, None), (1828, None), (1827, None), (1826, None), (1825, None), (1824, None), (1823, None), (1822, None), (1821, None), (1820, None), (1819, None), (1818, None), (1817, None), (1816, None), (1815, None), (1814, None), (1813, None), (1812, None), (1811, None), (1810, None), (1809, None), (1808, None), (1807, None), (1806, None), (1805, None), (1804, None), (1803, None), (1802, None), (1801, None), (1800, None), (1799, None), (1798, None), (1797, None), (1796, None), (1795, None), (1794, None), (1793, None), (1792, None), (1791, None), (1790, None), (1789, None), (1788, None), (1787, None), (1786, None), (1785, None)]
+  Query: SELECT Roky, value AS total_married FROM OBY01CT01 WHERE Území = 'Česko' AND Ukazatel LIKE '%ženatých%' LIMIT 10;
+  Result: No results found
+  Query: SELECT DISTINCT Ukazatel FROM OBY01CT01 WHERE Území = 'Česko';
+  Result: [('Počet obyvatel k 1. 1. (počáteční stav)',), ('Počet obyvatel k 1. 7. (střední stav)',), ('Počet obyvatel k 31. 12. (koncový stav)',), ('Sňatky',), ('Rozvody',), ('Narození',), ('Živě narození',), ('Živě narození mimo manželství',), ('Mrtvě narození',), ('Potraty',), ('UPT',), ('Zemřelí',), ('Zemřelí do 1 roku',), ('Zemřelí do 28 dnů',), ('Přirozený přírůstek/úbytek',), ('Přistěhovalí',), ('Vystěhovalí',), ('Přírůstek/úbytek stěhováním',), ('Celkový přírůstek/úbytek',)]
+----------------------------------------------------------------------------
+Prompt: skus tento dataset: SLD001T03
+Result: V datasetu SLD001T03 jsou následující informace o počtu jednotlivců v Česku v roce 2021:
+
+- Celkový počet ženatých/vdaných: 4007342
+- Celkový počet svobodných: 4508591
+
+Tedy, v Česku bylo v roce 2021 4007342 ženatých/vdaných a 4508591 svobodných jednotlivců.
+Queries and Results:
+  Query: SELECT 
+    SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS married_count,
+    SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS non_married_count,
+    (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS married_percentage,
+    (SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) * 100.0 / 
+     (SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) + 
+      SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END))) AS non_married_percentage
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021';
+  Result: [(46778.0, 21107.0, 68.90771157103926, 31.092288428960742)]
+  Query: SELECT SUM(value) AS total_married FROM OBY01CT01 WHERE Území = 'Česko' AND Roky = '2021' AND Ukazatel LIKE '%ženatých/vdaných%';
+  Result: None
+  Query: SELECT Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Roky = '2021'
+GROUP BY Ukazatel
+ORDER BY Ukazatel;
+  Result: [('Celkový přírůstek/úbytek', 21871.0), ('Mrtvě narození', 404.0), ('Narození', 112197.0), ('Potraty', 27959.0), ('Počet obyvatel k 1. 1. (počáteční stav)', 10494836.0), ('Počet obyvatel k 1. 7. (střední stav)', 10500850.0), ('Počet obyvatel k 31. 12. (koncový stav)', 10516707.0), ('Přirozený přírůstek/úbytek', -28098.0), ('Přistěhovalí', 69201.0), ('Přírůstek/úbytek stěhováním', 49969.0), ('Rozvody', 21107.0), ('Sňatky', 46778.0), ('UPT', 15492.0), ('Vystěhovalí', 19232.0), ('Zemřelí', 139891.0), ('Zemřelí do 1 roku', 246.0), ('Zemřelí do 28 dnů', 152.0), ('Živě narození', 111793.0), ('Živě narození mimo manželství', 54203.0)]
+  Query: SELECT Roky, value 
+FROM OBY01CT01 
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%' 
+ORDER BY Roky DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT Roky, Ukazatel, SUM(value) AS Count
+FROM OBY01CT01
+WHERE Území = 'Česko' AND Ukazatel LIKE '%Sňatky%'
+GROUP BY Roky, Ukazatel
+ORDER BY Roky DESC
+LIMIT 10;
+  Result: [(2024, 'Sňatky', 44486.0), (2023, 'Sňatky', 48268.0), (2022, 'Sňatky', 54820.0), (2021, 'Sňatky', 46778.0), (2020, 'Sňatky', 45415.0), (2019, 'Sňatky', 54870.0), (2018, 'Sňatky', 54470.0), (2017, 'Sňatky', 52567.0), (2016, 'Sňatky', 50768.0), (2015, 'Sňatky', 48191.0)]
+  Query: SELECT Roky, SUM(CASE WHEN Ukazatel = 'Sňatky' THEN value ELSE 0 END) AS Pocet_zenatych, SUM(CASE WHEN Ukazatel = 'Rozvody' THEN value ELSE 0 END) AS Pocet_rozvedenych FROM OBY01CT01 WHERE Území = 'Česko' GROUP BY Roky ORDER BY Roky DESC LIMIT 10;
+  Result: [(2024, 44486.0, 20796.0), (2023, 48268.0, 19453.0), (2022, 54820.0, 19846.0), (2021, 46778.0, 21107.0), (2020, 45415.0, 21734.0), (2019, 54870.0, 24141.0), (2018, 54470.0, 24313.0), (2017, 52567.0, 25755.0), (2016, 50768.0, 24996.0), (2015, 48191.0, 26083.0)]
+  Query: SELECT Roky, SUM(value) AS Total_Population 
+FROM OBY01CT01 
+WHERE Území = 'Česko' AND Ukazatel = 'Počet obyvatel k 31. 12. (koncový stav)' 
+GROUP BY Roky 
+ORDER BY Roky DESC;
+  Result: [(2024, 10909500.0), (2023, 10900555.0), (2022, 10827529.0), (2021, 10516707.0), (2020, 10701777.0), (2019, 10693939.0), (2018, 10649800.0), (2017, 10610055.0), (2016, 10578820.0), (2015, 10553843.0), (2014, 10538275.0), (2013, 10512419.0), (2012, 10516125.0), (2011, 10505445.0), (2010, 10532770.0), (2009, 10506813.0), (2008, 10467542.0), (2007, 10381130.0), (2006, 10287189.0), (2005, 10251079.0), (2004, 10220577.0), (2003, 10211455.0), (2002, 10203269.0), (2001, 10206436.0), (2000, 10266546.0), (1999, 10278098.0), (1998, 10289621.0), (1997, 10299125.0), (1996, 10309137.0), (1995, 10321344.0), (1994, 10333161.0), (1993, 10334013.0), (1992, 10325697.0), (1991, 10312548.0), (1990, 10304607.0), (1989, 10362102.0), (1988, 10360034.0), (1987, 10350517.0), (1986, 10344119.0), (1985, 10340335.0), (1984, 10333900.0), (1983, 10326526.0), (1982, 10321186.0), (1981, 10308465.0), (1980, 10292717.0), (1979, 10315669.0), (1978, 10269012.0), (1977, 10215183.0), (1976, 10158327.0), (1975, 10093551.0), (1974, 10023688.0), (1973, 9953230.0), (1972, 9891302.0), (1971, 9843962.0), (1970, 9809667.0), (1969, 9906474.0), (1968, 9886686.0), (1967, 9866006.0), (1966, 9839792.0), (1965, 9802287.0), (1964, 9756429.0), (1963, 9699179.0), (1962, 9642191.0), (1961, 9607129.0), (1960, 9566172.0), (1959, 9637840.0), (1958, 9597963.0), (1957, 9543780.0), (1956, 9480206.0), (1955, 9405047.0), (1954, 9329036.0), (1953, 9262646.0), (1952, 9177611.0), (1951, 9074172.0), (1950, 8978854.0), (1949, 8892449.0), (1948, 8893180.0), (1947, 8840287.0), (1946, None), (1945, None), (1944, None), (1943, None), (1942, None), (1941, None), (1940, None), (1939, None), (1938, None), (1937, None), (1936, None), (1935, None), (1934, None), (1933, None), (1932, None), (1931, None), (1930, None), (1929, None), (1928, None), (1927, None), (1926, None), (1925, None), (1924, None), (1923, None), (1922, None), (1921, None), (1920, None), (1919, None), (1918, None), (1917, None), (1916, None), (1915, None), (1914, None), (1913, None), (1912, None), (1911, None), (1910, 10076727.0), (1909, None), (1908, None), (1907, None), (1906, None), (1905, None), (1904, None), (1903, None), (1902, None), (1901, None), (1900, 9374028.0), (1899, None), (1898, None), (1897, None), (1896, None), (1895, None), (1894, None), (1893, None), (1892, None), (1891, None), (1890, 8666456.0), (1889, None), (1888, None), (1887, None), (1886, None), (1885, None), (1884, None), (1883, None), (1882, None), (1881, None), (1880, 8223227.0), (1879, None), (1878, None), (1877, None), (1876, None), (1875, None), (1874, None), (1873, None), (1872, None), (1871, None), (1870, None), (1869, 7565463.0), (1868, None), (1867, None), (1866, None), (1865, None), (1864, None), (1863, None), (1862, None), (1861, None), (1860, None), (1859, None), (1858, None), (1857, None), (1856, None), (1855, None), (1854, None), (1853, None), (1852, None), (1851, None), (1850, None), (1849, None), (1848, None), (1847, None), (1846, None), (1845, None), (1844, None), (1843, None), (1842, None), (1841, None), (1840, None), (1839, None), (1838, None), (1837, None), (1836, None), (1835, None), (1834, None), (1833, None), (1832, None), (1831, None), (1830, None), (1829, None), (1828, None), (1827, None), (1826, None), (1825, None), (1824, None), (1823, None), (1822, None), (1821, None), (1820, None), (1819, None), (1818, None), (1817, None), (1816, None), (1815, None), (1814, None), (1813, None), (1812, None), (1811, None), (1810, None), (1809, None), (1808, None), (1807, None), (1806, None), (1805, None), (1804, None), (1803, None), (1802, None), (1801, None), (1800, None), (1799, None), (1798, None), (1797, None), (1796, None), (1795, None), (1794, None), (1793, None), (1792, None), (1791, None), (1790, None), (1789, None), (1788, None), (1787, None), (1786, None), (1785, None)]
+  Query: SELECT Roky, value AS total_married FROM OBY01CT01 WHERE Území = 'Česko' AND Ukazatel LIKE '%ženatých%' LIMIT 10;
+  Result: No results found
+  Query: SELECT DISTINCT Ukazatel FROM OBY01CT01 WHERE Území = 'Česko';
+  Result: [('Počet obyvatel k 1. 1. (počáteční stav)',), ('Počet obyvatel k 1. 7. (střední stav)',), ('Počet obyvatel k 31. 12. (koncový stav)',), ('Sňatky',), ('Rozvody',), ('Narození',), ('Živě narození',), ('Živě narození mimo manželství',), ('Mrtvě narození',), ('Potraty',), ('UPT',), ('Zemřelí',), ('Zemřelí do 1 roku',), ('Zemřelí do 28 dnů',), ('Přirozený přírůstek/úbytek',), ('Přistěhovalí',), ('Vystěhovalí',), ('Přírůstek/úbytek stěhováním',), ('Celkový přírůstek/úbytek',)]
+  Query: SELECT * FROM SLD001T03 LIMIT 10;
+  Result: [('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Celkem', 'Celkem', 10524167), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Celkem', 'Ženy', 5337619), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Celkem', 'Muži', 5186548), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Svobodní/svobodné', 'Celkem', 4508591), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Svobodní/svobodné', 'Ženy', 2031554), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Svobodní/svobodné', 'Muži', 2477037), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Ženatí/vdané', 'Celkem', 4007342), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Ženatí/vdané', 'Ženy', 1997604), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Ženatí/vdané', 'Muži', 2009738), ('Počet obyvatel (obvyklý pobyt)', 2021, 'Česká republika', 'Rozvedení/rozvedené', 'Celkem', 1233112)]
+----------------------------------------------------------------------------
