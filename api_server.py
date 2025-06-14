@@ -298,6 +298,39 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
                 detail=f"Invalid run_id format. Expected UUID, got: {request.run_id}"
             )
         
+        # 🔒 SECURITY CHECK: Verify user owns this run_id before submitting feedback
+        print(f"[FEEDBACK-FLOW] 🔒 Verifying run_id ownership for user: {user_email}")
+        
+        try:
+            # Get a healthy pool to check ownership
+            from my_agent.utils.postgres_checkpointer import get_healthy_pool
+            pool = await get_healthy_pool()
+            
+            async with pool.connection() as conn:
+                ownership_result = await conn.execute("""
+                    SELECT COUNT(*) FROM users_threads_runs 
+                    WHERE run_id = %s AND email = %s
+                """, (run_uuid, user_email))
+                
+                ownership_row = await ownership_result.fetchone()
+                ownership_count = ownership_row[0] if ownership_row else 0
+                
+                if ownership_count == 0:
+                    print(f"[FEEDBACK-FLOW] 🚫 SECURITY: User {user_email} does not own run_id {run_uuid} - feedback denied")
+                    raise HTTPException(
+                        status_code=404,
+                        detail="Run ID not found or access denied"
+                    )
+                
+                print(f"[FEEDBACK-FLOW] ✅ SECURITY: User {user_email} owns run_id {run_uuid} - feedback authorized")
+                
+        except HTTPException:
+            raise
+        except Exception as ownership_error:
+            print(f"[FEEDBACK-FLOW] ⚠ Could not verify ownership: {ownership_error}")
+            # Continue with feedback submission but log the warning
+            print(f"[FEEDBACK-FLOW] ⚠ Proceeding with feedback submission despite ownership check failure")
+        
         print("[FEEDBACK-FLOW] 🔄 Initializing LangSmith client")
         client = Client()
         
@@ -360,8 +393,9 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
                 detail=f"Invalid run_id format. Expected UUID, got: {request.run_id}"
             )
         
-        # Update sentiment in database
-        success = await update_thread_run_sentiment(run_uuid, request.sentiment)
+        # 🔒 SECURITY: Update sentiment with user email verification
+        print(f"[SENTIMENT-FLOW] 🔒 Verifying ownership before sentiment update")
+        success = await update_thread_run_sentiment(run_uuid, request.sentiment, user_email)
         
         if success:
             print(f"[SENTIMENT-FLOW] ✅ Sentiment successfully updated")
@@ -371,10 +405,10 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
                 "sentiment": request.sentiment
             }
         else:
-            print(f"[SENTIMENT-FLOW] ❌ Failed to update sentiment - run_id may not exist")
+            print(f"[SENTIMENT-FLOW] ❌ Failed to update sentiment - run_id may not exist or access denied")
             raise HTTPException(
                 status_code=404,
-                detail=f"Run ID not found: {run_uuid}"
+                detail=f"Run ID not found or access denied: {run_uuid}"
             )
         
     except HTTPException:
@@ -501,6 +535,28 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
         
         async with pool.connection() as conn:
             await conn.set_autocommit(True)
+            
+            # 🔒 SECURITY CHECK: Verify user owns this thread before deleting
+            print(f"[API-PostgreSQL] 🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}")
+            
+            ownership_result = await conn.execute("""
+                SELECT COUNT(*) FROM users_threads_runs 
+                WHERE email = %s AND thread_id = %s
+            """, (user_email, thread_id))
+            
+            ownership_row = await ownership_result.fetchone()
+            thread_entries_count = ownership_row[0] if ownership_row else 0
+            
+            if thread_entries_count == 0:
+                print(f"[API-PostgreSQL] 🚫 SECURITY: User {user_email} does not own thread {thread_id} - deletion denied")
+                return {
+                    "message": "Thread not found or access denied",
+                    "thread_id": thread_id,
+                    "user_email": user_email,
+                    "deleted_counts": {}
+                }
+            
+            print(f"[API-PostgreSQL] ✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - deletion authorized")
             
             print(f"[API-PostgreSQL] 🔄 Deleting from checkpoint tables for thread {thread_id}")
             
@@ -683,12 +739,32 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
     print(f"[API-PostgreSQL] 📥 Loading checkpoint messages for thread {thread_id}, user: {user_email}")
     
     try:
-        # Get a healthy checkpointer
+        # 🔒 SECURITY CHECK: Verify user owns this thread before retrieving messages
+        print(f"[API-PostgreSQL] 🔒 Verifying thread ownership for user: {user_email}, thread: {thread_id}")
+        
+        # Check if this user has any entries in users_threads_runs for this thread
         checkpointer = await get_healthy_checkpointer()
         
         if not hasattr(checkpointer, 'conn'):
             print(f"[API-PostgreSQL] ⚠ No PostgreSQL checkpointer available - returning empty messages")
             return []
+        
+        # Verify thread ownership using users_threads_runs table
+        async with checkpointer.conn.connection() as conn:
+            ownership_result = await conn.execute("""
+                SELECT COUNT(*) FROM users_threads_runs 
+                WHERE email = %s AND thread_id = %s
+            """, (user_email, thread_id))
+            
+            ownership_row = await ownership_result.fetchone()
+            thread_entries_count = ownership_row[0] if ownership_row else 0
+            
+            if thread_entries_count == 0:
+                print(f"[API-PostgreSQL] 🚫 SECURITY: User {user_email} does not own thread {thread_id} - access denied")
+                # Return empty instead of error to avoid information disclosure
+                return []
+            
+            print(f"[API-PostgreSQL] ✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
         
         # Get conversation messages from checkpoint history
         stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id)
@@ -1048,7 +1124,7 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[DEBUG-RUN-ID] 🔍 Checking run_id: '{run_id}'")
+    print(f"[DEBUG-RUN-ID] 🔍 Checking run_id: '{run_id}' for user: {user_email}")
     
     result = {
         "run_id": run_id,
@@ -1056,6 +1132,7 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
         "run_id_length": len(run_id) if run_id else 0,
         "is_valid_uuid_format": False,
         "exists_in_database": False,
+        "user_owns_run_id": False,
         "database_details": None
     }
     
@@ -1074,22 +1151,37 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
         
         if pool:
             async with pool.connection() as conn:
-                # Check in users_threads_runs table
+                # 🔒 SECURITY: Check in users_threads_runs table with user ownership verification
                 db_result = await conn.execute("""
                     SELECT email, thread_id, prompt, timestamp
                     FROM users_threads_runs 
-                    WHERE run_id = %s
-                """, (run_id,))
+                    WHERE run_id = %s AND email = %s
+                """, (run_id, user_email))
                 
                 row = await db_result.fetchone()
                 if row:
                     result["exists_in_database"] = True
+                    result["user_owns_run_id"] = True
                     result["database_details"] = {
                         "email": row[0],
                         "thread_id": row[1],
                         "prompt": row[2],
                         "timestamp": row[3].isoformat() if row[3] else None
                     }
+                    print(f"[DEBUG-RUN-ID] ✅ User {user_email} owns run_id {run_id}")
+                else:
+                    # Check if run_id exists but belongs to different user
+                    db_result_any = await conn.execute("""
+                        SELECT COUNT(*) FROM users_threads_runs WHERE run_id = %s
+                    """, (run_id,))
+                    
+                    any_row = await db_result_any.fetchone()
+                    if any_row and any_row[0] > 0:
+                        result["exists_in_database"] = True
+                        result["user_owns_run_id"] = False
+                        print(f"[DEBUG-RUN-ID] 🚫 Run_id {run_id} exists but user {user_email} does not own it")
+                    else:
+                        print(f"[DEBUG-RUN-ID] ❌ Run_id {run_id} not found in database")
     except Exception as e:
         result["database_error"] = str(e)
     

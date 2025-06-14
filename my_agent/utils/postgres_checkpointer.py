@@ -253,12 +253,13 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
         print(f"❌ Error creating thread run entry: {str(e)}")
         raise
 
-async def update_thread_run_sentiment(run_id: str, sentiment: bool) -> bool:
+async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: str = None) -> bool:
     """Update sentiment for a specific run_id.
     
     Args:
         run_id: The run ID to update
         sentiment: True for thumbs up, False for thumbs down, None to clear
+        user_email: User's email address for ownership verification (recommended for security)
     
     Returns:
         True if update was successful, False otherwise
@@ -271,12 +272,37 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool) -> bool:
         async with pool.connection() as conn:
             await conn.set_autocommit(True)
             
-            # Update sentiment for this run_id
-            result = await conn.execute("""
-                UPDATE users_threads_runs 
-                SET sentiment = %s 
-                WHERE run_id = %s
-            """, (sentiment, run_id))
+            # 🔒 SECURITY: If user_email is provided, verify ownership before updating
+            if user_email:
+                # Check if this user owns the run_id
+                ownership_result = await conn.execute("""
+                    SELECT COUNT(*) FROM users_threads_runs 
+                    WHERE run_id = %s AND email = %s
+                """, (run_id, user_email))
+                
+                ownership_row = await ownership_result.fetchone()
+                ownership_count = ownership_row[0] if ownership_row else 0
+                
+                if ownership_count == 0:
+                    print(f"🚫 SECURITY: User {user_email} does not own run_id {run_id} - sentiment update denied")
+                    return False
+                
+                print(f"✅ SECURITY: User {user_email} owns run_id {run_id} - sentiment update authorized")
+                
+                # Update sentiment with user verification
+                result = await conn.execute("""
+                    UPDATE users_threads_runs 
+                    SET sentiment = %s 
+                    WHERE run_id = %s AND email = %s
+                """, (sentiment, run_id, user_email))
+            else:
+                # Legacy mode: Update without user verification (less secure)
+                print(f"⚠ WARNING: Updating sentiment without user verification for run_id {run_id}")
+                result = await conn.execute("""
+                    UPDATE users_threads_runs 
+                    SET sentiment = %s 
+                    WHERE run_id = %s
+                """, (sentiment, run_id))
             
             updated_count = result.rowcount if hasattr(result, 'rowcount') else 0
             
@@ -284,7 +310,7 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool) -> bool:
                 print(f"✓ Updated sentiment for run_id {run_id}: {sentiment}")
                 return True
             else:
-                print(f"⚠ No rows updated for run_id {run_id} - run_id may not exist")
+                print(f"⚠ No rows updated for run_id {run_id} - run_id may not exist or access denied")
                 return False
                 
     except Exception as e:
