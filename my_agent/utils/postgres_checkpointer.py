@@ -1071,12 +1071,55 @@ class ResilientPostgreSQLCheckpointer:
         )
         
     async def alist(self, config, filter=None, before=None, limit=None):
-        """List checkpoints with retry logic."""
-        return await self._retry_checkpoint_operation(
-            "alist",
-            self.base_checkpointer.alist,
-            config, filter, before, limit
-        )
+        """List checkpoints with retry logic - returns async generator."""
+        # For alist, we need to handle it differently since it returns an async generator
+        # We can't use the retry wrapper directly, so we implement retry logic here
+        
+        for attempt in range(self.max_checkpoint_retries):
+            try:
+                # Get the async generator from the base checkpointer
+                # Note: AsyncPostgresSaver.alist() only takes config parameter
+                async_gen = self.base_checkpointer.alist(config)
+                
+                # Yield items from the generator with error handling
+                async for item in async_gen:
+                    yield item
+                return  # Successfully completed
+                
+            except Exception as e:
+                error_msg = str(e).lower()
+                
+                # Check if it's a recoverable database connection error
+                is_recoverable = any(keyword in error_msg for keyword in [
+                    "dbhandler exited",
+                    "connection is lost",
+                    "ssl connection has been closed",
+                    "connection closed",
+                    "flush request failed",
+                    "pipeline mode",
+                    "connection not available",
+                    "bad connection"
+                ])
+                
+                if attempt < self.max_checkpoint_retries - 1 and is_recoverable:
+                    delay = 1.5 ** (attempt + 1)  # Progressive delay: 1.5s, 2.25s, 3.38s
+                    print(f"🔄 Checkpoint alist operation failed (attempt {attempt + 1}): {str(e)}")
+                    print(f"🔄 Retrying alist operation in {delay:.1f}s...")
+                    await asyncio.sleep(delay)
+                    
+                    # Try to refresh connection pool on SSL/connection errors
+                    if any(keyword in error_msg for keyword in ["ssl", "connection"]):
+                        try:
+                            if hasattr(self.base_checkpointer, 'conn') and hasattr(self.base_checkpointer.conn, 'reset'):
+                                print(f"🔄 Attempting to reset connection pool...")
+                                await self.base_checkpointer.conn.reset()
+                        except Exception as reset_error:
+                            print(f"⚠ Connection reset failed: {reset_error}")
+                    
+                    continue
+                else:
+                    print(f"❌ Checkpoint alist operation failed after {attempt + 1} attempts: {str(e)}")
+                    raise
     
     def __getattr__(self, name):
         """Delegate other operations to base checkpointer."""
