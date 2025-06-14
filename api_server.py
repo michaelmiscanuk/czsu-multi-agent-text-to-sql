@@ -269,7 +269,7 @@ def get_current_user(authorization: str = Header(None)):
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
-    """Analyze request with robust error handling for checkpointer issues."""
+    """Analyze request with single execution - no retries at API level."""
     
     user_email = user.get("email")
     if not user_email:
@@ -277,68 +277,33 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     
     print(f"[FEEDBACK-FLOW] 📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
     
-    # Enhanced retry logic for handling database connection issues
-    max_retries = 3
-    for attempt in range(max_retries):
-        try:
-            print(f"[FEEDBACK-FLOW] 🔄 Getting healthy checkpointer (attempt {attempt + 1})")
-            checkpointer = await get_healthy_checkpointer()
-            
-            print(f"[FEEDBACK-FLOW] 🔄 Creating thread run entry (attempt {attempt + 1})")
-            run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
-            print(f"[FEEDBACK-FLOW] ✅ Generated new run_id: {run_id}")
-            
-            print(f"[FEEDBACK-FLOW] 🚀 Starting analysis (attempt {attempt + 1})")
-            result = await asyncio.wait_for(
-                analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
-                timeout=900  # Increased to 15 minutes to handle longer LangGraph operations
-            )
-            
-            result["run_id"] = run_id
-            print(f"[FEEDBACK-FLOW] 📤 Returning analysis result with run_id: {run_id}")
-            
-            return result
-            
-        except asyncio.TimeoutError:
-            print(f"[FEEDBACK-FLOW] ⏰ Analysis timed out (attempt {attempt + 1})")
-            if attempt < max_retries - 1:
-                print(f"[FEEDBACK-FLOW] 🔄 Retrying due to timeout...")
-                await asyncio.sleep(2 * (attempt + 1))  # Progressive delay
-                continue
-            else:
-                raise HTTPException(status_code=504, detail="Analysis timed out after multiple attempts")
-            
-        except Exception as e:
-            error_msg = str(e)
-            print(f"[FEEDBACK-FLOW] 🚨 Analysis error (attempt {attempt + 1}): {error_msg}")
-            
-            # Check if it's a recoverable database/connection error
-            is_recoverable_error = any(keyword in error_msg.lower() for keyword in [
-                "dbhandler exited",
-                "connection is lost", 
-                "flush request failed",
-                "pipeline mode",
-                "connection",
-                "pool",
-                "database",
-                "postgres"
-            ])
-            
-            if attempt < max_retries - 1 and is_recoverable_error:
-                delay = 2 ** (attempt + 1)  # Exponential backoff: 2s, 4s, 8s
-                print(f"[FEEDBACK-FLOW] 🔄 Retrying due to recoverable database error in {delay} seconds...")
-                await asyncio.sleep(delay)
-                
-                # Force recreation of checkpointer on database errors
-                global GLOBAL_CHECKPOINTER
-                if "dbhandler" in error_msg.lower() or "connection" in error_msg.lower():
-                    print(f"[FEEDBACK-FLOW] 🔄 Forcing checkpointer recreation due to connection issue...")
-                    GLOBAL_CHECKPOINTER = None
-                continue
-            
-            # Final attempt failed or non-recoverable error
-            print(f"[FEEDBACK-FLOW] ❌ Analysis failed after {attempt + 1} attempts")
-            raise HTTPException(status_code=500, detail=f"Analysis failed: {error_msg}")
+    try:
+        print(f"[FEEDBACK-FLOW] 🔄 Getting healthy checkpointer")
+        checkpointer = await get_healthy_checkpointer()
+        
+        print(f"[FEEDBACK-FLOW] 🔄 Creating thread run entry")
+        run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
+        print(f"[FEEDBACK-FLOW] ✅ Generated new run_id: {run_id}")
+        
+        print(f"[FEEDBACK-FLOW] 🚀 Starting analysis")
+        result = await asyncio.wait_for(
+            analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
+            timeout=900  # 15 minutes timeout for long operations
+        )
+        
+        print(f"[FEEDBACK-FLOW] ✅ Analysis completed successfully")
+        return {"response": result, "thread_id": request.thread_id, "run_id": run_id}
+        
+    except asyncio.TimeoutError:
+        error_msg = "Analysis timed out after 15 minutes"
+        print(f"[FEEDBACK-FLOW] 🚨 {error_msg}")
+        raise HTTPException(status_code=408, detail=error_msg)
+        
+    except Exception as e:
+        error_msg = f"Analysis failed: {str(e)}"
+        print(f"[FEEDBACK-FLOW] 🚨 {error_msg}")
+        print(f"[FEEDBACK-FLOW] 🔍 Error details: {type(e).__name__}: {str(e)}")
+        raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):

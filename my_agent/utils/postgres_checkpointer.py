@@ -73,21 +73,16 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     """Create a new connection pool with improved stability settings."""
     connection_string = get_connection_string()
     
-    # Use more conservative settings to improve connection stability
+    # Use simplified settings for maximum compatibility
     pool = AsyncConnectionPool(
         conninfo=connection_string,
-        max_size=3,  # Reduced from 5 to 3 for better stability
-        min_size=1,  # Reduced from 2 to 1 to be more conservative
-        timeout=60,  # Timeout for ACQUIRING a connection from pool (not for using it)
+        max_size=3,  # Allow concurrent connections
+        min_size=1,  # Start with one connection
+        timeout=60,  # Timeout for acquiring a connection from pool
         kwargs={
             "autocommit": True,
-            "prepare_threshold": None,  # Disable automatic prepared statements to avoid conflicts
-            "connect_timeout": 30,  # Timeout for establishing TCP connection to database
-            # Add connection stability improvements
-            "keepalives_idle": 300,  # Send keepalive every 5 minutes
-            "keepalives_interval": 30,  # Keepalive interval
-            "keepalives_count": 3,  # Number of keepalive probes
-            "tcp_user_timeout": 30000,  # TCP timeout in milliseconds
+            "prepare_threshold": None,  # Disable prepared statements
+            "connect_timeout": 30,  # Connection establishment timeout
         },
         open=False
     )
@@ -607,7 +602,12 @@ async def get_postgres_checkpointer():
             await setup_users_threads_runs_table()
             
             print(f"✅ Official PostgreSQL checkpointer initialized successfully (attempt {attempt + 1})")
-            return checkpointer
+            
+            # Wrap with resilient checkpointer to handle connection failures gracefully
+            resilient_checkpointer = ResilientPostgreSQLCheckpointer(checkpointer)
+            print(f"✅ Wrapped with resilient checkpointer for connection stability")
+            
+            return resilient_checkpointer
             
         except Exception as e:
             error_msg = str(e)
@@ -629,22 +629,18 @@ def get_sync_postgres_checkpointer():
     try:
         connection_string = get_connection_string()
         
-        # Create sync connection pool with conservative settings for stability
+        # Create sync connection pool with simplified settings for compatibility
         pool = ConnectionPool(
             conninfo=connection_string,
             max_size=3,  # Match async pool settings
             min_size=1,  # Match async pool settings
-            timeout=60,  # Timeout for ACQUIRING a connection from pool (not for using it)
+            timeout=60,  # Timeout for acquiring a connection from pool
             kwargs={
                 "autocommit": True,
-                "prepare_threshold": None,  # Disable automatic prepared statements to avoid conflicts
-                "connect_timeout": 30,  # Timeout for establishing TCP connection to database
-                # Add connection stability improvements
-                "keepalives_idle": 300,  # Send keepalive every 5 minutes
-                "keepalives_interval": 30,  # Keepalive interval
-                "keepalives_count": 3,  # Number of keepalive probes
-                "tcp_user_timeout": 30000,  # TCP timeout in milliseconds
-            }
+                "prepare_threshold": None,  # Disable prepared statements
+                "connect_timeout": 30,  # Connection establishment timeout
+            },
+            open=False
         )
         
         # Create checkpointer with the connection pool
@@ -989,6 +985,102 @@ async def test_connection_health():
     except Exception as e:
         print(f"❌ Database connection test failed: {e}")
         return False
+
+class ResilientPostgreSQLCheckpointer:
+    """
+    A wrapper around PostgreSQLCheckpointer that handles connection failures gracefully
+    by retrying only checkpoint operations, not the entire LangGraph execution.
+    """
+    
+    def __init__(self, base_checkpointer):
+        self.base_checkpointer = base_checkpointer
+        self.max_checkpoint_retries = 3
+        
+    async def _retry_checkpoint_operation(self, operation_name, operation_func, *args, **kwargs):
+        """Retry checkpoint operations with exponential backoff for connection issues."""
+        
+        for attempt in range(self.max_checkpoint_retries):
+            try:
+                return await operation_func(*args, **kwargs)
+                
+            except Exception as e:
+                error_msg = str(e).lower()
+                
+                # Check if it's a recoverable database connection error
+                is_recoverable = any(keyword in error_msg for keyword in [
+                    "dbhandler exited",
+                    "connection is lost",
+                    "ssl connection has been closed",
+                    "connection closed",
+                    "flush request failed",
+                    "pipeline mode",
+                    "connection not available",
+                    "bad connection"
+                ])
+                
+                if attempt < self.max_checkpoint_retries - 1 and is_recoverable:
+                    delay = 1.5 ** (attempt + 1)  # Progressive delay: 1.5s, 2.25s, 3.38s
+                    print(f"🔄 Checkpoint operation '{operation_name}' failed (attempt {attempt + 1}): {str(e)}")
+                    print(f"🔄 Retrying checkpoint operation in {delay:.1f}s...")
+                    await asyncio.sleep(delay)
+                    
+                    # Try to refresh connection pool on SSL/connection errors
+                    if any(keyword in error_msg for keyword in ["ssl", "connection"]):
+                        try:
+                            if hasattr(self.base_checkpointer, 'conn') and hasattr(self.base_checkpointer.conn, 'reset'):
+                                print(f"🔄 Attempting to reset connection pool...")
+                                await self.base_checkpointer.conn.reset()
+                        except Exception as reset_error:
+                            print(f"⚠ Connection reset failed: {reset_error}")
+                    
+                    continue
+                else:
+                    print(f"❌ Checkpoint operation '{operation_name}' failed after {attempt + 1} attempts: {str(e)}")
+                    raise
+        
+    async def aput(self, config, checkpoint, metadata, new_versions):
+        """Put checkpoint with retry logic."""
+        return await self._retry_checkpoint_operation(
+            "aput", 
+            self.base_checkpointer.aput,
+            config, checkpoint, metadata, new_versions
+        )
+        
+    async def aput_writes(self, config, writes, task_id):
+        """Put writes with retry logic."""
+        return await self._retry_checkpoint_operation(
+            "aput_writes",
+            self.base_checkpointer.aput_writes,
+            config, writes, task_id
+        )
+    
+    async def aget(self, config):
+        """Get checkpoint with retry logic."""
+        return await self._retry_checkpoint_operation(
+            "aget",
+            self.base_checkpointer.aget,
+            config
+        )
+        
+    async def aget_tuple(self, config):
+        """Get tuple with retry logic."""
+        return await self._retry_checkpoint_operation(
+            "aget_tuple", 
+            self.base_checkpointer.aget_tuple,
+            config
+        )
+        
+    async def alist(self, config, filter=None, before=None, limit=None):
+        """List checkpoints with retry logic."""
+        return await self._retry_checkpoint_operation(
+            "alist",
+            self.base_checkpointer.alist,
+            config, filter, before, limit
+        )
+    
+    def __getattr__(self, name):
+        """Delegate other operations to base checkpointer."""
+        return getattr(self.base_checkpointer, name)
 
 if __name__ == "__main__":
     async def test():
