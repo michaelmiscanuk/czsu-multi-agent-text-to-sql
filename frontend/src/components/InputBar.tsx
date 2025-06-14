@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent } from "react"
+import React, { ChangeEvent, FormEvent, forwardRef } from "react"
 
 interface InputBarProps {
     currentMessage: string;
@@ -7,7 +7,7 @@ interface InputBarProps {
     isLoading?: boolean;
 }
 
-const InputBar = ({ currentMessage, setCurrentMessage, onSubmit, isLoading = false }: InputBarProps) => {
+const InputBar = forwardRef<HTMLInputElement, InputBarProps>(({ currentMessage, setCurrentMessage, onSubmit, isLoading = false }, ref) => {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setCurrentMessage(e.target.value)
@@ -17,6 +17,7 @@ const InputBar = ({ currentMessage, setCurrentMessage, onSubmit, isLoading = fal
         <form onSubmit={onSubmit} className="p-4 bg-white">
             <div className="flex items-center bg-[#F9F9F5] rounded-full p-3 shadow-md border border-gray-200">
                 <input
+                    ref={ref}
                     type="text"
                     placeholder="Type a message"
                     aria-label="Type a message"
@@ -38,6 +39,8 @@ const InputBar = ({ currentMessage, setCurrentMessage, onSubmit, isLoading = fal
             </div>
         </form>
     )
-}
+})
+
+InputBar.displayName = 'InputBar'
 
 export default InputBar

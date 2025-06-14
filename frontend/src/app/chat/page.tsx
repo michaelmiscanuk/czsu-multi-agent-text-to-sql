@@ -587,6 +587,44 @@ export default function ChatPage() {
     }
   }, [currentMessage]);
 
+  // Focus input field when activeThreadId changes, threads are loaded, or component mounts
+  React.useEffect(() => {
+    const focusInput = () => {
+      if (inputRef.current) {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 100);
+      }
+    };
+
+    // Focus when activeThreadId changes (switching chats or creating new chat)
+    if (activeThreadId) {
+      focusInput();
+    }
+    // Focus when threads are loaded for the first time
+    else if (threadsLoaded && threads.length === 0) {
+      focusInput();
+    }
+    // Focus on initial mount when no active thread
+    else if (!activeThreadId && !cacheLoading && !threadsLoading) {
+      focusInput();
+    }
+  }, [activeThreadId, threadsLoaded, threads.length, cacheLoading, threadsLoading]);
+
+  // Focus input field when navigating back to chat page
+  React.useEffect(() => {
+    const focusInput = () => {
+      if (inputRef.current) {
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 200);
+      }
+    };
+
+    // Focus when component mounts (page navigation)
+    focusInput();
+  }, []);
+
   // UI
   return (
     <div className="chat-container flex w-full max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
