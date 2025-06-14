@@ -103,44 +103,87 @@ async def cleanup_checkpointer():
             GLOBAL_CHECKPOINTER = None
 
 async def get_healthy_checkpointer():
-    """Get a healthy checkpointer instance, recreating if necessary."""
+    """Get a healthy checkpointer instance, recreating if necessary with enhanced error handling."""
     global GLOBAL_CHECKPOINTER
     
     # Check if current checkpointer is healthy
     if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
         try:
-            # Check if the pool is closed (this is the key issue)
+            # Check if the pool is closed
             if hasattr(GLOBAL_CHECKPOINTER.conn, 'closed') and GLOBAL_CHECKPOINTER.conn.closed:
                 print(f"⚠ Checkpointer pool is closed, recreating...")
                 GLOBAL_CHECKPOINTER = None
             else:
-                # Quick health check
-                async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
-                    await conn.execute("SELECT 1")
-                return GLOBAL_CHECKPOINTER
+                # Enhanced health check with timeout
+                try:
+                    async with asyncio.wait_for(GLOBAL_CHECKPOINTER.conn.connection(), timeout=5) as conn:
+                        await asyncio.wait_for(conn.execute("SELECT 1"), timeout=5)
+                    print("✅ Existing checkpointer is healthy")
+                    return GLOBAL_CHECKPOINTER
+                except asyncio.TimeoutError:
+                    print("⚠ Checkpointer health check timed out, recreating...")
+                    GLOBAL_CHECKPOINTER = None
+                except Exception as health_error:
+                    print(f"⚠ Checkpointer health check failed: {health_error}")
+                    GLOBAL_CHECKPOINTER = None
         except Exception as e:
-            print(f"⚠ Checkpointer unhealthy, recreating: {e}")
-            # Try to cleanup old pool
-            try:
-                if GLOBAL_CHECKPOINTER.conn and not GLOBAL_CHECKPOINTER.conn.closed:
-                    await GLOBAL_CHECKPOINTER.conn.close()
-            except Exception as cleanup_error:
-                print(f"⚠ Error during cleanup: {cleanup_error}")
-            finally:
-                GLOBAL_CHECKPOINTER = None
+            print(f"⚠ Error checking checkpointer health: {e}")
+            GLOBAL_CHECKPOINTER = None
     
-    # Create new checkpointer
-    try:
-        print("🔄 Creating fresh checkpointer...")
-        GLOBAL_CHECKPOINTER = await get_postgres_checkpointer()
-        print("✅ Fresh checkpointer created successfully")
-        return GLOBAL_CHECKPOINTER
-    except Exception as e:
-        print(f"⚠ Failed to recreate checkpointer: {e}")
-        from langgraph.checkpoint.memory import InMemorySaver
-        GLOBAL_CHECKPOINTER = InMemorySaver()
-        print("⚠ Falling back to InMemorySaver")
-        return GLOBAL_CHECKPOINTER
+    # Cleanup old checkpointer if needed
+    if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
+        try:
+            if GLOBAL_CHECKPOINTER.conn and not GLOBAL_CHECKPOINTER.conn.closed:
+                print("🧹 Closing old checkpointer connection...")
+                await GLOBAL_CHECKPOINTER.conn.close()
+        except Exception as cleanup_error:
+            print(f"⚠ Error during cleanup: {cleanup_error}")
+        finally:
+            GLOBAL_CHECKPOINTER = None
+    
+    # Create new checkpointer with retries
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        try:
+            print(f"🔄 Creating fresh checkpointer (attempt {attempt + 1})...")
+            GLOBAL_CHECKPOINTER = await asyncio.wait_for(
+                get_postgres_checkpointer(), 
+                timeout=120  # 2 minute timeout for checkpointer creation
+            )
+            print(f"✅ Fresh checkpointer created successfully (attempt {attempt + 1})")
+            return GLOBAL_CHECKPOINTER
+            
+        except asyncio.TimeoutError:
+            print(f"❌ Timeout creating checkpointer (attempt {attempt + 1})")
+            if attempt < max_attempts - 1:
+                delay = 2 ** attempt  # Exponential backoff
+                print(f"🔄 Retrying in {delay} seconds...")
+                await asyncio.sleep(delay)
+            else:
+                print("❌ All checkpointer creation attempts timed out, falling back to InMemorySaver")
+                break
+                
+        except Exception as e:
+            error_msg = str(e)
+            print(f"❌ Failed to recreate checkpointer (attempt {attempt + 1}): {error_msg}")
+            
+            # Check if it's a recoverable error
+            if (attempt < max_attempts - 1 and 
+                ("connection" in error_msg.lower() or 
+                 "pool" in error_msg.lower() or
+                 "dbhandler" in error_msg.lower())):
+                delay = 2 ** attempt  # Exponential backoff
+                print(f"🔄 Retrying due to connection issue in {delay} seconds...")
+                await asyncio.sleep(delay)
+            else:
+                print("❌ Non-recoverable error or final attempt failed, falling back to InMemorySaver")
+                break
+    
+    # Fallback to InMemorySaver
+    from langgraph.checkpoint.memory import InMemorySaver
+    GLOBAL_CHECKPOINTER = InMemorySaver()
+    print("⚠ Falling back to InMemorySaver - persistence will be limited")
+    return GLOBAL_CHECKPOINTER
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -234,38 +277,68 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     
     print(f"[FEEDBACK-FLOW] 📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
     
-    # Retry logic for handling concurrent connection issues
-    max_retries = 2
+    # Enhanced retry logic for handling database connection issues
+    max_retries = 3
     for attempt in range(max_retries):
         try:
+            print(f"[FEEDBACK-FLOW] 🔄 Getting healthy checkpointer (attempt {attempt + 1})")
             checkpointer = await get_healthy_checkpointer()
             
             print(f"[FEEDBACK-FLOW] 🔄 Creating thread run entry (attempt {attempt + 1})")
             run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
             print(f"[FEEDBACK-FLOW] ✅ Generated new run_id: {run_id}")
             
-            result = await analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id)
+            print(f"[FEEDBACK-FLOW] 🚀 Starting analysis (attempt {attempt + 1})")
+            result = await asyncio.wait_for(
+                analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
+                timeout=900  # Increased to 15 minutes to handle longer LangGraph operations
+            )
             
             result["run_id"] = run_id
             print(f"[FEEDBACK-FLOW] 📤 Returning analysis result with run_id: {run_id}")
             
             return result
             
+        except asyncio.TimeoutError:
+            print(f"[FEEDBACK-FLOW] ⏰ Analysis timed out (attempt {attempt + 1})")
+            if attempt < max_retries - 1:
+                print(f"[FEEDBACK-FLOW] 🔄 Retrying due to timeout...")
+                await asyncio.sleep(2 * (attempt + 1))  # Progressive delay
+                continue
+            else:
+                raise HTTPException(status_code=504, detail="Analysis timed out after multiple attempts")
+            
         except Exception as e:
             error_msg = str(e)
             print(f"[FEEDBACK-FLOW] 🚨 Analysis error (attempt {attempt + 1}): {error_msg}")
             
-            # Check if it's a connection/pipeline related error and we have retries left
-            if (attempt < max_retries - 1 and 
-                ("pipeline mode" in error_msg.lower() or 
-                 "connection" in error_msg.lower() or 
-                 "pool" in error_msg.lower())):
-                print(f"[FEEDBACK-FLOW] 🔄 Retrying due to connection issue...")
-                await asyncio.sleep(0.1 * (attempt + 1))  # Small delay before retry
+            # Check if it's a recoverable database/connection error
+            is_recoverable_error = any(keyword in error_msg.lower() for keyword in [
+                "dbhandler exited",
+                "connection is lost", 
+                "flush request failed",
+                "pipeline mode",
+                "connection",
+                "pool",
+                "database",
+                "postgres"
+            ])
+            
+            if attempt < max_retries - 1 and is_recoverable_error:
+                delay = 2 ** (attempt + 1)  # Exponential backoff: 2s, 4s, 8s
+                print(f"[FEEDBACK-FLOW] 🔄 Retrying due to recoverable database error in {delay} seconds...")
+                await asyncio.sleep(delay)
+                
+                # Force recreation of checkpointer on database errors
+                global GLOBAL_CHECKPOINTER
+                if "dbhandler" in error_msg.lower() or "connection" in error_msg.lower():
+                    print(f"[FEEDBACK-FLOW] 🔄 Forcing checkpointer recreation due to connection issue...")
+                    GLOBAL_CHECKPOINTER = None
                 continue
             
             # Final attempt failed or non-recoverable error
-            raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
+            print(f"[FEEDBACK-FLOW] ❌ Analysis failed after {attempt + 1} attempts")
+            raise HTTPException(status_code=500, detail=f"Analysis failed: {error_msg}")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
