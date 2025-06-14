@@ -26,7 +26,7 @@ Processing Flow:
    - Loads environment variables (AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY)
    - Loads prompt template from file
    - Validates configuration parameters
-   - Sets up logging (both file and console) and metrics tracking
+   - Sets up console logging and metrics tracking
 
 2. Data Loading:
    - Loads input DataFrame from CSV file
@@ -92,12 +92,11 @@ Output Files:
 ------------
 1. output.csv: Human-readable results with visual separators
 2. selection_descriptions.db: SQLite database with processed records
-3. metadata_extraction.log: Detailed processing log with timestamps
 
 Error Handling:
 -------------
 - Individual record failures don't stop processing
-- All errors are logged to both console and file
+- All errors are logged to console
 - Failed records are tracked in metrics
 - Missing schema files are reported at completion
 - Database connection errors are handled gracefully
@@ -117,14 +116,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
-from functools import wraps
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Third-party imports
 import pandas as pd
 import sqlite3
 from dotenv import load_dotenv
-from tenacity import retry, stop_after_attempt, wait_exponential
 import tqdm as tqdm_module
 
 # Local imports

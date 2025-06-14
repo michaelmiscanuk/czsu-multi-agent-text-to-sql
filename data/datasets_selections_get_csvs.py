@@ -182,7 +182,6 @@ def fetch_json(url):
                      
     Raises:
         requests.exceptions.RequestException: For network-related errors
-        json.JSONDecodeError: For invalid JSON response data
         
     Note:
         - Implements 0.1 second delay between requests for rate limiting
@@ -219,11 +218,6 @@ def save_to_csv(df, filename):
         
     Returns:
         bool: True if the file was saved successfully, False if an error occurred
-        
-    Raises:
-        OSError: For file system related errors (permissions, disk space, etc.)
-        UnicodeEncodeError: For character encoding issues
-        pandas.errors.ParserError: For DataFrame serialization errors
         
     Note:
         - Uses UTF-8 encoding to handle international characters
@@ -278,12 +272,6 @@ def main():
     Returns:
         None: This function performs side effects (file creation, console output)
               but does not return a value
-              
-    Raises:
-        requests.exceptions.RequestException: For API communication failures
-        json.JSONDecodeError: For invalid API response data
-        pandas.errors.ParserError: For data conversion errors
-        OSError: For file system operation errors
         
     Note:
         - Uses nested progress bars for visual feedback
