@@ -45,8 +45,8 @@
       "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/agents/:path*"
     },
     {
-      "source": "/api/:path*",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/:path*"
+      "source": "/api/((?!auth).*)",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/$1"
     }
   ]
 }
