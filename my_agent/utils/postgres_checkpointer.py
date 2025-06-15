@@ -70,15 +70,22 @@ async def is_pool_healthy(pool: Optional[AsyncConnectionPool]) -> bool:
         return False
 
 async def create_fresh_connection_pool() -> AsyncConnectionPool:
-    """Create a new connection pool with improved stability settings."""
+    """Create a new connection pool with memory-optimized settings from environment variables."""
     connection_string = get_connection_string()
     
-    # Use simplified settings for maximum compatibility
+    # Get pool settings from environment variables (with fallback defaults)
+    max_size = int(os.getenv('POSTGRES_POOL_MAX', '3'))
+    min_size = int(os.getenv('POSTGRES_POOL_MIN', '1'))
+    timeout = int(os.getenv('POSTGRES_POOL_TIMEOUT', '60'))
+    
+    print(f"🔧 Creating connection pool with settings: max_size={max_size}, min_size={min_size}, timeout={timeout}")
+    
+    # Use memory-optimized settings
     pool = AsyncConnectionPool(
         conninfo=connection_string,
-        max_size=3,  # Allow concurrent connections
-        min_size=1,  # Start with one connection
-        timeout=60,  # Timeout for acquiring a connection from pool
+        max_size=max_size,  # From environment variable
+        min_size=min_size,  # From environment variable
+        timeout=timeout,    # From environment variable
         kwargs={
             "autocommit": True,
             "prepare_threshold": None,  # Disable prepared statements
@@ -90,7 +97,7 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     # Explicitly open the pool with longer timeout
     try:
         await asyncio.wait_for(pool.open(), timeout=60)  # Increased to 60 seconds
-        print("🔗 Created fresh PostgreSQL connection pool (max_size=3, min_size=1) with enhanced stability")
+        print(f"🔗 Created fresh PostgreSQL connection pool (max_size={max_size}, min_size={min_size}, timeout={timeout}) with memory optimization")
         return pool
     except asyncio.TimeoutError:
         print("❌ Timeout opening connection pool")
