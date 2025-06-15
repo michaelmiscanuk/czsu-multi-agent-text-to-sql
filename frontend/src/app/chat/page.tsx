@@ -87,6 +87,12 @@ export default function ChatPage() {
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
   
+  // Simple text persistence
+  const setCurrentMessageWithPersistence = (message: string) => {
+    setCurrentMessage(message);
+    localStorage.setItem('czsu-draft-message', message);
+  };
+
   // PostgreSQL API functions with new cache context
   const loadThreadsFromPostgreSQL = async () => {
     if (!userEmail) {
@@ -255,6 +261,13 @@ export default function ChatPage() {
     }
   }, [userEmail, status, clearCacheForUserChange]);
 
+  // NEW: Initialize currentMessage from localStorage when user authenticates
+  useEffect(() => {
+    if (userEmail && status === "authenticated") {
+      setCurrentMessage(localStorage.getItem('czsu-draft-message') || '');
+    }
+  }, [userEmail, status]);
+
   // NEW: Initialize user email in context and check for existing loading state
   useEffect(() => {
     if (userEmail && status === "authenticated") {
@@ -402,6 +415,7 @@ export default function ChatPage() {
     
     const messageText = currentMessage.trim();
     setCurrentMessage("");
+    localStorage.removeItem('czsu-draft-message'); // Clear saved draft
     
     // Set loading state in BOTH local and context to ensure persistence across navigation
     setIsLoading(true);
@@ -756,7 +770,7 @@ export default function ChatPage() {
               ref={inputRef}
               placeholder="Type your message here... (SHIFT+ENTER for new line)"
               value={currentMessage}
-              onChange={e => setCurrentMessage(e.target.value)}
+              onChange={e => setCurrentMessageWithPersistence(e.target.value)}
               onKeyDown={handleKeyDown}
               className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200 resize-none min-h-[48px] max-h-[200px]"
               disabled={isAnyLoading}

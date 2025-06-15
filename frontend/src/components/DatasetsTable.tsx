@@ -32,6 +32,7 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isRestored, setIsRestored] = useState(false);
 
   // Restore page and filter from localStorage on mount
   useEffect(() => {
@@ -41,7 +42,8 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
       const pageNum = Number(savedPage);
       if (!isNaN(pageNum)) setPage(pageNum);
     }
-    if (typeof savedFilter === 'string') setFilter(savedFilter);
+    if (savedFilter) setFilter(savedFilter);
+    setIsRestored(true);
   }, []);
 
   // Persist page and filter to localStorage
@@ -53,6 +55,9 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
   }, [filter]);
 
   useEffect(() => {
+    // Don't fetch data until localStorage restoration is complete
+    if (!isRestored) return;
+    
     console.log('[DatasetsTable] Session:', JSON.stringify(session, null, 2));
     setLoading(true);
     const handleError = (err: any) => {
@@ -94,7 +99,7 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
         })
         .catch(handleError);
     }
-  }, [page, filter, session?.id_token]);
+  }, [page, filter, session?.id_token, isRestored]);
 
   const totalPages = Math.ceil(total / 10);
 
