@@ -637,14 +637,13 @@ async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisStat
         return {"hybrid_search_results": [], "chromadb_missing": True}
 
     try:
-        chroma_vectorstore = get_langchain_chroma_vectorstore(
-            collection_name=CHROMA_COLLECTION_NAME,
-            chroma_db_path=str(CHROMA_DB_PATH),
-            embedding_model_name=EMBEDDING_DEPLOYMENT
-        )
-        debug_print(f"{HYBRID_SEARCH_NODE_ID}: ChromaDB vectorstore initialized")
+        # Use the same method as the test script to get ChromaDB collection directly
+        import chromadb
+        client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+        collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized directly")
         
-        hybrid_results = hybrid_search(chroma_vectorstore._collection, query, n_results=n_results)
+        hybrid_results = hybrid_search(collection, query, n_results=n_results)
         debug_print(f"{HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results")
         
         # Convert dict results to Document objects for compatibility
@@ -726,9 +725,9 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
         return {"most_similar_selections": []}
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Select the top 3 reranked selections if their Cohere relevance score exceeds the threshold (0.0005)."""
+    """Node: Select the top 3 reranked selections if their Cohere relevance score exceeds the threshold (0.005)."""
     debug_print(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
-    SIMILARITY_THRESHOLD = 0.0005  # Minimum Cohere rerank score required
+    SIMILARITY_THRESHOLD = 0.005  # Minimum Cohere rerank score required
     most_similar = state.get("most_similar_selections", [])
     # Select up to 3 top selections above threshold
     top_selection_codes = [sel for sel, score in most_similar if sel is not None and score is not None and score >= SIMILARITY_THRESHOLD][:3]

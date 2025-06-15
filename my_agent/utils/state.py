@@ -61,7 +61,7 @@ class DataAnalysisState(TypedDict):
     queries_and_results: Annotated[List[Tuple[str, str]], limited_queries_reducer]  # Collection of executed queries and their results with limited reducer
     reflection_decision: str  # Last decision from the reflection node: "improve" or "answer"
     hybrid_search_results: List[Document]  # Intermediate hybrid search results before reranking (uses default replacement behavior)
-    most_similar_selections: Annotated[List[Tuple[str, float]], add]  # List of (selection_code, cohere_rerank_score) after reranking
+    most_similar_selections: List[Tuple[str, float]]  # List of (selection_code, cohere_rerank_score) after reranking
     top_selection_codes: List[str]  # List of top N selection codes (e.g., top 3)
     chromadb_missing: bool  # True if ChromaDB directory is missing, else False or not present
     final_answer: str  # Explicitly tracked final formatted answer string

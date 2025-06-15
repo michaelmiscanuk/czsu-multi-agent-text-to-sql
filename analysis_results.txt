@@ -50922,3 +50922,148 @@ GROUP BY `Území podle okresů`
 ORDER BY `Počet obyvatel` DESC;
   Result: [('Česká republika', 33858354), ('Jihovýchod', 5453642), ('Severovýchod', 4738258), ('Středočeský kraj', 4617546), ('Střední Čechy', 4617546), ('Praha', 4310642), ('Hlavní město Praha', 4310642), ('Jihozápad', 3875800), ('Jihomoravský kraj', 3873184), ('Střední Morava', 3759616), ('Moravskoslezský kraj', 3691082), ('Moravskoslezsko', 3691082), ('Severozápad', 3411768), ('Ústecký kraj', 2528438), ('Jihočeský kraj', 2011222), ('Olomoucký kraj', 1974290), ('Plzeňský kraj', 1864578), ('Zlínský kraj', 1785326), ('Královéhradecký kraj', 1707270), ('Pardubický kraj', 1633098), ('Kraj Vysočina', 1580458), ('Liberecký kraj', 1397890), ('Karlovarský kraj', 883330)]
 ----------------------------------------------------------------------------
+Prompt: kolik bylo svateb v poslednich letech?
+Result: V posledních letech bylo uzavřeno následující množství svateb v Česku:
+
+- 2024: 44486
+- 2023: 48268
+- 2022: 54820
+- 2021: 46778
+- 2020: 45415
+- 2019: 54870
+- 2018: 54470
+- 2017: 52567
+- 2016: 50768
+- 2015: 48191
+
+Celkově se počet svateb v posledních letech měnil, s nejvyšším počtem v roce 2022 a poklesem v následujících letech.
+Queries and Results:
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages` 
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT `Roky`, 
+       SUM(`value`) AS `Total Marriages`, 
+       LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Previous Year Marriages`,
+       (SUM(`value`) - LAG(SUM(`value`)) OVER (ORDER BY `Roky`)) / LAG(SUM(`value`)) OVER (ORDER BY `Roky`) * 100 AS `Percentage Change`
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC;
+  Result: [(2024, 44486.0, 48268.0, -7.835418911079804), (2023, 48268.0, 54820.0, -11.951842393287121), (2022, 54820.0, 46778.0, 17.191842319038862), (2021, 46778.0, 45415.0, 3.0012110536166463), (2020, 45415.0, 54870.0, -17.231638418079097), (2019, 54870.0, 54470.0, 0.7343491830365338), (2018, 54470.0, 52567.0, 3.6201419141286357), (2017, 52567.0, 50768.0, 3.5435707532303815), (2016, 50768.0, 48191.0, 5.347471519578344), (2015, 48191.0, None, None)]
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages` 
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT `Roky`, 
+       SUM(`value`) AS `Total Marriages`, 
+       LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Previous Year Marriages`,
+       (SUM(`value`) - LAG(SUM(`value`)) OVER (ORDER BY `Roky`)) / LAG(SUM(`value`)) OVER (ORDER BY `Roky`) * 100 AS `Percentage Change`
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC;
+  Result: [(2024, 44486.0, 48268.0, -7.835418911079804), (2023, 48268.0, 54820.0, -11.951842393287121), (2022, 54820.0, 46778.0, 17.191842319038862), (2021, 46778.0, 45415.0, 3.0012110536166463), (2020, 45415.0, 54870.0, -17.231638418079097), (2019, 54870.0, 54470.0, 0.7343491830365338), (2018, 54470.0, 52567.0, 3.6201419141286357), (2017, 52567.0, 50768.0, 3.5435707532303815), (2016, 50768.0, 48191.0, 5.347471519578344), (2015, 48191.0, None, None)]
+----------------------------------------------------------------------------
+Prompt: kolik bylo svateb v poslednich letech?
+Result: V posledních letech bylo uzavřeno následující množství svateb v Česku:
+
+- 2024: 44486
+- 2023: 48268
+- 2022: 54820
+- 2021: 46778
+- 2020: 45415
+- 2019: 54870
+- 2018: 54470
+- 2017: 52567
+- 2016: 50768
+- 2015: 48191
+
+Celkový trend ukazuje na kolísání počtu svateb, s nejvyšším počtem v roce 2022 a poklesem v roce 2024.
+Queries and Results:
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages`
+FROM WOBY05A
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky'
+GROUP BY `Roky`
+ORDER BY `Roky` DESC
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages`, 
+       LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Previous Year Total`,
+       (SUM(`value`) - LAG(SUM(`value`)) OVER (ORDER BY `Roky`)) / LAG(SUM(`value`)) OVER (ORDER BY `Roky`) * 100 AS `Percentage Change`
+FROM WOBY05A
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' AND `Roky` BETWEEN 2010 AND 2014
+GROUP BY `Roky`
+ORDER BY `Roky` DESC;
+  Result: No results found
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages`
+FROM WOBY05A
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky'
+GROUP BY `Roky`
+ORDER BY `Roky` DESC
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages`, 
+       LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Previous Year Total`,
+       (SUM(`value`) - LAG(SUM(`value`)) OVER (ORDER BY `Roky`)) / LAG(SUM(`value`)) OVER (ORDER BY `Roky`) * 100 AS `Percentage Change`
+FROM WOBY05A
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' AND `Roky` BETWEEN 2010 AND 2014
+GROUP BY `Roky`
+ORDER BY `Roky` DESC;
+  Result: No results found
+----------------------------------------------------------------------------
+Prompt: kolik bylo svateb v poslednich letech?
+Result: V posledních letech se konalo následující množství svateb v Česku:
+
+- 2024: 44486
+- 2023: 48268
+- 2022: 54820
+- 2021: 46778
+- 2020: 45415
+- 2019: 54870
+- 2018: 54470
+- 2017: 52567
+- 2016: 50768
+- 2015: 48191
+
+Celkový trend ukazuje na pokles počtu svateb v posledních dvou letech.
+Queries and Results:
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages` 
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages`, 
+       LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Previous Year Total`,
+       SUM(`value`) - LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Yearly Change`
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC 
+LIMIT 20;
+  Result: [(2024, 44486.0, 48268.0, -3782.0), (2023, 48268.0, 54820.0, -6552.0), (2022, 54820.0, 46778.0, 8042.0), (2021, 46778.0, 45415.0, 1363.0), (2020, 45415.0, 54870.0, -9455.0), (2019, 54870.0, 54470.0, 400.0), (2018, 54470.0, 52567.0, 1903.0), (2017, 52567.0, 50768.0, 1799.0), (2016, 50768.0, 48191.0, 2577.0), (2015, 48191.0, None, None)]
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages` 
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC 
+LIMIT 10;
+  Result: [(2024, 44486.0), (2023, 48268.0), (2022, 54820.0), (2021, 46778.0), (2020, 45415.0), (2019, 54870.0), (2018, 54470.0), (2017, 52567.0), (2016, 50768.0), (2015, 48191.0)]
+  Query: SELECT `Roky`, SUM(`value`) AS `Total Marriages`, 
+       LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Previous Year Total`,
+       SUM(`value`) - LAG(SUM(`value`)) OVER (ORDER BY `Roky`) AS `Yearly Change`
+FROM WOBY05A 
+WHERE `Území` = 'Česko' AND `Ukazatel` = 'Sňatky' 
+GROUP BY `Roky` 
+ORDER BY `Roky` DESC 
+LIMIT 20;
+  Result: [(2024, 44486.0, 48268.0, -3782.0), (2023, 48268.0, 54820.0, -6552.0), (2022, 54820.0, 46778.0, 8042.0), (2021, 46778.0, 45415.0, 1363.0), (2020, 45415.0, 54870.0, -9455.0), (2019, 54870.0, 54470.0, 400.0), (2018, 54470.0, 52567.0, 1903.0), (2017, 52567.0, 50768.0, 1799.0), (2016, 50768.0, 48191.0, 2577.0), (2015, 48191.0, None, None)]
+----------------------------------------------------------------------------

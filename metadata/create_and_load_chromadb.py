@@ -979,7 +979,9 @@ if __name__ == "__main__":
         # Test query - same as used in agent
         # QUERY = "Jaký je počet obytných domů vlastněných bytovými družstvy?"
         # QUERY = "Compare married and divorced people in the Czech Republic"
-        QUERY = "Kolik lidi zije na Marzu?"
+        # QUERY = "Kolik lidi zije na Marzu?"
+        # QUERY = "kolik bylo svateb v poslednich letech?"
+        QUERY = "Kolik svateb se konalo v posledních letech?"
         k = 60
 
         print(f"\n🔍 Testing Agent Workflow with query: '{QUERY}'")
