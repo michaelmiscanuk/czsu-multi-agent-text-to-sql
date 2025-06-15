@@ -29,7 +29,8 @@ from .utils.nodes import (
     save_node,
     reflect_node,
     MAX_ITERATIONS,
-    retrieve_similar_selections_node,
+    retrieve_similar_selections_hybrid_search_node,
+    rerank_node,
     relevant_selections_node,
     debug_print,
     rewrite_query_node,
@@ -71,7 +72,8 @@ def create_graph(checkpointer=None):
     # Add nodes - each handling a specific step in the process
     #--------------------------------------------------------------------------
     graph.add_node("rewrite_query", rewrite_query_node)
-    graph.add_node("retrieve_similar_selections", retrieve_similar_selections_node)
+    graph.add_node("retrieve_similar_selections_hybrid_search", retrieve_similar_selections_hybrid_search_node)
+    graph.add_node("rerank", rerank_node)
     graph.add_node("relevant_selections", relevant_selections_node)
     graph.add_node("get_schema", get_schema_node)
     graph.add_node("query_gen", query_node)
@@ -87,11 +89,12 @@ def create_graph(checkpointer=None):
     #--------------------------------------------------------------------------
     # Define the graph execution path
     #--------------------------------------------------------------------------
-    # Start: prompt -> rewrite_query -> summarize_messages -> retrieve -> relevant
+    # Start: prompt -> rewrite_query -> summarize_messages -> retrieve -> rerank -> relevant
     graph.add_edge(START, "rewrite_query")
     graph.add_edge("rewrite_query", "summarize_messages_rewrite")
-    graph.add_edge("summarize_messages_rewrite", "retrieve_similar_selections")
-    graph.add_edge("retrieve_similar_selections", "relevant_selections")
+    graph.add_edge("summarize_messages_rewrite", "retrieve_similar_selections_hybrid_search")
+    graph.add_edge("retrieve_similar_selections_hybrid_search", "rerank")
+    graph.add_edge("rerank", "relevant_selections")
 
     # Conditional edge from relevant_selections
     def route_after_relevant(state: DataAnalysisState):

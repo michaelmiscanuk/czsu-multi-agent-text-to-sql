@@ -516,7 +516,7 @@ export default function ChatPage() {
         id: loadingMessageId,
         threadId: currentThreadId,
         user: 'assistant',
-        content: data.result || 'No response received',
+        content: data.result,
         isUser: false,
         createdAt: Date.now(),
         isLoading: false,

@@ -26141,5 +26141,411 @@
         "result": "[(0, 'Rok sčítání', 'INTEGER', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Počet obytných místností', 'TEXT', 0, None, 0), (4, 'value', 'INTEGER', 0, None, 0)]"
       }
     ]
+  },
+  {
+    "prompt": "jaky je pocet obytnych domu vlastneny bytovymi drzustvy?",
+    "result": "Není k dispozici žádný výsledek pro počet obytných domů vlastněných bytovými družstvy.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obytne_domy FROM SLD025T02A WHERE Ukazatel = 'Počet  obydlených bytů' AND Území LIKE '%bytovými družstvy%' AND Rok_sčítání = 2021;",
+        "result": "Error: Query error: no such column: Rok_sčítání"
+      },
+      {
+        "query": "PRAGMA table_info(SLD025T02A);",
+        "result": "[(0, 'Rok sčítání', 'INTEGER', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Počet obytných místností', 'TEXT', 0, None, 0), (4, 'value', 'INTEGER', 0, None, 0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obytne_domy FROM SLD025T02A WHERE Ukazatel = 'Počet  obydlených bytů' AND Území LIKE '%bytovými družstvy%' AND Rok_sčítání = 2021;",
+        "result": "Error: Query error: no such column: Rok_sčítání"
+      },
+      {
+        "query": "PRAGMA table_info(SLD025T02A);",
+        "result": "[(0, 'Rok sčítání', 'INTEGER', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Počet obytných místností', 'TEXT', 0, None, 0), (4, 'value', 'INTEGER', 0, None, 0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "jaky je pocet obytnych domu vlastneny bytovymi drzustvy?",
+    "result": "Není k dispozici žádný údaj o počtu obytných domů vlastněných bytovými družstvy.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obytne_domy FROM dataset WHERE \"Ukazatel\" LIKE '%bytovými družstvy%' AND \"Roky\" = '2022';",
+        "result": "Error: Query error: no such table: dataset"
+      },
+      {
+        "query": "PRAGMA table_info(STAV799AT1);",
+        "result": "[(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Roky', 'INTEGER', 0, None, 0), (2, 'ČR, kraje, okresy', 'TEXT', 0, None, 0), (3, 'Počet obytných místnosti', 'TEXT', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obytne_domy FROM dataset WHERE \"Ukazatel\" LIKE '%bytovými družstvy%' AND \"Roky\" = '2022';",
+        "result": "Error: Query error: no such table: dataset"
+      },
+      {
+        "query": "PRAGMA table_info(STAV799AT1);",
+        "result": "[(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Roky', 'INTEGER', 0, None, 0), (2, 'ČR, kraje, okresy', 'TEXT', 0, None, 0), (3, 'Počet obytných místnosti', 'TEXT', 0, None, 0), (4, 'value', 'REAL', 0, None, 0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "jaky je pocet obytnych domu vlastneny bytovymi drzustvy?",
+    "result": "Není možné určit počet obytných domů vlastněných bytovými družstvy, protože dotaz obsahoval chybu a neexistuje sloupec \"Rok_sčítání\".",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(value) AS pocet_obydlenych_domu FROM SLD019T02 WHERE Ukazatel = \"Počet obydlených domů\" AND Rok_sčítání = \"2021\" AND Druh_vlastnictví = \"Bytové družstvo\";",
+        "result": "Error: Query error: no such column: Rok_sčítání"
+      },
+      {
+        "query": "PRAGMA table_info(SLD019T02);",
+        "result": "[(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Rok sčítání', 'INTEGER', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Druh vlastnictví', 'TEXT', 0, None, 0), (4, 'value', 'INTEGER', 0, None, 0)]"
+      },
+      {
+        "query": "SELECT SUM(value) AS pocet_obydlenych_domu FROM SLD019T02 WHERE Ukazatel = \"Počet obydlených domů\" AND Rok_sčítání = \"2021\" AND Druh_vlastnictví = \"Bytové družstvo\";",
+        "result": "Error: Query error: no such column: Rok_sčítání"
+      },
+      {
+        "query": "PRAGMA table_info(SLD019T02);",
+        "result": "[(0, 'Ukazatel', 'TEXT', 0, None, 0), (1, 'Rok sčítání', 'INTEGER', 0, None, 0), (2, 'Území', 'TEXT', 0, None, 0), (3, 'Druh vlastnictví', 'TEXT', 0, None, 0), (4, 'value', 'INTEGER', 0, None, 0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "jaky je pocet obytnych domu vlastneny bytovymi drzustvy?",
+    "result": "Počet obytných domů vlastněných bytovými družstvy v České republice je 13230.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(`value`) AS `Počet obydlených domů` \nFROM `SLD019T02` \nWHERE `Ukazatel` = 'Počet obydlených domů' \n  AND `Druh vlastnictví` = 'Bytové družstvo' \n  AND `Rok sčítání` = '2021' \n  AND `Území` = 'Česká republika';",
+        "result": "13230"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obydlených domů` \nFROM `SLD019T02` \nWHERE `Ukazatel` = 'Počet obydlených domů' \n  AND `Druh vlastnictví` = 'Bytové družstvo' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území`\nORDER BY SUM(`value`) DESC\nLIMIT 10;",
+        "result": "[('Česká republika', 13230), ('Hlavní město Praha', 2959), ('Moravskoslezský kraj', 2622), ('Ústecký kraj', 2137), ('Středočeský kraj', 1039), ('Jihočeský kraj', 907), ('Jihomoravský kraj', 724), ('Kraj Vysočina', 613), ('Olomoucký kraj', 524), ('Královéhradecký kraj', 491)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Počet obydlených domů` \nFROM `SLD019T02` \nWHERE `Ukazatel` = 'Počet obydlených domů' \n  AND `Druh vlastnictví` = 'Bytové družstvo' \n  AND `Rok sčítání` = '2021' \n  AND `Území` = 'Česká republika';",
+        "result": "13230"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obydlených domů` \nFROM `SLD019T02` \nWHERE `Ukazatel` = 'Počet obydlených domů' \n  AND `Druh vlastnictví` = 'Bytové družstvo' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území`\nORDER BY SUM(`value`) DESC\nLIMIT 10;",
+        "result": "[('Česká republika', 13230), ('Hlavní město Praha', 2959), ('Moravskoslezský kraj', 2622), ('Ústecký kraj', 2137), ('Středočeský kraj', 1039), ('Jihočeský kraj', 907), ('Jihomoravský kraj', 724), ('Kraj Vysočina', 613), ('Olomoucký kraj', 524), ('Královéhradecký kraj', 491)]"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "V Praze žije 14885228 lidí podle počtu hostů. Počet obyvatel není k dispozici.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(`value`) AS `Počet lidí` \nFROM `CRU02RDMOT2` \nWHERE `Roky` = '2023' \n  AND `Ukazatel` = 'Počet hostů' \n  AND `Rezidence` = 'Celkem' \n  AND `Oblasti destinačního managementu nečleněné` = 'Praha';",
+        "result": "14885228.0"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Počet obyvatel` \nFROM `CRU02RDMOT2` \nWHERE `Roky` = '2023' \n  AND `Ukazatel` = 'Počet obyvatel' \n  AND `Rezidence` = 'Celkem' \n  AND `Oblasti destinačního managementu nečleněné` = 'Praha';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Počet lidí` \nFROM `CRU02RDMOT2` \nWHERE `Roky` = '2023' \n  AND `Ukazatel` = 'Počet hostů' \n  AND `Rezidence` = 'Celkem' \n  AND `Oblasti destinačního managementu nečleněné` = 'Praha';",
+        "result": "14885228.0"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Počet obyvatel` \nFROM `CRU02RDMOT2` \nWHERE `Roky` = '2023' \n  AND `Ukazatel` = 'Počet obyvatel' \n  AND `Rezidence` = 'Celkem' \n  AND `Oblasti destinačního managementu nečleněné` = 'Praha';",
+        "result": "None"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "V Praze žije 28113 lidí, což je počet uchazečů o zaměstnání v evidenci úřadu práce. Není k dispozici celkový počet obyvatel.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(`value`) AS `Population` FROM `WREG0304` WHERE `Území` = 'Hlavní město Praha' AND `Ukazatel` = 'Uchazeči o zaměstnání v evidenci úřadu práce - celkem';",
+        "result": "28113"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Total_Population` FROM `PopulationData` WHERE `City` = 'Prague';",
+        "result": "Error: Query error: no such table: PopulationData"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` FROM `WREG0304` WHERE `Území` = 'Hlavní město Praha' AND `Ukazatel` = 'Uchazeči o zaměstnání v evidenci úřadu práce - celkem';",
+        "result": "28113"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Total_Population` FROM `PopulationData` WHERE `City` = 'Prague';",
+        "result": "Error: Query error: no such table: PopulationData"
+      }
+    ]
+  },
+  {
+    "prompt": "kolik lidi zije v praze?",
+    "result": "V Praze žije 1301432 lidí.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      }
+    ]
+  },
+  {
+    "prompt": "a kolik v brne?",
+    "result": "Populace Brna v roce 2021 není dostupná, protože nebyly nalezeny žádné výsledky pro tuto lokalitu.",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Populace Brna` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` LIKE '%Brno%' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT DISTINCT `Území podle okresů` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021';",
+        "result": "[('Česká republika',), ('Praha',), ('Střední Čechy',), ('Jihozápad',), ('Severozápad',), ('Severovýchod',), ('Jihovýchod',), ('Střední Morava',), ('Moravskoslezsko',), ('Hlavní město Praha',), ('Středočeský kraj',), ('Jihočeský kraj',), ('Plzeňský kraj',), ('Karlovarský kraj',), ('Ústecký kraj',), ('Liberecký kraj',), ('Královéhradecký kraj',), ('Pardubický kraj',), ('Kraj Vysočina',), ('Jihomoravský kraj',), ('Olomoucký kraj',), ('Zlínský kraj',), ('Moravskoslezský kraj',)]"
+      }
+    ]
+  },
+  {
+    "prompt": "tak mi dej rozdeleni podle kraju.",
+    "result": "Rozdělení podle krajů pro rok 2021 je následující:\n\n1. Jihovýchod: 5453642\n2. Severovýchod: 4738258\n3. Středočeský kraj: 4617546\n4. Střední Čechy: 4617546\n5. Praha: 4310642\n6. Hlavní město Praha: 4310642\n7. Jihozápad: 3875800\n8. Jihomoravský kraj: 3873184\n9. Střední Morava: 3759616\n10. Moravskoslezský kraj: 3691082\n11. Moravskoslezsko: 3691082\n12. Severozápad: 3411768\n13. Ústecký kraj: 2528438\n14. Jihočeský kraj: 2011222\n15. Olomoucký kraj: 1974290\n16. Plzeňský kraj: 1864578\n17. Zlínský kraj: 1785326\n18. Královéhradecký kraj: 1707270\n19. Pardubický kraj: 1633098\n20. Kraj Vysočina: 1580458\n21. Liberecký kraj: 1397890\n22. Karlovarský kraj: 883330",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Populace Brna` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` LIKE '%Brno%' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT DISTINCT `Území podle okresů` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021';",
+        "result": "[('Česká republika',), ('Praha',), ('Střední Čechy',), ('Jihozápad',), ('Severozápad',), ('Severovýchod',), ('Jihovýchod',), ('Střední Morava',), ('Moravskoslezsko',), ('Hlavní město Praha',), ('Středočeský kraj',), ('Jihočeský kraj',), ('Plzeňský kraj',), ('Karlovarský kraj',), ('Ústecký kraj',), ('Liberecký kraj',), ('Královéhradecký kraj',), ('Pardubický kraj',), ('Kraj Vysočina',), ('Jihomoravský kraj',), ('Olomoucký kraj',), ('Zlínský kraj',), ('Moravskoslezský kraj',)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Population` \nFROM SLD0100T2 \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` NOT LIKE 'Česká republika%' \nGROUP BY `Území podle okresů` \nORDER BY `Population` DESC \nLIMIT 10;",
+        "result": "[('Jihovýchod', 5453642), ('Severovýchod', 4738258), ('Středočeský kraj', 4617546), ('Střední Čechy', 4617546), ('Praha', 4310642), ('Hlavní město Praha', 4310642), ('Jihozápad', 3875800), ('Jihomoravský kraj', 3873184), ('Střední Morava', 3759616), ('Moravskoslezský kraj', 3691082)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Population` \nFROM SLD0100T2 \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` NOT LIKE 'Česká republika%' \nGROUP BY `Území podle okresů` \nORDER BY `Population` DESC;",
+        "result": "[('Jihovýchod', 5453642), ('Severovýchod', 4738258), ('Středočeský kraj', 4617546), ('Střední Čechy', 4617546), ('Praha', 4310642), ('Hlavní město Praha', 4310642), ('Jihozápad', 3875800), ('Jihomoravský kraj', 3873184), ('Střední Morava', 3759616), ('Moravskoslezský kraj', 3691082), ('Moravskoslezsko', 3691082), ('Severozápad', 3411768), ('Ústecký kraj', 2528438), ('Jihočeský kraj', 2011222), ('Olomoucký kraj', 1974290), ('Plzeňský kraj', 1864578), ('Zlínský kraj', 1785326), ('Královéhradecký kraj', 1707270), ('Pardubický kraj', 1633098), ('Kraj Vysočina', 1580458), ('Liberecký kraj', 1397890), ('Karlovarský kraj', 883330)]"
+      }
+    ]
+  },
+  {
+    "prompt": "dej mi rozdeleni obyvatelstva podle kraju. Pouzij tento dataset: SLD0100T2",
+    "result": "Rozdělení obyvatelstva podle krajů pro rok 2021 je následující:\n\n1. Jihovýchod: 1695312\n2. Severovýchod: 1483560\n3. Středočeský kraj: 1415463\n4. Střední Čechy: 1415463\n5. Praha: 1301432\n6. Hlavní město Praha: 1301432\n7. Jihozápad: 1213239\n8. Jihomoravský kraj: 1197651\n9. Střední Morava: 1184119\n10. Moravskoslezský kraj: 1162841\n\nDalší kraje a jejich populace:\n\n11. Moravskoslezsko: 1162841\n12. Severozápad: 1068201\n13. Ústecký kraj: 789098\n14. Jihočeský kraj: 631803\n15. Olomoucký kraj: 619788\n16. Plzeňský kraj: 581436\n17. Zlínský kraj: 564331\n18. Královéhradecký kraj: 538303\n19. Pardubický kraj: 510037\n20. Kraj Vysočina: 497661\n21. Liberecký kraj: 435220\n22. Karlovarský kraj: 279103",
+    "queries_and_results": [
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "1301432"
+      },
+      {
+        "query": "SELECT `Pohlaví`, SUM(`value`) AS `Population` \nFROM `SLD0100T2` \nWHERE `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` = 'Hlavní město Praha' \n  AND `Věkové skupiny (desetiletky)` = 'celkem'\n  AND `Rok sčítání` = '2021'\nGROUP BY `Pohlaví`;",
+        "result": "[('celkem', 1301432), ('muž', 633449), ('žena', 667983)]"
+      },
+      {
+        "query": "SELECT SUM(`value`) AS `Populace Brna` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` LIKE '%Brno%' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem';",
+        "result": "None"
+      },
+      {
+        "query": "SELECT DISTINCT `Území podle okresů` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021';",
+        "result": "[('Česká republika',), ('Praha',), ('Střední Čechy',), ('Jihozápad',), ('Severozápad',), ('Severovýchod',), ('Jihovýchod',), ('Střední Morava',), ('Moravskoslezsko',), ('Hlavní město Praha',), ('Středočeský kraj',), ('Jihočeský kraj',), ('Plzeňský kraj',), ('Karlovarský kraj',), ('Ústecký kraj',), ('Liberecký kraj',), ('Královéhradecký kraj',), ('Pardubický kraj',), ('Kraj Vysočina',), ('Jihomoravský kraj',), ('Olomoucký kraj',), ('Zlínský kraj',), ('Moravskoslezský kraj',)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Population` \nFROM SLD0100T2 \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` NOT LIKE 'Česká republika%' \nGROUP BY `Území podle okresů` \nORDER BY `Population` DESC \nLIMIT 10;",
+        "result": "[('Jihovýchod', 5453642), ('Severovýchod', 4738258), ('Středočeský kraj', 4617546), ('Střední Čechy', 4617546), ('Praha', 4310642), ('Hlavní město Praha', 4310642), ('Jihozápad', 3875800), ('Jihomoravský kraj', 3873184), ('Střední Morava', 3759616), ('Moravskoslezský kraj', 3691082)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Population` \nFROM SLD0100T2 \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` NOT LIKE 'Česká republika%' \nGROUP BY `Území podle okresů` \nORDER BY `Population` DESC;",
+        "result": "[('Jihovýchod', 5453642), ('Severovýchod', 4738258), ('Středočeský kraj', 4617546), ('Střední Čechy', 4617546), ('Praha', 4310642), ('Hlavní město Praha', 4310642), ('Jihozápad', 3875800), ('Jihomoravský kraj', 3873184), ('Střední Morava', 3759616), ('Moravskoslezský kraj', 3691082), ('Moravskoslezsko', 3691082), ('Severozápad', 3411768), ('Ústecký kraj', 2528438), ('Jihočeský kraj', 2011222), ('Olomoucký kraj', 1974290), ('Plzeňský kraj', 1864578), ('Zlínský kraj', 1785326), ('Královéhradecký kraj', 1707270), ('Pardubický kraj', 1633098), ('Kraj Vysočina', 1580458), ('Liberecký kraj', 1397890), ('Karlovarský kraj', 883330)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Population`\nFROM SLD0100T2\nWHERE `Rok sčítání` = '2021' AND `Ukazatel` = 'Obyvatelstvo' AND `Pohlaví` = 'celkem' AND `Věkové skupiny (desetiletky)` = 'celkem' AND `Území podle okresů` NOT LIKE 'Česká republika%'\nGROUP BY `Území podle okresů`\nORDER BY `Population` DESC;",
+        "result": "[('Jihovýchod', 1695312), ('Severovýchod', 1483560), ('Středočeský kraj', 1415463), ('Střední Čechy', 1415463), ('Praha', 1301432), ('Hlavní město Praha', 1301432), ('Jihozápad', 1213239), ('Jihomoravský kraj', 1197651), ('Střední Morava', 1184119), ('Moravskoslezský kraj', 1162841), ('Moravskoslezsko', 1162841), ('Severozápad', 1068201), ('Ústecký kraj', 789098), ('Jihočeský kraj', 631803), ('Olomoucký kraj', 619788), ('Plzeňský kraj', 581436), ('Zlínský kraj', 564331), ('Královéhradecký kraj', 538303), ('Pardubický kraj', 510037), ('Kraj Vysočina', 497661), ('Liberecký kraj', 435220), ('Karlovarský kraj', 279103)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Populace` \nFROM `SLD0100T2` \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Pohlaví` = 'celkem' \n  AND `Věkové skupiny (desetiletky)` = 'celkem' \n  AND `Území podle okresů` NOT LIKE 'Česká republika%' \nGROUP BY `Území podle okresů` \nORDER BY `Populace` DESC \nLIMIT 10;",
+        "result": "[('Jihovýchod', 1695312), ('Severovýchod', 1483560), ('Středočeský kraj', 1415463), ('Střední Čechy', 1415463), ('Praha', 1301432), ('Hlavní město Praha', 1301432), ('Jihozápad', 1213239), ('Jihomoravský kraj', 1197651), ('Střední Morava', 1184119), ('Moravskoslezský kraj', 1162841)]"
+      }
+    ]
+  },
+  {
+    "prompt": "dej mi rozdeleni obyvatelstva podle kraju. Pouzij tento dataset: SLD0100T2",
+    "result": "Nemohu poskytnout rozdělení obyvatelstva podle krajů z datasetu SLD0100T2, protože dotaz na tento dataset selhal s chybou, že neexistuje sloupec \"Území\". Mohu však poskytnout rozdělení obyvatelstva podle krajů z datasetu SLD003T04, pokud je to užitečné.",
+    "queries_and_results": [
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      }
+    ]
+  },
+  {
+    "prompt": "dobre, pojracuj",
+    "result": "Dotaz na dataset SLD0100T2 je třeba upravit, protože sloupec `Území` neexistuje. Místo toho byste měli použít sloupec `Území podle okresů`. Opravený dotaz by měl vypadat takto:\n\n```sql\nSELECT `Území podle okresů`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území podle okresů` \nORDER BY `Počet obyvatel` DESC;\n```",
+    "queries_and_results": [
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100M1 \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` NOT LIKE 'Česká republika%' \nGROUP BY `Území podle okresů` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 2602864), ('Jihomoravský kraj', 2395302), ('Jihovýchod', 3390624), ('Jihozápad', 2426478), ('Jihočeský kraj', 1263606), ('Karlovarský kraj', 558206), ('Kraj Vysočina', 995322), ('Královéhradecký kraj', 1076606), ('Liberecký kraj', 870440), ('Moravskoslezsko', 2325682)]"
+      },
+      {
+        "query": "PRAGMA table_info(SLD0100T2);",
+        "result": "[(0, 'Rok sčítání', 'INTEGER', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Území podle okresů', 'TEXT', 0, None, 0), (3, 'Pohlaví', 'TEXT', 0, None, 0), (4, 'Věkové skupiny (desetiletky)', 'TEXT', 0, None, 0), (5, 'value', 'INTEGER', 0, None, 0)]"
+      }
+    ]
+  },
+  {
+    "prompt": "ano, pokracuj",
+    "result": "Pro rok 2021 je rozdělení obyvatelstva podle okresů následující:\n\n1. Česká republika: 33858354\n2. Jihovýchod: 5453642\n3. Severovýchod: 4738258\n4. Středočeský kraj: 4617546\n5. Střední Čechy: 4617546\n6. Praha: 4310642\n7. Hlavní město Praha: 4310642\n8. Jihozápad: 3875800\n9. Jihomoravský kraj: 3873184\n10. Střední Morava: 3759616\n11. Moravskoslezský kraj: 3691082\n12. Moravskoslezsko: 3691082\n13. Severozápad: 3411768\n14. Ústecký kraj: 2528438\n15. Jihočeský kraj: 2011222\n16. Olomoucký kraj: 1974290\n17. Plzeňský kraj: 1864578\n18. Zlínský kraj: 1785326\n19. Královéhradecký kraj: 1707270\n20. Pardubický kraj: 1633098\n21. Kraj Vysočina: 1580458\n22. Liberecký kraj: 1397890\n23. Karlovarský kraj: 883330",
+    "queries_and_results": [
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD003T04 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \n  AND `Území` != 'Česká republika' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Středočeský kraj', 2814062), ('Hlavní město Praha', 2540655), ('Jihomoravský kraj', 2381985), ('Moravskoslezský kraj', 2321254), ('Ústecký kraj', 1572105), ('Jihočeský kraj', 1258514), ('Olomoucký kraj', 1236749), ('Plzeňský kraj', 1155024), ('Zlínský kraj', 1126176), ('Královéhradecký kraj', 1073434)]"
+      },
+      {
+        "query": "SELECT `Území`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Ukazatel` = 'Počet obyvatel (obvyklý pobyt)' \n  AND `Rok sčítání` = '2021' \nGROUP BY `Území` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "Error: Query error: no such column: Území"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100M1 \nWHERE `Rok sčítání` = '2021' \n  AND `Ukazatel` = 'Obyvatelstvo' \n  AND `Území podle okresů` NOT LIKE 'Česká republika%' \nGROUP BY `Území podle okresů` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 2602864), ('Jihomoravský kraj', 2395302), ('Jihovýchod', 3390624), ('Jihozápad', 2426478), ('Jihočeský kraj', 1263606), ('Karlovarský kraj', 558206), ('Kraj Vysočina', 995322), ('Královéhradecký kraj', 1076606), ('Liberecký kraj', 870440), ('Moravskoslezsko', 2325682)]"
+      },
+      {
+        "query": "PRAGMA table_info(SLD0100T2);",
+        "result": "[(0, 'Rok sčítání', 'INTEGER', 0, None, 0), (1, 'Ukazatel', 'TEXT', 0, None, 0), (2, 'Území podle okresů', 'TEXT', 0, None, 0), (3, 'Pohlaví', 'TEXT', 0, None, 0), (4, 'Věkové skupiny (desetiletky)', 'TEXT', 0, None, 0), (5, 'value', 'INTEGER', 0, None, 0)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100M1 \nWHERE `Rok sčítání` = '2021' AND `Ukazatel` = 'Obyvatelstvo' AND `Pohlaví` = 'celkem' \nGROUP BY `Území podle okresů` \nORDER BY `Počet obyvatel` DESC \nLIMIT 10;",
+        "result": "[('Česká republika', 10524167), ('Jihovýchod', 1695312), ('Severovýchod', 1483560), ('Středočeský kraj', 1415463), ('Střední Čechy', 1415463), ('Praha', 1301432), ('Hlavní město Praha', 1301432), ('Jihozápad', 1213239), ('Jihomoravský kraj', 1197651), ('Střední Morava', 1184119)]"
+      },
+      {
+        "query": "SELECT `Území podle okresů`, SUM(`value`) AS `Počet obyvatel` \nFROM SLD0100T2 \nWHERE `Rok sčítání` = '2021' AND `Ukazatel` = 'Obyvatelstvo' \nGROUP BY `Území podle okresů` \nORDER BY `Počet obyvatel` DESC;",
+        "result": "[('Česká republika', 33858354), ('Jihovýchod', 5453642), ('Severovýchod', 4738258), ('Středočeský kraj', 4617546), ('Střední Čechy', 4617546), ('Praha', 4310642), ('Hlavní město Praha', 4310642), ('Jihozápad', 3875800), ('Jihomoravský kraj', 3873184), ('Střední Morava', 3759616), ('Moravskoslezský kraj', 3691082), ('Moravskoslezsko', 3691082), ('Severozápad', 3411768), ('Ústecký kraj', 2528438), ('Jihočeský kraj', 2011222), ('Olomoucký kraj', 1974290), ('Plzeňský kraj', 1864578), ('Zlínský kraj', 1785326), ('Královéhradecký kraj', 1707270), ('Pardubický kraj', 1633098), ('Kraj Vysočina', 1580458), ('Liberecký kraj', 1397890), ('Karlovarský kraj', 883330)]"
+      }
+    ]
   }
 ]

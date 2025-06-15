@@ -18,6 +18,7 @@ from langchain_core.prompts import ChatPromptTemplate
 import os
 
 import sqlite3
+import chromadb
 
 # Get debug mode from environment variable
 DEBUG_MODE = os.environ.get('MY_AGENT_DEBUG', '0') == '1'
@@ -35,6 +36,8 @@ SAVE_RESULT_ID = 8
 SHOULD_CONTINUE_ID = 9
 RETRIEVE_NODE_ID = 20
 RELEVANT_NODE_ID = 21
+HYBRID_SEARCH_NODE_ID = 22
+RERANK_NODE_ID = 23
 
 # Constants
 try:
@@ -46,9 +49,9 @@ except NameError:
 from .mcp_server import create_mcp_server
 from .state import DataAnalysisState
 from metadata.create_and_load_chromadb import (
-    hybrid_search,
     get_langchain_chroma_vectorstore,
-    cohere_rerank
+    cohere_rerank,
+    hybrid_search
 )
 from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini, get_ollama_llm
 
@@ -292,7 +295,7 @@ To accomplish this, follow these steps:
 
 3. Construct an appropriate SQLITE SQL query by:
 - Choosing the correct dataset and its schema
-- Using exact column names from the schema provided (can be Czech or English)
+- Using exact column names from the schema provided (can be Czech or English), always use backticks around column names, like `Druh vlastnictví` = "Bytové družstvo";
 - Matching user prompt terms to correct dimension values provided as a distinct list of values
 - Ensuring proper string matching for Czech characters
 - Generating a NEW SQLITE QUERY THAT PROVIDES ADDITIONAL INFORMATION that is not already present in the previously executed queries
@@ -326,7 +329,8 @@ IMPORTANT notes about SQL query generation:
 - Return ONLY the SQL expression that answers the question.
 - Limit the output to at most 10 rows using LIMIT unless the user specifies otherwise - but first think if you dont need to group it somehow so it returns reasonable 10 rows.
 - Select only the necessary columns, never all columns.
-- Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG).
+- Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG) 
+- but always look carefully at the schema and distinct categorical values if your aggregations makes sence by this dimension or meric values.
 - Column to Aggregate or extract numeric values is always called "value"! Never use different one or assume how its called.
 - Do NOT modify the database.
 - Always examine the ALL Schema to see how the data are laid out - column names and its concrete dimensional values. 
@@ -617,17 +621,20 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     debug_print(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}")
     return state
 
-async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Retrieve most similar selection(s) from ChromaDB based on user prompt using Cohere rerank hybrid search. Returns selection codes and Cohere rerank scores."""
-    debug_print(f"{RETRIEVE_NODE_ID}: Enter retrieve_similar_selections_node (Cohere rerank)")
+async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Perform hybrid search on ChromaDB to retrieve initial candidate documents. Returns hybrid search results as Document objects."""
+    debug_print(f"{HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node")
     query = state.get("rewritten_prompt") or state["prompt"]
-    n_results = state.get("n_results", 20)  # Allow override, default to 10
+    n_results = state.get("n_results", 60)  # Increased from 20 to 60 to capture more relevant documents
+
+    debug_print(f"{HYBRID_SEARCH_NODE_ID}: Query: {query}")
+    debug_print(f"{HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
 
     # Check if ChromaDB directory exists
     chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
     if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
-        debug_print(f"{RETRIEVE_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}")
-        return {"most_similar_selections": [], "chromadb_missing": True}
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}")
+        return {"hybrid_search_results": [], "chromadb_missing": True}
 
     try:
         chroma_vectorstore = get_langchain_chroma_vectorstore(
@@ -635,17 +642,87 @@ async def retrieve_similar_selections_node(state: DataAnalysisState) -> DataAnal
             chroma_db_path=str(CHROMA_DB_PATH),
             embedding_model_name=EMBEDDING_DEPLOYMENT
         )
-        initial_results = hybrid_search(chroma_vectorstore, query, k=n_results)
-        reranked = cohere_rerank(query, initial_results, top_n=n_results)
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: ChromaDB vectorstore initialized")
+        
+        hybrid_results = hybrid_search(chroma_vectorstore._collection, query, n_results=n_results)
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results")
+        
+        # Convert dict results to Document objects for compatibility
+        from langchain_core.documents import Document
+        hybrid_docs = []
+        for result in hybrid_results:
+            doc = Document(
+                page_content=result['document'],
+                metadata=result['metadata']
+            )
+            hybrid_docs.append(doc)
+        
+        # Debug: Show detailed hybrid search results
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: Detailed hybrid search results:")
+        for i, doc in enumerate(hybrid_docs[:10], 1):  # Show first 10
+            selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
+            content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
+            debug_print(f"{HYBRID_SEARCH_NODE_ID}: #{i}: {selection} | Content: {content_preview}...")
+        
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}")
+        return {"hybrid_search_results": hybrid_docs}
+    except Exception as e:
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: Error in hybrid search: {e}")
+        import traceback
+        debug_print(f"{HYBRID_SEARCH_NODE_ID}: Traceback: {traceback.format_exc()}")
+        return {"hybrid_search_results": []}
+
+async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Rerank hybrid search results using Cohere rerank model. Returns selection codes and Cohere rerank scores."""
+    # Force debug mode on for this node to ensure visibility
+    original_debug = os.environ.get('MY_AGENT_DEBUG', '0')
+    os.environ['MY_AGENT_DEBUG'] = '1'
+    
+    debug_print(f"🔥🔥🔥 {RERANK_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥")
+    debug_print(f"{RERANK_NODE_ID}: Enter rerank_node")
+    query = state.get("rewritten_prompt") or state["prompt"]
+    hybrid_results = state.get("hybrid_search_results", [])
+    n_results = state.get("n_results", 60)  # Increased from 20 to 60 to match hybrid search
+
+    debug_print(f"{RERANK_NODE_ID}: Query: {query}")
+    debug_print(f"{RERANK_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}")
+    debug_print(f"{RERANK_NODE_ID}: Requested n_results: {n_results}")
+
+    # Check if we have hybrid search results to rerank
+    if not hybrid_results:
+        debug_print(f"{RERANK_NODE_ID}: No hybrid search results to rerank")
+        os.environ['MY_AGENT_DEBUG'] = original_debug  # Restore debug setting
+        return {"most_similar_selections": []}
+
+    # Debug: Show input to rerank
+    debug_print(f"{RERANK_NODE_ID}: Input hybrid results for reranking:")
+    for i, doc in enumerate(hybrid_results[:10], 1):  # Show first 10
+        selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
+        content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
+        debug_print(f"{RERANK_NODE_ID}: #{i}: {selection} | Content: {content_preview}...")
+
+    try:
+        debug_print(f"{RERANK_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents")
+        reranked = cohere_rerank(query, hybrid_results, top_n=n_results)
+        debug_print(f"{RERANK_NODE_ID}: Cohere returned {len(reranked)} reranked results")
+        
         most_similar = []
-        for doc, res in reranked:
+        for i, (doc, res) in enumerate(reranked, 1):
             selection_code = doc.metadata.get("selection") if doc.metadata else None
             score = res.relevance_score
             most_similar.append((selection_code, score))
-        debug_print(f"{RETRIEVE_NODE_ID}: Most similar selections: {most_similar}")
+            # Debug: Show detailed rerank results
+            if i <= 10:  # Show top 10 results
+                debug_print(f"{RERANK_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}")
+        
+        debug_print(f"🎯🎯🎯 {RERANK_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯")
+        os.environ['MY_AGENT_DEBUG'] = original_debug  # Restore debug setting
         return {"most_similar_selections": most_similar}
     except Exception as e:
-        debug_print(f"{RETRIEVE_NODE_ID}: Error in rerank hybrid search: {e}")
+        debug_print(f"{RERANK_NODE_ID}: Error in reranking: {e}")
+        import traceback
+        debug_print(f"{RERANK_NODE_ID}: Traceback: {traceback.format_exc()}")
+        os.environ['MY_AGENT_DEBUG'] = original_debug  # Restore debug setting
         return {"most_similar_selections": []}
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:

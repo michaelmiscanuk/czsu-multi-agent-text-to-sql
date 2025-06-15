@@ -10,6 +10,7 @@ in the LangGraph-based data analysis application.
 from typing import List, Tuple, TypedDict, Annotated
 from operator import add
 from langchain_core.messages import BaseMessage
+from langchain_core.documents import Document
 
 #==============================================================================
 # CUSTOM REDUCERS
@@ -59,7 +60,8 @@ class DataAnalysisState(TypedDict):
     iteration: int  # Iteration counter for workflow loop prevention
     queries_and_results: Annotated[List[Tuple[str, str]], limited_queries_reducer]  # Collection of executed queries and their results with limited reducer
     reflection_decision: str  # Last decision from the reflection node: "improve" or "answer"
-    most_similar_selections: Annotated[List[Tuple[str, float]], add]  # List of (selection_code, cosine_similarity
+    hybrid_search_results: List[Document]  # Intermediate hybrid search results before reranking (uses default replacement behavior)
+    most_similar_selections: Annotated[List[Tuple[str, float]], add]  # List of (selection_code, cohere_rerank_score) after reranking
     top_selection_codes: List[str]  # List of top N selection codes (e.g., top 3)
     chromadb_missing: bool  # True if ChromaDB directory is missing, else False or not present
     final_answer: str  # Explicitly tracked final formatted answer string

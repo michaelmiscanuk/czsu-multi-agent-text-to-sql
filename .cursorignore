@@ -1,5 +1,5 @@
 .venv
-/data/CSVs
+# /data/CSVs
 /data/czsu_data.db
 /metadata/czsu_chromadb
 /metadata/schemas

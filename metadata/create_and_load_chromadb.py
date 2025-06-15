@@ -140,7 +140,7 @@ from uuid import uuid4
 import time
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Set
 
 # Third-party imports
 import chromadb
@@ -155,6 +155,19 @@ import cohere
 import openpyxl
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
+import unicodedata
+import re
+from collections import Counter
+import numpy as np
+import logging
+
+# Add this import after the other imports
+try:
+    from rank_bm25 import BM25Okapi
+    print("rank_bm25 is available. BM25 search will be enabled.")
+except ImportError:
+    print("Warning: rank_bm25 not available. BM25 search will be disabled.")
+    BM25Okapi = None
 
 #==============================================================================
 # PATH SETUP
@@ -384,6 +397,244 @@ def split_text_by_tokens(text: str, max_tokens: int = MAX_TOKENS) -> List[str]:
         chunks.append(chunk_text)
     return chunks
 
+def normalize_czech_text(text: str) -> str:
+    """Advanced Czech text normalization for better search matching."""
+    if not text:
+        return text
+    
+    # Convert to lowercase first
+    text = text.lower()
+    
+    # Advanced Czech diacritics mapping for normalization
+    czech_diacritics_map = {
+        # Primary Czech diacritics
+        'á': 'a', 'č': 'c', 'ď': 'd', 'é': 'e', 'ě': 'e', 'í': 'i', 'ň': 'n',
+        'ó': 'o', 'ř': 'r', 'š': 's', 'ť': 't', 'ú': 'u', 'ů': 'u', 'ý': 'y', 'ž': 'z',
+        # Extended mappings for robustness
+        'à': 'a', 'ä': 'a', 'â': 'a', 'ă': 'a', 'ą': 'a',
+        'ç': 'c', 'ć': 'c', 'ĉ': 'c', 'ċ': 'c',
+        'è': 'e', 'ë': 'e', 'ê': 'e', 'ę': 'e', 'ė': 'e', 'ē': 'e',
+        'ì': 'i', 'ï': 'i', 'î': 'i', 'į': 'i', 'ī': 'i',
+        'ò': 'o', 'ö': 'o', 'ô': 'o', 'õ': 'o', 'ő': 'o', 'ø': 'o',
+        'ù': 'u', 'ü': 'u', 'û': 'u', 'ű': 'u', 'ū': 'u',
+        'ÿ': 'y', 'ŷ': 'y',
+        'ź': 'z', 'ż': 'z'
+    }
+    
+    # Create ASCII version  
+    ascii_text = text
+    for diacritic, ascii_char in czech_diacritics_map.items():
+        ascii_text = ascii_text.replace(diacritic, ascii_char)
+    
+    # Return both versions separated by space for broader indexing
+    if ascii_text != text:
+        return f"{text} {ascii_text}"
+    return text
+
+def hybrid_search(collection, query_text: str, n_results: int = 60, 
+                 rare_terms: Set[str] = None) -> List[Dict]:
+    """
+    Hybrid search that combines semantic and BM25 approaches with semantic focus.
+    
+    This function trusts text-embedding-3-large's semantic capabilities while using
+    BM25 for exact keyword matches. The approach is semantic-focused, meaning:
+    - Semantic search gets higher weight (0.85) as the primary method
+    - BM25 search gets lower weight (0.15) for exact matches only
+    - Results are combined and ranked by weighted score
+    
+    Args:
+        collection: ChromaDB collection to search
+        query_text: The search query string
+        n_results: Maximum number of results to return (default: 60)
+        rare_terms: Set of rare terms (unused, kept for compatibility)
+        
+    Returns:
+        List[Dict]: Ranked search results with metadata including:
+            - document: The document content
+            - metadata: Document metadata (selection codes, etc.)
+            - score: Final weighted score
+            - semantic_score: Normalized semantic similarity score
+            - bm25_score: Normalized BM25 relevance score
+            - source: Source of the result ('semantic', 'bm25', 'hybrid', 'fallback_semantic')
+    """
+    
+    logging.info(f"Hybrid search for query: '{query_text}'")
+    
+    try:
+        # Step 1: Clean and normalize query (minimal processing)
+        normalized_query = normalize_czech_text(query_text)
+        
+        # Step 2: Perform semantic search (primary method)
+        semantic_results = []
+        try:
+            embedding_client = get_azure_embedding_model()
+            
+            semantic_raw = similarity_search_chromadb(
+                collection=collection,
+                embedding_client=embedding_client,
+                query=normalized_query,
+                embedding_model_name="text-embedding-3-large__test1",
+                k=n_results
+            )
+            
+            for i, (doc, meta, distance) in enumerate(zip(
+                semantic_raw["documents"][0], 
+                semantic_raw["metadatas"][0], 
+                semantic_raw["distances"][0]
+            )):
+                # Convert distance to similarity score
+                similarity_score = max(0, 1 - (distance / 2))
+                
+                semantic_results.append({
+                    'id': f"semantic_{i}",
+                    'document': doc,
+                    'metadata': meta,
+                    'semantic_score': similarity_score,
+                    'source': 'semantic'
+                })
+                
+            logging.info(f"Semantic search returned {len(semantic_results)} results")
+            
+        except Exception as e:
+            logging.error(f"Semantic search failed: {e}")
+            semantic_results = []
+        
+        # Step 3: Perform minimal BM25 search (for exact keyword matches)
+        bm25_results = []
+        try:
+            all_data = collection.get(include=['documents', 'metadatas'])
+            
+            if all_data and 'documents' in all_data and all_data['documents']:
+                documents = all_data['documents']
+                metadatas = all_data['metadatas']
+                
+                # Simple document processing - just normalize
+                processed_docs = [normalize_czech_text(doc) for doc in documents]
+                
+                if BM25Okapi:
+                    tokenized_docs = [doc.split() for doc in processed_docs]
+                    bm25 = BM25Okapi(tokenized_docs)
+                    
+                    # Simple query processing
+                    tokenized_query = normalized_query.split()
+                    bm25_scores = bm25.get_scores(tokenized_query)
+                    
+                    # Get top results
+                    top_indices = np.argsort(bm25_scores)[::-1][:n_results]
+                    
+                    for i, idx in enumerate(top_indices):
+                        if bm25_scores[idx] > 0:
+                            bm25_results.append({
+                                'id': f"bm25_{i}",
+                                'document': documents[idx],
+                                'metadata': metadatas[idx] if idx < len(metadatas) else {},
+                                'bm25_score': float(bm25_scores[idx]),
+                                'source': 'bm25'
+                            })
+                    
+                    logging.info(f"BM25 search returned {len(bm25_results)} results")
+                
+        except Exception as e:
+            logging.error(f"BM25 search failed: {e}")
+            bm25_results = []
+        
+        # Step 4: Combine results with semantic-focused weighting
+        combined_results = {}
+        
+        # Process semantic results (primary)
+        for result in semantic_results:
+            doc_id = result['metadata'].get('selection', result['document'][:50])
+            if doc_id not in combined_results:
+                combined_results[doc_id] = result.copy()
+                combined_results[doc_id]['bm25_score'] = 0.0
+        
+        # Process BM25 results (secondary)
+        for result in bm25_results:
+            doc_id = result['metadata'].get('selection', result['document'][:50])
+            if doc_id in combined_results:
+                combined_results[doc_id]['bm25_score'] = result['bm25_score']
+                combined_results[doc_id]['source'] = 'hybrid'
+            else:
+                combined_results[doc_id] = result.copy()
+                combined_results[doc_id]['semantic_score'] = 0.0
+        
+        # Step 5: Calculate final scores with semantic focus
+        final_results = []
+        max_semantic = max((r.get('semantic_score', 0) for r in combined_results.values()), default=1)
+        max_bm25 = max((r.get('bm25_score', 0) for r in combined_results.values()), default=1)
+        
+        # Semantic-focused weights: trust the embedding model more
+        semantic_weight = 0.85  # High weight for semantic
+        bm25_weight = 0.15      # Low weight for exact matches only
+        
+        for doc_id, result in combined_results.items():
+            # Normalize scores
+            semantic_score = result.get('semantic_score', 0.0) / max_semantic if max_semantic > 0 else 0.0
+            bm25_score = result.get('bm25_score', 0.0) / max_bm25 if max_bm25 > 0 else 0.0
+            
+            # Calculate final score with semantic focus
+            final_score = (semantic_weight * semantic_score) + (bm25_weight * bm25_score)
+            
+            result['score'] = final_score
+            result['semantic_score'] = semantic_score
+            result['bm25_score'] = bm25_score
+            result['weights_used'] = {'semantic': semantic_weight, 'bm25': bm25_weight}
+            
+            final_results.append(result)
+        
+        # Sort by final score
+        final_results.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Return top results
+        top_results = final_results[:n_results]
+        logging.info(f"Hybrid search completed, returning {len(top_results)} results")
+        
+        # Log top result details for debugging
+        if top_results:
+            top = top_results[0]
+            logging.info(f"Top result: {top['metadata'].get('selection', 'unknown')} "
+                        f"(score: {top['score']:.4f}, semantic: {top['semantic_score']:.4f}, "
+                        f"bm25: {top['bm25_score']:.4f})")
+        
+        return top_results
+        
+    except Exception as e:
+        logging.error(f"Hybrid search failed: {e}")
+        
+        # Fallback to pure semantic search
+        try:
+            embedding_client = get_azure_embedding_model()
+            fallback_results = similarity_search_chromadb(
+                collection=collection,
+                embedding_client=embedding_client, 
+                query=query_text,
+                embedding_model_name="text-embedding-3-large__test1",
+                k=n_results
+            )
+            
+            converted_results = []
+            for i, (doc, meta, distance) in enumerate(zip(
+                fallback_results["documents"][0],
+                fallback_results["metadatas"][0], 
+                fallback_results["distances"][0]
+            )):
+                similarity_score = max(0, 1 - (distance / 2))
+                converted_results.append({
+                    'id': f"fallback_{i}",
+                    'document': doc,
+                    'metadata': meta,
+                    'score': similarity_score,
+                    'semantic_score': similarity_score,
+                    'bm25_score': 0.0,
+                    'source': 'fallback_semantic'
+                })
+            
+            return converted_results
+            
+        except Exception as fallback_error:
+            logging.error(f"Fallback search also failed: {fallback_error}")
+            return []
+
 #==============================================================================
 # MAIN LOGIC
 #==============================================================================
@@ -604,21 +855,6 @@ def similarity_search_chromadb(collection, embedding_client, query: str, embeddi
     )
     return results
 
-def hybrid_search(chroma, query: str, k: int = 5):
-    """Perform a Hybrid Search (similarity_search + BM25Retriever) in the collection. Returns a list of Document objects."""
-    raw_docs = chroma.get(include=["documents", "metadatas"])
-    documents = [
-        Document(page_content=doc, metadata=meta)
-        for doc, meta in zip(raw_docs["documents"], raw_docs["metadatas"])
-    ]
-    bm25_retriever = BM25Retriever.from_documents(documents=documents, k=k)
-    similarity_search_retriever = chroma.as_retriever(
-        search_type="similarity",
-        search_kwargs={'k': k}
-    )
-    ensemble_retriever = EnsembleRetriever(retrievers=[similarity_search_retriever, bm25_retriever], weights=[0.75, 0.25])
-    return ensemble_retriever.invoke(query)
-
 def cohere_rerank(query, docs, top_n):
     """Return reranked list of (Document, CohereResult) tuples using Cohere's rerank-multilingual-v3.0, using .index field for correct mapping."""
     cohere_api_key = os.environ.get("COHERE_API_KEY", "")
@@ -646,72 +882,86 @@ def cohere_rerank(query, docs, top_n):
         reranked.append((doc, res))
     return reranked
 
-def write_rerank_debug_excel(query, semantic_results, hybrid_results, reranked_results, path):
+def write_search_comparison_excel(query, semantic_results, hybrid_results, reranked_results, path):
     """
-    Write a side-by-side comparison Excel file for search results.
-    All data (semantic_results, hybrid_results, reranked_results) must be passed in as computed in the main block.
-    This function does not recalculate or fetch any results internally.
-    The output rows are sorted by Rank_Hybrid ascending (None at the end).
+    Write a comprehensive comparison Excel file showing the agent's actual workflow:
+    1. Pure semantic search (baseline)
+    2. Hybrid search (semantic + BM25)
+    3. Cohere reranked results (final)
     """
     from openpyxl import Workbook
     wb = Workbook()
     ws = wb.active
-    ws.title = 'Comparison'
-    ws.append(['Query', 'Rank_Semantic', 'Rank_Hybrid', 'Rank_Reranked', 'Text', 'Selection_Code', 'Similarity Score', 'Cohere Score'])
+    ws.title = 'Search_Comparison'
+    ws.append(['Query', 'Rank_Semantic', 'Rank_Hybrid', 'Rank_Reranked', 'Text_Preview', 'Selection_Code', 'Semantic_Score', 'Hybrid_Score', 'Cohere_Score'])
 
     # Build lookup tables for fast access
-    semantic_docs = semantic_results["documents"][0]
-    semantic_metas = semantic_results["metadatas"][0]
-    semantic_scores = semantic_results["distances"][0]
     semantic_lookup = {}
-    for i, (doc, meta, score) in enumerate(zip(semantic_docs, semantic_metas, semantic_scores)):
-        key = meta.get('selection') if meta else doc[:50]
-        semantic_lookup[key] = (i+1, score, doc)
+    if semantic_results and "documents" in semantic_results:
+        semantic_docs = semantic_results["documents"][0]
+        semantic_metas = semantic_results["metadatas"][0]
+        semantic_scores = semantic_results["distances"][0]
+        for i, (doc, meta, distance) in enumerate(zip(semantic_docs, semantic_metas, semantic_scores)):
+            key = meta.get('selection') if meta else doc[:50]
+            similarity_score = 1 - (distance / 2)  # Convert distance to similarity
+            semantic_lookup[key] = (i+1, similarity_score, doc)
 
     hybrid_lookup = {}
-    for i, doc in enumerate(hybrid_results, 1):
-        key = doc.metadata.get('selection') if doc.metadata else doc.page_content[:50]
-        hybrid_lookup[key] = (i, doc)
+    for i, result in enumerate(hybrid_results, 1):
+        key = result['metadata'].get('selection', 'unknown')
+        hybrid_lookup[key] = (i, result.get('score', 0), result['document'])
 
     rerank_lookup = {}
     for i, (doc, res) in enumerate(reranked_results, 1):
         key = doc.metadata.get('selection') if doc.metadata else doc.page_content[:50]
-        rerank_lookup[key] = (i, res.relevance_score, doc)
+        rerank_lookup[key] = (i, res.relevance_score, doc.page_content)
 
+    # Get all unique selection codes
     all_keys = set(semantic_lookup.keys()) | set(hybrid_lookup.keys()) | set(rerank_lookup.keys())
 
-    # Collect all rows first
+    # Collect all rows
     rows = []
     for key in all_keys:
-        q = query
-        rank_sem, sim_score, sem_text = semantic_lookup.get(key, (None, None, None))
-        rank_hyb, hyb_doc = hybrid_lookup.get(key, (None, None))
-        rank_rerank, cohere_score, rerank_doc = rerank_lookup.get(key, (None, None, None))
-        text = sem_text or (hyb_doc.page_content if hyb_doc else (rerank_doc.page_content if rerank_doc else ""))
-        selection_code = None
-        if hyb_doc and hyb_doc.metadata:
-            selection_code = hyb_doc.metadata.get('selection')
-        elif rerank_doc and rerank_doc.metadata:
-            selection_code = rerank_doc.metadata.get('selection')
-        elif key:
-            selection_code = key
-        sim_val = None
-        if sim_score is not None:
-            sim_val = 1 - (sim_score / 2)
+        rank_sem, sem_score, sem_text = semantic_lookup.get(key, (None, None, None))
+        rank_hyb, hyb_score, hyb_text = hybrid_lookup.get(key, (None, None, None))
+        rank_rerank, cohere_score, rerank_text = rerank_lookup.get(key, (None, None, None))
+        
+        # Use the best available text preview
+        text_preview = sem_text or hyb_text or rerank_text or ""
+        if text_preview:
+            text_preview = text_preview[:200].replace('\n', ' ') + "..." if len(text_preview) > 200 else text_preview
+        
         rows.append([
-            q,
+            query,
             rank_sem,
             rank_hyb,
             rank_rerank,
-            text,
-            selection_code,
-            sim_val,
+            text_preview,
+            key,
+            sem_score,
+            hyb_score,
             cohere_score
         ])
-    # Sort rows by Rank_Hybrid (index 2), None at the end
+    
+    # Sort by hybrid rank (since that's what feeds into reranking)
     rows_sorted = sorted(rows, key=lambda r: (r[2] is None, r[2] if r[2] is not None else float('inf')))
+    
     for row in rows_sorted:
         ws.append(row)
+    
+    # Auto-adjust column widths
+    for column in ws.columns:
+        max_length = 0
+        column_letter = get_column_letter(column[0].column)
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = min(max_length + 2, 50)  # Cap at 50 characters
+        ws.column_dimensions[column_letter].width = adjusted_width
+    
     wb.save(str(path))
 
 #==============================================================================
@@ -726,73 +976,83 @@ if __name__ == "__main__":
 
         embedding_client = get_azure_embedding_model()
         
-        
-        QUERY = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
-        #QUERY = "How many flights did NASA made to the MARS?"
-        
-        
-        
-        
-        
-        k = 15
+        # Test query - same as used in agent
+        # QUERY = "Jaký je počet obytných domů vlastněných bytovými družstvy?"
+        # QUERY = "Compare married and divorced people in the Czech Republic"
+        QUERY = "Kolik lidi zije na Marzu?"
+        k = 60
 
-        # --- Similarity search (original method) ---
-        results = similarity_search_chromadb(
+        print(f"\n🔍 Testing Agent Workflow with query: '{QUERY}'")
+        print(f"📊 Requesting top {k} results from each method (matching agent workflow)")
+        print("=" * 80)
+
+        # Step 1: Pure semantic search (baseline comparison)
+        print(f"\n[1/3] Pure Semantic Search (baseline)")
+        semantic_results = similarity_search_chromadb(
             collection=collection,
             embedding_client=embedding_client,
             query=QUERY,
             embedding_model_name="text-embedding-3-large__test1",
             k=k
         )
-        print(f"\n[Semantic Search] Top {k} Results:")
-        for i, (doc, meta, distance) in enumerate(zip(results["documents"][0], results["metadatas"][0], results["distances"][0]), 1):
+        print(f"✅ Retrieved {len(semantic_results['documents'][0])} semantic results")
+        for i, (doc, meta, distance) in enumerate(zip(semantic_results["documents"][0][:5], semantic_results["metadatas"][0][:5], semantic_results["distances"][0][:5]), 1):
             selection = meta.get('selection') if isinstance(meta, dict) and meta is not None else 'N/A'
             similarity = 1 - (distance / 2)
-            print(f"#{i}: Selection Code: {selection} | Similarity: {similarity:.4f}")
-        print("Selection Codes (most to least important):")
-        print([
-            meta.get('selection') if isinstance(meta, dict) and meta is not None else 'N/A'
-            for meta in results["metadatas"][0]
-        ])
+            print(f"  #{i}: {selection} | Similarity: {similarity:.4f}")
 
-        # --- Hybrid search (LangChain) ---
-        chroma_vectorstore = get_langchain_chroma_vectorstore(
-            collection_name="czsu_selections_chromadb",
-            chroma_db_path=str(CHROMA_DB_PATH),
-            embedding_model_name="text-embedding-3-large__test1"
-        )
-        hybrid_results = hybrid_search(chroma_vectorstore, QUERY, k=k)
-        print(f"\n[Hybrid Search] Top {k} Results:")
-        for i, doc in enumerate(hybrid_results, 1):
+        # Step 2: Hybrid search (agent's first step)
+        print(f"\n[2/3] Hybrid Search (agent workflow)")
+        hybrid_results = hybrid_search(collection, QUERY, n_results=k)
+        print(f"✅ Retrieved {len(hybrid_results)} hybrid results")
+        for i, result in enumerate(hybrid_results[:5], 1):
+            selection = result['metadata'].get('selection', 'unknown')
+            score = result.get('score', 0)
+            semantic_score = result.get('semantic_score', 0)
+            bm25_score = result.get('bm25_score', 0)
+            source = result.get('source', 'unknown')
+            print(f"  #{i}: {selection} | Score: {score:.6f} (sem: {semantic_score:.3f}, bm25: {bm25_score:.3f}, src: {source})")
+
+        # Step 3: Cohere reranking (agent's second step)
+        print(f"\n[3/3] Cohere Reranking (agent workflow)")
+        # Convert hybrid results to Document objects for reranking
+        hybrid_docs = []
+        for result in hybrid_results:
+            doc = Document(
+                page_content=result['document'],
+                metadata=result['metadata']
+            )
+            hybrid_docs.append(doc)
+
+        reranked = cohere_rerank(QUERY, hybrid_docs, top_n=k)
+        print(f"✅ Reranked {len(reranked)} results with Cohere")
+        for i, (doc, res) in enumerate(reranked[:5], 1):
             selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
-            print(f"#{i}: Selection Code: {selection}")
-        print("Selection Codes (most to least important):")
-        print([
-            doc.metadata.get('selection') if doc.metadata else 'N/A'
-            for doc in hybrid_results
-        ])
+            print(f"  #{i}: {selection} | Cohere Score: {res.relevance_score:.6f}")
 
-        # --- Rerank Hybrid Search (Cohere) ---
-        # print("100")
-        # print(hybrid_results)
-        reranked = cohere_rerank(QUERY, hybrid_results, top_n=k)
-        print(f"\n[Reranked Hybrid Search] Top {k} Results:")
-        for i, (doc, res) in enumerate(reranked, 1):
-            selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
-            print(f"#{i}: Selection Code: {selection} | Cohere Score: {res.relevance_score:.4f}")
-        print("Selection Codes (most to least important):")
-        print([
-            doc.metadata.get('selection') if doc.metadata else 'N/A'
-            for doc, _ in reranked
-        ])
+        # Final selection codes (what agent would use)
+        print(f"\n🎯 Final Agent Selection Codes (top 3 above threshold 0.0005):")
+        SIMILARITY_THRESHOLD = 0.0005
+        final_selections = []
+        for doc, res in reranked:
+            selection_code = doc.metadata.get('selection') if doc.metadata else None
+            if selection_code and res.relevance_score >= SIMILARITY_THRESHOLD:
+                final_selections.append(selection_code)
+        final_top3 = final_selections[:3]
+        print(f"  {final_top3}")
 
-        # --- Excel Debug Output ---
-        debug_xlsx_path = BASE_DIR / 'metadata' / 'rerank_debug.xlsx'
+        # Excel comparison output
+        print(f"\n📊 Generating Excel comparison...")
+        debug_xlsx_path = BASE_DIR / 'metadata' / 'search_comparison_for_debug.xlsx'
         try:
-            write_rerank_debug_excel(QUERY, results, hybrid_results, reranked, debug_xlsx_path)
-            print(f"Excel debug file written to {debug_xlsx_path}")
+            write_search_comparison_excel(QUERY, semantic_results, hybrid_results, reranked, debug_xlsx_path)
+            print(f"✅ Excel comparison written to: {debug_xlsx_path}")
         except Exception as e:
-            print(f"Error writing rerank debug Excel: {e}")
+            print(f"❌ Error writing Excel comparison: {e}")
+
+        print(f"\n🎉 Agent workflow test completed successfully!")
+        print(f"📈 Workflow: Semantic → Hybrid → Cohere → Top 3 selections")
+        
     except KeyboardInterrupt:
         debug_print(f"{CREATE_CHROMADB_ID}: Process interrupted by user")
         sys.exit(1)
