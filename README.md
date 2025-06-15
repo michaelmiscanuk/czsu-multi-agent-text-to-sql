@@ -20,7 +20,7 @@
    .venv\Scripts\activate
    uv pip install .
    uv pip install .[dev]
-   uvicorn api_server:app --reload --reload-exclude .venv
+   uvicorn api_server:app --host 0.0.0.0 --port $PORT --workers 1 --limit-max-requests 10000 --timeout-keep-alive 5 --limit-concurrency 200 --backlog 50
    ```
    
    If there is some problem with libraries, delete .venv folder and run commands above

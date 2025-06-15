@@ -14,9 +14,11 @@ build/
 dist/
 wheels/
 .venv
+*.pdf
 
 data/czsu_data.db
 data/CSVs
+data/pdf_chromadb/
 metadata/czsu_chromadb/
 metadata/schemas/
 

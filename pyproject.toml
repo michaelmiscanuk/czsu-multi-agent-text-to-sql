@@ -8,7 +8,7 @@ authors = [ { name = "Michael Miscanuk Name", email = "michael.miscanuk@gmail.co
 
 # Web frameworks: fastapi, starlette, uvicorn, python-multipart
 # Database: alembic, SQLAlchemy, psycopg, psycopg-pool
-# Data processing: pandas, numpy, openpyxl, pyjstat, tqdm
+# Data processing: pandas, numpy, openpyxl, pyjstat, tqdm, pymupdf
 # ML/AI: langchain, langgraph, openai, chromadb, cohere, tiktoken, langsmith, langchain-chroma, langchain-community, langchain-core, langchain-openai, langchain-text-splitters, langgraph-checkpoint, langgraph-checkpoint-postgres
 # Utilities: requests, httpx, httpcore, python-dotenv, aiofiles, anyio, rank-bm25, certifi, charset-normalizer, idna, h11
 # Serialization/Parsing: PyYAML, orjson, Jinja2, MarkupSafe, typing_extensions
@@ -50,6 +50,7 @@ dependencies = [
     "numpy==2.2.5",
     "openpyxl==3.1.5",
     "pyjstat==2.4.0",
+    "pymupdf>=1.26.0",
     "orjson==3.10.16",
     "PyYAML==6.0.2",
     "mcp==1.9.2",
@@ -66,6 +67,8 @@ dependencies = [
     "Jinja2==3.1.6",
     "MarkupSafe==3.0.2",
     "typing_extensions",
+    "pymupdf4llm>=0.0.5",
+    "llama-parse>=0.4.0" 
 ]
 
 [build-system]

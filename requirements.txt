@@ -51,6 +51,13 @@ numpy==2.2.5
 openpyxl==3.1.5
 pyjstat==2.4.0
 
+# PDF Processing
+pymupdf>=1.26.0
+
+# Optional: Enhanced PDF parsing (uncomment to enable)
+# pymupdf4llm>=0.0.5  # Better table handling for LLMs
+# llama-parse>=0.4.0  # Premium LLM-based parser (requires API key)
+
 # JSON/serialization
 orjson==3.10.16
 PyYAML==6.0.2
