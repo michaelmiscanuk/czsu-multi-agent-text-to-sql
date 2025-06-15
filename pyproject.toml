@@ -79,4 +79,4 @@ packages = ["czsu-multi-agent-text-to-sql"]
 "czsu-multi-agent-text-to-sql" = "czsu-multi-agent-text-to-sql"
 
 [tool.setuptools.package-data]
-"czsu-multi-agent-text-to-sql" = ["**/*"]
+"*" = ["**/*"]

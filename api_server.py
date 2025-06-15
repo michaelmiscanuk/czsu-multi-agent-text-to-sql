@@ -1,13 +1,16 @@
+# CRITICAL: Set Windows event loop policy FIRST, before any other imports
+# This must be the very first thing that happens to fix psycopg compatibility
 import sys
+if sys.platform == "win32":
+    import asyncio
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    print(f"🔧 Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
+
 import asyncio
 import gc
 from contextlib import asynccontextmanager
 from datetime import datetime
 import uuid
-
-# Configure asyncio event loop policy for Windows compatibility with psycopg
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from fastapi import FastAPI, Query, HTTPException, Header, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
