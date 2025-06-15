@@ -727,11 +727,20 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Select the top 3 reranked selections if their Cohere relevance score exceeds the threshold (0.005)."""
     debug_print(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
-    SIMILARITY_THRESHOLD = 0.005  # Minimum Cohere rerank score required
+    SIMILARITY_THRESHOLD = 0.0005  # Minimum Cohere rerank score required
     most_similar = state.get("most_similar_selections", [])
     # Select up to 3 top selections above threshold
     top_selection_codes = [sel for sel, score in most_similar if sel is not None and score is not None and score >= SIMILARITY_THRESHOLD][:3]
     debug_print(f"{RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}")
+    
+    # If no selections pass the threshold, set final_answer for frontend
+    if not top_selection_codes:
+        debug_print(f"{RELEVANT_NODE_ID}: No selections passed the threshold - setting final_answer")
+        return {
+            "top_selection_codes": top_selection_codes,
+            "final_answer": "No Relevant Selections Found"
+        }
+    
     return {"top_selection_codes": top_selection_codes}
 
 async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:

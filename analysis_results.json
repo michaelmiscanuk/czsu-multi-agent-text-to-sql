@@ -26613,5 +26613,95 @@
         "result": "[(2024, 44486.0, 48268.0, -3782.0), (2023, 48268.0, 54820.0, -6552.0), (2022, 54820.0, 46778.0, 8042.0), (2021, 46778.0, 45415.0, 1363.0), (2020, 45415.0, 54870.0, -9455.0), (2019, 54870.0, 54470.0, 400.0), (2018, 54470.0, 52567.0, 1903.0), (2017, 52567.0, 50768.0, 1799.0), (2016, 50768.0, 48191.0, 2577.0), (2015, 48191.0, None, None)]"
       }
     ]
+  },
+  {
+    "prompt": "porovnej prumerne ceny bytu v cechach a v praze v poslednim roce k dispozici.",
+    "result": "Průměrná cena bytů v Praze je 103693, zatímco průměrná cena bytů v Čechách je 58641. \n\nRozdíl v průměrných cenách je 76.83%.",
+    "queries_and_results": [
+      {
+        "query": "SELECT `Území`, AVG(`value`) AS `Průměrná cena` \nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Území` IN ('Česko', 'Hlavní město Praha') \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02) \nGROUP BY `Území` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 103693.0), ('Česko', 58641.0)]"
+      },
+      {
+        "query": "SELECT \n    (AVG(CASE WHEN `Území` = 'Hlavní město Praha' THEN `value` END) - \n     AVG(CASE WHEN `Území` = 'Česko' THEN `value` END)) / \n    AVG(CASE WHEN `Území` = 'Česko' THEN `value` END) * 100 AS `Percentage Difference`\nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02);",
+        "result": "76.82679354035572"
+      },
+      {
+        "query": "SELECT `Území`, AVG(`value`) AS `Průměrná cena` \nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Území` IN ('Česko', 'Hlavní město Praha') \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02) \nGROUP BY `Území` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 103693.0), ('Česko', 58641.0)]"
+      },
+      {
+        "query": "SELECT \n    (AVG(CASE WHEN `Území` = 'Hlavní město Praha' THEN `value` END) - \n     AVG(CASE WHEN `Území` = 'Česko' THEN `value` END)) / \n    AVG(CASE WHEN `Území` = 'Česko' THEN `value` END) * 100 AS `Percentage Difference`\nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02);",
+        "result": "76.82679354035572"
+      }
+    ]
+  },
+  {
+    "prompt": "v jakych jednotkach jsou tato cisla?",
+    "result": "Průměrné ceny bytů v Praze a České republice jsou uvedeny v Kč/m2.",
+    "queries_and_results": [
+      {
+        "query": "SELECT DISTINCT `Druh nemovitosti` FROM CEN0402T02 WHERE `Druh nemovitosti` LIKE '%Byty%';",
+        "result": "Byty [Kč/m2]"
+      },
+      {
+        "query": "SELECT `Území`, AVG(`value`) AS `Průměrná cena` \nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Území` IN ('Česko', 'Hlavní město Praha') \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02) \nGROUP BY `Území` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 103693.0), ('Česko', 58641.0)]"
+      },
+      {
+        "query": "SELECT \n    (AVG(CASE WHEN `Území` = 'Hlavní město Praha' THEN `value` END) - \n     AVG(CASE WHEN `Území` = 'Česko' THEN `value` END)) / \n    AVG(CASE WHEN `Území` = 'Česko' THEN `value` END) * 100 AS `Percentage Difference`\nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02);",
+        "result": "76.82679354035572"
+      },
+      {
+        "query": "SELECT `Území`, AVG(`value`) AS `Průměrná cena` \nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Území` IN ('Česko', 'Hlavní město Praha') \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02) \nGROUP BY `Území` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 103693.0), ('Česko', 58641.0)]"
+      },
+      {
+        "query": "SELECT \n    (AVG(CASE WHEN `Území` = 'Hlavní město Praha' THEN `value` END) - \n     AVG(CASE WHEN `Území` = 'Česko' THEN `value` END)) / \n    AVG(CASE WHEN `Území` = 'Česko' THEN `value` END) * 100 AS `Percentage Difference`\nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02);",
+        "result": "76.82679354035572"
+      },
+      {
+        "query": "SELECT `Území`, AVG(`value`) AS `Průměrná cena` \nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Území` IN ('Česko', 'Hlavní město Praha') \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02) \nGROUP BY `Území` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 103693.0), ('Česko', 58641.0)]"
+      },
+      {
+        "query": "SELECT \n    (AVG(CASE WHEN `Území` = 'Hlavní město Praha' THEN `value` END) - \n     AVG(CASE WHEN `Území` = 'Česko' THEN `value` END)) / \n    AVG(CASE WHEN `Území` = 'Česko' THEN `value` END) * 100 AS `Percentage Difference`\nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02);",
+        "result": "76.82679354035572"
+      },
+      {
+        "query": "SELECT `Území`, AVG(`value`) AS `Průměrná cena` \nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Území` IN ('Česko', 'Hlavní město Praha') \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02) \nGROUP BY `Území` \nLIMIT 10;",
+        "result": "[('Hlavní město Praha', 103693.0), ('Česko', 58641.0)]"
+      },
+      {
+        "query": "SELECT \n    (AVG(CASE WHEN `Území` = 'Hlavní město Praha' THEN `value` END) - \n     AVG(CASE WHEN `Území` = 'Česko' THEN `value` END)) / \n    AVG(CASE WHEN `Území` = 'Česko' THEN `value` END) * 100 AS `Percentage Difference`\nFROM CEN0402T02 \nWHERE `Ukazatel` = 'Průměrná jednotková kupní cena nemovitosti' \n  AND `Druh nemovitosti` = 'Byty [Kč/m2]' \n  AND `Roky` = (SELECT MAX(`Roky`) FROM CEN0402T02);",
+        "result": "76.82679354035572"
+      },
+      {
+        "query": "SELECT DISTINCT `Druh nemovitosti` FROM CEN0402T02 WHERE `Druh nemovitosti` LIKE '%Byty%';",
+        "result": "Byty [Kč/m2]"
+      }
+    ]
+  },
+  {
+    "prompt": "muzes mi rict jak se zdrazila cena bytu v poslednich letech? Nejake procentualni porovnani mezi roky",
+    "result": "Ceny bytů v Česku se v posledních letech vyvíjely následovně:\n\n- 2015: Index cen 100.0\n- 2016: Index cen 112.5, změna 12.5%\n- 2017: Index cen 130.6, změna 16.1%\n- 2018: Index cen 146.3, změna 12.0%\n- 2019: Index cen 159.8, změna 9.2%\n- 2020: Index cen 181.4, změna 13.5%\n- 2021: Index cen 221.6, změna 22.2%\n- 2022: Index cen 257.7, změna 16.3%\n- 2023: Index cen 243.2, změna -5.6%\n\nV roce 2021 došlo k nejvyššímu procentuálnímu nárůstu cen, zatímco v roce 2023 ceny klesly o 5.6%.",
+    "queries_and_results": [
+      {
+        "query": "SELECT `Roky`, \n       `Území`, \n       `value` AS `Index_cen`, \n       (`value` - LAG(`value`) OVER (PARTITION BY `Území` ORDER BY `Roky`)) / LAG(`value`) OVER (PARTITION BY `Území` ORDER BY `Roky`) * 100 AS `Procentuální_změna`\nFROM CEN0401T01\nWHERE `Ukazatel` = 'Index cen nemovitostí (%)' \n  AND `Druh nemovitosti` = 'Byty' \n  AND `Typ údaje` = 'Bazický index (2015 = 100)'\n  AND `Území` = 'Česko'\nORDER BY `Roky` ASC\nLIMIT 10;",
+        "result": "[(2015, 'Česko', 100.0, None), (2016, 'Česko', 112.5, 12.5), (2017, 'Česko', 130.6, 16.08888888888888), (2018, 'Česko', 146.3, 12.021439509954073), (2019, 'Česko', 159.8, 9.227614490772385), (2020, 'Česko', 181.4, 13.516896120150182), (2021, 'Česko', 221.6, 22.160970231532517), (2022, 'Česko', 257.7, 16.29061371841155), (2023, 'Česko', 243.2, -5.626697710516105)]"
+      },
+      {
+        "query": "SELECT `Roky`, `Území`, AVG(`value`) AS `Average_Price_per_Sqm`\nFROM `CEN0401T01`\nWHERE `Ukazatel` = 'Index cen nemovitostí (%)' \n  AND `Druh nemovitosti` = 'Byty' \n  AND `Typ údaje` = 'Bazický index (2015 = 100)'\nGROUP BY `Roky`, `Území`\nORDER BY `Roky` ASC, `Území` ASC\nLIMIT 10;",
+        "result": "[(2015, 'Hlavní město Praha', 100.0), (2015, 'Jihomoravský kraj', 100.0), (2015, 'Jihočeský kraj', 100.0), (2015, 'Karlovarský kraj', 100.0), (2015, 'Kraj Vysočina', 100.0), (2015, 'Královéhradecký kraj', 100.0), (2015, 'Liberecký kraj', 100.0), (2015, 'Moravskoslezský kraj', 100.0), (2015, 'Olomoucký kraj', 100.0), (2015, 'Pardubický kraj', 100.0)]"
+      },
+      {
+        "query": "SELECT `Roky`, \n       `Území`, \n       `value` AS `Index_cen`, \n       (`value` - LAG(`value`) OVER (PARTITION BY `Území` ORDER BY `Roky`)) / LAG(`value`) OVER (PARTITION BY `Území` ORDER BY `Roky`) * 100 AS `Procentuální_změna`\nFROM CEN0401T01\nWHERE `Ukazatel` = 'Index cen nemovitostí (%)' \n  AND `Druh nemovitosti` = 'Byty' \n  AND `Typ údaje` = 'Bazický index (2015 = 100)'\n  AND `Území` = 'Česko'\nORDER BY `Roky` ASC\nLIMIT 10;",
+        "result": "[(2015, 'Česko', 100.0, None), (2016, 'Česko', 112.5, 12.5), (2017, 'Česko', 130.6, 16.08888888888888), (2018, 'Česko', 146.3, 12.021439509954073), (2019, 'Česko', 159.8, 9.227614490772385), (2020, 'Česko', 181.4, 13.516896120150182), (2021, 'Česko', 221.6, 22.160970231532517), (2022, 'Česko', 257.7, 16.29061371841155), (2023, 'Česko', 243.2, -5.626697710516105)]"
+      },
+      {
+        "query": "SELECT `Roky`, `Území`, AVG(`value`) AS `Average_Price_per_Sqm`\nFROM `CEN0401T01`\nWHERE `Ukazatel` = 'Index cen nemovitostí (%)' \n  AND `Druh nemovitosti` = 'Byty' \n  AND `Typ údaje` = 'Bazický index (2015 = 100)'\nGROUP BY `Roky`, `Území`\nORDER BY `Roky` ASC, `Území` ASC\nLIMIT 10;",
+        "result": "[(2015, 'Hlavní město Praha', 100.0), (2015, 'Jihomoravský kraj', 100.0), (2015, 'Jihočeský kraj', 100.0), (2015, 'Karlovarský kraj', 100.0), (2015, 'Kraj Vysočina', 100.0), (2015, 'Královéhradecký kraj', 100.0), (2015, 'Liberecký kraj', 100.0), (2015, 'Moravskoslezský kraj', 100.0), (2015, 'Olomoucký kraj', 100.0), (2015, 'Pardubický kraj', 100.0)]"
+      }
+    ]
   }
 ]
