@@ -14,6 +14,33 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver  # Correct asyn
 from langgraph.checkpoint.postgres import PostgresSaver  # Correct sync import
 from psycopg_pool import AsyncConnectionPool, ConnectionPool
 
+#==============================================================================
+# DEBUG FUNCTIONS
+#==============================================================================
+def print__postgresql_debug(msg: str) -> None:
+    """Print PostgreSQL debug messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[PostgreSQL-Debug] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__api_postgresql(msg: str) -> None:
+    """Print API-PostgreSQL messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[API-PostgreSQL] {msg}")
+        import sys
+        sys.stdout.flush()
+
 # Fix for Windows ProactorEventLoop issue with psycopg
 if platform.system() == "Windows":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -28,11 +55,11 @@ async def force_close_all_connections():
     
     if database_pool is not None:
         try:
-            print("🧹 Force closing all database connections...")
+            print__postgresql_debug("🧹 Force closing all database connections...")
             await database_pool.close()
-            print("✓ All connections force closed")
+            print__postgresql_debug("✓ All connections force closed")
         except Exception as e:
-            print(f"⚠ Error force closing connections: {e}")
+            print__postgresql_debug(f"⚠ Error force closing connections: {e}")
         finally:
             database_pool = None
 
@@ -58,7 +85,7 @@ async def is_pool_healthy(pool: Optional[AsyncConnectionPool]) -> bool:
     try:
         # Check if pool is closed
         if pool.closed:
-            print(f"[Pool-Health] ⚠ Pool is marked as closed")
+            print__postgresql_debug(f"⚠ Pool is marked as closed")
             return False
         
         # Try a quick connection test
@@ -66,7 +93,7 @@ async def is_pool_healthy(pool: Optional[AsyncConnectionPool]) -> bool:
             await conn.execute("SELECT 1")
         return True
     except Exception as e:
-        print(f"[Pool-Health] ⚠ Pool health check failed: {e}")
+        print__postgresql_debug(f"⚠ Pool health check failed: {e}")
         return False
 
 async def create_fresh_connection_pool() -> AsyncConnectionPool:
@@ -78,7 +105,7 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     min_size = int(os.getenv('POSTGRES_POOL_MIN', '1'))
     timeout = int(os.getenv('POSTGRES_POOL_TIMEOUT', '60'))
     
-    print(f"🔧 Creating connection pool with settings: max_size={max_size}, min_size={min_size}, timeout={timeout}")
+    print__postgresql_debug(f"🔧 Creating connection pool with settings: max_size={max_size}, min_size={min_size}, timeout={timeout}")
     
     # Use memory-optimized settings
     pool = AsyncConnectionPool(
@@ -97,13 +124,13 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     # Explicitly open the pool with longer timeout
     try:
         await asyncio.wait_for(pool.open(), timeout=60)  # Increased to 60 seconds
-        print(f"🔗 Created fresh PostgreSQL connection pool (max_size={max_size}, min_size={min_size}, timeout={timeout}) with memory optimization")
+        print__postgresql_debug(f"🔗 Created fresh PostgreSQL connection pool (max_size={max_size}, min_size={min_size}, timeout={timeout}) with memory optimization")
         return pool
     except asyncio.TimeoutError:
-        print("❌ Timeout opening connection pool")
+        print__postgresql_debug("❌ Timeout opening connection pool")
         raise
     except Exception as e:
-        print(f"❌ Error opening connection pool: {e}")
+        print__postgresql_debug(f"❌ Error opening connection pool: {e}")
         raise
 
 async def get_healthy_pool() -> AsyncConnectionPool:
@@ -119,15 +146,15 @@ async def get_healthy_pool() -> AsyncConnectionPool:
         # Pool is unhealthy or doesn't exist, close old one if needed
         if database_pool is not None:
             try:
-                print(f"[Pool-Health] 🔄 Closing unhealthy pool...")
+                print__postgresql_debug(f"🔄 Closing unhealthy pool...")
                 await database_pool.close()
             except Exception as e:
-                print(f"[Pool-Health] ⚠ Error closing old pool: {e}")
+                print__postgresql_debug(f"⚠ Error closing old pool: {e}")
             finally:
                 database_pool = None
         
         # Create new pool
-        print(f"[Pool-Health] 🆕 Creating new connection pool...")
+        print__postgresql_debug(f"🆕 Creating new connection pool...")
         database_pool = await create_fresh_connection_pool()
         return database_pool
 
@@ -184,12 +211,12 @@ async def setup_users_threads_runs_table():
             # Enable RLS if this is Supabase
             try:
                 await conn.execute("ALTER TABLE users_threads_runs ENABLE ROW LEVEL SECURITY")
-                print("✓ RLS enabled on users_threads_runs")
+                print__postgresql_debug("✓ RLS enabled on users_threads_runs")
             except Exception as e:
                 if "already enabled" in str(e).lower():
-                    print("⚠ RLS already enabled on users_threads_runs")
+                    print__postgresql_debug("⚠ RLS already enabled on users_threads_runs")
                 else:
-                    print(f"⚠ Warning: Could not enable RLS on users_threads_runs: {e}")
+                    print__postgresql_debug(f"⚠ Warning: Could not enable RLS on users_threads_runs: {e}")
             
             # Create RLS policy
             try:
@@ -198,17 +225,17 @@ async def setup_users_threads_runs_table():
                     CREATE POLICY "Allow service role full access" ON users_threads_runs
                     FOR ALL USING (true) WITH CHECK (true)
                 """)
-                print("✓ RLS policy created for users_threads_runs")
+                print__postgresql_debug("✓ RLS policy created for users_threads_runs")
             except Exception as e:
                 if "already exists" in str(e).lower():
-                    print("⚠ RLS policy already exists for users_threads_runs")
+                    print__postgresql_debug("⚠ RLS policy already exists for users_threads_runs")
                 else:
-                    print(f"⚠ Could not create RLS policy for users_threads_runs: {e}")
+                    print__postgresql_debug(f"⚠ Could not create RLS policy for users_threads_runs: {e}")
             
-            print("✅ users_threads_runs table verified/created (6 columns: timestamp, email, thread_id, run_id, prompt, sentiment)")
+            print__postgresql_debug("✅ users_threads_runs table verified/created (6 columns: timestamp, email, thread_id, run_id, prompt, sentiment)")
             
     except Exception as e:
-        print(f"❌ Error setting up users_threads_runs table: {str(e)}")
+        print__postgresql_debug(f"❌ Error setting up users_threads_runs table: {str(e)}")
         raise
 
 async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None, run_id: str = None) -> str:
@@ -252,12 +279,12 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
             
             original_length = len(prompt) if prompt else 0
             truncated_length = len(truncated_prompt) if truncated_prompt else 0
-            print(f"✓ Created thread run entry: email={email}, thread_id={thread_id}, run_id={run_id}")
-            print(f"  prompt: '{truncated_prompt}' (original: {original_length} chars, stored: {truncated_length} chars, truncated: {was_truncated})")
+            print__postgresql_debug(f"✓ Created thread run entry: email={email}, thread_id={thread_id}, run_id={run_id}")
+            print__postgresql_debug(f"  prompt: '{truncated_prompt}' (original: {original_length} chars, stored: {truncated_length} chars, truncated: {was_truncated})")
             return run_id
             
     except Exception as e:
-        print(f"❌ Error creating thread run entry: {str(e)}")
+        print__postgresql_debug(f"❌ Error creating thread run entry: {str(e)}")
         raise
 
 async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: str = None) -> bool:
@@ -291,10 +318,10 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: 
                 ownership_count = ownership_row[0] if ownership_row else 0
                 
                 if ownership_count == 0:
-                    print(f"🚫 SECURITY: User {user_email} does not own run_id {run_id} - sentiment update denied")
+                    print__postgresql_debug(f"🚫 SECURITY: User {user_email} does not own run_id {run_id} - sentiment update denied")
                     return False
                 
-                print(f"✅ SECURITY: User {user_email} owns run_id {run_id} - sentiment update authorized")
+                print__postgresql_debug(f"✅ SECURITY: User {user_email} owns run_id {run_id} - sentiment update authorized")
                 
                 # Update sentiment with user verification
                 result = await conn.execute("""
@@ -304,7 +331,7 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: 
                 """, (sentiment, run_id, user_email))
             else:
                 # Legacy mode: Update without user verification (less secure)
-                print(f"⚠ WARNING: Updating sentiment without user verification for run_id {run_id}")
+                print__postgresql_debug(f"⚠ WARNING: Updating sentiment without user verification for run_id {run_id}")
                 result = await conn.execute("""
                     UPDATE users_threads_runs 
                     SET sentiment = %s 
@@ -314,14 +341,14 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: 
             updated_count = result.rowcount if hasattr(result, 'rowcount') else 0
             
             if updated_count > 0:
-                print(f"✓ Updated sentiment for run_id {run_id}: {sentiment}")
+                print__postgresql_debug(f"✓ Updated sentiment for run_id {run_id}: {sentiment}")
                 return True
             else:
-                print(f"⚠ No rows updated for run_id {run_id} - run_id may not exist or access denied")
+                print__postgresql_debug(f"⚠ No rows updated for run_id {run_id} - run_id may not exist or access denied")
                 return False
                 
     except Exception as e:
-        print(f"❌ Error updating sentiment for run_id {run_id}: {str(e)}")
+        print__postgresql_debug(f"❌ Error updating sentiment for run_id {run_id}: {str(e)}")
         return False
 
 async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, bool]:
@@ -354,11 +381,11 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
                 sentiment = row[1]  # This will be True, False, or None
                 sentiments[run_id] = sentiment
             
-            print(f"✓ Retrieved {len(sentiments)} sentiment values for thread {thread_id}")
+            print__postgresql_debug(f"✓ Retrieved {len(sentiments)} sentiment values for thread {thread_id}")
             return sentiments
             
     except Exception as e:
-        print(f"❌ Error retrieving sentiments for thread {thread_id}: {str(e)}")
+        print__postgresql_debug(f"❌ Error retrieving sentiments for thread {thread_id}: {str(e)}")
         return {}
 
 async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[str, Any]]:
@@ -388,10 +415,10 @@ async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[s
             
             count_row = await count_result.fetchone()
             total_records = count_row[0] if count_row else 0
-            print(f"[PostgreSQL-Debug] 🔍 Total records for user {email}: {total_records}")
+            print__postgresql_debug(f"🔍 Total records for user {email}: {total_records}")
             
             if total_records == 0:
-                print(f"[PostgreSQL-Debug] ⚠ No records found for user {email}")
+                print__postgresql_debug(f"⚠ No records found for user {email}")
                 return []
             
             # Get unique threads with their latest timestamp, run count, and first prompt as title
@@ -426,7 +453,7 @@ async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[s
             
             threads = []
             async for row in result:
-                print(f"[PostgreSQL-Debug] 🔍 Raw row: {row}")
+                print__postgresql_debug(f"🔍 Raw row: {row}")
                 
                 # Get the full prompt from database (already truncated to 50 chars)
                 full_prompt = row[3] if row[3] else 'New Chat'
@@ -444,16 +471,16 @@ async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[s
                     "full_prompt": full_prompt  # For tooltip
                 }
                 
-                print(f"[PostgreSQL-Debug] 🔍 Thread info: title='{display_title}', full_prompt='{full_prompt}'")
+                print__postgresql_debug(f"🔍 Thread info: title='{display_title}', full_prompt='{full_prompt}'")
                 threads.append(thread_info)
             
-            print(f"✓ Retrieved {len(threads)} chat threads for user: {email}")
+            print__postgresql_debug(f"✓ Retrieved {len(threads)} chat threads for user: {email}")
             return threads
             
     except Exception as e:
-        print(f"❌ Error retrieving user chat threads: {str(e)}")
+        print__postgresql_debug(f"❌ Error retrieving user chat threads: {str(e)}")
         import traceback
-        print(f"[PostgreSQL-Debug] 🔍 Full traceback: {traceback.format_exc()}")
+        print__postgresql_debug(f"🔍 Full traceback: {traceback.format_exc()}")
         return []
 
 async def delete_user_thread_entries(email: str, thread_id: str, connection_pool=None) -> Dict[str, Any]:
@@ -475,7 +502,7 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
         try:
             pool_to_use = await get_healthy_pool()
         except Exception as e:
-            print(f"[PostgreSQL-Debug] ⚠ Could not get healthy pool for deletion: {e}")
+            print__postgresql_debug(f"⚠ Could not get healthy pool for deletion: {e}")
             return {
                 "deleted_count": 0,
                 "email": email,
@@ -495,7 +522,7 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
             
             deleted_count = result.rowcount if hasattr(result, 'rowcount') else 0
             
-            print(f"✓ Deleted {deleted_count} thread entries from users_threads_runs for user: {email}, thread_id: {thread_id}")
+            print__postgresql_debug(f"✓ Deleted {deleted_count} thread entries from users_threads_runs for user: {email}, thread_id: {thread_id}")
             
             return {
                 "deleted_count": deleted_count,
@@ -504,7 +531,7 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
             }
             
     except Exception as e:
-        print(f"❌ Error deleting user thread entries from users_threads_runs: {str(e)}")
+        print__postgresql_debug(f"❌ Error deleting user thread entries from users_threads_runs: {str(e)}")
         return {
             "deleted_count": 0,
             "email": email,
@@ -524,10 +551,10 @@ def check_postgres_env_vars():
             missing_vars.append(var)
     
     if missing_vars:
-        print(f"❌ Missing required environment variables: {missing_vars}")
+        print__postgresql_debug(f"❌ Missing required environment variables: {missing_vars}")
         return False
     
-    print(f"✅ All required PostgreSQL environment variables present")
+    print__postgresql_debug(f"✅ All required PostgreSQL environment variables present")
     return True
 
 async def test_basic_postgres_connection():
@@ -538,11 +565,11 @@ async def test_basic_postgres_connection():
         config = get_db_config()
         connection_string = get_connection_string()
         
-        print(f"🔍 Testing basic PostgreSQL connection...")
-        print(f"🔍 Host: {config['host']}")
-        print(f"🔍 Port: {config['port']}")
-        print(f"🔍 Database: {config['dbname']}")
-        print(f"🔍 User: {config['user']}")
+        print__postgresql_debug(f"🔍 Testing basic PostgreSQL connection...")
+        print__postgresql_debug(f"🔍 Host: {config['host']}")
+        print__postgresql_debug(f"🔍 Port: {config['port']}")
+        print__postgresql_debug(f"🔍 Database: {config['dbname']}")
+        print__postgresql_debug(f"🔍 User: {config['user']}")
         
         # Test basic connection with short timeout
         async with await psycopg.AsyncConnection.connect(
@@ -554,12 +581,12 @@ async def test_basic_postgres_connection():
             async with conn.cursor() as cur:
                 await cur.execute("SELECT 1 as test, NOW() as current_time")
                 result = await cur.fetchone()
-                print(f"✅ Basic PostgreSQL connection successful: {result}")
+                print__postgresql_debug(f"✅ Basic PostgreSQL connection successful: {result}")
                 return True
                 
     except Exception as e:
-        print(f"❌ Basic PostgreSQL connection failed: {e}")
-        print(f"🔍 Error type: {type(e).__name__}")
+        print__postgresql_debug(f"❌ Basic PostgreSQL connection failed: {e}")
+        print__postgresql_debug(f"🔍 Error type: {type(e).__name__}")
         return False
 
 async def get_postgres_checkpointer():
@@ -572,61 +599,61 @@ async def get_postgres_checkpointer():
     for attempt in range(max_attempts):
         try:
             # First check environment variables
-            print(f"🔍 Step 0 (attempt {attempt + 1}): Checking environment variables...")
+            print__postgresql_debug(f"🔍 Step 0 (attempt {attempt + 1}): Checking environment variables...")
             if not check_postgres_env_vars():
                 raise Exception("Missing required PostgreSQL environment variables")
             
             # First test basic PostgreSQL connectivity
-            print(f"🔍 Step 1 (attempt {attempt + 1}): Testing basic PostgreSQL connectivity...")
+            print__postgresql_debug(f"🔍 Step 1 (attempt {attempt + 1}): Testing basic PostgreSQL connectivity...")
             basic_connection_ok = await test_basic_postgres_connection()
             
             if not basic_connection_ok:
                 if attempt < max_attempts - 1:
-                    print(f"❌ Basic PostgreSQL connectivity failed - retrying in 2 seconds...")
+                    print__postgresql_debug(f"❌ Basic PostgreSQL connectivity failed - retrying in 2 seconds...")
                     await asyncio.sleep(2)
                     continue
                 else:
-                    print("❌ Basic PostgreSQL connectivity failed - cannot proceed")
+                    print__postgresql_debug("❌ Basic PostgreSQL connectivity failed - cannot proceed")
                     raise Exception("PostgreSQL server is not reachable")
             
-            print(f"✅ Basic PostgreSQL connectivity confirmed (attempt {attempt + 1})")
+            print__postgresql_debug(f"✅ Basic PostgreSQL connectivity confirmed (attempt {attempt + 1})")
             
             # Get a healthy connection pool
-            print(f"🔍 Step 2 (attempt {attempt + 1}): Creating connection pool...")
+            print__postgresql_debug(f"🔍 Step 2 (attempt {attempt + 1}): Creating connection pool...")
             pool = await get_healthy_pool()
             
-            print(f"🔍 Step 3 (attempt {attempt + 1}): Creating PostgreSQL checkpointer with official library...")
+            print__postgresql_debug(f"🔍 Step 3 (attempt {attempt + 1}): Creating PostgreSQL checkpointer with official library...")
             
             # Create checkpointer with the connection pool
             checkpointer = AsyncPostgresSaver(pool)
             
-            print(f"🔍 Step 4 (attempt {attempt + 1}): Setting up langgraph tables...")
+            print__postgresql_debug(f"🔍 Step 4 (attempt {attempt + 1}): Setting up langgraph tables...")
             # Setup tables (this creates all required tables with correct schemas)
             await checkpointer.setup()
             
-            print(f"🔍 Step 5 (attempt {attempt + 1}): Setting up custom users_threads_runs table...")
+            print__postgresql_debug(f"🔍 Step 5 (attempt {attempt + 1}): Setting up custom users_threads_runs table...")
             # Setup our custom users_threads_runs table
             await setup_users_threads_runs_table()
             
-            print(f"✅ Official PostgreSQL checkpointer initialized successfully (attempt {attempt + 1})")
+            print__postgresql_debug(f"✅ Official PostgreSQL checkpointer initialized successfully (attempt {attempt + 1})")
             
             # Wrap with resilient checkpointer to handle connection failures gracefully
             resilient_checkpointer = ResilientPostgreSQLCheckpointer(checkpointer)
-            print(f"✅ Wrapped with resilient checkpointer for connection stability")
+            print__postgresql_debug(f"✅ Wrapped with resilient checkpointer for connection stability")
             
             return resilient_checkpointer
             
         except Exception as e:
             error_msg = str(e)
-            print(f"❌ Error creating PostgreSQL checkpointer (attempt {attempt + 1}): {error_msg}")
+            print__postgresql_debug(f"❌ Error creating PostgreSQL checkpointer (attempt {attempt + 1}): {error_msg}")
             
             if attempt < max_attempts - 1:
                 # Add delay before retry, increasing with each attempt
                 delay = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
-                print(f"🔄 Retrying in {delay} seconds...")
+                print__postgresql_debug(f"🔄 Retrying in {delay} seconds...")
                 await asyncio.sleep(delay)
             else:
-                print(f"❌ All {max_attempts} attempts failed, giving up")
+                print__postgresql_debug(f"❌ All {max_attempts} attempts failed, giving up")
                 raise
 
 def get_sync_postgres_checkpointer():
@@ -656,11 +683,11 @@ def get_sync_postgres_checkpointer():
         # Setup tables (this creates all required tables with correct schemas)
         checkpointer.setup()
         
-        print("✅ Sync PostgreSQL checkpointer initialized successfully (max_size=3) with enhanced stability")
+        print__postgresql_debug("✅ Sync PostgreSQL checkpointer initialized successfully (max_size=3) with enhanced stability")
         return checkpointer
         
     except Exception as e:
-        print(f"❌ Error creating sync PostgreSQL checkpointer: {str(e)}")
+        print__postgresql_debug(f"❌ Error creating sync PostgreSQL checkpointer: {str(e)}")
         raise
 
 # For backward compatibility
@@ -683,7 +710,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         List of message dictionaries in chronological order (complete conversation history)
     """
     try:
-        print(f"[API-PostgreSQL] 🔍 Retrieving COMPLETE checkpoint history for thread: {thread_id}")
+        print__api_postgresql(f"🔍 Retrieving COMPLETE checkpoint history for thread: {thread_id}")
         
         config = {"configurable": {"thread_id": thread_id}}
         
@@ -693,10 +720,10 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             checkpoint_tuples.append(checkpoint_tuple)
         
         if not checkpoint_tuples:
-            print(f"[API-PostgreSQL] ⚠ No checkpoints found for thread: {thread_id}")
+            print__api_postgresql(f"⚠ No checkpoints found for thread: {thread_id}")
             return []
         
-        print(f"[API-PostgreSQL] 📄 Found {len(checkpoint_tuples)} checkpoints")
+        print__api_postgresql(f"📄 Found {len(checkpoint_tuples)} checkpoints")
         
         # Sort checkpoints chronologically (oldest first)
         checkpoint_tuples.sort(key=lambda x: x.config.get("configurable", {}).get("checkpoint_id", ""))
@@ -707,7 +734,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         seen_answers = set()
         
         # Extract all user prompts and AI responses from checkpoint history
-        print(f"[API-PostgreSQL] 🔍 Extracting ALL user questions and AI responses...")
+        print__api_postgresql(f"🔍 Extracting ALL user questions and AI responses...")
         
         for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
             checkpoint = checkpoint_tuple.checkpoint
@@ -744,7 +771,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                                 "message_order": len(conversation_messages) + 1
                             }
                             conversation_messages.append(user_message)
-                            print(f"[API-PostgreSQL] 👤 Found user prompt in checkpoint {checkpoint_index}: {prompt[:50]}...")
+                            print__api_postgresql(f"🔍 Found user prompt in checkpoint {checkpoint_index}: {prompt[:50]}...")
             
             # METHOD 2: Extract AI responses directly from final_answer in channel_values
             if "channel_values" in checkpoint:
@@ -769,7 +796,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                         "message_order": len(conversation_messages) + 1
                     }
                     conversation_messages.append(ai_message)
-                    print(f"[API-PostgreSQL] 🤖 ✅ Found final_answer in checkpoint {checkpoint_index}: {final_answer[:100]}...")
+                    print__api_postgresql(f"🤖 ✅ Found final_answer in checkpoint {checkpoint_index}: {final_answer[:100]}...")
         
         # Sort all messages by timestamp to ensure proper chronological order
         conversation_messages.sort(key=lambda x: x.get("timestamp", datetime.now()))
@@ -779,19 +806,19 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             msg["message_order"] = i + 1
             msg["id"] = f"{'user' if msg['is_user'] else 'ai'}_{i + 1}"
         
-        print(f"[API-PostgreSQL] ✅ Extracted {len(conversation_messages)} conversation messages from COMPLETE history")
+        print__api_postgresql(f"✅ Extracted {len(conversation_messages)} conversation messages from COMPLETE history")
         
         # Debug: Log all messages found
         for i, msg in enumerate(conversation_messages):
             msg_type = "👤 User" if msg["is_user"] else "🤖 AI"
-            print(f"[API-PostgreSQL] {i+1}. {msg_type}: {msg['content'][:50]}...")
+            print__api_postgresql(f"{i+1}. {msg_type}: {msg['content'][:50]}...")
         
         return conversation_messages
         
     except Exception as e:
-        print(f"[API-PostgreSQL] ❌ Error retrieving COMPLETE messages from checkpoints: {str(e)}")
+        print__api_postgresql(f"❌ Error retrieving COMPLETE messages from checkpoints: {str(e)}")
         import traceback
-        print(f"[API-PostgreSQL] 🔍 Full traceback: {traceback.format_exc()}")
+        print__api_postgresql(f"🔍 Full traceback: {traceback.format_exc()}")
         return []
 
 async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id: str) -> List[List[str]]:
@@ -811,13 +838,13 @@ async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id
         if state_snapshot and state_snapshot.checkpoint:
             channel_values = state_snapshot.checkpoint.get("channel_values", {})
             queries_and_results = channel_values.get("queries_and_results", [])
-            print(f"[API-PostgreSQL] ✅ Found {len(queries_and_results)} queries from latest checkpoint")
+            print__api_postgresql(f"✅ Found {len(queries_and_results)} queries from latest checkpoint")
             return [[query, result] for query, result in queries_and_results]
         
         return []
         
     except Exception as e:
-        print(f"[API-PostgreSQL] ⚠ Could not get queries from checkpoint: {e}")
+        print__api_postgresql(f"⚠ Could not get queries from checkpoint: {e}")
         return []
 
 async def setup_rls_policies(pool: AsyncConnectionPool):
@@ -832,19 +859,19 @@ async def setup_rls_policies(pool: AsyncConnectionPool):
             for table in tables:
                 try:
                     await conn.execute(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY")
-                    print(f"✓ RLS enabled on {table}")
+                    print__api_postgresql(f"✓ RLS enabled on {table}")
                 except Exception as e:
                     if "already enabled" in str(e).lower() or "does not exist" in str(e).lower():
-                        print(f"⚠ RLS already enabled on {table} or table doesn't exist")
+                        print__api_postgresql(f"⚠ RLS already enabled on {table} or table doesn't exist")
                     else:
-                        print(f"⚠ Warning: Could not enable RLS on {table}: {e}")
+                        print__api_postgresql(f"⚠ Warning: Could not enable RLS on {table}: {e}")
             
             # Drop existing policies if they exist
             for table in tables:
                 try:
                     await conn.execute(f'DROP POLICY IF EXISTS "Allow service role full access" ON {table}')
                 except Exception as e:
-                    print(f"⚠ Could not drop existing policy on {table}: {e}")
+                    print__api_postgresql(f"⚠ Could not drop existing policy on {table}: {e}")
             
             # Create permissive policies for authenticated users
             for table in tables:
@@ -853,16 +880,16 @@ async def setup_rls_policies(pool: AsyncConnectionPool):
                         CREATE POLICY "Allow service role full access" ON {table}
                         FOR ALL USING (true) WITH CHECK (true)
                     """)
-                    print(f"✓ RLS policy created for {table}")
+                    print__api_postgresql(f"✓ RLS policy created for {table}")
                 except Exception as e:
                     if "already exists" in str(e).lower():
-                        print(f"⚠ RLS policy already exists for {table}")
+                        print__api_postgresql(f"⚠ RLS policy already exists for {table}")
                     else:
-                        print(f"⚠ Could not create RLS policy for {table}: {e}")
+                        print__api_postgresql(f"⚠ Could not create RLS policy for {table}: {e}")
             
-        print("✓ Row Level Security setup completed (with any warnings noted above)")
+        print__api_postgresql("✓ Row Level Security setup completed (with any warnings noted above)")
     except Exception as e:
-        print(f"⚠ Warning: Could not setup RLS policies: {e}")
+        print__api_postgresql(f"⚠ Warning: Could not setup RLS policies: {e}")
         # Don't fail the entire setup if RLS setup fails - this is not critical for basic functionality
 
 async def monitor_connection_health(pool: AsyncConnectionPool, interval: int = 60):
@@ -877,78 +904,78 @@ async def monitor_connection_health(pool: AsyncConnectionPool, interval: int = 6
                 # Get pool statistics if available
                 try:
                     stats = pool.get_stats()
-                    print(f"✓ Connection pool health OK - Stats: {stats}")
+                    print__api_postgresql(f"✓ Connection pool health OK - Stats: {stats}")
                 except AttributeError:
-                    print("✓ Connection pool health check passed")
+                    print__api_postgresql("✓ Connection pool health check passed")
             except Exception as e:
-                print(f"⚠ Connection pool health check failed: {e}")
+                print__api_postgresql(f"⚠ Connection pool health check failed: {e}")
             
             await asyncio.sleep(interval)
     except asyncio.CancelledError:
-        print("📊 Connection monitor stopped")
+        print__api_postgresql("📊 Connection monitor stopped")
 
 def log_connection_info(host: str, port: str, dbname: str, user: str):
     """Log connection information for debugging."""
-    print(f"🔗 PostgreSQL Connection Info:")
-    print(f"   Host: {host}")
-    print(f"   Port: {port}")
-    print(f"   Database: {dbname}")
-    print(f"   User: {user}")
-    print(f"   SSL: Required")
+    print__api_postgresql(f"🔗 PostgreSQL Connection Info:")
+    print__api_postgresql(f"   Host: {host}")
+    print__api_postgresql(f"   Port: {port}")
+    print__api_postgresql(f"   Database: {dbname}")
+    print__api_postgresql(f"   User: {user}")
+    print__api_postgresql(f"   SSL: Required")
 
 # Test and health check functions
 async def test_pool_connection():
     """Test creating and using a connection pool."""
     try:
-        print("🔍 Testing pool connection...")
+        print__api_postgresql("🔍 Testing pool connection...")
         
         # Test pool creation
         pool = await create_fresh_connection_pool()
-        print(f"✅ Pool created successfully: closed={pool.closed}")
+        print__api_postgresql(f"✅ Pool created successfully: closed={pool.closed}")
         
         # Test pool usage
         async with pool.connection() as conn:
             result = await conn.execute("SELECT 1 as test, NOW() as current_time")
             row = await result.fetchone()
-            print(f"✅ Pool query successful: {row}")
+            print__api_postgresql(f"✅ Pool query successful: {row}")
         
         # Test pool health check
         is_healthy = await is_pool_healthy(pool)
-        print(f"✅ Pool health check: {is_healthy}")
+        print__api_postgresql(f"✅ Pool health check: {is_healthy}")
         
         # Cleanup
         await pool.close()
-        print(f"✅ Pool closed: closed={pool.closed}")
+        print__api_postgresql(f"✅ Pool closed: closed={pool.closed}")
         
         return True
         
     except Exception as e:
-        print(f"❌ Pool connection test failed: {e}")
+        print__api_postgresql(f"❌ Pool connection test failed: {e}")
         return False
 
 async def debug_pool_status():
     """Debug function to show current pool status."""
     global database_pool
     
-    print(f"🔍 Pool Status Debug:")
-    print(f"   Global pool exists: {database_pool is not None}")
+    print__api_postgresql(f"🔍 Pool Status Debug:")
+    print__api_postgresql(f"   Global pool exists: {database_pool is not None}")
     
     if database_pool:
-        print(f"   Pool closed: {database_pool.closed}")
+        print__api_postgresql(f"   Pool closed: {database_pool.closed}")
         try:
             # Try to get pool stats if available
             if hasattr(database_pool, 'get_stats'):
                 stats = database_pool.get_stats()
-                print(f"   Pool stats: {stats}")
+                print__api_postgresql(f"   Pool stats: {stats}")
             else:
-                print(f"   Pool stats: Not available")
+                print__api_postgresql(f"   Pool stats: Not available")
                 
             # Test health
             is_healthy = await is_pool_healthy(database_pool)
-            print(f"   Pool healthy: {is_healthy}")
+            print__api_postgresql(f"   Pool healthy: {is_healthy}")
             
         except Exception as e:
-            print(f"   Pool status error: {e}")
+            print__api_postgresql(f"   Pool status error: {e}")
     
     return database_pool
 
@@ -962,7 +989,7 @@ async def test_connection_health():
         dbname = os.getenv("dbname")
         
         if not all([user, password, host, dbname]):
-            print("❌ Missing required environment variables for database connection")
+            print__api_postgresql("❌ Missing required environment variables for database connection")
             return False
             
         connection_string = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
@@ -983,14 +1010,14 @@ async def test_connection_health():
             result = await conn.execute("SELECT 1 as test")
             row = await result.fetchone()
             if row and row[0] == 1:
-                print("✓ Database connection test successful")
+                print__api_postgresql("✓ Database connection test successful")
                 return True
         
         await pool.close()
         return False
         
     except Exception as e:
-        print(f"❌ Database connection test failed: {e}")
+        print__api_postgresql(f"❌ Database connection test failed: {e}")
         return False
 
 class ResilientPostgreSQLCheckpointer:
@@ -1027,22 +1054,22 @@ class ResilientPostgreSQLCheckpointer:
                 
                 if attempt < self.max_checkpoint_retries - 1 and is_recoverable:
                     delay = 1.5 ** (attempt + 1)  # Progressive delay: 1.5s, 2.25s, 3.38s
-                    print(f"🔄 Checkpoint operation '{operation_name}' failed (attempt {attempt + 1}): {str(e)}")
-                    print(f"🔄 Retrying checkpoint operation in {delay:.1f}s...")
+                    print__api_postgresql(f"🔄 Checkpoint operation '{operation_name}' failed (attempt {attempt + 1}): {str(e)}")
+                    print__api_postgresql(f"🔄 Retrying checkpoint operation in {delay:.1f}s...")
                     await asyncio.sleep(delay)
                     
                     # Try to refresh connection pool on SSL/connection errors
                     if any(keyword in error_msg for keyword in ["ssl", "connection"]):
                         try:
                             if hasattr(self.base_checkpointer, 'conn') and hasattr(self.base_checkpointer.conn, 'reset'):
-                                print(f"🔄 Attempting to reset connection pool...")
+                                print__api_postgresql(f"🔄 Attempting to reset connection pool...")
                                 await self.base_checkpointer.conn.reset()
                         except Exception as reset_error:
-                            print(f"⚠ Connection reset failed: {reset_error}")
+                            print__api_postgresql(f"⚠ Connection reset failed: {reset_error}")
                     
                     continue
                 else:
-                    print(f"❌ Checkpoint operation '{operation_name}' failed after {attempt + 1} attempts: {str(e)}")
+                    print__api_postgresql(f"❌ Checkpoint operation '{operation_name}' failed after {attempt + 1} attempts: {str(e)}")
                     raise
         
     async def aput(self, config, checkpoint, metadata, new_versions):
@@ -1110,22 +1137,22 @@ class ResilientPostgreSQLCheckpointer:
                 
                 if attempt < self.max_checkpoint_retries - 1 and is_recoverable:
                     delay = 1.5 ** (attempt + 1)  # Progressive delay: 1.5s, 2.25s, 3.38s
-                    print(f"🔄 Checkpoint alist operation failed (attempt {attempt + 1}): {str(e)}")
-                    print(f"🔄 Retrying alist operation in {delay:.1f}s...")
+                    print__api_postgresql(f"🔄 Checkpoint alist operation failed (attempt {attempt + 1}): {str(e)}")
+                    print__api_postgresql(f"🔄 Retrying alist operation in {delay:.1f}s...")
                     await asyncio.sleep(delay)
                     
                     # Try to refresh connection pool on SSL/connection errors
                     if any(keyword in error_msg for keyword in ["ssl", "connection"]):
                         try:
                             if hasattr(self.base_checkpointer, 'conn') and hasattr(self.base_checkpointer.conn, 'reset'):
-                                print(f"🔄 Attempting to reset connection pool...")
+                                print__api_postgresql(f"🔄 Attempting to reset connection pool...")
                                 await self.base_checkpointer.conn.reset()
                         except Exception as reset_error:
-                            print(f"⚠ Connection reset failed: {reset_error}")
+                            print__api_postgresql(f"⚠ Connection reset failed: {reset_error}")
                     
                     continue
                 else:
-                    print(f"❌ Checkpoint alist operation failed after {attempt + 1} attempts: {str(e)}")
+                    print__api_postgresql(f"❌ Checkpoint alist operation failed after {attempt + 1} attempts: {str(e)}")
                     raise
     
     def __getattr__(self, name):
@@ -1134,7 +1161,7 @@ class ResilientPostgreSQLCheckpointer:
 
 if __name__ == "__main__":
     async def test():
-        print("Testing PostgreSQL connection...")
+        print__postgresql_debug("Testing PostgreSQL connection...")
         
         user = os.getenv("user")
         password = os.getenv("password")
@@ -1142,25 +1169,25 @@ if __name__ == "__main__":
         port = os.getenv("port", "5432")
         dbname = os.getenv("dbname")
         
-        print(f"User: {user}")
-        print(f"Host: {host}")
-        print(f"Port: {port}")
-        print(f"Database: {dbname}")
-        print(f"Password configured: {bool(password)}")
+        print__postgresql_debug(f"User: {user}")
+        print__postgresql_debug(f"Host: {host}")
+        print__postgresql_debug(f"Port: {port}")
+        print__postgresql_debug(f"Database: {dbname}")
+        print__postgresql_debug(f"Password configured: {bool(password)}")
         
         # Test connection health first
         health_ok = await test_connection_health()
         if not health_ok:
-            print("❌ Basic connectivity test failed")
+            print__postgresql_debug("❌ Basic connectivity test failed")
             return
         
         # Test full checkpointer setup
         checkpointer = await get_postgres_checkpointer()
-        print(f"Checkpointer type: {type(checkpointer).__name__}")
+        print__postgresql_debug(f"Checkpointer type: {type(checkpointer).__name__}")
         
         # Cleanup
         if hasattr(checkpointer, 'pool') and checkpointer.pool:
             await checkpointer.pool.close()
-            print("✓ Connection pool closed")
+            print__postgresql_debug("✓ Connection pool closed")
     
     asyncio.run(test()) 

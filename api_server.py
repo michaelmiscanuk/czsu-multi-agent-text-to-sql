@@ -27,6 +27,7 @@ import os
 from jwt.algorithms import RSAAlgorithm
 from langchain_core.messages import BaseMessage
 from langsmith import Client
+from dotenv import load_dotenv
 
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
@@ -267,12 +268,12 @@ def verify_google_jwt(token: str):
             try:
                 # Debug: print the audience in the token and the expected audience
                 unverified_payload = jwt.decode(token, options={"verify_signature": False})
-                print("[DEBUG] Token aud:", unverified_payload.get("aud"))
-                print("[DEBUG] Backend GOOGLE_CLIENT_ID:", os.getenv("GOOGLE_CLIENT_ID"))
+                print__debug("Token aud:", unverified_payload.get("aud"))
+                print__debug("Backend GOOGLE_CLIENT_ID:", os.getenv("GOOGLE_CLIENT_ID"))
                 payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
                 return payload
             except Exception as e:
-                print("[DEBUG] JWT decode error:", e)
+                print__debug("JWT decode error:", e)
                 raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
     raise HTTPException(status_code=401, detail="Public key not found")
 
@@ -291,34 +292,34 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[FEEDBACK-FLOW] 📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
+    print__feedback_flow(f"📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
     
     try:
-        print(f"[FEEDBACK-FLOW] 🔄 Getting healthy checkpointer")
+        print__feedback_flow(f"🔄 Getting healthy checkpointer")
         checkpointer = await get_healthy_checkpointer()
         
-        print(f"[FEEDBACK-FLOW] 🔄 Creating thread run entry")
+        print__feedback_flow(f"🔄 Creating thread run entry")
         run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
-        print(f"[FEEDBACK-FLOW] ✅ Generated new run_id: {run_id}")
+        print__feedback_flow(f"✅ Generated new run_id: {run_id}")
         
-        print(f"[FEEDBACK-FLOW] 🚀 Starting analysis")
+        print__feedback_flow(f"🚀 Starting analysis")
         result = await asyncio.wait_for(
             analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
             timeout=900  # 15 minutes timeout for long operations
         )
         
-        print(f"[FEEDBACK-FLOW] ✅ Analysis completed successfully")
+        print__feedback_flow(f"✅ Analysis completed successfully")
         return {"response": result, "thread_id": request.thread_id, "run_id": run_id}
         
     except asyncio.TimeoutError:
         error_msg = "Analysis timed out after 15 minutes"
-        print(f"[FEEDBACK-FLOW] 🚨 {error_msg}")
+        print__feedback_flow(f"🚨 {error_msg}")
         raise HTTPException(status_code=408, detail=error_msg)
         
     except Exception as e:
         error_msg = f"Analysis failed: {str(e)}"
-        print(f"[FEEDBACK-FLOW] 🚨 {error_msg}")
-        print(f"[FEEDBACK-FLOW] 🔍 Error details: {type(e).__name__}: {str(e)}")
+        print__feedback_flow(f"🚨 {error_msg}")
+        print__feedback_flow(f"🔍 Error details: {type(e).__name__}: {str(e)}")
         raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
 @app.post("/feedback")
@@ -329,12 +330,12 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[FEEDBACK-FLOW] 📥 Incoming feedback request:")
-    print(f"[FEEDBACK-FLOW] 👤 User: {user_email}")
-    print(f"[FEEDBACK-FLOW] 🔑 Run ID: '{request.run_id}'")
-    print(f"[FEEDBACK-FLOW] 🔑 Run ID type: {type(request.run_id).__name__}, length: {len(request.run_id) if request.run_id else 0}")
-    print(f"[FEEDBACK-FLOW] 👍/👎 Feedback: {request.feedback}")
-    print(f"[FEEDBACK-FLOW] 💬 Comment: {request.comment}")
+    print__feedback_flow(f"📥 Incoming feedback request:")
+    print__feedback_flow(f"👤 User: {user_email}")
+    print__feedback_flow(f"🔑 Run ID: '{request.run_id}'")
+    print__feedback_flow(f"🔑 Run ID type: {type(request.run_id).__name__}, length: {len(request.run_id) if request.run_id else 0}")
+    print__feedback_flow(f"👍/👎 Feedback: {request.feedback}")
+    print__feedback_flow(f"💬 Comment: {request.comment}")
     
     # Validate that at least one of feedback or comment is provided
     if request.feedback is None and not request.comment:
@@ -345,31 +346,31 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
     
     try:
         try:
-            print(f"[FEEDBACK-FLOW] 🔍 Validating UUID format for: '{request.run_id}'")
+            print__feedback_flow(f"🔍 Validating UUID format for: '{request.run_id}'")
             # Debug check if it resembles a UUID at all
             if not request.run_id or len(request.run_id) < 32:
-                print(f"[FEEDBACK-FLOW] ⚠️ Run ID is suspiciously short for a UUID: '{request.run_id}'")
+                print__feedback_flow(f"⚠️ Run ID is suspiciously short for a UUID: '{request.run_id}'")
             
             # Try to convert to UUID to validate format
             try:
                 run_uuid = str(uuid.UUID(request.run_id))
-                print(f"[FEEDBACK-FLOW] ✅ UUID validation successful: '{run_uuid}'")
+                print__feedback_flow(f"✅ UUID validation successful: '{run_uuid}'")
             except ValueError as uuid_error:
-                print(f"[FEEDBACK-FLOW] 🚨 UUID ValueError details: {str(uuid_error)}")
+                print__feedback_flow(f"🚨 UUID ValueError details: {str(uuid_error)}")
                 # More detailed diagnostic about the input
                 for i, char in enumerate(request.run_id):
                     if not (char.isalnum() or char == '-'):
-                        print(f"[FEEDBACK-FLOW] 🚨 Invalid character at position {i}: '{char}' (ord={ord(char)})")
+                        print__feedback_flow(f"🚨 Invalid character at position {i}: '{char}' (ord={ord(char)})")
                 raise
         except ValueError:
-            print(f"[FEEDBACK-FLOW] ❌ UUID validation failed for: '{request.run_id}'")
+            print__feedback_flow(f"❌ UUID validation failed for: '{request.run_id}'")
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid run_id format. Expected UUID, got: {request.run_id}"
             )
         
         # 🔒 SECURITY CHECK: Verify user owns this run_id before submitting feedback
-        print(f"[FEEDBACK-FLOW] 🔒 Verifying run_id ownership for user: {user_email}")
+        print__feedback_flow(f"🔒 Verifying run_id ownership for user: {user_email}")
         
         try:
             # Get a healthy pool to check ownership
@@ -386,22 +387,22 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
                 ownership_count = ownership_row[0] if ownership_row else 0
                 
                 if ownership_count == 0:
-                    print(f"[FEEDBACK-FLOW] 🚫 SECURITY: User {user_email} does not own run_id {run_uuid} - feedback denied")
+                    print__feedback_flow(f"🚫 SECURITY: User {user_email} does not own run_id {run_uuid} - feedback denied")
                     raise HTTPException(
                         status_code=404,
                         detail="Run ID not found or access denied"
                     )
                 
-                print(f"[FEEDBACK-FLOW] ✅ SECURITY: User {user_email} owns run_id {run_uuid} - feedback authorized")
+                print__feedback_flow(f"✅ SECURITY: User {user_email} owns run_id {run_uuid} - feedback authorized")
                 
         except HTTPException:
             raise
         except Exception as ownership_error:
-            print(f"[FEEDBACK-FLOW] ⚠ Could not verify ownership: {ownership_error}")
+            print__feedback_flow(f"⚠ Could not verify ownership: {ownership_error}")
             # Continue with feedback submission but log the warning
-            print(f"[FEEDBACK-FLOW] ⚠ Proceeding with feedback submission despite ownership check failure")
+            print__feedback_flow(f"⚠ Proceeding with feedback submission despite ownership check failure")
         
-        print("[FEEDBACK-FLOW] 🔄 Initializing LangSmith client")
+        print__feedback_flow("🔄 Initializing LangSmith client")
         client = Client()
         
         # Prepare feedback data for LangSmith
@@ -413,9 +414,9 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         # Only add score if feedback is provided
         if request.feedback is not None:
             feedback_kwargs["score"] = request.feedback
-            print(f"[FEEDBACK-FLOW] 📤 Submitting feedback with score to LangSmith - run_id: '{run_uuid}', score: {request.feedback}")
+            print__feedback_flow(f"📤 Submitting feedback with score to LangSmith - run_id: '{run_uuid}', score: {request.feedback}")
         else:
-            print(f"[FEEDBACK-FLOW] 📤 Submitting comment-only feedback to LangSmith - run_id: '{run_uuid}'")
+            print__feedback_flow(f"📤 Submitting comment-only feedback to LangSmith - run_id: '{run_uuid}'")
         
         # Only add comment if provided
         if request.comment:
@@ -423,7 +424,7 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         
         client.create_feedback(**feedback_kwargs)
         
-        print(f"[FEEDBACK-FLOW] ✅ Feedback successfully submitted to LangSmith")
+        print__feedback_flow(f"✅ Feedback successfully submitted to LangSmith")
         return {
             "message": "Feedback submitted successfully", 
             "run_id": run_uuid,
@@ -434,8 +435,8 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[FEEDBACK-FLOW] 🚨 LangSmith feedback submission error: {str(e)}")
-        print(f"[FEEDBACK-FLOW] 🔍 Error type: {type(e).__name__}")
+        print__feedback_flow(f"🚨 LangSmith feedback submission error: {str(e)}")
+        print__feedback_flow(f"🔍 Error type: {type(e).__name__}")
         raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {e}")
 
 @app.post("/sentiment")
@@ -446,36 +447,36 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[SENTIMENT-FLOW] 📥 Incoming sentiment update request:")
-    print(f"[SENTIMENT-FLOW] 👤 User: {user_email}")
-    print(f"[SENTIMENT-FLOW] 🔑 Run ID: '{request.run_id}'")
-    print(f"[SENTIMENT-FLOW] 👍/👎 Sentiment: {request.sentiment}")
+    print__sentiment_flow(f"📥 Incoming sentiment update request:")
+    print__sentiment_flow(f"👤 User: {user_email}")
+    print__sentiment_flow(f"🔑 Run ID: '{request.run_id}'")
+    print__sentiment_flow(f"👍/👎 Sentiment: {request.sentiment}")
     
     try:
         # Validate UUID format
         try:
             run_uuid = str(uuid.UUID(request.run_id))
-            print(f"[SENTIMENT-FLOW] ✅ UUID validation successful: '{run_uuid}'")
+            print__sentiment_flow(f"✅ UUID validation successful: '{run_uuid}'")
         except ValueError:
-            print(f"[SENTIMENT-FLOW] ❌ UUID validation failed for: '{request.run_id}'")
+            print__sentiment_flow(f"❌ UUID validation failed for: '{request.run_id}'")
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid run_id format. Expected UUID, got: {request.run_id}"
             )
         
         # 🔒 SECURITY: Update sentiment with user email verification
-        print(f"[SENTIMENT-FLOW] 🔒 Verifying ownership before sentiment update")
+        print__sentiment_flow(f"🔒 Verifying ownership before sentiment update")
         success = await update_thread_run_sentiment(run_uuid, request.sentiment, user_email)
         
         if success:
-            print(f"[SENTIMENT-FLOW] ✅ Sentiment successfully updated")
+            print__sentiment_flow(f"✅ Sentiment successfully updated")
             return {
                 "message": "Sentiment updated successfully", 
                 "run_id": run_uuid,
                 "sentiment": request.sentiment
             }
         else:
-            print(f"[SENTIMENT-FLOW] ❌ Failed to update sentiment - run_id may not exist or access denied")
+            print__sentiment_flow(f"❌ Failed to update sentiment - run_id may not exist or access denied")
             raise HTTPException(
                 status_code=404,
                 detail=f"Run ID not found or access denied: {run_uuid}"
@@ -484,28 +485,27 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
     except HTTPException:
         raise
     except Exception as e:
-        print(f"[SENTIMENT-FLOW] 🚨 Sentiment update error: {str(e)}")
-        print(f"[SENTIMENT-FLOW] 🔍 Error type: {type(e).__name__}")
+        print__sentiment_flow(f"🚨 Sentiment update error: {str(e)}")
+        print__sentiment_flow(f"🔍 Error type: {type(e).__name__}")
         raise HTTPException(status_code=500, detail=f"Failed to update sentiment: {e}")
 
 @app.get("/chat/{thread_id}/sentiments")
 async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
-    """Get all sentiment values for a specific thread."""
+    """Get sentiment values for all messages in a thread."""
     
     user_email = user.get("email")
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[SENTIMENT-FLOW] 📥 Getting sentiments for thread {thread_id}, user: {user_email}")
-    
     try:
+        print__sentiment_flow(f"📥 Getting sentiments for thread {thread_id}, user: {user_email}")
         sentiments = await get_thread_run_sentiments(user_email, thread_id)
         
-        print(f"[SENTIMENT-FLOW] ✅ Retrieved {len(sentiments)} sentiment values")
-        return {"sentiments": sentiments}
-        
+        print__sentiment_flow(f"✅ Retrieved {len(sentiments)} sentiment values")
+        return sentiments
+    
     except Exception as e:
-        print(f"[SENTIMENT-FLOW] ❌ Failed to get sentiments for thread {thread_id}: {e}")
+        print__sentiment_flow(f"❌ Failed to get sentiments for thread {thread_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get sentiments: {e}")
 
 @app.get("/chat-threads")
@@ -516,30 +516,30 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[API-PostgreSQL] 📥 Loading chat threads for user: {user_email}")
+    print__api_postgresql(f"📥 Loading chat threads for user: {user_email}")
     
     try:
         # First try to use the checkpointer's connection pool
         checkpointer = await get_healthy_checkpointer()
         
         if hasattr(checkpointer, 'conn') and checkpointer.conn and not checkpointer.conn.closed:
-            print(f"[API-PostgreSQL-Debug] 🔍 Using checkpointer connection pool")
+            print__api_postgresql(f"🔍 Using checkpointer connection pool")
             threads = await get_user_chat_threads(user_email, checkpointer.conn)
         else:
-            print(f"[API-PostgreSQL-Debug] ⚠ Checkpointer connection pool not available, using direct connection")
+            print__api_postgresql(f"⚠ Checkpointer connection pool not available, using direct connection")
             # Fallback to direct connection (this will create its own healthy pool)
             threads = await get_user_chat_threads(user_email)
         
-        print(f"[API-PostgreSQL] ✅ Retrieved {len(threads)} threads for user {user_email}")
+        print__api_postgresql(f"✅ Retrieved {len(threads)} threads for user {user_email}")
         
         if len(threads) == 0:
-            print(f"[API-PostgreSQL-Debug] 🔍 No threads found - this might be expected for new users")
-            print(f"[API-PostgreSQL-Debug] 🔍 User email: '{user_email}'")
+            print__api_postgresql(f"🔍 No threads found - this might be expected for new users")
+            print__api_postgresql(f"🔍 User email: '{user_email}'")
         
         # Convert to response format
         response_threads = []
         for thread in threads:
-            print(f"[API-PostgreSQL-Debug] 🔍 Processing thread: {thread}")
+            print__api_postgresql(f"🔍 Processing thread: {thread}")
             response_threads.append(ChatThreadResponse(
                 thread_id=thread["thread_id"],
                 latest_timestamp=thread["latest_timestamp"].isoformat(),
@@ -548,20 +548,20 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
                 full_prompt=thread["full_prompt"]
             ))
         
-        print(f"[API-PostgreSQL] 📤 Returning {len(response_threads)} threads to frontend")
+        print__api_postgresql(f"📤 Returning {len(response_threads)} threads to frontend")
         return response_threads
         
     except Exception as e:
-        print(f"[API-PostgreSQL] ❌ Failed to get chat threads for user {user_email}: {e}")
+        print__api_postgresql(f"❌ Failed to get chat threads for user {user_email}: {e}")
         import traceback
-        print(f"[API-PostgreSQL-Debug] 🔍 Full traceback: {traceback.format_exc()}")
+        print__api_postgresql(f"🔍 Full traceback: {traceback.format_exc()}")
         
         # If this is a pool-related error, try one more time with completely fresh connection
         error_msg = str(e)
         if any(keyword in error_msg.lower() for keyword in [
             "pool", "closed", "connection", "timeout", "operational error"
         ]):
-            print(f"[API-PostgreSQL] 🔄 Attempting one final retry with fresh connection...")
+            print__api_postgresql(f"🔄 Attempting one final retry with fresh connection...")
             try:
                 # This should create a completely fresh pool
                 threads = await get_user_chat_threads(user_email)
@@ -574,10 +574,10 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
                         title=thread["title"],
                         full_prompt=thread["full_prompt"]
                     ))
-                print(f"[API-PostgreSQL] ✅ Retry successful - returning {len(response_threads)} threads")
+                print__api_postgresql(f"✅ Retry successful - returning {len(response_threads)} threads")
                 return response_threads
             except Exception as retry_error:
-                print(f"[API-PostgreSQL] ❌ Retry also failed: {retry_error}")
+                print__api_postgresql(f"❌ Retry also failed: {retry_error}")
         
         raise HTTPException(status_code=500, detail=f"Failed to get chat threads: {e}")
 
@@ -589,14 +589,14 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[API-PostgreSQL] 🗑️ Deleting chat thread {thread_id} for user {user_email}")
+    print__api_postgresql(f"🗑️ Deleting chat thread {thread_id} for user {user_email}")
     
     # Get a healthy checkpointer
     checkpointer = await get_healthy_checkpointer()
     
     # Check if we have a PostgreSQL checkpointer (not InMemorySaver)
     if not hasattr(checkpointer, 'conn'):
-        print(f"[API-PostgreSQL] ⚠ No PostgreSQL checkpointer available - nothing to delete")
+        print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - nothing to delete")
         return {"message": "No PostgreSQL checkpointer available - nothing to delete"}
     
     try:
@@ -607,7 +607,7 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
             await conn.set_autocommit(True)
             
             # 🔒 SECURITY CHECK: Verify user owns this thread before deleting
-            print(f"[API-PostgreSQL] 🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}")
+            print__api_postgresql(f"🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}")
             
             ownership_result = await conn.execute("""
                 SELECT COUNT(*) FROM users_threads_runs 
@@ -618,7 +618,7 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
             thread_entries_count = ownership_row[0] if ownership_row else 0
             
             if thread_entries_count == 0:
-                print(f"[API-PostgreSQL] 🚫 SECURITY: User {user_email} does not own thread {thread_id} - deletion denied")
+                print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - deletion denied")
                 return {
                     "message": "Thread not found or access denied",
                     "thread_id": thread_id,
@@ -626,9 +626,9 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
                     "deleted_counts": {}
                 }
             
-            print(f"[API-PostgreSQL] ✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - deletion authorized")
+            print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - deletion authorized")
             
-            print(f"[API-PostgreSQL] 🔄 Deleting from checkpoint tables for thread {thread_id}")
+            print__api_postgresql(f"🔄 Deleting from checkpoint tables for thread {thread_id}")
             
             # Delete from all checkpoint tables
             tables = ["checkpoint_blobs", "checkpoint_writes", "checkpoints"]
@@ -646,7 +646,7 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
                     
                     table_exists = await result.fetchone()
                     if not table_exists or not table_exists[0]:
-                        print(f"[API-PostgreSQL] ⚠ Table {table} does not exist, skipping")
+                        print__api_postgresql(f"⚠ Table {table} does not exist, skipping")
                         deleted_counts[table] = 0
                         continue
                     
@@ -657,14 +657,14 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
                     )
                     
                     deleted_counts[table] = result.rowcount if hasattr(result, 'rowcount') else 0
-                    print(f"[API-PostgreSQL] ✅ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}")
+                    print__api_postgresql(f"✅ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}")
                     
                 except Exception as table_error:
-                    print(f"[API-PostgreSQL] ⚠ Error deleting from table {table}: {table_error}")
+                    print__api_postgresql(f"⚠ Error deleting from table {table}: {table_error}")
                     deleted_counts[table] = f"Error: {str(table_error)}"
             
             # Delete from users_threads_runs table directly within the same transaction
-            print(f"[API-PostgreSQL] 🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
+            print__api_postgresql(f"🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
             try:
                 result = await conn.execute("""
                     DELETE FROM users_threads_runs 
@@ -672,18 +672,18 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
                 """, (user_email, thread_id))
                 
                 users_threads_runs_deleted = result.rowcount if hasattr(result, 'rowcount') else 0
-                print(f"[API-PostgreSQL] ✅ Deleted {users_threads_runs_deleted} entries from users_threads_runs for user {user_email}, thread {thread_id}")
+                print__api_postgresql(f"✅ Deleted {users_threads_runs_deleted} entries from users_threads_runs for user {user_email}, thread {thread_id}")
                 
                 deleted_counts["users_threads_runs"] = users_threads_runs_deleted
                 
             except Exception as e:
-                print(f"[API-PostgreSQL] ❌ Error deleting from users_threads_runs: {e}")
+                print__api_postgresql(f"❌ Error deleting from users_threads_runs: {e}")
                 deleted_counts["users_threads_runs"] = f"Error: {str(e)}"
             
             # Also call the helper function for additional cleanup (backward compatibility)
-            print(f"[API-PostgreSQL] 🔄 Additional cleanup via helper function...")
+            print__api_postgresql(f"🔄 Additional cleanup via helper function...")
             thread_entries_result = await delete_user_thread_entries(user_email, thread_id, pool)
-            print(f"[API-PostgreSQL] ✅ Helper function deletion result: {thread_entries_result}")
+            print__api_postgresql(f"✅ Helper function deletion result: {thread_entries_result}")
             
             result_data = {
                 "message": f"Checkpoint records and thread entries deleted for thread_id: {thread_id}",
@@ -693,12 +693,12 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
                 "user_email": user_email
             }
             
-            print(f"[API-PostgreSQL] 🎉 Successfully deleted thread {thread_id} for user {user_email}")
+            print__api_postgresql(f"🎉 Successfully deleted thread {thread_id} for user {user_email}")
             return result_data
             
     except Exception as e:
         error_msg = str(e)
-        print(f"[API-PostgreSQL] ❌ Failed to delete checkpoint records for thread {thread_id}: {e}")
+        print__api_postgresql(f"❌ Failed to delete checkpoint records for thread {thread_id}: {e}")
         
         # If it's a connection error, don't treat it as a failure since it means 
         # there are likely no records to delete anyway
@@ -706,7 +706,7 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
             "ssl error", "connection", "timeout", "operational error", 
             "server closed", "bad connection", "consuming input failed"
         ]):
-            print(f"[API-PostgreSQL] ⚠ PostgreSQL connection unavailable - no records to delete")
+            print__api_postgresql(f"⚠ PostgreSQL connection unavailable - no records to delete")
             return {
                 "message": "PostgreSQL connection unavailable - no records to delete", 
                 "thread_id": thread_id,
@@ -771,7 +771,7 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
             for code, short_desc in desc_cursor.fetchall():
                 desc_map[code] = short_desc
     except Exception as e:
-        print(f"[DEBUG] Error fetching short_descriptions: {e}")
+        print__debug(f"Error fetching short_descriptions: {e}")
     # Build result list
     result = [
         {"selection_code": t, "short_description": desc_map.get(t, "")}
@@ -783,18 +783,18 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
 def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
     db_path = "data/czsu_data.db"
     if not table:
-        print("[DEBUG] No table specified")
+        print__debug("No table specified")
         return {"columns": [], "rows": []}
-    print(f"[DEBUG] Requested table: {table}")
+    print__debug(f"Requested table: {table}")
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
         try:
             cursor.execute(f"SELECT * FROM '{table}' LIMIT 10000")
             columns = [desc[0] for desc in cursor.description]
             rows = cursor.fetchall()
-            print(f"[DEBUG] Columns: {columns}, Rows count: {len(rows)}")
+            print__debug(f"Columns: {columns}, Rows count: {len(rows)}")
         except Exception as e:
-            print(f"[DEBUG] Error fetching table '{table}': {e}")
+            print__debug(f"Error fetching table '{table}': {e}")
             return {"columns": [], "rows": []}
     return {"columns": columns, "rows": rows}
 
@@ -806,17 +806,17 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[API-PostgreSQL] 📥 Loading checkpoint messages for thread {thread_id}, user: {user_email}")
+    print__api_postgresql(f"📥 Loading checkpoint messages for thread {thread_id}, user: {user_email}")
     
     try:
         # 🔒 SECURITY CHECK: Verify user owns this thread before retrieving messages
-        print(f"[API-PostgreSQL] 🔒 Verifying thread ownership for user: {user_email}, thread: {thread_id}")
+        print__api_postgresql(f"🔒 Verifying thread ownership for user: {user_email}, thread: {thread_id}")
         
         # Check if this user has any entries in users_threads_runs for this thread
         checkpointer = await get_healthy_checkpointer()
         
         if not hasattr(checkpointer, 'conn'):
-            print(f"[API-PostgreSQL] ⚠ No PostgreSQL checkpointer available - returning empty messages")
+            print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - returning empty messages")
             return []
         
         # Verify thread ownership using users_threads_runs table
@@ -830,20 +830,20 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
             thread_entries_count = ownership_row[0] if ownership_row else 0
             
             if thread_entries_count == 0:
-                print(f"[API-PostgreSQL] 🚫 SECURITY: User {user_email} does not own thread {thread_id} - access denied")
+                print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - access denied")
                 # Return empty instead of error to avoid information disclosure
                 return []
             
-            print(f"[API-PostgreSQL] ✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
+            print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
         
         # Get conversation messages from checkpoint history
         stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id)
         
         if not stored_messages:
-            print(f"[API-PostgreSQL] ⚠ No messages found in checkpoints for thread {thread_id}")
+            print__api_postgresql(f"⚠ No messages found in checkpoints for thread {thread_id}")
             return []
         
-        print(f"[API-PostgreSQL] 📄 Found {len(stored_messages)} messages from checkpoints")
+        print__api_postgresql(f"📄 Found {len(stored_messages)} messages from checkpoints")
         
         # Get additional metadata from latest checkpoint (like queries_and_results and top_selection_codes)
         queries_and_results = await get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id)
@@ -924,27 +924,27 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
                     
                     # Use filtered codes if available, otherwise fallback to all top_selection_codes
                     datasets_used = used_selection_codes if used_selection_codes else top_selection_codes
-                    print(f"[API-PostgreSQL] 📊 Found datasets used (filtered): {datasets_used} (from {len(top_selection_codes)} total)")
+                    print__api_postgresql(f"📊 Found datasets used (filtered): {datasets_used} (from {len(top_selection_codes)} total)")
                 elif top_selection_codes:
                     # If no queries yet, use all top_selection_codes
                     datasets_used = top_selection_codes
-                    print(f"[API-PostgreSQL] 📊 Found datasets used (unfiltered): {datasets_used}")
+                    print__api_postgresql(f"📊 Found datasets used (unfiltered): {datasets_used}")
                 
                 # Extract SQL query from queries_and_results for SQL button
                 if queries_and_results:
                     # Get the last (most recent) SQL query
                     sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
-                    print(f"[API-PostgreSQL] 🔍 Found SQL query: {sql_query[:50] if sql_query else 'None'}...")
+                    print__api_postgresql(f"🔍 Found SQL query: {sql_query[:50] if sql_query else 'None'}...")
                 
         except Exception as e:
-            print(f"[API-PostgreSQL] ⚠ Could not get datasets/SQL from checkpoint: {e}")
+            print__api_postgresql(f"⚠ Could not get datasets/SQL from checkpoint: {e}")
         
         # Convert stored messages to frontend format
         chat_messages = []
         
         for i, stored_msg in enumerate(stored_messages):
             # Debug: Log the raw stored message
-            print(f"[API-PostgreSQL] 🔍 Processing stored message {i+1}: is_user={stored_msg.get('is_user')}, content='{stored_msg.get('content', '')[:30]}...'")
+            print__api_postgresql(f"🔍 Processing stored message {i+1}: is_user={stored_msg.get('is_user')}, content='{stored_msg.get('content', '')[:30]}...'")
             
             # Create meta information for messages
             meta_info = {}
@@ -958,7 +958,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
                 if sql_query:
                     meta_info["sqlQuery"] = sql_query
                 meta_info["source"] = "checkpoint_history"
-                print(f"[API-PostgreSQL] 🔍 Added metadata to AI message: datasets={len(datasets_used)}, sql={'Yes' if sql_query else 'No'}")
+                print__api_postgresql(f"🔍 Added metadata to AI message: datasets={len(datasets_used)}, sql={'Yes' if sql_query else 'No'}")
             
             # Convert queries_and_results for AI messages
             queries_results_for_frontend = None
@@ -967,7 +967,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
             
             # Create ChatMessage with explicit debugging
             is_user_flag = stored_msg["is_user"]
-            print(f"[API-PostgreSQL] 🔍 Creating ChatMessage: isUser={is_user_flag}")
+            print__api_postgresql(f"🔍 Creating ChatMessage: isUser={is_user_flag}")
             
             chat_message = ChatMessage(
                 id=stored_msg["id"],
@@ -985,11 +985,11 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
             )
             
             # Debug: Verify the ChatMessage was created correctly
-            print(f"[API-PostgreSQL] 🔍 ChatMessage created: isUser={chat_message.isUser}, user='{chat_message.user}'")
+            print__api_postgresql(f"🔍 ChatMessage created: isUser={chat_message.isUser}, user='{chat_message.user}'")
             
             chat_messages.append(chat_message)
         
-        print(f"[API-PostgreSQL] ✅ Converted {len(chat_messages)} messages to frontend format")
+        print__api_postgresql(f"✅ Converted {len(chat_messages)} messages to frontend format")
         
         # Log the messages for debugging
         for i, msg in enumerate(chat_messages):
@@ -997,20 +997,20 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
             content_preview = msg.content[:50] + "..." if len(msg.content) > 50 else msg.content
             datasets_info = f" (datasets: {msg.meta.get('datasetsUsed', [])})" if msg.meta and msg.meta.get('datasetsUsed') else ""
             sql_info = f" (SQL: {msg.meta.get('sqlQuery', 'None')[:30]}...)" if msg.meta and msg.meta.get('sqlQuery') else ""
-            print(f"[API-PostgreSQL] {i+1}. {user_type}: {content_preview}{datasets_info}{sql_info}")
+            print__api_postgresql(f"{i+1}. {user_type}: {content_preview}{datasets_info}{sql_info}")
         
         return chat_messages
         
     except Exception as e:
         error_msg = str(e)
-        print(f"[API-PostgreSQL] ❌ Failed to load checkpoint messages for thread {thread_id}: {e}")
+        print__api_postgresql(f"❌ Failed to load checkpoint messages for thread {thread_id}: {e}")
         
         # Handle specific database connection errors gracefully
         if any(keyword in error_msg.lower() for keyword in [
             "ssl error", "connection", "timeout", "operational error", 
             "server closed", "bad connection", "consuming input failed"
         ]):
-            print(f"[API-PostgreSQL] ⚠ Database connection error - returning empty messages")
+            print__api_postgresql(f"⚠ Database connection error - returning empty messages")
             return []
         else:
             raise HTTPException(status_code=500, detail=f"Failed to load checkpoint messages: {e}")
@@ -1023,7 +1023,7 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[DEBUG] 🔍 Inspecting checkpoints for thread: {thread_id}")
+    print__debug(f"🔍 Inspecting checkpoints for thread: {thread_id}")
     
     try:
         checkpointer = await get_healthy_checkpointer()
@@ -1081,7 +1081,7 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
         return debug_data
         
     except Exception as e:
-        print(f"[DEBUG] ❌ Error inspecting checkpoints: {e}")
+        print__debug(f"❌ Error inspecting checkpoints: {e}")
         return {"error": str(e)}
 
 @app.get("/debug/pool-status")
@@ -1142,18 +1142,18 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[FEEDBACK-FLOW] 🔍 Fetching run_ids for thread {thread_id}")
+    print__feedback_flow(f"🔍 Fetching run_ids for thread {thread_id}")
     
     try:
         pool = await get_healthy_checkpointer()
         pool = pool.conn if hasattr(pool, 'conn') else None
         
         if not pool:
-            print("[FEEDBACK-FLOW] ⚠ No pool available for run_id lookup")
+            print__feedback_flow("⚠ No pool available for run_id lookup")
             return {"run_ids": []}
         
         async with pool.connection() as conn:
-            print(f"[FEEDBACK-FLOW] 📊 Executing SQL query for thread {thread_id}")
+            print__feedback_flow(f"📊 Executing SQL query for thread {thread_id}")
             result = await conn.execute("""
                 SELECT run_id, prompt, timestamp
                 FROM users_threads_runs 
@@ -1163,7 +1163,7 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
             
             run_id_data = []
             async for row in result:
-                print(f"[FEEDBACK-FLOW] 📝 Processing database row - run_id: {row[0]}, prompt: {row[1][:50]}...")
+                print__feedback_flow(f"📝 Processing database row - run_id: {row[0]}, prompt: {row[1][:50]}...")
                 try:
                     run_uuid = str(uuid.UUID(row[0])) if row[0] else None
                     if run_uuid:
@@ -1172,19 +1172,19 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
                             "prompt": row[1],
                             "timestamp": row[2].isoformat()
                         })
-                        print(f"[FEEDBACK-FLOW] ✅ Valid UUID found: {run_uuid}")
+                        print__feedback_flow(f"✅ Valid UUID found: {run_uuid}")
                     else:
-                        print(f"[FEEDBACK-FLOW] ⚠ Null run_id found for prompt: {row[1][:50]}...")
+                        print__feedback_flow(f"⚠ Null run_id found for prompt: {row[1][:50]}...")
                 except ValueError:
-                    print(f"[FEEDBACK-FLOW] ❌ Invalid UUID in database: {row[0]}")
+                    print__feedback_flow(f"❌ Invalid UUID in database: {row[0]}")
                     continue
             
-            print(f"[FEEDBACK-FLOW] 📊 Total valid run_ids found: {len(run_id_data)}")
+            print__feedback_flow(f"📊 Total valid run_ids found: {len(run_id_data)}")
             return {"run_ids": run_id_data}
             
     except Exception as e:
-        print(f"[FEEDBACK-FLOW] 🚨 Error fetching run_ids: {str(e)}")
-        return {"run_ids": []} 
+        print__feedback_flow(f"🚨 Error fetching run_ids: {str(e)}")
+        return {"run_ids": []}
 
 @app.get("/debug/run-id/{run_id}")
 async def debug_run_id(run_id: str, user=Depends(get_current_user)):
@@ -1194,7 +1194,7 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print(f"[DEBUG-RUN-ID] 🔍 Checking run_id: '{run_id}' for user: {user_email}")
+    print__debug(f"🔍 Checking run_id: '{run_id}' for user: {user_email}")
     
     result = {
         "run_id": run_id,
@@ -1238,7 +1238,7 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
                         "prompt": row[2],
                         "timestamp": row[3].isoformat() if row[3] else None
                     }
-                    print(f"[DEBUG-RUN-ID] ✅ User {user_email} owns run_id {run_id}")
+                    print__debug(f"✅ User {user_email} owns run_id {run_id}")
                 else:
                     # Check if run_id exists but belongs to different user
                     db_result_any = await conn.execute("""
@@ -1249,10 +1249,61 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
                     if any_row and any_row[0] > 0:
                         result["exists_in_database"] = True
                         result["user_owns_run_id"] = False
-                        print(f"[DEBUG-RUN-ID] 🚫 Run_id {run_id} exists but user {user_email} does not own it")
+                        print__debug(f"🚫 Run_id {run_id} exists but user {user_email} does not own it")
                     else:
-                        print(f"[DEBUG-RUN-ID] ❌ Run_id {run_id} not found in database")
+                        print__debug(f"❌ Run_id {run_id} not found in database")
     except Exception as e:
         result["database_error"] = str(e)
     
-    return result 
+    return result
+
+#==============================================================================
+# DEBUG FUNCTIONS
+#==============================================================================
+def print__api_postgresql(msg: str) -> None:
+    """Print API-PostgreSQL messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[API-PostgreSQL] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__feedback_flow(msg: str) -> None:
+    """Print FEEDBACK-FLOW messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[FEEDBACK-FLOW] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__sentiment_flow(msg: str) -> None:
+    """Print SENTIMENT-FLOW messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[SENTIMENT-FLOW] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__debug(msg: str) -> None:
+    """Print DEBUG messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG] {msg}")
+        import sys
+        sys.stdout.flush() 

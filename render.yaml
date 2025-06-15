@@ -3,7 +3,7 @@ services:
     name: czsu-multi-agent-text-to-sql
     runtime: python
     buildCommand: python -m pip install -r requirements.txt && python unzip_files.py
-    startCommand: python -m uvicorn api_server:app --host 0.0.0.0 --port $PORT --workers 1 --limit-max-requests 100 --timeout-keep-alive 5 --limit-concurrency 200 --backlog 50
+    startCommand: python -m uvicorn api_server:app --host 0.0.0.0 --port $PORT --workers 1 --limit-max-requests 10000 --timeout-keep-alive 5 --limit-concurrency 200 --backlog 50
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9

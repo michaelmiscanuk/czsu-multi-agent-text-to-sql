@@ -32,7 +32,7 @@ from .utils.nodes import (
     retrieve_similar_selections_hybrid_search_node,
     rerank_node,
     relevant_selections_node,
-    debug_print,
+    print__debug,
     rewrite_query_node,
     summarize_messages_node
 )
@@ -105,7 +105,7 @@ def create_graph(checkpointer=None):
             return END
         else:
             print("Couldn't find relevant dataset selection to provide answer")
-            debug_print(f"DEBUG STATE: {state}")
+            print__debug(f"DEBUG STATE: {state}")
             return END
     graph.add_conditional_edges(
         "relevant_selections",
