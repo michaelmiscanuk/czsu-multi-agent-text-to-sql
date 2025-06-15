@@ -1,5 +1,6 @@
 import sys
 import asyncio
+import gc
 from contextlib import asynccontextmanager
 from datetime import datetime
 import uuid
@@ -10,7 +11,9 @@ if sys.platform == "win32":
 
 from fastapi import FastAPI, Query, HTTPException, Header, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
 from typing import List, Optional
 import sqlite3
@@ -188,12 +191,19 @@ async def get_healthy_checkpointer():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    # Optimize garbage collection for memory efficiency
+    gc.set_threshold(700, 10, 10)  # More aggressive garbage collection
     await initialize_checkpointer()
     yield
     # Shutdown
     await cleanup_checkpointer()
+    # Force garbage collection on shutdown
+    gc.collect()
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    lifespan=lifespan,
+    default_response_class=ORJSONResponse  # Use ORJSON for faster, memory-efficient JSON responses
+)
 
 # Allow CORS for local frontend dev
 app.add_middleware(
@@ -203,6 +213,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add GZip compression to reduce response sizes and memory usage
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 class AnalyzeRequest(BaseModel):
     prompt: str
