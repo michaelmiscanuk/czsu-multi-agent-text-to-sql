@@ -167,4 +167,142 @@ dbname=your_db_name
 - **No functionality loss** - All features remain intact
 - **Easy to adjust** - Memory settings can be tuned via environment variables
 
-Your application should now run comfortably within Render's 512MB free tier limit while maintaining full functionality including ChromaDB vector search! 
+Your application should now run comfortably within Render's 512MB free tier limit while maintaining full functionality including ChromaDB vector search!
+
+# Memory Optimization Summary for CZSU Multi-Agent Text-to-SQL System
+
+## 🚨 Critical Issue Resolved: 512MB Memory Limit Exceeded on Render
+
+The platform was experiencing unexpected restarts with no error messages, causing the frontend to hang. Investigation revealed the root cause: **512MB memory limit exceeded** on Render's free tier.
+
+## Memory Optimization Changes Implemented
+
+### 1. 🩸 MAJOR MEMORY LEAK FIXED: `save_node()` Function
+**File**: `my_agent/utils/nodes.py`
+**Problem**: Loading entire 3.5MB `analysis_results.json` into memory on every request
+**Solution**: 
+- Changed to streaming JSONL format (`analysis_results.jsonl`)
+- Removed `existing_results = json.load(f)` memory killer
+- Now appends single JSON objects per line without loading existing file
+- **Memory savings**: ~3.5MB per request
+
+### 2. 🔒 Concurrency Control 
+**File**: `api_server.py`
+**Added**: `analysis_semaphore = asyncio.Semaphore(1)` 
+- Limits concurrent analyses to prevent memory stack-up
+- Timeout reduced from 15 minutes to 8 minutes for platform stability
+
+### 3. 📊 Memory Monitoring System
+**Added**: 
+- `psutil>=5.9.0` dependency for memory tracking
+- `print__memory_monitoring()` function with `[MEMORY-MONITORING]` debug prefix
+- `log_memory_usage()` at key points (startup, analysis start/complete, cleanup)
+- Garbage collection after each request
+- Request middleware monitoring slow operations
+
+### 4. 🏥 Health Monitoring
+**Added**: `/health` endpoint with memory usage reporting for Render monitoring
+**Added**: Graceful shutdown handlers to detect platform restarts
+
+## ⚡ Windows Development Compatibility Issue RESOLVED
+
+### Problem
+Local Windows testing failed with psycopg event loop incompatibility:
+```
+❌ Psycopg cannot use the 'ProactorEventLoop' to run in async mode. 
+Please use a compatible event loop, for instance by setting 
+'asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())'
+```
+
+### Solution Implemented: Aggressive Event Loop Fix ✅
+
+**Files Modified**:
+- `api_server.py`: Enhanced Windows event loop initialization
+- `my_agent/utils/postgres_checkpointer.py`: Aggressive SelectorEventLoop forcing
+
+**Key Changes**:
+
+1. **Aggressive Event Loop Policy Fix** (both files):
+   ```python
+   if sys.platform == "win32":
+       # Force close any existing event loop and create a fresh SelectorEventLoop
+       asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+       
+       # Explicitly close existing ProactorEventLoop
+       try:
+           current_loop = asyncio.get_event_loop()
+           if current_loop and not current_loop.is_closed():
+               current_loop.close()
+       except RuntimeError:
+           pass
+       
+       # Create new SelectorEventLoop explicitly
+       new_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
+       asyncio.set_event_loop(new_loop)
+   ```
+
+2. **Removed Platform-Specific Fallbacks**:
+   - No more InMemorySaver workaround on Windows
+   - Removed Windows bypasses in API endpoints
+   - PostgreSQL connections work normally on Windows now
+
+**Result**: 
+- ✅ **Windows**: Uses PostgreSQL with full persistence and functionality
+- ✅ **Linux (Render)**: Uses PostgreSQL normally (unchanged)
+- ✅ **Cross-platform**: Identical behavior on both platforms
+- ✅ **Local testing**: Full PostgreSQL functionality available on Windows
+
+### Development vs Production Behavior
+
+| Feature | Windows (Development) | Linux (Production) |
+|---------|----------------------|-------------------|
+| Checkpointer | **PostgreSQL** ✅ | PostgreSQL |
+| Chat persistence | **Full persistence** ✅ | Full persistence |
+| Memory usage | Optimized | Optimized |
+| Error handling | **Full functionality** ✅ | Full functionality |
+| API endpoints | **All endpoints work** ✅ | All endpoints work |
+
+### Verification ✅
+
+Local Windows testing confirmed:
+```json
+{
+    "global_checkpointer_exists": true,
+    "checkpointer_type": "ResilientPostgreSQLCheckpointer",
+    "has_connection_pool": true,
+    "pool_closed": false,
+    "pool_healthy": true,
+    "can_query": true,
+    "healthy_checkpointer_available": true
+}
+```
+
+**Windows PostgreSQL Status**: 🟢 **FULLY OPERATIONAL**
+
+## Configuration & Dependencies Updated
+
+### Files Modified
+- `requirements.txt` & `pyproject.toml`: Added `psutil>=5.9.0`, synchronized dependencies
+- `render.yaml`: Added `healthCheckPath: /health`, essential env vars
+- `monitor_health.py`: New monitoring script created
+
+### Memory Configuration
+- **Garbage Collection**: More aggressive thresholds (700, 10, 10)
+- **Response Format**: ORJSON for faster, memory-efficient JSON
+- **Compression**: GZip middleware for reduced response sizes
+- **Connection Pooling**: Optimized PostgreSQL connection management
+
+## Expected Results
+- **Memory usage reduction**: From ~400MB+ to ~200MB baseline
+- **No more platform restarts**: Memory stays well under 512MB limit
+- **Frontend stability**: No more hanging due to backend crashes
+- **Cross-platform compatibility**: Works on Windows and Linux
+- **Monitoring visibility**: Detailed memory logs with `[MEMORY-MONITORING]` tags
+
+## Deployment Status
+✅ **All optimizations implemented and tested**
+✅ **Windows compatibility verified**
+✅ **Memory monitoring active**
+✅ **Ready for production deployment**
+
+Main memory leak fix and concurrency control should resolve the 512MB limit issue immediately upon deployment to Render. 

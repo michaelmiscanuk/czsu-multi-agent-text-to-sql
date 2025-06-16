@@ -6,69 +6,108 @@ readme = "README.md"
 requires-python = ">=3.10"
 authors = [ { name = "Michael Miscanuk Name", email = "michael.miscanuk@gmail.com" } ]
 
-# Web frameworks: fastapi, starlette, uvicorn, python-multipart
-# Database: alembic, SQLAlchemy, psycopg, psycopg-pool
+# Core API and FastAPI
+# Database: PostgreSQL, SQLAlchemy, asyncpg, psycopg
 # Data processing: pandas, numpy, openpyxl, pyjstat, tqdm, pymupdf
-# ML/AI: langchain, langgraph, openai, chromadb, cohere, tiktoken, langsmith, langchain-chroma, langchain-community, langchain-core, langchain-openai, langchain-text-splitters, langgraph-checkpoint, langgraph-checkpoint-postgres
-# Utilities: requests, httpx, httpcore, python-dotenv, aiofiles, anyio, rank-bm25, certifi, charset-normalizer, idna, h11
-# Serialization/Parsing: PyYAML, orjson, Jinja2, MarkupSafe, typing_extensions
-# Auth/Security: authlib, PyJWT
+# ML/AI: langchain ecosystem, openai, chromadb, cohere, sentence-transformers
+# Utilities: requests, httpx, python-dotenv, aiofiles, psutil
+# Serialization/Parsing: PyYAML, orjson, Jinja2
+# Auth/Security: authlib, PyJWT, python-jose
 # MCP: mcp
-# Pydantic: pydantic, pydantic-settings, pydantic_core
 
 dependencies = [
-    "fastapi==0.115.9",
-    "uvicorn==0.34.2",
+    # Core API and FastAPI
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
     "starlette==0.45.3",
-    "python-multipart==0.0.20",
-    "pydantic==2.11.5",
+    "python-multipart>=0.0.6",
+    
+    # Pydantic for data validation
+    "pydantic>=2.5.0",
     "pydantic-settings==2.9.1",
     "pydantic_core==2.33.2",
-    "langchain==0.3.25",
-    "langchain-core==0.3.63",
-    "langchain-openai==0.3.18",
+    
+    # LangChain ecosystem (core)
+    "langchain>=0.1.0",
+    "langchain-core>=0.1.0",
+    "langchain-openai>=0.0.2",
     "langchain-chroma==0.2.4",
-    "langchain-community==0.3.24",
+    "langchain-community>=0.0.10",
     "langchain-text-splitters==0.3.8",
-    "langgraph==0.4.7",
+    "langgraph>=0.2.0",
     "langgraph-checkpoint==2.0.26",
-    "langgraph-checkpoint-postgres==2.0.21",
+    "langgraph-checkpoint-postgres>=2.0.0",
     "langsmith==0.3.34",
+    "langchain-anthropic>=0.1.0",
+    
+    # OpenAI and Azure OpenAI
     "openai==1.82.1",
-    "chromadb==1.0.11",
+    
+    # ChromaDB for vector search
+    "chromadb>=0.4.18",
+    
+    # Cohere for reranking
     "cohere==5.15.0",
-    "psycopg[binary]==3.2.4",
+    
+    # PostgreSQL database
+    "psycopg[binary,pool]>=3.1.13",
     "psycopg-pool==3.2.6",
-    "SQLAlchemy==2.0.40",
+    "SQLAlchemy>=2.0.23",
+    "asyncpg>=0.29.0",
     "alembic==1.15.2",
+    
+    # Authentication
     "authlib==1.5.2",
-    "PyJWT==2.10.1",
-    "python-dotenv==1.1.0",
-    "requests==2.32.3",
+    "PyJWT[crypto]>=2.8.0",
+    "python-jose[cryptography]>=3.3.0",
+    
+    # Essential utilities
+    "python-dotenv>=1.0.0",
+    "requests>=2.31.0",
     "tqdm==4.67.1",
-    "pandas==2.2.3",
-    "numpy==2.2.5",
+    
+    # Data processing
+    "pandas>=2.1.3",
+    "numpy>=1.25.2",
     "openpyxl==3.1.5",
     "pyjstat==2.4.0",
+    
+    # PDF Processing
     "pymupdf>=1.26.0",
-    "orjson==3.10.16",
+    
+    # JSON/serialization
+    "orjson>=3.9.10",
     "PyYAML==6.0.2",
+    
+    # MCP server
     "mcp==1.9.2",
+    
+    # Async utilities
     "aiofiles==24.1.0",
     "anyio==4.9.0",
+    
+    # Text processing
     "tiktoken==0.9.0",
-    "rank-bm25==0.2.2",
+    "rank-bm25>=0.2.2",
+    "sentence-transformers>=2.2.2",
+    
+    # HTTP and networking
     "httpx==0.28.1",
     "httpcore==1.0.9",
     "certifi==2025.1.31",
     "charset-normalizer==3.4.1",
     "idna==3.10",
     "h11==0.16.0",
+    
+    # Templates
     "Jinja2==3.1.6",
     "MarkupSafe==3.0.2",
+    
+    # Type checking
     "typing_extensions",
-    "pymupdf4llm>=0.0.5",
-    "llama-parse>=0.4.0" 
+    
+    # Monitoring and utilities
+    "psutil>=5.9.0",
 ]
 
 [build-system]

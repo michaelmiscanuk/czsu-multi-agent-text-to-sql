@@ -4,6 +4,45 @@ PostgreSQL checkpointer module using the official langgraph checkpoint postgres 
 This uses the correct table schemas and implementation from the langgraph library.
 """
 
+# CRITICAL: Set Windows event loop policy FIRST, before any other imports
+# This must be the very first thing that happens to fix psycopg compatibility
+import sys
+if sys.platform == "win32":
+    import asyncio
+    
+    # AGGRESSIVE WINDOWS FIX: Force SelectorEventLoop before any other async operations
+    print(f"🔧 PostgreSQL module: Windows detected - forcing SelectorEventLoop for PostgreSQL compatibility")
+    
+    # Set the policy first
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    print(f"🔧 PostgreSQL module: Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
+    
+    # Force close any existing event loop and create a fresh SelectorEventLoop
+    try:
+        current_loop = asyncio.get_event_loop()
+        if current_loop and not current_loop.is_closed():
+            print(f"🔧 PostgreSQL module: Closing existing {type(current_loop).__name__}")
+            current_loop.close()
+    except RuntimeError:
+        # No event loop exists yet, which is fine
+        pass
+    
+    # Create a new SelectorEventLoop explicitly
+    new_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
+    asyncio.set_event_loop(new_loop)
+    print(f"🔧 PostgreSQL module: Created new {type(new_loop).__name__}")
+    
+    # Verify the fix worked
+    try:
+        current_loop = asyncio.get_event_loop()
+        print(f"🔧 PostgreSQL module: Current event loop type: {type(current_loop).__name__}")
+        if "Selector" in type(current_loop).__name__:
+            print(f"✅ PostgreSQL module: PostgreSQL should work correctly on Windows now")
+        else:
+            print(f"⚠️ PostgreSQL module: Event loop fix may not have worked properly")
+    except RuntimeError:
+        print(f"🔧 PostgreSQL module: No event loop set yet (will be created as needed)")
+
 import asyncio
 import platform
 import os
@@ -40,10 +79,6 @@ def print__api_postgresql(msg: str) -> None:
         print(f"[API-PostgreSQL] {msg}")
         import sys
         sys.stdout.flush()
-
-# Fix for Windows ProactorEventLoop issue with psycopg
-if platform.system() == "Windows":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Database connection parameters
 database_pool: Optional[AsyncConnectionPool] = None
@@ -107,25 +142,79 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     
     print__postgresql_debug(f"🔧 Creating connection pool with settings: max_size={max_size}, min_size={min_size}, timeout={timeout}")
     
+    # WINDOWS FIX: For Windows, add special configuration to work with SelectorEventLoop
+    pool_kwargs = {
+        "autocommit": True,
+        "prepare_threshold": None,  # Disable prepared statements
+        "connect_timeout": 30,  # Connection establishment timeout
+    }
+    
+    # On Windows, add additional configuration for psycopg compatibility
+    if sys.platform == "win32":
+        print__postgresql_debug(f"🔧 Windows detected - configuring pool for SelectorEventLoop compatibility")
+        # Add any Windows-specific psycopg configuration
+        pool_kwargs["options"] = "-c default_transaction_isolation=read_committed"
+    
     # Use memory-optimized settings
     pool = AsyncConnectionPool(
         conninfo=connection_string,
         max_size=max_size,  # From environment variable
         min_size=min_size,  # From environment variable
         timeout=timeout,    # From environment variable
-        kwargs={
-            "autocommit": True,
-            "prepare_threshold": None,  # Disable prepared statements
-            "connect_timeout": 30,  # Connection establishment timeout
-        },
+        kwargs=pool_kwargs,
         open=False
     )
     
     # Explicitly open the pool with longer timeout
     try:
-        await asyncio.wait_for(pool.open(), timeout=60)  # Increased to 60 seconds
+        # WINDOWS FIX: For Windows, temporarily switch to SelectorEventLoop during pool opening
+        if sys.platform == "win32":
+            print__postgresql_debug(f"🔧 Opening pool with Windows SelectorEventLoop compatibility")
+            
+            # Try opening the pool in the current context first
+            try:
+                await asyncio.wait_for(pool.open(), timeout=60)
+                print__postgresql_debug(f"🔗 Pool opened successfully in current context")
+            except Exception as e:
+                if "ProactorEventLoop" in str(e):
+                    print__postgresql_debug(f"🔧 ProactorEventLoop issue detected, trying alternative approach...")
+                    
+                    # Create a new SelectorEventLoop context
+                    selector_policy = asyncio.WindowsSelectorEventLoopPolicy()
+                    selector_loop = selector_policy.new_event_loop()
+                    
+                    try:
+                        old_loop = asyncio.get_event_loop()
+                        asyncio.set_event_loop(selector_loop)
+                        
+                        # Recreate the pool in the new context
+                        pool = AsyncConnectionPool(
+                            conninfo=connection_string,
+                            max_size=max_size,
+                            min_size=min_size,
+                            timeout=timeout,
+                            kwargs=pool_kwargs,
+                            open=False
+                        )
+                        
+                        await asyncio.wait_for(pool.open(), timeout=60)
+                        print__postgresql_debug(f"🔗 Pool opened successfully with SelectorEventLoop")
+                        
+                        # Restore original loop
+                        asyncio.set_event_loop(old_loop)
+                        
+                    finally:
+                        if not selector_loop.is_closed():
+                            selector_loop.close()
+                else:
+                    raise
+        else:
+            # Non-Windows: Normal opening
+            await asyncio.wait_for(pool.open(), timeout=60)
+            
         print__postgresql_debug(f"🔗 Created fresh PostgreSQL connection pool (max_size={max_size}, min_size={min_size}, timeout={timeout}) with memory optimization")
         return pool
+        
     except asyncio.TimeoutError:
         print__postgresql_debug("❌ Timeout opening connection pool")
         raise
@@ -571,18 +660,57 @@ async def test_basic_postgres_connection():
         print__postgresql_debug(f"🔍 Database: {config['dbname']}")
         print__postgresql_debug(f"🔍 User: {config['user']}")
         
-        # Test basic connection with short timeout
-        async with await psycopg.AsyncConnection.connect(
-            connection_string,
-            autocommit=True,
-            connect_timeout=10
-        ) as conn:
-            # Simple query test
-            async with conn.cursor() as cur:
-                await cur.execute("SELECT 1 as test, NOW() as current_time")
-                result = await cur.fetchone()
-                print__postgresql_debug(f"✅ Basic PostgreSQL connection successful: {result}")
-                return True
+        # WINDOWS FIX: Force SelectorEventLoop for this specific connection test
+        if sys.platform == "win32":
+            print__postgresql_debug(f"🔧 Windows detected - forcing SelectorEventLoop for psycopg connection")
+            
+            # Create a dedicated SelectorEventLoop for this connection
+            selector_policy = asyncio.WindowsSelectorEventLoopPolicy()
+            selector_loop = selector_policy.new_event_loop()
+            
+            try:
+                # Set this as the current loop temporarily
+                old_loop = None
+                try:
+                    old_loop = asyncio.get_event_loop()
+                except RuntimeError:
+                    old_loop = None
+                
+                asyncio.set_event_loop(selector_loop)
+                print__postgresql_debug(f"🔧 Temporarily using event loop: {type(selector_loop).__name__}")
+                
+                # Test connection with SelectorEventLoop
+                async with await psycopg.AsyncConnection.connect(
+                    connection_string,
+                    autocommit=True,
+                    connect_timeout=10
+                ) as conn:
+                    # Simple query test
+                    async with conn.cursor() as cur:
+                        await cur.execute("SELECT 1 as test, NOW() as current_time")
+                        result = await cur.fetchone()
+                        print__postgresql_debug(f"✅ Basic PostgreSQL connection successful: {result}")
+                        return True
+                        
+            finally:
+                # Always restore the original loop
+                if old_loop:
+                    asyncio.set_event_loop(old_loop)
+                    print__postgresql_debug(f"🔧 Restored original event loop: {type(old_loop).__name__}")
+                selector_loop.close()
+        else:
+            # Non-Windows: Use normal connection
+            async with await psycopg.AsyncConnection.connect(
+                connection_string,
+                autocommit=True,
+                connect_timeout=10
+            ) as conn:
+                # Simple query test
+                async with conn.cursor() as cur:
+                    await cur.execute("SELECT 1 as test, NOW() as current_time")
+                    result = await cur.fetchone()
+                    print__postgresql_debug(f"✅ Basic PostgreSQL connection successful: {result}")
+                    return True
                 
     except Exception as e:
         print__postgresql_debug(f"❌ Basic PostgreSQL connection failed: {e}")

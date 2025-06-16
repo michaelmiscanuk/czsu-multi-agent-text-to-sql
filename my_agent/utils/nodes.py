@@ -599,6 +599,8 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         "result": final_answer,
         "queries_and_results": [{"query": q, "result": r} for q, r in state["queries_and_results"]]
     }
+    
+    # Stream write to text file (no memory issues)
     with result_path.open("a", encoding='utf-8') as f:
         f.write(f"Prompt: {state['prompt']}\n")
         f.write(f"Result: {final_answer}\n")
@@ -607,18 +609,20 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
             f.write(f"  Query: {query}\n")
             f.write(f"  Result: {result}\n")
         f.write("----------------------------------------------------------------------------\n")
-    json_result_path = BASE_DIR / "analysis_results.json"
-    existing_results = []
-    if json_result_path.exists():
-        try:
-            with json_result_path.open("r", encoding='utf-8') as f:
-                existing_results = json.load(f)
-        except json.JSONDecodeError:
-            existing_results = []
-    existing_results.append(result_obj)
-    with json_result_path.open("w", encoding='utf-8') as f:
-        json.dump(existing_results, f, ensure_ascii=False, indent=2)
-    print__debug(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}")
+    
+    # MEMORY OPTIMIZATION: Don't load entire JSON file into memory
+    # Instead, append to a JSONL (JSON Lines) file for memory efficiency
+    json_result_path = BASE_DIR / "analysis_results.jsonl"  # Changed to .jsonl
+    
+    try:
+        # Simply append one JSON object per line (no loading existing file)
+        with json_result_path.open("a", encoding='utf-8') as f:
+            import json
+            f.write(json.dumps(result_obj, ensure_ascii=False) + '\n')
+        print__debug(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path} (memory-optimized)")
+    except Exception as e:
+        print__debug(f"{SAVE_RESULT_ID}: ⚠️ Error saving JSON: {e}")
+    
     return state
 
 async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisState) -> DataAnalysisState:

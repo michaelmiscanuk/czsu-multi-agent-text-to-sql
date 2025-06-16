@@ -3,11 +3,44 @@
 import sys
 if sys.platform == "win32":
     import asyncio
+    
+    # AGGRESSIVE WINDOWS FIX: Force SelectorEventLoop before any other async operations
+    print(f"🔧 API Server: Windows detected - forcing SelectorEventLoop for PostgreSQL compatibility")
+    
+    # Set the policy first
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     print(f"🔧 Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
+    
+    # Force close any existing event loop and create a fresh SelectorEventLoop
+    try:
+        current_loop = asyncio.get_event_loop()
+        if current_loop and not current_loop.is_closed():
+            print(f"🔧 API Server: Closing existing {type(current_loop).__name__}")
+            current_loop.close()
+    except RuntimeError:
+        # No event loop exists yet, which is fine
+        pass
+    
+    # Create a new SelectorEventLoop explicitly
+    new_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
+    asyncio.set_event_loop(new_loop)
+    print(f"🔧 API Server: Created new {type(new_loop).__name__}")
+    
+    # Verify the fix worked
+    try:
+        current_loop = asyncio.get_event_loop()
+        print(f"🔧 API Server: Current event loop type: {type(current_loop).__name__}")
+        if "Selector" in type(current_loop).__name__:
+            print(f"✅ API Server: PostgreSQL should work correctly on Windows now")
+        else:
+            print(f"⚠️ API Server: Event loop fix may not have worked properly")
+    except RuntimeError:
+        print(f"🔧 API Server: No event loop set yet (will be created as needed)")
 
 import asyncio
 import gc
+import psutil
+import signal
 from contextlib import asynccontextmanager
 from datetime import datetime
 import uuid
@@ -50,6 +83,66 @@ from my_agent.utils.postgres_checkpointer import (
 # This ensures that conversation state is preserved between frontend requests using PostgreSQL
 GLOBAL_CHECKPOINTER = None
 
+# Add a semaphore to limit concurrent analysis requests
+MAX_CONCURRENT_ANALYSES = 1  # Only 1 analysis at a time for 512MB limit
+analysis_semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
+
+def print__memory_monitoring(msg: str) -> None:
+    """Print MEMORY-MONITORING messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[MEMORY-MONITORING] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def log_memory_usage(context: str = ""):
+    """Log current memory usage for monitoring."""
+    try:
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        memory_mb = memory_info.rss / 1024 / 1024
+        
+        # Get memory limits if available (Render typically sets these)
+        memory_limit_mb = None
+        try:
+            # Check for common memory limit environment variables
+            if os.environ.get('MEMORY_LIMIT'):
+                memory_limit_mb = int(os.environ.get('MEMORY_LIMIT')) / 1024 / 1024
+            elif os.environ.get('WEB_MEMORY'):
+                memory_limit_mb = int(os.environ.get('WEB_MEMORY'))
+        except:
+            pass
+        
+        limit_info = f" (limit: {memory_limit_mb:.1f}MB)" if memory_limit_mb else ""
+        usage_percent = f" ({(memory_mb/memory_limit_mb)*100:.1f}%)" if memory_limit_mb else ""
+        
+        print__memory_monitoring(f"Memory usage{f' [{context}]' if context else ''}: {memory_mb:.1f}MB{limit_info}{usage_percent}")
+        
+        # Warning if memory usage is high
+        if memory_limit_mb and memory_mb > memory_limit_mb * 0.85:
+            print__memory_monitoring(f"HIGH MEMORY WARNING: Using {(memory_mb/memory_limit_mb)*100:.1f}% of available memory!")
+            
+    except Exception as e:
+        print__memory_monitoring(f"Could not check memory usage: {e}")
+
+def setup_graceful_shutdown():
+    """Setup graceful shutdown handlers to detect platform restarts."""
+    def signal_handler(signum, frame):
+        print__memory_monitoring(f"Received signal {signum} - preparing for graceful shutdown...")
+        print__memory_monitoring(f"This could indicate a platform restart or memory limit exceeded")
+        log_memory_usage("shutdown_signal")
+        # Don't exit immediately, let FastAPI handle cleanup
+        
+    # Register signal handlers for common restart signals
+    signal.signal(signal.SIGTERM, signal_handler)  # Most common for container restarts
+    signal.signal(signal.SIGINT, signal_handler)   # Ctrl+C
+    if hasattr(signal, 'SIGUSR1'):
+        signal.signal(signal.SIGUSR1, signal_handler)  # User-defined signal
+
 async def initialize_checkpointer():
     """Initialize the global PostgreSQL checkpointer on startup."""
     global GLOBAL_CHECKPOINTER
@@ -57,6 +150,7 @@ async def initialize_checkpointer():
         try:
             print("🔗 Initializing PostgreSQL checkpointer and chat system...")
             print(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
+            log_memory_usage("startup")
             
             # Add timeout to initialization to fail faster
             GLOBAL_CHECKPOINTER = await asyncio.wait_for(
@@ -72,6 +166,7 @@ async def initialize_checkpointer():
             
             print("✓ Global PostgreSQL checkpointer initialized successfully")
             print("✓ users_threads_runs table verified/created")
+            log_memory_usage("checkpointer_initialized")
         except asyncio.TimeoutError:
             print("✗ Failed to initialize PostgreSQL checkpointer: initialization timeout")
             print("⚠ This usually means PostgreSQL connection pool is exhausted")
@@ -96,6 +191,9 @@ async def initialize_checkpointer():
 async def cleanup_checkpointer():
     """Clean up resources on app shutdown."""
     global GLOBAL_CHECKPOINTER
+    print__memory_monitoring("Starting application cleanup...")
+    log_memory_usage("cleanup_start")
+    
     if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
         try:
             # Check if pool is already closed before trying to close it
@@ -108,6 +206,11 @@ async def cleanup_checkpointer():
             print(f"⚠ Error closing connection pool: {e}")
         finally:
             GLOBAL_CHECKPOINTER = None
+    
+    # Force garbage collection on shutdown
+    collected = gc.collect()
+    print__memory_monitoring(f"Garbage collection freed {collected} objects")
+    log_memory_usage("cleanup_complete")
 
 async def get_healthy_checkpointer():
     """Get a healthy checkpointer instance, recreating if necessary with enhanced error handling."""
@@ -186,23 +289,34 @@ async def get_healthy_checkpointer():
                 print("❌ Non-recoverable error or final attempt failed, falling back to InMemorySaver")
                 break
     
-    # Fallback to InMemorySaver
+    # Fallback to InMemorySaver only if PostgreSQL completely fails
+    print("⚠ PostgreSQL checkpointer creation failed completely - falling back to InMemorySaver")
     from langgraph.checkpoint.memory import InMemorySaver
     GLOBAL_CHECKPOINTER = InMemorySaver()
-    print("⚠ Falling back to InMemorySaver - persistence will be limited")
+    print("⚠ Using InMemorySaver - persistence will be limited to this session")
     return GLOBAL_CHECKPOINTER
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    print("🚀 FastAPI application starting up...")
+    log_memory_usage("app_startup")
+    
+    # Setup graceful shutdown handlers
+    setup_graceful_shutdown()
+    
     # Optimize garbage collection for memory efficiency
     gc.set_threshold(700, 10, 10)  # More aggressive garbage collection
     await initialize_checkpointer()
+    
+    log_memory_usage("app_ready")
+    print("✅ FastAPI application ready to serve requests")
+    
     yield
+    
     # Shutdown
+    print("🛑 FastAPI application shutting down...")
     await cleanup_checkpointer()
-    # Force garbage collection on shutdown
-    gc.collect()
 
 app = FastAPI(
     lifespan=lifespan,
@@ -220,6 +334,99 @@ app.add_middleware(
 
 # Add GZip compression to reduce response sizes and memory usage
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# Add middleware to monitor requests and detect high load
+@app.middleware("http")
+async def monitor_requests(request: Request, call_next):
+    start_time = datetime.now()
+    
+    # Log memory before processing request
+    if request.url.path.startswith("/analyze"):
+        log_memory_usage(f"before_{request.url.path}")
+    
+    response = await call_next(request)
+    
+    # Log memory after processing request  
+    if request.url.path.startswith("/analyze"):
+        process_time = (datetime.now() - start_time).total_seconds()
+        log_memory_usage(f"after_{request.url.path}_({process_time:.2f}s)")
+        
+        # Warn about slow requests that might cause timeouts
+        if process_time > 300:  # 5 minutes
+            print__memory_monitoring(f"SLOW REQUEST WARNING: {request.url.path} took {process_time:.2f}s")
+    
+    return response
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Render and monitoring."""
+    try:
+        health_data = {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "app_uptime": "unknown"
+        }
+        
+        # Add memory info
+        try:
+            process = psutil.Process()
+            memory_info = process.memory_info()
+            memory_mb = memory_info.rss / 1024 / 1024
+            
+            health_data["memory_usage_mb"] = round(memory_mb, 1)
+            
+            # Check if we're approaching memory limits
+            memory_limit_mb = None
+            try:
+                if os.environ.get('MEMORY_LIMIT'):
+                    memory_limit_mb = int(os.environ.get('MEMORY_LIMIT')) / 1024 / 1024
+                elif os.environ.get('WEB_MEMORY'):
+                    memory_limit_mb = int(os.environ.get('WEB_MEMORY'))
+            except:
+                pass
+            
+            if memory_limit_mb:
+                usage_percent = (memory_mb / memory_limit_mb) * 100
+                health_data["memory_usage_percent"] = round(usage_percent, 1)
+                health_data["memory_limit_mb"] = memory_limit_mb
+                
+                # Return unhealthy if memory usage is too high
+                if usage_percent > 90:
+                    health_data["status"] = "critical_memory"
+                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}%"
+                elif usage_percent > 80:
+                    health_data["status"] = "high_memory"
+                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}%"
+        except:
+            pass
+        
+        # Check checkpointer health
+        try:
+            if GLOBAL_CHECKPOINTER:
+                if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
+                    if not GLOBAL_CHECKPOINTER.conn.closed:
+                        health_data["database"] = "connected"
+                    else:
+                        health_data["database"] = "disconnected"
+                        health_data["status"] = "degraded"
+                else:
+                    health_data["database"] = "in_memory_fallback"
+                    health_data["status"] = "degraded"
+            else:
+                health_data["database"] = "not_initialized"
+                health_data["status"] = "degraded"
+        except:
+            health_data["database"] = "error"
+            health_data["status"] = "degraded"
+        
+        return health_data
+        
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
 
 class AnalyzeRequest(BaseModel):
     prompt: str
@@ -293,34 +500,59 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="User email not found in token")
     
     print__feedback_flow(f"📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
+    log_memory_usage("analysis_start")
     
-    try:
-        print__feedback_flow(f"🔄 Getting healthy checkpointer")
-        checkpointer = await get_healthy_checkpointer()
+    # MEMORY PROTECTION: Limit concurrent analyses to prevent OOM
+    async with analysis_semaphore:
+        print__feedback_flow(f"🔒 Acquired analysis semaphore ({analysis_semaphore._value}/{MAX_CONCURRENT_ANALYSES} available)")
         
-        print__feedback_flow(f"🔄 Creating thread run entry")
-        run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
-        print__feedback_flow(f"✅ Generated new run_id: {run_id}")
-        
-        print__feedback_flow(f"🚀 Starting analysis")
-        result = await asyncio.wait_for(
-            analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
-            timeout=900  # 15 minutes timeout for long operations
-        )
-        
-        print__feedback_flow(f"✅ Analysis completed successfully")
-        return {"response": result, "thread_id": request.thread_id, "run_id": run_id}
-        
-    except asyncio.TimeoutError:
-        error_msg = "Analysis timed out after 15 minutes"
-        print__feedback_flow(f"🚨 {error_msg}")
-        raise HTTPException(status_code=408, detail=error_msg)
-        
-    except Exception as e:
-        error_msg = f"Analysis failed: {str(e)}"
-        print__feedback_flow(f"🚨 {error_msg}")
-        print__feedback_flow(f"🔍 Error details: {type(e).__name__}: {str(e)}")
-        raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
+        try:
+            print__feedback_flow(f"🔄 Getting healthy checkpointer")
+            checkpointer = await get_healthy_checkpointer()
+            
+            print__feedback_flow(f"🔄 Creating thread run entry")
+            run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
+            print__feedback_flow(f"✅ Generated new run_id: {run_id}")
+            
+            print__feedback_flow(f"🚀 Starting analysis")
+            # Reduced timeout from 15 minutes to 8 minutes for platform stability
+            result = await asyncio.wait_for(
+                analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
+                timeout=480  # 8 minutes timeout to prevent platform restarts
+            )
+            
+            log_memory_usage("analysis_complete")
+            print__feedback_flow(f"✅ Analysis completed successfully")
+            
+            # Force garbage collection after analysis to free memory
+            collected = gc.collect()
+            if collected > 0:
+                print__feedback_flow(f"🗑️ Garbage collection freed {collected} objects after analysis")
+            
+            return {"response": result, "thread_id": request.thread_id, "run_id": run_id}
+            
+        except asyncio.TimeoutError:
+            error_msg = "Analysis timed out after 8 minutes"
+            print__feedback_flow(f"🚨 {error_msg}")
+            log_memory_usage("analysis_timeout")
+            
+            # Force garbage collection on timeout
+            collected = gc.collect()
+            print__feedback_flow(f"🗑️ Cleanup: Freed {collected} objects after timeout")
+            
+            raise HTTPException(status_code=408, detail=error_msg)
+            
+        except Exception as e:
+            error_msg = f"Analysis failed: {str(e)}"
+            print__feedback_flow(f"🚨 {error_msg}")
+            print__feedback_flow(f"🔍 Error details: {type(e).__name__}: {str(e)}")
+            log_memory_usage("analysis_error")
+            
+            # Force garbage collection on error
+            collected = gc.collect()
+            print__feedback_flow(f"🗑️ Cleanup: Freed {collected} objects after error")
+            
+            raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
@@ -591,15 +823,15 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
     
     print__api_postgresql(f"🗑️ Deleting chat thread {thread_id} for user {user_email}")
     
-    # Get a healthy checkpointer
-    checkpointer = await get_healthy_checkpointer()
-    
-    # Check if we have a PostgreSQL checkpointer (not InMemorySaver)
-    if not hasattr(checkpointer, 'conn'):
-        print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - nothing to delete")
-        return {"message": "No PostgreSQL checkpointer available - nothing to delete"}
-    
     try:
+        # Get a healthy checkpointer
+        checkpointer = await get_healthy_checkpointer()
+        
+        # Check if we have a PostgreSQL checkpointer (not InMemorySaver)
+        if not hasattr(checkpointer, 'conn'):
+            print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - nothing to delete")
+            return {"message": "No PostgreSQL checkpointer available - nothing to delete"}
+        
         # Access the connection pool through the conn attribute
         pool = checkpointer.conn
         
