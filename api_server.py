@@ -268,12 +268,12 @@ def verify_google_jwt(token: str):
             try:
                 # Debug: print the audience in the token and the expected audience
                 unverified_payload = jwt.decode(token, options={"verify_signature": False})
-                print__debug("Token aud:", unverified_payload.get("aud"))
-                print__debug("Backend GOOGLE_CLIENT_ID:", os.getenv("GOOGLE_CLIENT_ID"))
+                print__debug(f"Token aud: {unverified_payload.get('aud')}")
+                print__debug(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
                 payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
                 return payload
             except Exception as e:
-                print__debug("JWT decode error:", e)
+                print__debug(f"JWT decode error: {e}")
                 raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
     raise HTTPException(status_code=401, detail="Public key not found")
 
