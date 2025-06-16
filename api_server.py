@@ -226,7 +226,9 @@ async def get_healthy_checkpointer():
             else:
                 # Enhanced health check with timeout
                 try:
-                    async with asyncio.wait_for(GLOBAL_CHECKPOINTER.conn.connection(), timeout=5) as conn:
+                    # Fix: await the coroutine first, then use the connection in async with
+                    conn = await asyncio.wait_for(GLOBAL_CHECKPOINTER.conn.connection(), timeout=5)
+                    async with conn:
                         await asyncio.wait_for(conn.execute("SELECT 1"), timeout=5)
                     print("✅ Existing checkpointer is healthy")
                     return GLOBAL_CHECKPOINTER
