@@ -112,10 +112,10 @@ except ImportError:
 # MAIN CONFIGURATION - MODIFY THESE SETTINGS
 # =====================================================================
 # Processing Mode - Three independent operations
-PARSE_WITH_LLAMAPARSE = 1    # Set to 1 to parse PDF with LlamaParse and save to txt file
+PARSE_WITH_LLAMAPARSE = 0    # Set to 1 to parse PDF with LlamaParse and save to txt file
                              # Set to 0 to skip parsing (use existing txt file)
 
-CHUNK_AND_STORE = 1          # Set to 1 to chunk text and create/update ChromaDB
+CHUNK_AND_STORE = 0          # Set to 1 to chunk text and create/update ChromaDB
                              # Set to 0 to skip chunking (use existing ChromaDB)
 
 DO_TESTING = 1               # Set to 1 to test search on existing ChromaDB
@@ -153,7 +153,12 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 # Test Query Settings
 # TEST_QUERY = "What is the main topic discussed in this document?"
 # TEST_QUERY = "Kolik byla prumerna teplotav meteorologicke stanici Praha-Karlov roku 2010?"
-TEST_QUERY = "Kolik bylo hektaru zahrad roku 2023?"
+# TEST_QUERY = "Kolik bylo hektaru zahrad roku 2023 v Praze?"
+# TEST_QUERY = "Jake vydaje byly vladou na Obranu v roce 2023 nebo 2024"
+# TEST_QUERY = "Jaka je cista mesicni mzda v Praze"
+# TEST_QUERY = "Kolik je ve meste Most soukromych podnikatelu?"
+# TEST_QUERY = "Kolik je centralnich bank je v Ceske republice jako ekonomickych subjektu?"
+TEST_QUERY = "Jake metody se pouzili pro ziskavani dat v zemedelstvi?"
 # TEST_QUERY = "Kolik je osobnich automobilu ve Varsave?"
 # TEST_QUERY = "How many passenger cars there in Warsaw (total, not per 1000 inhabitants)?"
 
@@ -2323,8 +2328,8 @@ def main():
                     print("📝 Content:")
                     print("-" * 60)
                     # Show first 300 characters for final results
-                    content = result['text'][:300]
-                    if len(result['text']) > 300:
+                    content = result['text'][:2000]
+                    if len(result['text']) > 2000:
                         content += "..."
                     print(content)
                     print("-" * 60)

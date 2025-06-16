@@ -105,9 +105,21 @@ dependencies = [
     
     # Type checking
     "typing_extensions",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Jupyter/IPython support for development
+    "ipykernel>=6.25.0",
+    "jupyter>=1.0.0", 
+    "notebook>=6.5.0",
+    "ipython>=8.0.0",
     
-    # Monitoring and utilities
+    # Development and monitoring utilities
     "psutil>=5.9.0",
+
+    # Graphs
+    "graphviz"
 ]
 
 [build-system]
