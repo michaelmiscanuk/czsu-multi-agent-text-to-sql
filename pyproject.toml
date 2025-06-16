@@ -8,8 +8,9 @@ authors = [ { name = "Michael Miscanuk Name", email = "michael.miscanuk@gmail.co
 
 # Core API and FastAPI
 # Database: PostgreSQL, SQLAlchemy, asyncpg, psycopg
-# Data processing: pandas, numpy, openpyxl, pyjstat, tqdm, pymupdf
-# ML/AI: langchain ecosystem, openai, chromadb, cohere, sentence-transformers
+# Data processing: pandas, numpy, openpyxl, pyjstat, tqdm
+# PDF processing: llama-parse (LlamaParse only)
+# ML/AI: langchain ecosystem, openai, chromadb, cohere
 # Utilities: requests, httpx, python-dotenv, aiofiles, psutil
 # Serialization/Parsing: PyYAML, orjson, Jinja2
 # Auth/Security: authlib, PyJWT, python-jose
@@ -72,8 +73,8 @@ dependencies = [
     "openpyxl==3.1.5",
     "pyjstat==2.4.0",
     
-    # PDF Processing
-    "pymupdf>=1.26.0",
+    # PDF Processing - LlamaParse only
+    "llama-parse>=0.4.0",  # Premium LLM-based parser (requires API key)
     
     # JSON/serialization
     "orjson>=3.9.10",
@@ -89,7 +90,6 @@ dependencies = [
     # Text processing
     "tiktoken==0.9.0",
     "rank-bm25>=0.2.2",
-    "sentence-transformers>=2.2.2",
     
     # HTTP and networking
     "httpx==0.28.1",

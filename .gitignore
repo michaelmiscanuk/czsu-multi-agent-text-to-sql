@@ -21,6 +21,7 @@ data/CSVs
 data/pdf_chromadb/
 metadata/czsu_chromadb/
 metadata/schemas/
+data/pdf_chromadb_llamaparse
 
 # Node/Next.js/Frontend ignores
 node_modules/
