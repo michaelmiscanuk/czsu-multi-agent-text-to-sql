@@ -14,7 +14,8 @@ PATHS_TO_UNZIP = [
     BASE_DIR / "metadata" / "czsu_chromadb.zip",
     BASE_DIR / "data" / "czsu_data.zip",
     BASE_DIR / "data" / "CSVs.zip",
-    BASE_DIR / "metadata" / "schemas.zip"
+    BASE_DIR / "metadata" / "schemas.zip",
+    BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip"
     # Add more paths here as needed
 ]
 

@@ -14,7 +14,8 @@ PATHS_TO_ZIP = [
     BASE_DIR / "metadata" / "czsu_chromadb",
     BASE_DIR / "data" / "czsu_data.db",
     BASE_DIR / "data" / "CSVs",
-    BASE_DIR / "metadata" / "schemas"
+    BASE_DIR / "metadata" / "schemas",
+    BASE_DIR / "data" / "pdf_chromadb_llamaparse"
 ]
 
 def zip_path(path_to_zip: Path):

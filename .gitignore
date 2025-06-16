@@ -14,7 +14,7 @@ build/
 dist/
 wheels/
 .venv
-*.pdf
+# *.pdf
 
 data/czsu_data.db
 data/CSVs
