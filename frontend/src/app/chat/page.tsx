@@ -354,6 +354,20 @@ export default function ChatPage() {
       return;
     }
 
+    console.log('[ChatPage-newChat] 🔄 Checking for existing New Chat');
+    
+    // First, check if there's already an existing "New Chat" thread
+    const existingNewChat = threads.find(thread => 
+      thread.title === 'New Chat' && 
+      (!thread.full_prompt || thread.full_prompt.trim() === '')
+    );
+    
+    if (existingNewChat) {
+      console.log('[ChatPage-newChat] ✅ Found existing New Chat, navigating to:', existingNewChat.thread_id);
+      setActiveThreadId(existingNewChat.thread_id);
+      return;
+    }
+
     console.log('[ChatPage-newChat] 🔄 Creating new chat');
     const newThreadId = uuidv4();
     
@@ -684,7 +698,7 @@ export default function ChatPage() {
             className="px-3 py-1.5 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleNewChat}
             title="New chat"
-            disabled={isAnyLoading || threads.some(s => !messages.length && s.thread_id === activeThreadId)}
+            disabled={isAnyLoading || !userEmail}
           >
             + New Chat
           </button>

@@ -731,7 +731,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                         className="px-4 py-2 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={onNewChat}
                         title="Start a new chat"
-                        disabled={isAnyLoading || (threads && threads.some(s => !messages.length && s.thread_id === activeThreadId))}
+                        disabled={isAnyLoading}
                     >
                         + New Chat
                     </button>
