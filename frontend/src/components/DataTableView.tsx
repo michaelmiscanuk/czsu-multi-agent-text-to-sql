@@ -332,7 +332,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
         <div className="flex items-center mt-2 space-x-4">
           <span
             className="text-gray-400 text-[10px] font-normal block"
-            style={{ lineHeight: 1, fontFamily: 'var(--table-font-family)' }}
+            style={{ lineHeight: 1, fontFamily: 'var(--table-font-family)', marginLeft: '1rem' }}
             title="Starting with * searches only for codes."
           >
             Starting with * searches only for codes.

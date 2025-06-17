@@ -7,7 +7,7 @@ if sys.platform == "win32":
     # AGGRESSIVE WINDOWS FIX: Force SelectorEventLoop before any other async operations
     print(f"🔧 API Server: Windows detected - forcing SelectorEventLoop for PostgreSQL compatibility")
     
-    # Set the policy first
+    # Set the policy first - this is CRITICAL and must happen before any async operations
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     print(f"🔧 Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
     
@@ -15,25 +15,34 @@ if sys.platform == "win32":
     try:
         current_loop = asyncio.get_event_loop()
         if current_loop and not current_loop.is_closed():
-            print(f"🔧 API Server: Closing existing {type(current_loop).__name__}")
+            current_loop_type = type(current_loop).__name__
+            print(f"🔧 API Server: Closing existing {current_loop_type}")
             current_loop.close()
     except RuntimeError:
         # No event loop exists yet, which is fine
         pass
     
-    # Create a new SelectorEventLoop explicitly
+    # Create a new SelectorEventLoop explicitly and set it as the running loop
     new_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
     asyncio.set_event_loop(new_loop)
     print(f"🔧 API Server: Created new {type(new_loop).__name__}")
     
-    # Verify the fix worked
+    # Verify the fix worked - this is critical for PostgreSQL compatibility
     try:
         current_loop = asyncio.get_event_loop()
-        print(f"🔧 API Server: Current event loop type: {type(current_loop).__name__}")
-        if "Selector" in type(current_loop).__name__:
+        current_loop_type = type(current_loop).__name__
+        print(f"🔧 API Server: Current event loop type: {current_loop_type}")
+        if "Selector" in current_loop_type:
             print(f"✅ API Server: PostgreSQL should work correctly on Windows now")
         else:
             print(f"⚠️ API Server: Event loop fix may not have worked properly")
+            # FORCE FIX: If we still don't have a SelectorEventLoop, create one
+            print(f"🔧 API Server: Force-creating SelectorEventLoop...")
+            if not current_loop.is_closed():
+                current_loop.close()
+            selector_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
+            asyncio.set_event_loop(selector_loop)
+            print(f"🔧 API Server: Force-created {type(selector_loop).__name__}")
     except RuntimeError:
         print(f"🔧 API Server: No event loop set yet (will be created as needed)")
 

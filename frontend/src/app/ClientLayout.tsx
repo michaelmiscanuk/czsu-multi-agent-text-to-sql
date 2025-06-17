@@ -9,19 +9,25 @@ import { ChatCacheProvider } from '@/contexts/ChatCacheContext';
 // Public routes that don't require authentication
 const PUBLIC_ROUTES = ["/", "/contacts", "/login"];
 
+// Routes that should allow navigation but protect content behind login
+const PROTECTED_ROUTES = ["/chat", "/catalog", "/data"];
+
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  // Client-side auth redirect
+  // Client-side auth redirect only for unknown routes
   const pathname = usePathname();
   const { status } = useSession();
   const router = useRouter();
 
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
+  const isProtectedRoute = PROTECTED_ROUTES.includes(pathname);
 
   useEffect(() => {
-    if (status === "unauthenticated" && !isPublicRoute) {
+    // Only redirect if it's not a public route AND not a protected route
+    // This lets AuthGuard handle protected routes
+    if (status === "unauthenticated" && !isPublicRoute && !isProtectedRoute) {
       router.replace("/login");
     }
-  }, [status, router, pathname, isPublicRoute]);
+  }, [status, router, pathname, isPublicRoute, isProtectedRoute]);
 
   const isChatPage = pathname === "/chat";
   const isCatalogPage = pathname === "/catalog";

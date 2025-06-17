@@ -158,7 +158,9 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 # TEST_QUERY = "Jaka je cista mesicni mzda v Praze"
 # TEST_QUERY = "Kolik je ve meste Most soukromych podnikatelu?"
 # TEST_QUERY = "Kolik je centralnich bank je v Ceske republice jako ekonomickych subjektu?"
-TEST_QUERY = "Jake metody se pouzili pro ziskavani dat v zemedelstvi?"
+# TEST_QUERY = "Jake metody se pouzili pro ziskavani dat v zemedelstvi?"
+TEST_QUERY = "jak se zmenili zasoby v milionech korun v oboru cinnosti - vzdelani? Porovnej posleni roky"
+# TEST_QUERY = "Kolik hektarů zahrad (gardens) se nachází v Praze?"
 # TEST_QUERY = "Kolik je osobnich automobilu ve Varsave?"
 # TEST_QUERY = "How many passenger cars there in Warsaw (total, not per 1000 inhabitants)?"
 

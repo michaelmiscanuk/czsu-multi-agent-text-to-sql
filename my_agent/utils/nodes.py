@@ -134,10 +134,13 @@ async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
     The messages list is always set to [summary, rewritten_message].
     """
     print__debug("REWRITE: Enter rewrite_query_node (simplified)")
-    llm = get_azure_llm_gpt_4o(temperature=0.0)
+    
+    prompt_text = state["prompt"]
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
-    prompt_text = state["prompt"]
+    
+    llm = get_azure_llm_gpt_4o(temperature=0.0)
+    
     system_prompt = """
 Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language, that can be used to query a vector database.
 
@@ -230,30 +233,37 @@ Now process this conversation:
     print__debug(f"REWRITE: Rewritten prompt: {rewritten_prompt}")
     if not hasattr(result, "id") or not result.id:
         result.id = "rewrite_query"
-    messages = [summary, result]
+    
     return {
         "rewritten_prompt": rewritten_prompt,
-        "messages": messages
+        "messages": [summary, result]
     }
 
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Get schema details for relevant columns. Messages list is always [summary, last_message]."""
     print__debug(f"{GET_SCHEMA_ID}: Enter get_schema_node")
-    schema = await load_schema(state)
-    msg = AIMessage(content=f"Schema details: {schema}", id="schema_details")
+    
+    top_selection_codes = state.get("top_selection_codes")
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
-    messages = [summary, msg]
-    return {"messages": messages}
-
+    
+    schema = await load_schema({"top_selection_codes": top_selection_codes})
+    msg = AIMessage(content=f"Schema details: {schema}", id="schema_details")
+    
+    return {"messages": [summary, msg]}
 
 async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Generate SQL query based on question and schema. Messages list is always [summary, last_message]."""
     print__debug(f"{QUERY_GEN_ID}: Enter query_node")
     
-    # Log current state for debugging
     current_iteration = state.get("iteration", 0)
     existing_queries = state.get("queries_and_results", [])
+    messages = state.get("messages", [])
+    rewritten_prompt = state.get("rewritten_prompt")
+    prompt = state["prompt"]
+    top_selection_codes = state.get("top_selection_codes")
+    
+    # Log current state for debugging
     print__debug(f"{QUERY_GEN_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries)}")
     
     # Check for potential query loops by examining recent queries
@@ -265,7 +275,7 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     # llm = get_ollama_llm("qwen:7b")
     tools = await create_mcp_server()
     sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
-    messages = state.get("messages", [])
+    
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
     
@@ -277,7 +287,7 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
         last_message_content = last_message.content if last_message else ""
     
     # Load schema before building the prompt
-    schema = await load_schema(state)
+    schema = await load_schema({"top_selection_codes": top_selection_codes})
     
     system_prompt = """
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
@@ -357,7 +367,7 @@ IMPORTANT notes about SQL query generation:
 """
     # Build human prompt conditionally to avoid empty "Last message:" section
     human_prompt_parts = [
-        f"User question: {state.get('rewritten_prompt') or state['prompt']}",
+        f"User question: {rewritten_prompt or prompt}",
         f"Schema: {schema}",
         f"Summary of conversation:\n{summary.content}"
     ]
@@ -367,12 +377,11 @@ IMPORTANT notes about SQL query generation:
     
     human_prompt = "\n".join(human_prompt_parts)
     
-    prompt = ChatPromptTemplate.from_messages([
+    prompt_template = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", human_prompt)
     ])
-    result = await llm.ainvoke(prompt.format_messages())
-    new_queries = []
+    result = await llm.ainvoke(prompt_template.format_messages())
     query = result.content.strip()
     
     print__debug(f"{QUERY_GEN_ID}: Generated query: {query}")
@@ -382,26 +391,27 @@ IMPORTANT notes about SQL query generation:
         if isinstance(tool_result, Exception):
             error_msg = f"Error executing query: {str(tool_result)}"
             print__debug(f"{QUERY_GEN_ID}: {error_msg}")
-            new_queries.append((query, f"Error: {str(tool_result)}"))
+            new_queries = [(query, f"Error: {str(tool_result)}")]
             last_message = AIMessage(content=error_msg)
         else:
             print__debug(f"{QUERY_GEN_ID}: Successfully executed query: {query}")
             print__debug(f"{QUERY_GEN_ID}: Query result: {tool_result}")
-            new_queries.append((query, tool_result))
+            new_queries = [(query, tool_result)]
             # Format the last message to include both query and result
             formatted_content = f"Query:\n{query}\n\nResult:\n{tool_result}"
             last_message = AIMessage(content=formatted_content, id="query_result")
     except Exception as e:
         error_msg = f"Error executing query: {str(e)}"
         print__debug(f"{QUERY_GEN_ID}: {error_msg}")
-        new_queries.append((query, f"Error: {str(e)}"))
+        new_queries = [(query, f"Error: {str(e)}")]
         last_message = AIMessage(content=error_msg)
+    
     print__debug(f"{QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}")
-    messages = [summary, last_message]
+    
     return {
-        "rewritten_prompt": state.get("rewritten_prompt"),
-        "messages": messages,
-        "iteration": state["iteration"],
+        "rewritten_prompt": rewritten_prompt,
+        "messages": [summary, last_message],
+        "iteration": current_iteration,
         "queries_and_results": new_queries
     }
 
@@ -411,9 +421,13 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     """
     print__debug(f"{REFLECT_NODE_ID}: Enter reflect_node")
     
-    # Check current iteration and total queries to prevent excessive looping
     current_iteration = state.get("iteration", 0)
-    total_queries = len(state.get("queries_and_results", []))
+    queries_and_results = state.get("queries_and_results", [])
+    messages = state.get("messages", [])
+    rewritten_prompt = state.get("rewritten_prompt")
+    prompt = state["prompt"]
+    
+    total_queries = len(queries_and_results)
     
     print__debug(f"{REFLECT_NODE_ID}: Current iteration: {current_iteration}, Total queries: {total_queries}")
     
@@ -421,7 +435,6 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     if current_iteration >= MAX_ITERATIONS:
         print__debug(f"{REFLECT_NODE_ID}: Forcing answer due to iteration limit ({current_iteration} >= {MAX_ITERATIONS})")
         # Create a simple reflection message
-        messages = state.get("messages", [])
         summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
         from langchain_core.messages import AIMessage
         result = AIMessage(content="Maximum iterations reached. Proceeding to answer with available data.", id="reflect_forced")
@@ -432,14 +445,11 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
         }
     
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
-    messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
     last_message_content = last_message.content if last_message else ""
     
     # Limit the queries_results_text to prevent token overflow
-    queries_and_results = state.get("queries_and_results", [])
-    
     # Only include the last few queries to prevent token overflow
     max_queries_for_reflection = 5  # Show only last 5 queries in reflection
     recent_queries = queries_and_results[-max_queries_for_reflection:] if len(queries_and_results) > max_queries_for_reflection else queries_and_results
@@ -492,13 +502,13 @@ how to improve the SQL QUERY - so phrase it like instructions.
 
 REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: improve' on its own line.
 """
-    prompt = ChatPromptTemplate.from_messages([
+    prompt_template = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", "Original question: {question}\n\nSummary of conversation:\n{summary}\nLast message:\n{last_message}\n\nCurrent queries and results:\n{results}\n\nWhat feedback can you provide to guide the next query? Should we answer now or improve further?")
     ])
     result = await llm.ainvoke(
-        prompt.format_messages(
-            question=state.get("rewritten_prompt") or state["prompt"],
+        prompt_template.format_messages(
+            question=rewritten_prompt or prompt,
             summary=summary.content,
             last_message=last_message_content,
             results=queries_results_text
@@ -513,14 +523,14 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
         # Increment iteration when deciding to improve
         current_iteration += 1
         print__debug(f"{REFLECT_NODE_ID}: Decision: improve (iteration will be: {current_iteration})")
+    
     if not hasattr(result, "id") or not result.id:
         result.id = "reflect"
-    if last_message:
-        messages = [summary, result]
-    else:
-        messages = [summary]
+    
+    new_messages = [summary, result] if last_message else [summary]
+    
     return {
-        "messages": messages,
+        "messages": new_messages,
         "reflection_decision": reflection_decision,
         "iteration": current_iteration
     }
@@ -528,17 +538,23 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Format the query result into a natural language answer. Messages list is always [summary, last_message]."""
     print__debug(f"{FORMAT_ANSWER_ID}: Enter format_answer_node")
+    
+    queries_and_results = state.get("queries_and_results", [])
+    top_chunks = state.get("top_chunks", [])
+    rewritten_prompt = state.get("rewritten_prompt")
+    prompt = state["prompt"]
+    messages = state.get("messages", [])
+    
     llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
     
     # Prepare SQL queries and results context
     queries_results_text = "\n\n".join(
         f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
-        for i, (query, result) in enumerate(state.get("queries_and_results", []))
+        for i, (query, result) in enumerate(queries_and_results)
     )
     
     # Prepare PDF chunks context separately
     pdf_chunks_text = ""
-    top_chunks = state.get("top_chunks", [])
     if top_chunks:
         print__debug(f"{FORMAT_ANSWER_ID}: Including {len(top_chunks)} PDF chunks in context")
         chunks_content = []
@@ -586,11 +602,11 @@ Bad: "The query shows X is 1,234,567"
     
     # Build the formatted prompt with separate sections for SQL and PDF data
     formatted_prompt_parts = [
-        f"Question: {state.get('rewritten_prompt') or state['prompt']}"
+        f"Question: {rewritten_prompt or prompt}"
     ]
     
     # Add SQL data section if available
-    if state.get("queries_and_results"):
+    if queries_and_results:
         formatted_prompt_parts.append(f"SQL Data Context:\n{queries_results_text}")
     
     # Add PDF data section if available
@@ -598,9 +614,9 @@ Bad: "The query shows X is 1,234,567"
         formatted_prompt_parts.append(f"PDF Document Context:\n{pdf_chunks_text}")
     
     # Add instruction
-    if state.get("queries_and_results") and pdf_chunks_text:
+    if queries_and_results and pdf_chunks_text:
         instruction = "Please answer the question based on both the SQL queries/results and the PDF document context provided."
-    elif state.get("queries_and_results"):
+    elif queries_and_results:
         instruction = "Please answer the question based on the SQL queries and results provided."
     elif pdf_chunks_text:
         instruction = "Please answer the question based on the PDF document context provided."
@@ -624,22 +640,22 @@ Bad: "The query shows X is 1,234,567"
     print__debug(f"{FORMAT_ANSWER_ID}: Final answer: {final_answer_content[:100]}...")
     
     # Update messages state (existing logic)
-    messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     if not hasattr(result, "id") or not result.id:
         result.id = "format_answer"
-    messages = [summary, result]
     
-    # Return both messages and final_answer states
     return {
-        "messages": messages,
-        "final_answer": final_answer_content
+        "messages": [summary, result],
+        "final_answer": final_answer_content,
+        "top_chunks": []
     }
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Increment the iteration counter and return updated state."""
     print__debug(f"{INCREMENT_ITERATION_ID}: Enter increment_iteration_node")
-    return {"iteration": state.get("iteration", 0) + 1}
+    
+    current_iteration = state.get("iteration", 0)
+    return {"iteration": current_iteration + 1}
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Submit the final answer to the user."""
@@ -649,35 +665,39 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Save the result to a file."""
     print__debug(f"{SAVE_RESULT_ID}: Enter save_node")
+    
+    prompt = state["prompt"]
+    messages = state.get("messages", [])
+    queries_and_results = state.get("queries_and_results", [])
+    
     # Get the final answer from the last message
-    final_answer = state["messages"][-1].content if state.get("messages") and len(state["messages"]) > 1 else ""
+    final_answer = messages[-1].content if messages and len(messages) > 1 else ""
     result_path = BASE_DIR / "analysis_results.txt"
     result_obj = {
-        "prompt": state["prompt"],
+        "prompt": prompt,
         "result": final_answer,
-        "queries_and_results": [{"query": q, "result": r} for q, r in state["queries_and_results"]]
+        "queries_and_results": [{"query": q, "result": r} for q, r in queries_and_results]
     }
     
     # Stream write to text file (no memory issues)
     with result_path.open("a", encoding='utf-8') as f:
-        f.write(f"Prompt: {state['prompt']}\n")
+        f.write(f"Prompt: {prompt}\n")
         f.write(f"Result: {final_answer}\n")
         f.write("Queries and Results:\n")
-        for query, result in state["queries_and_results"]:
+        for query, result in queries_and_results:
             f.write(f"  Query: {query}\n")
             f.write(f"  Result: {result}\n")
         f.write("----------------------------------------------------------------------------\n")
     
-    # MEMORY OPTIMIZATION: Don't load entire JSON file into memory
-    # Instead, append to a JSONL (JSON Lines) file for memory efficiency
-    json_result_path = BASE_DIR / "analysis_results.jsonl"  # Changed to .jsonl
+    # Append to a JSONL (JSON Lines) file for memory efficiency
+    json_result_path = BASE_DIR / "analysis_results.jsonl"
     
     try:
         # Simply append one JSON object per line (no loading existing file)
         with json_result_path.open("a", encoding='utf-8') as f:
             import json
             f.write(json.dumps(result_obj, ensure_ascii=False) + '\n')
-        print__debug(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path} (memory-optimized)")
+        print__debug(f"{SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}")
     except Exception as e:
         print__debug(f"{SAVE_RESULT_ID}: ⚠️ Error saving JSON: {e}")
     
@@ -686,6 +706,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
 async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Perform hybrid search on ChromaDB to retrieve initial candidate documents. Returns hybrid search results as Document objects."""
     print__debug(f"{HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node")
+    
     query = state.get("rewritten_prompt") or state["prompt"]
     n_results = state.get("n_results", 60)  # Increased from 20 to 60 to capture more relevant documents
 
@@ -726,6 +747,7 @@ async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisStat
             print__debug(f"{HYBRID_SEARCH_NODE_ID}: #{i}: {selection} | Content: {content_preview}...")
         
         print__debug(f"{HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}")
+        
         return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
         print__debug(f"{HYBRID_SEARCH_NODE_ID}: Error in hybrid search: {e}")
@@ -741,6 +763,7 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
     
     print__debug(f"🔥🔥🔥 {RERANK_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥")
     print__debug(f"{RERANK_NODE_ID}: Enter rerank_node")
+    
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_results", [])
     n_results = state.get("n_results", 60)  # Increased from 20 to 60 to match hybrid search
@@ -778,6 +801,7 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
         
         print__debug(f"🎯🎯🎯 {RERANK_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯")
         os.environ['MY_AGENT_DEBUG'] = original_debug  # Restore debug setting
+        
         return {"most_similar_selections": most_similar}
     except Exception as e:
         print__debug(f"{RERANK_NODE_ID}: Error in reranking: {e}")
@@ -790,35 +814,45 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
     """Node: Select the top 3 reranked selections if their Cohere relevance score exceeds the threshold (0.005)."""
     print__debug(f"{RELEVANT_NODE_ID}: Enter relevant_selections_node")
     SIMILARITY_THRESHOLD = 0.0005  # Minimum Cohere rerank score required
+    
     most_similar = state.get("most_similar_selections", [])
+    
     # Select up to 3 top selections above threshold
     top_selection_codes = [sel for sel, score in most_similar if sel is not None and score is not None and score >= SIMILARITY_THRESHOLD][:3]
     print__debug(f"{RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}")
     
+    result = {
+        "top_selection_codes": top_selection_codes,
+        "hybrid_search_results": [],
+        "most_similar_selections": []
+    }
+    
     # If no selections pass the threshold, set final_answer for frontend
     if not top_selection_codes:
         print__debug(f"{RELEVANT_NODE_ID}: No selections passed the threshold - setting final_answer")
-        return {
-            "top_selection_codes": top_selection_codes,
-            "final_answer": "No Relevant Selections Found"
-        }
+        result["final_answer"] = "No Relevant Selections Found"
     
-    return {"top_selection_codes": top_selection_codes}
+    return result
 
 async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Summarize the conversation so far, always setting messages to [summary, last_message]."""
     print__debug("SUMMARY: Enter summarize_messages_node")
-    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
+    
     messages = state.get("messages", [])
     summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
     last_message = messages[1] if len(messages) > 1 else None
     prev_summary = summary.content
     last_message_content = last_message.content if last_message else ""
+    
     print__debug(f"SUMMARY: prev_summary: '{prev_summary}'")
     print__debug(f"SUMMARY: last_message_content: '{last_message_content}'")
+    
     if not prev_summary and not last_message_content:
         print__debug("SUMMARY: Skipping summarization (no previous summary or last message).")
         return {"messages": [summary] if not last_message else [summary, last_message]}
+    
+    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
+    
     system_prompt = """
 You are a conversation summarization agent.
 Your job is to maintain a concise, cumulative summary of a data analysis conversation between a 
@@ -829,8 +863,10 @@ context from the latest message. The summary should be suitable for
 providing context to an LLM in future queries. 
 Be concise but do not omit important details. 
 Do not include any meta-commentary or formatting, just the summary text."""
+    
     human_prompt = f"Previous summary:\n{prev_summary}\n\nLatest message:\n{last_message_content}\n\nUpdate the summary to include the latest message."
     print__debug(f"SUMMARY: human_prompt: {human_prompt}")
+    
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", human_prompt)
@@ -838,13 +874,13 @@ Do not include any meta-commentary or formatting, just the summary text."""
     result = await llm.ainvoke(prompt.format_messages())
     new_summary = result.content.strip()
     print__debug(f"SUMMARY: Updated summary: {new_summary}")
+    
     summary_msg = SystemMessage(content=new_summary)
-    if last_message:
-        messages = [summary_msg, last_message]
-    else:
-        messages = [summary_msg]
-    print__debug(f"SUMMARY: New messages: {[getattr(m, 'content', None) for m in messages]}")
-    return {"messages": messages}
+    new_messages = [summary_msg, last_message] if last_message else [summary_msg]
+    
+    print__debug(f"SUMMARY: New messages: {[getattr(m, 'content', None) for m in new_messages]}")
+    
+    return {"messages": new_messages}
 
 #==============================================================================
 # PDF CHUNK NODES
@@ -945,6 +981,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
                 print__debug(f"{RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}")
         
         print__debug(f"🎯🎯🎯 {RERANK_CHUNKS_NODE_ID}: FINAL PDF RERANK OUTPUT: {len(most_similar)} chunks 🎯🎯🎯")
+        
         return {"most_similar_chunks": most_similar}
     except Exception as e:
         print__debug(f"{RERANK_CHUNKS_NODE_ID}: Error in PDF reranking: {e}")
@@ -956,6 +993,7 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Select PDF chunks that exceed the relevance threshold (0.01)."""
     print__debug(f"{RELEVANT_CHUNKS_NODE_ID}: Enter relevant_chunks_node")
     SIMILARITY_THRESHOLD = 0.01  # Higher threshold for PDF chunks as requested
+    
     most_similar = state.get("most_similar_chunks", [])
     
     # Select chunks above threshold
@@ -968,5 +1006,9 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
         content_preview = chunk.page_content[:100].replace('\n', ' ') if hasattr(chunk, 'page_content') else 'N/A'
         print__debug(f"{RELEVANT_CHUNKS_NODE_ID}: Chunk #{i}: {source} | Content: {content_preview}...")
     
-    return {"top_chunks": top_chunks}
+    return {
+        "top_chunks": top_chunks,
+        "hybrid_search_chunks": [],
+        "most_similar_chunks": []
+    }
 

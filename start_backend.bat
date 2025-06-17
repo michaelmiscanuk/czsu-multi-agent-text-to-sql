@@ -1,6 +1,7 @@
 @echo off
 
 REM Start backend server with memory-optimized settings and reload for development
+REM CRITICAL: Use custom uvicorn startup script for PostgreSQL compatibility on Windows
 call .venv\Scripts\activate
-python -m uvicorn api_server:app --host 0.0.0.0 --port 8000 --log-level info --reload
+python uvicorn_start.py --debug
 cmd /k 
