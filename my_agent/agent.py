@@ -34,7 +34,10 @@ from .utils.nodes import (
     relevant_selections_node,
     print__debug,
     rewrite_query_node,
-    summarize_messages_node
+    summarize_messages_node,
+    retrieve_similar_chunks_hybrid_search_node,
+    rerank_chunks_node,
+    relevant_chunks_node
 )
 
 # Load environment variables
@@ -75,6 +78,10 @@ def create_graph(checkpointer=None):
     graph.add_node("retrieve_similar_selections_hybrid_search", retrieve_similar_selections_hybrid_search_node)
     graph.add_node("rerank", rerank_node)
     graph.add_node("relevant_selections", relevant_selections_node)
+    # New PDF chunk nodes - run in parallel with selection nodes
+    graph.add_node("retrieve_similar_chunks_hybrid_search", retrieve_similar_chunks_hybrid_search_node)
+    graph.add_node("rerank_chunks", rerank_chunks_node)
+    graph.add_node("relevant_chunks", relevant_chunks_node)
     graph.add_node("get_schema", get_schema_node)
     graph.add_node("query_gen", query_node)
     graph.add_node("reflect", reflect_node)
@@ -89,29 +96,56 @@ def create_graph(checkpointer=None):
     #--------------------------------------------------------------------------
     # Define the graph execution path
     #--------------------------------------------------------------------------
-    # Start: prompt -> rewrite_query -> summarize_messages -> retrieve -> rerank -> relevant
+    # Start: prompt -> rewrite_query -> summarize_messages -> retrieve (both selections and chunks in parallel)
     graph.add_edge(START, "rewrite_query")
     graph.add_edge("rewrite_query", "summarize_messages_rewrite")
+    # After summarize_messages_rewrite, branch to both selection and chunk retrieval (parallel execution)
     graph.add_edge("summarize_messages_rewrite", "retrieve_similar_selections_hybrid_search")
+    graph.add_edge("summarize_messages_rewrite", "retrieve_similar_chunks_hybrid_search")
+    
+    # Selection path: retrieve -> rerank -> relevant
     graph.add_edge("retrieve_similar_selections_hybrid_search", "rerank")
     graph.add_edge("rerank", "relevant_selections")
+    
+    # PDF chunk path: retrieve -> rerank -> relevant (runs in parallel)
+    graph.add_edge("retrieve_similar_chunks_hybrid_search", "rerank_chunks")
+    graph.add_edge("rerank_chunks", "relevant_chunks")
 
-    # Conditional edge from relevant_selections
-    def route_after_relevant(state: DataAnalysisState):
+    # Add a synchronization node that both branches feed into
+    def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
+        """Synchronization node that waits for both selection and chunk processing to complete."""
+        print__debug("SYNC: Both selection and chunk branches completed")
+        return state  # Pass through state unchanged
+    
+    graph.add_node("route_decision", route_decision_node)
+    
+    # Both branches feed into the synchronization node
+    graph.add_edge("relevant_selections", "route_decision")  
+    graph.add_edge("relevant_chunks", "route_decision")
+    
+    # Single routing logic from the synchronization node
+    def route_after_sync(state: DataAnalysisState):
+        print__debug("ROUTING: Making decision after synchronization")
+        # Check if we have selection codes to proceed with database queries
         if state.get("top_selection_codes") and len(state["top_selection_codes"]) > 0:
+            print__debug("ROUTING: Found selections, proceeding to database schema")
             return "get_schema"
         elif state.get("chromadb_missing"):
             print("ERROR: ChromaDB directory is missing. Please unzip or create the ChromaDB at 'metadata/czsu_chromadb'.")
             return END
         else:
-            print("Couldn't find relevant dataset selection to provide answer")
-            print__debug(f"DEBUG STATE: {state}")
-            return END
+            # No database selections found - proceed directly to answer with available PDF chunks
+            print("No relevant dataset selections found, proceeding with PDF chunks only")
+            chunks_available = len(state.get("top_chunks", []))
+            print__debug(f"ROUTING: Available PDF chunks: {chunks_available}")
+            return "format_answer"
+    
     graph.add_conditional_edges(
-        "relevant_selections",
-        route_after_relevant,
+        "route_decision",
+        route_after_sync,
         {
-            "get_schema": "get_schema",
+            "get_schema": "get_schema",  
+            "format_answer": "format_answer",
             END: END
         }
     )
@@ -166,4 +200,4 @@ def create_graph(checkpointer=None):
         from langgraph.checkpoint.memory import InMemorySaver
         checkpointer = InMemorySaver()
         print("⚠ Using InMemorySaver fallback - consider using AsyncPostgresSaver for production")
-    return graph.compile(checkpointer=checkpointer)
+    return graph.compile(checkpointer=checkpointer) 

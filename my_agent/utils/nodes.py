@@ -38,6 +38,10 @@ RETRIEVE_NODE_ID = 20
 RELEVANT_NODE_ID = 21
 HYBRID_SEARCH_NODE_ID = 22
 RERANK_NODE_ID = 23
+# New PDF chunk node IDs
+RETRIEVE_CHUNKS_NODE_ID = 24
+RERANK_CHUNKS_NODE_ID = 25
+RELEVANT_CHUNKS_NODE_ID = 26
 
 # Constants
 try:
@@ -55,6 +59,14 @@ from metadata.create_and_load_chromadb import (
 )
 from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini, get_ollama_llm
 
+# PDF chunk functionality imports
+from data.pdf_to_chromadb import (
+    hybrid_search as pdf_hybrid_search,
+    cohere_rerank as pdf_cohere_rerank,
+    COLLECTION_NAME as PDF_COLLECTION_NAME,
+    CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
+)
+PDF_FUNCTIONALITY_AVAILABLE = True
 
 # Configurable iteration limit to prevent excessive looping
 MAX_ITERATIONS = int(os.environ.get('MAX_ITERATIONS', '1'))  # Configurable via environment variable, default 2
@@ -517,41 +529,87 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Format the query result into a natural language answer. Messages list is always [summary, last_message]."""
     print__debug(f"{FORMAT_ANSWER_ID}: Enter format_answer_node")
     llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
+    
+    # Prepare SQL queries and results context
     queries_results_text = "\n\n".join(
         f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
-        for i, (query, result) in enumerate(state["queries_and_results"])
+        for i, (query, result) in enumerate(state.get("queries_and_results", []))
     )
+    
+    # Prepare PDF chunks context separately
+    pdf_chunks_text = ""
+    top_chunks = state.get("top_chunks", [])
+    if top_chunks:
+        print__debug(f"{FORMAT_ANSWER_ID}: Including {len(top_chunks)} PDF chunks in context")
+        chunks_content = []
+        for i, chunk in enumerate(top_chunks[:10], 1):  # Limit to top 10 chunks to prevent token overflow
+            source = chunk.metadata.get('source', 'unknown') if chunk.metadata else 'unknown'
+            content = chunk.page_content if hasattr(chunk, 'page_content') else str(chunk)
+            chunks_content.append(f"PDF Source {i} ({source}):\n{content}")
+        pdf_chunks_text = "\n\n".join(chunks_content)
+    else:
+        print__debug(f"{FORMAT_ANSWER_ID}: No PDF chunks available for context")
+    
     system_prompt = """
-You are a bilingual (Czech/English) data analyst. Respond strictly using provided SQL results:
+You are a bilingual (Czech/English) data analyst. Respond strictly using provided SQL results and PDF document context:
 
 1. **Data Rules**:
-   - Use ONLY provided data (no external knowledge)
+   - Use ONLY provided data (SQL results and PDF document content)
    - Always read in details the QUERY and match it again with user question - if it does make sense.
    - Never format any numbers, use plain digits, no separators, no markdown etc.
+   - If PDF document context is provided, use it to enrich your answer with additional relevant information
    
 2. **Response Rules**:
    - Match question's language
-   - Synthesize all data into one direct answer
+   - Synthesize all data (SQL + PDF) into one comprehensive answer
    - Compare values when relevant
    - Highlight patterns if asked
    - Note contradictions if found
    - Never hallucinate, if you are not sure about the answer or if the answer is not in the results, just say so.
    - Be careful not to say that something was 0 when you got no results from SQL.
    - Again read carefully the question, and provide answer using the QUERIES and its RESULTS, only if those answer the question. For example if question is about cinemas, dont answer about houses.
+   - When using PDF context, clearly indicate what information comes from PDF sources vs SQL data
    
 
 3. **Style Rules**:
-   - No query/results references
+   - No query/results references in final answer
    - No filler phrases
    - No unsupported commentary
    - Logical structure (e.g., highest-to-lowest)
    - Make output more structured, instead of making one long sentence.
+   - If using both SQL and PDF data, organize the answer to show how they complement each other
 
 Example regarding numeric output:
 Good: "X is 1234567 while Y is 7654321"
 Bad: "The query shows X is 1,234,567"
 """
-    formatted_prompt = f"Question: {state.get('rewritten_prompt') or state['prompt']}\n\nContext: \n{state['queries_and_results']}\n\nPlease answer the question based on the queries and results."
+    
+    # Build the formatted prompt with separate sections for SQL and PDF data
+    formatted_prompt_parts = [
+        f"Question: {state.get('rewritten_prompt') or state['prompt']}"
+    ]
+    
+    # Add SQL data section if available
+    if state.get("queries_and_results"):
+        formatted_prompt_parts.append(f"SQL Data Context:\n{queries_results_text}")
+    
+    # Add PDF data section if available
+    if pdf_chunks_text:
+        formatted_prompt_parts.append(f"PDF Document Context:\n{pdf_chunks_text}")
+    
+    # Add instruction
+    if state.get("queries_and_results") and pdf_chunks_text:
+        instruction = "Please answer the question based on both the SQL queries/results and the PDF document context provided."
+    elif state.get("queries_and_results"):
+        instruction = "Please answer the question based on the SQL queries and results provided."
+    elif pdf_chunks_text:
+        instruction = "Please answer the question based on the PDF document context provided."
+    else:
+        instruction = "No data context available to answer the question."
+    
+    formatted_prompt_parts.append(instruction)
+    formatted_prompt = "\n\n".join(formatted_prompt_parts)
+    
     chain = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", "{input}")
@@ -787,4 +845,128 @@ Do not include any meta-commentary or formatting, just the summary text."""
         messages = [summary_msg]
     print__debug(f"SUMMARY: New messages: {[getattr(m, 'content', None) for m in messages]}")
     return {"messages": messages}
+
+#==============================================================================
+# PDF CHUNK NODES
+#==============================================================================
+async def retrieve_similar_chunks_hybrid_search_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Perform hybrid search on PDF ChromaDB to retrieve initial candidate document chunks. Returns hybrid search results as Document objects."""
+    print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Enter retrieve_similar_chunks_hybrid_search_node")
+    
+    if not PDF_FUNCTIONALITY_AVAILABLE:
+        print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: PDF functionality not available")
+        return {"hybrid_search_chunks": []}
+    
+    query = state.get("rewritten_prompt") or state["prompt"]
+    n_results = state.get("n_results", 60)  # Same as selections
+    
+    print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Query: {query}")
+    print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Requested n_results: {n_results}")
+    
+    # Check if PDF ChromaDB directory exists
+    if not PDF_CHROMA_DB_PATH.exists() or not PDF_CHROMA_DB_PATH.is_dir():
+        print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB directory not found at {PDF_CHROMA_DB_PATH}")
+        return {"hybrid_search_chunks": []}
+    
+    try:
+        # Use the PDF ChromaDB collection directly
+        import chromadb
+        client = chromadb.PersistentClient(path=str(PDF_CHROMA_DB_PATH))
+        collection = client.get_collection(name=PDF_COLLECTION_NAME)
+        print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized directly")
+        
+        hybrid_results = pdf_hybrid_search(collection, query, n_results=n_results)
+        print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Retrieved {len(hybrid_results)} PDF hybrid search results")
+        
+        # Convert dict results to Document objects for compatibility
+        from langchain_core.documents import Document
+        hybrid_docs = []
+        for result in hybrid_results:
+            doc = Document(
+                page_content=result['document'],
+                metadata=result['metadata']
+            )
+            hybrid_docs.append(doc)
+        
+        # Debug: Show detailed hybrid search results
+        print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Detailed PDF hybrid search results:")
+        for i, doc in enumerate(hybrid_docs[:5], 1):  # Show first 5
+            source = doc.metadata.get('source') if doc.metadata else 'N/A'
+            content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
+            print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}...")
+        
+        return {"hybrid_search_chunks": hybrid_docs}
+    except Exception as e:
+        print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Error in PDF hybrid search: {e}")
+        import traceback
+        print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}")
+        return {"hybrid_search_chunks": []}
+
+async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Rerank PDF chunk hybrid search results using Cohere rerank model. Returns document-score pairs."""
+    print__debug(f"{RERANK_CHUNKS_NODE_ID}: Enter rerank_chunks_node")
+    
+    if not PDF_FUNCTIONALITY_AVAILABLE:
+        print__debug(f"{RERANK_CHUNKS_NODE_ID}: PDF functionality not available")
+        return {"most_similar_chunks": []}
+    
+    query = state.get("rewritten_prompt") or state["prompt"]
+    hybrid_results = state.get("hybrid_search_chunks", [])
+    n_results = state.get("n_results", 60)  # Same as selections
+    
+    print__debug(f"{RERANK_CHUNKS_NODE_ID}: Query: {query}")
+    print__debug(f"{RERANK_CHUNKS_NODE_ID}: Number of PDF hybrid results received: {len(hybrid_results)}")
+    print__debug(f"{RERANK_CHUNKS_NODE_ID}: Requested n_results: {n_results}")
+    
+    # Check if we have hybrid search results to rerank
+    if not hybrid_results:
+        print__debug(f"{RERANK_CHUNKS_NODE_ID}: No PDF hybrid search results to rerank")
+        return {"most_similar_chunks": []}
+    
+    # Debug: Show input to rerank
+    print__debug(f"{RERANK_CHUNKS_NODE_ID}: Input PDF hybrid results for reranking:")
+    for i, doc in enumerate(hybrid_results[:5], 1):  # Show first 5
+        source = doc.metadata.get('source') if doc.metadata else 'N/A'
+        content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
+        print__debug(f"{RERANK_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}...")
+    
+    try:
+        print__debug(f"{RERANK_CHUNKS_NODE_ID}: Calling PDF cohere_rerank with {len(hybrid_results)} documents")
+        reranked = pdf_cohere_rerank(query, hybrid_results, top_n=n_results)
+        print__debug(f"{RERANK_CHUNKS_NODE_ID}: PDF Cohere returned {len(reranked)} reranked results")
+        
+        most_similar = []
+        for i, (doc, res) in enumerate(reranked, 1):
+            score = res.relevance_score
+            most_similar.append((doc, score))
+            # Debug: Show detailed rerank results
+            if i <= 5:  # Show top 5 results
+                source = doc.metadata.get("source") if doc.metadata else "unknown"
+                print__debug(f"{RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}")
+        
+        print__debug(f"🎯🎯🎯 {RERANK_CHUNKS_NODE_ID}: FINAL PDF RERANK OUTPUT: {len(most_similar)} chunks 🎯🎯🎯")
+        return {"most_similar_chunks": most_similar}
+    except Exception as e:
+        print__debug(f"{RERANK_CHUNKS_NODE_ID}: Error in PDF reranking: {e}")
+        import traceback
+        print__debug(f"{RERANK_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}")
+        return {"most_similar_chunks": []}
+
+async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Select PDF chunks that exceed the relevance threshold (0.01)."""
+    print__debug(f"{RELEVANT_CHUNKS_NODE_ID}: Enter relevant_chunks_node")
+    SIMILARITY_THRESHOLD = 0.01  # Higher threshold for PDF chunks as requested
+    most_similar = state.get("most_similar_chunks", [])
+    
+    # Select chunks above threshold
+    top_chunks = [doc for doc, score in most_similar if score is not None and score >= SIMILARITY_THRESHOLD]
+    print__debug(f"{RELEVANT_CHUNKS_NODE_ID}: top_chunks: {len(top_chunks)} chunks passed threshold {SIMILARITY_THRESHOLD}")
+    
+    # Debug: Show what passed
+    for i, chunk in enumerate(top_chunks[:5], 1):
+        source = chunk.metadata.get('source') if chunk.metadata else 'unknown'
+        content_preview = chunk.page_content[:100].replace('\n', ' ') if hasattr(chunk, 'page_content') else 'N/A'
+        print__debug(f"{RELEVANT_CHUNKS_NODE_ID}: Chunk #{i}: {source} | Content: {content_preview}...")
+    
+    return {"top_chunks": top_chunks}
 
