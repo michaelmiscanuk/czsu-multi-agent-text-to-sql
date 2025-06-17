@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { removeDiacritics } from './utils';
 import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
@@ -49,6 +50,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
   const [allTables, setAllTables] = React.useState<{ selection_code: string, short_description: string }[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const { data: session } = useSession();
+  const router = useRouter();
   const [sortConfig, setSortConfig] = React.useState<{ column: string | null; direction: 'asc' | 'desc' | null }>({ column: null, direction: null });
 
   // Prefill search box if pendingTableSearch changes
@@ -259,54 +261,78 @@ const DataTableView: React.FC<DataTableViewProps> = ({
     });
   };
 
+  // Handle table code click - navigate to catalog and prefill filter
+  const handleTableCodeClick = () => {
+    if (selectedTable) {
+      // Set the catalog filter in localStorage before navigation
+      localStorage.setItem('czsu-catalog-filter', selectedTable);
+      localStorage.setItem('czsu-catalog-page', '1'); // Reset to first page
+      
+      // Navigate to catalog
+      router.push('/catalog');
+    }
+  };
+
   return (
-    <div className="flex flex-col h-full p-6">
-      <div className="mb-4 flex flex-col relative z-30">
-        <div className="flex items-center w-full">
-          <input
-            ref={inputRef}
-            className="border border-gray-300 rounded px-3 py-2 w-112 mr-2 shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
-            placeholder="Search for a table..."
-            aria-label="Search for a table"
-            value={search}
-            onChange={e => {
-              const value = e.target.value;
-              setSearch(value);
-              setShowSuggestions(true);
-              if (value.trim() === '') {
-                setSuggestions(allTables);
-                setSelectedTable(null);
-              }
-            }}
-            onFocus={() => {
-              setShowSuggestions(true);
-              if (!search.trim()) {
-                setSuggestions(allTables);
-              }
-            }}
-            onBlur={handleBlur}
-          />
-          {search && (
-            <button
-              className="text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none ml-2"
-              title="Clear filter"
-              aria-label="Clear filter"
-              tabIndex={0}
-              onClick={() => {
-                setSearch('');
-                setSelectedTable(null);
-                setSuggestions(allTables);
+    <div className="table-container">
+      <div className="filter-section flex flex-col relative z-30">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
+            <input
+              ref={inputRef}
+              className="border border-gray-300 rounded px-3 py-2 w-112 mr-2 shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+              placeholder="Search for a table..."
+              aria-label="Search for a table"
+              value={search}
+              onChange={e => {
+                const value = e.target.value;
+                setSearch(value);
+                setShowSuggestions(true);
+                if (value.trim() === '') {
+                  setSuggestions(allTables);
+                  setSelectedTable(null);
+                }
               }}
-              style={{ lineHeight: 1 }}
+              onFocus={() => {
+                setShowSuggestions(true);
+                if (!search.trim()) {
+                  setSuggestions(allTables);
+                }
+              }}
+              onBlur={handleBlur}
+            />
+            {search && (
+              <button
+                className="text-gray-400 hover:text-gray-700 text-lg font-bold px-2 py-1 focus:outline-none"
+                title="Clear filter"
+                aria-label="Clear filter"
+                tabIndex={0}
+                onClick={() => {
+                  setSearch('');
+                  setSelectedTable(null);
+                  setSuggestions(allTables);
+                }}
+                style={{ lineHeight: 1 }}
+              >
+                ×
+              </button>
+            )}
+          </div>
+          {selectedTable && (
+            <button
+              className="dataset-code-badge"
+              onClick={handleTableCodeClick}
+              title={`Go to catalog and filter by ${selectedTable}`}
             >
-              ×
+              {selectedTable}
             </button>
           )}
         </div>
+        
         <div className="flex items-center mt-2 space-x-4">
           <span
             className="text-gray-400 text-[10px] font-normal block"
-            style={{ lineHeight: 1, fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}
+            style={{ lineHeight: 1, fontFamily: 'var(--table-font-family)' }}
             title="Starting with * searches only for codes."
           >
             Starting with * searches only for codes.
@@ -331,12 +357,8 @@ const DataTableView: React.FC<DataTableViewProps> = ({
         )}
         {loading && <div className="absolute right-3 top-2 text-xs text-gray-400">Loading...</div>}
       </div>
-      {selectedTable && (
-        <div className="mb-2 flex items-center">
-          <span className="font-mono text-xs bg-gray-100 border border-gray-200 rounded px-2 py-1 mr-2">Table code: {selectedTable}</span>
-        </div>
-      )}
-      {selectedTable && columns.length > 0 && (
+      
+      <div className="table-section">
         <div className="flex-1 overflow-auto">
           {tableLoading ? (
             <div className="text-center py-8">Loading table...</div>
@@ -344,13 +366,13 @@ const DataTableView: React.FC<DataTableViewProps> = ({
             <div className="text-center py-8">No data found for this table.</div>
           ) : (
             <div className="overflow-x-auto rounded shadow border border-gray-200 bg-white">
-              <table className="min-w-full text-xs">
+              <table className="min-w-full table-content-font">
                 <thead className="bg-blue-100 sticky top-0 z-10">
                   <tr>
                     {columns.map(col => (
                       <th
                         key={col}
-                        className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap cursor-pointer select-none group"
+                        className="px-4 py-2 border-b text-left table-header-font text-gray-700 whitespace-nowrap cursor-pointer select-none group"
                         onClick={() => handleSort(col)}
                         tabIndex={0}
                         aria-sort={
@@ -392,7 +414,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
                     {columns.map(col => (
                       <th key={col + '-filter'} className="px-4 py-1 border-b bg-blue-50">
                         <input
-                          className="border border-gray-300 rounded px-2 py-1 text-xs w-full"
+                          className="border border-gray-300 rounded px-2 py-1 table-content-font w-full"
                           placeholder={`Filter...`}
                           value={columnFilters[col] || ''}
                           onChange={e => handleColumnFilterChange(col, e.target.value)}
@@ -401,7 +423,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
                         {col === 'value' && (
                           <span
                             className="text-gray-400 text-[10px] font-normal block mt-1"
-                            style={{ lineHeight: 1, fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}
+                            style={{ lineHeight: 1, fontFamily: 'var(--table-font-family)' }}
                           >
                             <span title='You can filter using &gt;, &lt;, &gt;=, &lt;=, =, !=, etc. (e.g. "> 10000")'>
                               e.g. &gt; 10000, &lt;= 500
@@ -416,7 +438,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
                   {sortedRows.map((row, i) => (
                     <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
                       {row.map((cell, j) => (
-                        <td key={j} className="px-4 py-2 border-b whitespace-pre-line text-gray-800">
+                        <td key={j} className="px-4 py-2 border-b table-content-font table-cell-readable text-gray-800">
                           {cell !== null ? String(cell) : ''}
                         </td>
                       ))}
@@ -427,7 +449,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

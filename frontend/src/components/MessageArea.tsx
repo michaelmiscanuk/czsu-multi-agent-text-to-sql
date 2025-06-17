@@ -614,7 +614,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                             {/* Show multiple dataset codes if available */}
                                             {message.meta?.datasetsUsed && message.meta.datasetsUsed.length > 0 ? (
                                                 <div className="flex items-center space-x-2 flex-wrap">
-                                                    <span className="text-xs text-gray-500 mr-1">Dataset{message.meta.datasetsUsed.length > 1 ? 's' : ''} used:</span>
+                                                    <span className="text-xs text-gray-500 mr-1" style={{ marginLeft: '1rem' }}>Dataset{message.meta.datasetsUsed.length > 1 ? 's' : ''} used:</span>
                                                     {message.meta.datasetsUsed.map((code: string, index: number) => (
                                                         <Link
                                                             key={index}
@@ -630,7 +630,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 /* Fallback to old single dataset approach for backward compatibility */
                                                 (message.selectionCode || message.meta?.datasetUrl) && (
                                                     <div>
-                                                        <span className="text-xs text-gray-500 mr-1">Dataset used:</span>
+                                                        <span className="text-xs text-gray-500 mr-1" style={{ marginLeft: '1rem' }}>Dataset used:</span>
                                                         <Link
                                                             href={`/data?table=${encodeURIComponent(message.selectionCode || message.meta?.datasetUrl.replace('/datasets/', ''))}`}
                                                             className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"

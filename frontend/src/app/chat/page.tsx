@@ -688,7 +688,7 @@ export default function ChatPage() {
 
   // UI
   return (
-    <div className="chat-container flex w-full max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div className="unified-white-block-system">
       {/* Sidebar with its own scroll */}
       <aside className="w-64 bg-white border-r border-gray-200 flex flex-col">
         {/* Sidebar Header */}

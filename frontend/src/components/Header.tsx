@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import AuthButton from './AuthButton';
 
 const menuItems = [
@@ -13,6 +14,9 @@ const menuItems = [
 
 const Header = () => {
   const pathname = usePathname();
+  const { status } = useSession();
+  const isAuthenticated = status === 'authenticated';
+
   return (
     <header className="relative flex items-center justify-between px-10 py-6 bg-white shadow-md z-20">
       <div className="absolute inset-0 bg-[url('/api/placeholder/100/100')] opacity-5 mix-blend-overlay pointer-events-none"></div>
@@ -20,10 +24,10 @@ const Header = () => {
 
       <div className="flex items-center relative">
         <Link 
-          href="/chat"
+          href={isAuthenticated ? "/chat" : "/"}
           className="font-extrabold text-[#181C3A] text-2xl tracking-tight hover:text-blue-600 transition-colors duration-200 cursor-pointer"
           style={{fontFamily: 'var(--font-inter)'}}
-          title="Go to CHAT"
+          title={isAuthenticated ? "Go to CHAT" : "Go to HOME"}
         >
           CZSU - Multi-Agent Text-to-SQL
         </Link>

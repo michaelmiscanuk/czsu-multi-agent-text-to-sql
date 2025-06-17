@@ -80,23 +80,25 @@ function DataPageInner() {
   }, [columnFilters]);
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <DataTableView
-        search={search}
-        setSearch={setSearch}
-        selectedTable={selectedTable}
-        setSelectedTable={setSelectedTable}
-        columns={columns}
-        setColumns={setColumns}
-        rows={rows}
-        setRows={setRows}
-        selectedColumn={selectedColumn}
-        setSelectedColumn={setSelectedColumn}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
-        pendingTableSearch={pendingTableSearch}
-        setPendingTableSearch={setPendingTableSearch}
-      />
+    <div className="unified-white-block-system">
+      <div className="table-container">
+        <DataTableView
+          search={search}
+          setSearch={setSearch}
+          selectedTable={selectedTable}
+          setSelectedTable={setSelectedTable}
+          columns={columns}
+          setColumns={setColumns}
+          rows={rows}
+          setRows={setRows}
+          selectedColumn={selectedColumn}
+          setSelectedColumn={setSelectedColumn}
+          columnFilters={columnFilters}
+          setColumnFilters={setColumnFilters}
+          pendingTableSearch={pendingTableSearch}
+          setPendingTableSearch={setPendingTableSearch}
+        />
+      </div>
     </div>
   );
 }

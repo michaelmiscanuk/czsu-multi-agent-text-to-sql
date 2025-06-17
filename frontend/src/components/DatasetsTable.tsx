@@ -110,8 +110,8 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
   };
 
   return (
-    <div className="flex flex-col h-full p-6">
-      <div className="mb-4 flex items-center">
+    <div className="table-container">
+      <div className="filter-section flex items-center">
         <input
           className="border border-gray-300 rounded px-3 py-2 w-80 mr-2"
           placeholder="Filter by keyword..."
@@ -133,28 +133,28 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
         )}
         <span className="text-gray-500 text-sm ml-4">{total} records</span>
       </div>
-      <div className="flex-1 overflow-auto">
+      
+      <div className="table-section">
         <div className="overflow-x-auto rounded shadow border border-gray-200 bg-white">
-          <table className="min-w-full text-xs">
+          <table className="min-w-full table-content-font">
             <thead className="bg-blue-100 sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap">Selection Code</th>
-                <th className="px-4 py-2 border-b text-left font-semibold text-gray-700 whitespace-nowrap">Extended Description</th>
+                <th className="px-4 py-2 border-b text-left table-header-font text-gray-700 whitespace-nowrap">Selection Code</th>
+                <th className="px-4 py-2 border-b text-left table-header-font text-gray-700 whitespace-nowrap">Extended Description</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={2} className="text-center py-8">Loading...</td></tr>
+                <tr><td colSpan={2} className="text-center py-8 table-content-font">Loading...</td></tr>
               ) : data.length === 0 ? (
-                <tr><td colSpan={2} className="text-center py-8">No records found.</td></tr>
+                <tr><td colSpan={2} className="text-center py-8 table-content-font">No records found.</td></tr>
               ) : (
                 data.map((row, i) => (
                   <tr key={row.selection_code} className={i % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                    <td className="px-4 py-2 border-b font-mono text-xs text-blue-900">
+                    <td className="px-4 py-2 border-b font-mono table-content-font text-blue-900">
                       {onRowClick ? (
                         <button
-                          className="text-blue-600 underline hover:text-blue-800 cursor-pointer p-0 bg-transparent border-0 outline-none"
-                          style={{ textDecoration: 'underline' }}
+                          className="dataset-code-badge"
                           onClick={() => onRowClick(row.selection_code)}
                         >
                           {row.selection_code}
@@ -163,7 +163,7 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
                         row.selection_code
                       )}
                     </td>
-                    <td className="px-4 py-2 border-b text-sm whitespace-pre-line text-gray-800">{row.extended_description}</td>
+                    <td className="px-4 py-2 border-b table-description-font table-cell-readable text-gray-800">{row.extended_description}</td>
                   </tr>
                 ))
               )}
@@ -171,7 +171,8 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
           </table>
         </div>
       </div>
-      <div className="mt-4 flex justify-between items-center">
+      
+      <div className="pagination-section flex items-center justify-between">
         <button
           className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-sm"
           onClick={() => setPage(p => Math.max(1, p - 1))}
