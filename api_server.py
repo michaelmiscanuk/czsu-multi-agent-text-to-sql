@@ -51,15 +51,17 @@ import gc
 import psutil
 import signal
 from contextlib import asynccontextmanager
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
+import time
+from collections import defaultdict
 
 from fastapi import FastAPI, Query, HTTPException, Header, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.responses import ORJSONResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 import sqlite3
 import requests
@@ -70,6 +72,9 @@ from jwt.algorithms import RSAAlgorithm
 from langchain_core.messages import BaseMessage
 from langsmith import Client
 from dotenv import load_dotenv
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
@@ -95,6 +100,12 @@ GLOBAL_CHECKPOINTER = None
 # Add a semaphore to limit concurrent analysis requests
 MAX_CONCURRENT_ANALYSES = 1  # Only 1 analysis at a time for 512MB limit
 analysis_semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
+
+# RATE LIMITING: Global rate limiting storage
+rate_limit_storage = defaultdict(list)
+RATE_LIMIT_REQUESTS = 100  # requests per window
+RATE_LIMIT_WINDOW = 60  # 60 seconds window
+RATE_LIMIT_BURST = 20  # burst limit for rapid requests
 
 def print__memory_monitoring(msg: str) -> None:
     """Print MEMORY-MONITORING messages when debug mode is enabled.
@@ -137,6 +148,57 @@ def log_memory_usage(context: str = ""):
             
     except Exception as e:
         print__memory_monitoring(f"Could not check memory usage: {e}")
+
+def log_comprehensive_error(context: str, error: Exception, request: Request = None):
+    """Enhanced error logging with context and request details."""
+    error_details = {
+        "context": context,
+        "error_type": type(error).__name__,
+        "error_message": str(error),
+        "timestamp": datetime.now().isoformat(),
+    }
+    
+    if request:
+        error_details.update({
+            "method": request.method,
+            "url": str(request.url),
+            "client_ip": request.client.host if request.client else "unknown",
+            "user_agent": request.headers.get("user-agent", "unknown"),
+            "content_type": request.headers.get("content-type", "unknown")
+        })
+    
+    # Log to debug output
+    print__debug(f"COMPREHENSIVE ERROR: {json.dumps(error_details, indent=2)}")
+    
+    # Log memory usage during error
+    log_memory_usage(f"error_{context}")
+
+def check_rate_limit(client_ip: str) -> bool:
+    """Check if client IP is within rate limits."""
+    now = time.time()
+    
+    # Clean old entries
+    rate_limit_storage[client_ip] = [
+        timestamp for timestamp in rate_limit_storage[client_ip]
+        if now - timestamp < RATE_LIMIT_WINDOW
+    ]
+    
+    # Check burst limit (last 10 seconds)
+    recent_requests = [
+        timestamp for timestamp in rate_limit_storage[client_ip]
+        if now - timestamp < 10
+    ]
+    
+    if len(recent_requests) >= RATE_LIMIT_BURST:
+        return False
+    
+    # Check window limit
+    if len(rate_limit_storage[client_ip]) >= RATE_LIMIT_REQUESTS:
+        return False
+    
+    # Add current request
+    rate_limit_storage[client_ip].append(now)
+    return True
 
 def setup_graceful_shutdown():
     """Setup graceful shutdown handlers to detect platform restarts."""
@@ -346,6 +408,32 @@ app.add_middleware(
 # Add GZip compression to reduce response sizes and memory usage
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# RATE LIMITING MIDDLEWARE
+@app.middleware("http")
+async def rate_limiting_middleware(request: Request, call_next):
+    """Rate limiting middleware to prevent abuse."""
+    
+    # Skip rate limiting for health checks and static endpoints
+    if request.url.path in ["/health", "/docs", "/openapi.json", "/debug/pool-status"]:
+        return await call_next(request)
+    
+    client_ip = request.client.host if request.client else "unknown"
+    
+    if not check_rate_limit(client_ip):
+        log_comprehensive_error("rate_limit_exceeded", 
+                               Exception(f"Rate limit exceeded for IP: {client_ip}"), 
+                               request)
+        return JSONResponse(
+            status_code=429,
+            content={
+                "detail": "Rate limit exceeded. Please try again later.",
+                "retry_after": RATE_LIMIT_WINDOW
+            },
+            headers={"Retry-After": str(RATE_LIMIT_WINDOW)}
+        )
+    
+    return await call_next(request)
+
 # Add middleware to monitor requests and detect high load
 @app.middleware("http")
 async def monitor_requests(request: Request, call_next):
@@ -439,18 +527,155 @@ async def health_check():
             "timestamp": datetime.now().isoformat()
         }
 
+# NEW: Individual service health checks
+@app.get("/health/database")
+async def database_health_check():
+    """Database-specific health check."""
+    try:
+        if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
+            async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
+                await conn.execute("SELECT 1")
+            return {
+                "status": "healthy",
+                "database": "connected",
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            return {
+                "status": "degraded",
+                "database": "not_available",
+                "timestamp": datetime.now().isoformat()
+            }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "database": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
+@app.get("/health/memory")
+async def memory_health_check():
+    """Memory-specific health check."""
+    try:
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        memory_mb = memory_info.rss / 1024 / 1024
+        
+        # Get memory limit
+        memory_limit_mb = 512  # Default Render limit
+        try:
+            if os.environ.get('MEMORY_LIMIT'):
+                memory_limit_mb = int(os.environ.get('MEMORY_LIMIT')) / 1024 / 1024
+            elif os.environ.get('WEB_MEMORY'):
+                memory_limit_mb = int(os.environ.get('WEB_MEMORY'))
+        except:
+            pass
+        
+        usage_percent = (memory_mb / memory_limit_mb) * 100
+        
+        status = "healthy"
+        if usage_percent > 90:
+            status = "critical"
+        elif usage_percent > 80:
+            status = "warning"
+        
+        return {
+            "status": status,
+            "memory_usage_mb": round(memory_mb, 1),
+            "memory_limit_mb": memory_limit_mb,
+            "usage_percent": round(usage_percent, 1),
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
+@app.get("/health/rate-limits")
+async def rate_limit_health_check():
+    """Rate limiting health check."""
+    try:
+        total_clients = len(rate_limit_storage)
+        active_clients = sum(1 for requests in rate_limit_storage.values() if requests)
+        
+        return {
+            "status": "healthy",
+            "total_tracked_clients": total_clients,
+            "active_clients": active_clients,
+            "rate_limit_window": RATE_LIMIT_WINDOW,
+            "rate_limit_requests": RATE_LIMIT_REQUESTS,
+            "rate_limit_burst": RATE_LIMIT_BURST,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
 class AnalyzeRequest(BaseModel):
-    prompt: str
-    thread_id: str
+    prompt: str = Field(..., min_length=1, max_length=10000, description="The prompt to analyze")
+    thread_id: str = Field(..., min_length=1, max_length=100, description="The thread ID")
+    
+    @field_validator('prompt')
+    @classmethod
+    def validate_prompt(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Prompt cannot be empty or only whitespace')
+        return v.strip()
+    
+    @field_validator('thread_id')
+    @classmethod
+    def validate_thread_id(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Thread ID cannot be empty or only whitespace')
+        return v.strip()
 
 class FeedbackRequest(BaseModel):
-    run_id: str
-    feedback: Optional[int] = None  # 1 for thumbs up, 0 for thumbs down, None if only comment
-    comment: Optional[str] = None
+    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
+    feedback: Optional[int] = Field(None, ge=0, le=1, description="Feedback score: 1 for thumbs up, 0 for thumbs down")
+    comment: Optional[str] = Field(None, max_length=1000, description="Optional comment")
+    
+    @field_validator('run_id')
+    @classmethod
+    def validate_run_id(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Run ID cannot be empty')
+        # Basic UUID format validation
+        import uuid
+        try:
+            uuid.UUID(v.strip())
+        except ValueError:
+            raise ValueError('Run ID must be a valid UUID format')
+        return v.strip()
+    
+    @field_validator('comment')
+    @classmethod
+    def validate_comment(cls, v):
+        if v is not None and len(v.strip()) == 0:
+            return None  # Convert empty string to None
+        return v
 
 class SentimentRequest(BaseModel):
-    run_id: str
-    sentiment: Optional[bool]  # True for thumbs up, False for thumbs down, None to clear
+    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
+    sentiment: Optional[bool] = Field(None, description="Sentiment: true for positive, false for negative, null to clear")
+    
+    @field_validator('run_id')
+    @classmethod
+    def validate_run_id(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Run ID cannot be empty')
+        # Basic UUID format validation
+        import uuid
+        try:
+            uuid.UUID(v.strip())
+        except ValueError:
+            raise ValueError('Run ID must be a valid UUID format')
+        return v.strip()
 
 class ChatThreadResponse(BaseModel):
     thread_id: str
@@ -475,32 +700,102 @@ class ChatMessage(BaseModel):
 
 GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
 
-# Helper to verify Google JWT
+# FIXED: Enhanced JWT verification with proper error handling
 def verify_google_jwt(token: str):
-    # Get Google public keys
-    jwks = requests.get(GOOGLE_JWK_URL).json()
-    unverified_header = jwt.get_unverified_header(token)
-    for key in jwks["keys"]:
-        if key["kid"] == unverified_header["kid"]:
-            public_key = RSAAlgorithm.from_jwk(key)
-            try:
-                # Debug: print the audience in the token and the expected audience
-                unverified_payload = jwt.decode(token, options={"verify_signature": False})
-                print__debug(f"Token aud: {unverified_payload.get('aud')}")
-                print__debug(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
-                payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
-                return payload
-            except Exception as e:
-                print__debug(f"JWT decode error: {e}")
-                raise HTTPException(status_code=401, detail=f"Invalid token: {e}")
-    raise HTTPException(status_code=401, detail="Public key not found")
+    try:
+        # Get Google public keys
+        jwks = requests.get(GOOGLE_JWK_URL).json()
+        
+        # Get unverified header - this can fail with invalid JWT format
+        try:
+            unverified_header = jwt.get_unverified_header(token)
+        except jwt.DecodeError as e:
+            print__debug(f"JWT decode error (not enough segments): {e}")
+            raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        except Exception as e:
+            print__debug(f"JWT header decode error: {e}")
+            raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        
+        # CRITICAL FIX: Check if 'kid' exists in header before accessing it
+        if "kid" not in unverified_header:
+            print__debug(f"JWT token missing 'kid' field in header")
+            raise HTTPException(status_code=401, detail="Invalid JWT token: missing key ID")
+        
+        # Find matching key
+        for key in jwks["keys"]:
+            if key["kid"] == unverified_header["kid"]:
+                public_key = RSAAlgorithm.from_jwk(key)
+                try:
+                    # Debug: print the audience in the token and the expected audience
+                    try:
+                        unverified_payload = jwt.decode(token, options={"verify_signature": False})
+                        print__debug(f"Token aud: {unverified_payload.get('aud')}")
+                        print__debug(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
+                    except Exception:
+                        pass  # Ignore debug errors
+                    
+                    payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
+                    return payload
+                except jwt.ExpiredSignatureError:
+                    print__debug("JWT token has expired")
+                    raise HTTPException(status_code=401, detail="Token has expired")
+                except jwt.InvalidAudienceError:
+                    print__debug("JWT token has invalid audience")
+                    raise HTTPException(status_code=401, detail="Invalid token audience")
+                except jwt.InvalidSignatureError:
+                    print__debug("JWT token has invalid signature")
+                    raise HTTPException(status_code=401, detail="Invalid token signature")
+                except jwt.InvalidTokenError as e:
+                    print__debug(f"JWT token is invalid: {e}")
+                    raise HTTPException(status_code=401, detail="Invalid token")
+                except jwt.DecodeError as e:
+                    print__debug(f"JWT decode error: {e}")
+                    raise HTTPException(status_code=401, detail="Invalid token format")
+                except Exception as e:
+                    print__debug(f"JWT decode error: {e}")
+                    raise HTTPException(status_code=401, detail="Invalid token")
+        
+        print__debug("JWT public key not found in Google JWKS")
+        raise HTTPException(status_code=401, detail="Invalid token: public key not found")
+        
+    except HTTPException:
+        raise  # Re-raise HTTPException as-is
+    except requests.RequestException as e:
+        print__debug(f"Failed to fetch Google JWKS: {e}")
+        raise HTTPException(status_code=401, detail="Token verification failed - unable to validate")
+    except jwt.DecodeError as e:
+        print__debug(f"JWT decode error in main handler: {e}")
+        raise HTTPException(status_code=401, detail="Invalid JWT token format")
+    except KeyError as e:
+        print__debug(f"JWT verification KeyError: {e}")
+        raise HTTPException(status_code=401, detail="Invalid JWT token structure")
+    except Exception as e:
+        print__debug(f"JWT verification failed: {e}")
+        raise HTTPException(status_code=401, detail="Token verification failed")
 
-# Dependency for JWT authentication
+# Enhanced dependency for JWT authentication with better error handling
 def get_current_user(authorization: str = Header(None)):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
-    token = authorization.split(" ", 1)[1]
-    return verify_google_jwt(token)
+    try:
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Missing Authorization header")
+        
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid Authorization header format. Expected 'Bearer <token>'")
+        
+        # Split and validate token extraction
+        auth_parts = authorization.split(" ", 1)
+        if len(auth_parts) != 2 or not auth_parts[1].strip():
+            raise HTTPException(status_code=401, detail="Invalid Authorization header format")
+        
+        token = auth_parts[1].strip()
+        return verify_google_jwt(token)
+        
+    except HTTPException:
+        raise  # Re-raise HTTPException as-is
+    except Exception as e:
+        print__debug(f"Authentication error: {e}")
+        log_comprehensive_error("authentication", e)
+        raise HTTPException(status_code=401, detail="Authentication failed")
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
@@ -1549,4 +1844,43 @@ def print__debug(msg: str) -> None:
     if debug_mode == '1':
         print(f"[DEBUG] {msg}")
         import sys
-        sys.stdout.flush() 
+        sys.stdout.flush()
+
+# Global exception handlers for proper error handling
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle Pydantic validation errors with proper 422 status code."""
+    print__debug(f"Validation error: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": "Validation error",
+            "errors": exc.errors()
+        }
+    )
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Handle HTTP exceptions properly."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    """Handle ValueError exceptions as 400 Bad Request."""
+    print__debug(f"ValueError: {str(exc)}")
+    return JSONResponse(
+        status_code=400,
+        content={"detail": str(exc)}
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle unexpected exceptions."""
+    print__debug(f"Unexpected error: {type(exc).__name__}: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    ) 
