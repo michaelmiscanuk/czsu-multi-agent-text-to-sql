@@ -128,6 +128,9 @@ def get_connection_string():
     # - application_name: Help identify connections in Supabase dashboard
     # NOTE: command_timeout is NOT a valid connection parameter - removed
     
+    # CRITICAL SUPABASE FIX: Add pgbouncer=true for transaction mode (port 6543)
+    is_transaction_mode = config['port'] == '6543'
+    
     # Enhanced connection string for Supabase stability
     connection_string = (
         f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}"
@@ -139,6 +142,11 @@ def get_connection_string():
         f"&keepalives_count=3"                  # 3 failed keepalives before disconnect
         f"&tcp_user_timeout=30000"              # TCP timeout (30 seconds)
     )
+    
+    # CRITICAL: Add pgbouncer=true for Supabase transaction mode (port 6543)
+    if is_transaction_mode:
+        connection_string += "&pgbouncer=true"
+        print__postgresql_debug(f"🔧 CRITICAL: Added pgbouncer=true for Supabase transaction mode (port 6543)")
     
     # Debug: Show what connection string we're actually using (without password)
     debug_string = connection_string.replace(config['password'], '***')
@@ -168,18 +176,36 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     """Create a new connection pool with Supabase-optimized settings from environment variables."""
     connection_string = get_connection_string()
     
+    # SUPABASE CRITICAL FIX: Check if we're using transaction mode (port 6543)
+    config = get_db_config()
+    is_transaction_mode = config['port'] == '6543'
+    
     # Get pool settings from environment variables with Supabase-friendly defaults
-    max_size = int(os.getenv('POSTGRES_POOL_MAX', '2'))    # Conservative for Supabase free tier
-    min_size = int(os.getenv('POSTGRES_POOL_MIN', '0'))    # Start with 0, create as needed
-    timeout = int(os.getenv('POSTGRES_POOL_TIMEOUT', '20')) # Faster timeout for Supabase
+    if is_transaction_mode:
+        # TRANSACTION MODE (port 6543): Much more conservative settings
+        max_size = int(os.getenv('POSTGRES_POOL_MAX', '1'))    # CRITICAL: Only 1 connection for transaction mode
+        min_size = int(os.getenv('POSTGRES_POOL_MIN', '0'))    # Start with 0, create as needed
+        timeout = int(os.getenv('POSTGRES_POOL_TIMEOUT', '10')) # Faster timeout for transaction mode
+        print__postgresql_debug(f"🔧 TRANSACTION MODE detected (port 6543) - using conservative pool settings")
+    else:
+        # SESSION MODE (port 5432): Normal settings
+        max_size = int(os.getenv('POSTGRES_POOL_MAX', '2'))    # Conservative for Supabase free tier
+        min_size = int(os.getenv('POSTGRES_POOL_MIN', '0'))    # Start with 0, create as needed
+        timeout = int(os.getenv('POSTGRES_POOL_TIMEOUT', '20')) # Normal timeout for session mode
+        print__postgresql_debug(f"🔧 SESSION MODE detected (port 5432) - using normal pool settings")
     
     print__postgresql_debug(f"🔧 Creating Supabase-optimized connection pool with settings: max_size={max_size}, min_size={min_size}, timeout={timeout}")
+    
+    # SUPABASE CRITICAL FIX: Add pgbouncer=true to connection string if using transaction mode
+    if is_transaction_mode and 'pgbouncer=true' not in connection_string:
+        connection_string += '&pgbouncer=true'
+        print__postgresql_debug(f"🔧 CRITICAL: Added pgbouncer=true for Supabase transaction mode compatibility")
     
     # Supabase-optimized configuration for SSL connection stability
     pool_kwargs = {
         "autocommit": True,
-        "prepare_threshold": None,  # Disable prepared statements for simplicity
-        "connect_timeout": 15       # Shorter connection timeout for Supabase
+        "prepare_threshold": None,  # CRITICAL: Disable prepared statements for Supabase transaction mode
+        "connect_timeout": 10 if is_transaction_mode else 15  # Shorter timeout for transaction mode
     }
     
     # On Windows, add additional configuration for psycopg compatibility
@@ -200,13 +226,16 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     
     # Explicitly open the pool with enhanced error handling for Supabase
     try:
+        # CRITICAL FIX: Reduce timeout for transaction mode
+        pool_open_timeout = 15 if is_transaction_mode else 30
+        
         # WINDOWS + SUPABASE FIX: Handle both Windows event loop issues and Supabase SSL
         if sys.platform == "win32":
-            print__postgresql_debug(f"🔧 Opening pool with Windows + Supabase compatibility")
+            print__postgresql_debug(f"🔧 Opening pool with Windows + Supabase compatibility (timeout={pool_open_timeout}s)")
             
             # Try opening the pool in the current context first
             try:
-                await asyncio.wait_for(pool.open(), timeout=30)  # Reduced timeout for Supabase
+                await asyncio.wait_for(pool.open(), timeout=pool_open_timeout)
                 print__postgresql_debug(f"🔗 Pool opened successfully in current context")
             except Exception as e:
                 error_msg = str(e).lower()
@@ -232,7 +261,7 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
                             open=False
                         )
                         
-                        await asyncio.wait_for(pool.open(), timeout=30)
+                        await asyncio.wait_for(pool.open(), timeout=pool_open_timeout)
                         print__postgresql_debug(f"🔗 Pool opened successfully with SelectorEventLoop")
                         
                         # Restore original loop
@@ -248,14 +277,22 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
                     raise
         else:
             # Non-Windows: Normal opening with Supabase timeout
-            await asyncio.wait_for(pool.open(), timeout=30)
+            print__postgresql_debug(f"🔧 Opening pool with timeout={pool_open_timeout}s")
+            await asyncio.wait_for(pool.open(), timeout=pool_open_timeout)
             
-        print__postgresql_debug(f"🔗 Created fresh Supabase connection pool (max_size={max_size}, min_size={min_size}, timeout={timeout}) with SSL stability")
+        mode_description = "TRANSACTION MODE (port 6543)" if is_transaction_mode else "SESSION MODE (port 5432)"
+        print__postgresql_debug(f"🔗 Created fresh Supabase connection pool for {mode_description} (max_size={max_size}, min_size={min_size}, timeout={timeout}) with SSL stability")
         return pool
         
     except asyncio.TimeoutError:
-        print__postgresql_debug("❌ Timeout opening Supabase connection pool - check network connectivity")
-        raise Exception("Supabase connection timeout - check your network and database status")
+        mode_description = "transaction mode (port 6543)" if is_transaction_mode else "session mode (port 5432)"
+        print__postgresql_debug(f"❌ Timeout opening Supabase connection pool in {mode_description} - check network connectivity and pool size limits")
+        if is_transaction_mode:
+            print__postgresql_debug("💡 Transaction mode troubleshooting:")
+            print__postgresql_debug("   1. Verify pgbouncer=true is in connection string")
+            print__postgresql_debug("   2. Use max_size=1 for transaction mode")
+            print__postgresql_debug("   3. Check Supabase pool size settings in dashboard")
+        raise Exception(f"Supabase {mode_description} connection timeout - check your network and database status")
     except Exception as e:
         error_msg = str(e).lower()
         if "ssl" in error_msg:
