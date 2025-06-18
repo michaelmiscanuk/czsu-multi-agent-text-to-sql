@@ -200,6 +200,220 @@ async def test_invalid_jwt_scenarios():
         print(f"❌ Invalid JWT test failed: {e}")
         return False
 
+async def test_jwt_token_variations():
+    """Test various JWT token format variations and edge cases."""
+    print("🔍 Testing JWT token variations...")
+    
+    jwt_variations = [
+        # Case sensitivity tests
+        ("bearer " + create_mock_jwt_token(), "Lowercase bearer"),
+        ("BEARER " + create_mock_jwt_token(), "Uppercase bearer"),
+        ("Bearer  " + create_mock_jwt_token(), "Extra space after Bearer"),
+        ("Bearer\t" + create_mock_jwt_token(), "Tab after Bearer"),
+        ("Bearer\n" + create_mock_jwt_token(), "Newline after Bearer"),
+        
+        # Whitespace variations
+        (" Bearer " + create_mock_jwt_token(), "Leading space"),
+        ("Bearer " + create_mock_jwt_token() + " ", "Trailing space"),
+        ("Bearer " + create_mock_jwt_token() + "\n", "Trailing newline"),
+        
+        # Multiple Bearer tokens
+        ("Bearer token1 Bearer token2", "Multiple Bearer keywords"),
+        ("Bearer " + create_mock_jwt_token() + " " + create_mock_jwt_token(), "Multiple tokens"),
+        
+        # Malformed base64 in JWT parts
+        ("Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.invalid_payload.signature", "Invalid payload base64"),
+        ("Bearer invalid_header.eyJzdWIiOiJ0ZXN0In0.signature", "Invalid header base64"),
+        
+        # Very long tokens
+        ("Bearer " + "a" * 10000, "Extremely long token"),
+        ("Bearer " + create_mock_jwt_token() + "a" * 5000, "Valid token with extra data"),
+        
+        # Special characters in token
+        ("Bearer token-with-hyphens", "Token with hyphens"),
+        ("Bearer token_with_underscores", "Token with underscores"),
+        ("Bearer token.with.dots", "Token with dots"),
+        
+        # Binary and non-printable characters
+        ("Bearer " + "\x00\x01\x02", "Binary characters"),
+        ("Bearer " + "token\x7f\x80\x81", "Non-printable characters"),
+    ]
+    
+    results = {}
+    
+    try:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=TEST_TIMEOUT)) as session:
+            for token, description in jwt_variations:
+                print(f"   Testing: {description}")
+                
+                try:
+                    headers = {"Authorization": token}
+                    async with session.get(f"{BASE_URL}/catalog", headers=headers) as response:
+                        
+                        if response.status == 401:
+                            print(f"     ✅ 401 Unauthorized - Correctly rejected")
+                            results[description] = True
+                        elif response.status == 400:
+                            print(f"     ✅ 400 Bad Request - Correctly rejected")
+                            results[description] = True
+                        elif response.status == 500:
+                            print(f"     ❌ 500 Internal Server Error - Poor error handling")
+                            results[description] = False
+                        else:
+                            print(f"     ⚠️ {response.status} - Unexpected status")
+                            results[description] = True
+                            
+                except Exception as e:
+                    print(f"     ❌ Exception: {e}")
+                    results[description] = False
+                
+                await asyncio.sleep(0.2)
+        
+        successful = sum(results.values())
+        total = len(results)
+        print(f"✅ JWT token variations test: {successful}/{total} handled correctly")
+        return successful >= total * 0.8
+        
+    except Exception as e:
+        print(f"❌ JWT token variations test failed: {e}")
+        return False
+
+async def test_concurrent_authentication():
+    """Test concurrent authentication requests."""
+    print("🔍 Testing concurrent authentication...")
+    
+    async def auth_request(session, request_id, token):
+        try:
+            headers = {"Authorization": token}
+            start_time = time.time()
+            async with session.get(f"{BASE_URL}/chat-threads", headers=headers) as response:
+                response_time = time.time() - start_time
+                return {
+                    'request_id': request_id,
+                    'status': response.status,
+                    'response_time': response_time,
+                    'expected': response.status in [200, 401]
+                }
+        except Exception as e:
+            return {
+                'request_id': request_id,
+                'status': None,
+                'response_time': None,
+                'expected': False,
+                'error': str(e)
+            }
+    
+    try:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=TEST_TIMEOUT)) as session:
+            # Test with mix of valid and invalid tokens
+            tokens = [
+                f"Bearer {create_mock_jwt_token()}",  # Valid format
+                "Bearer invalid_token",               # Invalid format
+                "",                                   # Empty
+                "Bearer",                            # Missing token
+                f"Bearer {create_mock_jwt_token()}",  # Another valid format
+            ]
+            
+            # Create 25 concurrent requests (5 tokens x 5 requests each)
+            tasks = []
+            for i in range(25):
+                token = tokens[i % len(tokens)]
+                task = auth_request(session, i, token)
+                tasks.append(task)
+            
+            start_time = time.time()
+            results = await asyncio.gather(*tasks)
+            total_time = time.time() - start_time
+            
+            expected_responses = sum(1 for r in results if r['expected'])
+            unexpected_responses = sum(1 for r in results if not r['expected'])
+            
+            print(f"   Concurrent authentication results:")
+            print(f"     Total requests: 25")
+            print(f"     Expected responses: {expected_responses}")
+            print(f"     Unexpected responses: {unexpected_responses}")
+            print(f"     Total time: {total_time:.2f}s")
+            
+            if unexpected_responses <= 2:  # Allow small margin for errors
+                print("   ✅ Concurrent authentication test passed")
+                return True
+            else:
+                print("   ❌ Too many unexpected responses")
+                return False
+                
+    except Exception as e:
+        print(f"   ❌ Concurrent authentication test failed: {e}")
+        return False
+
+async def test_authentication_header_variations():
+    """Test various authentication header variations."""
+    print("🔍 Testing authentication header variations...")
+    
+    header_variations = [
+        # Different header names (should all fail)
+        ({"authorization": f"Bearer {create_mock_jwt_token()}"}, "Lowercase authorization"),
+        ({"AUTHORIZATION": f"Bearer {create_mock_jwt_token()}"}, "Uppercase authorization"),
+        ({"Auth": f"Bearer {create_mock_jwt_token()}"}, "Short auth header"),
+        ({"Bearer": create_mock_jwt_token()}, "Bearer as header name"),
+        
+        # Multiple authorization headers
+        ({"Authorization": f"Bearer {create_mock_jwt_token()}", 
+          "authorization": f"Bearer {create_mock_jwt_token()}"}, "Duplicate auth headers"),
+        
+        # Authorization with other auth schemes
+        ({"Authorization": f"Basic {create_mock_jwt_token()}"}, "Basic auth scheme"),
+        ({"Authorization": f"Digest {create_mock_jwt_token()}"}, "Digest auth scheme"),
+        ({"Authorization": f"Token {create_mock_jwt_token()}"}, "Token auth scheme"),
+        
+        # Malformed authorization headers
+        ({"Authorization": "Bearer"}, "Bearer without token"),
+        ({"Authorization": create_mock_jwt_token()}, "Token without Bearer"),
+        ({"Authorization": f"Bearer {create_mock_jwt_token()} extra"}, "Extra data after token"),
+        
+        # Special characters in headers
+        ({"Authorization": f"Bearer {create_mock_jwt_token()}\x00"}, "Null byte in header"),
+        ({"Authorization": f"Bearer {create_mock_jwt_token()}\n"}, "Newline in header"),
+        ({"Authorization": f"Bearer {create_mock_jwt_token()}\r"}, "Carriage return in header"),
+    ]
+    
+    results = {}
+    
+    try:
+        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=TEST_TIMEOUT)) as session:
+            for headers, description in header_variations:
+                print(f"   Testing: {description}")
+                
+                try:
+                    async with session.get(f"{BASE_URL}/catalog", headers=headers) as response:
+                        
+                        if response.status == 401:
+                            print(f"     ✅ 401 Unauthorized - Correctly rejected")
+                            results[description] = True
+                        elif response.status == 400:
+                            print(f"     ✅ 400 Bad Request - Correctly rejected")
+                            results[description] = True
+                        elif response.status == 500:
+                            print(f"     ❌ 500 Internal Server Error - Poor error handling")
+                            results[description] = False
+                        else:
+                            print(f"     ⚠️ {response.status} - Unexpected status")
+                            results[description] = True
+                            
+                except Exception as e:
+                    print(f"     ❌ Exception: {e}")
+                    results[description] = False
+                
+                await asyncio.sleep(0.2)
+        
+        successful = sum(results.values())
+        total = len(results)
+        print(f"✅ Authentication header variations: {successful}/{total} handled correctly")
+        return successful >= total * 0.8
+        
+    except Exception as e:
+        print(f"❌ Authentication header variations test failed: {e}")
+        return False
+
 async def test_malformed_requests():
     """Test malformed request payloads."""
     print("🔍 Testing malformed requests...")
@@ -346,6 +560,9 @@ async def run_auth_tests():
         ("No-Auth Endpoints", test_no_auth_endpoints),
         ("Protected Endpoints Security", test_protected_endpoints_without_auth),
         ("Invalid JWT Handling", test_invalid_jwt_scenarios),
+        ("JWT Token Variations", test_jwt_token_variations),
+        ("Authentication Header Variations", test_authentication_header_variations),
+        ("Concurrent Authentication", test_concurrent_authentication),
         ("Malformed Request Handling", test_malformed_requests),
         ("Rate Limiting", test_rate_limiting),
         ("CORS Preflight", test_cors_preflight)
@@ -368,6 +585,9 @@ async def run_auth_tests():
         
         status = "✅ PASS" if result else "❌ FAIL"
         print(f"   Result: {status} ({test_time:.2f}s)")
+        
+        # Brief pause between tests
+        await asyncio.sleep(2)
     
     # Summary
     print("\n" + "=" * 50)

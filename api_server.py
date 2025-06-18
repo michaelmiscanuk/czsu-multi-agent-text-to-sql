@@ -700,8 +700,13 @@ class ChatMessage(BaseModel):
 
 GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
 
+# Global counter for tracking JWT 'kid' missing events to reduce log spam
+_jwt_kid_missing_count = 0
+
 # FIXED: Enhanced JWT verification with proper error handling
 def verify_google_jwt(token: str):
+    global _jwt_kid_missing_count
+    
     try:
         # EARLY VALIDATION: Check if token has basic JWT structure before processing
         # JWT tokens must have exactly 3 parts separated by dots (header.payload.signature)
@@ -731,7 +736,11 @@ def verify_google_jwt(token: str):
         
         # CRITICAL FIX: Check if 'kid' exists in header before accessing it
         if "kid" not in unverified_header:
-            print__debug(f"JWT token missing 'kid' field in header")
+            # Reduce log noise - only log this every 10th occurrence
+            # This is normal for test tokens and security probes
+            _jwt_kid_missing_count += 1
+            if _jwt_kid_missing_count % 10 == 1:  # Log 1st, 11th, 21st, etc.
+                print__debug(f"JWT token missing 'kid' field (#{_jwt_kid_missing_count} - common for test/invalid tokens)")
             raise HTTPException(status_code=401, detail="Invalid JWT token: missing key ID")
         
         # Find matching key
