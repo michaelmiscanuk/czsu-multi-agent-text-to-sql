@@ -1,0 +1,3 @@
+{
+  "test_suite_error": "'NoneType' object has no attribute 'lower'"
+}

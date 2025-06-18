@@ -93,6 +93,18 @@ from my_agent.utils.postgres_checkpointer import (
     get_thread_run_sentiments
 )
 
+def print__memory_monitoring(msg: str) -> None:
+    """Print MEMORY-MONITORING messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[MEMORY-MONITORING] {msg}")
+        import sys
+        sys.stdout.flush()
+
 # MEMORY LEAK PREVENTION: Global tracking based on "Needle in a haystack" article
 # These help detect the same issues that plagued the Ocean framework
 _app_startup_time = None
@@ -106,8 +118,13 @@ _last_gc_run = time.time()  # Track garbage collection frequency
 GLOBAL_CHECKPOINTER = None
 
 # Add a semaphore to limit concurrent analysis requests
-MAX_CONCURRENT_ANALYSES = 3  # Only 1 analysis at a time for 512MB limit
+MAX_CONCURRENT_ANALYSES = int(os.environ.get('MAX_CONCURRENT_ANALYSES', '3'))  # Read from .env with fallback to 3 (we have recovery systems!)
 analysis_semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
+
+# Log the concurrency setting for debugging
+print(f"🔧 API Server: MAX_CONCURRENT_ANALYSES set to {MAX_CONCURRENT_ANALYSES} (from environment)")
+print__memory_monitoring(f"Concurrent analysis semaphore initialized with {MAX_CONCURRENT_ANALYSES} slots")
+print__memory_monitoring(f"🛡️ Recovery systems active: Response persistence + Frontend auto-recovery")
 
 # RATE LIMITING: Global rate limiting storage
 rate_limit_storage = defaultdict(list)
@@ -118,18 +135,6 @@ RATE_LIMIT_MAX_WAIT = 5  # maximum seconds to wait before giving up
 
 # Throttling semaphores per IP to limit concurrent requests
 throttle_semaphores = defaultdict(lambda: asyncio.Semaphore(8))  # Max 8 concurrent requests per IP
-
-def print__memory_monitoring(msg: str) -> None:
-    """Print MEMORY-MONITORING messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
-    if debug_mode == '1':
-        print(f"[MEMORY-MONITORING] {msg}")
-        import sys
-        sys.stdout.flush()
 
 def detect_memory_fragmentation() -> dict:
     """Detect potential memory fragmentation issues."""
@@ -619,7 +624,7 @@ app = FastAPI(
 
 # Monitor all route registrations (including middleware and CORS)
 print__memory_monitoring("📋 Registering CORS middleware...")
-monitor_route_registration("/*", "OPTIONS")  # CORS adds OPTIONS to all routes
+# Note: Route registration monitoring happens at runtime to avoid import-time global variable access
 
 # Allow CORS for local frontend dev
 app.add_middleware(
@@ -934,10 +939,11 @@ main_routes = [
     ("/debug/run-id/{run_id}", "GET")
 ]
 
-for route_path, method in main_routes:
-    monitor_route_registration(route_path, method)
+# Route monitoring is performed at runtime through middleware to ensure proper global variable access
+# for route_path, method in main_routes:
+#     monitor_route_registration(route_path, method)
 
-print__memory_monitoring(f"📋 Tracked {len(main_routes)} route registrations for leak detection")
+print__memory_monitoring(f"📋 Route monitoring configured for {len(main_routes)} endpoints - tracking occurs at runtime")
 
 class AnalyzeRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=10000, description="The prompt to analyze")

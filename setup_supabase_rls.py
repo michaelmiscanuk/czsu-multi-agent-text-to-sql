@@ -29,7 +29,7 @@ async def setup_rls_for_supabase():
     user = os.getenv("user")
     password = os.getenv("password") 
     host = os.getenv("host")
-    port = os.getenv("port", "5432")
+    port = os.getenv("port", "6543")
     dbname = os.getenv("dbname")
     
     # Check required parameters

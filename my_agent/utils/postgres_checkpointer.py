@@ -59,6 +59,8 @@ from datetime import datetime
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver  # Correct async import
 from langgraph.checkpoint.postgres import PostgresSaver  # Correct sync import
 from psycopg_pool import AsyncConnectionPool, ConnectionPool
+import threading
+from contextlib import asynccontextmanager
 
 #==============================================================================
 # DEBUG FUNCTIONS
@@ -90,6 +92,28 @@ def print__api_postgresql(msg: str) -> None:
 # Database connection parameters
 database_pool: Optional[AsyncConnectionPool] = None
 _pool_lock = asyncio.Lock()  # Add global lock to prevent multiple pool creation
+_active_operations = 0  # Track active operations using the pool
+_operations_lock = asyncio.Lock()  # Lock for tracking operations
+
+async def increment_active_operations():
+    """Safely increment the count of active operations."""
+    global _active_operations
+    async with _operations_lock:
+        _active_operations += 1
+        print__postgresql_debug(f"🔄 Active operations incremented to: {_active_operations}")
+
+async def decrement_active_operations():
+    """Safely decrement the count of active operations."""
+    global _active_operations
+    async with _operations_lock:
+        _active_operations -= 1
+        print__postgresql_debug(f"🔄 Active operations decremented to: {_active_operations}")
+
+async def get_active_operations_count():
+    """Get the current count of active operations."""
+    global _active_operations
+    async with _operations_lock:
+        return _active_operations
 
 async def force_close_all_connections():
     """Force close all connections - useful when hitting connection limits."""
@@ -305,28 +329,71 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
             raise
 
 async def get_healthy_pool() -> AsyncConnectionPool:
-    """Get a healthy connection pool, creating a new one if needed."""
+    """Get a healthy connection pool with proper concurrent access protection."""
     global database_pool
     
-    # Use global lock to prevent multiple pool creation
-    async with _pool_lock:
-        # Check if current pool is healthy
-        if await is_pool_healthy(database_pool):
-            return database_pool
+    async with _pool_lock:  # Ensure only one thread can modify the pool at a time
+        print__postgresql_debug(f"🔒 Acquired pool lock for health check")
         
-        # Pool is unhealthy or doesn't exist, close old one if needed
+        # Check current active operations before making changes
+        active_ops = await get_active_operations_count()
+        print__postgresql_debug(f"📊 Current active operations: {active_ops}")
+        
+        # If we have an existing pool, check if it's healthy
         if database_pool is not None:
             try:
-                print__postgresql_debug(f"🔄 Closing unhealthy pool...")
-                await database_pool.close()
+                # Don't close pool if operations are active
+                if active_ops > 0:
+                    print__postgresql_debug(f"⚠️ {active_ops} operations active - skipping pool health check to prevent closure")
+                    return database_pool
+                
+                is_healthy = await is_pool_healthy(database_pool)
+                if is_healthy:
+                    print__postgresql_debug(f"✅ Existing pool is healthy")
+                    return database_pool
+                else:
+                    print__postgresql_debug(f"⚠️ Existing pool is unhealthy, will recreate")
+                    # Wait for active operations to complete before closing
+                    max_wait = 30  # Maximum 30 seconds to wait
+                    wait_time = 0
+                    while active_ops > 0 and wait_time < max_wait:
+                        print__postgresql_debug(f"⏳ Waiting for {active_ops} active operations to complete...")
+                        await asyncio.sleep(1)
+                        wait_time += 1
+                        active_ops = await get_active_operations_count()
+                    
+                    if active_ops > 0:
+                        print__postgresql_debug(f"⚠️ Timeout waiting for operations to complete - will not close pool")
+                        return database_pool  # Return existing pool rather than risk breaking active operations
+                    
+                    # Safe to close now
+                    try:
+                        if not database_pool.closed:
+                            await database_pool.close()
+                            print__postgresql_debug(f"🔒 Closed unhealthy pool safely")
+                    except Exception as e:
+                        print__postgresql_debug(f"⚠️ Error closing unhealthy pool: {e}")
+                    database_pool = None
+                    
             except Exception as e:
-                print__postgresql_debug(f"⚠ Error closing old pool: {e}")
-            finally:
+                print__postgresql_debug(f"❌ Error checking pool health: {e}")
+                # Don't close pool on health check errors if operations are active
+                if active_ops > 0:
+                    print__postgresql_debug(f"⚠️ Health check failed but {active_ops} operations active - keeping pool")
+                    return database_pool
+                # Otherwise, mark for recreation
                 database_pool = None
         
-        # Create new pool
-        print__postgresql_debug(f"🆕 Creating new connection pool...")
-        database_pool = await create_fresh_connection_pool()
+        # Create new pool if needed
+        if database_pool is None:
+            print__postgresql_debug(f"🔄 Creating new connection pool...")
+            try:
+                database_pool = await create_fresh_connection_pool()
+                print__postgresql_debug(f"✅ New connection pool created successfully")
+            except Exception as e:
+                print__postgresql_debug(f"❌ Failed to create new pool: {e}")
+                raise
+        
         return database_pool
 
 async def setup_users_threads_runs_table():
@@ -1361,76 +1428,48 @@ class ResilientPostgreSQLCheckpointer:
         self.max_checkpoint_retries = 3
         
     async def _retry_checkpoint_operation(self, operation_name, operation_func, *args, **kwargs):
-        """Retry checkpoint operations with exponential backoff for connection issues."""
+        """Enhanced retry logic with proper connection pool management and concurrent access protection."""
+        max_attempts = 3
+        base_delay = 0.5
         
-        for attempt in range(self.max_checkpoint_retries):
+        for attempt in range(max_attempts):
             try:
-                return await operation_func(*args, **kwargs)
+                print__postgresql_debug(f"🔄 [{operation_name}] Attempt {attempt + 1}/{max_attempts}")
                 
+                # Use safe pool operation context manager
+                async with safe_pool_operation() as pool:
+                    # Execute the operation with the healthy pool
+                    result = await operation_func(*args, **kwargs)
+                    
+                    if attempt > 0:
+                        print__postgresql_debug(f"✅ [{operation_name}] Succeeded on attempt {attempt + 1}")
+                    
+                    return result
+                    
             except Exception as e:
                 error_msg = str(e).lower()
                 
-                # Enhanced error detection for SSL and connection issues
-                is_recoverable = any(keyword in error_msg for keyword in [
-                    "dbhandler exited",
-                    "connection is lost",
-                    "ssl connection has been closed",
-                    "connection closed",
-                    "flush request failed",
-                    "pipeline mode",
-                    "connection not available",
-                    "bad connection",
-                    "ssl error",                    # Added SSL error detection
-                    "ssl syscall error",           # Added SSL syscall error detection
-                    "bad length",                  # Added bad length error (from your specific error)
-                    "eof detected",                # Added EOF detected error
-                    "connection reset",            # Added connection reset
-                    "broken pipe",                 # Added broken pipe
-                    "network unreachable"          # Added network issues
-                ])
+                # Log the error for debugging
+                print__postgresql_debug(f"❌ [{operation_name}] Attempt {attempt + 1} failed: {e}")
                 
-                if attempt < self.max_checkpoint_retries - 1 and is_recoverable:
-                    delay = 2.0 ** (attempt + 1)  # Exponential backoff: 2s, 4s, 8s
-                    print__api_postgresql(f"🔄 Checkpoint operation '{operation_name}' failed (attempt {attempt + 1}): {str(e)}")
-                    print__api_postgresql(f"🔄 Retrying checkpoint operation in {delay:.1f}s...")
-                    await asyncio.sleep(delay)
-                    
-                    # Enhanced connection recovery for SSL/connection errors
-                    if any(keyword in error_msg for keyword in ["ssl", "connection", "eof", "bad length"]):
-                        try:
-                            print__api_postgresql(f"🔄 SSL/Connection error detected - attempting pool recovery...")
-                            
-                            # Try multiple recovery strategies
-                            if hasattr(self.base_checkpointer, 'conn'):
-                                # Strategy 1: Reset connection pool
-                                if hasattr(self.base_checkpointer.conn, 'reset'):
-                                    print__api_postgresql(f"🔄 Resetting connection pool...")
-                                    await self.base_checkpointer.conn.reset()
-                                
-                                # Strategy 2: Check pool health and recreate if needed
-                                if hasattr(self.base_checkpointer.conn, 'closed') and self.base_checkpointer.conn.closed:
-                                    print__api_postgresql(f"🔄 Pool is closed, attempting to reopen...")
-                                    await self.base_checkpointer.conn.open()
-                                
-                                # Strategy 3: Force a health check
-                                try:
-                                    async with self.base_checkpointer.conn.connection() as test_conn:
-                                        await test_conn.execute("SELECT 1")
-                                    print__api_postgresql(f"✓ Connection pool health check passed")
-                                except Exception as health_error:
-                                    print__api_postgresql(f"⚠ Connection health check failed: {health_error}")
-                                    
-                        except Exception as reset_error:
-                            print__api_postgresql(f"⚠ Connection recovery failed: {reset_error}")
-                    
-                    continue
-                else:
-                    print__api_postgresql(f"❌ Checkpoint operation '{operation_name}' failed after {attempt + 1} attempts: {str(e)}")
-                    # For SSL errors, provide specific guidance
-                    if any(keyword in error_msg for keyword in ["ssl", "eof detected", "bad length"]):
-                        print__api_postgresql(f"💡 SSL Connection Issue: This may be caused by network timeouts, connection pool exhaustion, or database restarts")
-                        print__api_postgresql(f"💡 Consider: 1) Check database connectivity, 2) Restart application, 3) Check SSL certificates")
-                    raise
+                # Check if this is a retryable error
+                retryable_errors = [
+                    "pool", "connection", "timeout", "server closed", "bad connection",
+                    "consuming input failed", "ssl error", "operational error",
+                    "database is locked", "temporary failure", "busy"
+                ]
+                
+                is_retryable = any(keyword in error_msg for keyword in retryable_errors)
+                
+                if not is_retryable or attempt == max_attempts - 1:
+                    # Not retryable or final attempt - give up
+                    print__postgresql_debug(f"❌ [{operation_name}] Final failure after {attempt + 1} attempts: {e}")
+                    raise e
+                
+                # Wait before retry with exponential backoff
+                delay = base_delay * (2 ** attempt)
+                print__postgresql_debug(f"⏳ [{operation_name}] Waiting {delay:.1f}s before retry...")
+                await asyncio.sleep(delay)
         
     async def aput(self, config, checkpoint, metadata, new_versions):
         """Put checkpoint with retry logic."""
@@ -1497,27 +1536,37 @@ class ResilientPostgreSQLCheckpointer:
                 
                 if attempt < self.max_checkpoint_retries - 1 and is_recoverable:
                     delay = 1.5 ** (attempt + 1)  # Progressive delay: 1.5s, 2.25s, 3.38s
-                    print__api_postgresql(f"🔄 Checkpoint alist operation failed (attempt {attempt + 1}): {str(e)}")
-                    print__api_postgresql(f"🔄 Retrying alist operation in {delay:.1f}s...")
+                    print__postgresql_debug(f"🔄 Checkpoint alist operation failed (attempt {attempt + 1}): {str(e)}")
+                    print__postgresql_debug(f"🔄 Retrying alist operation in {delay:.1f}s...")
                     await asyncio.sleep(delay)
                     
                     # Try to refresh connection pool on SSL/connection errors
                     if any(keyword in error_msg for keyword in ["ssl", "connection"]):
                         try:
                             if hasattr(self.base_checkpointer, 'conn') and hasattr(self.base_checkpointer.conn, 'reset'):
-                                print__api_postgresql(f"🔄 Attempting to reset connection pool...")
+                                print__postgresql_debug(f"🔄 Attempting to reset connection pool...")
                                 await self.base_checkpointer.conn.reset()
                         except Exception as reset_error:
-                            print__api_postgresql(f"⚠ Connection reset failed: {reset_error}")
+                            print__postgresql_debug(f"⚠ Connection reset failed: {reset_error}")
                     
                     continue
                 else:
-                    print__api_postgresql(f"❌ Checkpoint alist operation failed after {attempt + 1} attempts: {str(e)}")
+                    print__postgresql_debug(f"❌ Checkpoint alist operation failed after {attempt + 1} attempts: {str(e)}")
                     raise
     
     def __getattr__(self, name):
         """Delegate other operations to base checkpointer."""
         return getattr(self.base_checkpointer, name)
+
+@asynccontextmanager
+async def safe_pool_operation():
+    """Context manager to safely track pool operations and prevent concurrent closure."""
+    await increment_active_operations()
+    try:
+        pool = await get_healthy_pool()
+        yield pool
+    finally:
+        await decrement_active_operations()
 
 if __name__ == "__main__":
     async def test():
