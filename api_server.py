@@ -703,14 +703,27 @@ GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
 # FIXED: Enhanced JWT verification with proper error handling
 def verify_google_jwt(token: str):
     try:
+        # EARLY VALIDATION: Check if token has basic JWT structure before processing
+        # JWT tokens must have exactly 3 parts separated by dots (header.payload.signature)
+        token_parts = token.split('.')
+        if len(token_parts) != 3:
+            # Don't log this as it's a common case for invalid tokens in tests
+            raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        
+        # Additional basic validation - each part should be non-empty and base64-like
+        for i, part in enumerate(token_parts):
+            if not part or len(part) < 4:  # Base64 encoded parts should be at least 4 chars
+                raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        
         # Get Google public keys
         jwks = requests.get(GOOGLE_JWK_URL).json()
         
-        # Get unverified header - this can fail with invalid JWT format
+        # Get unverified header - this should now work since we pre-validated the format
         try:
             unverified_header = jwt.get_unverified_header(token)
         except jwt.DecodeError as e:
-            print__debug(f"JWT decode error (not enough segments): {e}")
+            # This should be rare now due to pre-validation, but keep for edge cases
+            print__debug(f"JWT decode error after pre-validation: {e}")
             raise HTTPException(status_code=401, detail="Invalid JWT token format")
         except Exception as e:
             print__debug(f"JWT header decode error: {e}")
@@ -764,6 +777,7 @@ def verify_google_jwt(token: str):
         print__debug(f"Failed to fetch Google JWKS: {e}")
         raise HTTPException(status_code=401, detail="Token verification failed - unable to validate")
     except jwt.DecodeError as e:
+        # This should be rare now due to pre-validation
         print__debug(f"JWT decode error in main handler: {e}")
         raise HTTPException(status_code=401, detail="Invalid JWT token format")
     except KeyError as e:

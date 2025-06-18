@@ -10,6 +10,7 @@ import time
 import json
 import jwt
 import uuid
+import base64
 from datetime import datetime, timedelta
 
 # Configuration
@@ -37,6 +38,30 @@ def create_mock_jwt_token(payload_overrides=None, expire_minutes=60):
         payload.update(payload_overrides)
     
     return jwt.encode(payload, MOCK_SECRET, algorithm="HS256")
+
+def create_malformed_jwt_token(token_type="empty"):
+    """Create various types of malformed JWT tokens for testing."""
+    if token_type == "empty":
+        return ""
+    elif token_type == "invalid_format":
+        return "not-a-jwt-token"
+    elif token_type == "one_part":
+        return "onlyonepart"
+    elif token_type == "two_parts":
+        return "header.payload"
+    elif token_type == "three_empty_parts":
+        return ".."
+    elif token_type == "valid_structure_invalid_content":
+        # This looks like a JWT but has invalid base64 content
+        return "invalid_header.invalid_payload.invalid_signature"
+    elif token_type == "valid_base64_invalid_jwt":
+        # This has valid base64 but invalid JWT content
+        header = base64.urlsafe_b64encode(b'{"typ":"JWT","alg":"HS256"}').decode().rstrip('=')
+        payload = base64.urlsafe_b64encode(b'{"sub":"test"}').decode().rstrip('=')
+        signature = base64.urlsafe_b64encode(b'invalid_signature').decode().rstrip('=')
+        return f"{header}.{payload}.{signature}"
+    else:
+        return "default-invalid-token"
 
 async def test_no_auth_endpoints():
     """Test endpoints that should work without authentication."""
@@ -130,10 +155,11 @@ async def test_invalid_jwt_scenarios():
     
     invalid_tokens = [
         ("", "Empty token"),
-        ("invalid-token", "Invalid format"),
+        (create_malformed_jwt_token("invalid_format"), "Invalid format"),
         ("Bearer", "Bearer without token"),
-        ("Bearer invalid-jwt-token", "Bearer with invalid token"),
-        ("Bearer not.a.jwt", "Invalid JWT format"),
+        (f"Bearer {create_malformed_jwt_token('one_part')}", "Bearer with one part token"),
+        (f"Bearer {create_malformed_jwt_token('two_parts')}", "Bearer with two parts token"),
+        (f"Bearer {create_malformed_jwt_token('valid_base64_invalid_jwt')}", "Valid structure but invalid JWT"),
         (f"Bearer {create_mock_jwt_token(expire_minutes=-10)}", "Expired token"),
         (f"Bearer {create_mock_jwt_token({'email': None})}", "Token without email")
     ]

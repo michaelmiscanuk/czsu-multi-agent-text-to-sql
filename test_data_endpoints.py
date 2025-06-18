@@ -8,14 +8,24 @@ import asyncio
 import aiohttp
 import time
 import json
-from datetime import datetime
+import jwt
+import base64
+from datetime import datetime, timedelta
 
 # Configuration
 BASE_URL = "https://czsu-multi-agent-text-to-sql.onrender.com"
 TEST_TIMEOUT = 30
 
-# Mock JWT token (this would need to be a real Google JWT in production)
-MOCK_JWT_TOKEN = "Bearer mock-jwt-token-for-testing"
+def create_mock_jwt_token():
+    """Create a properly formatted mock JWT token for testing."""
+    # Create a minimal but properly formatted JWT token
+    header = base64.urlsafe_b64encode(b'{"typ":"JWT","alg":"HS256"}').decode().rstrip('=')
+    payload = base64.urlsafe_b64encode(b'{"sub":"test","email":"test@example.com"}').decode().rstrip('=')
+    signature = base64.urlsafe_b64encode(b'mock_signature').decode().rstrip('=')
+    return f"{header}.{payload}.{signature}"
+
+# Mock JWT token (properly formatted for testing)
+MOCK_JWT_TOKEN = f"Bearer {create_mock_jwt_token()}"
 
 async def test_catalog_endpoint():
     """Test the catalog endpoint functionality."""
