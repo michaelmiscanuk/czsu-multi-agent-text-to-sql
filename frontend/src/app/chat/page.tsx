@@ -252,13 +252,9 @@ export default function ChatPage() {
   // Load threads when component mounts or user changes
   useEffect(() => {
     if (userEmail && status === "authenticated") {
-      console.log('[ChatPage-useEffect] 🔄 User authenticated, loading threads');
+      console.log('[ChatPage-useEffect] 🔄 User authenticated, checking cache strategy');
       
-      // 🔒 SECURITY & CLEAN STATE: Clear localStorage when user logs in to ensure no data from previous user
-      // This ensures that each user gets a clean slate, just like pressing F5
-      console.log('[ChatPage-useEffect] 🧹 User authenticated - clearing localStorage for clean state');
-      
-      // Check if localStorage contains data from a different user
+      // 🔒 SECURITY & CLEAN STATE: Clear localStorage when user changes
       if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
         try {
           const existingCache = localStorage.getItem('czsu-chat-cache');
@@ -272,22 +268,60 @@ export default function ChatPage() {
               clearCacheForUserChange(userEmail);
               
               console.log('[ChatPage-useEffect] ✅ Previous user data cleared - loading fresh data for current user');
+              loadThreadsFromPostgreSQL();
+              return;
             } else {
-              console.log('[ChatPage-useEffect] ✅ Same user login detected - keeping existing cache');
+              console.log('[ChatPage-useEffect] ✅ Same user login detected - checking cache validity');
             }
           } else {
             console.log('[ChatPage-useEffect] ✅ No existing cache - fresh login');
+            loadThreadsFromPostgreSQL();
+            return;
           }
         } catch (error) {
           console.error('[ChatPage-useEffect] ⚠ Error checking existing cache:', error);
           // If there's any issue parsing cache, clear it for safety
           clearCacheForUserChange(userEmail);
+          loadThreadsFromPostgreSQL();
+          return;
         }
       }
       
-      loadThreadsFromPostgreSQL();
+      // Check if data is stale or if this is a page refresh (F5)
+      if (isDataStale() || isPageRefresh) {
+        console.log('[ChatPage-useEffect] 🔄 Cache is stale or page refresh detected - loading from API');
+        loadThreadsFromPostgreSQL();
+      } else {
+        console.log('[ChatPage-useEffect] ⚡ Using cached data - no API call needed');
+        // Cache is valid and data should already be loaded by ChatCacheContext
+        // Just mark threads as loaded so UI can proceed
+        setThreadsLoaded(true);
+        
+        // If we have cached threads but threadsLoaded is false, we need to trigger the UI update
+        if (threads.length > 0) {
+          console.log('[ChatPage-useEffect] 📤 Found', threads.length, 'cached threads - UI ready');
+          
+          // Restore active thread from localStorage if not already set
+          if (!activeThreadId) {
+            const lastActiveThread = localStorage.getItem('czsu-last-active-chat');
+            if (lastActiveThread && threads.find(t => t.thread_id === lastActiveThread)) {
+              console.log('[ChatPage-useEffect] 🔄 Restoring cached active thread:', lastActiveThread);
+              setActiveThreadId(lastActiveThread);
+            } else if (threads.length > 0) {
+              // Select the most recent thread if no stored thread
+              const mostRecentThread = threads[0]; // threads are sorted by latest_timestamp DESC
+              console.log('[ChatPage-useEffect] 🔄 No stored thread, selecting most recent:', mostRecentThread.thread_id);
+              setActiveThreadId(mostRecentThread.thread_id);
+            }
+          }
+        } else {
+          console.log('[ChatPage-useEffect] ⚠ No cached threads found - this may be a first-time user');
+          // Still load from API if no cached data
+          loadThreadsFromPostgreSQL();
+        }
+      }
     }
-  }, [userEmail, status, clearCacheForUserChange]);
+  }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length]);
 
   // NEW: Initialize currentMessage from localStorage when user authenticates
   useEffect(() => {

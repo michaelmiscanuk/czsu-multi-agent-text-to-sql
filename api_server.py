@@ -106,7 +106,7 @@ _last_gc_run = time.time()  # Track garbage collection frequency
 GLOBAL_CHECKPOINTER = None
 
 # Add a semaphore to limit concurrent analysis requests
-MAX_CONCURRENT_ANALYSES = 1  # Only 1 analysis at a time for 512MB limit
+MAX_CONCURRENT_ANALYSES = 3  # Only 1 analysis at a time for 512MB limit
 analysis_semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
 
 # RATE LIMITING: Global rate limiting storage

@@ -98,6 +98,19 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   const isInitialMount = useRef(true)
   const hasBeenHydrated = useRef(false)
 
+  // Reset page refresh flag after initial mount to ensure subsequent navigation uses cache
+  useEffect(() => {
+    // Reset page refresh flag after a short delay to ensure it only applies to the initial load
+    if (isPageRefresh) {
+      const timer = setTimeout(() => {
+        console.log('[ChatCache] ⏰ Resetting page refresh flag after initial load - subsequent navigation will use cache');
+        setIsPageRefresh(false);
+      }, 2000); // 2 second delay to allow initial API calls to complete
+
+      return () => clearTimeout(timer);
+    }
+  }, [isPageRefresh]);
+
   // Page refresh detection logic - fix to distinguish F5 from navigation
   useEffect(() => {
     // Ensure we're on the client side
@@ -125,46 +138,28 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
         }
       }
       
-      // Method 3: Check sessionStorage flag that persists only during session
-      if (typeof sessionStorage !== 'undefined') {
-        const refreshTimestamp = sessionStorage.getItem(PAGE_REFRESH_FLAG_KEY);
-        
-        if (refreshTimestamp) {
-          const timeDiff = now - parseInt(refreshTimestamp, 10);
-          // If less than 1 second since flag was set, it's likely a reload
-          if (timeDiff < 1000) {
-            return true;
-          }
-        }
-      }
-      
       return false;
     };
 
     // Check if localStorage has data (previous session)
     const hasLocalStorageData = typeof localStorage !== 'undefined' && !!localStorage.getItem(CACHE_KEY);
     
-    // Final decision logic - be more conservative about detecting refresh
+    // Final decision logic - be much more conservative about detecting refresh
     const actualPageRefresh = isPageReload();
     
-    // Only set page refresh if we're confident it's a real F5/reload
+    // Only set page refresh if we're confident it's a real F5/reload AND we have existing data
+    // This prevents normal navigation from being treated as refresh
     const finalDecision = actualPageRefresh && hasLocalStorageData;
     
     console.log('[ChatCache] 🔍 Page refresh detection: ', {
       performanceNavType: typeof performance !== 'undefined' ? performance.navigation?.type : 'undefined',
       performanceEntries: typeof performance !== 'undefined' ? (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type : 'undefined',
-      sessionStorageFlag: typeof sessionStorage !== 'undefined' ? !!sessionStorage.getItem(PAGE_REFRESH_FLAG_KEY) : false,
       hasLocalStorageData,
       actualPageRefresh,
       finalDecision
     });
     
     setIsPageRefresh(finalDecision);
-    
-    // Set sessionStorage flag for next potential refresh detection
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem(PAGE_REFRESH_FLAG_KEY, now.toString());
-    }
     
     // Load initial data
     if (finalDecision) {
