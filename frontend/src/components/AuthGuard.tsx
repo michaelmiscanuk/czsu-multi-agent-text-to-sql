@@ -58,7 +58,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           <div className="space-y-4">
             <AuthButton compact={false} />
             <p className="text-sm text-gray-500">
-              Sign in to start using our multi-agent text-to-SQL system
+              Sign in to start using our CZSU Multi-agent Text-to-SQL System
             </p>
           </div>
         </div>

@@ -15,7 +15,7 @@ const InputBar = forwardRef<HTMLInputElement, InputBarProps>(({ currentMessage, 
 
     return (
         <form onSubmit={onSubmit} className="p-4 bg-white">
-            <div className="flex items-center bg-[#F9F9F5] rounded-full p-3 shadow-md border border-gray-200">
+            <div className="flex items-center bg-[#F9F9F5] rounded-full p-3 shadow-md border border-gray-200 relative focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 focus-within:z-10 transition-all duration-200">
                 <input
                     ref={ref}
                     type="text"
@@ -29,7 +29,7 @@ const InputBar = forwardRef<HTMLInputElement, InputBarProps>(({ currentMessage, 
                 <button
                     type="submit"
                     aria-label="Send message"
-                    className="bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 rounded-full p-3 ml-2 shadow-md transition-all duration-200 group"
+                    className="bg-gradient-to-r from-blue-500 to-blue-400 hover:from-blue-600 hover:to-blue-500 rounded-full p-3 ml-2 shadow-md transition-all duration-200 group relative z-0"
                     disabled={isLoading}
                 >
                     <svg className="w-6 h-6 text-white transform rotate-45 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
