@@ -386,26 +386,19 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
         loadRunIdsFromCache();
     }, [threadId, messages, getRunIdsForThread]);
 
-    // Load sentiments from cache instead of making API calls
+    // OPTIMIZED: Sentiments are loaded via bulk loading - no individual loading needed
     React.useEffect(() => {
-        const loadSentimentsFromCache = () => {
-            if (!threadId) return;
-            
-            console.log('[SENTIMENT-DEBUG] Loading sentiments from cache for thread:', threadId);
-            
-            // Get cached sentiments for this thread
-            const cachedSentiments = getSentimentsForThread(threadId);
-            console.log('[SENTIMENT-DEBUG] Found cached sentiments:', Object.keys(cachedSentiments).length);
-            
-            // The sentiment hook will be updated to use cached data instead of API calls
-            // For now, we still call loadSentiments but it should be fast since data is cached
-            loadSentiments(threadId);
-        };
+        if (!threadId) return;
         
-        if (threadId) {
-            loadSentimentsFromCache();
-        }
-    }, [threadId, messageRunIds, getSentimentsForThread, loadSentiments]);
+        console.log('[SENTIMENT-DEBUG] Thread changed to:', threadId);
+        console.log('[SENTIMENT-DEBUG] Sentiments are automatically loaded via bulk loading - no individual API calls needed');
+        
+        // Get cached sentiments for this thread to verify they're available
+        const cachedSentiments = getSentimentsForThread(threadId);
+        console.log('[SENTIMENT-DEBUG] Found cached sentiments for thread:', Object.keys(cachedSentiments).length);
+        
+        // No need to call loadSentiments() - bulk loading handles everything
+    }, [threadId, getSentimentsForThread]);
 
     // Session and authentication
     const { data: session } = useSession();

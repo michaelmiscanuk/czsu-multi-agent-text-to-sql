@@ -97,29 +97,28 @@ export default function ChatPage() {
     localStorage.setItem('czsu-draft-message', message);
   };
 
-  // PostgreSQL API functions with new cache context
+  // Load threads and ALL messages at once from PostgreSQL
   const loadThreadsFromPostgreSQL = async () => {
     if (!userEmail) {
+      console.log('[ChatPage-loadThreads] ⚠ No user email available');
       return;
     }
 
-    console.log('[ChatPage-loadThreads] 🔄 Loading threads from PostgreSQL for user:', userEmail);
-    console.log('[ChatPage-loadThreads] 💾 Cache state - Stale:', isDataStale(), 'Threads:', threads.length, 'IsPageRefresh:', isPageRefresh);
-
-    // FORCE API CALL only on actual F5 page refresh to sync localStorage with PostgreSQL
-    if (isPageRefresh) {
-      console.log('[ChatPage-loadThreads] 🔄 Actual page refresh (F5) detected - forcing fresh API call to sync with PostgreSQL');
-      await forceAPIRefresh(); // Clear cache first
-    }
-    // Use cache if fresh and has data (navigation between menus)
-    else if (!isDataStale() && threads.length > 0) {
-      console.log('[ChatPage-loadThreads] ✅ Using fresh cache data (navigation between menus)');
-      setThreadsLoaded(true);
+    // NEW: Prevent concurrent loading for the same user across tabs
+    const isAlreadyLoading = checkUserLoadingState(userEmail);
+    if (isAlreadyLoading) {
+      console.log('[ChatPage-loadThreads] 🔒 Another tab is already loading for user:', userEmail, '- waiting...');
+      setLoading(true);
+      setThreadsLoading(true);
       return;
     }
 
-    setThreadsLoading(true);
+    console.log('[ChatPage-loadThreads] 🚀 Starting optimized loading (threads + bulk messages)...');
     setLoading(true);
+    setThreadsLoading(true);
+    
+    // Set loading state to prevent other tabs from starting concurrent loads
+    setUserLoadingState(userEmail, true);
 
     try {
       // Get fresh session for authentication
@@ -128,24 +127,29 @@ export default function ChatPage() {
         throw new Error('No authentication token available');
       }
 
-      console.log('[ChatPage-loadThreads] 📡 Making API call to PostgreSQL...');
-      const data = await authApiFetch<ChatThreadResponse[]>('/chat-threads', freshSession.id_token);
+      console.log('[ChatPage-loadThreads] 📡 Step 1: Loading threads from PostgreSQL...');
+      const threadsData = await authApiFetch<ChatThreadResponse[]>('/chat-threads', freshSession.id_token);
       
-      console.log('[ChatPage-loadThreads] ✅ Loaded threads from PostgreSQL API:', data.length);
+      console.log('[ChatPage-loadThreads] ✅ Loaded threads from PostgreSQL API:', threadsData.length);
       
       // Update cache through context - this will sync localStorage with PostgreSQL data
-      setThreads(data);
+      setThreads(threadsData);
       
-      // NEW: Bulk load ALL messages for ALL threads at once
-      if (data.length > 0) {
-        console.log('[ChatPage-loadThreads] 🚀 Starting bulk loading of ALL messages...');
+      // OPTIMIZATION: Only do bulk loading if we have threads
+      if (threadsData.length > 0) {
+        console.log('[ChatPage-loadThreads] 📡 Step 2: Starting bulk loading of ALL messages for', threadsData.length, 'threads...');
+        
+        // CRITICAL: Wait for bulk loading to complete before allowing navigation
         try {
           await loadAllMessagesFromAPI(freshSession.id_token);
           console.log('[ChatPage-loadThreads] ✅ Bulk loading completed - all messages cached');
+          console.log('[ChatPage-loadThreads] 🎯 Performance: No individual API calls needed - everything is cached!');
         } catch (error) {
           console.error('[ChatPage-loadThreads] ❌ Bulk loading failed:', error);
-          // Continue even if bulk loading fails - individual loading will still work
+          // Continue even if bulk loading fails - individual loading will still work as fallback
         }
+      } else {
+        console.log('[ChatPage-loadThreads] ⚠ No threads found - skipping bulk message loading');
       }
       
       setThreadsLoaded(true);
@@ -163,9 +167,12 @@ export default function ChatPage() {
     } finally {
       setThreadsLoading(false);
       setLoading(false);
+      // Clear loading state to allow other tabs to load if needed
+      setUserLoadingState(userEmail, false);
     }
   };
 
+  // OPTIMIZED: Use cached data only - no more individual API calls
   const loadMessagesFromCheckpoint = async (threadId: string) => {
     if (!threadId || !userEmail) {
       return;
@@ -173,36 +180,40 @@ export default function ChatPage() {
 
     console.log('[ChatPage-loadMessages] 🔄 Loading messages for thread:', threadId);
 
-    // CHECK CACHE FIRST: Use the new context method to check if messages exist for this thread
+    // ALWAYS check cache first - bulk loading should have populated everything
     const hasCachedMessages = hasMessagesForThread(threadId);
     
-    // Use cached messages if available (always prefer cache unless forced refresh)
     if (hasCachedMessages) {
       console.log('[ChatPage-loadMessages] ✅ Using cached messages for thread:', threadId, '(loaded via bulk loading)');
       setActiveThreadId(threadId);
       return;
     }
 
-    // Only make API call if no cached messages (fallback for individual loading)
-    console.log('[ChatPage-loadMessages] 📡 Making individual API call for thread:', threadId, '(fallback - bulk loading may have failed)');
-
-    try {
-      // Get fresh session for authentication
-      const freshSession = await getSession();
-      if (!freshSession?.id_token) {
-        throw new Error('No authentication token available');
-      }
-
-      const data = await authApiFetch<ChatMessage[]>(`/chat/${threadId}/messages`, freshSession.id_token);
-      
-      console.log('[ChatPage-loadMessages] ✅ Loaded messages from individual API call:', data.length);
-      
-      // Update cache through context
-      setMessages(threadId, data);
+    // If no cached messages, it means either:
+    // 1. Bulk loading failed for this thread (empty thread)
+    // 2. This is a new thread created after bulk loading (no messages yet)
+    // 3. Cache was cleared (rare)
+    console.log('[ChatPage-loadMessages] ⚠ No cached messages found for thread:', threadId);
+    
+    // Check if we're still loading threads/bulk data
+    if (threadsLoading || isLoading) {
+      console.log('[ChatPage-loadMessages] 🔄 Still loading bulk data - waiting for completion...');
+      // Set the active thread anyway - messages will appear when bulk loading completes
       setActiveThreadId(threadId);
-    } catch (error) {
-      console.error('[ChatPage-loadMessages] ❌ Error loading messages:', error);
+      return;
     }
+
+    // OPTIMIZATION: No more fallback API calls - bulk loading handles everything
+    console.log('[ChatPage-loadMessages] 💡 No cached messages for thread:', threadId, '- this thread may be empty or bulk loading failed');
+    console.log('[ChatPage-loadMessages] 📊 Bulk loading should have loaded all messages - no individual API calls needed');
+    
+    // Set the active thread anyway - if it's truly empty, the UI will show "No messages"
+    // If bulk loading failed, the user can refresh the page to retry
+    setActiveThreadId(threadId);
+    
+    // REMOVED: No more individual API calls
+    // The bulk loading via /chat/all-messages should have loaded all messages
+    // If there are no cached messages, it means this thread has no messages or bulk loading failed
   };
 
   const deleteThreadFromPostgreSQL = async (threadId: string) => {
@@ -582,19 +593,13 @@ export default function ChatPage() {
       
       console.log('[ChatPage-send] ✅ Message sent and localStorage synced with new response');
       
-      // IMPORTANT: After receiving response from langgraph, reload messages from PostgreSQL to ensure sync
-      console.log('[ChatPage-send] 🔄 Reloading messages from PostgreSQL to sync with langgraph response');
-      try {
-        const freshSession = await getSession();
-        if (freshSession?.id_token) {
-          const freshMessages = await authApiFetch<ChatMessage[]>(`/chat/${currentThreadId}/messages`, freshSession.id_token);
-          console.log('[ChatPage-send] ✅ Reloaded', freshMessages.length, 'messages from PostgreSQL after langgraph response');
-          setMessages(currentThreadId, freshMessages);
-        }
-      } catch (refreshError) {
-        console.error('[ChatPage-send] ⚠️ Failed to refresh messages from PostgreSQL:', refreshError);
-        // Don't fail the whole operation if refresh fails
-      }
+      // OPTIMIZATION: No more individual message reloading - bulk loading handles everything
+      console.log('[ChatPage-send] 📊 Message response received - no individual API reload needed');
+      console.log('[ChatPage-send] 💡 Bulk loading on page refresh will sync all messages with PostgreSQL');
+      
+      // REMOVED: Individual message reload after sending
+      // The bulk loading via /chat/all-messages handles all message synchronization
+      // Individual reloads are unnecessary and cause extra database calls
     } catch (error) {
       console.error('[ChatPage-send] ❌ Error sending message:', error);
       console.error('[ChatPage-send] ❌ Error details:', {

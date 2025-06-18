@@ -469,119 +469,44 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   // Get current messages for active thread
   const currentMessages = activeThreadId ? messages[activeThreadId] || [] : []
 
-  // NEW: Functions for cross-tab loading state management
-  const getUserLoadingKey = useCallback((email: string) => {
-    return `${USER_LOADING_STATE_KEY}:${email}`;
-  }, []);
-
+  // NEW: Cross-tab loading state management
   const setUserLoadingState = useCallback((email: string, loading: boolean) => {
-    if (!email || typeof window === 'undefined' || typeof localStorage === 'undefined') return;
-    
-    try {
-      const key = getUserLoadingKey(email);
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const key = `czsu-user-loading-${email}`;
       if (loading) {
-        const loadingData = {
-          email,
-          loading: true,
-          timestamp: Date.now(),
-          tabId: Math.random().toString(36).substr(2, 9) // Unique tab identifier
-        };
-        localStorage.setItem(key, JSON.stringify(loadingData));
-        console.log('[ChatCache] 🔒 User loading state set for:', email, 'across all tabs');
-        
-        // IMPORTANT: Also update local state immediately in current tab
-        setIsUserLoading(true);
-        
-        // Force a custom storage event for current tab (since storage events don't fire in the same tab)
-        window.dispatchEvent(new CustomEvent('userLoadingChange', { 
-          detail: { email, loading: true } 
-        }));
+        localStorage.setItem(key, Date.now().toString());
+        console.log('[ChatCache] 🔒 Set user loading state for:', email);
       } else {
         localStorage.removeItem(key);
-        console.log('[ChatCache] 🔓 User loading state cleared for:', email, 'across all tabs');
-        
-        // IMPORTANT: Also update local state immediately in current tab
-        setIsUserLoading(false);
-        
-        // Force a custom storage event for current tab
-        window.dispatchEvent(new CustomEvent('userLoadingChange', { 
-          detail: { email, loading: false } 
-        }));
+        console.log('[ChatCache] 🔓 Cleared user loading state for:', email);
       }
-    } catch (error) {
-      console.error('[ChatCache] ❌ Error setting user loading state:', error);
     }
-  }, [getUserLoadingKey]);
+  }, []);
 
-  const checkUserLoadingState = useCallback((email: string) => {
-    if (!email || typeof window === 'undefined' || typeof localStorage === 'undefined') return false;
-    
-    try {
-      const key = getUserLoadingKey(email);
-      const stored = localStorage.getItem(key);
-      
-      if (stored) {
-        const data = JSON.parse(stored);
-        const age = Date.now() - data.timestamp;
-        
-        // Clear stale loading states (older than 5 minutes - prevent stuck states)
-        if (age > 5 * 60 * 1000) {
+  const checkUserLoadingState = useCallback((email: string): boolean => {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      const key = `czsu-user-loading-${email}`;
+      const loadingTime = localStorage.getItem(key);
+      if (loadingTime) {
+        const elapsed = Date.now() - parseInt(loadingTime, 10);
+        // Consider loading stale after 30 seconds
+        if (elapsed > 30000) {
           localStorage.removeItem(key);
-          console.log('[ChatCache] 🧹 Cleared stale loading state for:', email);
+          console.log('[ChatCache] ⏰ User loading state expired for:', email);
           return false;
         }
-        
-        console.log('[ChatCache] 🔍 User loading state check for:', email, '- loading:', data.loading);
-        return data.loading === true;
+        console.log('[ChatCache] 🔒 User is already loading:', email, 'elapsed:', elapsed, 'ms');
+        return true;
       }
-      
-      return false;
-    } catch (error) {
-      console.error('[ChatCache] ❌ Error checking user loading state:', error);
-      return false;
     }
-  }, [getUserLoadingKey]);
+    return false;
+  }, []);
 
-  // NEW: Better cross-tab loading state synchronization
-  useEffect(() => {
-    if (!userEmail || typeof window === 'undefined') return;
-
-    // Handle storage events from OTHER tabs
-    const handleStorageChange = (e: StorageEvent) => {
-      if (!e.key || !e.key.startsWith(USER_LOADING_STATE_KEY)) return;
-      
-      // Check if this change affects the current user
-      const expectedKey = getUserLoadingKey(userEmail);
-      if (e.key !== expectedKey) return;
-      
-      console.log('[ChatCache] 📡 Cross-tab loading state change detected from ANOTHER tab for:', userEmail);
-      
-      // Update local state based on storage change
-      const isCurrentlyLoading = checkUserLoadingState(userEmail);
-      setIsUserLoading(isCurrentlyLoading);
-    };
-
-    // Handle custom events from CURRENT tab (since storage events don't fire in same tab)
-    const handleCustomLoadingChange = (e: CustomEvent) => {
-      if (e.detail.email === userEmail) {
-        console.log('[ChatCache] 📡 Loading state change detected in CURRENT tab for:', userEmail, '- loading:', e.detail.loading);
-        setIsUserLoading(e.detail.loading);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('userLoadingChange', handleCustomLoadingChange as EventListener);
-    
-    // Initial check when user email changes
-    const initialLoadingState = checkUserLoadingState(userEmail);
-    setIsUserLoading(initialLoadingState);
-    console.log('[ChatCache] 🔍 Initial loading state check for:', userEmail, '- loading:', initialLoadingState);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('userLoadingChange', handleCustomLoadingChange as EventListener);
-    };
-  }, [userEmail, getUserLoadingKey, checkUserLoadingState]);
+  // NEW: Reset page refresh state
+  const resetPageRefresh = useCallback(() => {
+    console.log('[ChatCache] 🔄 Resetting page refresh state');
+    setIsPageRefresh(false);
+  }, []);
 
   // NEW: Bulk load all messages, run-ids, and sentiments at once
   const loadAllMessagesFromAPI = useCallback(async (authToken: string) => {
@@ -594,24 +519,40 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       
       // Step 1: Load all data at once (messages, run-ids, and sentiments)
       console.log('[ChatCache] 📡 Calling /chat/all-messages endpoint...');
+      const startTime = Date.now();
+      
       const response = await authApiFetch<{
         messages: { [threadId: string]: any[] };
         runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
         sentiments: { [threadId: string]: { [runId: string]: boolean } };
       }>('/chat/all-messages', authToken);
       
-      console.log('[ChatCache] ✅ Loaded ALL data:', {
-        messageThreads: Object.keys(response.messages || {}).length,
+      const loadTime = Date.now() - startTime;
+      const totalThreadsWithMessages = Object.keys(response.messages || {}).length;
+      const totalMessages = Object.values(response.messages || {}).reduce((sum, msgs) => sum + msgs.length, 0);
+      
+      console.log('[ChatCache] ✅ Loaded ALL data in', loadTime, 'ms:', {
+        messageThreads: totalThreadsWithMessages,
+        totalMessages: totalMessages,
         runIdThreads: Object.keys(response.runIds || {}).length,
         sentimentThreads: Object.keys(response.sentiments || {}).length
       });
       
-      // Store all data
+      // Store all data atomically to prevent partial updates
+      console.log('[ChatCache] 💾 Storing bulk data in cache...');
       setMessagesState(response.messages || {});
       setRunIdsState(response.runIds || {});
       setSentimentsState(response.sentiments || {});
       
       console.log('[ChatCache] ✅ Bulk loading completed successfully');
+      console.log('[ChatCache] 🎯 Performance benefit: Loaded', totalMessages, 'messages with 1 API call instead of', totalThreadsWithMessages, 'individual calls');
+      
+      // Force save to localStorage immediately after bulk loading
+      saveToStorage({
+        messages: response.messages || {},
+        runIds: response.runIds || {},
+        sentiments: response.sentiments || {}
+      });
       
     } catch (error) {
       console.error('[ChatCache] ❌ Error in bulk loading:', error);
@@ -619,38 +560,7 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
-  
-  // NEW: Get cached run-ids for a thread
-  const getRunIdsForThread = useCallback((threadId: string) => {
-    return runIds[threadId] || [];
-  }, [runIds]);
-  
-  // NEW: Get cached sentiments for a thread
-  const getSentimentsForThread = useCallback((threadId: string) => {
-    return sentiments[threadId] || {};
-  }, [sentiments]);
-  
-  // NEW: Update cached sentiment
-  const updateCachedSentiment = useCallback((threadId: string, runId: string, sentiment: boolean | null) => {
-    console.log('[ChatCache] 📝 Updating cached sentiment:', threadId, runId, sentiment);
-    setSentimentsState(prev => {
-      const threadSentiments = { ...prev[threadId] };
-      
-      if (sentiment === null) {
-        // Remove the sentiment entry
-        delete threadSentiments[runId];
-      } else {
-        // Set the sentiment value
-        threadSentiments[runId] = sentiment;
-      }
-      
-      return {
-        ...prev,
-        [threadId]: threadSentiments
-      };
-    });
-  }, []);
+  }, [saveToStorage]);
 
   const contextValue: ChatCacheContextType = {
     // State
@@ -687,10 +597,7 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     },
     
     // NEW: Reset page refresh state
-    resetPageRefresh: () => {
-      console.log('[ChatCache] 🔄 Resetting page refresh flag - future navigation will use cache');
-      setIsPageRefresh(false);
-    },
+    resetPageRefresh,
     
     // NEW: Cross-tab loading state management
     isUserLoading,
@@ -705,11 +612,33 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     loadAllMessagesFromAPI,
     
     // NEW: Get cached run-ids and sentiments for a thread
-    getRunIdsForThread,
-    getSentimentsForThread,
+    getRunIdsForThread: (threadId: string) => {
+      return runIds[threadId] || [];
+    },
+    getSentimentsForThread: (threadId: string) => {
+      return sentiments[threadId] || {};
+    },
     
     // NEW: Update cached sentiment
-    updateCachedSentiment
+    updateCachedSentiment: (threadId: string, runId: string, sentiment: boolean | null) => {
+      console.log('[ChatCache] 📝 Updating cached sentiment:', threadId, runId, sentiment);
+      setSentimentsState(prev => {
+        const threadSentiments = { ...prev[threadId] };
+        
+        if (sentiment === null) {
+          // Remove the sentiment entry
+          delete threadSentiments[runId];
+        } else {
+          // Set the sentiment value
+          threadSentiments[runId] = sentiment;
+        }
+        
+        return {
+          ...prev,
+          [threadId]: threadSentiments
+        };
+      });
+    }
   }
 
   return (
