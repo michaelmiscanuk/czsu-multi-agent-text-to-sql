@@ -51,7 +51,7 @@ import gc
 import psutil
 import signal
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 import time
 from collections import defaultdict
@@ -1939,65 +1939,56 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
 
 @app.get("/chat/all-messages")
 async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
-    """Load conversation messages for ALL user threads at once to improve frontend performance.
+    """OPTIMIZED: Load conversation messages for ALL user threads using built-in functions in parallel.
     
-    This endpoint is optimized for bulk loading to reduce PostgreSQL calls and improve caching.
-    Returns a dictionary with messages, runIds, and sentiments for all user threads.
+    This endpoint uses the proven working functions but calls them efficiently:
+    - Single query to get all user threads, run-ids, and sentiments 
+    - Use the proven working get_conversation_messages_from_checkpoints() for each thread
+    - Call all thread processing in parallel using asyncio.gather()
+    - Much faster than sequential individual API calls from frontend
     """
     
     user_email = user.get("email")
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print__api_postgresql(f"📥 Loading ALL chat messages for user: {user_email}")
+    print__api_postgresql(f"📥 PARALLEL BULK: Loading ALL chat messages for user: {user_email}")
     
     try:
-        # First get all user's threads to know which threads to load
-        print__api_postgresql(f"🔍 Step 1: Getting all user threads")
         checkpointer = await get_healthy_checkpointer()
         
         if not hasattr(checkpointer, 'conn'):
             print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - returning empty messages")
             return {"messages": {}, "runIds": {}, "sentiments": {}}
         
-        # Get all thread IDs that belong to this user
+        # STEP 1: Get all user threads, run-ids, and sentiments in ONE query
+        print__api_postgresql(f"🔍 BULK QUERY: Getting all user threads, run-ids, and sentiments")
         user_thread_ids = []
-        try:
-            async with checkpointer.conn.connection() as conn:
-                result = await conn.execute("""
-                    SELECT DISTINCT thread_id FROM users_threads_runs 
-                    WHERE email = %s
-                    ORDER BY thread_id
-                """, (user_email,))
-                
-                async for row in result:
-                    user_thread_ids.append(row[0])
-        except Exception as e:
-            print__api_postgresql(f"❌ Error getting user threads: {e}")
-            return {"messages": {}, "runIds": {}, "sentiments": {}}
-        
-        print__api_postgresql(f"📊 Found {len(user_thread_ids)} threads for user: {user_email}")
-        
-        if not user_thread_ids:
-            print__api_postgresql(f"⚠ No threads found for user - returning empty dictionary")
-            return {"messages": {}, "runIds": {}, "sentiments": {}}
-        
-        # Step 2: Load run-ids and sentiments for all threads at once
-        print__api_postgresql(f"🔍 Step 2: Loading run-ids and sentiments for all threads")
         all_run_ids = {}
         all_sentiments = {}
         
         async with checkpointer.conn.connection() as conn:
-            # Load all run-ids at once
-            run_ids_result = await conn.execute("""
-                SELECT thread_id, run_id, prompt, timestamp
+            # Single query for all threads, run-ids, and sentiments
+            result = await conn.execute("""
+                SELECT 
+                    thread_id, 
+                    run_id, 
+                    prompt, 
+                    timestamp,
+                    sentiment
                 FROM users_threads_runs 
-                WHERE email = %s AND thread_id = ANY(%s)
+                WHERE email = %s
                 ORDER BY thread_id, timestamp ASC
-            """, (user_email, user_thread_ids))
+            """, (user_email,))
             
-            async for row in run_ids_result:
-                thread_id, run_id, prompt, timestamp = row
+            async for row in result:
+                thread_id, run_id, prompt, timestamp, sentiment = row
+                
+                # Track unique thread IDs
+                if thread_id not in user_thread_ids:
+                    user_thread_ids.append(thread_id)
+                
+                # Build run-ids dictionary
                 if thread_id not in all_run_ids:
                     all_run_ids[thread_id] = []
                 all_run_ids[thread_id].append({
@@ -2005,43 +1996,37 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                     "prompt": prompt,
                     "timestamp": timestamp.isoformat()
                 })
-            
-            # Load all sentiments at once
-            sentiments_result = await conn.execute("""
-                SELECT thread_id, run_id, sentiment
-                FROM users_threads_runs 
-                WHERE email = %s AND thread_id = ANY(%s) AND sentiment IS NOT NULL
-                ORDER BY thread_id
-            """, (user_email, user_thread_ids))
-            
-            async for row in sentiments_result:
-                thread_id, run_id, sentiment = row
-                if thread_id not in all_sentiments:
-                    all_sentiments[thread_id] = {}
-                all_sentiments[thread_id][run_id] = sentiment
+                
+                # Build sentiments dictionary
+                if sentiment is not None:
+                    if thread_id not in all_sentiments:
+                        all_sentiments[thread_id] = {}
+                    all_sentiments[thread_id][run_id] = sentiment
         
-        print__api_postgresql(f"📊 Loaded run-ids for {len(all_run_ids)} threads")
-        print__api_postgresql(f"📊 Loaded sentiments for {len(all_sentiments)} threads")
+        print__api_postgresql(f"📊 BULK: Found {len(user_thread_ids)} threads")
         
-        # Step 3: Load messages for all threads
-        print__api_postgresql(f"🔍 Step 3: Loading messages for all threads")
-        all_messages = {}
+        if not user_thread_ids:
+            print__api_postgresql(f"⚠ No threads found for user - returning empty dictionary")
+            return {"messages": {}, "runIds": {}, "sentiments": {}}
         
-        for thread_id in user_thread_ids:
-            print__api_postgresql(f"🔄 Loading messages for thread {thread_id}")
-            
+        # STEP 2: Process all threads in PARALLEL using the proven working functions
+        print__api_postgresql(f"🔄 PARALLEL: Processing all {len(user_thread_ids)} threads using proven working functions")
+        
+        async def process_single_thread(thread_id: str):
+            """Process a single thread using the proven working functions."""
             try:
-                # Get conversation messages from checkpoint history
+                print__api_postgresql(f"🔄 Processing thread {thread_id}")
+                
+                # Use the ORIGINAL working function that we know works
                 stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id)
                 
                 if not stored_messages:
-                    print__api_postgresql(f"⚠ No messages found in checkpoints for thread {thread_id}")
-                    all_messages[thread_id] = []
-                    continue
+                    print__api_postgresql(f"⚠ No messages found for thread {thread_id}")
+                    return thread_id, []
                 
                 print__api_postgresql(f"📄 Found {len(stored_messages)} messages for thread {thread_id}")
                 
-                # Get additional metadata from latest checkpoint
+                # Get additional metadata from latest checkpoint (like queries_and_results)
                 queries_and_results = await get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id)
                 
                 # Get dataset information and SQL query from latest checkpoint
@@ -2055,87 +2040,23 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                         channel_values = state_snapshot.checkpoint.get("channel_values", {})
                         top_selection_codes = channel_values.get("top_selection_codes", [])
                         
-                        # Filter to only include selection codes actually used in queries
-                        if top_selection_codes and queries_and_results:
-                            # Use the same filtering logic as the single-thread endpoint
-                            def extract_table_names_from_sql(sql_query: str):
-                                """Extract table names from SQL query FROM clauses."""
-                                import re
-                                
-                                # Remove comments and normalize whitespace
-                                sql_clean = re.sub(r'--.*?(?=\n|$)', '', sql_query, flags=re.MULTILINE)
-                                sql_clean = re.sub(r'/\*.*?\*/', '', sql_clean, flags=re.DOTALL)
-                                sql_clean = ' '.join(sql_clean.split())
-                                
-                                # Pattern to match FROM clause with table names
-                                from_pattern = r'\bFROM\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1(?:\s*,\s*(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\3)*'
-                                
-                                table_names = []
-                                matches = re.finditer(from_pattern, sql_clean, re.IGNORECASE)
-                                
-                                for match in matches:
-                                    # Extract the main table name (group 2)
-                                    if match.group(2):
-                                        table_names.append(match.group(2).upper())
-                                    # Extract additional table names if comma-separated (group 4)
-                                    if match.group(4):
-                                        table_names.append(match.group(4).upper())
-                                
-                                # Also handle JOIN clauses
-                                join_pattern = r'\bJOIN\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1'
-                                join_matches = re.finditer(join_pattern, sql_clean, re.IGNORECASE)
-                                
-                                for match in join_matches:
-                                    if match.group(2):
-                                        table_names.append(match.group(2).upper())
-                                
-                                return list(set(table_names))  # Remove duplicates
-                            
-                            def get_used_selection_codes(queries_and_results, top_selection_codes):
-                                """Filter top_selection_codes to only include those actually used in queries."""
-                                if not queries_and_results or not top_selection_codes:
-                                    return []
-                                
-                                # Extract all table names used in queries
-                                used_table_names = set()
-                                for query, _ in queries_and_results:
-                                    if query:
-                                        table_names = extract_table_names_from_sql(query)
-                                        used_table_names.update(table_names)
-                                
-                                # Filter selection codes to only include those that match used table names
-                                used_selection_codes = []
-                                for selection_code in top_selection_codes:
-                                    if selection_code.upper() in used_table_names:
-                                        used_selection_codes.append(selection_code)
-                                
-                                return used_selection_codes
-                            
-                            # Apply the filtering
-                            used_selection_codes = get_used_selection_codes(queries_and_results, top_selection_codes)
-                            
-                            # Use filtered codes if available, otherwise fallback to all top_selection_codes
-                            datasets_used = used_selection_codes if used_selection_codes else top_selection_codes
-                        elif top_selection_codes:
-                            # If no queries yet, use all top_selection_codes
-                            datasets_used = top_selection_codes
+                        # Use the datasets directly
+                        datasets_used = top_selection_codes
                         
                         # Extract SQL query from queries_and_results for SQL button
                         if queries_and_results:
                             # Get the last (most recent) SQL query
                             sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
-                        
+                    
                 except Exception as e:
-                    print__api_postgresql(f"⚠ Could not get datasets/SQL from checkpoint for thread {thread_id}: {e}")
+                    print__api_postgresql(f"⚠ Could not get datasets/SQL from checkpoint: {e}")
                 
-                # Convert stored messages to frontend format
+                # Convert stored messages to frontend format (SAME as original working code)
                 chat_messages = []
                 
                 for i, stored_msg in enumerate(stored_messages):
-                    # Create meta information for messages
+                    # Create meta information for AI messages
                     meta_info = {}
-                    
-                    # For AI messages, include queries/results, datasets used, and SQL query
                     if not stored_msg["is_user"]:
                         if queries_and_results:
                             meta_info["queriesAndResults"] = queries_and_results
@@ -2143,28 +2064,13 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                             meta_info["datasetsUsed"] = datasets_used
                         if sql_query:
                             meta_info["sqlQuery"] = sql_query
-                        meta_info["source"] = "checkpoint_history"
-                    
-                    # NEW: Add run-ids and sentiments to message meta for frontend caching
-                    if stored_msg["is_user"]:
-                        # For user messages, find the corresponding run_id
-                        thread_run_ids = all_run_ids.get(thread_id, [])
-                        # Try to match by content and timing (approximate)
-                        for run_data in thread_run_ids:
-                            if run_data["prompt"] and stored_msg["content"] in run_data["prompt"]:
-                                meta_info["runId"] = run_data["run_id"]
-                                # Add sentiment if available
-                                thread_sentiments = all_sentiments.get(thread_id, {})
-                                if run_data["run_id"] in thread_sentiments:
-                                    meta_info["sentiment"] = thread_sentiments[run_data["run_id"]]
-                                break
+                        meta_info["source"] = "parallel_bulk_processing"
                     
                     # Convert queries_and_results for AI messages
                     queries_results_for_frontend = None
                     if not stored_msg["is_user"] and queries_and_results:
                         queries_results_for_frontend = queries_and_results
                     
-                    # Create ChatMessage
                     is_user_flag = stored_msg["is_user"]
                     
                     chat_message = ChatMessage(
@@ -2184,18 +2090,37 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                     
                     chat_messages.append(chat_message)
                 
-                all_messages[thread_id] = chat_messages
-                print__api_postgresql(f"✅ Loaded {len(chat_messages)} messages for thread {thread_id}")
+                print__api_postgresql(f"✅ Processed {len(chat_messages)} messages for thread {thread_id}")
+                return thread_id, chat_messages
                 
-            except Exception as thread_error:
-                print__api_postgresql(f"⚠ Error loading messages for thread {thread_id}: {thread_error}")
-                # Don't fail the entire request if one thread fails
-                all_messages[thread_id] = []
+            except Exception as e:
+                print__api_postgresql(f"❌ Error processing thread {thread_id}: {e}")
+                return thread_id, []
         
-        total_messages = sum(len(messages) for messages in all_messages.values())
-        print__api_postgresql(f"✅ Successfully loaded ALL messages for user {user_email}: {len(all_messages)} threads, {total_messages} total messages")
+        # Process ALL threads in parallel using asyncio.gather()
+        print__api_postgresql(f"🚀 Starting parallel processing of {len(user_thread_ids)} threads...")
         
-        # NEW: Add run-ids and sentiments to the response for frontend caching
+        # Use asyncio.gather to process all threads concurrently
+        thread_results = await asyncio.gather(
+            *[process_single_thread(thread_id) for thread_id in user_thread_ids],
+            return_exceptions=True
+        )
+        
+        # Collect results
+        all_messages = {}
+        total_messages = 0
+        
+        for result in thread_results:
+            if isinstance(result, Exception):
+                print__api_postgresql(f"⚠ Exception in thread processing: {result}")
+                continue
+            
+            thread_id, chat_messages = result
+            all_messages[thread_id] = chat_messages
+            total_messages += len(chat_messages)
+        
+        print__api_postgresql(f"✅ PARALLEL BULK LOADING COMPLETE: Successfully loaded ALL messages for user {user_email}: {len(all_messages)} threads, {total_messages} total messages using proven working functions in parallel")
+        
         result = {
             "messages": all_messages,
             "runIds": all_run_ids,
@@ -2206,7 +2131,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
         
     except Exception as e:
         error_msg = str(e)
-        print__api_postgresql(f"❌ Failed to load all chat messages for user {user_email}: {e}")
+        print__api_postgresql(f"❌ Failed to bulk load all chat messages for user {user_email}: {e}")
         
         # Handle specific database connection errors gracefully
         if any(keyword in error_msg.lower() for keyword in [
@@ -2216,7 +2141,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             print__api_postgresql(f"⚠ Database connection error - returning empty messages")
             return {"messages": {}, "runIds": {}, "sentiments": {}}
         else:
-            raise HTTPException(status_code=500, detail=f"Failed to load all chat messages: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to bulk load all chat messages: {e}")
 
 @app.get("/debug/chat/{thread_id}/checkpoints")
 async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
