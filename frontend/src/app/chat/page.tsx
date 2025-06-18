@@ -15,12 +15,15 @@ interface Message {
   isUser: boolean;
   type: string;
   isLoading?: boolean;
+  startedAt?: number;
+  isError?: boolean;
   selectionCode?: string | null;
   queriesAndResults?: [string, string][];
   meta?: {
     datasetUrl?: string;
     datasetsUsed?: string[];  // Array of dataset codes actually used in queries
     sqlQuery?: string;
+    run_id?: string;
   };
 }
 
@@ -486,12 +489,15 @@ export default function ChatPage() {
       console.log('[ChatPage-send] 🚫 BLOCKED: User', userEmail, 'is already processing a request in another tab');
       return; // Exit immediately - don't allow concurrent requests
     }
-    
+
     console.log('[ChatPage-send] ✅ No existing loading state found, proceeding with request for user:', userEmail);
     
     const messageText = currentMessage.trim();
     setCurrentMessage("");
     localStorage.removeItem('czsu-draft-message'); // Clear saved draft
+    
+    // Capture state for recovery mechanism
+    const messagesBefore = messages.length;
     
     // Set loading state in BOTH local and context to ensure persistence across navigation
     setIsLoading(true);
@@ -552,7 +558,7 @@ export default function ChatPage() {
       isUser: true,
       createdAt: Date.now(),
     };
-    
+
     addMessage(currentThreadId, userMessage);
     
     // Add loading message
@@ -567,7 +573,7 @@ export default function ChatPage() {
       isLoading: true,
       startedAt: Date.now()
     };
-    
+
     addMessage(currentThreadId, loadingMessage);
     
     try {
@@ -577,6 +583,7 @@ export default function ChatPage() {
         throw new Error('No authentication token available');
       }
 
+      // MEMORY PRESSURE HANDLING: Extended timeout and better error handling
       const data = await authApiFetch<AnalyzeResponse>('/analyze', freshSession.id_token, {
         method: 'POST',
         body: JSON.stringify({
@@ -586,7 +593,7 @@ export default function ChatPage() {
       });
       
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
-      
+
       // Update loading message with response
       const responseMessage: ChatMessage = {
         id: loadingMessageId,
@@ -608,7 +615,7 @@ export default function ChatPage() {
       console.log('[ChatPage-send] ✅ Attaching run_id to message meta:', data.run_id);
       
       updateMessage(currentThreadId, loadingMessageId, responseMessage);
-      
+
       // Update thread metadata after response - this ensures any PostgreSQL changes are reflected
       const updatedMetadata: Partial<ChatThreadMeta> = {
         latest_timestamp: new Date().toISOString(),
@@ -627,13 +634,6 @@ export default function ChatPage() {
       
       console.log('[ChatPage-send] ✅ Message sent and localStorage synced with new response');
       
-      // OPTIMIZATION: No more individual message reloading - bulk loading handles everything
-      console.log('[ChatPage-send] 📊 Message response received - no individual API reload needed');
-      console.log('[ChatPage-send] 💡 Bulk loading on page refresh will sync all messages with PostgreSQL');
-      
-      // REMOVED: Individual message reload after sending
-      // The bulk loading via /chat/all-messages handles all message synchronization
-      // Individual reloads are unnecessary and cause extra database calls
     } catch (error) {
       console.error('[ChatPage-send] ❌ Error sending message:', error);
       console.error('[ChatPage-send] ❌ Error details:', {
@@ -643,20 +643,34 @@ export default function ChatPage() {
         error: error
       });
       
-      // Update loading message with error
-      const errorMessage: ChatMessage = {
-        id: loadingMessageId,
-        threadId: currentThreadId,
-        user: 'assistant',
-        content: 'Sorry, there was an error processing your request. Please try again.',
-        isUser: false,
-        createdAt: Date.now(),
-        isLoading: false,
-        isError: true,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      };
+      // MEMORY PRESSURE RECOVERY: Check if response was saved to PostgreSQL despite error
+      console.log('[ChatPage-Recovery] 🔄 Attempting response recovery due to error...');
       
-      updateMessage(currentThreadId, loadingMessageId, errorMessage);
+      const recoverySuccessful = await checkForNewMessagesAfterTimeout(currentThreadId, messagesBefore);
+      
+      if (recoverySuccessful) {
+        console.log('[ChatPage-Recovery] 🎉 Response recovered from PostgreSQL!');
+        
+        // Remove the loading message since we recovered the real response
+        console.log('[ChatPage-Recovery] ✅ Response recovery completed successfully');
+        
+      } else {
+        // Recovery failed - show error message
+        const errorMessage: ChatMessage = {
+          id: loadingMessageId,
+          threadId: currentThreadId,
+          user: 'assistant',
+          content: 'I apologize, but I encountered an issue while processing your request. This might be due to high server load. Please try again, or refresh the page to see if your response was saved.',
+          isUser: false,
+          createdAt: Date.now(),
+          isLoading: false,
+          isError: true,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        };
+        
+        updateMessage(currentThreadId, loadingMessageId, errorMessage);
+        console.log('[ChatPage-Recovery] ❌ Recovery failed - showing error message');
+      }
     } finally {
       setIsLoading(false);
       setLoading(false); // Clear context loading state as well
@@ -741,6 +755,105 @@ export default function ChatPage() {
     // Focus when component mounts (page navigation)
     focusInput();
   }, []);
+
+  // NEW: Response recovery mechanism for memory pressure scenarios
+  const checkForNewMessagesAfterTimeout = async (threadId: string, beforeMessageCount: number) => {
+    console.log('[ChatPage-Recovery] 🔄 Checking for new messages after timeout/error for thread:', threadId);
+    console.log('[ChatPage-Recovery] 📊 Messages before request:', beforeMessageCount);
+    
+    try {
+      // Small delay to allow PostgreSQL writes to complete
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Load fresh messages from PostgreSQL via our bulk endpoint
+      const freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        console.log('[ChatPage-Recovery] ⚠ No session available for recovery check');
+        return false;
+      }
+      
+      // Get fresh data from API to check for new messages
+      const response = await authApiFetch<{
+        messages: { [threadId: string]: any[] };
+        runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
+        sentiments: { [threadId: string]: { [runId: string]: boolean } };
+      }>('/chat/all-messages', freshSession.id_token);
+      
+      const freshMessages = response.messages[threadId] || [];
+      console.log('[ChatPage-Recovery] 📄 Fresh messages from PostgreSQL:', freshMessages.length);
+      
+      if (freshMessages.length > beforeMessageCount) {
+        console.log('[ChatPage-Recovery] 🎉 RECOVERY SUCCESS: Found new messages! Updating cache...');
+        
+        // Update cache with fresh data
+        setMessages(threadId, freshMessages);
+        
+        // Update run-ids and sentiments if available
+        if (response.runIds[threadId]) {
+          console.log('[ChatPage-Recovery] 📝 Updating cached run-ids and sentiments');
+        }
+        
+        console.log('[ChatPage-Recovery] ✅ Chat recovered successfully - new messages are now visible');
+        return true;
+      } else {
+        console.log('[ChatPage-Recovery] ⚠ No new messages found - request may have truly failed');
+        return false;
+      }
+      
+    } catch (error) {
+      console.error('[ChatPage-Recovery] ❌ Error during message recovery:', error);
+      return false;
+    }
+  };
+
+  // NEW: Periodic health check to detect and recover missing responses
+  useEffect(() => {
+    if (!userEmail || !activeThreadId) return;
+    
+    // Only run health check if we have loading messages (indicating potential issues)
+    const hasLoadingMessages = messages.some(msg => msg.isLoading);
+    if (!hasLoadingMessages) return;
+    
+    console.log('[ChatPage-HealthCheck] 🔍 Detected loading messages - starting health check');
+    
+    const healthCheckInterval = setInterval(async () => {
+      try {
+        // Check if any message has been loading for more than 2 minutes
+        const stuckMessages = messages.filter(msg => {
+          if (!msg.isLoading || !msg.startedAt) return false;
+          const timeElapsed = Date.now() - msg.startedAt;
+          return timeElapsed > 120000; // 2 minutes
+        });
+        
+        if (stuckMessages.length > 0) {
+          console.log('[ChatPage-HealthCheck] 🚨 Detected stuck loading messages:', stuckMessages.length);
+          console.log('[ChatPage-HealthCheck] 🔄 Attempting automatic recovery...');
+          
+          const beforeMessageCount = messages.filter(msg => !msg.isLoading).length;
+          const recoverySuccessful = await checkForNewMessagesAfterTimeout(activeThreadId, beforeMessageCount);
+          
+          if (recoverySuccessful) {
+            console.log('[ChatPage-HealthCheck] 🎉 Automatic recovery successful!');
+          } else {
+            console.log('[ChatPage-HealthCheck] ⚠ Automatic recovery failed - response may still be processing');
+          }
+        }
+      } catch (error) {
+        console.error('[ChatPage-HealthCheck] ❌ Health check error:', error);
+      }
+    }, 30000); // Check every 30 seconds
+    
+    // Cleanup interval after 10 minutes (analysis timeout)
+    const cleanupTimer = setTimeout(() => {
+      clearInterval(healthCheckInterval);
+      console.log('[ChatPage-HealthCheck] ⏰ Health check timeout - stopping automatic recovery');
+    }, 600000); // 10 minutes
+    
+    return () => {
+      clearInterval(healthCheckInterval);
+      clearTimeout(cleanupTimer);
+    };
+  }, [activeThreadId, messages, userEmail, checkForNewMessagesAfterTimeout]);
 
   // UI
   return (

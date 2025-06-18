@@ -977,8 +977,10 @@ async def create_postgres_checkpointer():
     """Backward compatibility wrapper."""
     return await get_postgres_checkpointer()
 
-async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: str) -> List[Dict[str, Any]]:
+async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: str, user_email: str = None) -> List[Dict[str, Any]]:
     """Get the COMPLETE conversation messages from the LangChain PostgreSQL checkpoint history.
+    
+    SECURITY: Only loads messages for threads owned by the specified user to prevent data leakage.
     
     This extracts ALL user questions and ALL AI responses for proper chat display:
     - All user messages: for right-side blue display
@@ -987,12 +989,40 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
     Args:
         checkpointer: The PostgreSQL checkpointer instance
         thread_id: Thread ID for the conversation
+        user_email: Email of the user requesting the messages (for security verification)
     
     Returns:
         List of message dictionaries in chronological order (complete conversation history)
     """
     try:
         print__api_postgresql(f"🔍 Retrieving COMPLETE checkpoint history for thread: {thread_id}")
+        
+        # 🔒 SECURITY CHECK: Verify user owns this thread before loading checkpoint data
+        if user_email:
+            print__api_postgresql(f"🔒 Verifying thread ownership for user: {user_email}")
+            
+            # Get a connection to verify ownership
+            pool = checkpointer.conn if hasattr(checkpointer, 'conn') else await get_healthy_pool()
+            
+            if pool:
+                async with pool.connection() as conn:
+                    ownership_result = await conn.execute("""
+                        SELECT COUNT(*) FROM users_threads_runs 
+                        WHERE email = %s AND thread_id = %s
+                    """, (user_email, thread_id))
+                    
+                    ownership_row = await ownership_result.fetchone()
+                    thread_entries_count = ownership_row[0] if ownership_row else 0
+                    
+                    if thread_entries_count == 0:
+                        print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - access denied")
+                        return []  # Return empty instead of loading other users' data
+                    
+                    print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
+            else:
+                print__api_postgresql(f"⚠ Could not verify thread ownership - connection pool unavailable")
+                # In case of connection issues, don't load data to be safe
+                return []
         
         config = {"configurable": {"thread_id": thread_id}}
         
@@ -1005,7 +1035,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             print__api_postgresql(f"⚠ No checkpoints found for thread: {thread_id}")
             return []
         
-        print__api_postgresql(f"📄 Found {len(checkpoint_tuples)} checkpoints")
+        print__api_postgresql(f"📄 Found {len(checkpoint_tuples)} checkpoints for verified thread")
         
         # Sort checkpoints chronologically (oldest first)
         checkpoint_tuples.sort(key=lambda x: x.config.get("configurable", {}).get("checkpoint_id", ""))
@@ -1088,7 +1118,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             msg["message_order"] = i + 1
             msg["id"] = f"{'user' if msg['is_user'] else 'ai'}_{i + 1}"
         
-        print__api_postgresql(f"✅ Extracted {len(conversation_messages)} conversation messages from COMPLETE history")
+        print__api_postgresql(f"✅ Extracted {len(conversation_messages)} conversation messages from COMPLETE history (verified user access)")
         
         # Debug: Log all messages found
         for i, msg in enumerate(conversation_messages):

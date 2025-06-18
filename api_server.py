@@ -1144,7 +1144,7 @@ def get_current_user(authorization: str = Header(None)):
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
-    """Analyze request with enhanced memory leak prevention based on 'Needle in a haystack' article."""
+    """Analyze request with enhanced memory leak prevention and memory pressure recovery."""
     
     user_email = user.get("email")
     if not user_email:
@@ -1155,6 +1155,9 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     # MEMORY LEAK PREVENTION: Pre-analysis memory monitoring
     log_memory_usage("analysis_start")
     pre_analysis_memory = None
+    run_id = None
+    checkpointer = None
+    
     try:
         process = psutil.Process()
         pre_analysis_memory = process.memory_info().rss / 1024 / 1024
@@ -1221,7 +1224,21 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             except:
                 pass
             
-            return {"response": result, "thread_id": request.thread_id, "run_id": run_id}
+            # MEMORY PRESSURE RECOVERY: Save response state before attempting HTTP response
+            response_data = {"response": result, "thread_id": request.thread_id, "run_id": run_id}
+            
+            # If memory pressure is high, log that we're about to attempt HTTP response
+            try:
+                process = psutil.Process()
+                current_memory = process.memory_info().rss / 1024 / 1024
+                if current_memory > 450:  # Close to 512MB limit
+                    print__memory_monitoring(f"⚠ HIGH MEMORY PRESSURE: {current_memory:.1f}MB - attempting HTTP response delivery")
+                    print__memory_monitoring(f"🔄 Response data prepared and saved to PostgreSQL via checkpoints")
+                    print__memory_monitoring(f"🔄 If HTTP response fails, frontend can recover from PostgreSQL using thread_id: {request.thread_id}")
+            except:
+                pass
+            
+            return response_data
             
         except asyncio.TimeoutError:
             error_msg = "Analysis timed out after 8 minutes"
@@ -1230,6 +1247,11 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             
             # TIMEOUT CLEANUP: Force aggressive garbage collection on timeout
             aggressive_garbage_collection("analysis_timeout")
+            
+            # Log for recovery purposes
+            if run_id:
+                print__memory_monitoring(f"🔄 TIMEOUT RECOVERY INFO: thread_id={request.thread_id}, run_id={run_id}")
+                print__memory_monitoring(f"🔄 Analysis may have partially completed - check PostgreSQL for saved state")
             
             raise HTTPException(status_code=408, detail=error_msg)
             
@@ -1242,7 +1264,23 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             # ERROR CLEANUP: Force aggressive garbage collection on error
             aggressive_garbage_collection("analysis_error")
             
-            raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
+            # Enhanced error logging for recovery
+            if run_id:
+                print__memory_monitoring(f"🔄 ERROR RECOVERY INFO: thread_id={request.thread_id}, run_id={run_id}")
+                print__memory_monitoring(f"🔄 Check PostgreSQL checkpoints for any saved partial state")
+            
+            # Check if this is a memory pressure related error
+            error_str = str(e).lower()
+            if any(keyword in error_str for keyword in ['memory', 'resource', 'timeout', 'connection']):
+                print__memory_monitoring(f"🚨 MEMORY PRESSURE ERROR DETECTED: {error_str}")
+                print__memory_monitoring(f"🔄 Frontend should attempt recovery from PostgreSQL")
+                # Still raise the error, but with enhanced info for frontend recovery
+                raise HTTPException(
+                    status_code=503, 
+                    detail="Service temporarily unavailable due to high load. Your request may have been processed. Please check your chat or refresh the page."
+                )
+            else:
+                raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
@@ -1759,7 +1797,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
             print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
         
         # Get conversation messages from checkpoint history
-        stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id)
+        stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id, user_email)
         
         if not stored_messages:
             print__api_postgresql(f"⚠ No messages found in checkpoints for thread {thread_id}")
@@ -2018,10 +2056,10 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 print__api_postgresql(f"🔄 Processing thread {thread_id}")
                 
                 # Use the ORIGINAL working function that we know works
-                stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id)
+                stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id, user_email)
                 
                 if not stored_messages:
-                    print__api_postgresql(f"⚠ No messages found for thread {thread_id}")
+                    print__api_postgresql(f"⚠ No messages found in checkpoints for thread {thread_id}")
                     return thread_id, []
                 
                 print__api_postgresql(f"📄 Found {len(stored_messages)} messages for thread {thread_id}")

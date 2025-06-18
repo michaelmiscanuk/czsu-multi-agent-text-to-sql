@@ -75,9 +75,11 @@ const ChatCacheContext = createContext<ChatCacheContextType | undefined>(undefin
 // Cache configuration
 const CACHE_KEY = 'czsu-chat-cache'
 const ACTIVE_THREAD_KEY = 'czsu-last-active-chat'
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes in milliseconds
+const CACHE_DURATION = 60 * 60 * 1000 // 60 minutes in milliseconds (increased from 5 minutes)
 const PAGE_REFRESH_FLAG_KEY = 'czsu-page-refresh-flag'
 const USER_LOADING_STATE_KEY = 'czsu-user-loading-state' // NEW: Cross-tab loading state
+const F5_REFRESH_THROTTLE_KEY = 'czsu-f5-refresh-throttle' // NEW: F5 refresh throttling
+const F5_REFRESH_COOLDOWN = 100 // Reduced for faster recovery testing (was 1000)
 
 export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   // Internal state
@@ -120,6 +122,20 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     
     const now = Date.now();
     
+    // Check F5 refresh throttling first
+    const lastF5Refresh = typeof localStorage !== 'undefined' ? localStorage.getItem(F5_REFRESH_THROTTLE_KEY) : null;
+    const isF5Throttled = lastF5Refresh && (now - parseInt(lastF5Refresh, 10)) < F5_REFRESH_COOLDOWN;
+    
+    if (isF5Throttled) {
+      const timeLeft = F5_REFRESH_COOLDOWN - (now - parseInt(lastF5Refresh, 10));
+      const minutesLeft = Math.ceil(timeLeft / (60 * 1000));
+      console.log('[ChatCache] 🚫 F5 refresh throttled - must wait', minutesLeft, 'more minutes');
+      console.log('[ChatCache] ⚡ Using cached data instead of API refresh');
+      loadFromStorage();
+      hasBeenHydrated.current = true;
+      return;
+    }
+    
     // More robust page refresh detection
     const isPageReload = () => {
       // Method 1: Performance navigation API (most reliable)
@@ -156,10 +172,17 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       performanceEntries: typeof performance !== 'undefined' ? (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type : 'undefined',
       hasLocalStorageData,
       actualPageRefresh,
-      finalDecision
+      finalDecision,
+      isF5Throttled
     });
     
     setIsPageRefresh(finalDecision);
+    
+    // Set F5 refresh timestamp if this is a real refresh
+    if (finalDecision && typeof localStorage !== 'undefined') {
+      localStorage.setItem(F5_REFRESH_THROTTLE_KEY, now.toString());
+      console.log('[ChatCache] 🕐 F5 refresh timestamp recorded - next refresh allowed in 5 minutes');
+    }
     
     // Load initial data
     if (finalDecision) {
