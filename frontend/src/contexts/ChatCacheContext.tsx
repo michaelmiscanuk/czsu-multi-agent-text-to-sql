@@ -6,6 +6,8 @@ import { ChatThreadMeta, ChatMessage } from '@/types'
 interface CacheData {
   threads: ChatThreadMeta[];
   messages: { [threadId: string]: ChatMessage[] };
+  runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
+  sentiments: { [threadId: string]: { [runId: string]: boolean } };
   activeThreadId: string | null;
   lastUpdated: number;
   userEmail: string | null;
@@ -56,6 +58,16 @@ interface ChatCacheContextType {
   
   // NEW: Clear cache for user changes (logout/login)
   clearCacheForUserChange: (newUserEmail?: string | null) => void;
+  
+  // NEW: Bulk load all messages, run-ids, and sentiments at once
+  loadAllMessagesFromAPI: (authToken: string) => Promise<void>;
+  
+  // NEW: Get cached run-ids and sentiments for a thread
+  getRunIdsForThread: (threadId: string) => { run_id: string; prompt: string; timestamp: string }[];
+  getSentimentsForThread: (threadId: string) => { [runId: string]: boolean };
+  
+  // NEW: Update cached sentiment
+  updateCachedSentiment: (threadId: string, runId: string, sentiment: boolean | null) => void;
 }
 
 const ChatCacheContext = createContext<ChatCacheContextType | undefined>(undefined)
@@ -71,6 +83,8 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   // Internal state
   const [threads, setThreadsState] = useState<ChatThreadMeta[]>([])
   const [messages, setMessagesState] = useState<{ [threadId: string]: ChatMessage[] }>({})
+  const [runIds, setRunIdsState] = useState<{ [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] }>({})
+  const [sentiments, setSentimentsState] = useState<{ [threadId: string]: { [runId: string]: boolean } }>({})
   const [activeThreadId, setActiveThreadIdState] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<number>(0)
   const [userEmail, setUserEmail] = useState<string | null>(null)
@@ -184,6 +198,8 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
         
         setThreadsState(data.threads || [])
         setMessagesState(data.messages || {})
+        setRunIdsState(data.runIds || {})
+        setSentimentsState(data.sentiments || {})
         setUserEmail(data.userEmail)
         
         // Restore active thread from either cache or separate storage
@@ -211,6 +227,8 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       const existing: CacheData = existingData ? JSON.parse(existingData) : {
         threads: [],
         messages: {},
+        runIds: {},
+        sentiments: {},
         activeThreadId: null,
         lastUpdated: 0,
         userEmail: null
@@ -250,11 +268,13 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       saveToStorage({
         threads,
         messages,
+        runIds,
+        sentiments,
         activeThreadId,
         userEmail
       })
     }
-  }, [threads, messages, activeThreadId, userEmail, saveToStorage])
+  }, [threads, messages, runIds, sentiments, activeThreadId, userEmail, saveToStorage])
 
   // Actions
   const setThreads = useCallback((newThreads: ChatThreadMeta[]) => {
@@ -321,6 +341,8 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(ACTIVE_THREAD_KEY)
     setThreadsState([])
     setMessagesState({})
+    setRunIdsState({})
+    setSentimentsState({})
     setActiveThreadIdState(null)
     setUserEmail(null)
   }, [])
@@ -345,6 +367,8 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     // Reset state
     setThreadsState([])
     setMessagesState({})
+    setRunIdsState({})
+    setSentimentsState({})
     setActiveThreadIdState(null)
     
     // Mark that we need fresh data from API
@@ -431,6 +455,8 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     // Reset all state
     setThreadsState([])
     setMessagesState({})
+    setRunIdsState({})
+    setSentimentsState({})
     setActiveThreadIdState(null)
     setUserEmail(newUserEmail)
     setIsLoading(false)
@@ -557,6 +583,75 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     };
   }, [userEmail, getUserLoadingKey, checkUserLoadingState]);
 
+  // NEW: Bulk load all messages, run-ids, and sentiments at once
+  const loadAllMessagesFromAPI = useCallback(async (authToken: string) => {
+    console.log('[ChatCache] 🔄 Loading ALL messages from API using bulk endpoint...');
+    setIsLoading(true);
+    
+    try {
+      // Import authApiFetch from the lib/api file
+      const { authApiFetch } = await import('@/lib/api');
+      
+      // Step 1: Load all data at once (messages, run-ids, and sentiments)
+      console.log('[ChatCache] 📡 Calling /chat/all-messages endpoint...');
+      const response = await authApiFetch<{
+        messages: { [threadId: string]: any[] };
+        runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
+        sentiments: { [threadId: string]: { [runId: string]: boolean } };
+      }>('/chat/all-messages', authToken);
+      
+      console.log('[ChatCache] ✅ Loaded ALL data:', {
+        messageThreads: Object.keys(response.messages || {}).length,
+        runIdThreads: Object.keys(response.runIds || {}).length,
+        sentimentThreads: Object.keys(response.sentiments || {}).length
+      });
+      
+      // Store all data
+      setMessagesState(response.messages || {});
+      setRunIdsState(response.runIds || {});
+      setSentimentsState(response.sentiments || {});
+      
+      console.log('[ChatCache] ✅ Bulk loading completed successfully');
+      
+    } catch (error) {
+      console.error('[ChatCache] ❌ Error in bulk loading:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+  
+  // NEW: Get cached run-ids for a thread
+  const getRunIdsForThread = useCallback((threadId: string) => {
+    return runIds[threadId] || [];
+  }, [runIds]);
+  
+  // NEW: Get cached sentiments for a thread
+  const getSentimentsForThread = useCallback((threadId: string) => {
+    return sentiments[threadId] || {};
+  }, [sentiments]);
+  
+  // NEW: Update cached sentiment
+  const updateCachedSentiment = useCallback((threadId: string, runId: string, sentiment: boolean | null) => {
+    console.log('[ChatCache] 📝 Updating cached sentiment:', threadId, runId, sentiment);
+    setSentimentsState(prev => {
+      const threadSentiments = { ...prev[threadId] };
+      
+      if (sentiment === null) {
+        // Remove the sentiment entry
+        delete threadSentiments[runId];
+      } else {
+        // Set the sentiment value
+        threadSentiments[runId] = sentiment;
+      }
+      
+      return {
+        ...prev,
+        [threadId]: threadSentiments
+      };
+    });
+  }, []);
+
   const contextValue: ChatCacheContextType = {
     // State
     threads,
@@ -604,7 +699,17 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     setUserEmail: setUserEmailContext,
     
     // NEW: Clear cache for user changes (logout/login)
-    clearCacheForUserChange
+    clearCacheForUserChange,
+    
+    // NEW: Bulk load all messages, run-ids, and sentiments at once
+    loadAllMessagesFromAPI,
+    
+    // NEW: Get cached run-ids and sentiments for a thread
+    getRunIdsForThread,
+    getSentimentsForThread,
+    
+    // NEW: Update cached sentiment
+    updateCachedSentiment
   }
 
   return (

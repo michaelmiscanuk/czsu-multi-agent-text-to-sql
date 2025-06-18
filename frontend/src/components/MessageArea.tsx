@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useSession, getSession } from "next-auth/react";
 import Modal from './Modal';
 import Link from 'next/link';
-import { ChatMessage } from '@/types';
+import { ChatMessage, ChatThreadMeta, AnalyzeResponse, ChatThreadResponse } from '@/types';
 import { API_CONFIG, authApiFetch } from '@/lib/api';
 import { useSentiment } from '@/lib/useSentiment';
+import { useChatCache } from '@/contexts/ChatCacheContext';
 
 const PROGRESS_DURATION = 20000; // 20 seconds
 
@@ -318,7 +319,10 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     const [feedbackState, setFeedbackState] = React.useState<{ [runId: string]: { feedback: number | null; comment?: string } }>({});
     const [messageRunIds, setMessageRunIds] = React.useState<{[messageId: string]: string}>({});
     
-    // Add sentiment functionality
+    // NEW: Use ChatCacheContext for cached data access
+    const { getRunIdsForThread, getSentimentsForThread, updateCachedSentiment } = useChatCache();
+    
+    // Use sentiments from cache instead of API calls
     const { sentiments, updateSentiment, loadSentiments, getSentimentForRunId } = useSentiment();
     
     // Track which run_ids have already sent feedback to LangSmith to prevent duplicates
@@ -336,66 +340,72 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
         setLangsmithFeedbackSent(new Set());
     }, [threadId]);
 
-    // Fetch run_ids for the current thread when it changes
+    // Load run-ids from cache instead of making API calls
     React.useEffect(() => {
-        const fetchRunIds = async () => {
+        const loadRunIdsFromCache = () => {
             if (!threadId) return;
             
-            try {
-                console.log('[FEEDBACK-DEBUG] Fetching run_ids for thread:', threadId);
-                const freshSession = await getSession();
-                if (!freshSession?.id_token) {
-                    console.log('[FEEDBACK-DEBUG] No id_token available for run_id fetch');
-                    return;
-                }
+            console.log('[FEEDBACK-DEBUG] Loading run_ids from cache for thread:', threadId);
+            
+            // Get cached run-ids for this thread
+            const cachedRunIds = getRunIdsForThread(threadId);
+            console.log('[FEEDBACK-DEBUG] Found cached run_ids:', cachedRunIds.length);
+            
+            if (cachedRunIds && cachedRunIds.length > 0) {
+                const newMessageRunIds: {[messageId: string]: string} = {};
                 
-                const data = await authApiFetch<{run_ids: Array<{run_id: string, prompt: string, timestamp: string}>}>(`/chat/${threadId}/run-ids`, freshSession.id_token);
-                console.log('[FEEDBACK-DEBUG] Received run_ids:', JSON.stringify(data.run_ids));
+                // Get all non-user messages (AI responses) in order
+                const aiMessages = messages.filter(message => !message.isUser);
                 
-                // Match run_ids with messages based on content/prompt similarity
-                if (data.run_ids && data.run_ids.length > 0) {
-                    const newMessageRunIds: {[messageId: string]: string} = {};
+                // For each AI message, try to find a matching run_id
+                aiMessages.forEach((message, index) => {
+                    // Skip if message already has run_id in meta
+                    if (message.meta?.runId) {
+                        console.log('[FEEDBACK-DEBUG] Message already has run_id in meta:', message.meta.runId);
+                        newMessageRunIds[message.id] = message.meta.runId;
+                        return;
+                    }
                     
-                    // Get all non-user messages (AI responses) in order
-                    const aiMessages = messages.filter(message => !message.isUser);
-                    
-                    // For each AI message, try to find a matching run_id
-                    aiMessages.forEach((message, index) => {
-                        // Skip if message already has run_id in meta
-                        if (message.meta?.run_id) {
-                            console.log('[FEEDBACK-DEBUG] Message already has run_id in meta:', message.meta.run_id);
-                            newMessageRunIds[message.id] = message.meta.run_id;
-                            return;
-                        }
-                        
-                        // Match by index (first AI message gets first run_id, etc.)
-                        if (index < data.run_ids.length) {
-                            const runIdEntry = data.run_ids[index];
-                            newMessageRunIds[message.id] = runIdEntry.run_id;
-                            console.log('[FEEDBACK-DEBUG] Assigned run_id to message by index:', 
-                                {messageId: message.id, runId: runIdEntry.run_id, index});
-                        } else {
-                            console.log('[FEEDBACK-DEBUG] No run_id available for message at index:', index);
-                        }
-                    });
-                    
-                    setMessageRunIds(newMessageRunIds);
-                }
-            } catch (error) {
-                console.error('[FEEDBACK-DEBUG] Error fetching run_ids:', error);
+                    // Match by index (first AI message gets first run_id, etc.)
+                    if (index < cachedRunIds.length) {
+                        const runIdEntry = cachedRunIds[index];
+                        newMessageRunIds[message.id] = runIdEntry.run_id;
+                        console.log('[FEEDBACK-DEBUG] Assigned cached run_id to message by index:', 
+                            {messageId: message.id, runId: runIdEntry.run_id, index});
+                    } else {
+                        console.log('[FEEDBACK-DEBUG] No cached run_id available for message at index:', index);
+                    }
+                });
+                
+                setMessageRunIds(newMessageRunIds);
+            } else {
+                console.log('[FEEDBACK-DEBUG] No cached run_ids found for thread:', threadId);
             }
         };
         
-        fetchRunIds();
-    }, [threadId, messages]);
+        loadRunIdsFromCache();
+    }, [threadId, messages, getRunIdsForThread]);
 
-    // Load sentiments when thread or messageRunIds change
+    // Load sentiments from cache instead of making API calls
     React.useEffect(() => {
-        if (threadId) {
-            console.log('[SENTIMENT-DEBUG] Loading sentiments for thread:', threadId, 'messageRunIds:', messageRunIds);
+        const loadSentimentsFromCache = () => {
+            if (!threadId) return;
+            
+            console.log('[SENTIMENT-DEBUG] Loading sentiments from cache for thread:', threadId);
+            
+            // Get cached sentiments for this thread
+            const cachedSentiments = getSentimentsForThread(threadId);
+            console.log('[SENTIMENT-DEBUG] Found cached sentiments:', Object.keys(cachedSentiments).length);
+            
+            // The sentiment hook will be updated to use cached data instead of API calls
+            // For now, we still call loadSentiments but it should be fast since data is cached
             loadSentiments(threadId);
+        };
+        
+        if (threadId) {
+            loadSentimentsFromCache();
         }
-    }, [threadId, messageRunIds, loadSentiments]);
+    }, [threadId, messageRunIds, getSentimentsForThread, loadSentiments]);
 
     // Session and authentication
     const { data: session } = useSession();

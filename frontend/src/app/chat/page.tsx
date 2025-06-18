@@ -63,7 +63,11 @@ export default function ChatPage() {
     setUserLoadingState,
     checkUserLoadingState,
     setUserEmail,
-    clearCacheForUserChange
+    clearCacheForUserChange,
+    loadAllMessagesFromAPI,
+    getRunIdsForThread,
+    getSentimentsForThread,
+    updateCachedSentiment
   } = useChatCache();
   
   // Local component state
@@ -131,6 +135,19 @@ export default function ChatPage() {
       
       // Update cache through context - this will sync localStorage with PostgreSQL data
       setThreads(data);
+      
+      // NEW: Bulk load ALL messages for ALL threads at once
+      if (data.length > 0) {
+        console.log('[ChatPage-loadThreads] 🚀 Starting bulk loading of ALL messages...');
+        try {
+          await loadAllMessagesFromAPI(freshSession.id_token);
+          console.log('[ChatPage-loadThreads] ✅ Bulk loading completed - all messages cached');
+        } catch (error) {
+          console.error('[ChatPage-loadThreads] ❌ Bulk loading failed:', error);
+          // Continue even if bulk loading fails - individual loading will still work
+        }
+      }
+      
       setThreadsLoaded(true);
       
       if (isPageRefresh) {
@@ -159,15 +176,15 @@ export default function ChatPage() {
     // CHECK CACHE FIRST: Use the new context method to check if messages exist for this thread
     const hasCachedMessages = hasMessagesForThread(threadId);
     
-    // Use cached messages if available AND it's not a page refresh
-    if (hasCachedMessages && !isPageRefresh) {
-      console.log('[ChatPage-loadMessages] ✅ Using cached messages for thread:', threadId);
+    // Use cached messages if available (always prefer cache unless forced refresh)
+    if (hasCachedMessages) {
+      console.log('[ChatPage-loadMessages] ✅ Using cached messages for thread:', threadId, '(loaded via bulk loading)');
       setActiveThreadId(threadId);
       return;
     }
 
-    // Only make API call if no cached messages OR it's a page refresh (to sync with PostgreSQL)
-    console.log('[ChatPage-loadMessages] 📡 Making API call for thread:', threadId, 'reason:', !hasCachedMessages ? 'no cache' : 'page refresh');
+    // Only make API call if no cached messages (fallback for individual loading)
+    console.log('[ChatPage-loadMessages] 📡 Making individual API call for thread:', threadId, '(fallback - bulk loading may have failed)');
 
     try {
       // Get fresh session for authentication
@@ -178,7 +195,7 @@ export default function ChatPage() {
 
       const data = await authApiFetch<ChatMessage[]>(`/chat/${threadId}/messages`, freshSession.id_token);
       
-      console.log('[ChatPage-loadMessages] ✅ Loaded messages from API:', data.length);
+      console.log('[ChatPage-loadMessages] ✅ Loaded messages from individual API call:', data.length);
       
       // Update cache through context
       setMessages(threadId, data);
