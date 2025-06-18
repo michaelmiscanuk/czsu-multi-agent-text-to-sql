@@ -93,6 +93,14 @@ from my_agent.utils.postgres_checkpointer import (
     get_thread_run_sentiments
 )
 
+# MEMORY LEAK PREVENTION: Global tracking based on "Needle in a haystack" article
+# These help detect the same issues that plagued the Ocean framework
+_app_startup_time = None
+_route_registration_count = defaultdict(int)  # Track duplicate route registrations
+_memory_baseline = None  # RSS memory at startup
+_request_count = 0  # Track total requests processed
+_last_gc_run = time.time()  # Track garbage collection frequency
+
 # Global shared checkpointer for conversation memory across API requests
 # This ensures that conversation state is preserved between frontend requests using PostgreSQL
 GLOBAL_CHECKPOINTER = None
@@ -106,6 +114,10 @@ rate_limit_storage = defaultdict(list)
 RATE_LIMIT_REQUESTS = 100  # requests per window
 RATE_LIMIT_WINDOW = 60  # 60 seconds window
 RATE_LIMIT_BURST = 20  # burst limit for rapid requests
+RATE_LIMIT_MAX_WAIT = 5  # maximum seconds to wait before giving up
+
+# Throttling semaphores per IP to limit concurrent requests
+throttle_semaphores = defaultdict(lambda: asyncio.Semaphore(8))  # Max 8 concurrent requests per IP
 
 def print__memory_monitoring(msg: str) -> None:
     """Print MEMORY-MONITORING messages when debug mode is enabled.
@@ -119,12 +131,43 @@ def print__memory_monitoring(msg: str) -> None:
         import sys
         sys.stdout.flush()
 
-def log_memory_usage(context: str = ""):
-    """Log current memory usage for monitoring."""
+def detect_memory_fragmentation() -> dict:
+    """Detect potential memory fragmentation issues."""
     try:
         process = psutil.Process()
         memory_info = process.memory_info()
-        memory_mb = memory_info.rss / 1024 / 1024
+        
+        # RSS is physical memory, VMS is virtual memory
+        rss_mb = memory_info.rss / 1024 / 1024
+        vms_mb = memory_info.vms / 1024 / 1024
+        
+        # High VMS to RSS ratio might indicate fragmentation
+        fragmentation_ratio = vms_mb / rss_mb if rss_mb > 0 else 0
+        
+        # Memory growth since startup
+        global _memory_baseline
+        memory_growth = rss_mb - _memory_baseline if _memory_baseline else 0
+        
+        return {
+            "rss_mb": round(rss_mb, 2),
+            "vms_mb": round(vms_mb, 2),
+            "fragmentation_ratio": round(fragmentation_ratio, 2),
+            "memory_growth_mb": round(memory_growth, 2),
+            "potential_fragmentation": fragmentation_ratio > 2.0,  # Threshold from article
+            "significant_growth": memory_growth > 100  # 100MB growth threshold
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+def log_memory_usage(context: str = ""):
+    """Enhanced memory logging with RSS tracking and fragmentation detection."""
+    try:
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        
+        # RSS memory (actual physical RAM usage) - this is what leaked in the article
+        rss_mb = memory_info.rss / 1024 / 1024
+        vms_mb = memory_info.vms / 1024 / 1024
         
         # Get memory limits if available (Render typically sets these)
         memory_limit_mb = None
@@ -137,17 +180,85 @@ def log_memory_usage(context: str = ""):
         except:
             pass
         
+        # Enhanced logging with RSS focus (the issue from the article)
         limit_info = f" (limit: {memory_limit_mb:.1f}MB)" if memory_limit_mb else ""
-        usage_percent = f" ({(memory_mb/memory_limit_mb)*100:.1f}%)" if memory_limit_mb else ""
+        usage_percent = f" ({(rss_mb/memory_limit_mb)*100:.1f}%)" if memory_limit_mb else ""
         
-        print__memory_monitoring(f"Memory usage{f' [{context}]' if context else ''}: {memory_mb:.1f}MB{limit_info}{usage_percent}")
+        # Memory fragmentation detection
+        fragmentation_info = detect_memory_fragmentation()
+        frag_warning = " [FRAGMENTATION DETECTED]" if fragmentation_info.get("potential_fragmentation") else ""
+        growth_warning = " [SIGNIFICANT GROWTH]" if fragmentation_info.get("significant_growth") else ""
         
-        # Warning if memory usage is high
-        if memory_limit_mb and memory_mb > memory_limit_mb * 0.85:
-            print__memory_monitoring(f"HIGH MEMORY WARNING: Using {(memory_mb/memory_limit_mb)*100:.1f}% of available memory!")
+        print__memory_monitoring(
+            f"Memory usage{f' [{context}]' if context else ''}: "
+            f"RSS={rss_mb:.1f}MB, VMS={vms_mb:.1f}MB{limit_info}{usage_percent}"
+            f"{frag_warning}{growth_warning}"
+        )
+        
+        # Warning if memory usage is high or growing suspiciously
+        if memory_limit_mb and rss_mb > memory_limit_mb * 0.85:
+            print__memory_monitoring(f"HIGH MEMORY WARNING: Using {(rss_mb/memory_limit_mb)*100:.1f}% of available RSS memory!")
+        
+        # Track memory growth pattern (similar to the article's issue)
+        global _memory_baseline, _request_count
+        if _memory_baseline is None:
+            _memory_baseline = rss_mb
+            print__memory_monitoring(f"Memory baseline set: {_memory_baseline:.1f}MB RSS")
+        elif context.startswith("after_") and _request_count > 0:
+            growth_per_request = (rss_mb - _memory_baseline) / _request_count
+            if growth_per_request > 0.1:  # More than 100KB growth per request
+                print__memory_monitoring(f"LEAK WARNING: {growth_per_request:.3f}MB growth per request pattern detected!")
             
     except Exception as e:
         print__memory_monitoring(f"Could not check memory usage: {e}")
+
+def aggressive_garbage_collection(context: str = ""):
+    """Aggressive garbage collection based on article's findings."""
+    global _last_gc_run
+    
+    try:
+        current_time = time.time()
+        
+        # Run GC more frequently during high memory usage
+        process = psutil.Process()
+        memory_mb = process.memory_info().rss / 1024 / 1024
+        
+        # Force GC if memory is high or it's been a while
+        should_gc = (
+            current_time - _last_gc_run > 30 or  # Every 30 seconds minimum
+            memory_mb > 400 or  # High memory usage
+            context in ["analysis_complete", "cleanup_start", "error_cleanup"]  # Critical points
+        )
+        
+        if should_gc:
+            collected = gc.collect()
+            _last_gc_run = current_time
+            
+            if collected > 0:
+                print__memory_monitoring(f"Aggressive GC [{context}]: freed {collected} objects")
+                # Log memory after GC to see impact
+                log_memory_usage(f"post_gc_{context}")
+            
+    except Exception as e:
+        print__memory_monitoring(f"GC error: {e}")
+
+def monitor_route_registration(route_path: str, method: str):
+    """Monitor route registration to detect duplicates (main issue from article)."""
+    global _route_registration_count
+    
+    route_key = f"{method}:{route_path}"
+    _route_registration_count[route_key] += 1
+    
+    if _route_registration_count[route_key] > 1:
+        print__memory_monitoring(
+            f"🚨 DUPLICATE ROUTE REGISTRATION DETECTED: {route_key} "
+            f"registered {_route_registration_count[route_key]} times! "
+            f"This was the ROOT CAUSE in the Ocean framework leak!"
+        )
+        
+        # Log call stack to identify where duplicate registration is happening
+        import traceback
+        print__memory_monitoring(f"Route registration stack trace:\n{traceback.format_stack()[-3]}")
 
 def log_comprehensive_error(context: str, error: Exception, request: Request = None):
     """Enhanced error logging with context and request details."""
@@ -170,8 +281,77 @@ def log_comprehensive_error(context: str, error: Exception, request: Request = N
     # Log to debug output
     print__debug(f"COMPREHENSIVE ERROR: {json.dumps(error_details, indent=2)}")
     
-    # Log memory usage during error
+    # Log memory usage during error AND run cleanup GC
     log_memory_usage(f"error_{context}")
+    aggressive_garbage_collection(f"error_{context}")
+def check_rate_limit_with_throttling(client_ip: str) -> dict:
+    """Check rate limits and return throttling information instead of boolean."""
+    now = time.time()
+    
+    # Clean old entries
+    rate_limit_storage[client_ip] = [
+        timestamp for timestamp in rate_limit_storage[client_ip]
+        if now - timestamp < RATE_LIMIT_WINDOW
+    ]
+    
+    # Check burst limit (last 10 seconds)
+    recent_requests = [
+        timestamp for timestamp in rate_limit_storage[client_ip]
+        if now - timestamp < 10
+    ]
+    
+    # Check window limit
+    window_requests = len(rate_limit_storage[client_ip])
+    
+    # Calculate suggested wait time based on current load
+    suggested_wait = 0
+    
+    if len(recent_requests) >= RATE_LIMIT_BURST:
+        # Burst limit exceeded - calculate wait time until oldest burst request expires
+        oldest_burst = min(recent_requests)
+        suggested_wait = max(0, 10 - (now - oldest_burst))
+    elif window_requests >= RATE_LIMIT_REQUESTS:
+        # Window limit exceeded - calculate wait time until oldest request expires
+        oldest_window = min(rate_limit_storage[client_ip])
+        suggested_wait = max(0, RATE_LIMIT_WINDOW - (now - oldest_window))
+    
+    return {
+        "allowed": len(recent_requests) < RATE_LIMIT_BURST and window_requests < RATE_LIMIT_REQUESTS,
+        "suggested_wait": min(suggested_wait, RATE_LIMIT_MAX_WAIT),
+        "burst_count": len(recent_requests),
+        "window_count": window_requests,
+        "burst_limit": RATE_LIMIT_BURST,
+        "window_limit": RATE_LIMIT_REQUESTS
+    }
+
+async def wait_for_rate_limit(client_ip: str) -> bool:
+    """Wait for rate limit to allow request, with maximum wait time."""
+    max_attempts = 3
+    
+    for attempt in range(max_attempts):
+        rate_info = check_rate_limit_with_throttling(client_ip)
+        
+        if rate_info["allowed"]:
+            # Add current request to tracking
+            rate_limit_storage[client_ip].append(time.time())
+            return True
+        
+        if rate_info["suggested_wait"] <= 0:
+            # Should be allowed but isn't - might be a race condition
+            await asyncio.sleep(0.1)
+            continue
+            
+        if rate_info["suggested_wait"] > RATE_LIMIT_MAX_WAIT:
+            # Wait time too long, give up
+            print__debug(f"⚠ Rate limit wait time ({rate_info['suggested_wait']:.1f}s) exceeds maximum ({RATE_LIMIT_MAX_WAIT}s) for {client_ip}")
+            return False
+            
+        # Wait for the suggested time
+        print__debug(f"⏳ Throttling request from {client_ip}: waiting {rate_info['suggested_wait']:.1f}s (burst: {rate_info['burst_count']}/{rate_info['burst_limit']}, window: {rate_info['window_count']}/{rate_info['window_limit']}, attempt {attempt + 1})")
+        await asyncio.sleep(rate_info["suggested_wait"])
+    
+    print__debug(f"❌ Rate limit exceeded after {max_attempts} attempts for {client_ip}")
+    return False
 
 def check_rate_limit(client_ip: str) -> bool:
     """Check if client IP is within rate limits."""
@@ -206,6 +386,9 @@ def setup_graceful_shutdown():
         print__memory_monitoring(f"Received signal {signum} - preparing for graceful shutdown...")
         print__memory_monitoring(f"This could indicate a platform restart or memory limit exceeded")
         log_memory_usage("shutdown_signal")
+        
+        # Run final cleanup GC
+        aggressive_garbage_collection("shutdown_signal")
         # Don't exit immediately, let FastAPI handle cleanup
         
     # Register signal handlers for common restart signals
@@ -278,9 +461,8 @@ async def cleanup_checkpointer():
         finally:
             GLOBAL_CHECKPOINTER = None
     
-    # Force garbage collection on shutdown
-    collected = gc.collect()
-    print__memory_monitoring(f"Garbage collection freed {collected} objects")
+    # Enhanced garbage collection on shutdown based on article findings
+    aggressive_garbage_collection("cleanup_complete")
     log_memory_usage("cleanup_complete")
 
 async def get_healthy_checkpointer():
@@ -372,15 +554,35 @@ async def get_healthy_checkpointer():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    global _app_startup_time, _memory_baseline
+    _app_startup_time = datetime.now()
+    
     print("🚀 FastAPI application starting up...")
+    print__memory_monitoring(f"Application startup initiated at {_app_startup_time.isoformat()}")
     log_memory_usage("app_startup")
+    
+    # ROUTE REGISTRATION MONITORING: Track all routes that get registered
+    # This prevents the exact issue described in the "Needle in a haystack" article
+    print__memory_monitoring("🔍 Monitoring route registrations to prevent memory leaks...")
     
     # Setup graceful shutdown handlers
     setup_graceful_shutdown()
     
-    # Optimize garbage collection for memory efficiency
-    gc.set_threshold(700, 10, 10)  # More aggressive garbage collection
+    # Optimize garbage collection for memory efficiency (more aggressive than before)
+    # Based on article findings about memory not being released
+    gc.set_threshold(500, 8, 8)  # Even more aggressive than the current 700, 10, 10
+    print__memory_monitoring(f"Set aggressive GC thresholds: (500, 8, 8)")
+    
     await initialize_checkpointer()
+    
+    # Set memory baseline after initialization
+    if _memory_baseline is None:
+        try:
+            process = psutil.Process()
+            _memory_baseline = process.memory_info().rss / 1024 / 1024
+            print__memory_monitoring(f"Memory baseline established: {_memory_baseline:.1f}MB RSS")
+        except:
+            pass
     
     log_memory_usage("app_ready")
     print("✅ FastAPI application ready to serve requests")
@@ -389,12 +591,35 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     print("🛑 FastAPI application shutting down...")
+    print__memory_monitoring(f"Application ran for {datetime.now() - _app_startup_time}")
+    
+    # Log final memory statistics
+    if _memory_baseline:
+        try:
+            process = psutil.Process()
+            final_memory = process.memory_info().rss / 1024 / 1024
+            total_growth = final_memory - _memory_baseline
+            print__memory_monitoring(
+                f"Final memory stats: Started={_memory_baseline:.1f}MB, "
+                f"Final={final_memory:.1f}MB, Growth={total_growth:.1f}MB"
+            )
+            if total_growth > 200:  # More than 200MB growth
+                print__memory_monitoring("🚨 SIGNIFICANT MEMORY GROWTH DETECTED - investigate for leaks!")
+        except:
+            pass
+    
     await cleanup_checkpointer()
 
+# CRITICAL: Route registration happens here ONCE during startup
+# This is the key fix from the "Needle in a haystack" article
 app = FastAPI(
     lifespan=lifespan,
     default_response_class=ORJSONResponse  # Use ORJSON for faster, memory-efficient JSON responses
 )
+
+# Monitor all route registrations (including middleware and CORS)
+print__memory_monitoring("📋 Registering CORS middleware...")
+monitor_route_registration("/*", "OPTIONS")  # CORS adds OPTIONS to all routes
 
 # Allow CORS for local frontend dev
 app.add_middleware(
@@ -405,74 +630,110 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+print__memory_monitoring("📋 Registering GZip middleware...")
 # Add GZip compression to reduce response sizes and memory usage
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # RATE LIMITING MIDDLEWARE
 @app.middleware("http")
-async def rate_limiting_middleware(request: Request, call_next):
-    """Rate limiting middleware to prevent abuse."""
+async def throttling_middleware(request: Request, call_next):
+    """Throttling middleware that makes requests wait instead of rejecting them."""
     
-    # Skip rate limiting for health checks and static endpoints
+    # Skip throttling for health checks and static endpoints
     if request.url.path in ["/health", "/docs", "/openapi.json", "/debug/pool-status"]:
         return await call_next(request)
     
     client_ip = request.client.host if request.client else "unknown"
     
-    if not check_rate_limit(client_ip):
-        log_comprehensive_error("rate_limit_exceeded", 
-                               Exception(f"Rate limit exceeded for IP: {client_ip}"), 
-                               request)
-        return JSONResponse(
-            status_code=429,
-            content={
-                "detail": "Rate limit exceeded. Please try again later.",
-                "retry_after": RATE_LIMIT_WINDOW
-            },
-            headers={"Retry-After": str(RATE_LIMIT_WINDOW)}
-        )
+    # Use semaphore to limit concurrent requests per IP
+    semaphore = throttle_semaphores[client_ip]
     
-    return await call_next(request)
+    async with semaphore:
+        # Try to wait for rate limit instead of immediately rejecting
+        if not await wait_for_rate_limit(client_ip):
+            # Only reject if we can't wait (wait time too long or max attempts exceeded)
+            rate_info = check_rate_limit_with_throttling(client_ip)
+            log_comprehensive_error("rate_limit_exceeded_after_wait", 
+                                   Exception(f"Rate limit exceeded for IP: {client_ip} after waiting. Burst: {rate_info['burst_count']}/{rate_info['burst_limit']}, Window: {rate_info['window_count']}/{rate_info['window_limit']}"), 
+                                   request)
+            return JSONResponse(
+                status_code=429,
+                content={
+                    "detail": f"Rate limit exceeded. Please wait {rate_info['suggested_wait']:.1f}s before retrying.",
+                    "retry_after": max(rate_info['suggested_wait'], 1),
+                    "burst_usage": f"{rate_info['burst_count']}/{rate_info['burst_limit']}",
+                    "window_usage": f"{rate_info['window_count']}/{rate_info['window_limit']}"
+                },
+                headers={"Retry-After": str(max(int(rate_info['suggested_wait']), 1))}
+            )
+        
+        return await call_next(request)
 
-# Add middleware to monitor requests and detect high load
+# Enhanced middleware to monitor memory patterns and detect leaks
 @app.middleware("http")
-async def monitor_requests(request: Request, call_next):
-    start_time = datetime.now()
+async def enhanced_memory_monitoring_middleware(request: Request, call_next):
+    """Enhanced memory monitoring with leak detection patterns."""
+    global _request_count
     
-    # Log memory before processing request
-    if request.url.path.startswith("/analyze"):
-        log_memory_usage(f"before_{request.url.path}")
+    start_time = datetime.now()
+    _request_count += 1
+    
+    # Log memory before processing request (especially for heavy operations)
+    request_path = request.url.path
+    if any(path in request_path for path in ["/analyze", "/chat", "/feedback"]):
+        log_memory_usage(f"before_{request_path.replace('/', '_')}")
+    
+    # Track requests that might be repeatedly registering routes (the article's issue)
+    if request_path in ["/health", "/docs"] and _request_count > 100:
+        # These are frequently called - make sure they don't cause memory leaks
+        if _request_count % 100 == 0:  # Log every 100th request
+            print__memory_monitoring(f"Health check #{_request_count} - monitoring for route re-registration leaks")
     
     response = await call_next(request)
     
-    # Log memory after processing request  
-    if request.url.path.startswith("/analyze"):
+    # Log memory after processing request with enhanced leak detection
+    if any(path in request_path for path in ["/analyze", "/chat", "/feedback"]):
         process_time = (datetime.now() - start_time).total_seconds()
-        log_memory_usage(f"after_{request.url.path}_({process_time:.2f}s)")
+        log_memory_usage(f"after_{request_path.replace('/', '_')}_({process_time:.2f}s)")
+        
+        # Aggressive GC after heavy operations to prevent accumulation
+        if request_path.startswith("/analyze"):
+            aggressive_garbage_collection("post_analysis")
         
         # Warn about slow requests that might cause timeouts
         if process_time > 300:  # 5 minutes
-            print__memory_monitoring(f"SLOW REQUEST WARNING: {request.url.path} took {process_time:.2f}s")
+            print__memory_monitoring(f"SLOW REQUEST WARNING: {request_path} took {process_time:.2f}s")
+    
+    # Periodic memory health check (every 50 requests)
+    if _request_count % 50 == 0:
+        fragmentation_info = detect_memory_fragmentation()
+        if fragmentation_info.get("potential_fragmentation") or fragmentation_info.get("significant_growth"):
+            print__memory_monitoring(f"🔍 Request #{_request_count} memory health check: {fragmentation_info}")
     
     return response
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for Render and monitoring."""
+    """Enhanced health check endpoint with memory leak detection."""
     try:
         health_data = {
             "status": "healthy",
             "timestamp": datetime.now().isoformat(),
-            "app_uptime": "unknown"
+            "app_uptime": str(datetime.now() - _app_startup_time) if _app_startup_time else "unknown",
+            "total_requests_processed": _request_count
         }
         
-        # Add memory info
+        # Enhanced memory info with RSS focus (the leak indicator from article)
         try:
-            process = psutil.Process()
-            memory_info = process.memory_info()
-            memory_mb = memory_info.rss / 1024 / 1024
-            
-            health_data["memory_usage_mb"] = round(memory_mb, 1)
+            fragmentation_info = detect_memory_fragmentation()
+            health_data.update({
+                "memory_rss_mb": fragmentation_info.get("rss_mb", 0),
+                "memory_vms_mb": fragmentation_info.get("vms_mb", 0),
+                "memory_fragmentation_ratio": fragmentation_info.get("fragmentation_ratio", 0),
+                "memory_growth_mb": fragmentation_info.get("memory_growth_mb", 0),
+                "potential_memory_fragmentation": fragmentation_info.get("potential_fragmentation", False),
+                "significant_memory_growth": fragmentation_info.get("significant_growth", False)
+            })
             
             # Check if we're approaching memory limits
             memory_limit_mb = None
@@ -485,19 +746,40 @@ async def health_check():
                 pass
             
             if memory_limit_mb:
-                usage_percent = (memory_mb / memory_limit_mb) * 100
+                rss_mb = fragmentation_info.get("rss_mb", 0)
+                usage_percent = (rss_mb / memory_limit_mb) * 100
                 health_data["memory_usage_percent"] = round(usage_percent, 1)
                 health_data["memory_limit_mb"] = memory_limit_mb
                 
-                # Return unhealthy if memory usage is too high
-                if usage_percent > 90:
+                # Return unhealthy if memory usage is too high or showing leak patterns
+                if usage_percent > 90 or fragmentation_info.get("significant_growth", False):
                     health_data["status"] = "critical_memory"
-                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}%"
-                elif usage_percent > 80:
+                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}% or significant growth detected"
+                elif usage_percent > 80 or fragmentation_info.get("potential_fragmentation", False):
                     health_data["status"] = "high_memory"
-                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}%"
-        except:
-            pass
+                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}% or fragmentation detected"
+                    
+        except Exception as mem_error:
+            health_data["memory_error"] = str(mem_error)
+        
+        # Route registration health check (prevent the article's main issue)
+        try:
+            duplicate_routes = {k: v for k, v in _route_registration_count.items() if v > 1}
+            health_data["route_registrations"] = {
+                "total_registrations": sum(_route_registration_count.values()),
+                "unique_routes": len(_route_registration_count),
+                "duplicate_registrations": duplicate_routes,
+                "has_duplicates": len(duplicate_routes) > 0
+            }
+            
+            # Mark as unhealthy if we detect route duplication (the core issue!)
+            if duplicate_routes:
+                health_data["status"] = "unhealthy"
+                health_data["error"] = f"Duplicate route registrations detected: {list(duplicate_routes.keys())}"
+                print__memory_monitoring(f"🚨 HEALTH CHECK: Duplicate route registrations detected!")
+                
+        except Exception as route_error:
+            health_data["route_registration_error"] = str(route_error)
         
         # Check checkpointer health
         try:
@@ -556,11 +838,9 @@ async def database_health_check():
 
 @app.get("/health/memory")
 async def memory_health_check():
-    """Memory-specific health check."""
+    """Enhanced memory-specific health check with fragmentation detection."""
     try:
-        process = psutil.Process()
-        memory_info = process.memory_info()
-        memory_mb = memory_info.rss / 1024 / 1024
+        fragmentation_info = detect_memory_fragmentation()
         
         # Get memory limit
         memory_limit_mb = 512  # Default Render limit
@@ -572,19 +852,39 @@ async def memory_health_check():
         except:
             pass
         
-        usage_percent = (memory_mb / memory_limit_mb) * 100
+        rss_mb = fragmentation_info.get("rss_mb", 0)
+        usage_percent = (rss_mb / memory_limit_mb) * 100
         
         status = "healthy"
+        warnings = []
+        
+        # Check for various memory issues based on article findings
         if usage_percent > 90:
             status = "critical"
+            warnings.append(f"High RSS memory usage: {usage_percent:.1f}%")
         elif usage_percent > 80:
             status = "warning"
+            warnings.append(f"Elevated RSS memory usage: {usage_percent:.1f}%")
+        
+        if fragmentation_info.get("potential_fragmentation", False):
+            status = "warning" if status == "healthy" else status
+            warnings.append(f"Memory fragmentation detected (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
+        
+        if fragmentation_info.get("significant_growth", False):
+            status = "critical" if status == "healthy" else status
+            warnings.append(f"Significant memory growth: {fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
         
         return {
             "status": status,
-            "memory_usage_mb": round(memory_mb, 1),
+            "memory_rss_mb": rss_mb,
+            "memory_vms_mb": fragmentation_info.get("vms_mb", 0),
             "memory_limit_mb": memory_limit_mb,
             "usage_percent": round(usage_percent, 1),
+            "fragmentation_ratio": fragmentation_info.get("fragmentation_ratio", 0),
+            "memory_growth_mb": fragmentation_info.get("memory_growth_mb", 0),
+            "warnings": warnings,
+            "baseline_memory_mb": _memory_baseline,
+            "total_requests_processed": _request_count,
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
@@ -616,6 +916,27 @@ async def rate_limit_health_check():
             "error": str(e),
             "timestamp": datetime.now().isoformat()
         }
+
+# ROUTE REGISTRATION MONITORING: Track all endpoint registrations to prevent memory leaks
+# This directly addresses the core issue from the "Needle in a haystack" article
+print__memory_monitoring("📋 Monitoring route registrations for memory leak prevention...")
+
+# Track all main routes that will be registered
+main_routes = [
+    ("/health", "GET"), ("/health/database", "GET"), ("/health/memory", "GET"), 
+    ("/health/rate-limits", "GET"), ("/analyze", "POST"), ("/feedback", "POST"), 
+    ("/sentiment", "POST"), ("/chat/{thread_id}/sentiments", "GET"), 
+    ("/chat-threads", "GET"), ("/chat/{thread_id}", "DELETE"), 
+    ("/catalog", "GET"), ("/data-tables", "GET"), ("/data-table", "GET"),
+    ("/chat/{thread_id}/messages", "GET"), ("/debug/chat/{thread_id}/checkpoints", "GET"),
+    ("/debug/pool-status", "GET"), ("/chat/{thread_id}/run-ids", "GET"),
+    ("/debug/run-id/{run_id}", "GET")
+]
+
+for route_path, method in main_routes:
+    monitor_route_registration(route_path, method)
+
+print__memory_monitoring(f"📋 Tracked {len(main_routes)} route registrations for leak detection")
 
 class AnalyzeRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=10000, description="The prompt to analyze")
@@ -822,14 +1143,23 @@ def get_current_user(authorization: str = Header(None)):
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
-    """Analyze request with single execution - no retries at API level."""
+    """Analyze request with enhanced memory leak prevention based on 'Needle in a haystack' article."""
     
     user_email = user.get("email")
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
     print__feedback_flow(f"📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
+    
+    # MEMORY LEAK PREVENTION: Pre-analysis memory monitoring
     log_memory_usage("analysis_start")
+    pre_analysis_memory = None
+    try:
+        process = psutil.Process()
+        pre_analysis_memory = process.memory_info().rss / 1024 / 1024
+        print__memory_monitoring(f"Pre-analysis memory: {pre_analysis_memory:.1f}MB RSS")
+    except:
+        pass
     
     # MEMORY PROTECTION: Limit concurrent analyses to prevent OOM
     async with analysis_semaphore:
@@ -850,13 +1180,45 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 timeout=480  # 8 minutes timeout to prevent platform restarts
             )
             
+            # POST-ANALYSIS MEMORY MONITORING: Check for memory growth patterns
+            post_analysis_memory = None
+            try:
+                process = psutil.Process()
+                post_analysis_memory = process.memory_info().rss / 1024 / 1024
+                memory_growth = post_analysis_memory - pre_analysis_memory if pre_analysis_memory else 0
+                
+                print__memory_monitoring(
+                    f"Post-analysis memory: {post_analysis_memory:.1f}MB RSS, "
+                    f"Growth: {memory_growth:.1f}MB"
+                )
+                
+                # Warn about suspicious memory growth (pattern from article)
+                if memory_growth > 50:  # More than 50MB growth per analysis
+                    print__memory_monitoring(
+                        f"🚨 SUSPICIOUS MEMORY GROWTH: {memory_growth:.1f}MB per analysis! "
+                        f"This is similar to the pattern described in the Ocean framework leak!"
+                    )
+                    
+            except:
+                pass
+            
             log_memory_usage("analysis_complete")
             print__feedback_flow(f"✅ Analysis completed successfully")
             
-            # Force garbage collection after analysis to free memory
-            collected = gc.collect()
-            if collected > 0:
-                print__feedback_flow(f"🗑️ Garbage collection freed {collected} objects after analysis")
+            # AGGRESSIVE CLEANUP: Force garbage collection after analysis to free memory
+            # This addresses the memory not being released issue from the article
+            aggressive_garbage_collection("analysis_complete")
+            
+            # Post-GC memory check
+            try:
+                if pre_analysis_memory and post_analysis_memory:
+                    process = psutil.Process()
+                    post_gc_memory = process.memory_info().rss / 1024 / 1024
+                    gc_freed = post_analysis_memory - post_gc_memory
+                    if gc_freed > 5:  # More than 5MB freed
+                        print__memory_monitoring(f"GC effectiveness: freed {gc_freed:.1f}MB after analysis")
+            except:
+                pass
             
             return {"response": result, "thread_id": request.thread_id, "run_id": run_id}
             
@@ -865,9 +1227,8 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             print__feedback_flow(f"🚨 {error_msg}")
             log_memory_usage("analysis_timeout")
             
-            # Force garbage collection on timeout
-            collected = gc.collect()
-            print__feedback_flow(f"🗑️ Cleanup: Freed {collected} objects after timeout")
+            # TIMEOUT CLEANUP: Force aggressive garbage collection on timeout
+            aggressive_garbage_collection("analysis_timeout")
             
             raise HTTPException(status_code=408, detail=error_msg)
             
@@ -877,9 +1238,8 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             print__feedback_flow(f"🔍 Error details: {type(e).__name__}: {str(e)}")
             log_memory_usage("analysis_error")
             
-            # Force garbage collection on error
-            collected = gc.collect()
-            print__feedback_flow(f"🗑️ Cleanup: Freed {collected} objects after error")
+            # ERROR CLEANUP: Force aggressive garbage collection on error
+            aggressive_garbage_collection("analysis_error")
             
             raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 

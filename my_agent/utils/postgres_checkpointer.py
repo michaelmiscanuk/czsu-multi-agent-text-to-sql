@@ -128,7 +128,7 @@ def get_connection_string():
     # - application_name: Help identify connections in Supabase dashboard
     # NOTE: command_timeout is NOT a valid connection parameter - removed
     
-    # CRITICAL SUPABASE FIX: Add pgbouncer=true for transaction mode (port 6543)
+    # Check if this is transaction mode (port 6543) for logging purposes
     is_transaction_mode = config['port'] == '6543'
     
     # Enhanced connection string for Supabase stability
@@ -143,10 +143,9 @@ def get_connection_string():
         f"&tcp_user_timeout=30000"              # TCP timeout (30 seconds)
     )
     
-    # CRITICAL: Add pgbouncer=true for Supabase transaction mode (port 6543)
+    # Log transaction mode detection (removed invalid pgbouncer parameter)
     if is_transaction_mode:
-        connection_string += "&pgbouncer=true"
-        print__postgresql_debug(f"🔧 CRITICAL: Added pgbouncer=true for Supabase transaction mode (port 6543)")
+        print__postgresql_debug(f"🔧 Detected Supabase transaction mode (port 6543) - using optimized settings")
     
     # Debug: Show what connection string we're actually using (without password)
     debug_string = connection_string.replace(config['password'], '***')
@@ -196,10 +195,8 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
     
     print__postgresql_debug(f"🔧 Creating Supabase-optimized connection pool with settings: max_size={max_size}, min_size={min_size}, timeout={timeout}")
     
-    # SUPABASE CRITICAL FIX: Add pgbouncer=true to connection string if using transaction mode
-    if is_transaction_mode and 'pgbouncer=true' not in connection_string:
-        connection_string += '&pgbouncer=true'
-        print__postgresql_debug(f"🔧 CRITICAL: Added pgbouncer=true for Supabase transaction mode compatibility")
+    # Note: Removed invalid pgbouncer parameter that was causing connection failures
+    # PostgreSQL drivers don't recognize 'pgbouncer=true' as a valid connection parameter
     
     # Supabase-optimized configuration for SSL connection stability
     pool_kwargs = {
@@ -289,9 +286,10 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
         print__postgresql_debug(f"❌ Timeout opening Supabase connection pool in {mode_description} - check network connectivity and pool size limits")
         if is_transaction_mode:
             print__postgresql_debug("💡 Transaction mode troubleshooting:")
-            print__postgresql_debug("   1. Verify pgbouncer=true is in connection string")
+            print__postgresql_debug("   1. Verify connection to port 6543 (transaction mode)")
             print__postgresql_debug("   2. Use max_size=1 for transaction mode")
             print__postgresql_debug("   3. Check Supabase pool size settings in dashboard")
+            print__postgresql_debug("   4. Ensure SSL settings are correct for Supabase")
         raise Exception(f"Supabase {mode_description} connection timeout - check your network and database status")
     except Exception as e:
         error_msg = str(e).lower()
