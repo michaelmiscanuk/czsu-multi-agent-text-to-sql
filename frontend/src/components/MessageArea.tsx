@@ -323,6 +323,9 @@ interface MessageAreaProps {
     onSQLClick: (msgId: string) => void;
     openSQLModalForMsgId: string | null;
     onCloseSQLModal: () => void;
+    onPDFClick: (msgId: string) => void;
+    openPDFModalForMsgId: string | null;
+    onClosePDFModal: () => void;
     onNewChat: () => void;
     isLoading: boolean;
     isAnyLoading?: boolean;
@@ -342,7 +345,7 @@ const getPersistedFeedbackData = (): { [key: string]: any } => {
     }
 };
 
-const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal, onNewChat, isLoading, isAnyLoading, threads, activeThreadId }: MessageAreaProps) => {
+const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal, onPDFClick, openPDFModalForMsgId, onClosePDFModal, onNewChat, isLoading, isAnyLoading, threads, activeThreadId }: MessageAreaProps) => {
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     
@@ -642,7 +645,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                     }))}
                                 </div>
                                 {/* Dataset used and SQL button for AI answers */}
-                                {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery) && (
+                                {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length) && (
                                     <div className="mt-3 flex items-center justify-between flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
                                         <div className="flex items-center space-x-3 flex-wrap">
                                             {/* Show multiple dataset codes if available */}
@@ -681,6 +684,14 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                     onClick={() => onSQLClick(message.id)}
                                                 >
                                                     SQL
+                                                </button>
+                                            )}
+                                            {message.meta?.topChunks && message.meta.topChunks.length > 0 && (
+                                                <button
+                                                    className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
+                                                    onClick={() => onPDFClick(message.id)}
+                                                >
+                                                    PDF
                                                 </button>
                                             )}
                                         </div>
@@ -736,11 +747,43 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 </div>
                                             </Modal>
                                         )}
+
+                                        {/* PDF Modal for this message */}
+                                        {openPDFModalForMsgId === message.id && (
+                                            <Modal open={true} onClose={onClosePDFModal}>
+                                                <h2 className="text-lg font-bold mb-4">PDF Document Chunks</h2>
+                                                <div className="max-h-[60vh] overflow-y-auto pr-2 chat-scrollbar">
+                                                    {(() => {
+                                                        const topChunks = message.meta?.topChunks || [];
+                                                        if (topChunks.length === 0) {
+                                                            return <div className="text-gray-500">No PDF chunks available.</div>;
+                                                        }
+                                                        return (
+                                                            <div className="space-y-6">
+                                                                {topChunks.map((chunk: any, idx: number) => (
+                                                                    <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
+                                                                        <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">
+                                                                            PDF Chunk {idx + 1} 
+                                                                            {chunk.metadata?.source && (
+                                                                                <span className="ml-2 text-gray-600">({chunk.metadata.source})</span>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="p-3 text-xs whitespace-pre-line text-gray-800 leading-relaxed">
+                                                                            {chunk.content}
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            </Modal>
+                                        )}
                                     </div>
                                 )}
                                 
                                 {/* Show feedback component even when no datasets/SQL - for messages without metadata */}
-                                {!message.isUser && !message.isLoading && threadId && !(message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery) && (
+                                {!message.isUser && !message.isLoading && threadId && !(message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length) && (
                                     <div className="mt-3 flex justify-end">
                                         <FeedbackComponent
                                             messageId={message.id}

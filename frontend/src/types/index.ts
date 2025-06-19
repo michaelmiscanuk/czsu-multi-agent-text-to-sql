@@ -41,6 +41,10 @@ export interface AnalyzeResponse {
   datasetUrl: string | null;
   run_id: string;
   warning?: string;
+  top_chunks?: Array<{
+    content: string;
+    metadata: Record<string, any>;
+  }>;
 }
 
 export interface FeedbackRequest {

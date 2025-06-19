@@ -24,6 +24,10 @@ interface Message {
     datasetsUsed?: string[];  // Array of dataset codes actually used in queries
     sqlQuery?: string;
     run_id?: string;
+    topChunks?: Array<{
+      content: string;
+      metadata: Record<string, any>;
+    }>;
   };
 }
 
@@ -79,6 +83,7 @@ export default function ChatPage() {
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [openSQLModalForMsgId, setOpenSQLModalForMsgId] = useState<string | null>(null);
+  const [openPDFModalForMsgId, setOpenPDFModalForMsgId] = useState<string | null>(null);
   const [iteration, setIteration] = useState(0);
   const [maxIterations, setMaxIterations] = useState(2); // default fallback
   const [threadsLoaded, setThreadsLoaded] = useState(false);
@@ -425,6 +430,14 @@ export default function ChatPage() {
     setOpenSQLModalForMsgId(null);
   };
 
+  const handlePDFButtonClick = (msgId: string) => {
+    setOpenPDFModalForMsgId(msgId);
+  };
+
+  const handleClosePDFModal = () => {
+    setOpenPDFModalForMsgId(null);
+  };
+
   const handleNewChat = async () => {
     if (!userEmail) {
       return;
@@ -690,6 +703,12 @@ export default function ChatPage() {
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
 
+      // Debug logging for PDF chunks
+      console.log('[ChatPage-send] 🔍 PDF chunks in response:', data.top_chunks?.length || 0);
+      if (data.top_chunks && data.top_chunks.length > 0) {
+        console.log('[ChatPage-send] 📄 First chunk preview:', data.top_chunks[0].content?.substring(0, 100) + '...');
+      }
+
       // Update loading message with response
       const responseMessage: ChatMessage = {
         id: loadingMessageId,
@@ -706,9 +725,16 @@ export default function ChatPage() {
           iteration: data.iteration || 0,
           maxIterations: data.max_iterations || 2,
           datasetUrl: data.datasetUrl || null,
-          runId: data.run_id
+          runId: data.run_id,
+          topChunks: data.top_chunks || []
         }
       };
+
+      // Debug logging for message meta
+      console.log('[ChatPage-send] 📋 Message meta topChunks:', responseMessage.meta?.topChunks?.length || 0);
+      if (responseMessage.meta && responseMessage.meta.topChunks && responseMessage.meta.topChunks.length > 0) {
+        console.log('[ChatPage-send] 📄 Message meta first chunk:', responseMessage.meta.topChunks[0].content?.substring(0, 100) + '...');
+      }
 
       updateMessage(currentThreadId, loadingMessageId, responseMessage);
       setIsLoading(false);
@@ -1091,6 +1117,9 @@ export default function ChatPage() {
             onSQLClick={handleSQLButtonClick}
             openSQLModalForMsgId={openSQLModalForMsgId}
             onCloseSQLModal={handleCloseSQLModal}
+            onPDFClick={handlePDFButtonClick}
+            openPDFModalForMsgId={openPDFModalForMsgId}
+            onClosePDFModal={handleClosePDFModal}
             onNewChat={handleNewChat}
             isLoading={isAnyLoading}
             isAnyLoading={isAnyLoading}

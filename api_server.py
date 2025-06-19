@@ -1284,7 +1284,8 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 "max_iterations": result.get("max_iterations", 2) if isinstance(result, dict) else 2,
                 "sql": result.get("sql", None) if isinstance(result, dict) else None,
                 "datasetUrl": result.get("datasetUrl", None) if isinstance(result, dict) else None,
-                "run_id": run_id
+                "run_id": run_id,
+                "top_chunks": result.get("top_chunks", []) if isinstance(result, dict) else []  # Add PDF chunks to response
             }
             
             # Simple memory check and return response
@@ -1873,6 +1874,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
         # Get dataset information and SQL query from latest checkpoint
         datasets_used = []
         sql_query = None
+        top_chunks = []
         try:
             config = {"configurable": {"thread_id": thread_id}}
             state_snapshot = await checkpointer.aget_tuple(config)
@@ -1881,85 +1883,30 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
                 channel_values = state_snapshot.checkpoint.get("channel_values", {})
                 top_selection_codes = channel_values.get("top_selection_codes", [])
                 
-                # Filter to only include selection codes actually used in queries (same logic as main.py)
-                if top_selection_codes and queries_and_results:
-                    # Import the filtering function from main.py
-                    import sys
-                    from pathlib import Path
-                    
-                    # Get the filtering logic
-                    def extract_table_names_from_sql(sql_query: str):
-                        """Extract table names from SQL query FROM clauses."""
-                        import re
-                        
-                        # Remove comments and normalize whitespace
-                        sql_clean = re.sub(r'--.*?(?=\n|$)', '', sql_query, flags=re.MULTILINE)
-                        sql_clean = re.sub(r'/\*.*?\*/', '', sql_clean, flags=re.DOTALL)
-                        sql_clean = ' '.join(sql_clean.split())
-                        
-                        # Pattern to match FROM clause with table names
-                        from_pattern = r'\bFROM\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1(?:\s*,\s*(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\3)*'
-                        
-                        table_names = []
-                        matches = re.finditer(from_pattern, sql_clean, re.IGNORECASE)
-                        
-                        for match in matches:
-                            # Extract the main table name (group 2)
-                            if match.group(2):
-                                table_names.append(match.group(2).upper())
-                            # Extract additional table names if comma-separated (group 4)
-                            if match.group(4):
-                                table_names.append(match.group(4).upper())
-                        
-                        # Also handle JOIN clauses
-                        join_pattern = r'\bJOIN\s+(["\']?)([a-zA-Z_][a-zA-Z0-9_]*)\1'
-                        join_matches = re.finditer(join_pattern, sql_clean, re.IGNORECASE)
-                        
-                        for match in join_matches:
-                            if match.group(2):
-                                table_names.append(match.group(2).upper())
-                        
-                        return list(set(table_names))  # Remove duplicates
-                    
-                    def get_used_selection_codes(queries_and_results, top_selection_codes):
-                        """Filter top_selection_codes to only include those actually used in queries."""
-                        if not queries_and_results or not top_selection_codes:
-                            return []
-                        
-                        # Extract all table names used in queries
-                        used_table_names = set()
-                        for query, _ in queries_and_results:
-                            if query:
-                                table_names = extract_table_names_from_sql(query)
-                                used_table_names.update(table_names)
-                        
-                        # Filter selection codes to only include those that match used table names
-                        used_selection_codes = []
-                        for selection_code in top_selection_codes:
-                            if selection_code.upper() in used_table_names:
-                                used_selection_codes.append(selection_code)
-                        
-                        return used_selection_codes
-                    
-                    # Apply the filtering
-                    used_selection_codes = get_used_selection_codes(queries_and_results, top_selection_codes)
-                    
-                    # Use filtered codes if available, otherwise fallback to all top_selection_codes
-                    datasets_used = used_selection_codes if used_selection_codes else top_selection_codes
-                    print__api_postgresql(f"📊 Found datasets used (filtered): {datasets_used} (from {len(top_selection_codes)} total)")
-                elif top_selection_codes:
-                    # If no queries yet, use all top_selection_codes
-                    datasets_used = top_selection_codes
-                    print__api_postgresql(f"📊 Found datasets used (unfiltered): {datasets_used}")
+                # Use the datasets directly
+                datasets_used = top_selection_codes
+                
+                # Get PDF chunks from checkpoint state
+                checkpoint_top_chunks = channel_values.get("top_chunks", [])
+                print__api_postgresql(f"📄 Found {len(checkpoint_top_chunks)} PDF chunks in checkpoint for thread {thread_id}")
+                
+                # Convert Document objects to serializable format
+                if checkpoint_top_chunks:
+                    for chunk in checkpoint_top_chunks:
+                        chunk_data = {
+                            "content": chunk.page_content if hasattr(chunk, 'page_content') else str(chunk),
+                            "metadata": chunk.metadata if hasattr(chunk, 'metadata') else {}
+                        }
+                        top_chunks.append(chunk_data)
+                    print__api_postgresql(f"📄 Serialized {len(top_chunks)} PDF chunks for frontend")
                 
                 # Extract SQL query from queries_and_results for SQL button
                 if queries_and_results:
                     # Get the last (most recent) SQL query
                     sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
-                    print__api_postgresql(f"🔍 Found SQL query: {sql_query[:50] if sql_query else 'None'}...")
-                
+            
         except Exception as e:
-            print__api_postgresql(f"⚠ Could not get datasets/SQL from checkpoint: {e}")
+            print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
         
         # Convert stored messages to frontend format
         chat_messages = []
@@ -1979,8 +1926,10 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
                     meta_info["datasetsUsed"] = datasets_used
                 if sql_query:
                     meta_info["sqlQuery"] = sql_query
+                if top_chunks:
+                    meta_info["topChunks"] = top_chunks
                 meta_info["source"] = "checkpoint_history"
-                print__api_postgresql(f"🔍 Added metadata to AI message: datasets={len(datasets_used)}, sql={'Yes' if sql_query else 'No'}")
+                print__api_postgresql(f"🔍 Added metadata to AI message: datasets={len(datasets_used)}, sql={'Yes' if sql_query else 'No'}, chunks={len(top_chunks)}")
             
             # Convert queries_and_results for AI messages
             queries_results_for_frontend = None
@@ -2132,6 +2081,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 # Get dataset information and SQL query from latest checkpoint
                 datasets_used = []
                 sql_query = None
+                top_chunks = []
                 try:
                     config = {"configurable": {"thread_id": thread_id}}
                     state_snapshot = await checkpointer.aget_tuple(config)
@@ -2143,13 +2093,27 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                         # Use the datasets directly
                         datasets_used = top_selection_codes
                         
+                        # Get PDF chunks from checkpoint state
+                        checkpoint_top_chunks = channel_values.get("top_chunks", [])
+                        print__api_postgresql(f"📄 Found {len(checkpoint_top_chunks)} PDF chunks in checkpoint for thread {thread_id}")
+                        
+                        # Convert Document objects to serializable format
+                        if checkpoint_top_chunks:
+                            for chunk in checkpoint_top_chunks:
+                                chunk_data = {
+                                    "content": chunk.page_content if hasattr(chunk, 'page_content') else str(chunk),
+                                    "metadata": chunk.metadata if hasattr(chunk, 'metadata') else {}
+                                }
+                                top_chunks.append(chunk_data)
+                            print__api_postgresql(f"📄 Serialized {len(top_chunks)} PDF chunks for frontend")
+                        
                         # Extract SQL query from queries_and_results for SQL button
                         if queries_and_results:
                             # Get the last (most recent) SQL query
                             sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
                     
                 except Exception as e:
-                    print__api_postgresql(f"⚠ Could not get datasets/SQL from checkpoint: {e}")
+                    print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
                 
                 # Convert stored messages to frontend format (SAME as original working code)
                 chat_messages = []
@@ -2164,6 +2128,8 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                             meta_info["datasetsUsed"] = datasets_used
                         if sql_query:
                             meta_info["sqlQuery"] = sql_query
+                        if top_chunks:
+                            meta_info["topChunks"] = top_chunks
                         meta_info["source"] = "parallel_bulk_processing"
                     
                     # Convert queries_and_results for AI messages

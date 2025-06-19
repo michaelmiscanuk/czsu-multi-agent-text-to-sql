@@ -348,6 +348,21 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         dataset_url = f"/datasets/{used_selection_codes[0]}"
 
     # Convert the result to a JSON-serializable format
+    # Convert top_chunks (Document objects) to JSON-serializable format
+    top_chunks_serialized = []
+    if result.get("top_chunks"):
+        print(f"DEBUG: main.py - Found {len(result['top_chunks'])} top_chunks to serialize")
+        for i, chunk in enumerate(result["top_chunks"]):
+            chunk_data = {
+                "content": chunk.page_content if hasattr(chunk, 'page_content') else str(chunk),
+                "metadata": chunk.metadata if hasattr(chunk, 'metadata') else {}
+            }
+            top_chunks_serialized.append(chunk_data)
+            if i == 0:  # Log first chunk for debugging
+                print(f"DEBUG: main.py - First chunk content preview: {chunk_data['content'][:100]}...")
+    else:
+        print("DEBUG: main.py - No top_chunks found in result")
+    
     serializable_result = {
         "prompt": prompt,
         "result": final_answer,
@@ -357,8 +372,11 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         "iteration": result.get("iteration", 0),
         "max_iterations": MAX_ITERATIONS,
         "sql": sql_query,
-        "datasetUrl": dataset_url
+        "datasetUrl": dataset_url,
+        "top_chunks": top_chunks_serialized  # Add serialized PDF chunks for frontend
     }
+    
+    print(f"DEBUG: main.py - Serializable result includes {len(top_chunks_serialized)} top_chunks")
     
     return serializable_result
 

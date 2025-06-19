@@ -546,6 +546,11 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     prompt = state["prompt"]
     messages = state.get("messages", [])
     
+    # Add debug logging for PDF chunks
+    print__debug(f"{FORMAT_ANSWER_ID}: PDF chunks count: {len(top_chunks)}")
+    if top_chunks:
+        print__debug(f"{FORMAT_ANSWER_ID}: First chunk preview: {top_chunks[0].page_content[:100] if hasattr(top_chunks[0], 'page_content') else str(top_chunks[0])[:100]}...")
+    
     llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
     
     # Prepare SQL queries and results context
@@ -646,10 +651,13 @@ Bad: "The query shows X is 1,234,567"
     if not hasattr(result, "id") or not result.id:
         result.id = "format_answer"
     
+    # Add final debug logging
+    print__debug(f"{FORMAT_ANSWER_ID}: Preserving {len(top_chunks)} PDF chunks for frontend")
+    
     return {
         "messages": [summary, result],
         "final_answer": final_answer_content,
-        "top_chunks": []
+        "top_chunks": top_chunks  # Preserve chunks for frontend instead of clearing them
     }
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
