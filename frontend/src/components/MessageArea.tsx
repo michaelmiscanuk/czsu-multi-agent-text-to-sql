@@ -645,7 +645,19 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                     }))}
                                 </div>
                                 {/* Dataset used and SQL button for AI answers */}
-                                {!message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length) && (
+                                {(() => {
+                                    // CRITICAL DEBUG: Log message state during render
+                                    if (!message.isUser && !message.isLoading) {
+                                        console.log('[MessageArea-render] 🔍 Rendering message:', message.id);
+                                        console.log('[MessageArea-render] 🔍 Message meta:', message.meta);
+                                        console.log('[MessageArea-render] 🔍 DatasetsUsed:', message.meta?.datasetsUsed);
+                                        console.log('[MessageArea-render] 🔍 DatasetsUsed length:', message.meta?.datasetsUsed?.length);
+                                        console.log('[MessageArea-render] 🔍 Condition check:', 
+                                            (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length));
+                                    }
+                                    
+                                    return !message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length);
+                                })() && (
                                     <div className="mt-3 flex items-center justify-between flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
                                         <div className="flex items-center space-x-3 flex-wrap">
                                             {/* Show multiple dataset codes if available */}

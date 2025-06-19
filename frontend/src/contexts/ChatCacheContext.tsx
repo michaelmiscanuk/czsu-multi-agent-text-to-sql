@@ -323,12 +323,27 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
 
   const updateMessage = useCallback((threadId: string, messageId: string, updatedMessage: ChatMessage) => {
     console.log('[ChatCache] 📝 Updating message:', messageId, 'in thread:', threadId)
-    setMessagesState(prev => ({
-      ...prev,
-      [threadId]: (prev[threadId] || []).map(msg => 
-        msg.id === messageId ? updatedMessage : msg
-      )
-    }))
+    console.log('[ChatCache] 🔍 UpdateMessage - updatedMessage meta:', updatedMessage.meta)
+    console.log('[ChatCache] 🔍 UpdateMessage - datasetsUsed:', updatedMessage.meta?.datasetsUsed)
+    
+    setMessagesState(prev => {
+      const updatedMessages = {
+        ...prev,
+        [threadId]: (prev[threadId] || []).map(msg => 
+          msg.id === messageId ? updatedMessage : msg
+        )
+      };
+      
+      // Debug: Check the updated message in the new state
+      const newMessage = updatedMessages[threadId]?.find(m => m.id === messageId);
+      console.log('[ChatCache] 🔍 UpdateMessage RESULT - message found:', !!newMessage);
+      if (newMessage) {
+        console.log('[ChatCache] 🔍 UpdateMessage RESULT - meta:', newMessage.meta);
+        console.log('[ChatCache] 🔍 UpdateMessage RESULT - datasetsUsed:', newMessage.meta?.datasetsUsed);
+      }
+      
+      return updatedMessages;
+    })
   }, [])
 
   const addThread = useCallback((thread: ChatThreadMeta) => {

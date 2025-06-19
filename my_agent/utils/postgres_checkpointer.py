@@ -100,28 +100,42 @@ def print__api_postgresql(msg: str) -> None:
 
 # Database connection parameters
 database_pool: Optional[AsyncConnectionPool] = None
-_pool_lock = asyncio.Lock()  # Add global lock to prevent multiple pool creation
+_pool_lock = None  # Will be created lazily when needed
 _active_operations = 0  # Track active operations using the pool
-_operations_lock = asyncio.Lock()  # Lock for tracking operations
+_operations_lock = None  # Will be created lazily when needed
+
+def _get_pool_lock():
+    """Get or create the pool lock."""
+    global _pool_lock
+    if _pool_lock is None:
+        _pool_lock = asyncio.Lock()
+    return _pool_lock
+
+def _get_operations_lock():
+    """Get or create the operations lock."""
+    global _operations_lock
+    if _operations_lock is None:
+        _operations_lock = asyncio.Lock()
+    return _operations_lock
 
 async def increment_active_operations():
     """Safely increment the count of active operations."""
     global _active_operations
-    async with _operations_lock:
+    async with _get_operations_lock():
         _active_operations += 1
         print__postgresql_debug(f"🔄 Active operations incremented to: {_active_operations}")
 
 async def decrement_active_operations():
     """Safely decrement the count of active operations."""
     global _active_operations
-    async with _operations_lock:
+    async with _get_operations_lock():
         _active_operations -= 1
         print__postgresql_debug(f"🔄 Active operations decremented to: {_active_operations}")
 
 async def get_active_operations_count():
     """Get the current count of active operations."""
     global _active_operations
-    async with _operations_lock:
+    async with _get_operations_lock():
         return _active_operations
 
 async def force_close_all_connections():
@@ -223,7 +237,7 @@ async def get_healthy_pool() -> AsyncConnectionPool:
     """Get a healthy connection pool with proper concurrent access protection."""
     global database_pool
     
-    async with _pool_lock:  # Ensure only one thread can modify the pool at a time
+    async with _get_pool_lock():  # Ensure only one thread can modify the pool at a time
         print__postgresql_debug(f"🔒 Acquired pool lock for health check")
         
         # Check current active operations before making changes

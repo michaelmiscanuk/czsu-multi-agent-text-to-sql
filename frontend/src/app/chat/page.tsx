@@ -736,8 +736,32 @@ export default function ChatPage() {
         console.log('[ChatPage-send] 📄 Message meta first chunk:', responseMessage.meta.topChunks[0].content?.substring(0, 100) + '...');
       }
 
+      // CRITICAL DEBUG: Log datasetsUsed before update
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.meta?.datasetsUsed);
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full meta:', JSON.stringify(responseMessage.meta, null, 2));
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - loadingMessageId:', loadingMessageId);
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - currentThreadId:', currentThreadId);
+
       updateMessage(currentThreadId, loadingMessageId, responseMessage);
+      
+      // CRITICAL DEBUG: Add a small delay and check the message state
+      setTimeout(() => {
+        const currentMessages = messages;
+        const updatedMessage = currentMessages.find(msg => msg.id === loadingMessageId);
+        console.log('[ChatPage-send] 🔍 AFTER updateMessage - found updated message:', !!updatedMessage);
+        if (updatedMessage) {
+          console.log('[ChatPage-send] 🔍 AFTER updateMessage - datasetsUsed:', updatedMessage.meta?.datasetsUsed);
+          console.log('[ChatPage-send] 🔍 AFTER updateMessage - full meta:', JSON.stringify(updatedMessage.meta, null, 2));
+        } else {
+          console.log('[ChatPage-send] ⚠️ AFTER updateMessage - message not found with ID:', loadingMessageId);
+          console.log('[ChatPage-send] ⚠️ AFTER updateMessage - current message IDs:', currentMessages.map(m => m.id));
+        }
+      }, 100);
+
       setIsLoading(false);
+      
+      // IMPORTANT: Mark this response as successfully processed to prevent recovery interference
+      console.log('[ChatPage-send] ✅ API response processed successfully - recovery mechanisms should not interfere');
       
     } catch (error) {
       console.error('[ChatPage-send] ❌ Error sending message:', error);

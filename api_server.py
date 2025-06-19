@@ -106,7 +106,7 @@ from my_agent.utils.postgres_checkpointer import (
 )
 
 # Read GC memory threshold from environment with default fallback
-GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '1900'))  # 200MB for 2GB memory allocation (10% threshold)
+GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '1900'))  # 1900MB for 2GB memory allocation
 print__startup_debug(f"🔧 API Server: GC_MEMORY_THRESHOLD set to {GC_MEMORY_THRESHOLD}MB (from environment)")
 
 def print__memory_monitoring(msg: str) -> None:
@@ -121,26 +121,22 @@ def print__memory_monitoring(msg: str) -> None:
         import sys
         sys.stdout.flush()
 
-# MEMORY LEAK PREVENTION: Global tracking based on "Needle in a haystack" article
-# These help detect the same issues that plagued the Ocean framework
+# MEMORY LEAK PREVENTION: Simplified global tracking
 _app_startup_time = None
-_route_registration_count = defaultdict(int)  # Track duplicate route registrations
 _memory_baseline = None  # RSS memory at startup
 _request_count = 0  # Track total requests processed
-_last_gc_run = time.time()  # Track garbage collection frequency
 
 # Global shared checkpointer for conversation memory across API requests
 # This ensures that conversation state is preserved between frontend requests using PostgreSQL
 GLOBAL_CHECKPOINTER = None
 
 # Add a semaphore to limit concurrent analysis requests
-MAX_CONCURRENT_ANALYSES = int(os.environ.get('MAX_CONCURRENT_ANALYSES', '3'))  # Read from .env with fallback to 3 (we have recovery systems!)
+MAX_CONCURRENT_ANALYSES = int(os.environ.get('MAX_CONCURRENT_ANALYSES', '3'))  # Read from .env with fallback to 3
 analysis_semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
 
 # Log the concurrency setting for debugging
 print__startup_debug(f"🔧 API Server: MAX_CONCURRENT_ANALYSES set to {MAX_CONCURRENT_ANALYSES} (from environment)")
 print__memory_monitoring(f"Concurrent analysis semaphore initialized with {MAX_CONCURRENT_ANALYSES} slots")
-print__memory_monitoring(f"🛡️ Recovery systems active: Response persistence + Frontend auto-recovery")
 
 # RATE LIMITING: Global rate limiting storage
 rate_limit_storage = defaultdict(list)
@@ -152,149 +148,71 @@ RATE_LIMIT_MAX_WAIT = 5  # maximum seconds to wait before giving up
 # Throttling semaphores per IP to limit concurrent requests
 throttle_semaphores = defaultdict(lambda: asyncio.Semaphore(8))  # Max 8 concurrent requests per IP
 
-def detect_memory_fragmentation() -> dict:
-    """Simple memory monitoring without complex fragmentation detection."""
+def check_memory_and_gc():
+    """Enhanced memory check with cache cleanup and scaling strategy."""
     try:
         process = psutil.Process()
         memory_info = process.memory_info()
-        
-        # RSS is physical memory
         rss_mb = memory_info.rss / 1024 / 1024
-        vms_mb = memory_info.vms / 1024 / 1024
         
-        # Simple memory growth tracking
-        global _memory_baseline
-        memory_growth = rss_mb - _memory_baseline if _memory_baseline else 0
+        # Clean up cache first if memory is getting high
+        if rss_mb > (GC_MEMORY_THRESHOLD * 0.8):  # At 80% of threshold
+            print__memory_monitoring(f"📊 Memory at {rss_mb:.1f}MB (80% of {GC_MEMORY_THRESHOLD}MB threshold) - cleaning cache")
+            cleaned_entries = cleanup_bulk_cache()
+            if cleaned_entries > 0:
+                # Check memory after cache cleanup
+                new_memory = psutil.Process().memory_info().rss / 1024 / 1024
+                freed = rss_mb - new_memory
+                print__memory_monitoring(f"🧹 Cache cleanup freed {freed:.1f}MB, cleaned {cleaned_entries} entries")
+                rss_mb = new_memory
         
-        return {
-            "rss_mb": round(rss_mb, 2),
-            "vms_mb": round(vms_mb, 2),
-            "memory_growth_mb": round(memory_growth, 2),
-            "high_memory": rss_mb > 1600  # 80% of 2GB allocation (1600MB), leaving 400MB buffer
-        }
+        # Trigger GC only if above threshold
+        if rss_mb > GC_MEMORY_THRESHOLD:
+            print__memory_monitoring(f"🚨 MEMORY THRESHOLD EXCEEDED: {rss_mb:.1f}MB > {GC_MEMORY_THRESHOLD}MB - running GC")
+            import gc
+            collected = gc.collect()
+            print__memory_monitoring(f"🧹 GC collected {collected} objects")
+            
+            # Log memory after GC
+            new_memory = psutil.Process().memory_info().rss / 1024 / 1024
+            freed = rss_mb - new_memory
+            print__memory_monitoring(f"🧹 Memory after GC: {new_memory:.1f}MB (freed: {freed:.1f}MB)")
+            
+            # If memory is still high after GC, provide scaling guidance
+            if new_memory > (GC_MEMORY_THRESHOLD * 0.9):
+                thread_count = len(_bulk_loading_cache)
+                print__memory_monitoring(f"⚠ HIGH MEMORY WARNING: {new_memory:.1f}MB after GC")
+                print__memory_monitoring(f"📊 Current cache entries: {thread_count}")
+                if thread_count > 20:
+                    print__memory_monitoring(f"💡 SCALING TIP: Consider implementing pagination for chat threads")
+            
+        return rss_mb
+        
     except Exception as e:
-        return {"error": str(e)}
+        print__memory_monitoring(f"Could not check memory: {e}")
+        return 0
 
 def log_memory_usage(context: str = ""):
-    """Enhanced memory logging with RSS tracking and fragmentation detection."""
+    """Simplified memory logging."""
     try:
         process = psutil.Process()
-        memory_info = process.memory_info()
+        rss_mb = process.memory_info().rss / 1024 / 1024
         
-        # RSS memory (actual physical RAM usage) - this is what leaked in the article
-        rss_mb = memory_info.rss / 1024 / 1024
-        vms_mb = memory_info.vms / 1024 / 1024
+        print__memory_monitoring(f"Memory usage{f' [{context}]' if context else ''}: {rss_mb:.1f}MB RSS")
         
-        # Get memory limits if available (Render typically sets these)
-        memory_limit_mb = None
-        try:
-            # Check for common memory limit environment variables
-            if os.environ.get('MEMORY_LIMIT'):
-                memory_limit_mb = int(os.environ.get('MEMORY_LIMIT')) / 1024 / 1024
-            elif os.environ.get('WEB_MEMORY'):
-                memory_limit_mb = int(os.environ.get('WEB_MEMORY'))
-        except:
-            pass
-        
-        # Enhanced logging with RSS focus (the issue from the article)
-        limit_info = f" (limit: {memory_limit_mb:.1f}MB)" if memory_limit_mb else ""
-        usage_percent = f" ({(rss_mb/memory_limit_mb)*100:.1f}%)" if memory_limit_mb else ""
-        
-        # Memory fragmentation detection
-        fragmentation_info = detect_memory_fragmentation()
-        frag_warning = " [FRAGMENTATION DETECTED]" if fragmentation_info.get("high_memory") else ""
-        growth_warning = " [SIGNIFICANT GROWTH]" if fragmentation_info.get("memory_growth_mb") > GC_MEMORY_THRESHOLD else ""
-        
-        print__memory_monitoring(
-            f"Memory usage{f' [{context}]' if context else ''}: "
-            f"RSS={rss_mb:.1f}MB, VMS={vms_mb:.1f}MB{limit_info}{usage_percent}"
-            f"{frag_warning}{growth_warning}"
-        )
-        
-        # FRAGMENTATION HANDLING: Automatically handle detected fragmentation
-        # Only trigger if not already in a fragmentation handling context to avoid loops
-        if (fragmentation_info.get("high_memory") and 
-            not context.startswith("post_fragmentation_handler") and
-            not context.startswith("fragmentation_")):
-            
-            print__memory_monitoring(f"🚨 FRAGMENTATION TRIGGER: RSS {rss_mb:.1f}MB exceeds threshold 1600MB (80% of 2GB allocation)")
-            print__memory_monitoring(f"📊 Memory details: RSS={rss_mb:.1f}MB, VMS={vms_mb:.1f}MB, Growth={fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
-            
-            # Call the fragmentation handler
-            handle_memory_fragmentation()
-        
-        # Warning if memory usage is high or growing suspiciously
-        if memory_limit_mb and rss_mb > memory_limit_mb * 0.85:
-            print__memory_monitoring(f"HIGH MEMORY WARNING: Using {(rss_mb/memory_limit_mb)*100:.1f}% of available RSS memory!")
-        
-        # Track memory growth pattern (similar to the article's issue)
-        global _memory_baseline, _request_count
-        if _memory_baseline is None:
-            _memory_baseline = rss_mb
-            print__memory_monitoring(f"Memory baseline set: {_memory_baseline:.1f}MB RSS")
-        elif context.startswith("after_") and _request_count > 0:
-            growth_per_request = (rss_mb - _memory_baseline) / _request_count
-            if growth_per_request > GC_MEMORY_THRESHOLD * 0.001:  # More than 0.1% of threshold growth per request
-                print__memory_monitoring(f"LEAK WARNING: {growth_per_request:.3f}MB growth per request pattern detected!")
+        # Simple threshold check
+        if rss_mb > GC_MEMORY_THRESHOLD:
+            check_memory_and_gc()
             
     except Exception as e:
         print__memory_monitoring(f"Could not check memory usage: {e}")
 
-def handle_memory_fragmentation():
-    """Simple memory cleanup without complex fragmentation handling."""
-    print__memory_monitoring("🧹 Running simple memory cleanup")
-    
-    try:
-        # Simple garbage collection
-        import gc
-        collected = gc.collect()
-        print__memory_monitoring(f"🧹 GC freed {collected} objects")
-        
-        # Clear rate limiting storage for inactive clients
-        global rate_limit_storage, throttle_semaphores
-        old_clients = len(rate_limit_storage)
-        
-        import time
-        current_time = time.time()
-        for client_ip in list(rate_limit_storage.keys()):
-            rate_limit_storage[client_ip] = [
-                timestamp for timestamp in rate_limit_storage[client_ip]
-                if current_time - timestamp < RATE_LIMIT_WINDOW
-            ]
-            if not rate_limit_storage[client_ip]:
-                del rate_limit_storage[client_ip]
-        
-        new_clients = len(rate_limit_storage)
-        print__memory_monitoring(f"🧹 Cleaned rate limiting: {old_clients}→{new_clients} clients")
-            
-    except Exception as e:
-        print__memory_monitoring(f"❌ Error in memory cleanup: {e}")
-        # Still try basic GC even if cleanup fails
-        try:
-            gc.collect()
-        except:
-            pass
-
 def monitor_route_registration(route_path: str, method: str):
-    """Monitor route registration to detect duplicates (main issue from article)."""
-    global _route_registration_count
-    
-    route_key = f"{method}:{route_path}"
-    _route_registration_count[route_key] += 1
-    
-    if _route_registration_count[route_key] > 1:
-        print__memory_monitoring(
-            f"🚨 DUPLICATE ROUTE REGISTRATION DETECTED: {route_key} "
-            f"registered {_route_registration_count[route_key]} times! "
-            f"This was the ROOT CAUSE in the Ocean framework leak!"
-        )
-        
-        # Log call stack to identify where duplicate registration is happening
-        import traceback
-        print__memory_monitoring(f"Route registration stack trace:\n{traceback.format_stack()[-3]}")
+    """Simplified route registration monitoring."""
+    pass  # Simplified - no complex tracking needed
 
 def log_comprehensive_error(context: str, error: Exception, request: Request = None):
-    """Enhanced error logging with context and request details."""
+    """Simplified error logging."""
     error_details = {
         "context": context,
         "error_type": type(error).__name__,
@@ -307,18 +225,10 @@ def log_comprehensive_error(context: str, error: Exception, request: Request = N
             "method": request.method,
             "url": str(request.url),
             "client_ip": request.client.host if request.client else "unknown",
-            "user_agent": request.headers.get("user-agent", "unknown"),
-            "content_type": request.headers.get("content-type", "unknown")
         })
     
     # Log to debug output
-    print__debug(f"COMPREHENSIVE ERROR: {json.dumps(error_details, indent=2)}")
-    
-    # Log memory usage during error
-    log_memory_usage(f"error_{context}")
-    # Simple garbage collection on error
-    import gc
-    gc.collect()
+    print__debug(f"ERROR: {json.dumps(error_details, indent=2)}")
 
 def check_rate_limit_with_throttling(client_ip: str) -> dict:
     """Check rate limits and return throttling information instead of boolean."""
@@ -417,16 +327,10 @@ def check_rate_limit(client_ip: str) -> bool:
     return True
 
 def setup_graceful_shutdown():
-    """Setup graceful shutdown handlers to detect platform restarts."""
+    """Setup graceful shutdown handlers."""
     def signal_handler(signum, frame):
         print__memory_monitoring(f"Received signal {signum} - preparing for graceful shutdown...")
-        print__memory_monitoring(f"This could indicate a platform restart or memory limit exceeded")
         log_memory_usage("shutdown_signal")
-        
-        # Run simple cleanup GC
-        import gc
-        gc.collect()
-        # Don't exit immediately, let FastAPI handle cleanup
         
     # Register signal handlers for common restart signals
     signal.signal(signal.SIGTERM, signal_handler)  # Most common for container restarts
@@ -544,9 +448,8 @@ async def get_healthy_checkpointer():
             else:
                 # Enhanced health check with timeout
                 try:
-                    # Fix: await the coroutine first, then use the connection in async with
-                    conn = await asyncio.wait_for(GLOBAL_CHECKPOINTER.conn.connection(), timeout=5)
-                    async with conn:
+                    # FIXED: Use proper async context manager for connection pool with timeout
+                    async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
                         await asyncio.wait_for(conn.execute("SELECT 1"), timeout=5)
                     print__startup_debug("✅ Existing checkpointer is healthy")
                     return GLOBAL_CHECKPOINTER
@@ -756,51 +659,28 @@ async def throttling_middleware(request: Request, call_next):
 
 # Enhanced middleware to monitor memory patterns and detect leaks
 @app.middleware("http")
-async def enhanced_memory_monitoring_middleware(request: Request, call_next):
-    """Enhanced memory monitoring with leak detection patterns."""
+async def simplified_memory_monitoring_middleware(request: Request, call_next):
+    """Simplified memory monitoring middleware."""
     global _request_count
     
-    start_time = datetime.now()
     _request_count += 1
     
-    # Log memory before processing request (especially for heavy operations)
+    # Only check memory for heavy operations
     request_path = request.url.path
-    if any(path in request_path for path in ["/analyze", "/chat", "/feedback"]):
+    if any(path in request_path for path in ["/analyze", "/chat/all-messages"]):
         log_memory_usage(f"before_{request_path.replace('/', '_')}")
-    
-    # Track requests that might be repeatedly registering routes (the article's issue)
-    if request_path in ["/health", "/docs"] and _request_count > 100:
-        # These are frequently called - make sure they don't cause memory leaks
-        if _request_count % 100 == 0:  # Log every 100th request
-            print__memory_monitoring(f"Health check #{_request_count} - monitoring for route re-registration leaks")
     
     response = await call_next(request)
     
-    # Log memory after processing request with enhanced leak detection
-    if any(path in request_path for path in ["/analyze", "/chat", "/feedback"]):
-        process_time = (datetime.now() - start_time).total_seconds()
-        log_memory_usage(f"after_{request_path.replace('/', '_')}_({process_time:.2f}s)")
-        
-        # Simple GC after heavy operations to prevent accumulation
-        if request_path.startswith("/analyze"):
-            import gc
-            gc.collect()
-        
-        # Warn about slow requests that might cause timeouts
-        if process_time > 300:  # 5 minutes
-            print__memory_monitoring(f"SLOW REQUEST WARNING: {request_path} took {process_time:.2f}s")
-    
-    # Periodic memory health check (every 50 requests)
-    if _request_count % 50 == 0:
-        fragmentation_info = detect_memory_fragmentation()
-        if fragmentation_info.get("high_memory") or fragmentation_info.get("memory_growth_mb"):
-            print__memory_monitoring(f"🔍 Request #{_request_count} memory health check: {fragmentation_info}")
+    # Check memory after heavy operations
+    if any(path in request_path for path in ["/analyze", "/chat/all-messages"]):
+        log_memory_usage(f"after_{request_path.replace('/', '_')}")
     
     return response
 
 @app.get("/health")
 async def health_check():
-    """Enhanced health check endpoint with memory leak detection."""
+    """Simplified health check endpoint."""
     try:
         health_data = {
             "status": "healthy",
@@ -809,63 +689,16 @@ async def health_check():
             "total_requests_processed": _request_count
         }
         
-        # Enhanced memory info with RSS focus (the leak indicator from article)
+        # Simple memory info
         try:
-            fragmentation_info = detect_memory_fragmentation()
+            process = psutil.Process()
+            rss_mb = process.memory_info().rss / 1024 / 1024
             health_data.update({
-                "memory_rss_mb": fragmentation_info.get("rss_mb", 0),
-                "memory_vms_mb": fragmentation_info.get("vms_mb", 0),
-                "memory_fragmentation_ratio": fragmentation_info.get("fragmentation_ratio", 0),
-                "memory_growth_mb": fragmentation_info.get("memory_growth_mb", 0),
-                "potential_memory_fragmentation": fragmentation_info.get("high_memory", False),
-                "significant_memory_growth": fragmentation_info.get("memory_growth_mb", 0) > GC_MEMORY_THRESHOLD
+                "memory_rss_mb": round(rss_mb, 1),
+                "memory_over_threshold": rss_mb > GC_MEMORY_THRESHOLD
             })
-            
-            # Check if we're approaching memory limits
-            memory_limit_mb = None
-            try:
-                if os.environ.get('MEMORY_LIMIT'):
-                    memory_limit_mb = int(os.environ.get('MEMORY_LIMIT')) / 1024 / 1024
-                elif os.environ.get('WEB_MEMORY'):
-                    memory_limit_mb = int(os.environ.get('WEB_MEMORY'))
-            except:
-                pass
-            
-            if memory_limit_mb:
-                rss_mb = fragmentation_info.get("rss_mb", 0)
-                usage_percent = (rss_mb / memory_limit_mb) * 100
-                health_data["memory_usage_percent"] = round(usage_percent, 1)
-                health_data["memory_limit_mb"] = memory_limit_mb
-                
-                # Return unhealthy if memory usage is too high or showing leak patterns
-                if usage_percent > 90 or fragmentation_info.get("significant_memory_growth", False):
-                    health_data["status"] = "critical_memory"
-                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}% or significant growth detected"
-                elif usage_percent > 80 or fragmentation_info.get("high_memory", False):
-                    health_data["status"] = "high_memory"
-                    health_data["warning"] = f"Memory usage at {usage_percent:.1f}% or fragmentation detected"
-                    
         except Exception as mem_error:
             health_data["memory_error"] = str(mem_error)
-        
-        # Route registration health check (prevent the article's main issue)
-        try:
-            duplicate_routes = {k: v for k, v in _route_registration_count.items() if v > 1}
-            health_data["route_registrations"] = {
-                "total_registrations": sum(_route_registration_count.values()),
-                "unique_routes": len(_route_registration_count),
-                "duplicate_registrations": duplicate_routes,
-                "has_duplicates": len(duplicate_routes) > 0
-            }
-            
-            # Mark as unhealthy if we detect route duplication (the core issue!)
-            if duplicate_routes:
-                health_data["status"] = "unhealthy"
-                health_data["error"] = f"Duplicate route registrations detected: {list(duplicate_routes.keys())}"
-                print__memory_monitoring(f"🚨 HEALTH CHECK: Duplicate route registrations detected!")
-                
-        except Exception as route_error:
-            health_data["route_registration_error"] = str(route_error)
         
         # Check checkpointer health
         try:
@@ -924,53 +757,44 @@ async def database_health_check():
 
 @app.get("/health/memory")
 async def memory_health_check():
-    """Enhanced memory-specific health check with fragmentation detection."""
+    """Enhanced memory-specific health check with cache information."""
     try:
-        fragmentation_info = detect_memory_fragmentation()
+        process = psutil.Process()
+        rss_mb = process.memory_info().rss / 1024 / 1024
         
-        # Get memory limit
-        memory_limit_mb = 512  # Default Render limit
-        try:
-            if os.environ.get('MEMORY_LIMIT'):
-                memory_limit_mb = int(os.environ.get('MEMORY_LIMIT')) / 1024 / 1024
-            elif os.environ.get('WEB_MEMORY'):
-                memory_limit_mb = int(os.environ.get('WEB_MEMORY'))
-        except:
-            pass
-        
-        rss_mb = fragmentation_info.get("rss_mb", 0)
-        usage_percent = (rss_mb / memory_limit_mb) * 100
+        # Clean up expired cache entries
+        cleaned_entries = cleanup_bulk_cache()
         
         status = "healthy"
-        warnings = []
-        
-        # Check for various memory issues based on article findings
-        if usage_percent > 90:
-            status = "critical"
-            warnings.append(f"High RSS memory usage: {usage_percent:.1f}%")
-        elif usage_percent > 80:
+        if rss_mb > GC_MEMORY_THRESHOLD:
+            status = "high_memory"
+        elif rss_mb > (GC_MEMORY_THRESHOLD * 0.8):
             status = "warning"
-            warnings.append(f"Elevated RSS memory usage: {usage_percent:.1f}%")
         
-        if fragmentation_info.get("high_memory", False):
-            status = "warning" if status == "healthy" else status
-            warnings.append(f"Memory fragmentation detected (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
+        cache_info = {
+            "active_cache_entries": len(_bulk_loading_cache),
+            "cleaned_expired_entries": cleaned_entries,
+            "cache_timeout_seconds": BULK_CACHE_TIMEOUT
+        }
         
-        if fragmentation_info.get("memory_growth_mb", 0):
-            status = "critical" if status == "healthy" else status
-            warnings.append(f"Significant memory growth: {fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
+        # Calculate estimated memory per thread for scaling guidance
+        thread_count = len(_bulk_loading_cache)
+        memory_per_thread = rss_mb / max(thread_count, 1) if thread_count > 0 else 0
+        estimated_max_threads = int(GC_MEMORY_THRESHOLD / max(memory_per_thread, 38)) if memory_per_thread > 0 else 50
         
         return {
             "status": status,
-            "memory_rss_mb": rss_mb,
-            "memory_vms_mb": fragmentation_info.get("vms_mb", 0),
-            "memory_limit_mb": memory_limit_mb,
-            "usage_percent": round(usage_percent, 1),
-            "fragmentation_ratio": fragmentation_info.get("fragmentation_ratio", 0),
-            "memory_growth_mb": fragmentation_info.get("memory_growth_mb", 0),
-            "warnings": warnings,
-            "baseline_memory_mb": _memory_baseline,
+            "memory_rss_mb": round(rss_mb, 1),
+            "memory_threshold_mb": GC_MEMORY_THRESHOLD,
+            "memory_usage_percent": round((rss_mb / GC_MEMORY_THRESHOLD) * 100, 1),
+            "over_threshold": rss_mb > GC_MEMORY_THRESHOLD,
             "total_requests_processed": _request_count,
+            "cache_info": cache_info,
+            "scaling_info": {
+                "estimated_memory_per_thread_mb": round(memory_per_thread, 1),
+                "estimated_max_threads_at_threshold": estimated_max_threads,
+                "current_thread_count": thread_count
+            },
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:
@@ -1231,7 +1055,7 @@ def get_current_user(authorization: str = Header(None)):
 
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
-    """Analyze request with enhanced memory leak prevention and memory pressure recovery."""
+    """Analyze request with simplified memory monitoring."""
     
     user_email = user.get("email")
     if not user_email:
@@ -1239,41 +1063,63 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     
     print__feedback_flow(f"📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
     print__debug(f"🔍 ANALYZE REQUEST RECEIVED: thread_id={request.thread_id}, user={user_email}")
-    print__debug(f"🔍 ANALYZE REQUEST CONTENT: prompt_length={len(request.prompt)}, first_50_chars={request.prompt[:50]}...")
     
-    # MEMORY LEAK PREVENTION: Pre-analysis memory monitoring
+    # Simple memory check
     log_memory_usage("analysis_start")
-    pre_analysis_memory = None
     run_id = None
-    checkpointer = None
     
     try:
-        process = psutil.Process()
-        pre_analysis_memory = process.memory_info().rss / 1024 / 1024
-        print__memory_monitoring(f"Pre-analysis memory: {pre_analysis_memory:.1f}MB RSS")
-    except:
-        pass
-    
-    # MEMORY PROTECTION: Limit concurrent analyses to prevent OOM
-    async with analysis_semaphore:
-        print__feedback_flow(f"🔒 Acquired analysis semaphore ({analysis_semaphore._value}/{MAX_CONCURRENT_ANALYSES} available)")
-        
-        try:
-            print__feedback_flow(f"🔄 Getting healthy checkpointer")
-            checkpointer = await get_healthy_checkpointer()
+        # Limit concurrent analyses to prevent resource exhaustion
+        async with analysis_semaphore:
+            print__feedback_flow(f"🔒 Acquired analysis semaphore ({analysis_semaphore._value}/{MAX_CONCURRENT_ANALYSES} available)")
             
-            print__feedback_flow(f"🔄 Creating thread run entry")
-            run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
-            print__feedback_flow(f"✅ Generated new run_id: {run_id}")
-            
-            print__feedback_flow(f"🚀 Starting analysis")
-            # 8 minute timeout for platform stability
-            result = await asyncio.wait_for(
-                analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
-                timeout=480  # 8 minutes timeout
-            )
-            
-            print__feedback_flow(f"✅ Analysis completed successfully")
+            try:
+                print__feedback_flow(f"🔄 Getting healthy checkpointer")
+                checkpointer = await get_healthy_checkpointer()
+                
+                print__feedback_flow(f"🔄 Creating thread run entry")
+                run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
+                print__feedback_flow(f"✅ Generated new run_id: {run_id}")
+                
+                print__feedback_flow(f"🚀 Starting analysis")
+                # 8 minute timeout for platform stability
+                result = await asyncio.wait_for(
+                    analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
+                    timeout=480  # 8 minutes timeout
+                )
+                
+                print__feedback_flow(f"✅ Analysis completed successfully")
+                
+            except Exception as analysis_error:
+                # If there's a database connection issue, try with InMemorySaver as fallback
+                error_msg = str(analysis_error).lower()
+                if any(keyword in error_msg for keyword in ["pool", "connection", "closed", "timeout", "ssl", "postgres"]):
+                    print__feedback_flow(f"⚠ Database issue detected, trying with InMemorySaver fallback: {analysis_error}")
+                    
+                    try:
+                        from langgraph.checkpoint.memory import InMemorySaver
+                        fallback_checkpointer = InMemorySaver()
+                        
+                        # Generate a fallback run_id since database creation might have failed
+                        if run_id is None:
+                            run_id = str(uuid.uuid4())
+                            print__feedback_flow(f"✅ Generated fallback run_id: {run_id}")
+                        
+                        print__feedback_flow(f"🚀 Starting analysis with InMemorySaver fallback")
+                        result = await asyncio.wait_for(
+                            analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=fallback_checkpointer, run_id=run_id),
+                            timeout=480  # 8 minutes timeout
+                        )
+                        
+                        print__feedback_flow(f"✅ Analysis completed successfully with fallback")
+                        
+                    except Exception as fallback_error:
+                        print__feedback_flow(f"🚨 Fallback analysis also failed: {fallback_error}")
+                        raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
+                else:
+                    # Re-raise non-database errors
+                    print__feedback_flow(f"🚨 Non-database error: {analysis_error}")
+                    raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
             
             # Simple response preparation
             response_data = {
@@ -1287,65 +1133,20 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 "sql": result.get("sql", None) if isinstance(result, dict) else None,
                 "datasetUrl": result.get("datasetUrl", None) if isinstance(result, dict) else None,
                 "run_id": run_id,
-                "top_chunks": result.get("top_chunks", []) if isinstance(result, dict) else []  # Add PDF chunks to response
+                "top_chunks": result.get("top_chunks", []) if isinstance(result, dict) else []
             }
             
-            # Simple memory check and return response
-            try:
-                process = psutil.Process()
-                current_memory = process.memory_info().rss / 1024 / 1024
-                
-                print__memory_monitoring(f"📤 Current memory: {current_memory:.1f}MB - sending response")
-                
-                response_data.update({
-                    "memory_usage_mb": current_memory,
-                    "analysis_completed": True,
-                    "timestamp": datetime.now().isoformat(),
-                    "server_status": "completed_successfully"
-                })
-                
-                return response_data
-                
-            except Exception as response_error:
-                # Simple fallback without complex recovery logic
-                print__memory_monitoring(f"❌ Error preparing response: {response_error}")
-                
-                fallback_response = {
-                    "prompt": request.prompt,
-                    "result": result if 'result' in locals() else "Analysis completed",
-                    "queries_and_results": [],
-                    "thread_id": request.thread_id,
-                    "top_selection_codes": [],
-                    "iteration": 0,
-                    "max_iterations": 2,
-                    "sql": None,
-                    "datasetUrl": None,
-                    "run_id": run_id,
-                    "error": "Response formatting error"
-                }
-                
-                return fallback_response
+            return response_data
             
-        except asyncio.TimeoutError:
-            error_msg = "Analysis timed out after 8 minutes"
-            print__feedback_flow(f"🚨 {error_msg}")
-            
-            # Log for recovery purposes
-            if run_id:
-                print__feedback_flow(f"🔄 TIMEOUT INFO: thread_id={request.thread_id}, run_id={run_id}")
-            
-            raise HTTPException(status_code=408, detail=error_msg)
-            
-        except Exception as e:
-            error_msg = f"Analysis failed: {str(e)}"
-            print__feedback_flow(f"🚨 {error_msg}")
-            print__feedback_flow(f"🔍 Error details: {type(e).__name__}: {str(e)}")
-            
-            # Enhanced error logging for recovery
-            if run_id:
-                print__feedback_flow(f"🔄 ERROR INFO: thread_id={request.thread_id}, run_id={run_id}")
-            
-            raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
+    except asyncio.TimeoutError:
+        error_msg = "Analysis timed out after 8 minutes"
+        print__feedback_flow(f"🚨 {error_msg}")
+        raise HTTPException(status_code=408, detail=error_msg)
+        
+    except Exception as e:
+        error_msg = f"Analysis failed: {str(e)}"
+        print__feedback_flow(f"🚨 {error_msg}")
+        raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
@@ -1990,230 +1791,281 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
         else:
             raise HTTPException(status_code=500, detail=f"Failed to load checkpoint messages: {e}")
 
+# Global cache for bulk loading to prevent repeated calls
+_bulk_loading_cache = {}
+_bulk_loading_locks = defaultdict(asyncio.Lock)
+BULK_CACHE_TIMEOUT = 30  # seconds
+
+def cleanup_bulk_cache():
+    """Clean up expired cache entries to prevent memory leaks."""
+    current_time = time.time()
+    expired_keys = []
+    
+    for cache_key, (cached_data, cache_time) in _bulk_loading_cache.items():
+        if current_time - cache_time > BULK_CACHE_TIMEOUT:
+            expired_keys.append(cache_key)
+    
+    for key in expired_keys:
+        del _bulk_loading_cache[key]
+        print__memory_monitoring(f"🧹 Cleaned up expired cache entry: {key}")
+    
+    return len(expired_keys)
+
 @app.get("/chat/all-messages")
 async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
-    """OPTIMIZED: Load conversation messages for ALL user threads using built-in functions in parallel.
-    
-    This endpoint uses the proven working functions but calls them efficiently:
-    - Single query to get all user threads, run-ids, and sentiments 
-    - Use the proven working get_conversation_messages_from_checkpoints() for each thread
-    - Call all thread processing in parallel using asyncio.gather()
-    - Much faster than sequential individual API calls from frontend
-    """
+    """CACHED: Load conversation messages for ALL user threads with request deduplication."""
     
     user_email = user.get("email")
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print__api_postgresql(f"📥 PARALLEL BULK: Loading ALL chat messages for user: {user_email}")
+    print__api_postgresql(f"📥 BULK REQUEST: Loading ALL chat messages for user: {user_email}")
     
-    try:
-        checkpointer = await get_healthy_checkpointer()
+    # Check if we have a recent cached result
+    cache_key = f"bulk_messages_{user_email}"
+    current_time = time.time()
+    
+    if cache_key in _bulk_loading_cache:
+        cached_data, cache_time = _bulk_loading_cache[cache_key]
+        if current_time - cache_time < BULK_CACHE_TIMEOUT:
+            print__api_postgresql(f"✅ CACHE HIT: Returning cached bulk data for {user_email} (age: {current_time - cache_time:.1f}s)")
+            return cached_data
+        else:
+            print__api_postgresql(f"⏰ CACHE EXPIRED: Cached data too old ({current_time - cache_time:.1f}s), will refresh")
+            del _bulk_loading_cache[cache_key]
+    
+    # Use a lock to prevent multiple simultaneous requests from the same user
+    async with _bulk_loading_locks[user_email]:
+        # Double-check cache after acquiring lock (another request might have completed)
+        if cache_key in _bulk_loading_cache:
+            cached_data, cache_time = _bulk_loading_cache[cache_key]
+            if current_time - cache_time < BULK_CACHE_TIMEOUT:
+                print__api_postgresql(f"✅ CACHE HIT (after lock): Returning cached bulk data for {user_email}")
+                return cached_data
         
-        if not hasattr(checkpointer, 'conn'):
-            print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - returning empty messages")
-            return {"messages": {}, "runIds": {}, "sentiments": {}}
+        print__api_postgresql(f"🔄 CACHE MISS: Processing fresh bulk request for {user_email}")
         
-        # STEP 1: Get all user threads, run-ids, and sentiments in ONE query
-        print__api_postgresql(f"🔍 BULK QUERY: Getting all user threads, run-ids, and sentiments")
-        user_thread_ids = []
-        all_run_ids = {}
-        all_sentiments = {}
+        # Simple memory check before starting
+        log_memory_usage("bulk_start")
         
-        async with checkpointer.conn.connection() as conn:
-            # Single query for all threads, run-ids, and sentiments
-            result = await conn.execute("""
-                SELECT 
-                    thread_id, 
-                    run_id, 
-                    prompt, 
-                    timestamp,
-                    sentiment
-                FROM users_threads_runs 
-                WHERE email = %s
-                ORDER BY thread_id, timestamp ASC
-            """, (user_email,))
+        try:
+            checkpointer = await get_healthy_checkpointer()
             
-            async for row in result:
-                thread_id, run_id, prompt, timestamp, sentiment = row
+            if not hasattr(checkpointer, 'conn'):
+                print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - returning empty messages")
+                empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
+                _bulk_loading_cache[cache_key] = (empty_result, current_time)
+                return empty_result
+            
+            # STEP 1: Get all user threads, run-ids, and sentiments in ONE query
+            print__api_postgresql(f"🔍 BULK QUERY: Getting all user threads, run-ids, and sentiments")
+            user_thread_ids = []
+            all_run_ids = {}
+            all_sentiments = {}
+            
+            async with checkpointer.conn.connection() as conn:
+                # Single query for all threads, run-ids, and sentiments
+                result = await conn.execute("""
+                    SELECT 
+                        thread_id, 
+                        run_id, 
+                        prompt, 
+                        timestamp,
+                        sentiment
+                    FROM users_threads_runs 
+                    WHERE email = %s
+                    ORDER BY thread_id, timestamp ASC
+                """, (user_email,))
                 
-                # Track unique thread IDs
-                if thread_id not in user_thread_ids:
-                    user_thread_ids.append(thread_id)
-                
-                # Build run-ids dictionary
-                if thread_id not in all_run_ids:
-                    all_run_ids[thread_id] = []
-                all_run_ids[thread_id].append({
-                    "run_id": run_id,
-                    "prompt": prompt,
-                    "timestamp": timestamp.isoformat()
-                })
-                
-                # Build sentiments dictionary
-                if sentiment is not None:
-                    if thread_id not in all_sentiments:
-                        all_sentiments[thread_id] = {}
-                    all_sentiments[thread_id][run_id] = sentiment
-        
-        print__api_postgresql(f"📊 BULK: Found {len(user_thread_ids)} threads")
-        
-        if not user_thread_ids:
-            print__api_postgresql(f"⚠ No threads found for user - returning empty dictionary")
-            return {"messages": {}, "runIds": {}, "sentiments": {}}
-        
-        # STEP 2: Process all threads in PARALLEL using the proven working functions
-        print__api_postgresql(f"🔄 PARALLEL: Processing all {len(user_thread_ids)} threads using proven working functions")
-        
-        async def process_single_thread(thread_id: str):
-            """Process a single thread using the proven working functions."""
-            try:
-                print__api_postgresql(f"🔄 Processing thread {thread_id}")
-                
-                # Use the ORIGINAL working function that we know works
-                stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id, user_email)
-                
-                if not stored_messages:
-                    print__api_postgresql(f"⚠ No messages found in checkpoints for thread {thread_id}")
-                    return thread_id, []
-                
-                print__api_postgresql(f"📄 Found {len(stored_messages)} messages for thread {thread_id}")
-                
-                # Get additional metadata from latest checkpoint (like queries_and_results)
-                queries_and_results = await get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id)
-                
-                # Get dataset information and SQL query from latest checkpoint
-                datasets_used = []
-                sql_query = None
-                top_chunks = []
-                
-                try:
-                    config = {"configurable": {"thread_id": thread_id}}
-                    state_snapshot = await checkpointer.aget_tuple(config)
+                async for row in result:
+                    thread_id, run_id, prompt, timestamp, sentiment = row
                     
-                    if state_snapshot and state_snapshot.checkpoint:
-                        channel_values = state_snapshot.checkpoint.get("channel_values", {})
-                        top_selection_codes = channel_values.get("top_selection_codes", [])
+                    # Track unique thread IDs
+                    if thread_id not in user_thread_ids:
+                        user_thread_ids.append(thread_id)
+                    
+                    # Build run-ids dictionary
+                    if thread_id not in all_run_ids:
+                        all_run_ids[thread_id] = []
+                    all_run_ids[thread_id].append({
+                        "run_id": run_id,
+                        "prompt": prompt,
+                        "timestamp": timestamp.isoformat()
+                    })
+                    
+                    # Build sentiments dictionary
+                    if sentiment is not None:
+                        if thread_id not in all_sentiments:
+                            all_sentiments[thread_id] = {}
+                        all_sentiments[thread_id][run_id] = sentiment
+            
+            print__api_postgresql(f"📊 BULK: Found {len(user_thread_ids)} threads")
+            
+            if not user_thread_ids:
+                print__api_postgresql(f"⚠ No threads found for user - returning empty dictionary")
+                empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
+                _bulk_loading_cache[cache_key] = (empty_result, current_time)
+                return empty_result
+            
+            # STEP 2: Process threads with limited concurrency (max 3 concurrent)
+            print__api_postgresql(f"🔄 Processing {len(user_thread_ids)} threads with limited concurrency")
+            
+            async def process_single_thread(thread_id: str):
+                """Process a single thread using the proven working functions."""
+                try:
+                    print__api_postgresql(f"🔄 Processing thread {thread_id}")
+                    
+                    # Use the working function
+                    stored_messages = await get_conversation_messages_from_checkpoints(checkpointer, thread_id, user_email)
+                    
+                    if not stored_messages:
+                        print__api_postgresql(f"⚠ No messages found in checkpoints for thread {thread_id}")
+                        return thread_id, []
+                    
+                    print__api_postgresql(f"📄 Found {len(stored_messages)} messages for thread {thread_id}")
+                    
+                    # Get additional metadata from latest checkpoint
+                    queries_and_results = await get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id)
+                    
+                    # Get dataset information and SQL query from latest checkpoint
+                    datasets_used = []
+                    sql_query = None
+                    top_chunks = []
+                    
+                    try:
+                        config = {"configurable": {"thread_id": thread_id}}
+                        state_snapshot = await checkpointer.aget_tuple(config)
                         
-                        # Use the datasets directly
-                        datasets_used = top_selection_codes
+                        if state_snapshot and state_snapshot.checkpoint:
+                            channel_values = state_snapshot.checkpoint.get("channel_values", {})
+                            top_selection_codes = channel_values.get("top_selection_codes", [])
+                            datasets_used = top_selection_codes
+                            
+                            # Get PDF chunks
+                            checkpoint_top_chunks = channel_values.get("top_chunks", [])
+                            if checkpoint_top_chunks:
+                                for chunk in checkpoint_top_chunks:
+                                    chunk_data = {
+                                        "content": chunk.page_content if hasattr(chunk, 'page_content') else str(chunk),
+                                        "metadata": chunk.metadata if hasattr(chunk, 'metadata') else {}
+                                    }
+                                    top_chunks.append(chunk_data)
+                            
+                            # Extract SQL query
+                            if queries_and_results:
+                                sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
                         
-                        # Get PDF chunks from checkpoint state
-                        checkpoint_top_chunks = channel_values.get("top_chunks", [])
-                        print__api_postgresql(f"📄 Found {len(checkpoint_top_chunks)} PDF chunks in checkpoint for thread {thread_id}")
+                    except Exception as e:
+                        print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
+                    
+                    # Convert stored messages to frontend format
+                    chat_messages = []
+                    
+                    for i, stored_msg in enumerate(stored_messages):
+                        # Create meta information for AI messages
+                        meta_info = {}
+                        if not stored_msg["is_user"]:
+                            if queries_and_results:
+                                meta_info["queriesAndResults"] = queries_and_results
+                            if datasets_used:
+                                meta_info["datasetsUsed"] = datasets_used
+                            if sql_query:
+                                meta_info["sqlQuery"] = sql_query
+                            if top_chunks:
+                                meta_info["topChunks"] = top_chunks
+                            meta_info["source"] = "cached_bulk_processing"
                         
-                        # Convert Document objects to serializable format
-                        if checkpoint_top_chunks:
-                            for chunk in checkpoint_top_chunks:
-                                chunk_data = {
-                                    "content": chunk.page_content if hasattr(chunk, 'page_content') else str(chunk),
-                                    "metadata": chunk.metadata if hasattr(chunk, 'metadata') else {}
-                                }
-                                top_chunks.append(chunk_data)
-                            print__api_postgresql(f"📄 Serialized {len(top_chunks)} PDF chunks for frontend")
+                        queries_results_for_frontend = None
+                        if not stored_msg["is_user"] and queries_and_results:
+                            queries_results_for_frontend = queries_and_results
                         
-                        # Extract SQL query from queries_and_results for SQL button
-                        if queries_and_results:
-                            # Get the last (most recent) SQL query
-                            sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
+                        is_user_flag = stored_msg["is_user"]
+                        
+                        chat_message = ChatMessage(
+                            id=stored_msg["id"],
+                            threadId=thread_id,
+                            user=user_email if is_user_flag else "AI",
+                            content=stored_msg["content"],
+                            isUser=is_user_flag,
+                            createdAt=int(stored_msg["timestamp"].timestamp() * 1000),
+                            error=None,
+                            meta=meta_info if meta_info else None,
+                            queriesAndResults=queries_results_for_frontend,
+                            isLoading=False,
+                            startedAt=None,
+                            isError=False
+                        )
+                        
+                        chat_messages.append(chat_message)
+                    
+                    print__api_postgresql(f"✅ Processed {len(chat_messages)} messages for thread {thread_id}")
+                    return thread_id, chat_messages
                     
                 except Exception as e:
-                    print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
-                    print__api_postgresql(f"🔧 Using fallback empty values: datasets=[], sql=None, chunks=[]")
-                
-                # Convert stored messages to frontend format (SAME as original working code)
-                chat_messages = []
-                
-                for i, stored_msg in enumerate(stored_messages):
-                    # Create meta information for AI messages
-                    meta_info = {}
-                    if not stored_msg["is_user"]:
-                        if queries_and_results:
-                            meta_info["queriesAndResults"] = queries_and_results
-                        if datasets_used:
-                            meta_info["datasetsUsed"] = datasets_used
-                        if sql_query:
-                            meta_info["sqlQuery"] = sql_query
-                        if top_chunks:
-                            meta_info["topChunks"] = top_chunks
-                        meta_info["source"] = "parallel_bulk_processing"
-                    
-                    # Convert queries_and_results for AI messages
-                    queries_results_for_frontend = None
-                    if not stored_msg["is_user"] and queries_and_results:
-                        queries_results_for_frontend = queries_and_results
-                    
-                    is_user_flag = stored_msg["is_user"]
-                    
-                    chat_message = ChatMessage(
-                        id=stored_msg["id"],
-                        threadId=thread_id,
-                        user=user_email if is_user_flag else "AI",
-                        content=stored_msg["content"],
-                        isUser=is_user_flag,
-                        createdAt=int(stored_msg["timestamp"].timestamp() * 1000),
-                        error=None,
-                        meta=meta_info if meta_info else None,
-                        queriesAndResults=queries_results_for_frontend,
-                        isLoading=False,
-                        startedAt=None,
-                        isError=False
-                    )
-                    
-                    chat_messages.append(chat_message)
-                
-                print__api_postgresql(f"✅ Processed {len(chat_messages)} messages for thread {thread_id}")
-                return thread_id, chat_messages
-                
-            except Exception as e:
-                print__api_postgresql(f"❌ Error processing thread {thread_id}: {e}")
-                return thread_id, []
-        
-        # Process ALL threads in parallel using asyncio.gather()
-        print__api_postgresql(f"🚀 Starting parallel processing of {len(user_thread_ids)} threads...")
-        
-        # Use asyncio.gather to process all threads concurrently
-        thread_results = await asyncio.gather(
-            *[process_single_thread(thread_id) for thread_id in user_thread_ids],
-            return_exceptions=True
-        )
-        
-        # Collect results
-        all_messages = {}
-        total_messages = 0
-        
-        for result in thread_results:
-            if isinstance(result, Exception):
-                print__api_postgresql(f"⚠ Exception in thread processing: {result}")
-                continue
+                    print__api_postgresql(f"❌ Error processing thread {thread_id}: {e}")
+                    return thread_id, []
             
-            thread_id, chat_messages = result
-            all_messages[thread_id] = chat_messages
-            total_messages += len(chat_messages)
-        
-        print__api_postgresql(f"✅ PARALLEL BULK LOADING COMPLETE: Successfully loaded ALL messages for user {user_email}: {len(all_messages)} threads, {total_messages} total messages using proven working functions in parallel")
-        
-        result = {
-            "messages": all_messages,
-            "runIds": all_run_ids,
-            "sentiments": all_sentiments
-        }
-        
-        return result
-        
-    except Exception as e:
-        error_msg = str(e)
-        print__api_postgresql(f"❌ Failed to bulk load all chat messages for user {user_email}: {e}")
-        
-        # Handle specific database connection errors gracefully
-        if any(keyword in error_msg.lower() for keyword in [
-            "ssl error", "connection", "timeout", "operational error", 
-            "server closed", "bad connection", "consuming input failed"
-        ]):
-            print__api_postgresql(f"⚠ Database connection error - returning empty messages")
-            return {"messages": {}, "runIds": {}, "sentiments": {}}
-        else:
-            raise HTTPException(status_code=500, detail=f"Failed to bulk load all chat messages: {e}")
+            MAX_CONCURRENT_THREADS = 3
+            semaphore = asyncio.Semaphore(MAX_CONCURRENT_THREADS)
+
+            async def process_single_thread_with_limit(thread_id: str):
+                """Process a single thread with concurrency limiting."""
+                async with semaphore:
+                    return await process_single_thread(thread_id)
+
+            print__api_postgresql(f"🔒 Processing with max {MAX_CONCURRENT_THREADS} concurrent operations")
+
+            # Use asyncio.gather with limited concurrency
+            thread_results = await asyncio.gather(
+                *[process_single_thread_with_limit(thread_id) for thread_id in user_thread_ids],
+                return_exceptions=True
+            )
+            
+            # Collect results
+            all_messages = {}
+            total_messages = 0
+            
+            for result in thread_results:
+                if isinstance(result, Exception):
+                    print__api_postgresql(f"⚠ Exception in thread processing: {result}")
+                    continue
+                
+                thread_id, chat_messages = result
+                all_messages[thread_id] = chat_messages
+                total_messages += len(chat_messages)
+            
+            print__api_postgresql(f"✅ BULK LOADING COMPLETE: {len(all_messages)} threads, {total_messages} total messages")
+            
+            # Simple memory check after completion
+            log_memory_usage("bulk_complete")
+            
+            result = {
+                "messages": all_messages,
+                "runIds": all_run_ids,
+                "sentiments": all_sentiments
+            }
+            
+            # Cache the result
+            _bulk_loading_cache[cache_key] = (result, current_time)
+            print__api_postgresql(f"💾 CACHED: Bulk result for {user_email} (expires in {BULK_CACHE_TIMEOUT}s)")
+            
+            return result
+            
+        except Exception as e:
+            error_msg = str(e)
+            print__api_postgresql(f"❌ Failed to bulk load all chat messages for user {user_email}: {e}")
+            
+            # Handle specific database connection errors gracefully
+            if any(keyword in error_msg.lower() for keyword in [
+                "ssl error", "connection", "timeout", "operational error", 
+                "server closed", "bad connection", "consuming input failed"
+            ]):
+                print__api_postgresql(f"⚠ Database connection error - returning empty messages")
+                empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
+                _bulk_loading_cache[cache_key] = (empty_result, current_time)
+                return empty_result
+            else:
+                raise HTTPException(status_code=500, detail=f"Failed to bulk load all chat messages: {e}")
 
 @app.get("/debug/chat/{thread_id}/checkpoints")
 async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
@@ -2315,7 +2167,7 @@ async def debug_pool_status():
                 # Test if we can execute a simple query
                 try:
                     async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
-                        await conn.execute("SELECT 1")
+                        await asyncio.wait_for(conn.execute("SELECT 1"), timeout=5)
                     status["can_query"] = True
                     status["pool_healthy"] = True
                 except Exception as e:
@@ -2462,6 +2314,44 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
         result["database_error"] = str(e)
     
     return result
+
+@app.post("/admin/clear-cache")
+async def clear_bulk_cache(user=Depends(get_current_user)):
+    """Clear the bulk loading cache (admin endpoint)."""
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+    
+    # For now, allow any authenticated user to clear cache
+    # In production, you might want to restrict this to admin users
+    
+    cache_entries_before = len(_bulk_loading_cache)
+    _bulk_loading_cache.clear()
+    
+    print__memory_monitoring(f"🧹 MANUAL CACHE CLEAR: {cache_entries_before} entries cleared by {user_email}")
+    
+    # Run garbage collection after cache clear
+    import gc
+    collected = gc.collect()
+    
+    # Check memory after cleanup
+    try:
+        process = psutil.Process()
+        rss_mb = process.memory_info().rss / 1024 / 1024
+        memory_status = "normal" if rss_mb < (GC_MEMORY_THRESHOLD * 0.8) else "high"
+    except:
+        rss_mb = 0
+        memory_status = "unknown"
+    
+    return {
+        "message": "Cache cleared successfully",
+        "cache_entries_cleared": cache_entries_before,
+        "gc_objects_collected": collected,
+        "current_memory_mb": round(rss_mb, 1),
+        "memory_status": memory_status,
+        "cleared_by": user_email,
+        "timestamp": datetime.now().isoformat()
+    }
 
 #==============================================================================
 # DEBUG FUNCTIONS
