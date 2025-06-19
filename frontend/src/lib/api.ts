@@ -6,7 +6,7 @@ import { getSession } from 'next-auth/react';
 
 // API Configuration
 export const API_CONFIG: ApiConfig = {
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE || 'https://czsu-multi-agent-text-to-sql.onrender.com',
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000',
   timeout: 600000, // 10 minutes - increased to match backend analysis timeout
 };
 

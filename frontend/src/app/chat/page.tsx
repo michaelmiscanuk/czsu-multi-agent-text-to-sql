@@ -690,22 +690,6 @@ export default function ChatPage() {
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
 
-      // EMERGENCY RESPONSE HANDLING: Check for memory pressure responses
-      if ((data as any).emergency_mode || (data as any).memory_pressure || (data as any).recovery_mode || (data as any).response_truncated) {
-        console.log('[ChatPage-send] ⚠ Emergency/Recovery response detected - checking PostgreSQL for complete data');
-        
-        // Wait a moment for PostgreSQL to be updated, then refresh messages
-        setTimeout(async () => {
-          try {
-            console.log('[ChatPage-send] 🔄 Refreshing messages from PostgreSQL after emergency response');
-            await loadMessagesFromCheckpoint(currentThreadId);
-            console.log('[ChatPage-send] ✅ Messages refreshed successfully after emergency response');
-          } catch (refreshError) {
-            console.log('[ChatPage-send] ⚠ Could not refresh messages after emergency response:', refreshError);
-          }
-        }, 2000); // Wait 2 seconds for PostgreSQL to be updated
-      }
-
       // Update loading message with response
       const responseMessage: ChatMessage = {
         id: loadingMessageId,
@@ -715,36 +699,19 @@ export default function ChatPage() {
         isUser: false,
         createdAt: Date.now(),
         isLoading: false,
+        queriesAndResults: data.queries_and_results || [],
         meta: {
           datasetsUsed: data.top_selection_codes || [],
           sqlQuery: data.sql || null,
+          iteration: data.iteration || 0,
+          maxIterations: data.max_iterations || 2,
           datasetUrl: data.datasetUrl || null,
-          run_id: data.run_id  // Store run_id in meta for feedback
-        },
-        queriesAndResults: data.queries_and_results || []
+          runId: data.run_id
+        }
       };
-      
-      console.log('[ChatPage-send] ✅ Attaching run_id to message meta:', data.run_id);
-      
-      updateMessage(currentThreadId, loadingMessageId, responseMessage);
 
-      // Update thread metadata after response - this ensures any PostgreSQL changes are reflected
-      const updatedMetadata: Partial<ChatThreadMeta> = {
-        latest_timestamp: new Date().toISOString(),
-        run_count: (threads.find(t => t.thread_id === currentThreadId)?.run_count || 0) + 1
-      };
-      
-      // If we updated the title earlier, make sure to preserve it in case PostgreSQL response overwrites
-      if (shouldUpdateTitle) {
-        const newTitle = messageText.slice(0, 50) + (messageText.length > 50 ? '...' : '');
-        updatedMetadata.title = newTitle;
-        updatedMetadata.full_prompt = messageText;
-        console.log('[ChatPage-send] ✅ Preserving updated title after response:', newTitle);
-      }
-      
-      updateThread(currentThreadId, updatedMetadata);
-      
-      console.log('[ChatPage-send] ✅ Message sent and localStorage synced with new response');
+      updateMessage(currentThreadId, loadingMessageId, responseMessage);
+      setIsLoading(false);
       
     } catch (error) {
       console.error('[ChatPage-send] ❌ Error sending message:', error);

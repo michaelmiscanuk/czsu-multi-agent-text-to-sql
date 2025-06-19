@@ -149,40 +149,22 @@ def get_db_config():
     }
 
 def get_connection_string():
-    """Get PostgreSQL connection string from environment variables with proper Supabase SSL configuration."""
+    """Get PostgreSQL connection string from environment variables with basic Supabase configuration."""
     config = get_db_config()
     
-    # SUPABASE FIX: Use proper SSL settings for Supabase
-    # Supabase REQUIRES SSL connections - never use sslmode=disable
+    print__postgres_startup_debug(f"🔗 Building connection string for Supabase")
     
-    # For Supabase, we need these SSL settings:
-    # - sslmode=require: Force SSL connection (required by Supabase)
-    # - connect_timeout: Prevent hanging connections
-    # - application_name: Help identify connections in Supabase dashboard
-    # NOTE: command_timeout is NOT a valid connection parameter - removed
-    
-    # Check if this is transaction mode (port 6543) for logging purposes
-    is_transaction_mode = config['port'] == '6543'
-    
-    # Enhanced connection string for Supabase stability
+    # FIXED: Basic Supabase connection string (prepare_threshold must be set in connection kwargs, not URL)
     connection_string = (
         f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}"
-        f"?sslmode=require"                     # REQUIRED for Supabase
-        f"&connect_timeout=20"                  # Timeout for initial connection 
-        f"&application_name=czsu_agent"         # Application identification
-        f"&keepalives_idle=600"                 # Keep connection alive (10 minutes)
-        f"&keepalives_interval=30"              # Send keepalive every 30 seconds
-        f"&keepalives_count=3"                  # 3 failed keepalives before disconnect
-        f"&tcp_user_timeout=30000"              # TCP timeout (30 seconds)
+        f"?sslmode=require"                     # Required for Supabase
+        f"&connect_timeout=20"                  # Basic connection timeout
+        f"&application_name=czsu_agent"         # App identification
     )
     
-    # Log transaction mode detection (removed invalid pgbouncer parameter)
-    if is_transaction_mode:
-        print__postgresql_debug(f"🔧 Detected Supabase transaction mode (port 6543) - using optimized settings")
-    
-    # Debug: Show what connection string we're actually using (without password)
+    # Log connection details (without password)
     debug_string = connection_string.replace(config['password'], '***')
-    print__postgresql_debug(f"🔍 Using Supabase-optimized connection string: {debug_string}")
+    print__postgres_startup_debug(f"🔗 Using Supabase connection string (prepared statements disabled via pool kwargs): {debug_string}")
     
     return connection_string
 
@@ -205,137 +187,37 @@ async def is_pool_healthy(pool: Optional[AsyncConnectionPool]) -> bool:
         return False
 
 async def create_fresh_connection_pool() -> AsyncConnectionPool:
-    """Create a new connection pool with Supabase-optimized settings from environment variables."""
+    """Create a fresh connection pool with simple, reliable configuration."""
+    print__postgresql_debug(f"🔄 Creating fresh PostgreSQL connection pool...")
+    
     connection_string = get_connection_string()
     
-    # SUPABASE CRITICAL FIX: Check if we're using transaction mode (port 6543)
-    config = get_db_config()
-    is_transaction_mode = config['port'] == '6543'
-    
-    # Get pool settings from environment variables with Supabase-friendly defaults
-    if is_transaction_mode:
-        # TRANSACTION MODE (port 6543): Much more conservative settings
-        max_size = int(os.getenv('POSTGRES_POOL_MAX', '1'))    # CRITICAL: Only 1 connection for transaction mode
-        min_size = int(os.getenv('POSTGRES_POOL_MIN', '0'))    # Start with 0, create as needed
-        timeout = int(os.getenv('POSTGRES_POOL_TIMEOUT', '10')) # Faster timeout for transaction mode
-        print__postgresql_debug(f"🔧 TRANSACTION MODE detected (port 6543) - using conservative pool settings")
-    else:
-        # SESSION MODE (port 5432): Normal settings
-        max_size = int(os.getenv('POSTGRES_POOL_MAX', '2'))    # Conservative for Supabase free tier
-        min_size = int(os.getenv('POSTGRES_POOL_MIN', '0'))    # Start with 0, create as needed
-        timeout = int(os.getenv('POSTGRES_POOL_TIMEOUT', '20')) # Normal timeout for session mode
-        print__postgresql_debug(f"🔧 SESSION MODE detected (port 5432) - using normal pool settings")
-    
-    print__postgresql_debug(f"🔧 Creating Supabase-optimized connection pool with settings: max_size={max_size}, min_size={min_size}, timeout={timeout}")
-    
-    # Note: Removed invalid pgbouncer parameter that was causing connection failures
-    # PostgreSQL drivers don't recognize 'pgbouncer=true' as a valid connection parameter
-    
-    # Supabase-optimized configuration for SSL connection stability
-    pool_kwargs = {
-        "autocommit": True,
-        "prepare_threshold": None,  # CRITICAL: Disable prepared statements for Supabase transaction mode
-        "connect_timeout": 10 if is_transaction_mode else 15  # Shorter timeout for transaction mode
-    }
-    
-    # On Windows, add additional configuration for psycopg compatibility
-    if sys.platform == "win32":
-        print__postgresql_debug(f"🔧 Windows detected - configuring pool for Supabase + SelectorEventLoop compatibility")
-        # Windows-specific psycopg configuration for SSL stability
-        # Note: Removed server_settings as it's not a valid connection parameter
-    
-    # Create pool with Supabase-optimized settings
-    pool = AsyncConnectionPool(
-        conninfo=connection_string,
-        max_size=max_size,
-        min_size=min_size,
-        timeout=timeout,
-        kwargs=pool_kwargs,
-        open=False
-    )
-    
-    # Explicitly open the pool with enhanced error handling for Supabase
     try:
-        # CRITICAL FIX: Reduce timeout for transaction mode
-        pool_open_timeout = 15 if is_transaction_mode else 30
+        # FIXED: Enhanced connection pool with prepared statement protection for Supabase/pgBouncer
+        pool = AsyncConnectionPool(
+            connection_string, 
+            min_size=1,          # Start with 1 connection
+            max_size=5,          # Max 5 connections to avoid Supabase limits
+            open=False,          # Don't open in constructor to avoid deprecation warning
+            kwargs={
+                "prepare_threshold": None,      # CRITICAL: Disable prepared statements at connection level
+                "autocommit": True,             # Use autocommit for better compatibility
+            }
+        )
         
-        # WINDOWS + SUPABASE FIX: Handle both Windows event loop issues and Supabase SSL
-        if sys.platform == "win32":
-            print__postgresql_debug(f"🔧 Opening pool with Windows + Supabase compatibility (timeout={pool_open_timeout}s)")
-            
-            # Try opening the pool in the current context first
-            try:
-                await asyncio.wait_for(pool.open(), timeout=pool_open_timeout)
-                print__postgresql_debug(f"🔗 Pool opened successfully in current context")
-            except Exception as e:
-                error_msg = str(e).lower()
-                
-                if "proactoreventloop" in error_msg:
-                    print__postgresql_debug(f"🔧 ProactorEventLoop issue detected, switching to SelectorEventLoop...")
-                    
-                    # Create a new SelectorEventLoop context
-                    selector_policy = asyncio.WindowsSelectorEventLoopPolicy()
-                    selector_loop = selector_policy.new_event_loop()
-                    
-                    try:
-                        old_loop = asyncio.get_event_loop()
-                        asyncio.set_event_loop(selector_loop)
-                        
-                        # Recreate the pool in the new context
-                        pool = AsyncConnectionPool(
-                            conninfo=connection_string,
-                            max_size=max_size,
-                            min_size=min_size,
-                            timeout=timeout,
-                            kwargs=pool_kwargs,
-                            open=False
-                        )
-                        
-                        await asyncio.wait_for(pool.open(), timeout=pool_open_timeout)
-                        print__postgresql_debug(f"🔗 Pool opened successfully with SelectorEventLoop")
-                        
-                        # Restore original loop
-                        asyncio.set_event_loop(old_loop)
-                        
-                    finally:
-                        if not selector_loop.is_closed():
-                            selector_loop.close()
-                elif "ssl" in error_msg or "connection" in error_msg:
-                    print__postgresql_debug(f"🔧 SSL/Connection issue with Supabase detected: {error_msg}")
-                    raise Exception(f"Supabase SSL connection failed: {error_msg}")
-                else:
-                    raise
-        else:
-            # Non-Windows: Normal opening with Supabase timeout
-            print__postgresql_debug(f"🔧 Opening pool with timeout={pool_open_timeout}s")
-            await asyncio.wait_for(pool.open(), timeout=pool_open_timeout)
-            
-        mode_description = "TRANSACTION MODE (port 6543)" if is_transaction_mode else "SESSION MODE (port 5432)"
-        print__postgresql_debug(f"🔗 Created fresh Supabase connection pool for {mode_description} (max_size={max_size}, min_size={min_size}, timeout={timeout}) with SSL stability")
+        # Open the pool properly
+        await pool.open()
+        
+        # Simple connection test
+        async with pool.connection() as conn:
+            await conn.execute("SELECT 1")
+        
+        print__postgresql_debug(f"✅ Fresh connection pool created successfully with prepared statement protection")
         return pool
         
-    except asyncio.TimeoutError:
-        mode_description = "transaction mode (port 6543)" if is_transaction_mode else "session mode (port 5432)"
-        print__postgresql_debug(f"❌ Timeout opening Supabase connection pool in {mode_description} - check network connectivity and pool size limits")
-        if is_transaction_mode:
-            print__postgresql_debug("💡 Transaction mode troubleshooting:")
-            print__postgresql_debug("   1. Verify connection to port 6543 (transaction mode)")
-            print__postgresql_debug("   2. Use max_size=1 for transaction mode")
-            print__postgresql_debug("   3. Check Supabase pool size settings in dashboard")
-            print__postgresql_debug("   4. Ensure SSL settings are correct for Supabase")
-        raise Exception(f"Supabase {mode_description} connection timeout - check your network and database status")
     except Exception as e:
-        error_msg = str(e).lower()
-        if "ssl" in error_msg:
-            print__postgresql_debug(f"❌ SSL error opening Supabase connection pool: {e}")
-            print__postgresql_debug("💡 SSL Troubleshooting tips:")
-            print__postgresql_debug("   1. Verify your Supabase credentials are correct")
-            print__postgresql_debug("   2. Check if your IP is allowed in Supabase dashboard")
-            print__postgresql_debug("   3. Ensure you're using the correct Supabase host URL")
-            raise Exception(f"Supabase SSL connection failed: {e}")
-        else:
-            print__postgresql_debug(f"❌ Error opening Supabase connection pool: {e}")
-            raise
+        print__postgresql_debug(f"❌ Failed to create connection pool: {e}")
+        raise
 
 async def get_healthy_pool() -> AsyncConnectionPool:
     """Get a healthy connection pool with proper concurrent access protection."""
@@ -900,119 +782,57 @@ async def test_basic_postgres_connection():
 
 async def get_postgres_checkpointer():
     """
-    Get a PostgreSQL checkpointer using the official langgraph PostgreSQL implementation.
-    This ensures we use the correct table schemas and implementation with enhanced Supabase error handling.
+    Get a PostgreSQL checkpointer with simple, reliable configuration.
     """
     
-    max_attempts = 3
-    base_delay = 3  # Start with 3 seconds
-    
-    for attempt in range(max_attempts):
-        try:
-            # First check environment variables
-            print__postgresql_debug(f"🔍 Step 0 (attempt {attempt + 1}): Checking environment variables...")
-            if not check_postgres_env_vars():
-                raise Exception("Missing required PostgreSQL environment variables")
-            
-            # First test basic PostgreSQL connectivity
-            print__postgresql_debug(f"🔍 Step 1 (attempt {attempt + 1}): Testing basic Supabase connectivity...")
-            basic_connection_ok = await test_basic_postgres_connection()
-            
-            if not basic_connection_ok:
-                if attempt < max_attempts - 1:
-                    delay = base_delay * (attempt + 1)  # Progressive delay: 3s, 6s, 9s
-                    print__postgresql_debug(f"❌ Basic Supabase connectivity failed - retrying in {delay} seconds...")
-                    await asyncio.sleep(delay)
-                    continue
-                else:
-                    print__postgresql_debug("❌ Basic Supabase connectivity failed - cannot proceed")
-                    raise Exception("Supabase server is not reachable or credentials are invalid")
-            
-            print__postgresql_debug(f"✅ Basic Supabase connectivity confirmed (attempt {attempt + 1})")
-            
-            # Get a healthy connection pool
-            print__postgresql_debug(f"🔍 Step 2 (attempt {attempt + 1}): Creating Supabase connection pool...")
-            pool = await get_healthy_pool()
-            
-            print__postgresql_debug(f"🔍 Step 3 (attempt {attempt + 1}): Creating PostgreSQL checkpointer with official library...")
-            
-            # Create checkpointer with the connection pool
-            checkpointer = AsyncPostgresSaver(pool)
-            
-            print__postgresql_debug(f"🔍 Step 4 (attempt {attempt + 1}): Setting up langgraph tables...")
-            # Setup tables (this creates all required tables with correct schemas)
-            await checkpointer.setup()
-            
-            print__postgresql_debug(f"🔍 Step 5 (attempt {attempt + 1}): Setting up custom users_threads_runs table...")
-            # Setup our custom users_threads_runs table
-            await setup_users_threads_runs_table()
-            
-            print__postgresql_debug(f"✅ Official PostgreSQL checkpointer initialized successfully (attempt {attempt + 1})")
-            
-            # Wrap with resilient checkpointer to handle connection failures gracefully
-            resilient_checkpointer = ResilientPostgreSQLCheckpointer(checkpointer)
-            print__postgresql_debug(f"✅ Wrapped with resilient checkpointer for Supabase connection stability")
-            
-            return resilient_checkpointer
-            
-        except Exception as e:
-            error_msg = str(e).lower()
-            print__postgresql_debug(f"❌ Error creating PostgreSQL checkpointer (attempt {attempt + 1}): {e}")
-            
-            # Enhanced error categorization for Supabase
-            is_retryable = False
-            
-            if any(keyword in error_msg for keyword in [
-                "timeout", "connection", "network", "ssl", "connection reset", 
-                "connection closed", "server closed", "temporarily unavailable"
-            ]):
-                is_retryable = True
-                print__postgresql_debug("🔄 Connection/network error detected - this is retryable")
-            elif any(keyword in error_msg for keyword in [
-                "authentication", "password", "permission denied", "access denied"
-            ]):
-                print__postgresql_debug("🚫 Authentication error detected - not retryable")
-                print__postgresql_debug("💡 Check your Supabase credentials:")
-                print__postgresql_debug("   1. Verify database password")
-                print__postgresql_debug("   2. Check user permissions")
-                print__postgresql_debug("   3. Verify service role key")
-                break  # Don't retry auth errors
-            elif "missing required" in error_msg:
-                print__postgresql_debug("🚫 Configuration error detected - not retryable")
-                print__postgresql_debug("💡 Check your environment variables")
-                break  # Don't retry config errors
-            else:
-                is_retryable = True  # Default to retryable for unknown errors
-                print__postgresql_debug("❓ Unknown error - attempting retry")
-            
-            if attempt < max_attempts - 1 and is_retryable:
-                # Progressive delay with jitter for Supabase rate limits
-                delay = base_delay * (2 ** attempt) + (attempt * 2)  # 3s, 8s, 18s
-                print__postgresql_debug(f"🔄 Retrying in {delay} seconds...")
-                await asyncio.sleep(delay)
-            else:
-                if not is_retryable:
-                    print__postgresql_debug(f"❌ Non-retryable error encountered")
-                else:
-                    print__postgresql_debug(f"❌ All {max_attempts} attempts failed")
-                    
-                # Provide specific guidance based on error type
-                if "ssl" in error_msg or "connection" in error_msg:
-                    print__postgresql_debug("💡 Supabase Connection Troubleshooting:")
-                    print__postgresql_debug("   1. Check Supabase service status")
-                    print__postgresql_debug("   2. Verify your IP is whitelisted")
-                    print__postgresql_debug("   3. Check network connectivity")
-                    print__postgresql_debug("   4. Verify connection string format")
-                
-                print__postgresql_debug("📋 Environment Check:")
-                config = get_db_config()
-                print__postgresql_debug(f"   Host: {config.get('host', 'MISSING')}")
-                print__postgresql_debug(f"   Port: {config.get('port', 'MISSING')}")
-                print__postgresql_debug(f"   Database: {config.get('dbname', 'MISSING')}")
-                print__postgresql_debug(f"   User: {config.get('user', 'MISSING')}")
-                print__postgresql_debug(f"   Password: {'SET' if config.get('password') else 'MISSING'}")
-                
-                raise
+    try:
+        # Step 1: Check environment variables
+        print__postgresql_debug("🔍 Checking environment variables...")
+        if not check_postgres_env_vars():
+            raise Exception("Missing required PostgreSQL environment variables")
+        
+        # Step 2: Test basic connectivity  
+        print__postgresql_debug("🔍 Testing basic Supabase connectivity...")
+        basic_connection_ok = await test_basic_postgres_connection()
+        
+        if not basic_connection_ok:
+            print__postgresql_debug("❌ Basic Supabase connectivity failed")
+            raise Exception("Supabase server is not reachable or credentials are invalid")
+        
+        print__postgresql_debug("✅ Basic Supabase connectivity confirmed")
+        
+        # Step 3: Create simple connection pool
+        print__postgresql_debug("🔍 Creating Supabase connection pool...")
+        pool = await get_healthy_pool()
+        
+        # Step 4: Create checkpointer
+        print__postgresql_debug("🔍 Creating PostgreSQL checkpointer...")
+        checkpointer = AsyncPostgresSaver(pool)
+        
+        # Step 5: Setup tables
+        print__postgresql_debug("🔍 Setting up database tables...")
+        await checkpointer.setup()
+        await setup_users_threads_runs_table()
+        
+        print__postgresql_debug("✅ PostgreSQL checkpointer initialized successfully")
+        
+        # Step 6: Wrap with resilient checkpointer for basic error handling
+        resilient_checkpointer = ResilientPostgreSQLCheckpointer(checkpointer)
+        print__postgresql_debug("✅ Wrapped with resilient checkpointer")
+        
+        return resilient_checkpointer
+        
+    except Exception as e:
+        error_msg = str(e).lower()
+        print__postgresql_debug(f"❌ Error creating PostgreSQL checkpointer: {e}")
+        
+        # Simple error categorization
+        if any(keyword in error_msg for keyword in [
+            "timeout", "connection", "network", "ssl", "authentication", "password"
+        ]):
+            print__postgresql_debug("💡 Check Supabase connection and credentials")
+        
+        raise Exception("Supabase server is not reachable or credentials are invalid")
 
 def get_sync_postgres_checkpointer():
     """
@@ -1104,8 +924,26 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         
         # Get all checkpoints for this thread using alist()
         checkpoint_tuples = []
-        async for checkpoint_tuple in checkpointer.alist(config):
-            checkpoint_tuples.append(checkpoint_tuple)
+        try:
+            # Fix: alist() returns an async generator, don't await it
+            checkpoint_iterator = checkpointer.alist(config)
+            
+            # Now we can iterate over the async iterator
+            async for checkpoint_tuple in checkpoint_iterator:
+                checkpoint_tuples.append(checkpoint_tuple)
+                
+        except Exception as alist_error:
+            print__api_postgresql(f"❌ Error getting checkpoint list: {alist_error}")
+            # Try alternative approach if alist fails
+            try:
+                # Alternative: use aget_tuple to get the latest checkpoint
+                state_snapshot = await checkpointer.aget_tuple(config)
+                if state_snapshot:
+                    checkpoint_tuples = [state_snapshot]
+                    print__api_postgresql(f"⚠ Using fallback method - got latest checkpoint only")
+            except Exception as fallback_error:
+                print__api_postgresql(f"❌ Fallback method also failed: {fallback_error}")
+                return []
         
         if not checkpoint_tuples:
             print__api_postgresql(f"⚠ No checkpoints found for thread: {thread_id}")
@@ -1387,19 +1225,14 @@ async def test_connection_health():
             max_size=1,
             min_size=1,
             timeout=10,  # Short timeout for health check
+            open=False,  # Don't open in constructor to avoid deprecation warning
             kwargs={
-                "connect_timeout": 10,
-                "autocommit": True,
-                "prepare_threshold": None,
-                "server_settings": {
-                    "application_name": "czsu_agent_health_check",
-                    "statement_timeout": "10000",  # 10 second timeout
-                }
-            },
-            open=False
+                "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase
+                "autocommit": True,             # Use autocommit for better compatibility
+            }
         )
         
-        await pool.open()
+        await pool.open()  # Open the pool properly
         
         async with pool.connection() as conn:
             result = await conn.execute("SELECT 1 as test, NOW() as current_time")
@@ -1429,142 +1262,59 @@ async def test_connection_health():
 class ResilientPostgreSQLCheckpointer:
     """
     A wrapper around PostgreSQLCheckpointer that handles connection failures gracefully
-    by retrying only checkpoint operations, not the entire LangGraph execution.
+    with simple retry logic.
     """
     
     def __init__(self, base_checkpointer):
         self.base_checkpointer = base_checkpointer
-        self.max_checkpoint_retries = 3
+        self.max_retries = 2  # Simple retry count
         
-    async def _retry_checkpoint_operation(self, operation_name, operation_func, *args, **kwargs):
-        """Enhanced retry logic with proper connection pool management and concurrent access protection."""
-        max_attempts = 3
-        base_delay = 0.5
+    async def _simple_retry(self, operation_name, operation_func, *args, **kwargs):
+        """Simple retry logic for basic connection failures."""
         
-        for attempt in range(max_attempts):
+        for attempt in range(self.max_retries + 1):
             try:
-                print__postgresql_debug(f"🔄 [{operation_name}] Attempt {attempt + 1}/{max_attempts}")
-                
-                # Use safe pool operation context manager
-                async with safe_pool_operation() as pool:
-                    # Execute the operation with the healthy pool
-                    result = await operation_func(*args, **kwargs)
-                    
-                    if attempt > 0:
-                        print__postgresql_debug(f"✅ [{operation_name}] Succeeded on attempt {attempt + 1}")
-                    
-                    return result
-                    
-            except Exception as e:
-                error_msg = str(e).lower()
-                
-                # Log the error for debugging
-                print__postgresql_debug(f"❌ [{operation_name}] Attempt {attempt + 1} failed: {e}")
-                
-                # Check if this is a retryable error
-                retryable_errors = [
-                    "pool", "connection", "timeout", "server closed", "bad connection",
-                    "consuming input failed", "ssl error", "operational error",
-                    "database is locked", "temporary failure", "busy"
-                ]
-                
-                is_retryable = any(keyword in error_msg for keyword in retryable_errors)
-                
-                if not is_retryable or attempt == max_attempts - 1:
-                    # Not retryable or final attempt - give up
-                    print__postgresql_debug(f"❌ [{operation_name}] Final failure after {attempt + 1} attempts: {e}")
-                    raise e
-                
-                # Wait before retry with exponential backoff
-                delay = base_delay * (2 ** attempt)
-                print__postgresql_debug(f"⏳ [{operation_name}] Waiting {delay:.1f}s before retry...")
-                await asyncio.sleep(delay)
-        
-    async def aput(self, config, checkpoint, metadata, new_versions):
-        """Put checkpoint with retry logic."""
-        return await self._retry_checkpoint_operation(
-            "aput", 
-            self.base_checkpointer.aput,
-            config, checkpoint, metadata, new_versions
-        )
-        
-    async def aput_writes(self, config, writes, task_id):
-        """Put writes with retry logic."""
-        return await self._retry_checkpoint_operation(
-            "aput_writes",
-            self.base_checkpointer.aput_writes,
-            config, writes, task_id
-        )
-    
-    async def aget(self, config):
-        """Get checkpoint with retry logic."""
-        return await self._retry_checkpoint_operation(
-            "aget",
-            self.base_checkpointer.aget,
-            config
-        )
-        
-    async def aget_tuple(self, config):
-        """Get tuple with retry logic."""
-        return await self._retry_checkpoint_operation(
-            "aget_tuple", 
-            self.base_checkpointer.aget_tuple,
-            config
-        )
-        
-    async def alist(self, config, filter=None, before=None, limit=None):
-        """List checkpoints with retry logic - returns async generator."""
-        # For alist, we need to handle it differently since it returns an async generator
-        # We can't use the retry wrapper directly, so we implement retry logic here
-        
-        for attempt in range(self.max_checkpoint_retries):
-            try:
-                # Get the async generator from the base checkpointer
-                # Note: AsyncPostgresSaver.alist() only takes config parameter
-                async_gen = self.base_checkpointer.alist(config)
-                
-                # Yield items from the generator with error handling
-                async for item in async_gen:
-                    yield item
-                return  # Successfully completed
+                result = await operation_func(*args, **kwargs)
+                if attempt > 0:
+                    print__postgresql_debug(f"✅ [{operation_name}] Succeeded on attempt {attempt + 1}")
+                return result
                 
             except Exception as e:
                 error_msg = str(e).lower()
                 
-                # Check if it's a recoverable database connection error
-                is_recoverable = any(keyword in error_msg for keyword in [
-                    "dbhandler exited",
-                    "connection is lost",
-                    "ssl connection has been closed",
-                    "connection closed",
-                    "flush request failed",
-                    "pipeline mode",
-                    "connection not available",
-                    "bad connection"
+                # Only retry connection-related errors
+                is_retryable = any(keyword in error_msg for keyword in [
+                    "connection", "timeout", "network", "ssl", "closed"
                 ])
                 
-                if attempt < self.max_checkpoint_retries - 1 and is_recoverable:
-                    delay = 1.5 ** (attempt + 1)  # Progressive delay: 1.5s, 2.25s, 3.38s
-                    print__postgresql_debug(f"🔄 Checkpoint alist operation failed (attempt {attempt + 1}): {str(e)}")
-                    print__postgresql_debug(f"🔄 Retrying alist operation in {delay:.1f}s...")
+                if attempt < self.max_retries and is_retryable:
+                    delay = 1 + attempt  # Simple delay: 1s, 2s
+                    print__postgresql_debug(f"⚠ [{operation_name}] Attempt {attempt + 1} failed, retrying in {delay}s: {e}")
                     await asyncio.sleep(delay)
-                    
-                    # Try to refresh connection pool on SSL/connection errors
-                    if any(keyword in error_msg for keyword in ["ssl", "connection"]):
-                        try:
-                            if hasattr(self.base_checkpointer, 'conn') and hasattr(self.base_checkpointer.conn, 'reset'):
-                                print__postgresql_debug(f"🔄 Attempting to reset connection pool...")
-                                await self.base_checkpointer.conn.reset()
-                        except Exception as reset_error:
-                            print__postgresql_debug(f"⚠ Connection reset failed: {reset_error}")
-                    
-                    continue
                 else:
-                    print__postgresql_debug(f"❌ Checkpoint alist operation failed after {attempt + 1} attempts: {str(e)}")
+                    print__postgresql_debug(f"❌ [{operation_name}] Failed after {attempt + 1} attempts: {e}")
                     raise
     
+    # Delegate all operations to the base checkpointer with simple retry
+    async def aput(self, config, checkpoint, metadata, new_versions):
+        return await self._simple_retry("aput", self.base_checkpointer.aput, config, checkpoint, metadata, new_versions)
+
+    async def aput_writes(self, config, writes, task_id):
+        return await self._simple_retry("aput_writes", self.base_checkpointer.aput_writes, config, writes, task_id)
+
+    async def aget(self, config):
+        return await self._simple_retry("aget", self.base_checkpointer.aget, config)
+
+    async def aget_tuple(self, config):
+        return await self._simple_retry("aget_tuple", self.base_checkpointer.aget_tuple, config)
+
+    async def alist(self, config, filter=None, before=None, limit=None):
+        # alist returns an async generator, so we need to yield from it
+        # We can't apply retry logic to async generators, so we delegate directly
+        async for item in self.base_checkpointer.alist(config):
+            yield item
+
     def __getattr__(self, name):
-        """Delegate other operations to base checkpointer."""
         return getattr(self.base_checkpointer, name)
 
 @asynccontextmanager

@@ -153,29 +153,24 @@ RATE_LIMIT_MAX_WAIT = 5  # maximum seconds to wait before giving up
 throttle_semaphores = defaultdict(lambda: asyncio.Semaphore(8))  # Max 8 concurrent requests per IP
 
 def detect_memory_fragmentation() -> dict:
-    """Detect potential memory fragmentation issues."""
+    """Simple memory monitoring without complex fragmentation detection."""
     try:
         process = psutil.Process()
         memory_info = process.memory_info()
         
-        # RSS is physical memory, VMS is virtual memory
+        # RSS is physical memory
         rss_mb = memory_info.rss / 1024 / 1024
         vms_mb = memory_info.vms / 1024 / 1024
         
-        # High VMS to RSS ratio might indicate fragmentation
-        fragmentation_ratio = vms_mb / rss_mb if rss_mb > 0 else 0
-        
-        # Memory growth since startup
+        # Simple memory growth tracking
         global _memory_baseline
         memory_growth = rss_mb - _memory_baseline if _memory_baseline else 0
         
         return {
             "rss_mb": round(rss_mb, 2),
             "vms_mb": round(vms_mb, 2),
-            "fragmentation_ratio": round(fragmentation_ratio, 2),
             "memory_growth_mb": round(memory_growth, 2),
-            "potential_fragmentation": fragmentation_ratio > 2.0,  # Threshold from article
-            "significant_growth": memory_growth > GC_MEMORY_THRESHOLD  # Use env variable instead of hardcoded 100MB
+            "high_memory": rss_mb > 400  # Simple threshold
         }
     except Exception as e:
         return {"error": str(e)}
@@ -207,8 +202,8 @@ def log_memory_usage(context: str = ""):
         
         # Memory fragmentation detection
         fragmentation_info = detect_memory_fragmentation()
-        frag_warning = " [FRAGMENTATION DETECTED]" if fragmentation_info.get("potential_fragmentation") else ""
-        growth_warning = " [SIGNIFICANT GROWTH]" if fragmentation_info.get("significant_growth") else ""
+        frag_warning = " [FRAGMENTATION DETECTED]" if fragmentation_info.get("high_memory") else ""
+        growth_warning = " [SIGNIFICANT GROWTH]" if fragmentation_info.get("memory_growth_mb") > GC_MEMORY_THRESHOLD else ""
         
         print__memory_monitoring(
             f"Memory usage{f' [{context}]' if context else ''}: "
@@ -218,11 +213,11 @@ def log_memory_usage(context: str = ""):
         
         # FRAGMENTATION HANDLING: Automatically handle detected fragmentation
         # Only trigger if not already in a fragmentation handling context to avoid loops
-        if (fragmentation_info.get("potential_fragmentation") and 
+        if (fragmentation_info.get("high_memory") and 
             not context.startswith("post_fragmentation_handler") and
             not context.startswith("fragmentation_")):
             
-            print__memory_monitoring(f"🚨 FRAGMENTATION TRIGGER: Ratio {fragmentation_info.get('fragmentation_ratio', 0):.2f} exceeds threshold 2.0")
+            print__memory_monitoring(f"🚨 FRAGMENTATION TRIGGER: RSS {rss_mb:.1f}MB exceeds threshold 400MB")
             print__memory_monitoring(f"📊 Memory details: RSS={rss_mb:.1f}MB, VMS={vms_mb:.1f}MB, Growth={fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
             
             # Call the fragmentation handler
@@ -245,137 +240,38 @@ def log_memory_usage(context: str = ""):
     except Exception as e:
         print__memory_monitoring(f"Could not check memory usage: {e}")
 
-def aggressive_garbage_collection(context: str = ""):
-    """Aggressive garbage collection based on article's findings."""
-    global _last_gc_run
-    
-    try:
-        current_time = time.time()
-        
-        # Run GC more frequently during high memory usage
-        process = psutil.Process()
-        memory_mb = process.memory_info().rss / 1024 / 1024
-        
-        # Force GC if memory is high or it's been a while
-        should_gc = (
-            current_time - _last_gc_run > 30 or  # Every 30 seconds minimum
-            memory_mb > GC_MEMORY_THRESHOLD or  # High memory usage - trigger at threshold
-            context in ["analysis_complete", "cleanup_start", "error_cleanup"]  # Critical points
-        )
-        
-        if should_gc:
-            collected = gc.collect()
-            _last_gc_run = current_time
-            
-            if collected > 0:
-                print__memory_monitoring(f"Aggressive GC [{context}]: freed {collected} objects")
-                # Log memory after GC to see impact
-                log_memory_usage(f"post_gc_{context}")
-            
-    except Exception as e:
-        print__memory_monitoring(f"GC error: {e}")
-
 def handle_memory_fragmentation():
-    """Handle detected memory fragmentation with specific countermeasures."""
-    print__memory_monitoring("🔧 FRAGMENTATION HANDLER: Implementing countermeasures")
+    """Simple memory cleanup without complex fragmentation handling."""
+    print__memory_monitoring("🧹 Running simple memory cleanup")
     
     try:
-        # 1. Force comprehensive garbage collection across all generations
+        # Simple garbage collection
         import gc
-        collected_counts = []
-        for generation in range(3):  # Python has 3 GC generations
-            collected = gc.collect(generation)
-            collected_counts.append(collected)
+        collected = gc.collect()
+        print__memory_monitoring(f"🧹 GC freed {collected} objects")
         
-        total_collected = sum(collected_counts)
-        print__memory_monitoring(f"🧹 Comprehensive GC: freed {total_collected} objects across generations {collected_counts}")
-        
-        # 2. Force memory compaction and cleanup
-        try:
-            # Clear weak references that might be causing fragmentation
-            import weakref
-            weakref.finalize_registry()
-            print__memory_monitoring("🧹 Cleared weak reference registry")
-        except Exception as weakref_error:
-            print__memory_monitoring(f"⚠ Could not clear weakref registry: {weakref_error}")
-        
-        # 3. Reset connection pool to prevent pool fragmentation
-        global GLOBAL_CHECKPOINTER
-        if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
-            try:
-                print__memory_monitoring("🔄 Scheduling connection pool recreation to reduce fragmentation")
-                # Mark for recreation on next use - this prevents immediate disruption
-                # but ensures fragmented pool gets replaced
-                if hasattr(GLOBAL_CHECKPOINTER, '_fragmentation_reset_needed'):
-                    GLOBAL_CHECKPOINTER._fragmentation_reset_needed = True
-                print__memory_monitoring("✅ Connection pool marked for recreation")
-            except Exception as pool_error:
-                print__memory_monitoring(f"⚠ Could not mark pool for reset: {pool_error}")
-        
-        # 4. Clear rate limiting storage to free fragmented memory
+        # Clear rate limiting storage for inactive clients
         global rate_limit_storage, throttle_semaphores
-        old_clients_rate = len(rate_limit_storage)
-        old_clients_throttle = len(throttle_semaphores)
+        old_clients = len(rate_limit_storage)
         
-        # Clear old entries more aggressively during fragmentation
         import time
         current_time = time.time()
         for client_ip in list(rate_limit_storage.keys()):
             rate_limit_storage[client_ip] = [
                 timestamp for timestamp in rate_limit_storage[client_ip]
-                if current_time - timestamp < RATE_LIMIT_WINDOW / 2  # More aggressive cleanup
+                if current_time - timestamp < RATE_LIMIT_WINDOW
             ]
             if not rate_limit_storage[client_ip]:
                 del rate_limit_storage[client_ip]
         
-        # Clear throttle semaphores for inactive clients
-        active_clients = set(rate_limit_storage.keys())
-        for client_ip in list(throttle_semaphores.keys()):
-            if client_ip not in active_clients:
-                del throttle_semaphores[client_ip]
-        
-        new_clients_rate = len(rate_limit_storage)
-        new_clients_throttle = len(throttle_semaphores)
-        
-        print__memory_monitoring(f"🧹 Rate limiting cleanup: {old_clients_rate}→{new_clients_rate} clients, {old_clients_throttle}→{new_clients_throttle} throttle semaphores")
-        
-        # 5. Force Python to return memory to OS if possible
-        try:
-            import ctypes
-            import sys
-            if sys.platform == "win32":
-                # On Windows, try to encourage memory return to OS
-                kernel32 = ctypes.windll.kernel32
-                kernel32.SetProcessWorkingSetSize(-1, -1, -1)
-                print__memory_monitoring("🧹 Windows: Attempted to trim working set")
-        except Exception as os_error:
-            print__memory_monitoring(f"⚠ Could not trim OS memory: {os_error}")
-        
-        # 6. Log memory after all fragmentation handling
-        print__memory_monitoring("📊 Memory state after fragmentation handling:")
-        log_memory_usage("post_fragmentation_handler")
-        
-        # 7. Check if fragmentation was resolved
-        fragmentation_info = detect_memory_fragmentation()
-        if fragmentation_info.get("potential_fragmentation"):
-            print__memory_monitoring(f"⚠ Fragmentation still detected after handler (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
-            print__memory_monitoring(f"🔄 This might indicate a deeper memory issue requiring application restart")
-            
-            # CRITICAL: Check if fragmentation is severe and persistent
-            ratio = fragmentation_info.get('fragmentation_ratio', 0)
-            if ratio > 3.0:  # Very severe fragmentation
-                print__memory_monitoring(f"🚨 SEVERE FRAGMENTATION: Ratio {ratio:.2f} indicates critical memory fragmentation")
-                print__memory_monitoring(f"💡 RECOMMENDATION: Consider restarting the application to restore memory health")
-                print__memory_monitoring(f"🔄 Frontend should handle this gracefully via PostgreSQL recovery")
-        else:
-            print__memory_monitoring(f"✅ Fragmentation successfully resolved (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
+        new_clients = len(rate_limit_storage)
+        print__memory_monitoring(f"🧹 Cleaned rate limiting: {old_clients}→{new_clients} clients")
             
     except Exception as e:
-        print__memory_monitoring(f"❌ Error in fragmentation handler: {e}")
-        # Still try basic GC even if advanced handling fails
+        print__memory_monitoring(f"❌ Error in memory cleanup: {e}")
+        # Still try basic GC even if cleanup fails
         try:
             gc.collect()
-            print__memory_monitoring("🧹 Fallback: Basic garbage collection completed")
         except:
             pass
 
@@ -612,6 +508,26 @@ async def get_healthy_checkpointer():
             # FRAGMENTATION CHECK: If fragmentation handler marked for reset, recreate pool
             if hasattr(GLOBAL_CHECKPOINTER, '_fragmentation_reset_needed') and GLOBAL_CHECKPOINTER._fragmentation_reset_needed:
                 print__memory_monitoring("🔄 FRAGMENTATION RESET: Recreating checkpointer due to fragmentation handler request")
+                
+                # CRITICAL FIX: Wait for active operations to complete before pool recreation
+                from my_agent.utils.postgres_checkpointer import get_active_operations_count
+                max_wait_time = 30  # Maximum 30 seconds to wait for operations to complete
+                wait_start = time.time()
+                
+                while True:
+                    active_ops = await get_active_operations_count()
+                    if active_ops == 0:
+                        print__memory_monitoring(f"✅ No active operations - safe to recreate pool")
+                        break
+                    
+                    elapsed = time.time() - wait_start
+                    if elapsed > max_wait_time:
+                        print__memory_monitoring(f"⚠ Timeout waiting for {active_ops} active operations to complete - proceeding with caution")
+                        break
+                    
+                    print__memory_monitoring(f"⏳ Waiting for {active_ops} active operations to complete... ({elapsed:.1f}s elapsed)")
+                    await asyncio.sleep(1)
+                
                 # Close existing connection and mark for recreation
                 if GLOBAL_CHECKPOINTER.conn and not GLOBAL_CHECKPOINTER.conn.closed:
                     await GLOBAL_CHECKPOINTER.conn.close()
@@ -644,6 +560,20 @@ async def get_healthy_checkpointer():
         try:
             if GLOBAL_CHECKPOINTER.conn and not GLOBAL_CHECKPOINTER.conn.closed:
                 print__startup_debug("🧹 Closing old checkpointer connection...")
+                
+                # CRITICAL FIX: Wait for active operations before closing
+                from my_agent.utils.postgres_checkpointer import get_active_operations_count
+                active_ops = await get_active_operations_count()
+                if active_ops > 0:
+                    print__startup_debug(f"⏳ Waiting for {active_ops} active operations before closing pool...")
+                    wait_start = time.time()
+                    while active_ops > 0 and (time.time() - wait_start) < 15:  # Wait max 15 seconds
+                        await asyncio.sleep(0.5)
+                        active_ops = await get_active_operations_count()
+                    
+                    if active_ops > 0:
+                        print__startup_debug(f"⚠ Still {active_ops} active operations after 15s - proceeding with closure")
+                
                 await GLOBAL_CHECKPOINTER.conn.close()
         except Exception as cleanup_error:
             print__startup_debug(f"⚠ Error during cleanup: {cleanup_error}")
@@ -677,7 +607,7 @@ async def get_healthy_checkpointer():
             else:
                 print__startup_debug("❌ All checkpointer creation attempts timed out, falling back to InMemorySaver")
                 break
-                
+                    
         except Exception as e:
             error_msg = str(e)
             print__startup_debug(f"❌ Failed to recreate checkpointer (attempt {attempt + 1}): {error_msg}")
@@ -693,7 +623,6 @@ async def get_healthy_checkpointer():
             else:
                 print__startup_debug("❌ Non-recoverable error or final attempt failed, falling back to InMemorySaver")
                 break
-    
     # Fallback to InMemorySaver only if PostgreSQL completely fails
     print__startup_debug("⚠ PostgreSQL checkpointer creation failed completely - falling back to InMemorySaver")
     print__memory_monitoring("⚠ Using InMemorySaver - fragmentation handling will be limited")
@@ -858,7 +787,7 @@ async def enhanced_memory_monitoring_middleware(request: Request, call_next):
     # Periodic memory health check (every 50 requests)
     if _request_count % 50 == 0:
         fragmentation_info = detect_memory_fragmentation()
-        if fragmentation_info.get("potential_fragmentation") or fragmentation_info.get("significant_growth"):
+        if fragmentation_info.get("high_memory") or fragmentation_info.get("memory_growth_mb"):
             print__memory_monitoring(f"🔍 Request #{_request_count} memory health check: {fragmentation_info}")
     
     return response
@@ -882,8 +811,8 @@ async def health_check():
                 "memory_vms_mb": fragmentation_info.get("vms_mb", 0),
                 "memory_fragmentation_ratio": fragmentation_info.get("fragmentation_ratio", 0),
                 "memory_growth_mb": fragmentation_info.get("memory_growth_mb", 0),
-                "potential_memory_fragmentation": fragmentation_info.get("potential_fragmentation", False),
-                "significant_memory_growth": fragmentation_info.get("significant_growth", False)
+                "potential_memory_fragmentation": fragmentation_info.get("high_memory", False),
+                "significant_memory_growth": fragmentation_info.get("memory_growth_mb", 0) > GC_MEMORY_THRESHOLD
             })
             
             # Check if we're approaching memory limits
@@ -903,10 +832,10 @@ async def health_check():
                 health_data["memory_limit_mb"] = memory_limit_mb
                 
                 # Return unhealthy if memory usage is too high or showing leak patterns
-                if usage_percent > 90 or fragmentation_info.get("significant_growth", False):
+                if usage_percent > 90 or fragmentation_info.get("significant_memory_growth", False):
                     health_data["status"] = "critical_memory"
                     health_data["warning"] = f"Memory usage at {usage_percent:.1f}% or significant growth detected"
-                elif usage_percent > 80 or fragmentation_info.get("potential_fragmentation", False):
+                elif usage_percent > 80 or fragmentation_info.get("high_memory", False):
                     health_data["status"] = "high_memory"
                     health_data["warning"] = f"Memory usage at {usage_percent:.1f}% or fragmentation detected"
                     
@@ -1017,11 +946,11 @@ async def memory_health_check():
             status = "warning"
             warnings.append(f"Elevated RSS memory usage: {usage_percent:.1f}%")
         
-        if fragmentation_info.get("potential_fragmentation", False):
+        if fragmentation_info.get("high_memory", False):
             status = "warning" if status == "healthy" else status
             warnings.append(f"Memory fragmentation detected (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
         
-        if fragmentation_info.get("significant_growth", False):
+        if fragmentation_info.get("memory_growth_mb", 0):
             status = "critical" if status == "healthy" else status
             warnings.append(f"Significant memory growth: {fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
         
@@ -1329,97 +1258,16 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
             print__feedback_flow(f"✅ Generated new run_id: {run_id}")
             
-            # MEMORY LEAK PREVENTION: Pre-analysis cleanup
-            print__memory_monitoring("🧹 PRE-ANALYSIS: Running memory cleanup to prevent leaks")
-            aggressive_garbage_collection("pre_analysis")
-            
-            # Check memory before analysis
-            pre_analysis_fragmentation = detect_memory_fragmentation()
-            if pre_analysis_fragmentation.get("potential_fragmentation"):
-                print__memory_monitoring(f"⚠ PRE-ANALYSIS fragmentation detected - running handler")
-                handle_memory_fragmentation()
-            
-            # CRITICAL: Reset checkpointer if marked for fragmentation reset
-            if (hasattr(checkpointer, '_fragmentation_reset_needed') and 
-                checkpointer._fragmentation_reset_needed):
-                print__memory_monitoring("🔄 PRE-ANALYSIS: Recreating checkpointer due to fragmentation")
-                checkpointer = await get_healthy_checkpointer()
-            
             print__feedback_flow(f"🚀 Starting analysis")
-            # Reduced timeout from 15 minutes to 8 minutes for platform stability
+            # 8 minute timeout for platform stability
             result = await asyncio.wait_for(
                 analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=checkpointer, run_id=run_id),
-                timeout=480  # 8 minutes timeout to prevent platform restarts
+                timeout=480  # 8 minutes timeout
             )
             
-            # POST-ANALYSIS MEMORY MONITORING: Check for memory growth patterns
-            post_analysis_memory = None
-            try:
-                process = psutil.Process()
-                post_analysis_memory = process.memory_info().rss / 1024 / 1024
-                memory_growth = post_analysis_memory - pre_analysis_memory if pre_analysis_memory else 0
-                
-                print__memory_monitoring(
-                    f"Post-analysis memory: {post_analysis_memory:.1f}MB RSS, "
-                    f"Growth: {memory_growth:.1f}MB"
-                )
-                
-                # Warn about suspicious memory growth (pattern from article)
-                if memory_growth > GC_MEMORY_THRESHOLD * 0.3:  # 30% of threshold growth per analysis
-                    print__memory_monitoring(
-                        f"🚨 SUSPICIOUS MEMORY GROWTH: {memory_growth:.1f}MB per analysis! "
-                        f"This is similar to the pattern described in the Ocean framework leak!"
-                    )
-                    
-            except:
-                pass
-            
-            log_memory_usage("analysis_complete")
             print__feedback_flow(f"✅ Analysis completed successfully")
             
-            # AGGRESSIVE CLEANUP: Force garbage collection after analysis to free memory
-            # This addresses the memory not being released issue from the article
-            aggressive_garbage_collection("analysis_complete")
-            
-            # FRAGMENTATION PREVENTION: Comprehensive post-analysis cleanup
-            print__memory_monitoring("🔧 FRAGMENTATION PREVENTION: Starting post-analysis cleanup")
-            
-            # Check for fragmentation immediately after analysis
-            fragmentation_info = detect_memory_fragmentation()
-            if fragmentation_info.get("potential_fragmentation"):
-                print__memory_monitoring(f"🚨 FRAGMENTATION DETECTED after analysis: Ratio {fragmentation_info.get('fragmentation_ratio', 0):.2f}")
-                print__memory_monitoring(f"🔄 Triggering fragmentation handler immediately")
-                handle_memory_fragmentation()
-            else:
-                print__memory_monitoring(f"✅ No fragmentation detected after analysis (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
-            
-            # Post-GC memory check
-            try:
-                if pre_analysis_memory and post_analysis_memory:
-                    process = psutil.Process()
-                    post_gc_memory = process.memory_info().rss / 1024 / 1024
-                    gc_freed = post_analysis_memory - post_gc_memory
-                    if gc_freed > GC_MEMORY_THRESHOLD * 0.05:  # More than 5% of threshold freed
-                        print__memory_monitoring(f"GC effectiveness: freed {gc_freed:.1f}MB after analysis")
-                    
-                    # Check for excessive memory retention after cleanup
-                    total_cleanup_freed = post_analysis_memory - post_gc_memory
-                    memory_retained = post_gc_memory - pre_analysis_memory if pre_analysis_memory else 0
-                    
-                    if memory_retained > GC_MEMORY_THRESHOLD * 0.2:  # 20% of threshold retained after cleanup
-                        print__memory_monitoring(f"⚠ HIGH MEMORY RETENTION: {memory_retained:.1f}MB still retained after cleanup")
-                        print__memory_monitoring(f"🔄 This suggests potential memory fragmentation or leaks")
-                        # Run additional fragmentation handler if not already triggered
-                        if not fragmentation_info.get("potential_fragmentation"):
-                            print__memory_monitoring(f"🔄 Running additional fragmentation handler due to high retention")
-                            handle_memory_fragmentation()
-                    else:
-                        print__memory_monitoring(f"✅ Good memory cleanup: only {memory_retained:.1f}MB retained after analysis")
-                        
-            except Exception as cleanup_error:
-                print__memory_monitoring(f"⚠ Error during post-analysis memory check: {cleanup_error}")
-            
-            # MEMORY PRESSURE RECOVERY: Save response state before attempting HTTP response
+            # Simple response preparation
             response_data = {
                 "prompt": request.prompt,
                 "result": result["result"] if isinstance(result, dict) and "result" in result else str(result),
@@ -1433,17 +1281,13 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 "run_id": run_id
             }
             
-            # Final memory pressure check before HTTP response
+            # Simple memory check and return response
             try:
                 process = psutil.Process()
                 current_memory = process.memory_info().rss / 1024 / 1024
                 
-                print__memory_monitoring(f"📤 Current memory: {current_memory:.1f}MB - preparing HTTP response")
+                print__memory_monitoring(f"📤 Current memory: {current_memory:.1f}MB - sending response")
                 
-                # CRITICAL: Always attempt to return response regardless of memory state
-                print__memory_monitoring(f"📤 Attempting to send full HTTP response to frontend...")
-                
-                # Add response metadata for frontend debugging
                 response_data.update({
                     "memory_usage_mb": current_memory,
                     "analysis_completed": True,
@@ -1451,25 +1295,15 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                     "server_status": "completed_successfully"
                 })
                 
-                # ENHANCED RESPONSE LOGGING: Log exactly what we're sending to frontend
-                print__memory_monitoring(f"📤 SENDING RESPONSE TO FRONTEND:")
-                print__memory_monitoring(f"   🔑 run_id: {response_data.get('run_id', 'N/A')}")
-                print__memory_monitoring(f"   🧵 thread_id: {response_data.get('thread_id', 'N/A')}")
-                print__memory_monitoring(f"   📊 result_length: {len(str(response_data.get('result', ''))) if response_data.get('result') else 0} chars")
-                print__memory_monitoring(f"   🔍 response_keys: {list(response_data.keys())}")
-                print__memory_monitoring(f"   💾 memory_usage: {response_data.get('memory_usage_mb', 'N/A')}MB")
-                print__memory_monitoring(f"   ✅ server_status: {response_data.get('server_status', 'N/A')}")
-                
                 return response_data
                 
             except Exception as response_error:
-                # CRITICAL: If response preparation fails, still try to return something
-                print__memory_monitoring(f"❌ Error preparing HTTP response: {response_error}")
+                # Simple fallback without complex recovery logic
+                print__memory_monitoring(f"❌ Error preparing response: {response_error}")
                 
-                # Fallback response to prevent frontend hanging
                 fallback_response = {
                     "prompt": request.prompt,
-                    "result": result if 'result' in locals() else "Analysis completed but response formatting failed",
+                    "result": result if 'result' in locals() else "Analysis completed",
                     "queries_and_results": [],
                     "thread_id": request.thread_id,
                     "top_selection_codes": [],
@@ -1478,35 +1312,18 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                     "sql": None,
                     "datasetUrl": None,
                     "run_id": run_id,
-                    "error": f"Response preparation error: {str(response_error)}",
-                    "recovery_note": "Check PostgreSQL checkpoints for full results",
-                    "analysis_completed": True,
-                    "timestamp": datetime.now().isoformat(),
-                    "server_status": "completed_with_response_error"
+                    "error": "Response formatting error"
                 }
                 
-                print__memory_monitoring(f"📤 Sending fallback response to prevent frontend hanging")
                 return fallback_response
             
         except asyncio.TimeoutError:
             error_msg = "Analysis timed out after 8 minutes"
             print__feedback_flow(f"🚨 {error_msg}")
-            log_memory_usage("analysis_timeout")
-            
-            # TIMEOUT CLEANUP: Force aggressive garbage collection and fragmentation handling on timeout
-            aggressive_garbage_collection("analysis_timeout")
-            
-            # Check for fragmentation after timeout - timeouts often indicate memory pressure
-            fragmentation_info = detect_memory_fragmentation()
-            if fragmentation_info.get("potential_fragmentation") or fragmentation_info.get("significant_growth"):
-                print__memory_monitoring(f"🚨 TIMEOUT + FRAGMENTATION: Running fragmentation handler after timeout")
-                print__memory_monitoring(f"📊 Fragmentation ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f}, Growth: {fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
-                handle_memory_fragmentation()
             
             # Log for recovery purposes
             if run_id:
-                print__memory_monitoring(f"🔄 TIMEOUT RECOVERY INFO: thread_id={request.thread_id}, run_id={run_id}")
-                print__memory_monitoring(f"🔄 Analysis may have partially completed - check PostgreSQL for saved state")
+                print__feedback_flow(f"🔄 TIMEOUT INFO: thread_id={request.thread_id}, run_id={run_id}")
             
             raise HTTPException(status_code=408, detail=error_msg)
             
@@ -1514,40 +1331,12 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             error_msg = f"Analysis failed: {str(e)}"
             print__feedback_flow(f"🚨 {error_msg}")
             print__feedback_flow(f"🔍 Error details: {type(e).__name__}: {str(e)}")
-            log_memory_usage("analysis_error")
-            
-            # ERROR CLEANUP: Force aggressive garbage collection and fragmentation handling on error
-            aggressive_garbage_collection("analysis_error")
-            
-            # Check for fragmentation after error - errors can leave memory in fragmented state
-            fragmentation_info = detect_memory_fragmentation()
-            if fragmentation_info.get("potential_fragmentation") or fragmentation_info.get("significant_growth"):
-                print__memory_monitoring(f"🚨 ERROR + FRAGMENTATION: Running fragmentation handler after error")
-                print__memory_monitoring(f"📊 Fragmentation ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f}, Growth: {fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
-                handle_memory_fragmentation()
             
             # Enhanced error logging for recovery
             if run_id:
-                print__memory_monitoring(f"🔄 ERROR RECOVERY INFO: thread_id={request.thread_id}, run_id={run_id}")
-                print__memory_monitoring(f"🔄 Check PostgreSQL checkpoints for any saved partial state")
+                print__feedback_flow(f"🔄 ERROR INFO: thread_id={request.thread_id}, run_id={run_id}")
             
-            # Check if this is a memory pressure related error
-            error_str = str(e).lower()
-            if any(keyword in error_str for keyword in ['memory', 'resource', 'timeout', 'connection']):
-                print__memory_monitoring(f"🚨 MEMORY PRESSURE ERROR DETECTED: {error_str}")
-                print__memory_monitoring(f"🔄 Frontend should attempt recovery from PostgreSQL")
-                
-                # Run additional fragmentation cleanup for memory-related errors
-                print__memory_monitoring(f"🔄 Running additional fragmentation cleanup for memory-related error")
-                handle_memory_fragmentation()
-                
-                # Still raise the error, but with enhanced info for frontend recovery
-                raise HTTPException(
-                    status_code=503, 
-                    detail="Service temporarily unavailable due to high load. Your request may have been processed. Please check your chat or refresh the page."
-                )
-            else:
-                raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
+            raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
@@ -2468,8 +2257,14 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
         
         # Get all checkpoints for this thread
         checkpoint_tuples = []
-        async for checkpoint_tuple in checkpointer.alist(config):
-            checkpoint_tuples.append(checkpoint_tuple)
+        try:
+            # Fix: alist() returns an async generator, don't await it
+            checkpoint_iterator = checkpointer.alist(config)
+            async for checkpoint_tuple in checkpoint_iterator:
+                checkpoint_tuples.append(checkpoint_tuple)
+        except Exception as alist_error:
+            print__debug(f"❌ Error getting checkpoint list: {alist_error}")
+            return {"error": f"Failed to get checkpoints: {alist_error}"}
         
         debug_data = {
             "thread_id": thread_id,
