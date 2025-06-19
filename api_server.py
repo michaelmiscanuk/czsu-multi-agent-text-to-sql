@@ -1875,6 +1875,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
         datasets_used = []
         sql_query = None
         top_chunks = []
+        
         try:
             config = {"configurable": {"thread_id": thread_id}}
             state_snapshot = await checkpointer.aget_tuple(config)
@@ -1907,6 +1908,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
             
         except Exception as e:
             print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
+            print__api_postgresql(f"🔧 Using fallback empty values: datasets=[], sql=None, chunks=[]")
         
         # Convert stored messages to frontend format
         chat_messages = []
@@ -2082,6 +2084,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 datasets_used = []
                 sql_query = None
                 top_chunks = []
+                
                 try:
                     config = {"configurable": {"thread_id": thread_id}}
                     state_snapshot = await checkpointer.aget_tuple(config)
@@ -2114,6 +2117,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                     
                 except Exception as e:
                     print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
+                    print__api_postgresql(f"🔧 Using fallback empty values: datasets=[], sql=None, chunks=[]")
                 
                 # Convert stored messages to frontend format (SAME as original working code)
                 chat_messages = []
