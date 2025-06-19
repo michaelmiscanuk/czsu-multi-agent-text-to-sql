@@ -314,9 +314,12 @@ def log_comprehensive_error(context: str, error: Exception, request: Request = N
     # Log to debug output
     print__debug(f"COMPREHENSIVE ERROR: {json.dumps(error_details, indent=2)}")
     
-    # Log memory usage during error AND run cleanup GC
+    # Log memory usage during error
     log_memory_usage(f"error_{context}")
-    aggressive_garbage_collection(f"error_{context}")
+    # Simple garbage collection on error
+    import gc
+    gc.collect()
+
 def check_rate_limit_with_throttling(client_ip: str) -> dict:
     """Check rate limits and return throttling information instead of boolean."""
     now = time.time()
@@ -420,8 +423,9 @@ def setup_graceful_shutdown():
         print__memory_monitoring(f"This could indicate a platform restart or memory limit exceeded")
         log_memory_usage("shutdown_signal")
         
-        # Run final cleanup GC
-        aggressive_garbage_collection("shutdown_signal")
+        # Run simple cleanup GC
+        import gc
+        gc.collect()
         # Don't exit immediately, let FastAPI handle cleanup
         
     # Register signal handlers for common restart signals
@@ -494,8 +498,9 @@ async def cleanup_checkpointer():
         finally:
             GLOBAL_CHECKPOINTER = None
     
-    # Enhanced garbage collection on shutdown based on article findings
-    aggressive_garbage_collection("cleanup_complete")
+    # Simple garbage collection on shutdown
+    import gc
+    gc.collect()
     log_memory_usage("cleanup_complete")
 
 async def get_healthy_checkpointer():
@@ -776,9 +781,10 @@ async def enhanced_memory_monitoring_middleware(request: Request, call_next):
         process_time = (datetime.now() - start_time).total_seconds()
         log_memory_usage(f"after_{request_path.replace('/', '_')}_({process_time:.2f}s)")
         
-        # Aggressive GC after heavy operations to prevent accumulation
+        # Simple GC after heavy operations to prevent accumulation
         if request_path.startswith("/analyze"):
-            aggressive_garbage_collection("post_analysis")
+            import gc
+            gc.collect()
         
         # Warn about slow requests that might cause timeouts
         if process_time > 300:  # 5 minutes
