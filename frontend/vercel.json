@@ -5,6 +5,22 @@
       "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/analyze"
     },
     {
+      "source": "/api/chat-threads",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/chat-threads"
+    },
+    {
+      "source": "/api/chat/:path*",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/chat/:path*"
+    },
+    {
+      "source": "/api/feedback",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/feedback"
+    },
+    {
+      "source": "/api/sentiment",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/sentiment"
+    },
+    {
       "source": "/api/catalog",
       "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/catalog"
     },
@@ -43,6 +59,10 @@
     {
       "source": "/api/agents/:path*",
       "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/agents/:path*"
+    },
+    {
+      "source": "/api/debug/:path*",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/debug/:path*"
     },
     {
       "source": "/api/((?!auth).*)",

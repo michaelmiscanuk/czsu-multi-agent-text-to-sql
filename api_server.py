@@ -106,7 +106,7 @@ from my_agent.utils.postgres_checkpointer import (
 )
 
 # Read GC memory threshold from environment with default fallback
-GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '100'))  # Default 100MB
+GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '1900'))  # 200MB for 2GB memory allocation (10% threshold)
 print__startup_debug(f"🔧 API Server: GC_MEMORY_THRESHOLD set to {GC_MEMORY_THRESHOLD}MB (from environment)")
 
 def print__memory_monitoring(msg: str) -> None:
@@ -170,7 +170,7 @@ def detect_memory_fragmentation() -> dict:
             "rss_mb": round(rss_mb, 2),
             "vms_mb": round(vms_mb, 2),
             "memory_growth_mb": round(memory_growth, 2),
-            "high_memory": rss_mb > 400  # Simple threshold
+            "high_memory": rss_mb > 1600  # 80% of 2GB allocation (1600MB), leaving 400MB buffer
         }
     except Exception as e:
         return {"error": str(e)}
@@ -217,7 +217,7 @@ def log_memory_usage(context: str = ""):
             not context.startswith("post_fragmentation_handler") and
             not context.startswith("fragmentation_")):
             
-            print__memory_monitoring(f"🚨 FRAGMENTATION TRIGGER: RSS {rss_mb:.1f}MB exceeds threshold 400MB")
+            print__memory_monitoring(f"🚨 FRAGMENTATION TRIGGER: RSS {rss_mb:.1f}MB exceeds threshold 1600MB (80% of 2GB allocation)")
             print__memory_monitoring(f"📊 Memory details: RSS={rss_mb:.1f}MB, VMS={vms_mb:.1f}MB, Growth={fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
             
             # Call the fragmentation handler
@@ -1238,6 +1238,8 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="User email not found in token")
     
     print__feedback_flow(f"📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
+    print__debug(f"🔍 ANALYZE REQUEST RECEIVED: thread_id={request.thread_id}, user={user_email}")
+    print__debug(f"🔍 ANALYZE REQUEST CONTENT: prompt_length={len(request.prompt)}, first_50_chars={request.prompt[:50]}...")
     
     # MEMORY LEAK PREVENTION: Pre-analysis memory monitoring
     log_memory_usage("analysis_start")

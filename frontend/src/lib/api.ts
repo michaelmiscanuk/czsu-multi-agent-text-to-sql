@@ -4,9 +4,11 @@
 import { ApiConfig, ApiError } from '@/types';
 import { getSession } from 'next-auth/react';
 
-// API Configuration
+// API Configuration - Fixed for Vercel deployment
 export const API_CONFIG: ApiConfig = {
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000',
+  // Use /api prefix in production to leverage vercel.json rewrites
+  // In development, use direct backend URL
+  baseUrl: process.env.NODE_ENV === 'production' ? '/api' : (process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000'),
   timeout: 600000, // 10 minutes - increased to match backend analysis timeout
 };
 
