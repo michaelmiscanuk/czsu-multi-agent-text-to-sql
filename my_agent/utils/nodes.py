@@ -357,6 +357,7 @@ IMPORTANT notes about SQL query generation:
 - Do NOT modify the database.
 - Always examine the ALL Schema to see how the data are laid out - column names and its concrete dimensional values. 
 - If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name.
+- Be careful about how you ALIAS (AS Clause) the Column names to make sense of the data - base it on what you use in where or group by clase.
 
 === OUTPUT - MOST IMPORTANT AND CRITICAL RULE FOR IT TO WORK!!!!!!!! ===
 - Return ONLY the final SQLITE SQL QUERY that should be executed, with nothing else around it. 
@@ -585,6 +586,7 @@ You are a bilingual (Czech/English) data analyst. Respond strictly using provide
    - Be careful not to say that something was 0 when you got no results from SQL.
    - Again read carefully the question, and provide answer using the QUERIES and its RESULTS, only if those answer the question. For example if question is about cinemas, dont answer about houses.
    - When using PDF context, clearly indicate what information comes from PDF sources vs SQL data
+   - Dont mention anything general if user asks for something specific, like dont mention general imports to whole country, if user asks about import from one country.
    
 
 3. **Style Rules**:
@@ -708,7 +710,7 @@ async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisStat
     print__debug(f"{HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node")
     
     query = state.get("rewritten_prompt") or state["prompt"]
-    n_results = state.get("n_results", 60)  # Increased from 20 to 60 to capture more relevant documents
+    n_results = state.get("n_results", 20)
 
     print__debug(f"{HYBRID_SEARCH_NODE_ID}: Query: {query}")
     print__debug(f"{HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
@@ -766,7 +768,7 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
     
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_results", [])
-    n_results = state.get("n_results", 60)  # Increased from 20 to 60 to match hybrid search
+    n_results = state.get("n_results", 20) 
 
     print__debug(f"{RERANK_NODE_ID}: Query: {query}")
     print__debug(f"{RERANK_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}")
@@ -894,7 +896,7 @@ async def retrieve_similar_chunks_hybrid_search_node(state: DataAnalysisState) -
         return {"hybrid_search_chunks": []}
     
     query = state.get("rewritten_prompt") or state["prompt"]
-    n_results = state.get("n_results", 60)  # Same as selections
+    n_results = state.get("n_results", 10)
     
     print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Query: {query}")
     print__debug(f"{RETRIEVE_CHUNKS_NODE_ID}: Requested n_results: {n_results}")
@@ -948,7 +950,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_chunks", [])
-    n_results = state.get("n_results", 60)  # Same as selections
+    n_results = state.get("n_results", 5)
     
     print__debug(f"{RERANK_CHUNKS_NODE_ID}: Query: {query}")
     print__debug(f"{RERANK_CHUNKS_NODE_ID}: Number of PDF hybrid results received: {len(hybrid_results)}")

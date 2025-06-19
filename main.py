@@ -26,6 +26,8 @@ from typing import List
 from dotenv import load_dotenv
 from langchain_core.messages import BaseMessage, SystemMessage, AIMessage
 import os
+import psutil
+import gc
 
 # Load environment variables
 load_dotenv()
@@ -203,6 +205,16 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # This is crucial for production deployments to track execution paths
     # instrument(project_name="LangGraph_czsu-multi-agent-text-to-sql", framework=Framework.LANGGRAPH)
     
+    # MEMORY LEAK PREVENTION: Track memory before and after analysis
+    # Memory monitoring before analysis
+    process = psutil.Process()
+    memory_before = process.memory_info().rss / 1024 / 1024
+    print(f"🔍 MEMORY: Starting analysis with {memory_before:.1f}MB RSS")
+    
+    # Force garbage collection before starting
+    collected = gc.collect()
+    print(f"🧹 MEMORY: Pre-analysis GC collected {collected} objects")
+    
     # Create the LangGraph execution graph with AsyncPostgresSaver for persistent checkpointing
     if checkpointer is None:
         try:
@@ -266,6 +278,58 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         input_state,
         config=config
     )
+    
+    # MEMORY LEAK PREVENTION: Monitor memory after graph execution
+    memory_after_graph = process.memory_info().rss / 1024 / 1024
+    memory_growth_graph = memory_after_graph - memory_before
+    print(f"🔍 MEMORY: After graph execution: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)")
+    
+    if memory_growth_graph > 50:  # More than 50MB growth is suspicious
+        print(f"⚠ MEMORY: Suspicious growth detected: {memory_growth_graph:.1f}MB during graph execution!")
+        
+        # EMERGENCY: Force immediate cleanup if growth is excessive
+        if memory_growth_graph > 200:  # More than 200MB growth
+            print(f"🚨 MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - implementing emergency cleanup")
+            
+            # Emergency garbage collection
+            collected = gc.collect()
+            print(f"🧹 MEMORY: Emergency GC collected {collected} objects")
+            
+            # Check memory after emergency GC
+            memory_after_gc = process.memory_info().rss / 1024 / 1024
+            freed_by_gc = memory_after_graph - memory_after_gc
+            print(f"🧹 MEMORY: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
+            
+            # Update memory tracking
+            memory_after_graph = memory_after_gc
+            memory_growth_graph = memory_after_graph - memory_before
+    
+    # Log details about the result to understand memory usage
+    try:
+        result_size = len(str(result)) / 1024 if result else 0  # Size in KB
+        print(f"🔍 MEMORY: Result object size: {result_size:.1f}KB")
+    except:
+        print(f"🔍 MEMORY: Could not determine result size")
+        
+    # MEMORY LEAK PREVENTION: Final cleanup and monitoring before return
+    try:
+        # Final garbage collection to clean up any temporary objects from graph execution
+        collected = gc.collect()
+        print(f"🧹 MEMORY: Final cleanup GC collected {collected} objects")
+        
+        # Final memory check
+        memory_final = process.memory_info().rss / 1024 / 1024
+        total_growth = memory_final - memory_before
+        
+        print(f"🔍 MEMORY: Final memory: {memory_final:.1f}MB RSS (total growth: {total_growth:.1f}MB)")
+        
+        # Warn about high memory retention patterns
+        if total_growth > 100:  # More than 100MB total growth
+            print(f"⚠ MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!")
+            print(f"💡 MEMORY: Consider investigating LangGraph nodes for memory leaks")
+            
+    except Exception as memory_error:
+        print(f"⚠ MEMORY: Error during final memory check: {memory_error}")
         
     # Extract values from the graph result dictionary         
     # The graph now uses a messages list: [summary (SystemMessage), last_message (AIMessage)]
@@ -295,8 +359,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         "sql": sql_query,
         "datasetUrl": dataset_url
     }
-        
-    print(f"Result: {final_answer}")
+    
     return serializable_result
 
 #==============================================================================

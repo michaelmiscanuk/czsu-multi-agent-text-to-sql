@@ -2384,7 +2384,4 @@ def main():
     print(f"   - Add more PDFs to PDF_FILENAMES list and rerun")
 
 if __name__ == "__main__":
-    # Enable debug mode for detailed logging
-    os.environ['MY_AGENT_DEBUG'] = '1'
-    
     main() 

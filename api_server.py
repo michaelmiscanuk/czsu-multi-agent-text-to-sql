@@ -1,22 +1,31 @@
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import sys
+import os  # Import os early for environment variable access
+
+def print__startup_debug(msg: str) -> None:
+    """Print startup debug messages when debug mode is enabled."""
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[STARTUP-DEBUG] {msg}")
+        sys.stdout.flush()
+
 if sys.platform == "win32":
     import asyncio
     
     # AGGRESSIVE WINDOWS FIX: Force SelectorEventLoop before any other async operations
-    print(f"🔧 API Server: Windows detected - forcing SelectorEventLoop for PostgreSQL compatibility")
+    print__startup_debug(f"🔧 API Server: Windows detected - forcing SelectorEventLoop for PostgreSQL compatibility")
     
     # Set the policy first - this is CRITICAL and must happen before any async operations
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print(f"🔧 Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
+    print__startup_debug(f"🔧 Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
     
     # Force close any existing event loop and create a fresh SelectorEventLoop
     try:
         current_loop = asyncio.get_event_loop()
         if current_loop and not current_loop.is_closed():
             current_loop_type = type(current_loop).__name__
-            print(f"🔧 API Server: Closing existing {current_loop_type}")
+            print__startup_debug(f"🔧 API Server: Closing existing {current_loop_type}")
             current_loop.close()
     except RuntimeError:
         # No event loop exists yet, which is fine
@@ -25,26 +34,26 @@ if sys.platform == "win32":
     # Create a new SelectorEventLoop explicitly and set it as the running loop
     new_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
     asyncio.set_event_loop(new_loop)
-    print(f"🔧 API Server: Created new {type(new_loop).__name__}")
+    print__startup_debug(f"🔧 API Server: Created new {type(new_loop).__name__}")
     
     # Verify the fix worked - this is critical for PostgreSQL compatibility
     try:
         current_loop = asyncio.get_event_loop()
         current_loop_type = type(current_loop).__name__
-        print(f"🔧 API Server: Current event loop type: {current_loop_type}")
+        print__startup_debug(f"🔧 API Server: Current event loop type: {current_loop_type}")
         if "Selector" in current_loop_type:
-            print(f"✅ API Server: PostgreSQL should work correctly on Windows now")
+            print__startup_debug(f"✅ API Server: PostgreSQL should work correctly on Windows now")
         else:
-            print(f"⚠️ API Server: Event loop fix may not have worked properly")
+            print__startup_debug(f"⚠️ API Server: Event loop fix may not have worked properly")
             # FORCE FIX: If we still don't have a SelectorEventLoop, create one
-            print(f"🔧 API Server: Force-creating SelectorEventLoop...")
+            print__startup_debug(f"🔧 API Server: Force-creating SelectorEventLoop...")
             if not current_loop.is_closed():
                 current_loop.close()
             selector_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
             asyncio.set_event_loop(selector_loop)
-            print(f"🔧 API Server: Force-created {type(selector_loop).__name__}")
+            print__startup_debug(f"🔧 API Server: Force-created {type(selector_loop).__name__}")
     except RuntimeError:
-        print(f"🔧 API Server: No event loop set yet (will be created as needed)")
+        print__startup_debug(f"🔧 API Server: No event loop set yet (will be created as needed)")
 
 import asyncio
 import gc
@@ -76,6 +85,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+# Load environment variables from .env file EARLY
+load_dotenv()
+
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
     get_postgres_checkpointer,
@@ -92,6 +104,10 @@ from my_agent.utils.postgres_checkpointer import (
     update_thread_run_sentiment,
     get_thread_run_sentiments
 )
+
+# Read GC memory threshold from environment with default fallback
+GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '100'))  # Default 100MB
+print__startup_debug(f"🔧 API Server: GC_MEMORY_THRESHOLD set to {GC_MEMORY_THRESHOLD}MB (from environment)")
 
 def print__memory_monitoring(msg: str) -> None:
     """Print MEMORY-MONITORING messages when debug mode is enabled.
@@ -122,7 +138,7 @@ MAX_CONCURRENT_ANALYSES = int(os.environ.get('MAX_CONCURRENT_ANALYSES', '3'))  #
 analysis_semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
 
 # Log the concurrency setting for debugging
-print(f"🔧 API Server: MAX_CONCURRENT_ANALYSES set to {MAX_CONCURRENT_ANALYSES} (from environment)")
+print__startup_debug(f"🔧 API Server: MAX_CONCURRENT_ANALYSES set to {MAX_CONCURRENT_ANALYSES} (from environment)")
 print__memory_monitoring(f"Concurrent analysis semaphore initialized with {MAX_CONCURRENT_ANALYSES} slots")
 print__memory_monitoring(f"🛡️ Recovery systems active: Response persistence + Frontend auto-recovery")
 
@@ -159,7 +175,7 @@ def detect_memory_fragmentation() -> dict:
             "fragmentation_ratio": round(fragmentation_ratio, 2),
             "memory_growth_mb": round(memory_growth, 2),
             "potential_fragmentation": fragmentation_ratio > 2.0,  # Threshold from article
-            "significant_growth": memory_growth > 100  # 100MB growth threshold
+            "significant_growth": memory_growth > GC_MEMORY_THRESHOLD  # Use env variable instead of hardcoded 100MB
         }
     except Exception as e:
         return {"error": str(e)}
@@ -200,6 +216,18 @@ def log_memory_usage(context: str = ""):
             f"{frag_warning}{growth_warning}"
         )
         
+        # FRAGMENTATION HANDLING: Automatically handle detected fragmentation
+        # Only trigger if not already in a fragmentation handling context to avoid loops
+        if (fragmentation_info.get("potential_fragmentation") and 
+            not context.startswith("post_fragmentation_handler") and
+            not context.startswith("fragmentation_")):
+            
+            print__memory_monitoring(f"🚨 FRAGMENTATION TRIGGER: Ratio {fragmentation_info.get('fragmentation_ratio', 0):.2f} exceeds threshold 2.0")
+            print__memory_monitoring(f"📊 Memory details: RSS={rss_mb:.1f}MB, VMS={vms_mb:.1f}MB, Growth={fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
+            
+            # Call the fragmentation handler
+            handle_memory_fragmentation()
+        
         # Warning if memory usage is high or growing suspiciously
         if memory_limit_mb and rss_mb > memory_limit_mb * 0.85:
             print__memory_monitoring(f"HIGH MEMORY WARNING: Using {(rss_mb/memory_limit_mb)*100:.1f}% of available RSS memory!")
@@ -211,7 +239,7 @@ def log_memory_usage(context: str = ""):
             print__memory_monitoring(f"Memory baseline set: {_memory_baseline:.1f}MB RSS")
         elif context.startswith("after_") and _request_count > 0:
             growth_per_request = (rss_mb - _memory_baseline) / _request_count
-            if growth_per_request > 0.1:  # More than 100KB growth per request
+            if growth_per_request > GC_MEMORY_THRESHOLD * 0.001:  # More than 0.1% of threshold growth per request
                 print__memory_monitoring(f"LEAK WARNING: {growth_per_request:.3f}MB growth per request pattern detected!")
             
     except Exception as e:
@@ -231,7 +259,7 @@ def aggressive_garbage_collection(context: str = ""):
         # Force GC if memory is high or it's been a while
         should_gc = (
             current_time - _last_gc_run > 30 or  # Every 30 seconds minimum
-            memory_mb > 400 or  # High memory usage
+            memory_mb > GC_MEMORY_THRESHOLD or  # High memory usage - trigger at threshold
             context in ["analysis_complete", "cleanup_start", "error_cleanup"]  # Critical points
         )
         
@@ -246,6 +274,110 @@ def aggressive_garbage_collection(context: str = ""):
             
     except Exception as e:
         print__memory_monitoring(f"GC error: {e}")
+
+def handle_memory_fragmentation():
+    """Handle detected memory fragmentation with specific countermeasures."""
+    print__memory_monitoring("🔧 FRAGMENTATION HANDLER: Implementing countermeasures")
+    
+    try:
+        # 1. Force comprehensive garbage collection across all generations
+        import gc
+        collected_counts = []
+        for generation in range(3):  # Python has 3 GC generations
+            collected = gc.collect(generation)
+            collected_counts.append(collected)
+        
+        total_collected = sum(collected_counts)
+        print__memory_monitoring(f"🧹 Comprehensive GC: freed {total_collected} objects across generations {collected_counts}")
+        
+        # 2. Force memory compaction and cleanup
+        try:
+            # Clear weak references that might be causing fragmentation
+            import weakref
+            weakref.finalize_registry()
+            print__memory_monitoring("🧹 Cleared weak reference registry")
+        except Exception as weakref_error:
+            print__memory_monitoring(f"⚠ Could not clear weakref registry: {weakref_error}")
+        
+        # 3. Reset connection pool to prevent pool fragmentation
+        global GLOBAL_CHECKPOINTER
+        if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
+            try:
+                print__memory_monitoring("🔄 Scheduling connection pool recreation to reduce fragmentation")
+                # Mark for recreation on next use - this prevents immediate disruption
+                # but ensures fragmented pool gets replaced
+                if hasattr(GLOBAL_CHECKPOINTER, '_fragmentation_reset_needed'):
+                    GLOBAL_CHECKPOINTER._fragmentation_reset_needed = True
+                print__memory_monitoring("✅ Connection pool marked for recreation")
+            except Exception as pool_error:
+                print__memory_monitoring(f"⚠ Could not mark pool for reset: {pool_error}")
+        
+        # 4. Clear rate limiting storage to free fragmented memory
+        global rate_limit_storage, throttle_semaphores
+        old_clients_rate = len(rate_limit_storage)
+        old_clients_throttle = len(throttle_semaphores)
+        
+        # Clear old entries more aggressively during fragmentation
+        import time
+        current_time = time.time()
+        for client_ip in list(rate_limit_storage.keys()):
+            rate_limit_storage[client_ip] = [
+                timestamp for timestamp in rate_limit_storage[client_ip]
+                if current_time - timestamp < RATE_LIMIT_WINDOW / 2  # More aggressive cleanup
+            ]
+            if not rate_limit_storage[client_ip]:
+                del rate_limit_storage[client_ip]
+        
+        # Clear throttle semaphores for inactive clients
+        active_clients = set(rate_limit_storage.keys())
+        for client_ip in list(throttle_semaphores.keys()):
+            if client_ip not in active_clients:
+                del throttle_semaphores[client_ip]
+        
+        new_clients_rate = len(rate_limit_storage)
+        new_clients_throttle = len(throttle_semaphores)
+        
+        print__memory_monitoring(f"🧹 Rate limiting cleanup: {old_clients_rate}→{new_clients_rate} clients, {old_clients_throttle}→{new_clients_throttle} throttle semaphores")
+        
+        # 5. Force Python to return memory to OS if possible
+        try:
+            import ctypes
+            import sys
+            if sys.platform == "win32":
+                # On Windows, try to encourage memory return to OS
+                kernel32 = ctypes.windll.kernel32
+                kernel32.SetProcessWorkingSetSize(-1, -1, -1)
+                print__memory_monitoring("🧹 Windows: Attempted to trim working set")
+        except Exception as os_error:
+            print__memory_monitoring(f"⚠ Could not trim OS memory: {os_error}")
+        
+        # 6. Log memory after all fragmentation handling
+        print__memory_monitoring("📊 Memory state after fragmentation handling:")
+        log_memory_usage("post_fragmentation_handler")
+        
+        # 7. Check if fragmentation was resolved
+        fragmentation_info = detect_memory_fragmentation()
+        if fragmentation_info.get("potential_fragmentation"):
+            print__memory_monitoring(f"⚠ Fragmentation still detected after handler (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
+            print__memory_monitoring(f"🔄 This might indicate a deeper memory issue requiring application restart")
+            
+            # CRITICAL: Check if fragmentation is severe and persistent
+            ratio = fragmentation_info.get('fragmentation_ratio', 0)
+            if ratio > 3.0:  # Very severe fragmentation
+                print__memory_monitoring(f"🚨 SEVERE FRAGMENTATION: Ratio {ratio:.2f} indicates critical memory fragmentation")
+                print__memory_monitoring(f"💡 RECOMMENDATION: Consider restarting the application to restore memory health")
+                print__memory_monitoring(f"🔄 Frontend should handle this gracefully via PostgreSQL recovery")
+        else:
+            print__memory_monitoring(f"✅ Fragmentation successfully resolved (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
+            
+    except Exception as e:
+        print__memory_monitoring(f"❌ Error in fragmentation handler: {e}")
+        # Still try basic GC even if advanced handling fails
+        try:
+            gc.collect()
+            print__memory_monitoring("🧹 Fallback: Basic garbage collection completed")
+        except:
+            pass
 
 def monitor_route_registration(route_path: str, method: str):
     """Monitor route registration to detect duplicates (main issue from article)."""
@@ -407,8 +539,8 @@ async def initialize_checkpointer():
     global GLOBAL_CHECKPOINTER
     if GLOBAL_CHECKPOINTER is None:
         try:
-            print("🔗 Initializing PostgreSQL checkpointer and chat system...")
-            print(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
+            print__startup_debug("🔗 Initializing PostgreSQL checkpointer and chat system...")
+            print__startup_debug(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
             log_memory_usage("startup")
             
             # Add timeout to initialization to fail faster
@@ -419,33 +551,33 @@ async def initialize_checkpointer():
             
             # Verify the checkpointer is healthy
             if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
-                print(f"✓ Checkpointer has connection pool: closed={GLOBAL_CHECKPOINTER.conn.closed}")
+                print__startup_debug(f"✓ Checkpointer has connection pool: closed={GLOBAL_CHECKPOINTER.conn.closed}")
             else:
-                print("⚠ Checkpointer does not have connection pool")
+                print__startup_debug("⚠ Checkpointer does not have connection pool")
             
-            print("✓ Global PostgreSQL checkpointer initialized successfully")
-            print("✓ users_threads_runs table verified/created")
+            print__startup_debug("✓ Global PostgreSQL checkpointer initialized successfully")
+            print__startup_debug("✓ users_threads_runs table verified/created")
             log_memory_usage("checkpointer_initialized")
         except asyncio.TimeoutError:
-            print("✗ Failed to initialize PostgreSQL checkpointer: initialization timeout")
-            print("⚠ This usually means PostgreSQL connection pool is exhausted")
+            print__startup_debug("✗ Failed to initialize PostgreSQL checkpointer: initialization timeout")
+            print__startup_debug("⚠ This usually means PostgreSQL connection pool is exhausted")
             
             # Fallback to InMemorySaver for development/testing
             from langgraph.checkpoint.memory import InMemorySaver
             GLOBAL_CHECKPOINTER = InMemorySaver()
-            print("⚠ Falling back to InMemorySaver")
+            print__startup_debug("⚠ Falling back to InMemorySaver")
         except Exception as e:
-            print(f"✗ Failed to initialize PostgreSQL checkpointer: {e}")
-            print(f"🔍 Error type: {type(e).__name__}")
+            print__startup_debug(f"✗ Failed to initialize PostgreSQL checkpointer: {e}")
+            print__startup_debug(f"🔍 Error type: {type(e).__name__}")
             import traceback
-            print(f"🔍 Full traceback: {traceback.format_exc()}")
+            print__startup_debug(f"🔍 Full traceback: {traceback.format_exc()}")
             
             # Fallback to InMemorySaver for development/testing
             from langgraph.checkpoint.memory import InMemorySaver
             GLOBAL_CHECKPOINTER = InMemorySaver()
-            print("⚠ Falling back to InMemorySaver")
+            print__startup_debug("⚠ Falling back to InMemorySaver")
     else:
-        print("⚠ Global checkpointer already exists - skipping initialization")
+        print__startup_debug("⚠ Global checkpointer already exists - skipping initialization")
 
 async def cleanup_checkpointer():
     """Clean up resources on app shutdown."""
@@ -458,11 +590,11 @@ async def cleanup_checkpointer():
             # Check if pool is already closed before trying to close it
             if not GLOBAL_CHECKPOINTER.conn.closed:
                 await GLOBAL_CHECKPOINTER.conn.close()
-                print("✓ PostgreSQL connection pool closed cleanly")
+                print__startup_debug("✓ PostgreSQL connection pool closed cleanly")
             else:
-                print("⚠ PostgreSQL connection pool was already closed")
+                print__startup_debug("⚠ PostgreSQL connection pool was already closed")
         except Exception as e:
-            print(f"⚠ Error closing connection pool: {e}")
+            print__startup_debug(f"⚠ Error closing connection pool: {e}")
         finally:
             GLOBAL_CHECKPOINTER = None
     
@@ -477,9 +609,16 @@ async def get_healthy_checkpointer():
     # Check if current checkpointer is healthy
     if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
         try:
+            # FRAGMENTATION CHECK: If fragmentation handler marked for reset, recreate pool
+            if hasattr(GLOBAL_CHECKPOINTER, '_fragmentation_reset_needed') and GLOBAL_CHECKPOINTER._fragmentation_reset_needed:
+                print__memory_monitoring("🔄 FRAGMENTATION RESET: Recreating checkpointer due to fragmentation handler request")
+                # Close existing connection and mark for recreation
+                if GLOBAL_CHECKPOINTER.conn and not GLOBAL_CHECKPOINTER.conn.closed:
+                    await GLOBAL_CHECKPOINTER.conn.close()
+                GLOBAL_CHECKPOINTER = None  # Force recreation
             # Check if the pool is closed
-            if hasattr(GLOBAL_CHECKPOINTER.conn, 'closed') and GLOBAL_CHECKPOINTER.conn.closed:
-                print(f"⚠ Checkpointer pool is closed, recreating...")
+            elif hasattr(GLOBAL_CHECKPOINTER.conn, 'closed') and GLOBAL_CHECKPOINTER.conn.closed:
+                print__startup_debug(f"⚠ Checkpointer pool is closed, recreating...")
                 GLOBAL_CHECKPOINTER = None
             else:
                 # Enhanced health check with timeout
@@ -488,26 +627,26 @@ async def get_healthy_checkpointer():
                     conn = await asyncio.wait_for(GLOBAL_CHECKPOINTER.conn.connection(), timeout=5)
                     async with conn:
                         await asyncio.wait_for(conn.execute("SELECT 1"), timeout=5)
-                    print("✅ Existing checkpointer is healthy")
+                    print__startup_debug("✅ Existing checkpointer is healthy")
                     return GLOBAL_CHECKPOINTER
                 except asyncio.TimeoutError:
-                    print("⚠ Checkpointer health check timed out, recreating...")
+                    print__startup_debug("⚠ Checkpointer health check timed out, recreating...")
                     GLOBAL_CHECKPOINTER = None
                 except Exception as health_error:
-                    print(f"⚠ Checkpointer health check failed: {health_error}")
+                    print__startup_debug(f"⚠ Checkpointer health check failed: {health_error}")
                     GLOBAL_CHECKPOINTER = None
         except Exception as e:
-            print(f"⚠ Error checking checkpointer health: {e}")
+            print__startup_debug(f"⚠ Error checking checkpointer health: {e}")
             GLOBAL_CHECKPOINTER = None
     
     # Cleanup old checkpointer if needed
     if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
         try:
             if GLOBAL_CHECKPOINTER.conn and not GLOBAL_CHECKPOINTER.conn.closed:
-                print("🧹 Closing old checkpointer connection...")
+                print__startup_debug("🧹 Closing old checkpointer connection...")
                 await GLOBAL_CHECKPOINTER.conn.close()
         except Exception as cleanup_error:
-            print(f"⚠ Error during cleanup: {cleanup_error}")
+            print__startup_debug(f"⚠ Error during cleanup: {cleanup_error}")
         finally:
             GLOBAL_CHECKPOINTER = None
     
@@ -515,27 +654,33 @@ async def get_healthy_checkpointer():
     max_attempts = 3
     for attempt in range(max_attempts):
         try:
-            print(f"🔄 Creating fresh checkpointer (attempt {attempt + 1})...")
+            print__startup_debug(f"🔄 Creating fresh checkpointer (attempt {attempt + 1})...")
             GLOBAL_CHECKPOINTER = await asyncio.wait_for(
                 get_postgres_checkpointer(), 
                 timeout=120  # 2 minute timeout for checkpointer creation
             )
-            print(f"✅ Fresh checkpointer created successfully (attempt {attempt + 1})")
+            
+            # Clear any fragmentation reset flag on successful creation
+            if hasattr(GLOBAL_CHECKPOINTER, '_fragmentation_reset_needed'):
+                delattr(GLOBAL_CHECKPOINTER, '_fragmentation_reset_needed')
+            
+            print__startup_debug(f"✅ Fresh checkpointer created successfully (attempt {attempt + 1})")
+            print__memory_monitoring("✅ New checkpointer created - fragmentation-related pool issues should be resolved")
             return GLOBAL_CHECKPOINTER
             
         except asyncio.TimeoutError:
-            print(f"❌ Timeout creating checkpointer (attempt {attempt + 1})")
+            print__startup_debug(f"❌ Timeout creating checkpointer (attempt {attempt + 1})")
             if attempt < max_attempts - 1:
                 delay = 2 ** attempt  # Exponential backoff
-                print(f"🔄 Retrying in {delay} seconds...")
+                print__startup_debug(f"🔄 Retrying in {delay} seconds...")
                 await asyncio.sleep(delay)
             else:
-                print("❌ All checkpointer creation attempts timed out, falling back to InMemorySaver")
+                print__startup_debug("❌ All checkpointer creation attempts timed out, falling back to InMemorySaver")
                 break
                 
         except Exception as e:
             error_msg = str(e)
-            print(f"❌ Failed to recreate checkpointer (attempt {attempt + 1}): {error_msg}")
+            print__startup_debug(f"❌ Failed to recreate checkpointer (attempt {attempt + 1}): {error_msg}")
             
             # Check if it's a recoverable error
             if (attempt < max_attempts - 1 and 
@@ -543,17 +688,18 @@ async def get_healthy_checkpointer():
                  "pool" in error_msg.lower() or
                  "dbhandler" in error_msg.lower())):
                 delay = 2 ** attempt  # Exponential backoff
-                print(f"🔄 Retrying due to connection issue in {delay} seconds...")
+                print__startup_debug(f"🔄 Retrying due to connection issue in {delay} seconds...")
                 await asyncio.sleep(delay)
             else:
-                print("❌ Non-recoverable error or final attempt failed, falling back to InMemorySaver")
+                print__startup_debug("❌ Non-recoverable error or final attempt failed, falling back to InMemorySaver")
                 break
     
     # Fallback to InMemorySaver only if PostgreSQL completely fails
-    print("⚠ PostgreSQL checkpointer creation failed completely - falling back to InMemorySaver")
+    print__startup_debug("⚠ PostgreSQL checkpointer creation failed completely - falling back to InMemorySaver")
+    print__memory_monitoring("⚠ Using InMemorySaver - fragmentation handling will be limited")
     from langgraph.checkpoint.memory import InMemorySaver
     GLOBAL_CHECKPOINTER = InMemorySaver()
-    print("⚠ Using InMemorySaver - persistence will be limited to this session")
+    print__startup_debug("⚠ Using InMemorySaver - persistence will be limited to this session")
     return GLOBAL_CHECKPOINTER
 
 @asynccontextmanager
@@ -562,7 +708,7 @@ async def lifespan(app: FastAPI):
     global _app_startup_time, _memory_baseline
     _app_startup_time = datetime.now()
     
-    print("🚀 FastAPI application starting up...")
+    print__startup_debug("🚀 FastAPI application starting up...")
     print__memory_monitoring(f"Application startup initiated at {_app_startup_time.isoformat()}")
     log_memory_usage("app_startup")
     
@@ -590,12 +736,12 @@ async def lifespan(app: FastAPI):
             pass
     
     log_memory_usage("app_ready")
-    print("✅ FastAPI application ready to serve requests")
+    print__startup_debug("✅ FastAPI application ready to serve requests")
     
     yield
     
     # Shutdown
-    print("🛑 FastAPI application shutting down...")
+    print__startup_debug("🛑 FastAPI application shutting down...")
     print__memory_monitoring(f"Application ran for {datetime.now() - _app_startup_time}")
     
     # Log final memory statistics
@@ -608,7 +754,7 @@ async def lifespan(app: FastAPI):
                 f"Final memory stats: Started={_memory_baseline:.1f}MB, "
                 f"Final={final_memory:.1f}MB, Growth={total_growth:.1f}MB"
             )
-            if total_growth > 200:  # More than 200MB growth
+            if total_growth > GC_MEMORY_THRESHOLD:  # More than threshold growth - app will restart soon
                 print__memory_monitoring("🚨 SIGNIFICANT MEMORY GROWTH DETECTED - investigate for leaks!")
         except:
             pass
@@ -1183,6 +1329,22 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
             print__feedback_flow(f"✅ Generated new run_id: {run_id}")
             
+            # MEMORY LEAK PREVENTION: Pre-analysis cleanup
+            print__memory_monitoring("🧹 PRE-ANALYSIS: Running memory cleanup to prevent leaks")
+            aggressive_garbage_collection("pre_analysis")
+            
+            # Check memory before analysis
+            pre_analysis_fragmentation = detect_memory_fragmentation()
+            if pre_analysis_fragmentation.get("potential_fragmentation"):
+                print__memory_monitoring(f"⚠ PRE-ANALYSIS fragmentation detected - running handler")
+                handle_memory_fragmentation()
+            
+            # CRITICAL: Reset checkpointer if marked for fragmentation reset
+            if (hasattr(checkpointer, '_fragmentation_reset_needed') and 
+                checkpointer._fragmentation_reset_needed):
+                print__memory_monitoring("🔄 PRE-ANALYSIS: Recreating checkpointer due to fragmentation")
+                checkpointer = await get_healthy_checkpointer()
+            
             print__feedback_flow(f"🚀 Starting analysis")
             # Reduced timeout from 15 minutes to 8 minutes for platform stability
             result = await asyncio.wait_for(
@@ -1203,7 +1365,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 )
                 
                 # Warn about suspicious memory growth (pattern from article)
-                if memory_growth > 50:  # More than 50MB growth per analysis
+                if memory_growth > GC_MEMORY_THRESHOLD * 0.3:  # 30% of threshold growth per analysis
                     print__memory_monitoring(
                         f"🚨 SUSPICIOUS MEMORY GROWTH: {memory_growth:.1f}MB per analysis! "
                         f"This is similar to the pattern described in the Ocean framework leak!"
@@ -1219,40 +1381,127 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             # This addresses the memory not being released issue from the article
             aggressive_garbage_collection("analysis_complete")
             
+            # FRAGMENTATION PREVENTION: Comprehensive post-analysis cleanup
+            print__memory_monitoring("🔧 FRAGMENTATION PREVENTION: Starting post-analysis cleanup")
+            
+            # Check for fragmentation immediately after analysis
+            fragmentation_info = detect_memory_fragmentation()
+            if fragmentation_info.get("potential_fragmentation"):
+                print__memory_monitoring(f"🚨 FRAGMENTATION DETECTED after analysis: Ratio {fragmentation_info.get('fragmentation_ratio', 0):.2f}")
+                print__memory_monitoring(f"🔄 Triggering fragmentation handler immediately")
+                handle_memory_fragmentation()
+            else:
+                print__memory_monitoring(f"✅ No fragmentation detected after analysis (ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f})")
+            
             # Post-GC memory check
             try:
                 if pre_analysis_memory and post_analysis_memory:
                     process = psutil.Process()
                     post_gc_memory = process.memory_info().rss / 1024 / 1024
                     gc_freed = post_analysis_memory - post_gc_memory
-                    if gc_freed > 5:  # More than 5MB freed
+                    if gc_freed > GC_MEMORY_THRESHOLD * 0.05:  # More than 5% of threshold freed
                         print__memory_monitoring(f"GC effectiveness: freed {gc_freed:.1f}MB after analysis")
-            except:
-                pass
+                    
+                    # Check for excessive memory retention after cleanup
+                    total_cleanup_freed = post_analysis_memory - post_gc_memory
+                    memory_retained = post_gc_memory - pre_analysis_memory if pre_analysis_memory else 0
+                    
+                    if memory_retained > GC_MEMORY_THRESHOLD * 0.2:  # 20% of threshold retained after cleanup
+                        print__memory_monitoring(f"⚠ HIGH MEMORY RETENTION: {memory_retained:.1f}MB still retained after cleanup")
+                        print__memory_monitoring(f"🔄 This suggests potential memory fragmentation or leaks")
+                        # Run additional fragmentation handler if not already triggered
+                        if not fragmentation_info.get("potential_fragmentation"):
+                            print__memory_monitoring(f"🔄 Running additional fragmentation handler due to high retention")
+                            handle_memory_fragmentation()
+                    else:
+                        print__memory_monitoring(f"✅ Good memory cleanup: only {memory_retained:.1f}MB retained after analysis")
+                        
+            except Exception as cleanup_error:
+                print__memory_monitoring(f"⚠ Error during post-analysis memory check: {cleanup_error}")
             
             # MEMORY PRESSURE RECOVERY: Save response state before attempting HTTP response
-            response_data = {"response": result, "thread_id": request.thread_id, "run_id": run_id}
+            response_data = {
+                "prompt": request.prompt,
+                "result": result["result"] if isinstance(result, dict) and "result" in result else str(result),
+                "queries_and_results": result.get("queries_and_results", []) if isinstance(result, dict) else [],
+                "thread_id": request.thread_id,
+                "top_selection_codes": result.get("top_selection_codes", []) if isinstance(result, dict) else [],
+                "iteration": result.get("iteration", 0) if isinstance(result, dict) else 0,
+                "max_iterations": result.get("max_iterations", 2) if isinstance(result, dict) else 2,
+                "sql": result.get("sql", None) if isinstance(result, dict) else None,
+                "datasetUrl": result.get("datasetUrl", None) if isinstance(result, dict) else None,
+                "run_id": run_id
+            }
             
-            # If memory pressure is high, log that we're about to attempt HTTP response
+            # Final memory pressure check before HTTP response
             try:
                 process = psutil.Process()
                 current_memory = process.memory_info().rss / 1024 / 1024
-                if current_memory > 450:  # Close to 512MB limit
-                    print__memory_monitoring(f"⚠ HIGH MEMORY PRESSURE: {current_memory:.1f}MB - attempting HTTP response delivery")
-                    print__memory_monitoring(f"🔄 Response data prepared and saved to PostgreSQL via checkpoints")
-                    print__memory_monitoring(f"🔄 If HTTP response fails, frontend can recover from PostgreSQL using thread_id: {request.thread_id}")
-            except:
-                pass
-            
-            return response_data
+                
+                print__memory_monitoring(f"📤 Current memory: {current_memory:.1f}MB - preparing HTTP response")
+                
+                # CRITICAL: Always attempt to return response regardless of memory state
+                print__memory_monitoring(f"📤 Attempting to send full HTTP response to frontend...")
+                
+                # Add response metadata for frontend debugging
+                response_data.update({
+                    "memory_usage_mb": current_memory,
+                    "analysis_completed": True,
+                    "timestamp": datetime.now().isoformat(),
+                    "server_status": "completed_successfully"
+                })
+                
+                # ENHANCED RESPONSE LOGGING: Log exactly what we're sending to frontend
+                print__memory_monitoring(f"📤 SENDING RESPONSE TO FRONTEND:")
+                print__memory_monitoring(f"   🔑 run_id: {response_data.get('run_id', 'N/A')}")
+                print__memory_monitoring(f"   🧵 thread_id: {response_data.get('thread_id', 'N/A')}")
+                print__memory_monitoring(f"   📊 result_length: {len(str(response_data.get('result', ''))) if response_data.get('result') else 0} chars")
+                print__memory_monitoring(f"   🔍 response_keys: {list(response_data.keys())}")
+                print__memory_monitoring(f"   💾 memory_usage: {response_data.get('memory_usage_mb', 'N/A')}MB")
+                print__memory_monitoring(f"   ✅ server_status: {response_data.get('server_status', 'N/A')}")
+                
+                return response_data
+                
+            except Exception as response_error:
+                # CRITICAL: If response preparation fails, still try to return something
+                print__memory_monitoring(f"❌ Error preparing HTTP response: {response_error}")
+                
+                # Fallback response to prevent frontend hanging
+                fallback_response = {
+                    "prompt": request.prompt,
+                    "result": result if 'result' in locals() else "Analysis completed but response formatting failed",
+                    "queries_and_results": [],
+                    "thread_id": request.thread_id,
+                    "top_selection_codes": [],
+                    "iteration": 0,
+                    "max_iterations": 2,
+                    "sql": None,
+                    "datasetUrl": None,
+                    "run_id": run_id,
+                    "error": f"Response preparation error: {str(response_error)}",
+                    "recovery_note": "Check PostgreSQL checkpoints for full results",
+                    "analysis_completed": True,
+                    "timestamp": datetime.now().isoformat(),
+                    "server_status": "completed_with_response_error"
+                }
+                
+                print__memory_monitoring(f"📤 Sending fallback response to prevent frontend hanging")
+                return fallback_response
             
         except asyncio.TimeoutError:
             error_msg = "Analysis timed out after 8 minutes"
             print__feedback_flow(f"🚨 {error_msg}")
             log_memory_usage("analysis_timeout")
             
-            # TIMEOUT CLEANUP: Force aggressive garbage collection on timeout
+            # TIMEOUT CLEANUP: Force aggressive garbage collection and fragmentation handling on timeout
             aggressive_garbage_collection("analysis_timeout")
+            
+            # Check for fragmentation after timeout - timeouts often indicate memory pressure
+            fragmentation_info = detect_memory_fragmentation()
+            if fragmentation_info.get("potential_fragmentation") or fragmentation_info.get("significant_growth"):
+                print__memory_monitoring(f"🚨 TIMEOUT + FRAGMENTATION: Running fragmentation handler after timeout")
+                print__memory_monitoring(f"📊 Fragmentation ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f}, Growth: {fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
+                handle_memory_fragmentation()
             
             # Log for recovery purposes
             if run_id:
@@ -1267,8 +1516,15 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             print__feedback_flow(f"🔍 Error details: {type(e).__name__}: {str(e)}")
             log_memory_usage("analysis_error")
             
-            # ERROR CLEANUP: Force aggressive garbage collection on error
+            # ERROR CLEANUP: Force aggressive garbage collection and fragmentation handling on error
             aggressive_garbage_collection("analysis_error")
+            
+            # Check for fragmentation after error - errors can leave memory in fragmented state
+            fragmentation_info = detect_memory_fragmentation()
+            if fragmentation_info.get("potential_fragmentation") or fragmentation_info.get("significant_growth"):
+                print__memory_monitoring(f"🚨 ERROR + FRAGMENTATION: Running fragmentation handler after error")
+                print__memory_monitoring(f"📊 Fragmentation ratio: {fragmentation_info.get('fragmentation_ratio', 0):.2f}, Growth: {fragmentation_info.get('memory_growth_mb', 0):.1f}MB")
+                handle_memory_fragmentation()
             
             # Enhanced error logging for recovery
             if run_id:
@@ -1280,6 +1536,11 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             if any(keyword in error_str for keyword in ['memory', 'resource', 'timeout', 'connection']):
                 print__memory_monitoring(f"🚨 MEMORY PRESSURE ERROR DETECTED: {error_str}")
                 print__memory_monitoring(f"🔄 Frontend should attempt recovery from PostgreSQL")
+                
+                # Run additional fragmentation cleanup for memory-related errors
+                print__memory_monitoring(f"🔄 Running additional fragmentation cleanup for memory-related error")
+                handle_memory_fragmentation()
+                
                 # Still raise the error, but with enhanced info for frontend recovery
                 raise HTTPException(
                     status_code=503, 

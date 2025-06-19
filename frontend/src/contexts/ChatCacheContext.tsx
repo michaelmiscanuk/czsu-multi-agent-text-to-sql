@@ -60,7 +60,7 @@ interface ChatCacheContextType {
   clearCacheForUserChange: (newUserEmail?: string | null) => void;
   
   // NEW: Bulk load all messages, run-ids, and sentiments at once
-  loadAllMessagesFromAPI: (authToken: string) => Promise<void>;
+  loadAllMessagesFromAPI: () => Promise<void>;
   
   // NEW: Get cached run-ids and sentiments for a thread
   getRunIdsForThread: (threadId: string) => { run_id: string; prompt: string; timestamp: string }[];
@@ -527,23 +527,32 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // NEW: Bulk load all messages, run-ids, and sentiments at once
-  const loadAllMessagesFromAPI = useCallback(async (authToken: string) => {
+  const loadAllMessagesFromAPI = useCallback(async () => {
     console.log('[ChatCache] 🔄 Loading ALL messages from API using bulk endpoint...');
     setIsLoading(true);
     
     try {
-      // Import authApiFetch from the lib/api file
+      // Import authApiFetch and getSession from the lib/api file
       const { authApiFetch } = await import('@/lib/api');
+      const { getSession } = await import('next-auth/react');
+      
+      // Get fresh session - the authApiFetch will handle token refresh if needed
+      console.log('[ChatCache] 🔐 Getting fresh session for bulk loading...');
+      const freshSession = await getSession();
+      
+      if (!freshSession?.id_token) {
+        throw new Error('No authentication token available for bulk loading');
+      }
       
       // Step 1: Load all data at once (messages, run-ids, and sentiments)
-      console.log('[ChatCache] 📡 Calling /chat/all-messages endpoint...');
+      console.log('[ChatCache] 📡 Calling /chat/all-messages endpoint with automatic token refresh...');
       const startTime = Date.now();
       
       const response = await authApiFetch<{
         messages: { [threadId: string]: any[] };
         runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
         sentiments: { [threadId: string]: { [runId: string]: boolean } };
-      }>('/chat/all-messages', authToken);
+      }>('/chat/all-messages', freshSession.id_token);
       
       const loadTime = Date.now() - startTime;
       const totalThreadsWithMessages = Object.keys(response.messages || {}).length;
@@ -562,7 +571,7 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       setRunIdsState(response.runIds || {});
       setSentimentsState(response.sentiments || {});
       
-      console.log('[ChatCache] ✅ Bulk loading completed successfully');
+      console.log('[ChatCache] ✅ Bulk loading completed successfully with automatic token refresh');
       console.log('[ChatCache] 🎯 Performance benefit: Loaded', totalMessages, 'messages with 1 API call instead of', totalThreadsWithMessages, 'individual calls');
       
       // Force save to localStorage immediately after bulk loading
@@ -574,6 +583,16 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       
     } catch (error) {
       console.error('[ChatCache] ❌ Error in bulk loading:', error);
+      
+      // Enhanced error logging for authentication issues
+      if (error instanceof Error) {
+        if (error.message.includes('Authentication failed') || error.message.includes('Session expired')) {
+          console.error('[ChatCache] 🔐 Authentication error during bulk loading - user may need to log in again');
+        } else {
+          console.error('[ChatCache] 📡 Network or API error during bulk loading:', error.message);
+        }
+      }
+      
       throw error;
     } finally {
       setIsLoading(false);

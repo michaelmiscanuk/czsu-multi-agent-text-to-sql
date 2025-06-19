@@ -6,6 +6,13 @@ Custom uvicorn startup script that ensures proper event loop policy for PostgreS
 import sys
 import os
 
+# Load .env file early
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not available, use environment variables as-is
+
 # CRITICAL: Set Windows event loop policy BEFORE any other imports
 if sys.platform == "win32":
     import asyncio
@@ -17,11 +24,6 @@ if sys.platform == "win32":
 import uvicorn
 
 if __name__ == "__main__":
-    # Set debug mode if needed
-    if len(sys.argv) > 1 and sys.argv[1] == "--debug":
-        os.environ['MY_AGENT_DEBUG'] = '1'
-        print("🔍 Debug mode enabled")
-    
     print("🚀 Starting uvicorn with SelectorEventLoop...")
     
     # Start uvicorn with the correct event loop policy already set

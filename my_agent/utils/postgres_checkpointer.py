@@ -7,21 +7,30 @@ This uses the correct table schemas and implementation from the langgraph librar
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import sys
+import os  # Import os early for environment variable access
+
+def print__postgres_startup_debug(msg: str) -> None:
+    """Print PostgreSQL startup debug messages when debug mode is enabled."""
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[POSTGRES-STARTUP-DEBUG] {msg}")
+        sys.stdout.flush()
+
 if sys.platform == "win32":
     import asyncio
     
     # AGGRESSIVE WINDOWS FIX: Force SelectorEventLoop before any other async operations
-    print(f"🔧 PostgreSQL module: Windows detected - forcing SelectorEventLoop for PostgreSQL compatibility")
+    print__postgres_startup_debug(f"🔧 PostgreSQL module: Windows detected - forcing SelectorEventLoop for PostgreSQL compatibility")
     
     # Set the policy first - this is CRITICAL and must happen before any async operations
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print(f"🔧 PostgreSQL module: Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
+    print__postgres_startup_debug(f"🔧 PostgreSQL module: Windows event loop policy set to: {type(asyncio.get_event_loop_policy()).__name__}")
     
     # Force close any existing event loop and create a fresh SelectorEventLoop
     try:
         current_loop = asyncio.get_event_loop()
         if current_loop and not current_loop.is_closed():
-            print(f"🔧 PostgreSQL module: Closing existing {type(current_loop).__name__}")
+            print__postgres_startup_debug(f"🔧 PostgreSQL module: Closing existing {type(current_loop).__name__}")
             current_loop.close()
     except RuntimeError:
         # No event loop exists yet, which is fine
@@ -30,25 +39,25 @@ if sys.platform == "win32":
     # Create a new SelectorEventLoop explicitly and set it as the running loop
     new_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
     asyncio.set_event_loop(new_loop)
-    print(f"🔧 PostgreSQL module: Created new {type(new_loop).__name__}")
+    print__postgres_startup_debug(f"🔧 PostgreSQL module: Created new {type(new_loop).__name__}")
     
     # Verify the fix worked - this is critical for PostgreSQL compatibility
     try:
         current_loop = asyncio.get_event_loop()
-        print(f"🔧 PostgreSQL module: Current event loop type: {type(current_loop).__name__}")
+        print__postgres_startup_debug(f"🔧 PostgreSQL module: Current event loop type: {type(current_loop).__name__}")
         if "Selector" in type(current_loop).__name__:
-            print(f"✅ PostgreSQL module: PostgreSQL should work correctly on Windows now")
+            print__postgres_startup_debug(f"✅ PostgreSQL module: PostgreSQL should work correctly on Windows now")
         else:
-            print(f"⚠️ PostgreSQL module: Event loop fix may not have worked properly")
+            print__postgres_startup_debug(f"⚠️ PostgreSQL module: Event loop fix may not have worked properly")
             # FORCE FIX: If we still don't have a SelectorEventLoop, create one
-            print(f"🔧 PostgreSQL module: Force-creating SelectorEventLoop...")
+            print__postgres_startup_debug(f"🔧 PostgreSQL module: Force-creating SelectorEventLoop...")
             if not current_loop.is_closed():
                 current_loop.close()
             selector_loop = asyncio.WindowsSelectorEventLoopPolicy().new_event_loop()
             asyncio.set_event_loop(selector_loop)
-            print(f"🔧 PostgreSQL module: Force-created {type(selector_loop).__name__}")
+            print__postgres_startup_debug(f"🔧 PostgreSQL module: Force-created {type(selector_loop).__name__}")
     except RuntimeError:
-        print(f"🔧 PostgreSQL module: No event loop set yet (will be created as needed)")
+        print__postgres_startup_debug(f"🔧 PostgreSQL module: No event loop set yet (will be created as needed)")
 
 import asyncio
 import platform

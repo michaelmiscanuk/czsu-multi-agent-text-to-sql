@@ -7,7 +7,7 @@ import { API_CONFIG, authApiFetch } from '@/lib/api';
 import { useSentiment } from '@/lib/useSentiment';
 import { useChatCache } from '@/contexts/ChatCacheContext';
 
-const PROGRESS_DURATION = 20000; // 20 seconds
+const PROGRESS_DURATION = 480000; // 8 minutes - matches backend analysis timeout
 
 interface SimpleProgressBarProps {
     messageId: number;
@@ -17,31 +17,62 @@ interface SimpleProgressBarProps {
 const SimpleProgressBar = ({ messageId, startedAt }: SimpleProgressBarProps) => {
     const [progress, setProgress] = React.useState(() => {
         const elapsed = Date.now() - startedAt;
-        return Math.min(100, (elapsed / PROGRESS_DURATION) * 100);
+        return Math.min(95, (elapsed / PROGRESS_DURATION) * 100); // Cap at 95% until completion
     });
+    const [isCompleted, setIsCompleted] = React.useState(false);
     const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
     React.useEffect(() => {
         const update = () => {
             const elapsed = Date.now() - startedAt;
-            const percent = Math.min(100, (elapsed / PROGRESS_DURATION) * 100);
+            const percent = Math.min(95, (elapsed / PROGRESS_DURATION) * 100); // Cap at 95% until actual completion
             setProgress(percent);
-            if (percent >= 100 && intervalRef.current) {
+            
+            // Don't auto-complete the progress bar - let the actual response completion do that
+            if (elapsed >= PROGRESS_DURATION && intervalRef.current) {
                 clearInterval(intervalRef.current);
             }
         };
         update();
-        intervalRef.current = setInterval(update, 100);
+        intervalRef.current = setInterval(update, 1000); // Update every second instead of every 100ms
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
         };
     }, [messageId, startedAt]);
 
+    // Complete progress bar when message is done loading
+    React.useEffect(() => {
+        // Note: This will be triggered when the parent component re-renders with isLoading=false
+        // We need a way to detect completion from the parent
+        return () => {
+            // Cleanup when component unmounts (message stops loading)
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, []);
+
+    // Calculate estimated time remaining
+    const elapsed = Date.now() - startedAt;
+    const remainingMs = Math.max(0, PROGRESS_DURATION - elapsed);
+    const remainingMinutes = Math.ceil(remainingMs / 60000);
+    const remainingSeconds = Math.ceil((remainingMs % 60000) / 1000);
+
     return (
-        <div className="w-full mt-2">
+        <div className="w-full mt-3">
+            <div className="flex justify-between items-center mb-1">
+                <span className="text-xs text-gray-500">Processing...</span>
+                <span className="text-xs text-gray-500">
+                    {remainingMs > 0 ? (
+                        remainingMinutes > 0 ? 
+                            `~${remainingMinutes}m ${remainingSeconds}s remaining` : 
+                            `~${remainingSeconds}s remaining`
+                    ) : (
+                        'Completing...'
+                    )}
+                </span>
+            </div>
             <div className="h-[3px] w-full bg-gray-200 rounded-full overflow-hidden">
                 <div
-                    className="h-[3px] bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-200"
+                    className="h-[3px] bg-gradient-to-r from-blue-400 to-blue-600 transition-all duration-1000"
                     style={{ width: `${progress}%` }}
                 />
             </div>
@@ -595,7 +626,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                     {message.isLoading && !message.content ? (
                                         <div className="flex items-center space-x-3">
                                             <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-                                            <span className="text-gray-600">Thinking...</span>
+                                            <span className="text-gray-600">Analyzing your request...</span>
                                         </div>
                                     ) : (
                                         message.content || (
