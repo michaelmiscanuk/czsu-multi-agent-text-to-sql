@@ -28,7 +28,7 @@
 3. **Frontend Setup (from frontend folder)**
    Run the following commands:
    ```
-   npm install
+   npm install --verbose
    npm run build
    npm run dev
    ```
