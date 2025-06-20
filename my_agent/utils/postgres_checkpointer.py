@@ -159,22 +159,26 @@ def get_db_config():
     }
 
 def get_connection_string():
-    """Get PostgreSQL connection string from environment variables with basic Supabase configuration."""
+    """Get PostgreSQL connection string from environment variables with enhanced cloud deployment configuration."""
     config = get_db_config()
     
     print__postgres_startup_debug(f"🔗 Building connection string for Supabase")
     
-    # FIXED: Basic Supabase connection string (prepare_threshold must be set in connection kwargs, not URL)
+    # ENHANCED: Cloud-optimized connection string for Render/Supabase deployment
     connection_string = (
         f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}"
         f"?sslmode=require"                     # Required for Supabase
-        f"&connect_timeout=20"                  # Basic connection timeout
+        f"&connect_timeout=15"                  # Shorter connection timeout for cloud
         f"&application_name=czsu_agent"         # App identification
+        f"&keepalives_idle=300"                 # Keep connection alive (5 minutes)
+        f"&keepalives_interval=30"              # Send keepalive every 30 seconds
+        f"&keepalives_count=3"                  # 3 failed keepalives before disconnect
+        f"&tcp_user_timeout=30000"              # TCP timeout (30 seconds)
     )
     
     # Log connection details (without password)
     debug_string = connection_string.replace(config['password'], '***')
-    print__postgres_startup_debug(f"🔗 Using Supabase connection string (prepared statements disabled via pool kwargs): {debug_string}")
+    print__postgres_startup_debug(f"🔗 Using cloud-optimized Supabase connection string: {debug_string}")
     
     return connection_string
 
@@ -197,7 +201,7 @@ async def is_pool_healthy(pool: Optional[AsyncConnectionPool]) -> bool:
         return False
 
 async def create_fresh_connection_pool() -> AsyncConnectionPool:
-    """Create a new PostgreSQL connection pool."""
+    """Create a new PostgreSQL connection pool with cloud-optimized settings."""
     try:
         print__postgresql_debug("🔄 Creating fresh PostgreSQL connection pool...")
         
@@ -213,21 +217,23 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
         print__postgresql_debug(f"🔗 Connection string configured (SSL enabled)")
         
         # CRITICAL: For Supabase transaction mode, disable prepared statements
-        print__postgresql_debug("🔧 Configuring for Supabase transaction mode (prepared statements disabled)")
+        print__postgresql_debug("🔧 Configuring for cloud deployment with enhanced resilience")
         
-        # Create pool with Supabase-optimized settings (don't open in constructor)
+        # FIXED: Cloud-optimized pool settings for Render/Supabase
         pool = AsyncConnectionPool(
             conninfo=conninfo,
             min_size=1,  # Minimum connections in pool
-            max_size=8,  # Maximum connections in pool (reduced from 10)
-            timeout=30,  # Connection timeout in seconds
-            max_idle=300,  # Maximum idle time before closing connections (5 minutes)
-            max_lifetime=3600,  # Maximum lifetime of connections (1 hour)
+            max_size=3,  # REDUCED: Lower max to prevent connection exhaustion
+            timeout=15,  # REDUCED: Shorter timeout for acquiring connections
+            max_idle=180,  # REDUCED: 3 minutes idle time (was 5 minutes)
+            max_lifetime=1800,  # REDUCED: 30 minutes lifetime (was 1 hour)
+            reconnect_timeout=30,  # ADDED: Timeout for reconnection attempts
             open=False,  # IMPORTANT: Don't open in constructor to avoid deprecation warning
             configure=None,  # Connection configuration function
             kwargs={
                 "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase transaction mode
                 "autocommit": True,             # Use autocommit for better compatibility
+                "connect_timeout": 10,          # ADDED: Connection-level timeout
             }
         )
         
@@ -963,7 +969,7 @@ async def debug_pool_status():
     return database_pool
 
 async def test_connection_health():
-    """Test the health of the PostgreSQL connection using proper Supabase settings."""
+    """Test the health of the PostgreSQL connection using cloud-optimized Supabase settings."""
     try:
         config = get_db_config()
         
@@ -976,16 +982,19 @@ async def test_connection_health():
         
         print__api_postgresql("🔍 Testing Supabase connection health...")
         
-        # Test basic connection using same settings as main pool (don't open in constructor)
+        # FIXED: Use cloud-optimized settings matching main pool
         pool = AsyncConnectionPool(
             conninfo=connection_string,
             max_size=1,
             min_size=1,
-            timeout=10,  # Short timeout for health check
+            timeout=5,  # Short timeout for health check
+            max_idle=60,  # Short idle time for health check
+            max_lifetime=300,  # Short lifetime for health check
             open=False,  # Don't open in constructor to avoid deprecation warning
             kwargs={
                 "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase transaction mode
                 "autocommit": True,             # Use autocommit for better compatibility
+                "connect_timeout": 5,           # Quick connection timeout for health check
             }
         )
         
@@ -1007,28 +1016,30 @@ async def test_connection_health():
         error_msg = str(e).lower()
         print__api_postgresql(f"❌ Supabase connection health check failed: {e}")
         
-        # Provide specific guidance
+        # Provide specific guidance for common cloud deployment issues
         if "ssl" in error_msg:
             print__api_postgresql("💡 SSL Issue: Verify Supabase credentials and IP whitelist")
         elif "timeout" in error_msg:
             print__api_postgresql("💡 Timeout Issue: Check network connectivity to Supabase")
         elif "authentication" in error_msg:
             print__api_postgresql("💡 Auth Issue: Verify database credentials")
+        elif any(keyword in error_msg for keyword in ["pipeline", "bad", "terminating"]):
+            print__api_postgresql("💡 Pipeline Issue: This may resolve with connection pool recreation")
             
         return False
 
 class ResilientPostgreSQLCheckpointer:
     """
     A wrapper around PostgreSQLCheckpointer that handles connection failures gracefully
-    with simple retry logic.
+    with enhanced retry logic for cloud deployments.
     """
     
     def __init__(self, base_checkpointer):
         self.base_checkpointer = base_checkpointer
-        self.max_retries = 2  # Simple retry count
+        self.max_retries = 3  # Increased retry count for cloud resilience
         
-    async def _simple_retry(self, operation_name, operation_func, *args, **kwargs):
-        """Simple retry logic for basic connection failures."""
+    async def _cloud_resilient_retry(self, operation_name, operation_func, *args, **kwargs):
+        """Enhanced retry logic for cloud deployment connection failures."""
         
         for attempt in range(self.max_retries + 1):
             try:
@@ -1040,31 +1051,63 @@ class ResilientPostgreSQLCheckpointer:
             except Exception as e:
                 error_msg = str(e).lower()
                 
-                # Only retry connection-related errors
+                # Enhanced error detection for cloud deployment issues
                 is_retryable = any(keyword in error_msg for keyword in [
-                    "connection", "timeout", "network", "ssl", "closed"
+                    "connection", "timeout", "network", "ssl", "closed",
+                    "pipeline", "bad", "lost", "terminating", "consuming input failed",
+                    "server closed", "ssl connection has been closed unexpectedly",
+                    "dbhandler exited"
+                ])
+                
+                # Special handling for pipeline errors (the main issue in your logs)
+                is_pipeline_error = any(keyword in error_msg for keyword in [
+                    "pipeline", "asyncpipeline", "[bad]", "terminating"
                 ])
                 
                 if attempt < self.max_retries and is_retryable:
-                    delay = 1 + attempt  # Simple delay: 1s, 2s
-                    print__postgresql_debug(f"⚠ [{operation_name}] Attempt {attempt + 1} failed, retrying in {delay}s: {e}")
+                    # Use longer delay for pipeline errors
+                    if is_pipeline_error:
+                        delay = 2 + (attempt * 2)  # 2s, 4s, 6s for pipeline errors
+                        print__postgresql_debug(f"⚠ [{operation_name}] Pipeline error detected - attempt {attempt + 1} failed, retrying in {delay}s: {e}")
+                    else:
+                        delay = 1 + attempt  # Standard delay: 1s, 2s, 3s
+                        print__postgresql_debug(f"⚠ [{operation_name}] Connection error - attempt {attempt + 1} failed, retrying in {delay}s: {e}")
+                    
                     await asyncio.sleep(delay)
+                    
+                    # For pipeline errors, try to get a fresh pool connection
+                    if is_pipeline_error and hasattr(self.base_checkpointer, 'conn'):
+                        try:
+                            print__postgresql_debug(f"🔄 [{operation_name}] Testing pool health after pipeline error...")
+                            async with self.base_checkpointer.conn.connection() as test_conn:
+                                await asyncio.wait_for(test_conn.execute("SELECT 1"), timeout=5)
+                            print__postgresql_debug(f"✅ [{operation_name}] Pool health check passed")
+                        except Exception as health_error:
+                            print__postgresql_debug(f"⚠ [{operation_name}] Pool health check failed: {health_error}")
+                            # Mark checkpointer for recreation
+                            if hasattr(self.base_checkpointer, '_fragmentation_reset_needed'):
+                                self.base_checkpointer._fragmentation_reset_needed = True
                 else:
                     print__postgresql_debug(f"❌ [{operation_name}] Failed after {attempt + 1} attempts: {e}")
+                    
+                    # For final failure on pipeline errors, provide specific guidance
+                    if is_pipeline_error:
+                        print__postgresql_debug(f"💡 [{operation_name}] Pipeline errors often resolve with connection pool recreation")
+                    
                     raise
     
-    # Delegate all operations to the base checkpointer with simple retry
+    # Delegate all operations to the base checkpointer with enhanced retry
     async def aput(self, config, checkpoint, metadata, new_versions):
-        return await self._simple_retry("aput", self.base_checkpointer.aput, config, checkpoint, metadata, new_versions)
+        return await self._cloud_resilient_retry("aput", self.base_checkpointer.aput, config, checkpoint, metadata, new_versions)
 
     async def aput_writes(self, config, writes, task_id):
-        return await self._simple_retry("aput_writes", self.base_checkpointer.aput_writes, config, writes, task_id)
+        return await self._cloud_resilient_retry("aput_writes", self.base_checkpointer.aput_writes, config, writes, task_id)
 
     async def aget(self, config):
-        return await self._simple_retry("aget", self.base_checkpointer.aget, config)
+        return await self._cloud_resilient_retry("aget", self.base_checkpointer.aget, config)
 
     async def aget_tuple(self, config):
-        return await self._simple_retry("aget_tuple", self.base_checkpointer.aget_tuple, config)
+        return await self._cloud_resilient_retry("aget_tuple", self.base_checkpointer.aget_tuple, config)
 
     async def alist(self, config, filter=None, before=None, limit=None):
         # alist returns an async generator, so we need to yield from it

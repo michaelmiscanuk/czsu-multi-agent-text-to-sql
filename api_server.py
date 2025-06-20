@@ -413,7 +413,7 @@ async def cleanup_checkpointer():
     log_memory_usage("cleanup_complete")
 
 async def get_healthy_checkpointer():
-    """Get a healthy checkpointer instance, recreating if necessary with enhanced error handling."""
+    """Get a healthy checkpointer instance, recreating if necessary with enhanced error handling for cloud deployments."""
     global GLOBAL_CHECKPOINTER
     
     # Check if current checkpointer is healthy
@@ -451,7 +451,7 @@ async def get_healthy_checkpointer():
                 print__startup_debug(f"⚠️ Checkpointer pool is closed, recreating...")
                 GLOBAL_CHECKPOINTER = None
             else:
-                # Enhanced health check with timeout
+                # Enhanced health check with timeout and pipeline error detection
                 try:
                     # FIXED: Use proper async context manager for connection pool with timeout
                     async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
@@ -462,10 +462,29 @@ async def get_healthy_checkpointer():
                     print__startup_debug("⚠️ Checkpointer health check timed out, recreating...")
                     GLOBAL_CHECKPOINTER = None
                 except Exception as health_error:
-                    print__startup_debug(f"⚠️ Checkpointer health check failed: {health_error}")
+                    error_msg = str(health_error).lower()
+                    
+                    # Enhanced error detection for pipeline and connection issues
+                    is_pipeline_error = any(keyword in error_msg for keyword in [
+                        "pipeline", "bad", "terminating", "consuming input failed",
+                        "ssl connection has been closed unexpectedly"
+                    ])
+                    
+                    if is_pipeline_error:
+                        print__startup_debug(f"⚠️ Pipeline/connection error detected in health check: {health_error}")
+                        print__startup_debug("🔄 Forcing checkpointer recreation due to pipeline error")
+                    else:
+                        print__startup_debug(f"⚠️ Checkpointer health check failed: {health_error}")
+                    
                     GLOBAL_CHECKPOINTER = None
         except Exception as e:
+            error_msg = str(e).lower()
             print__startup_debug(f"⚠️ Error checking checkpointer health: {e}")
+            
+            # Force recreation on pipeline errors
+            if any(keyword in error_msg for keyword in ["pipeline", "bad", "terminating"]):
+                print__startup_debug("🔄 Forcing checkpointer recreation due to pipeline error in health check")
+            
             GLOBAL_CHECKPOINTER = None
     
     # Cleanup old checkpointer if needed
@@ -508,7 +527,7 @@ async def get_healthy_checkpointer():
                 delattr(GLOBAL_CHECKPOINTER, '_fragmentation_reset_needed')
             
             print__startup_debug(f"✅ Fresh checkpointer created successfully (attempt {attempt + 1})")
-            print__memory_monitoring("✅ New checkpointer created - fragmentation-related pool issues should be resolved")
+            print__memory_monitoring("✅ New checkpointer created - connection/pipeline issues should be resolved")
             return GLOBAL_CHECKPOINTER
             
         except asyncio.TimeoutError:
@@ -529,16 +548,17 @@ async def get_healthy_checkpointer():
             if (attempt < max_attempts - 1 and 
                 ("connection" in error_msg.lower() or 
                  "pool" in error_msg.lower() or
-                 "dbhandler" in error_msg.lower())):
+                 "dbhandler" in error_msg.lower() or
+                 "pipeline" in error_msg.lower())):
                 delay = 2 ** attempt  # Exponential backoff
-                print__startup_debug(f"🔄 Retrying due to connection issue in {delay} seconds...")
+                print__startup_debug(f"🔄 Retrying due to connection/pipeline issue in {delay} seconds...")
                 await asyncio.sleep(delay)
             else:
                 print__startup_debug("❌ Non-recoverable error or final attempt failed, falling back to InMemorySaver")
                 break
     # Fallback to InMemorySaver only if PostgreSQL completely fails
     print__startup_debug("⚠ PostgreSQL checkpointer creation failed completely - falling back to InMemorySaver")
-    print__memory_monitoring("⚠ Using InMemorySaver - fragmentation handling will be limited")
+    print__memory_monitoring("⚠ Using InMemorySaver - connection/pipeline handling will be limited")
     from langgraph.checkpoint.memory import InMemorySaver
     GLOBAL_CHECKPOINTER = InMemorySaver()
     print__startup_debug("⚠ Using InMemorySaver - persistence will be limited to this session")
