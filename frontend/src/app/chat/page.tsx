@@ -1,13 +1,15 @@
 "use client";
 import InputBar from '@/components/InputBar';
 import MessageArea from '@/components/MessageArea';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
 import { useChatCache } from '@/contexts/ChatCacheContext';
 import { ChatThreadMeta, ChatMessage, AnalyzeResponse, ChatThreadResponse } from '@/types';
 import { API_CONFIG, authApiFetch } from '@/lib/api';
+import { useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Message {
   id: number;
@@ -50,6 +52,10 @@ export default function ChatPage() {
     messages,
     activeThreadId,
     isLoading: cacheLoading,
+    threadsPage,
+    threadsHasMore,
+    threadsLoading,
+    totalThreadsCount,
     setThreads,
     setMessages,
     setActiveThreadId,
@@ -58,6 +64,9 @@ export default function ChatPage() {
     addThread,
     removeThread,
     updateThread,
+    loadInitialThreads,
+    loadMoreThreads,
+    resetPagination,
     invalidateCache,
     refreshFromAPI,
     isDataStale,
@@ -77,6 +86,34 @@ export default function ChatPage() {
     updateCachedSentiment
   } = useChatCache();
   
+  // Infinite scroll for threads
+  const {
+    isLoading: infiniteScrollLoading,
+    error: infiniteScrollError,
+    hasMore: infiniteScrollHasMore,
+    observerRef: threadsObserverRef,
+    setHasMore: setInfiniteScrollHasMore,
+    setError: setInfiniteScrollError
+  } = useInfiniteScroll(
+    async () => {
+      await loadMoreThreads();
+    },
+    { threshold: 1.0, rootMargin: '100px' }
+  );
+
+  // Update infinite scroll state when pagination state changes
+  useEffect(() => {
+    setInfiniteScrollHasMore(threadsHasMore);
+  }, [threadsHasMore, setInfiniteScrollHasMore]);
+
+  // Clear infinite scroll error when needed
+  useEffect(() => {
+    if (infiniteScrollError) {
+      console.error('[ChatPage] Infinite scroll error:', infiniteScrollError);
+      setInfiniteScrollError(null);
+    }
+  }, [infiniteScrollError, setInfiniteScrollError]);
+
   // Local component state
   const [currentMessage, setCurrentMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -86,8 +123,6 @@ export default function ChatPage() {
   const [openPDFModalForMsgId, setOpenPDFModalForMsgId] = useState<string | null>(null);
   const [iteration, setIteration] = useState(0);
   const [maxIterations, setMaxIterations] = useState(2); // default fallback
-  const [threadsLoaded, setThreadsLoaded] = useState(false);
-  const [threadsLoading, setThreadsLoading] = useState(false);
   
   // Combined loading state: local loading OR global context loading OR cross-tab user loading
   // This ensures loading state persists across navigation AND across browser tabs for the same user
@@ -105,8 +140,8 @@ export default function ChatPage() {
     localStorage.setItem('czsu-draft-message', message);
   };
 
-  // Load threads and ALL messages at once from PostgreSQL
-  const loadThreadsFromPostgreSQL = async () => {
+  // NEW: Load threads using pagination instead of loading all at once
+  const loadThreadsWithPagination = useCallback(async () => {
     if (!userEmail) {
       console.log('[ChatPage-loadThreads] ⚠ No user email available');
       return;
@@ -117,79 +152,36 @@ export default function ChatPage() {
     if (isAlreadyLoading) {
       console.log('[ChatPage-loadThreads] 🔒 Another tab is already loading for user:', userEmail, '- waiting...');
       setLoading(true);
-      setThreadsLoading(true);
       return;
     }
 
-    console.log('[ChatPage-loadThreads] 🚀 Starting optimized loading (threads + bulk messages)...');
+    console.log('[ChatPage-loadThreads] 🚀 Starting paginated loading...');
     setLoading(true);
-    setThreadsLoading(true);
     
     // Set loading state to prevent other tabs from starting concurrent loads
     setUserLoadingState(userEmail, true);
 
     try {
-      // Get fresh session for authentication
-      const freshSession = await getSession();
-      if (!freshSession?.id_token) {
-        throw new Error('No authentication token available');
-      }
-
-      console.log('[ChatPage-loadThreads] 📡 Step 1: Loading threads from PostgreSQL...');
-      const threadsData = await authApiFetch<ChatThreadResponse[]>('/chat-threads', freshSession.id_token);
+      // Reset pagination and load initial threads
+      resetPagination();
+      await loadInitialThreads();
       
-      console.log('[ChatPage-loadThreads] ✅ Loaded threads from PostgreSQL API:', threadsData.length);
-      
-      // Update cache through context - this will sync localStorage with PostgreSQL data
-      setThreads(threadsData);
-      
-      // OPTIMIZATION: Only do bulk loading if we have threads
-      if (threadsData.length > 0) {
-        console.log('[ChatPage-loadThreads] 📡 Step 2: Starting bulk loading of ALL messages for', threadsData.length, 'threads...');
-        
-        // CRITICAL: Wait for bulk loading to complete before allowing navigation
-        try {
-          await loadAllMessagesFromAPI();
-          console.log('[ChatPage-loadThreads] ✅ Bulk loading completed with automatic token refresh - all messages cached');
-          console.log('[ChatPage-loadThreads] 🎯 Performance: No individual API calls needed - everything is cached!');
-        } catch (error) {
-          console.error('[ChatPage-loadThreads] ❌ Bulk loading failed:', error);
-          
-          // Enhanced error handling for authentication issues
-          if (error instanceof Error) {
-            if (error.message.includes('Authentication failed') || error.message.includes('Session expired')) {
-              console.error('[ChatPage-loadThreads] 🔐 Authentication error - user may need to log in again');
-              // Optionally, you could trigger a sign-out or redirect to login here
-            } else {
-              console.error('[ChatPage-loadThreads] 📡 Network or API error:', error.message);
-            }
-          }
-          
-          // Continue even if bulk loading fails - individual loading will still work as fallback
-        }
-      } else {
-        console.log('[ChatPage-loadThreads] ⚠ No threads found - skipping bulk message loading');
-      }
-      
-      setThreadsLoaded(true);
+      console.log('[ChatPage-loadThreads] ✅ Initial threads loaded with pagination');
       
       if (isPageRefresh) {
-        console.log('[ChatPage-loadThreads] ✅ F5 refresh completed - localStorage now synced with PostgreSQL');
-        // IMPORTANT: Reset page refresh flag after successful F5 sync
-        // This allows subsequent navigation to use cache instead of always hitting API
+        console.log('[ChatPage-loadThreads] ✅ F5 refresh completed - using new pagination system');
         resetPageRefresh();
       } else {
-        console.log('[ChatPage-loadThreads] ✅ Navigation completed - cache populated from API');
+        console.log('[ChatPage-loadThreads] ✅ Navigation completed - pagination initialized');
       }
     } catch (error) {
       console.error('[ChatPage-loadThreads] ❌ Error loading threads:', error);
     } finally {
-      setThreadsLoading(false);
       setLoading(false);
       // Clear loading state to allow other tabs to load if needed
       setUserLoadingState(userEmail, false);
     }
-  };
+  }, [userEmail, checkUserLoadingState, setLoading, setUserLoadingState, resetPagination, loadInitialThreads, isPageRefresh, resetPageRefresh]);
 
   // OPTIMIZED: Use cached data only - no more individual API calls
   const loadMessagesFromCheckpoint = async (threadId: string) => {
@@ -268,55 +260,59 @@ export default function ChatPage() {
     }
   };
 
-  // Load threads when component mounts or user changes
+  // Main effect: Handle user authentication and initialize data
   useEffect(() => {
-    if (userEmail && status === "authenticated") {
-      console.log('[ChatPage-useEffect] 🔄 User authenticated, checking cache strategy');
+    if (status === "loading") return; // Wait for session to be determined
+    
+    if (status === "unauthenticated") {
+      console.log('[ChatPage-useEffect] 🚫 User not authenticated, redirecting to login');
+      return; // Let the AuthGuard handle the redirect
+    }
+    
+    if (status === "authenticated" && userEmail) {
+      console.log('[ChatPage-useEffect] ✅ User authenticated:', userEmail);
       
-      // 🔒 SECURITY & CLEAN STATE: Clear localStorage when user changes
-      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      // Initialize user in context
+      setUserEmail(userEmail);
+      
+      // Check for user change (different from cached user)
+      const existingCache = typeof localStorage !== 'undefined' ? localStorage.getItem('czsu-chat-cache') : null;
+      if (existingCache) {
         try {
-          const existingCache = localStorage.getItem('czsu-chat-cache');
-          if (existingCache) {
-            const cacheData = JSON.parse(existingCache);
-            if (cacheData.userEmail && cacheData.userEmail !== userEmail) {
-              console.log('[ChatPage-useEffect] 🔄 Different user detected - clearing previous user data');
-              console.log('[ChatPage-useEffect] 👤 Previous user:', cacheData.userEmail, '→ Current user:', userEmail);
-              
-              // Use comprehensive cache clearing function for user change
-              clearCacheForUserChange(userEmail);
-              
-              console.log('[ChatPage-useEffect] ✅ Previous user data cleared - loading fresh data for current user');
-              loadThreadsFromPostgreSQL();
-              return;
-            } else {
-              console.log('[ChatPage-useEffect] ✅ Same user login detected - checking cache validity');
-            }
-          } else {
-            console.log('[ChatPage-useEffect] ✅ No existing cache - fresh login');
-            loadThreadsFromPostgreSQL();
+          const cached = JSON.parse(existingCache);
+          if (cached.userEmail && cached.userEmail !== userEmail) {
+            console.log('[ChatPage-useEffect] 👤 User changed from', cached.userEmail, 'to', userEmail);
+            console.log('[ChatPage-useEffect] 🧹 Clearing cache and resetting pagination for user change');
+            
+            clearCacheForUserChange(userEmail);
+            resetPagination();
+            
+            console.log('[ChatPage-useEffect] ✅ Previous user data cleared - loading fresh data for current user');
+            loadThreadsWithPagination();
             return;
+          } else {
+            console.log('[ChatPage-useEffect] ✅ Same user as cached data - checking if refresh needed');
           }
-        } catch (error) {
-          console.error('[ChatPage-useEffect] ⚠ Error checking existing cache:', error);
+        } catch (e) {
           // If there's any issue parsing cache, clear it for safety
           clearCacheForUserChange(userEmail);
-          loadThreadsFromPostgreSQL();
+          resetPagination();
+          loadThreadsWithPagination();
           return;
         }
       }
       
-      // Check if data is stale or if this is a page refresh (F5)
+      // Check if we need to refresh from API (F5 or stale data)
       if (isDataStale() || isPageRefresh) {
-        console.log('[ChatPage-useEffect] 🔄 Cache is stale or page refresh detected - loading from API');
-        loadThreadsFromPostgreSQL();
+        console.log('[ChatPage-useEffect] 🔄 Cache is stale or page refresh detected - using pagination');
+        resetPagination();
+        loadThreadsWithPagination();
       } else {
         console.log('[ChatPage-useEffect] ⚡ Using cached data - no API call needed');
         // Cache is valid and data should already be loaded by ChatCacheContext
-        // Just mark threads as loaded so UI can proceed
-        setThreadsLoaded(true);
+        // Threads are considered loaded when we have totalThreadsCount > 0
         
-        // If we have cached threads but threadsLoaded is false, we need to trigger the UI update
+        // If we have cached threads, we need to trigger the UI update
         if (threads.length > 0) {
           console.log('[ChatPage-useEffect] 📤 Found', threads.length, 'cached threads - UI ready');
           
@@ -334,13 +330,13 @@ export default function ChatPage() {
             }
           }
         } else {
-          console.log('[ChatPage-useEffect] ⚠ No cached threads found - this may be a first-time user');
-          // Still load from API if no cached data
-          loadThreadsFromPostgreSQL();
+          console.log('[ChatPage-useEffect] ⚠ No cached threads found - initializing pagination');
+          // Initialize pagination for first-time users
+          loadThreadsWithPagination();
         }
       }
     }
-  }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length]);
+  }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length, activeThreadId, setUserEmail, resetPagination, loadThreadsWithPagination, setActiveThreadId]);
 
   // NEW: Initialize currentMessage from localStorage when user authenticates
   useEffect(() => {
@@ -366,17 +362,17 @@ export default function ChatPage() {
 
   // Load messages when active thread changes (when user clicks a thread)
   useEffect(() => {
-    if (activeThreadId && threadsLoaded) {
+    if (activeThreadId && totalThreadsCount > 0) {
       console.log('[ChatPage-useEffect] 🔄 Active thread changed, loading messages for:', activeThreadId);
       // Save active thread to localStorage
       localStorage.setItem('czsu-last-active-chat', activeThreadId);
       loadMessagesFromCheckpoint(activeThreadId);
     }
-  }, [activeThreadId, threadsLoaded]);
+  }, [activeThreadId, totalThreadsCount]);
 
   // Restore active thread from localStorage after threads are loaded
   useEffect(() => {
-    if (threadsLoaded && threads.length > 0 && !activeThreadId) {
+    if (totalThreadsCount > 0 && threads.length > 0 && !activeThreadId) {
       // Check localStorage for last active thread
       const lastActiveThread = localStorage.getItem('czsu-last-active-chat');
       console.log('[ChatPage-useEffect] 🔄 Checking for last active thread:', lastActiveThread);
@@ -392,7 +388,7 @@ export default function ChatPage() {
         setActiveThreadId(mostRecentThread.thread_id);
       }
     }
-  }, [threadsLoaded, threads.length, activeThreadId]);
+  }, [totalThreadsCount, threads.length, activeThreadId]);
 
   // Handle URL storage event for localStorage sync
   useEffect(() => {
@@ -847,43 +843,23 @@ export default function ChatPage() {
     }
   }, [currentMessage]);
 
-  // Focus input field when activeThreadId changes, threads are loaded, or component mounts
-  React.useEffect(() => {
-    const focusInput = () => {
-      if (inputRef.current) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 100);
-      }
-    };
-
-    // Focus when activeThreadId changes (switching chats or creating new chat)
-    if (activeThreadId) {
-      focusInput();
+  // Focus input when active thread changes AND we have loaded threads
+  useEffect(() => {
+    if (activeThreadId && totalThreadsCount > 0) {
+      console.log('[ChatPage-focusInput] 🎯 Active thread changed, focusing input');
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     }
-    // Focus when threads are loaded for the first time
-    else if (threadsLoaded && threads.length === 0) {
-      focusInput();
-    }
-    // Focus on initial mount when no active thread
-    else if (!activeThreadId && !cacheLoading && !threadsLoading) {
-      focusInput();
-    }
-  }, [activeThreadId, threadsLoaded, threads.length, cacheLoading, threadsLoading]);
+  }, [activeThreadId, totalThreadsCount]);
 
-  // Focus input field when navigating back to chat page
-  React.useEffect(() => {
-    const focusInput = () => {
-      if (inputRef.current) {
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 200);
-      }
-    };
-
-    // Focus when component mounts (page navigation)
-    focusInput();
-  }, []);
+  // Set default active thread when threads are loaded
+  useEffect(() => {
+    if (totalThreadsCount > 0 && threads.length > 0 && !activeThreadId) {
+      console.log('[ChatPage-setDefaultThread] 🎯 Setting default active thread to first loaded thread');
+      setActiveThreadId(threads[0].thread_id);
+    }
+  }, [totalThreadsCount, threads.length, activeThreadId]);
 
   // NEW: Response recovery mechanism for memory pressure scenarios
   const checkForNewMessagesAfterTimeout = async (threadId: string, beforeMessageCount: number) => {
@@ -1078,7 +1054,7 @@ export default function ChatPage() {
         
         {/* Sidebar Chat List with Scroll */}
         <div ref={sidebarRef} className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-1 chat-scrollbar">
-          {(threadsLoading && !cacheLoading) ? (
+          {(threadsLoading && threads.length === 0) ? (
             <div className="text-center py-8">
               <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
               <div className="text-sm text-gray-500">Loading your chats...</div>
@@ -1089,44 +1065,75 @@ export default function ChatPage() {
               <div className="text-xs text-gray-400">Click "New Chat" to start</div>
             </div>
           ) : (
-            threads.map(s => (
-              <div key={s.thread_id} className="group">
-                {editingTitleId === s.thread_id ? (
-                  <input
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-white border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                    value={newTitle}
-                    onChange={e => setNewTitle(e.target.value)}
-                    onBlur={() => handleRename(s.thread_id, newTitle)}
-                    onKeyDown={e => { if (e.key === 'Enter') handleRename(s.thread_id, newTitle); }}
-                    autoFocus
+            <>
+              {threads.map(s => (
+                <div key={s.thread_id} className="group">
+                  {editingTitleId === s.thread_id ? (
+                    <input
+                      className="w-full px-3 py-2 text-sm rounded-lg bg-white border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      value={newTitle}
+                      onChange={e => setNewTitle(e.target.value)}
+                      onBlur={() => handleRename(s.thread_id, newTitle)}
+                      onKeyDown={e => { if (e.key === 'Enter') handleRename(s.thread_id, newTitle); }}
+                      autoFocus
+                    />
+                  ) : (
+                    <div className="flex items-center min-w-0">
+                      <button
+                        className={
+                          `flex-1 text-left text-sm px-3 py-2 font-semibold rounded-lg transition-all duration-200 cursor-pointer min-w-0 ` +
+                          (activeThreadId === s.thread_id
+                            ? 'font-extrabold light-blue-theme '
+                            : 'text-[#181C3A]/80 hover:text-gray-300 hover:bg-gray-100 ')
+                        }
+                        style={{fontFamily: 'var(--font-inter)'}}
+                        onClick={() => setActiveThreadId(s.thread_id)}
+                        onDoubleClick={() => { setEditingTitleId(s.thread_id); setNewTitle(s.title || ''); }}
+                        title={`${s.full_prompt || s.title || 'New Chat'}${s.full_prompt && s.full_prompt.length === 50 ? '...' : ''}`}
+                      >
+                        <div className="truncate block leading-tight">{s.title || 'New Chat'}</div>
+                      </button>
+                      <button
+                        className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors"
+                        title="Delete chat"
+                        onClick={() => handleDelete(s.thread_id)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Infinite Scroll Loading Indicator */}
+              {threadsHasMore && (
+                <div ref={threadsObserverRef} className="w-full">
+                  <LoadingSpinner 
+                    size="sm" 
+                    text="Loading more chats..." 
+                    className="py-4"
                   />
-                ) : (
-                  <div className="flex items-center min-w-0">
-                    <button
-                      className={
-                        `flex-1 text-left text-sm px-3 py-2 font-semibold rounded-lg transition-all duration-200 cursor-pointer min-w-0 ` +
-                        (activeThreadId === s.thread_id
-                          ? 'font-extrabold light-blue-theme '
-                          : 'text-[#181C3A]/80 hover:text-gray-300 hover:bg-gray-100 ')
-                      }
-                      style={{fontFamily: 'var(--font-inter)'}}
-                      onClick={() => setActiveThreadId(s.thread_id)}
-                      onDoubleClick={() => { setEditingTitleId(s.thread_id); setNewTitle(s.title || ''); }}
-                      title={`${s.full_prompt || s.title || 'New Chat'}${s.full_prompt && s.full_prompt.length === 50 ? '...' : ''}`}
-                    >
-                      <div className="truncate block leading-tight">{s.title || 'New Chat'}</div>
-                    </button>
-                    <button
-                      className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors"
-                      title="Delete chat"
-                      onClick={() => handleDelete(s.thread_id)}
-                    >
-                      ×
-                    </button>
+                </div>
+              )}
+              
+              {/* Loading indicator for additional pages */}
+              {threadsLoading && threads.length > 0 && (
+                <LoadingSpinner 
+                  size="sm" 
+                  text="Loading more chats..." 
+                  className="py-2"
+                />
+              )}
+              
+              {/* End of list indicator */}
+              {!threadsHasMore && threads.length > 10 && (
+                <div className="text-center py-4">
+                  <div className="text-xs text-gray-400">
+                    All {totalThreadsCount} chats loaded
                   </div>
-                )}
-              </div>
-            ))
+                </div>
+              )}
+            </>
           )}
         </div>
       </aside>

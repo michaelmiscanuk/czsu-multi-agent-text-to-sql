@@ -1,7 +1,9 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
-import { ChatThreadMeta, ChatMessage } from '@/types'
+import { ChatThreadMeta, ChatMessage, PaginatedChatThreadsResponse } from '@/types'
+import { API_CONFIG, authApiFetch } from '@/lib/api'
+import { getSession } from "next-auth/react"
 
 interface CacheData {
   threads: ChatThreadMeta[];
@@ -20,6 +22,12 @@ interface ChatCacheContextType {
   activeThreadId: string | null;
   isLoading: boolean;
   
+  // Pagination state
+  threadsPage: number;
+  threadsHasMore: boolean;
+  threadsLoading: boolean;
+  totalThreadsCount: number;
+  
   // Actions
   setThreads: (threads: ChatThreadMeta[]) => void;
   setMessages: (threadId: string, messages: ChatMessage[]) => void;
@@ -29,6 +37,11 @@ interface ChatCacheContextType {
   addThread: (thread: ChatThreadMeta) => void;
   removeThread: (threadId: string) => void;
   updateThread: (threadId: string, updates: Partial<ChatThreadMeta>) => void;
+  
+  // Pagination actions
+  loadInitialThreads: () => Promise<void>;
+  loadMoreThreads: () => Promise<void>;
+  resetPagination: () => void;
   
   // Cache management
   invalidateCache: () => void;
@@ -95,6 +108,12 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   
   // NEW: Cross-tab loading state tied to user email
   const [isUserLoading, setIsUserLoading] = useState(false)
+  
+  // NEW: Pagination state
+  const [threadsPage, setThreadsPage] = useState(1)
+  const [threadsHasMore, setThreadsHasMore] = useState(true)
+  const [threadsLoading, setThreadsLoading] = useState(false)
+  const [totalThreadsCount, setTotalThreadsCount] = useState(0)
   
   // Track if this is the initial mount to detect page refresh
   const isInitialMount = useRef(true)
@@ -614,12 +633,158 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     }
   }, [saveToStorage]);
 
+  // NEW: Load initial threads with pagination
+  const loadInitialThreads = useCallback(async () => {
+    if (!userEmail || threadsLoading) return;
+    
+    console.log('[ChatCache] 🔄 Loading initial threads (page 1)...');
+    setThreadsLoading(true);
+    
+    try {
+      const { authApiFetch } = await import('@/lib/api');
+      const { getSession } = await import('next-auth/react');
+      
+      const freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        throw new Error('No authentication token available');
+      }
+
+      const response = await authApiFetch<PaginatedChatThreadsResponse>(
+        '/chat-threads?page=1&limit=10', 
+        freshSession.id_token
+      );
+      
+      console.log('[ChatCache] ✅ Loaded initial threads:', response);
+      
+      // Convert to ChatThreadMeta format
+      const threadMetas: ChatThreadMeta[] = response.threads.map(t => ({
+        thread_id: t.thread_id,
+        latest_timestamp: t.latest_timestamp,
+        run_count: t.run_count,
+        title: t.title,
+        full_prompt: t.full_prompt
+      }));
+      
+      setThreadsState(threadMetas);
+      setThreadsPage(1);
+      setThreadsHasMore(response.has_more);
+      setTotalThreadsCount(response.total_count);
+      
+      console.log('[ChatCache] 📊 Pagination state:', {
+        loaded: threadMetas.length,
+        total: response.total_count,
+        hasMore: response.has_more
+      });
+      
+      // IMPORTANT: Also load all conversation messages for the loaded threads
+      // This maintains the original functionality where messages were loaded alongside threads
+      console.log('[ChatCache] 🔄 Now loading all conversation messages for threads...');
+      try {
+        await loadAllMessagesFromAPI();
+        console.log('[ChatCache] ✅ Successfully loaded all conversation messages alongside threads');
+      } catch (messageError) {
+        console.error('[ChatCache] ⚠️ Failed to load messages, but threads loaded successfully:', messageError);
+        // Don't throw here - we still have threads loaded even if messages failed
+      }
+      
+    } catch (error) {
+      console.error('[ChatCache] ❌ Failed to load initial threads:', error);
+      throw error; // Re-throw thread loading errors
+    } finally {
+      setThreadsLoading(false);
+    }
+  }, [userEmail, threadsLoading, loadAllMessagesFromAPI]);
+  
+  // NEW: Load more threads
+  const loadMoreThreads = useCallback(async () => {
+    if (!userEmail || threadsLoading || !threadsHasMore) return;
+    
+    console.log('[ChatCache] 🔄 Loading more threads (page', threadsPage + 1, ')...');
+    setThreadsLoading(true);
+    
+    try {
+      const { authApiFetch } = await import('@/lib/api');
+      const { getSession } = await import('next-auth/react');
+      
+      const freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        throw new Error('No authentication token available');
+      }
+
+      const nextPage = threadsPage + 1;
+      const response = await authApiFetch<PaginatedChatThreadsResponse>(
+        `/chat-threads?page=${nextPage}&limit=10`, 
+        freshSession.id_token
+      );
+      
+      console.log('[ChatCache] ✅ Loaded more threads:', response);
+      
+      // Convert to ChatThreadMeta format
+      const newThreadMetas: ChatThreadMeta[] = response.threads.map(t => ({
+        thread_id: t.thread_id,
+        latest_timestamp: t.latest_timestamp,
+        run_count: t.run_count,
+        title: t.title,
+        full_prompt: t.full_prompt
+      }));
+      
+      // Append to existing threads
+      setThreadsState(prev => [...prev, ...newThreadMetas]);
+      setThreadsPage(nextPage);
+      setThreadsHasMore(response.has_more);
+      setTotalThreadsCount(response.total_count);
+      
+      console.log('[ChatCache] 📊 Updated pagination state:', {
+        loaded: threads.length + newThreadMetas.length,
+        total: response.total_count,
+        hasMore: response.has_more,
+        page: nextPage
+      });
+      
+      // IMPORTANT: Load messages for the newly loaded threads
+      // This ensures conversation messages are available when user clicks on new threads
+      if (newThreadMetas.length > 0) {
+        console.log('[ChatCache] 🔄 Loading conversation messages for', newThreadMetas.length, 'newly loaded threads...');
+        try {
+          // Reload all messages to include the new threads' messages
+          await loadAllMessagesFromAPI();
+          console.log('[ChatCache] ✅ Successfully loaded messages for newly loaded threads');
+        } catch (messageError) {
+          console.error('[ChatCache] ⚠️ Failed to load messages for new threads:', messageError);
+          // Don't throw here - we still have the threads loaded
+        }
+      }
+      
+    } catch (error) {
+      console.error('[ChatCache] ❌ Failed to load more threads:', error);
+      throw error; // Re-throw thread loading errors
+    } finally {
+      setThreadsLoading(false);
+    }
+  }, [userEmail, threadsLoading, threadsHasMore, threadsPage, threads.length, loadAllMessagesFromAPI]);
+  
+  // NEW: Reset pagination
+  const resetPagination = useCallback(() => {
+    console.log('[ChatCache] 🔄 Resetting pagination...');
+    setThreadsState([]);
+    setThreadsPage(1);
+    setThreadsHasMore(true);
+    setTotalThreadsCount(0);
+    setThreadsLoading(false);
+  }, []);
+
   const contextValue: ChatCacheContextType = {
     // State
     threads,
     messages: currentMessages,
     activeThreadId,
     isLoading,
+    
+    // Pagination state
+    threadsPage,
+    threadsHasMore,
+    threadsLoading,
+    totalThreadsCount,
     
     // Actions
     setThreads,
@@ -630,6 +795,11 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     addThread,
     removeThread,
     updateThread,
+    
+    // Pagination actions
+    loadInitialThreads,
+    loadMoreThreads,
+    resetPagination,
     
     // Cache management
     invalidateCache,

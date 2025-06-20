@@ -70,6 +70,14 @@ export interface ChatThreadResponse {
   full_prompt: string;
 }
 
+export interface PaginatedChatThreadsResponse {
+  threads: ChatThreadResponse[];
+  total_count: number;
+  page: number;
+  limit: number;
+  has_more: boolean;
+}
+
 export interface ApiError {
   detail: string;
   status?: number;

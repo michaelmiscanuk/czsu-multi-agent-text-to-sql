@@ -92,16 +92,21 @@ from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
     get_postgres_checkpointer,
     create_thread_run_entry,
+    update_thread_run_sentiment,
+    get_thread_run_sentiments,
     get_user_chat_threads,
+    get_user_chat_threads_count,  # Add this import
     delete_user_thread_entries,
     get_conversation_messages_from_checkpoints,
     get_queries_and_results_from_latest_checkpoint,
-    force_close_all_connections
+    debug_pool_status,
+    test_connection_health,
+    force_close_all_connections,
+    AsyncPostgresSaver
 )
 
 # Additional imports for sentiment functionality
 from my_agent.utils.postgres_checkpointer import (
-    update_thread_run_sentiment,
     get_thread_run_sentiments
 )
 
@@ -958,6 +963,13 @@ class ChatThreadResponse(BaseModel):
     title: str  # Now includes the title from first prompt
     full_prompt: str  # Full prompt text for tooltip
 
+class PaginatedChatThreadsResponse(BaseModel):
+    threads: List[ChatThreadResponse]
+    total_count: int
+    page: int
+    limit: int
+    has_more: bool
+
 class ChatMessage(BaseModel):
     id: str
     threadId: str
@@ -1376,14 +1388,21 @@ async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=f"Failed to get sentiments: {e}")
 
 @app.get("/chat-threads")
-async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadResponse]:
-    """Get all chat threads for the authenticated user from PostgreSQL."""
+async def get_chat_threads(
+    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
+    limit: int = Query(10, ge=1, le=50, description="Number of threads per page"),
+    user=Depends(get_current_user)
+) -> PaginatedChatThreadsResponse:
+    """Get paginated chat threads for the authenticated user from PostgreSQL."""
     
     user_email = user.get("email")
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print__api_postgresql(f"📥 Loading chat threads for user: {user_email}")
+    print__api_postgresql(f"📥 Loading chat threads for user: {user_email} (page: {page}, limit: {limit})")
+    
+    # Calculate offset
+    offset = (page - 1) * limit
     
     try:
         # First try to use the checkpointer's connection pool
@@ -1391,17 +1410,16 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
         
         if hasattr(checkpointer, 'conn') and checkpointer.conn and not checkpointer.conn.closed:
             print__api_postgresql(f"🔍 Using checkpointer connection pool")
-            threads = await get_user_chat_threads(user_email, checkpointer.conn)
+            # Get total count and threads in parallel
+            total_count = await get_user_chat_threads_count(user_email, checkpointer.conn)
+            threads = await get_user_chat_threads(user_email, checkpointer.conn, limit, offset)
         else:
             print__api_postgresql(f"⚠️ Checkpointer connection pool not available, using direct connection")
-            # Fallback to direct connection (this will create its own healthy pool)
-            threads = await get_user_chat_threads(user_email)
+            # Fallback to direct connection
+            total_count = await get_user_chat_threads_count(user_email)
+            threads = await get_user_chat_threads(user_email, None, limit, offset)
         
-        print__api_postgresql(f"✅ Retrieved {len(threads)} threads for user {user_email}")
-        
-        if len(threads) == 0:
-            print__api_postgresql(f"🔍 No threads found - this might be expected for new users")
-            print__api_postgresql(f"🔍 User email: '{user_email}'")
+        print__api_postgresql(f"✅ Retrieved {len(threads)} threads for user {user_email} (total: {total_count})")
         
         # Convert to response format
         response_threads = []
@@ -1415,8 +1433,19 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
                 full_prompt=thread["full_prompt"]
             ))
         
-        print__api_postgresql(f"📤 Returning {len(response_threads)} threads to frontend")
-        return response_threads
+        # Calculate has_more
+        has_more = (offset + len(threads)) < total_count
+        
+        paginated_response = PaginatedChatThreadsResponse(
+            threads=response_threads,
+            total_count=total_count,
+            page=page,
+            limit=limit,
+            has_more=has_more
+        )
+        
+        print__api_postgresql(f"📤 Returning {len(response_threads)} threads to frontend (page {page}/{((total_count - 1) // limit) + 1})")
+        return paginated_response
         
     except Exception as e:
         print__api_postgresql(f"❌ Failed to get chat threads for user {user_email}: {e}")
@@ -1431,7 +1460,9 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
             print__api_postgresql(f"🔄 Attempting one final retry with fresh connection...")
             try:
                 # This should create a completely fresh pool
-                threads = await get_user_chat_threads(user_email)
+                total_count = await get_user_chat_threads_count(user_email)
+                threads = await get_user_chat_threads(user_email, None, limit, offset)
+                
                 response_threads = []
                 for thread in threads:
                     response_threads.append(ChatThreadResponse(
@@ -1441,8 +1472,19 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
                         title=thread["title"],
                         full_prompt=thread["full_prompt"]
                     ))
+                
+                has_more = (offset + len(threads)) < total_count
+                
+                paginated_response = PaginatedChatThreadsResponse(
+                    threads=response_threads,
+                    total_count=total_count,
+                    page=page,
+                    limit=limit,
+                    has_more=has_more
+                )
+                
                 print__api_postgresql(f"✅ Retry successful - returning {len(response_threads)} threads")
-                return response_threads
+                return paginated_response
             except Exception as retry_error:
                 print__api_postgresql(f"❌ Retry also failed: {retry_error}")
         

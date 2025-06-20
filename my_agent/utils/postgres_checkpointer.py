@@ -422,10 +422,10 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
         print__postgresql_debug(f"❌ Failed to get sentiments for thread {thread_id}: {e}")
         return {}
 
-async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[str, Any]]:
-    """Get all chat threads for a user with thread details."""
+async def get_user_chat_threads(email: str, connection_pool=None, limit: int = None, offset: int = 0) -> List[Dict[str, Any]]:
+    """Get chat threads for a user with optional pagination."""
     try:
-        print__api_postgresql(f"📋 Getting chat threads for user: {email}")
+        print__api_postgresql(f"📋 Getting chat threads for user: {email} (limit: {limit}, offset: {offset})")
         
         if connection_pool:
             print__api_postgresql(f"🔗 Using provided connection pool")
@@ -435,7 +435,8 @@ async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[s
             pool = await get_healthy_pool()
         
         async with pool.connection() as conn:
-            result = await conn.execute("""
+            # Build the SQL query with optional pagination
+            base_query = """
                 SELECT 
                     thread_id,
                     MAX(timestamp) as latest_timestamp,
@@ -447,7 +448,16 @@ async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[s
                 WHERE email = %s
                 GROUP BY thread_id
                 ORDER BY latest_timestamp DESC
-            """, (email, email))
+            """
+            
+            params = [email, email]
+            
+            # Add pagination if limit is specified
+            if limit is not None:
+                base_query += " LIMIT %s OFFSET %s"
+                params.extend([limit, offset])
+            
+            result = await conn.execute(base_query, params)
             
             threads = []
             async for row in result:
@@ -469,6 +479,37 @@ async def get_user_chat_threads(email: str, connection_pool=None) -> List[Dict[s
             
     except Exception as e:
         print__api_postgresql(f"❌ Failed to get chat threads for user {email}: {e}")
+        import traceback
+        print__api_postgresql(f"🔍 Full traceback: {traceback.format_exc()}")
+        raise
+
+async def get_user_chat_threads_count(email: str, connection_pool=None) -> int:
+    """Get total count of chat threads for a user."""
+    try:
+        print__api_postgresql(f"📊 Getting chat threads count for user: {email}")
+        
+        if connection_pool:
+            print__api_postgresql(f"🔗 Using provided connection pool")
+            pool = connection_pool
+        else:
+            print__api_postgresql(f"🔄 Creating new connection pool")
+            pool = await get_healthy_pool()
+        
+        async with pool.connection() as conn:
+            result = await conn.execute("""
+                SELECT COUNT(DISTINCT thread_id) as total_threads
+                FROM users_threads_runs
+                WHERE email = %s
+            """, (email,))
+            
+            row = await result.fetchone()
+            total_count = row[0] if row else 0
+            
+            print__api_postgresql(f"✅ Total threads count for user {email}: {total_count}")
+            return total_count
+            
+    except Exception as e:
+        print__api_postgresql(f"❌ Failed to get chat threads count for user {email}: {e}")
         import traceback
         print__api_postgresql(f"🔍 Full traceback: {traceback.format_exc()}")
         raise
