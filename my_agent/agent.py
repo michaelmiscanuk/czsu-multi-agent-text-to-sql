@@ -114,7 +114,7 @@ def create_graph(checkpointer=None):
     # Add a synchronization node that both branches feed into
     def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
         """Synchronization node that waits for both selection and chunk processing to complete."""
-        print__debug("SYNC: Both selection and chunk branches completed")
+        print__debug("🔄 SYNC: Both selection and chunk branches completed")
         return state  # Pass through state unchanged
     
     graph.add_node("route_decision", route_decision_node)
@@ -125,19 +125,19 @@ def create_graph(checkpointer=None):
     
     # Single routing logic from the synchronization node
     def route_after_sync(state: DataAnalysisState):
-        print__debug("ROUTING: Making decision after synchronization")
+        print__debug("🔀 ROUTING: Making decision after synchronization")
         # Check if we have selection codes to proceed with database queries
         if state.get("top_selection_codes") and len(state["top_selection_codes"]) > 0:
-            print__debug("ROUTING: Found selections, proceeding to database schema")
+            print__debug("🎯 ROUTING: Found selections, proceeding to database schema")
             return "get_schema"
         elif state.get("chromadb_missing"):
-            print("ERROR: ChromaDB directory is missing. Please unzip or create the ChromaDB at 'metadata/czsu_chromadb'.")
+            print("❌ ERROR: ChromaDB directory is missing. Please unzip or create the ChromaDB at 'metadata/czsu_chromadb'.")
             return END
         else:
             # No database selections found - proceed directly to answer with available PDF chunks
-            print("No relevant dataset selections found, proceeding with PDF chunks only")
+            print("⚠️ No relevant dataset selections found, proceeding with PDF chunks only")
             chunks_available = len(state.get("top_chunks", []))
-            print__debug(f"ROUTING: Available PDF chunks: {chunks_available}")
+            print__debug(f"🔀 ROUTING: Available PDF chunks: {chunks_available}")
             return "format_answer"
     
     graph.add_conditional_edges(
@@ -156,7 +156,7 @@ def create_graph(checkpointer=None):
     # query_gen -> summarize_messages -> reflect/format_answer
     graph.add_edge("query_gen", "summarize_messages_query")
     def route_after_query(state: DataAnalysisState) -> Literal["reflect", "format_answer"]:
-        print(f"Routing decision, iteration={state.get('iteration', 0)}")
+        print(f"🔀 Routing decision, iteration={state.get('iteration', 0)}")
         if state.get("iteration", 0) >= MAX_ITERATIONS:
             return "format_answer"
         else:
@@ -199,5 +199,5 @@ def create_graph(checkpointer=None):
         # Import here to avoid circular imports and provide fallback
         from langgraph.checkpoint.memory import InMemorySaver
         checkpointer = InMemorySaver()
-        print("⚠ Using InMemorySaver fallback - consider using AsyncPostgresSaver for production")
+        print("⚠️ Using InMemorySaver fallback - consider using AsyncPostgresSaver for production")
     return graph.compile(checkpointer=checkpointer) 

@@ -276,9 +276,11 @@ def debug_print(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    # Always check environment variable directly to respect runtime changes
-    if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
-        print(msg)
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[CHROMADB-DEBUG] {msg}")
+        import sys
+        sys.stdout.flush()
 
 def get_document_hash(text: str) -> str:
     """Generate MD5 hash for a document text.
@@ -324,7 +326,7 @@ def get_documents_from_sqlite() -> tuple[list[str], list[str], list[str]]:
             WHERE type='table' AND name='selection_descriptions'
         """)
         if not cursor.fetchone():
-            debug_print(f"{CREATE_CHROMADB_ID}: Table 'selection_descriptions' does not exist in SQLite database.")
+            debug_print(f"⚠️ {CREATE_CHROMADB_ID}: Table 'selection_descriptions' does not exist in SQLite database.")
             return [], [], []
         
         # Get only documents that have extended_description
@@ -337,22 +339,22 @@ def get_documents_from_sqlite() -> tuple[list[str], list[str], list[str]]:
         results = cursor.fetchall()
         
         if not results:
-            debug_print(f"{CREATE_CHROMADB_ID}: No documents found in SQLite database.")
+            debug_print(f"⚠️ {CREATE_CHROMADB_ID}: No documents found in SQLite database.")
             return [], [], []
         
         texts, selections = zip(*results)
         hashes = [get_document_hash(text) for text in texts]
         
         # Print some debug info about the documents
-        debug_print(f"{CREATE_CHROMADB_ID}: Found {len(texts)} documents in SQLite database.")
-        debug_print(f"{CREATE_CHROMADB_ID}: Sample document lengths:")
-        for sel, text in zip(selections[:3], texts[:3]):
-            debug_print(f"{CREATE_CHROMADB_ID}: - {sel}: {len(text)} characters")
+        debug_print(f"📊 {CREATE_CHROMADB_ID}: Found {len(texts)} documents in SQLite database.")
+        debug_print(f"📊 {CREATE_CHROMADB_ID}: Sample document lengths:")
+        for sel, text in list(texts.items())[:5]:
+            debug_print(f"📊 {CREATE_CHROMADB_ID}: - {sel}: {len(text)} characters")
         
         return list(texts), list(selections), list(hashes)
         
     except sqlite3.Error as e:
-        debug_print(f"{CREATE_CHROMADB_ID}: Database error: {str(e)}")
+        debug_print(f"❌ {CREATE_CHROMADB_ID}: Database error: {str(e)}")
         raise
     finally:
         if 'conn' in locals():
@@ -669,7 +671,7 @@ def upsert_documents_to_chromadb(
         # Get documents from SQLite
         texts, selections, hashes = get_documents_from_sqlite()
         if not texts:
-            debug_print(f"{CREATE_CHROMADB_ID}: No documents found in SQLite database.")
+            debug_print(f"⚠️ {CREATE_CHROMADB_ID}: No documents found in SQLite database.")
             return None
 
         # Initialize Azure embedding client
@@ -696,7 +698,7 @@ def upsert_documents_to_chromadb(
                     doc_hash = metadata.get('doc_hash')
                     if doc_hash:
                         existing_hashes.add(doc_hash)
-        debug_print(f"{CREATE_CHROMADB_ID}: Found {len(existing_hashes)} existing documents in ChromaDB.")
+        debug_print(f"📊 {CREATE_CHROMADB_ID}: Found {len(existing_hashes)} existing documents in ChromaDB.")
 
         # Filter out existing documents
         new_indices = [i for i, doc_hash in enumerate(hashes) if doc_hash not in existing_hashes]
@@ -705,10 +707,10 @@ def upsert_documents_to_chromadb(
         new_hashes = [hashes[i] for i in new_indices]
         
         if not new_texts:
-            debug_print(f"{CREATE_CHROMADB_ID}: No new documents to add.")
+            debug_print(f"⚠️ {CREATE_CHROMADB_ID}: No new documents to add.")
             return collection
 
-        debug_print(f"{CREATE_CHROMADB_ID}: Processing {len(new_texts)} new documents.")
+        debug_print(f"🔄 {CREATE_CHROMADB_ID}: Processing {len(new_texts)} new documents.")
         
         # Process documents in batches to handle token limits
         BATCH_SIZE = 1  # Process one document at a time
@@ -733,19 +735,19 @@ def upsert_documents_to_chromadb(
                 
                 try:
                     # Print batch info for debugging
-                    debug_print(f"\n{CREATE_CHROMADB_ID}: Processing batch {batch_idx + 1}/{total_batches}")
+                    debug_print(f"📦 \n{CREATE_CHROMADB_ID}: Processing batch {batch_idx + 1}/{total_batches}")
                     
                     # Process each document in the batch
                     for text, selection_code, doc_hash in zip(batch_texts, batch_selections, batch_hashes):
                         # Count tokens and split if necessary
                         token_count = num_tokens_from_string(text)
-                        debug_print(f"{CREATE_CHROMADB_ID}: - {selection_code}: {len(text)} characters, {token_count} tokens")
+                        debug_print(f"📊 {CREATE_CHROMADB_ID}: - {selection_code}: {len(text)} characters, {token_count} tokens")
                         
                         # Split text if it exceeds token limit
                         text_chunks = split_text_by_tokens(text)
                         
                         if len(text_chunks) > 1:
-                            debug_print(f"{CREATE_CHROMADB_ID}: - Split {selection_code} into {len(text_chunks)} chunks")
+                            debug_print(f"✂️ {CREATE_CHROMADB_ID}: - Split {selection_code} into {len(text_chunks)} chunks")
                         
                         # Process each chunk
                         for chunk_idx, chunk in enumerate(text_chunks):
@@ -829,7 +831,7 @@ def upsert_documents_to_chromadb(
         return collection
         
     except Exception as e:
-        debug_print(f"{CREATE_CHROMADB_ID}: Error in upsert_documents_to_chromadb: {str(e)}")
+        debug_print(f"❌ {CREATE_CHROMADB_ID}: Error in upsert_documents_to_chromadb: {str(e)}")
         raise
 
 def get_langchain_chroma_vectorstore(collection_name: str, chroma_db_path: str, embedding_model_name: str = "text-embedding-3-large__test1"):
@@ -1059,5 +1061,5 @@ if __name__ == "__main__":
         debug_print(f"{CREATE_CHROMADB_ID}: Process interrupted by user")
         sys.exit(1)
     except Exception as e:
-        debug_print(f"{CREATE_CHROMADB_ID}: Unexpected error: {str(e)}")
+        debug_print(f"❌ {CREATE_CHROMADB_ID}: Unexpected error: {str(e)}")
         sys.exit(1) 

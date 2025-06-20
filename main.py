@@ -46,6 +46,21 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 #==============================================================================
+# DEBUG FUNCTIONS
+#==============================================================================
+def print__debug(msg: str) -> None:
+    """Print debug messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG] {msg}")
+        import sys
+        sys.stdout.flush()
+
+#==============================================================================
 # CONSTANTS & CONFIGURATION
 #==============================================================================
 # Default prompt if none provided
@@ -209,26 +224,26 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # Memory monitoring before analysis
     process = psutil.Process()
     memory_before = process.memory_info().rss / 1024 / 1024
-    print(f"🔍 MEMORY: Starting analysis with {memory_before:.1f}MB RSS")
+    print__debug(f"🔍 MEMORY: Starting analysis with {memory_before:.1f}MB RSS")
     
     # Force garbage collection before starting
     collected = gc.collect()
-    print(f"🧹 MEMORY: Pre-analysis GC collected {collected} objects")
+    print__debug(f"🧹 MEMORY: Pre-analysis GC collected {collected} objects")
     
     # Create the LangGraph execution graph with AsyncPostgresSaver for persistent checkpointing
     if checkpointer is None:
         try:
             checkpointer = await get_postgres_checkpointer()
         except Exception as e:
-            print(f"⚠ Failed to initialize PostgreSQL checkpointer: {e}")
+            print__debug(f"⚠️ Failed to initialize PostgreSQL checkpointer: {e}")
             # Fallback to InMemorySaver to ensure application still works
             from langgraph.checkpoint.memory import InMemorySaver
             checkpointer = InMemorySaver()
-            print("⚠ Using InMemorySaver fallback")
+            print__debug("⚠️ Using InMemorySaver fallback")
     
     graph = create_graph(checkpointer=checkpointer)
         
-    print(f"Processing prompt: {prompt} (thread_id={thread_id}, run_id={run_id})")
+    print__debug(f"🚀 Processing prompt: {prompt} (thread_id={thread_id}, run_id={run_id})")
     
     # Configuration for thread-level persistence and LangSmith tracing
     config = {"configurable": {"thread_id": thread_id}, "run_id": run_id}
@@ -242,12 +257,12 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             existing_state.values.get("messages") and 
             len(existing_state.values.get("messages", [])) > 0
         )
-        print(f"DEBUG: Found existing state: {existing_state is not None}")
+        print__debug(f"🔍 Found existing state: {existing_state is not None}")
         if existing_state and existing_state.values:
-            print(f"DEBUG: Message count: {len(existing_state.values.get('messages', []))}")
-        print(f"DEBUG: Continuing conversation: {is_continuing_conversation}")
+            print__debug(f"📋 Message count: {len(existing_state.values.get('messages', []))}")
+        print__debug(f"🔀 Continuing conversation: {is_continuing_conversation}")
     except Exception as e:
-        print(f"DEBUG: Error checking existing state: {e}")
+        print__debug(f"❌ Error checking existing state: {e}")
         is_continuing_conversation = False
     
     # Prepare input state based on whether this is a new or continuing conversation
@@ -282,23 +297,23 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # MEMORY LEAK PREVENTION: Monitor memory after graph execution
     memory_after_graph = process.memory_info().rss / 1024 / 1024
     memory_growth_graph = memory_after_graph - memory_before
-    print(f"🔍 MEMORY: After graph execution: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)")
+    print__debug(f"🔍 MEMORY: After graph execution: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)")
     
     if memory_growth_graph > 50:  # More than 50MB growth is suspicious
-        print(f"⚠ MEMORY: Suspicious growth detected: {memory_growth_graph:.1f}MB during graph execution!")
+        print__debug(f"⚠️ MEMORY: Suspicious growth detected: {memory_growth_graph:.1f}MB during graph execution!")
         
         # EMERGENCY: Force immediate cleanup if growth is excessive
         if memory_growth_graph > 200:  # More than 200MB growth
-            print(f"🚨 MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - implementing emergency cleanup")
+            print__debug(f"🚨 MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - implementing emergency cleanup")
             
             # Emergency garbage collection
             collected = gc.collect()
-            print(f"🧹 MEMORY: Emergency GC collected {collected} objects")
+            print__debug(f"🧹 MEMORY: Emergency GC collected {collected} objects")
             
             # Check memory after emergency GC
             memory_after_gc = process.memory_info().rss / 1024 / 1024
             freed_by_gc = memory_after_graph - memory_after_gc
-            print(f"🧹 MEMORY: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
+            print__debug(f"🧹 MEMORY: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
             
             # Update memory tracking
             memory_after_graph = memory_after_gc
@@ -307,29 +322,29 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # Log details about the result to understand memory usage
     try:
         result_size = len(str(result)) / 1024 if result else 0  # Size in KB
-        print(f"🔍 MEMORY: Result object size: {result_size:.1f}KB")
+        print__debug(f"🔍 MEMORY: Result object size: {result_size:.1f}KB")
     except:
-        print(f"🔍 MEMORY: Could not determine result size")
+        print__debug(f"🔍 MEMORY: Could not determine result size")
         
     # MEMORY LEAK PREVENTION: Final cleanup and monitoring before return
     try:
         # Final garbage collection to clean up any temporary objects from graph execution
         collected = gc.collect()
-        print(f"🧹 MEMORY: Final cleanup GC collected {collected} objects")
+        print__debug(f"🧹 MEMORY: Final cleanup GC collected {collected} objects")
         
         # Final memory check
         memory_final = process.memory_info().rss / 1024 / 1024
         total_growth = memory_final - memory_before
         
-        print(f"🔍 MEMORY: Final memory: {memory_final:.1f}MB RSS (total growth: {total_growth:.1f}MB)")
+        print__debug(f"🔍 MEMORY: Final memory: {memory_final:.1f}MB RSS (total growth: {total_growth:.1f}MB)")
         
         # Warn about high memory retention patterns
         if total_growth > 100:  # More than 100MB total growth
-            print(f"⚠ MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!")
-            print(f"💡 MEMORY: Consider investigating LangGraph nodes for memory leaks")
+            print__debug(f"⚠️ MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!")
+            print__debug(f"💡 MEMORY: Consider investigating LangGraph nodes for memory leaks")
             
     except Exception as memory_error:
-        print(f"⚠ MEMORY: Error during final memory check: {memory_error}")
+        print__debug(f"⚠️ MEMORY: Error during final memory check: {memory_error}")
         
     # Extract values from the graph result dictionary         
     # The graph now uses a messages list: [summary (SystemMessage), last_message (AIMessage)]
@@ -351,7 +366,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # Convert top_chunks (Document objects) to JSON-serializable format
     top_chunks_serialized = []
     if result.get("top_chunks"):
-        print(f"DEBUG: main.py - Found {len(result['top_chunks'])} top_chunks to serialize")
+        print__debug(f"📦 main.py - Found {len(result['top_chunks'])} top_chunks to serialize")
         for i, chunk in enumerate(result["top_chunks"]):
             chunk_data = {
                 "content": chunk.page_content if hasattr(chunk, 'page_content') else str(chunk),
@@ -359,9 +374,9 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             }
             top_chunks_serialized.append(chunk_data)
             if i == 0:  # Log first chunk for debugging
-                print(f"DEBUG: main.py - First chunk content preview: {chunk_data['content'][:100]}...")
+                print__debug(f"🔍 main.py - First chunk content preview: {chunk_data['content'][:100]}...")
     else:
-        print("DEBUG: main.py - No top_chunks found in result")
+        print__debug("⚠️ main.py - No top_chunks found in result")
     
     serializable_result = {
         "prompt": prompt,
@@ -376,7 +391,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         "top_chunks": top_chunks_serialized  # Add serialized PDF chunks for frontend
     }
     
-    print(f"DEBUG: main.py - Serializable result includes {len(top_chunks_serialized)} top_chunks")
+    print__debug(f"📦 main.py - Serializable result includes {len(top_chunks_serialized)} top_chunks")
     
     return serializable_result
 

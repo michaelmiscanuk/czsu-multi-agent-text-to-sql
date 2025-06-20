@@ -426,9 +426,16 @@ Process this document with extreme attention to context preservation for optimal
 """
 
 def debug_print(msg: str) -> None:
-    """Print debug messages when debug mode is enabled."""
-    if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
-        print(f"[PDF_CHROMADB] {msg}")
+    """Print debug messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[PDF-CHROMADB-DEBUG] {msg}")
+        import sys
+        sys.stdout.flush()
 
 def get_document_hash(text: str) -> str:
     """Generate MD5 hash for a document text."""
@@ -856,7 +863,7 @@ def save_parsed_text_to_file(text: str, file_path: str) -> None:
         # Analyze content structure
         content_types = extract_content_by_type(text)
         
-        debug_print(f"Successfully saved parsed text to: {file_path}")
+        debug_print(f"💾 Successfully saved parsed text to: {file_path}")
         print(f"✅ Parsed text saved to: {file_path}")
         print(f"📊 Content analysis:")
         print(f"   📋 Tables: {len(content_types['tables'])}")
@@ -873,7 +880,7 @@ def save_parsed_text_to_file(text: str, file_path: str) -> None:
             print(f"⚠️  No content separators found - check LlamaParse instructions")
             
     except Exception as e:
-        debug_print(f"Error saving parsed text: {str(e)}")
+        debug_print(f"❌ Error saving parsed text: {str(e)}")
         raise
 
 def load_parsed_text_from_file(file_path: str) -> str:
@@ -889,14 +896,14 @@ def load_parsed_text_from_file(file_path: str) -> str:
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             text = f.read()
-        debug_print(f"Successfully loaded parsed text from: {file_path}")
+        debug_print(f"💾 Successfully loaded parsed text from: {file_path}")
         print(f"✅ Loaded parsed text from: {file_path}")
         return text
     except FileNotFoundError:
-        debug_print(f"Parsed text file not found: {file_path}")
-        raise FileNotFoundError(f"Parsed text file not found: {file_path}")
+        debug_print(f"❌ Parsed text file not found: {file_path}")
+        return None
     except Exception as e:
-        debug_print(f"Error loading parsed text: {str(e)}")
+        debug_print(f"❌ Error loading parsed text: {str(e)}")
         raise
 
 def create_documents_from_text(text: str, source_file: str, parsing_method: str) -> List[Dict[str, Any]]:
@@ -912,32 +919,32 @@ def create_documents_from_text(text: str, source_file: str, parsing_method: str)
     Returns:
         List of document-like dictionaries representing sections/pages
     """
-    debug_print(f"Creating document structure from parsed text ({len(text)} characters)")
-    debug_print(f"Source: {source_file}, Method: {parsing_method}")
+    debug_print(f"🏗️ Creating document structure from parsed text ({len(text)} characters)")
+    debug_print(f"📄 Source: {source_file}, Method: {parsing_method}")
     
     # Analyze content structure before splitting
     content_analysis = extract_content_by_type(text)
-    debug_print(f"Content analysis: {len(content_analysis['tables'])} tables, {len(content_analysis['images'])} images, {len(content_analysis['text'])} text sections")
+    debug_print(f"📊 Content analysis: {len(content_analysis['tables'])} tables, {len(content_analysis['images'])} images, {len(content_analysis['text'])} text sections")
     
     pages = []
     
     # Split by our custom page separator first (LlamaParse)
     if CONTENT_SEPARATORS['page_separator'] in text:
-        debug_print(f"Found LlamaParse page separators")
+        debug_print(f"📄 Found LlamaParse page separators")
         page_texts = text.split(CONTENT_SEPARATORS['page_separator'])
     # Fallback separators for other methods
     elif "\n---\n" in text:
-        debug_print(f"Found standard page separators (---)")
+        debug_print(f"📄 Found standard page separators (---)")
         page_texts = text.split("\n---\n")
     elif "\n=================\n" in text:
-        debug_print(f"Found extended page separators (=================)")
+        debug_print(f"📄 Found extended page separators (=================)")
         page_texts = text.split("\n=================\n")
     else:
         # If no clear separators, treat as one large document
-        debug_print(f"No page separators found, treating as single document")
+        debug_print(f"📄 No page separators found, treating as single document")
         page_texts = [text]
     
-    debug_print(f"Split text into {len(page_texts)} sections")
+    debug_print(f"✂️ Split text into {len(page_texts)} sections")
     
     for page_num, page_text in enumerate(page_texts, 1):
         if page_text.strip():  # Only add non-empty pages
@@ -960,20 +967,20 @@ def create_documents_from_text(text: str, source_file: str, parsing_method: str)
             }
             pages.append(page_data)
             
-            debug_print(f"Section {page_num}: {len(cleaned_text)} chars, tables: {section_has_tables}, images: {section_has_images}")
+            debug_print(f"📄 Section {page_num}: {len(cleaned_text)} chars, tables: {section_has_tables}, images: {section_has_images}")
     
-    debug_print(f"Created {len(pages)} document sections from parsed text")
+    debug_print(f"✅ Created {len(pages)} document sections from parsed text")
     
     # Summary statistics
     total_chars = sum(p['char_count'] for p in pages)
     sections_with_tables = sum(1 for p in pages if p['has_tables'])
     sections_with_images = sum(1 for p in pages if p['has_images'])
     
-    debug_print(f"Document summary:")
-    debug_print(f"  - Total characters: {total_chars}")
-    debug_print(f"  - Sections with tables: {sections_with_tables}/{len(pages)}")
-    debug_print(f"  - Sections with images: {sections_with_images}/{len(pages)}")
-    debug_print(f"  - Average section size: {total_chars/len(pages):.0f} characters")
+    debug_print(f"📊 Document summary:")
+    debug_print(f"📊   - Total characters: {total_chars}")
+    debug_print(f"📊   - Sections with tables: {sections_with_tables}/{len(pages)}")
+    debug_print(f"📊   - Sections with images: {sections_with_images}/{len(pages)}")
+    debug_print(f"📊   - Average section size: {total_chars/len(pages):.0f} characters")
     
     return pages
 
@@ -1043,7 +1050,7 @@ def extract_content_by_type(text: str) -> Dict[str, List[str]]:
     texts = re.findall(text_pattern, text, re.DOTALL)
     content_types['text'] = [text_content.strip() for text_content in texts]
     
-    debug_print(f"Extracted content: {len(content_types['tables'])} tables, {len(content_types['images'])} images, {len(content_types['text'])} text sections")
+    debug_print(f"📊 Extracted content: {len(content_types['tables'])} tables, {len(content_types['images'])} images, {len(content_types['text'])} text sections")
     
     return content_types
 
@@ -1061,7 +1068,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
     Returns:
         List of dictionaries containing text and metadata for each page
     """
-    debug_print(f"Opening PDF with LlamaParse: {pdf_path}")
+    debug_print(f"📄 Opening PDF with LlamaParse: {pdf_path}")
     
     try:
         # Try to import llama_parse
@@ -1102,10 +1109,10 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
                 page_separator=CONTENT_SEPARATORS['page_separator'],
                 verbose=True
             )
-            debug_print("Using newer LlamaParse parameter system (system_prompt + user_prompt)")
+            debug_print("🔧 Using newer LlamaParse parameter system (system_prompt + user_prompt)")
             
         except TypeError as e:
-            debug_print(f"Newer parameters not available ({e}), falling back to parsing_instruction")
+            debug_print(f"⚠️ Newer parameters not available ({e}), falling back to parsing_instruction")
             # Fallback to the older parameter if new ones aren't available
             parser = LlamaParse(
                 api_key=api_key,
@@ -1196,7 +1203,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
             text = document.text if hasattr(document, 'text') else str(document)
             
             if not text.strip():
-                debug_print(f"Document {doc_idx + 1} contains no text")
+                debug_print(f"⚠️ Document {doc_idx + 1} contains no text")
                 continue
             
             # Get page metadata
@@ -1211,7 +1218,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
             
             pages_data.append(page_info)
             print(f"   ✅ Section {doc_idx + 1}: {len(text):,} characters, {len(text.split()):,} words")
-            debug_print(f"Document {doc_idx + 1}: {len(text)} characters, {len(text.split())} words (LlamaParse)")
+            debug_print(f"📄 Document {doc_idx + 1}: {len(text)} characters, {len(text.split())} words (LlamaParse)")
         
         # Final summary
         total_chars = sum(p['char_count'] for p in pages_data)
@@ -1224,6 +1231,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
         print(f"   ⏱️  Total time: {elapsed_time:.1f} seconds")
         print(f"   📊 Processing speed: {total_chars/elapsed_time:.0f} chars/sec")
         
+        debug_print(f"🏗️ Successfully extracted text from {len(pages_data)} documents using LlamaParse")
         debug_print(f"Successfully extracted text from {len(pages_data)} documents using LlamaParse")
         return pages_data
         

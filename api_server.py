@@ -136,7 +136,7 @@ analysis_semaphore = asyncio.Semaphore(MAX_CONCURRENT_ANALYSES)
 
 # Log the concurrency setting for debugging
 print__startup_debug(f"🔧 API Server: MAX_CONCURRENT_ANALYSES set to {MAX_CONCURRENT_ANALYSES} (from environment)")
-print__memory_monitoring(f"Concurrent analysis semaphore initialized with {MAX_CONCURRENT_ANALYSES} slots")
+print__memory_monitoring(f"🔒 Concurrent analysis semaphore initialized with {MAX_CONCURRENT_ANALYSES} slots")
 
 # RATE LIMITING: Global rate limiting storage
 rate_limit_storage = defaultdict(list)
@@ -189,7 +189,7 @@ def check_memory_and_gc():
         return rss_mb
         
     except Exception as e:
-        print__memory_monitoring(f"Could not check memory: {e}")
+        print__memory_monitoring(f"❌ Could not check memory: {e}")
         return 0
 
 def log_memory_usage(context: str = ""):
@@ -198,14 +198,14 @@ def log_memory_usage(context: str = ""):
         process = psutil.Process()
         rss_mb = process.memory_info().rss / 1024 / 1024
         
-        print__memory_monitoring(f"Memory usage{f' [{context}]' if context else ''}: {rss_mb:.1f}MB RSS")
+        print__memory_monitoring(f"📊 Memory usage{f' [{context}]' if context else ''}: {rss_mb:.1f}MB RSS")
         
         # Simple threshold check
         if rss_mb > GC_MEMORY_THRESHOLD:
             check_memory_and_gc()
             
     except Exception as e:
-        print__memory_monitoring(f"Could not check memory usage: {e}")
+        print__memory_monitoring(f"❌ Could not check memory usage: {e}")
 
 def monitor_route_registration(route_path: str, method: str):
     """Simplified route registration monitoring."""
@@ -228,7 +228,7 @@ def log_comprehensive_error(context: str, error: Exception, request: Request = N
         })
     
     # Log to debug output
-    print__debug(f"ERROR: {json.dumps(error_details, indent=2)}")
+    print__debug(f"🚨 ERROR: {json.dumps(error_details, indent=2)}")
 
 def check_rate_limit_with_throttling(client_ip: str) -> dict:
     """Check rate limits and return throttling information instead of boolean."""
@@ -289,7 +289,7 @@ async def wait_for_rate_limit(client_ip: str) -> bool:
             
         if rate_info["suggested_wait"] > RATE_LIMIT_MAX_WAIT:
             # Wait time too long, give up
-            print__debug(f"⚠ Rate limit wait time ({rate_info['suggested_wait']:.1f}s) exceeds maximum ({RATE_LIMIT_MAX_WAIT}s) for {client_ip}")
+            print__debug(f"⚠️ Rate limit wait time ({rate_info['suggested_wait']:.1f}s) exceeds maximum ({RATE_LIMIT_MAX_WAIT}s) for {client_ip}")
             return False
             
         # Wait for the suggested time
@@ -329,7 +329,7 @@ def check_rate_limit(client_ip: str) -> bool:
 def setup_graceful_shutdown():
     """Setup graceful shutdown handlers."""
     def signal_handler(signum, frame):
-        print__memory_monitoring(f"Received signal {signum} - preparing for graceful shutdown...")
+        print__memory_monitoring(f"📡 Received signal {signum} - preparing for graceful shutdown...")
         log_memory_usage("shutdown_signal")
         
     # Register signal handlers for common restart signals
@@ -355,23 +355,23 @@ async def initialize_checkpointer():
             
             # Verify the checkpointer is healthy
             if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
-                print__startup_debug(f"✓ Checkpointer has connection pool: closed={GLOBAL_CHECKPOINTER.conn.closed}")
+                print__startup_debug(f"✅ Checkpointer has connection pool: closed={GLOBAL_CHECKPOINTER.conn.closed}")
             else:
-                print__startup_debug("⚠ Checkpointer does not have connection pool")
+                print__startup_debug("⚠️ Checkpointer does not have connection pool")
             
-            print__startup_debug("✓ Global PostgreSQL checkpointer initialized successfully")
-            print__startup_debug("✓ users_threads_runs table verified/created")
+            print__startup_debug("✅ Global PostgreSQL checkpointer initialized successfully")
+            print__startup_debug("✅ users_threads_runs table verified/created")
             log_memory_usage("checkpointer_initialized")
         except asyncio.TimeoutError:
-            print__startup_debug("✗ Failed to initialize PostgreSQL checkpointer: initialization timeout")
-            print__startup_debug("⚠ This usually means PostgreSQL connection pool is exhausted")
+            print__startup_debug("❌ Failed to initialize PostgreSQL checkpointer: initialization timeout")
+            print__startup_debug("⚠️ This usually means PostgreSQL connection pool is exhausted")
             
             # Fallback to InMemorySaver for development/testing
             from langgraph.checkpoint.memory import InMemorySaver
             GLOBAL_CHECKPOINTER = InMemorySaver()
-            print__startup_debug("⚠ Falling back to InMemorySaver")
+            print__startup_debug("⚠️ Falling back to InMemorySaver")
         except Exception as e:
-            print__startup_debug(f"✗ Failed to initialize PostgreSQL checkpointer: {e}")
+            print__startup_debug(f"❌ Failed to initialize PostgreSQL checkpointer: {e}")
             print__startup_debug(f"🔍 Error type: {type(e).__name__}")
             import traceback
             print__startup_debug(f"🔍 Full traceback: {traceback.format_exc()}")
@@ -379,14 +379,14 @@ async def initialize_checkpointer():
             # Fallback to InMemorySaver for development/testing
             from langgraph.checkpoint.memory import InMemorySaver
             GLOBAL_CHECKPOINTER = InMemorySaver()
-            print__startup_debug("⚠ Falling back to InMemorySaver")
+            print__startup_debug("⚠️ Falling back to InMemorySaver")
     else:
-        print__startup_debug("⚠ Global checkpointer already exists - skipping initialization")
+        print__startup_debug("⚠️ Global checkpointer already exists - skipping initialization")
 
 async def cleanup_checkpointer():
     """Clean up resources on app shutdown."""
     global GLOBAL_CHECKPOINTER
-    print__memory_monitoring("Starting application cleanup...")
+    print__memory_monitoring("🧹 Starting application cleanup...")
     log_memory_usage("cleanup_start")
     
     if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
@@ -394,11 +394,11 @@ async def cleanup_checkpointer():
             # Check if pool is already closed before trying to close it
             if not GLOBAL_CHECKPOINTER.conn.closed:
                 await GLOBAL_CHECKPOINTER.conn.close()
-                print__startup_debug("✓ PostgreSQL connection pool closed cleanly")
+                print__startup_debug("✅ PostgreSQL connection pool closed cleanly")
             else:
-                print__startup_debug("⚠ PostgreSQL connection pool was already closed")
+                print__startup_debug("⚠️ PostgreSQL connection pool was already closed")
         except Exception as e:
-            print__startup_debug(f"⚠ Error closing connection pool: {e}")
+            print__startup_debug(f"⚠️ Error closing connection pool: {e}")
         finally:
             GLOBAL_CHECKPOINTER = None
     
@@ -431,7 +431,7 @@ async def get_healthy_checkpointer():
                     
                     elapsed = time.time() - wait_start
                     if elapsed > max_wait_time:
-                        print__memory_monitoring(f"⚠ Timeout waiting for {active_ops} active operations to complete - proceeding with caution")
+                        print__memory_monitoring(f"⚠️ Timeout waiting for {active_ops} active operations to complete - proceeding with caution")
                         break
                     
                     print__memory_monitoring(f"⏳ Waiting for {active_ops} active operations to complete... ({elapsed:.1f}s elapsed)")
@@ -443,7 +443,7 @@ async def get_healthy_checkpointer():
                 GLOBAL_CHECKPOINTER = None  # Force recreation
             # Check if the pool is closed
             elif hasattr(GLOBAL_CHECKPOINTER.conn, 'closed') and GLOBAL_CHECKPOINTER.conn.closed:
-                print__startup_debug(f"⚠ Checkpointer pool is closed, recreating...")
+                print__startup_debug(f"⚠️ Checkpointer pool is closed, recreating...")
                 GLOBAL_CHECKPOINTER = None
             else:
                 # Enhanced health check with timeout
@@ -454,13 +454,13 @@ async def get_healthy_checkpointer():
                     print__startup_debug("✅ Existing checkpointer is healthy")
                     return GLOBAL_CHECKPOINTER
                 except asyncio.TimeoutError:
-                    print__startup_debug("⚠ Checkpointer health check timed out, recreating...")
+                    print__startup_debug("⚠️ Checkpointer health check timed out, recreating...")
                     GLOBAL_CHECKPOINTER = None
                 except Exception as health_error:
-                    print__startup_debug(f"⚠ Checkpointer health check failed: {health_error}")
+                    print__startup_debug(f"⚠️ Checkpointer health check failed: {health_error}")
                     GLOBAL_CHECKPOINTER = None
         except Exception as e:
-            print__startup_debug(f"⚠ Error checking checkpointer health: {e}")
+            print__startup_debug(f"⚠️ Error checking checkpointer health: {e}")
             GLOBAL_CHECKPOINTER = None
     
     # Cleanup old checkpointer if needed
@@ -484,7 +484,7 @@ async def get_healthy_checkpointer():
                 
                 await GLOBAL_CHECKPOINTER.conn.close()
         except Exception as cleanup_error:
-            print__startup_debug(f"⚠ Error during cleanup: {cleanup_error}")
+            print__startup_debug(f"⚠️ Error during cleanup: {cleanup_error}")
         finally:
             GLOBAL_CHECKPOINTER = None
     
@@ -1094,7 +1094,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 # If there's a database connection issue, try with InMemorySaver as fallback
                 error_msg = str(analysis_error).lower()
                 if any(keyword in error_msg for keyword in ["pool", "connection", "closed", "timeout", "ssl", "postgres"]):
-                    print__feedback_flow(f"⚠ Database issue detected, trying with InMemorySaver fallback: {analysis_error}")
+                    print__feedback_flow(f"⚠️ Database issue detected, trying with InMemorySaver fallback: {analysis_error}")
                     
                     try:
                         from langgraph.checkpoint.memory import InMemorySaver
@@ -1224,9 +1224,9 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         except HTTPException:
             raise
         except Exception as ownership_error:
-            print__feedback_flow(f"⚠ Could not verify ownership: {ownership_error}")
+            print__feedback_flow(f"⚠️ Could not verify ownership: {ownership_error}")
             # Continue with feedback submission but log the warning
-            print__feedback_flow(f"⚠ Proceeding with feedback submission despite ownership check failure")
+            print__feedback_flow(f"⚠️ Proceeding with feedback submission despite ownership check failure")
         
         print__feedback_flow("🔄 Initializing LangSmith client")
         client = Client()
@@ -1352,7 +1352,7 @@ async def get_chat_threads(user=Depends(get_current_user)) -> List[ChatThreadRes
             print__api_postgresql(f"🔍 Using checkpointer connection pool")
             threads = await get_user_chat_threads(user_email, checkpointer.conn)
         else:
-            print__api_postgresql(f"⚠ Checkpointer connection pool not available, using direct connection")
+            print__api_postgresql(f"⚠️ Checkpointer connection pool not available, using direct connection")
             # Fallback to direct connection (this will create its own healthy pool)
             threads = await get_user_chat_threads(user_email)
         
@@ -1423,7 +1423,7 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
         
         # Check if we have a PostgreSQL checkpointer (not InMemorySaver)
         if not hasattr(checkpointer, 'conn'):
-            print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - nothing to delete")
+            print__api_postgresql(f"⚠️ No PostgreSQL checkpointer available - nothing to delete")
             return {"message": "No PostgreSQL checkpointer available - nothing to delete"}
         
         # Access the connection pool through the conn attribute
@@ -1532,7 +1532,7 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
             "ssl error", "connection", "timeout", "operational error", 
             "server closed", "bad connection", "consuming input failed"
         ]):
-            print__api_postgresql(f"⚠ PostgreSQL connection unavailable - no records to delete")
+            print__api_postgresql(f"⚠️ PostgreSQL connection unavailable - no records to delete")
             return {
                 "message": "PostgreSQL connection unavailable - no records to delete", 
                 "thread_id": thread_id,
@@ -1642,7 +1642,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
         checkpointer = await get_healthy_checkpointer()
         
         if not hasattr(checkpointer, 'conn'):
-            print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - returning empty messages")
+            print__api_postgresql(f"⚠️ No PostgreSQL checkpointer available - returning empty messages")
             return []
         
         # Verify thread ownership using users_threads_runs table
@@ -1710,7 +1710,7 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
                     sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
             
         except Exception as e:
-            print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
+            print__api_postgresql(f"⚠️ Could not get datasets/SQL/chunks from checkpoint: {e}")
             print__api_postgresql(f"🔧 Using fallback empty values: datasets=[], sql=None, chunks=[]")
         
         # Convert stored messages to frontend format
@@ -1852,7 +1852,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             checkpointer = await get_healthy_checkpointer()
             
             if not hasattr(checkpointer, 'conn'):
-                print__api_postgresql(f"⚠ No PostgreSQL checkpointer available - returning empty messages")
+                print__api_postgresql(f"⚠️ No PostgreSQL checkpointer available - returning empty messages")
                 empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
                 _bulk_loading_cache[cache_key] = (empty_result, current_time)
                 return empty_result
@@ -1956,7 +1956,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                                 sql_query = queries_and_results[-1][0] if queries_and_results[-1] else None
                         
                     except Exception as e:
-                        print__api_postgresql(f"⚠ Could not get datasets/SQL/chunks from checkpoint: {e}")
+                        print__api_postgresql(f"⚠️ Could not get datasets/SQL/chunks from checkpoint: {e}")
                     
                     # Convert stored messages to frontend format
                     chat_messages = []
