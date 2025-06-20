@@ -67,7 +67,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver  # Correct async import
 from langgraph.checkpoint.postgres import PostgresSaver  # Correct sync import
-from psycopg_pool import AsyncConnectionPool, ConnectionPool
+from psycopg_pool import AsyncConnectionPool, ConnectionPool, ConnectionCheck
 import threading
 from contextlib import asynccontextmanager
 
