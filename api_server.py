@@ -347,40 +347,89 @@ def setup_graceful_shutdown():
         signal.signal(signal.SIGUSR1, signal_handler)  # User-defined signal
 
 async def initialize_checkpointer():
-    """Initialize the global PostgreSQL checkpointer on startup."""
+    """Initialize the enhanced PostgreSQL checkpointer system on startup."""
     global GLOBAL_CHECKPOINTER
     if GLOBAL_CHECKPOINTER is None:
         try:
-            print__startup_debug("🔗 Initializing PostgreSQL checkpointer and chat system...")
+            print__startup_debug("🚀 Initializing Enhanced PostgreSQL Connection System...")
             print__startup_debug(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
             log_memory_usage("startup")
             
-            # Add timeout to initialization to fail faster
-            GLOBAL_CHECKPOINTER = await asyncio.wait_for(
-                get_postgres_checkpointer(), 
-                timeout=45  # Increased from 30 to 45 seconds
+            # NEW: Use the enhanced initialization system
+            print__startup_debug("🔧 Running enhanced PostgreSQL system initialization...")
+            system_init_success = await asyncio.wait_for(
+                initialize_enhanced_postgres_system(),
+                timeout=120  # 2 minutes for complete system initialization
             )
             
-            # Verify the checkpointer is healthy
-            if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
+            if not system_init_success:
+                print__startup_debug("❌ Enhanced PostgreSQL system initialization failed")
+                raise Exception("Enhanced PostgreSQL system initialization failed")
+            
+            print__startup_debug("✅ Enhanced PostgreSQL system initialized successfully")
+            
+            # Create the enhanced checkpointer with improved error handling
+            print__startup_debug("🔧 Creating enhanced PostgreSQL checkpointer...")
+            GLOBAL_CHECKPOINTER = await asyncio.wait_for(
+                get_postgres_checkpointer(), 
+                timeout=60  # 1 minute for checkpointer creation
+            )
+            
+            # Verify the enhanced checkpointer is working
+            if isinstance(GLOBAL_CHECKPOINTER, ResilientPostgreSQLCheckpointer):
+                print__startup_debug("✅ Enhanced resilient checkpointer created successfully")
+                print__startup_debug("🛡️ Features enabled:")
+                print__startup_debug("   • SSL connection error recovery")
+                print__startup_debug("   • AsyncPipeline error handling")
+                print__startup_debug("   • Automatic pool recreation")
+                print__startup_debug("   • Enhanced error diagnostics")
+            else:
+                print__startup_debug(f"⚠️ Created checkpointer type: {type(GLOBAL_CHECKPOINTER).__name__}")
+            
+            # Verify connection pool status
+            if (hasattr(GLOBAL_CHECKPOINTER, 'base_checkpointer') and 
+                hasattr(GLOBAL_CHECKPOINTER.base_checkpointer, 'pool')):
+                pool = GLOBAL_CHECKPOINTER.base_checkpointer.pool
+                print__startup_debug(f"✅ Checkpointer has enhanced connection pool: closed={pool.closed}")
+            elif hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
                 print__startup_debug(f"✅ Checkpointer has connection pool: closed={GLOBAL_CHECKPOINTER.conn.closed}")
             else:
-                print__startup_debug("⚠️ Checkpointer does not have connection pool")
+                print__startup_debug("⚠️ Checkpointer does not have expected connection pool structure")
             
-            print__startup_debug("✅ Global PostgreSQL checkpointer initialized successfully")
-            print__startup_debug("✅ users_threads_runs table verified/created")
-            log_memory_usage("checkpointer_initialized")
+            print__startup_debug("✅ Enhanced PostgreSQL checkpointer initialization completed")
+            print__startup_debug("✅ Enhanced users_threads_runs table verified/created")
+            log_memory_usage("enhanced_checkpointer_initialized")
+            
         except asyncio.TimeoutError:
-            print__startup_debug("❌ Failed to initialize PostgreSQL checkpointer: initialization timeout")
-            print__startup_debug("⚠️ This usually means PostgreSQL connection pool is exhausted")
+            print__startup_debug("❌ Enhanced PostgreSQL checkpointer initialization timeout")
+            print__startup_debug("⚠️ This may indicate network issues or database overload")
             
             # Fallback to InMemorySaver for development/testing
             from langgraph.checkpoint.memory import InMemorySaver
             GLOBAL_CHECKPOINTER = InMemorySaver()
             print__startup_debug("⚠️ Falling back to InMemorySaver")
+            
         except Exception as e:
-            print__startup_debug(f"❌ Failed to initialize PostgreSQL checkpointer: {e}")
+            print__startup_debug(f"❌ Enhanced PostgreSQL checkpointer initialization failed: {e}")
             print__startup_debug(f"🔍 Error type: {type(e).__name__}")
+            
+            # Enhanced error diagnostics
+            error_msg = str(e).lower()
+            if "ssl" in error_msg:
+                print__startup_debug("💡 SSL-related error detected during initialization")
+                print__startup_debug("   • Check database SSL configuration")
+                print__startup_debug("   • Verify network connectivity")
+                print__startup_debug("   • Check firewall settings")
+            elif "timeout" in error_msg:
+                print__startup_debug("💡 Timeout error detected during initialization")
+                print__startup_debug("   • Check database server responsiveness")
+                print__startup_debug("   • Verify network latency")
+                print__startup_debug("   • Check connection limits")
+            elif any(pattern in error_msg for pattern in ["pipeline", "dbhandler", "flush request"]):
+                print__startup_debug("💡 Pipeline/handler error detected during initialization")
+                print__startup_debug("   • Connection state may be corrupted")
+                print__startup_debug("   • Enhanced system should handle this automatically")
+            
             import traceback
             print__startup_debug(f"🔍 Full traceback: {traceback.format_exc()}")
             
@@ -388,8 +437,9 @@ async def initialize_checkpointer():
             from langgraph.checkpoint.memory import InMemorySaver
             GLOBAL_CHECKPOINTER = InMemorySaver()
             print__startup_debug("⚠️ Falling back to InMemorySaver")
+            
     else:
-        print__startup_debug("⚠️ Global checkpointer already exists - skipping initialization")
+        print__startup_debug("⚠️ Global checkpointer already exists - skipping enhanced initialization")
 
 async def cleanup_checkpointer():
     """Clean up resources on app shutdown."""

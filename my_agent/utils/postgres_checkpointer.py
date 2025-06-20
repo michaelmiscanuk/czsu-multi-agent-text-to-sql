@@ -1304,7 +1304,7 @@ async def test_connection_health():
         
         # Comprehensive connection test
         try:
-            async with asyncio.wait_for(pool.connection(), timeout=10) as conn:
+            async with pool.connection() as conn:
                 # Test multiple operations to ensure full functionality
                 result = await asyncio.wait_for(
                     conn.execute("SELECT 1 as test, NOW() as current_time, version() as pg_version, pg_backend_pid() as pid"), 
