@@ -64,7 +64,7 @@ import platform
 import os
 import uuid
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver  # Correct async import
 from langgraph.checkpoint.postgres import PostgresSaver  # Correct sync import
 from psycopg_pool import AsyncConnectionPool, ConnectionPool
@@ -631,142 +631,209 @@ async def create_postgres_checkpointer():
     """Backward compatibility wrapper."""
     return await get_postgres_checkpointer()
 
+
+
+
 async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: str, user_email: str = None) -> List[Dict[str, Any]]:
-    """Extract conversation messages from PostgreSQL checkpoint data."""
+    """Get the COMPLETE conversation messages from the LangChain PostgreSQL checkpoint history.
+    
+    SECURITY: Only loads messages for threads owned by the specified user to prevent data leakage.
+    
+    This extracts ALL user questions and ALL AI responses for proper chat display:
+    - All user messages: for right-side blue display
+    - All AI messages: for left-side white display using the explicit final_answer from state
+    
+    Args:
+        checkpointer: The PostgreSQL checkpointer instance
+        thread_id: Thread ID for the conversation
+        user_email: Email of the user requesting the messages (for security verification)
+    
+    Returns:
+        List of message dictionaries in chronological order (complete conversation history)
+    """
     try:
-        print__api_postgresql(f"📥 Loading conversation messages from checkpoints for thread: {thread_id}")
+        print__api_postgresql(f"🔍 Retrieving COMPLETE checkpoint history for thread: {thread_id}")
         
-        # Get the latest checkpoint state
+        # 🔒 SECURITY CHECK: Verify user owns this thread before loading checkpoint data
+        if user_email:
+            print__api_postgresql(f"🔒 Verifying thread ownership for user: {user_email}")
+            
+            # Get a connection to verify ownership
+            pool = checkpointer.conn if hasattr(checkpointer, 'conn') else await get_healthy_pool()
+            
+            if pool:
+                async with pool.connection() as conn:
+                    ownership_result = await conn.execute("""
+                        SELECT COUNT(*) FROM users_threads_runs 
+                        WHERE email = %s AND thread_id = %s
+                    """, (user_email, thread_id))
+                    
+                    ownership_row = await ownership_result.fetchone()
+                    thread_entries_count = ownership_row[0] if ownership_row else 0
+                    
+                    if thread_entries_count == 0:
+                        print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - access denied")
+                        return []  # Return empty instead of loading other users' data
+                    
+                    print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
+            else:
+                print__api_postgresql(f"⚠ Could not verify thread ownership - connection pool unavailable")
+                # In case of connection issues, don't load data to be safe
+                return []
+        
         config = {"configurable": {"thread_id": thread_id}}
-        state_snapshot = await checkpointer.aget_tuple(config)
         
-        if not state_snapshot or not state_snapshot.checkpoint:
-            print__api_postgresql(f"⚠️ No checkpoint data found for thread: {thread_id}")
+        # Get all checkpoints for this thread using alist()
+        checkpoint_tuples = []
+        try:
+            # Fix: alist() returns an async generator, don't await it
+            checkpoint_iterator = checkpointer.alist(config)
+            
+            # Now we can iterate over the async iterator
+            async for checkpoint_tuple in checkpoint_iterator:
+                checkpoint_tuples.append(checkpoint_tuple)
+                
+        except Exception as alist_error:
+            print__api_postgresql(f"❌ Error getting checkpoint list: {alist_error}")
+            # Try alternative approach if alist fails
+            try:
+                # Alternative: use aget_tuple to get the latest checkpoint
+                state_snapshot = await checkpointer.aget_tuple(config)
+                if state_snapshot:
+                    checkpoint_tuples = [state_snapshot]
+                    print__api_postgresql(f"⚠ Using fallback method - got latest checkpoint only")
+            except Exception as fallback_error:
+                print__api_postgresql(f"❌ Fallback method also failed: {fallback_error}")
+                return []
+        
+        if not checkpoint_tuples:
+            print__api_postgresql(f"⚠ No checkpoints found for thread: {thread_id}")
             return []
         
-        # Extract messages from the checkpoint
-        channel_values = state_snapshot.checkpoint.get("channel_values", {})
-        messages = channel_values.get("messages", [])
+        print__api_postgresql(f"📄 Found {len(checkpoint_tuples)} checkpoints for verified thread")
         
-        print__api_postgresql(f"📊 Found {len(messages)} messages in checkpoint for thread: {thread_id}")
+        # Sort checkpoints chronologically (oldest first)
+        checkpoint_tuples.sort(key=lambda x: x.config.get("configurable", {}).get("checkpoint_id", ""))
         
-        # Convert LangChain messages to our format
-        stored_messages = []
+        # Extract conversation messages chronologically
+        conversation_messages = []
+        seen_prompts = set()
+        seen_answers = set()
         
-        for i, message in enumerate(messages):
-            try:
-                # Skip empty system messages (they're just placeholders)
-                if hasattr(message, 'content') and message.content.strip() == "":
-                    continue
-                
-                # Determine if this is a user or AI message
-                from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-                
-                if isinstance(message, HumanMessage):
-                    is_user = True
-                    user_type = "user"
-                elif isinstance(message, AIMessage):
-                    is_user = False
-                    user_type = "ai"
-                elif isinstance(message, SystemMessage):
-                    # Skip system messages in conversation display
-                    continue
-                else:
-                    # Unknown message type, skip
-                    print__api_postgresql(f"⚠️ Unknown message type: {type(message)}")
-                    continue
-                
-                # Create stored message record
-                stored_message = {
-                    "id": getattr(message, 'id', f"msg_{thread_id}_{i}"),
-                    "content": getattr(message, 'content', ''),
-                    "is_user": is_user,
-                    "timestamp": datetime.now(),  # We don't have original timestamps
-                    "user_type": user_type
-                }
-                
-                stored_messages.append(stored_message)
-                
-                print__api_postgresql(f"📄 Message {i+1}: {user_type} - {stored_message['content'][:50]}...")
-                
-            except Exception as msg_error:
-                print__api_postgresql(f"❌ Error processing message {i}: {msg_error}")
+        # Extract all user prompts and AI responses from checkpoint history
+        print__api_postgresql(f"🔍 Extracting ALL user questions and AI responses...")
+        
+        for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
+            checkpoint = checkpoint_tuple.checkpoint
+            metadata = checkpoint_tuple.metadata or {}
+            
+            if not checkpoint:
                 continue
+                
+            # METHOD 1: Extract user prompts from checkpoint writes (new questions)
+            if "writes" in metadata and isinstance(metadata["writes"], dict):
+                writes = metadata["writes"]
+                
+                # Look for user prompts in different node writes
+                for node_name, node_data in writes.items():
+                    if isinstance(node_data, dict):
+                        # Check for new prompts (excluding rewritten prompts)
+                        prompt = node_data.get("prompt")
+                        if (prompt and 
+                            prompt.strip() and 
+                            prompt.strip() not in seen_prompts and
+                            len(prompt.strip()) > 5 and
+                            # Filter out rewritten prompts (they usually contain references to previous context)
+                            not any(indicator in prompt.lower() for indicator in [
+                                "standalone question:", "rephrase", "follow up", "conversation so far"
+                            ])):
+                            
+                            seen_prompts.add(prompt.strip())
+                            user_message = {
+                                "id": f"user_{len(conversation_messages) + 1}",
+                                "content": prompt.strip(),
+                                "is_user": True,
+                                "timestamp": datetime.fromtimestamp(1700000000 + checkpoint_index * 1000),  # Use stable timestamp for sorting
+                                "checkpoint_order": checkpoint_index,
+                                "message_order": len(conversation_messages) + 1
+                            }
+                            conversation_messages.append(user_message)
+                            print__api_postgresql(f"🔍 Found user prompt in checkpoint {checkpoint_index}: {prompt[:50]}...")
+            
+            # METHOD 2: Extract AI responses directly from final_answer in channel_values
+            if "channel_values" in checkpoint:
+                channel_values = checkpoint["channel_values"]
+                
+                # NEW: Use explicit final_answer from state instead of trying to filter messages
+                final_answer = channel_values.get("final_answer")
+                
+                if (final_answer and 
+                    isinstance(final_answer, str) and 
+                    final_answer.strip() and 
+                    len(final_answer.strip()) > 20 and 
+                    final_answer.strip() not in seen_answers):
+                    
+                    seen_answers.add(final_answer.strip())
+                    ai_message = {
+                        "id": f"ai_{len(conversation_messages) + 1}",
+                        "content": final_answer.strip(),
+                        "is_user": False,
+                        "timestamp": datetime.fromtimestamp(1700000000 + checkpoint_index * 1000 + 500),  # Stable timestamp slightly after user message
+                        "checkpoint_order": checkpoint_index,
+                        "message_order": len(conversation_messages) + 1
+                    }
+                    conversation_messages.append(ai_message)
+                    print__api_postgresql(f"🤖 ✅ Found final_answer in checkpoint {checkpoint_index}: {final_answer[:100]}...")
         
-        print__api_postgresql(f"✅ Successfully processed {len(stored_messages)} conversation messages")
-        return stored_messages
+        # Sort all messages by timestamp to ensure proper chronological order
+        conversation_messages.sort(key=lambda x: x.get("timestamp", datetime.now()))
+        
+        # Re-assign sequential IDs and message order after sorting
+        for i, msg in enumerate(conversation_messages):
+            msg["message_order"] = i + 1
+            msg["id"] = f"{'user' if msg['is_user'] else 'ai'}_{i + 1}"
+        
+        print__api_postgresql(f"✅ Extracted {len(conversation_messages)} conversation messages from COMPLETE history (verified user access)")
+        
+        # Debug: Log all messages found
+        for i, msg in enumerate(conversation_messages):
+            msg_type = "👤 User" if msg["is_user"] else "🤖 AI"
+            print__api_postgresql(f"{i+1}. {msg_type}: {msg['content'][:50]}...")
+        
+        return conversation_messages
         
     except Exception as e:
-        print__api_postgresql(f"❌ Failed to get conversation messages from checkpoints: {e}")
+        print__api_postgresql(f"❌ Error retrieving COMPLETE messages from checkpoints: {str(e)}")
         import traceback
         print__api_postgresql(f"🔍 Full traceback: {traceback.format_exc()}")
         return []
 
 async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id: str) -> List[List[str]]:
-    """Get queries_and_results from the latest checkpoint."""
+    """Get queries_and_results from the latest checkpoint state.
+    
+    Args:
+        checkpointer: The PostgreSQL checkpointer instance
+        thread_id: Thread ID for the conversation
+    
+    Returns:
+        List of [query, result] pairs from the latest checkpoint
+    """
     try:
-        print__api_postgresql(f"🔍 Getting queries and results from checkpoint for thread: {thread_id}")
-        
         config = {"configurable": {"thread_id": thread_id}}
         state_snapshot = await checkpointer.aget_tuple(config)
         
         if state_snapshot and state_snapshot.checkpoint:
             channel_values = state_snapshot.checkpoint.get("channel_values", {})
             queries_and_results = channel_values.get("queries_and_results", [])
-            print__api_postgresql(f"📊 Found {len(queries_and_results)} queries in checkpoint")
-            return queries_and_results
-        else:
-            print__api_postgresql(f"⚠️ No checkpoint or queries found for thread: {thread_id}")
-            return []
-            
+            print__api_postgresql(f"✅ Found {len(queries_and_results)} queries from latest checkpoint")
+            return [[query, result] for query, result in queries_and_results]
+        
+        return []
+        
     except Exception as e:
-        print__api_postgresql(f"❌ Failed to get queries from checkpoint: {e}")
+        print__api_postgresql(f"⚠ Could not get queries from checkpoint: {e}")
         return []
 
-async def setup_rls_policies(pool: AsyncConnectionPool):
-    """Setup Row Level Security policies for checkpointer tables in Supabase."""
-    try:
-        async with pool.connection() as conn:
-            await conn.set_autocommit(True)
-            
-            # Enable RLS on all checkpointer tables
-            tables = ["checkpoints", "checkpoint_writes", "checkpoint_blobs", "checkpoint_migrations"]
-            
-            for table in tables:
-                try:
-                    await conn.execute(f"ALTER TABLE {table} ENABLE ROW LEVEL SECURITY")
-                    print__api_postgresql(f"✓ RLS enabled on {table}")
-                except Exception as e:
-                    if "already enabled" in str(e).lower() or "does not exist" in str(e).lower():
-                        print__api_postgresql(f"⚠ RLS already enabled on {table} or table doesn't exist")
-                    else:
-                        print__api_postgresql(f"⚠ Warning: Could not enable RLS on {table}: {e}")
-            
-            # Drop existing policies if they exist
-            for table in tables:
-                try:
-                    await conn.execute(f'DROP POLICY IF EXISTS "Allow service role full access" ON {table}')
-                except Exception as e:
-                    print__api_postgresql(f"⚠ Could not drop existing policy on {table}: {e}")
-            
-            # Create permissive policies for authenticated users
-            for table in tables:
-                try:
-                    await conn.execute(f"""
-                        CREATE POLICY "Allow service role full access" ON {table}
-                        FOR ALL USING (true) WITH CHECK (true)
-                    """)
-                    print__api_postgresql(f"✓ RLS policy created for {table}")
-                except Exception as e:
-                    if "already exists" in str(e).lower():
-                        print__api_postgresql(f"⚠ RLS policy already exists for {table}")
-                    else:
-                        print__api_postgresql(f"⚠ Could not create RLS policy for {table}: {e}")
-            
-        print__api_postgresql("✓ Row Level Security setup completed (with any warnings noted above)")
-    except Exception as e:
-        print__api_postgresql(f"⚠ Warning: Could not setup RLS policies: {e}")
-        # Don't fail the entire setup if RLS setup fails - this is not critical for basic functionality
 
 async def monitor_connection_health(pool: AsyncConnectionPool, interval: int = 60):
     """Monitor connection pool health in the background."""
