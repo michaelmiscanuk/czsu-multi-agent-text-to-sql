@@ -67,7 +67,8 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver  # Correct async import
 from langgraph.checkpoint.postgres import PostgresSaver  # Correct sync import
-from psycopg_pool import AsyncConnectionPool, ConnectionPool, ConnectionCheck
+from psycopg_pool import AsyncConnectionPool, ConnectionPool
+from psycopg import AsyncConnection  # Add missing import for direct connection testing
 import threading
 from contextlib import asynccontextmanager
 
@@ -211,7 +212,10 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
         conninfo = get_connection_string()
         print__postgresql_debug(f"🔗 Connection string configured (SSL enabled)")
         
-        # Create pool with production-optimized settings
+        # CRITICAL: For Supabase transaction mode, disable prepared statements
+        print__postgresql_debug("🔧 Configuring for Supabase transaction mode (prepared statements disabled)")
+        
+        # Create pool with Supabase-optimized settings (don't open in constructor)
         pool = AsyncConnectionPool(
             conninfo=conninfo,
             min_size=1,  # Minimum connections in pool
@@ -219,12 +223,19 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
             timeout=30,  # Connection timeout in seconds
             max_idle=300,  # Maximum idle time before closing connections (5 minutes)
             max_lifetime=3600,  # Maximum lifetime of connections (1 hour)
-            check=ConnectionCheck.ON_CREATE_AND_ACQUIRE,  # Health check mode
+            open=False,  # IMPORTANT: Don't open in constructor to avoid deprecation warning
             configure=None,  # Connection configuration function
-            kwargs={}  # Additional connection parameters
+            kwargs={
+                "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase transaction mode
+                "autocommit": True,             # Use autocommit for better compatibility
+            }
         )
         
-        print__postgresql_debug("✅ Connection pool created successfully")
+        # Explicitly open the pool to avoid deprecation warning
+        print__postgresql_debug("🔧 Opening connection pool explicitly...")
+        await pool.open()
+        
+        print__postgresql_debug("✅ Connection pool created and opened successfully")
         return pool
         
     except Exception as e:
@@ -521,8 +532,8 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
 def check_postgres_env_vars():
     """Check if all required PostgreSQL environment variables are set."""
     required_vars = [
-        'POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_DB', 
-        'POSTGRES_USER', 'POSTGRES_PASSWORD'
+        'host', 'port', 'dbname', 
+        'user', 'password'
     ]
     
     missing_vars = []
@@ -857,7 +868,7 @@ async def test_connection_health():
         
         print__api_postgresql("🔍 Testing Supabase connection health...")
         
-        # Test basic connection using same settings as main pool
+        # Test basic connection using same settings as main pool (don't open in constructor)
         pool = AsyncConnectionPool(
             conninfo=connection_string,
             max_size=1,
@@ -865,12 +876,13 @@ async def test_connection_health():
             timeout=10,  # Short timeout for health check
             open=False,  # Don't open in constructor to avoid deprecation warning
             kwargs={
-                "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase
+                "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase transaction mode
                 "autocommit": True,             # Use autocommit for better compatibility
             }
         )
         
-        await pool.open()  # Open the pool properly
+        # Explicitly open the pool
+        await pool.open()
         
         async with pool.connection() as conn:
             result = await conn.execute("SELECT 1 as test, NOW() as current_time")
