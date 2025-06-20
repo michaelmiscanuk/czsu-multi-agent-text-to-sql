@@ -102,7 +102,10 @@ from my_agent.utils.postgres_checkpointer import (
     debug_pool_status,
     test_connection_health,
     force_close_all_connections,
-    AsyncPostgresSaver
+    AsyncPostgresSaver,
+    # NEW: Import enhanced initialization system
+    initialize_enhanced_postgres_system,
+    ResilientPostgreSQLCheckpointer
 )
 
 # Additional imports for sentiment functionality
@@ -1009,7 +1012,7 @@ GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
 # Global counter for tracking JWT 'kid' missing events to reduce log spam
 _jwt_kid_missing_count = 0
 
-# FIXED: Enhanced JWT verification with proper error handling
+# FIXED: Enhanced JWT verification with NextAuth.js id_token support
 def verify_google_jwt(token: str):
     global _jwt_kid_missing_count
     
@@ -1026,12 +1029,10 @@ def verify_google_jwt(token: str):
             if not part or len(part) < 4:  # Base64 encoded parts should be at least 4 chars
                 raise HTTPException(status_code=401, detail="Invalid JWT token format")
         
-        # Get Google public keys
-        jwks = requests.get(GOOGLE_JWK_URL).json()
-        
-        # Get unverified header - this should now work since we pre-validated the format
+        # Get unverified header and payload first - this should now work since we pre-validated the format
         try:
             unverified_header = jwt.get_unverified_header(token)
+            unverified_payload = jwt.decode(token, options={"verify_signature": False})
         except jwt.DecodeError as e:
             # This should be rare now due to pre-validation, but keep for edge cases
             print__debug(f"JWT decode error after pre-validation: {e}")
@@ -1040,29 +1041,72 @@ def verify_google_jwt(token: str):
             print__debug(f"JWT header decode error: {e}")
             raise HTTPException(status_code=401, detail="Invalid JWT token format")
         
-        # CRITICAL FIX: Check if 'kid' exists in header before accessing it
+        # Debug: print the audience in the token and the expected audience
+        print__debug(f"Token aud: {unverified_payload.get('aud')}")
+        print__debug(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
+        
+        # NEW: Check if this is a NextAuth.js id_token (missing 'kid' field)
         if "kid" not in unverified_header:
             # Reduce log noise - only log this every 10th occurrence
-            # This is normal for test tokens and security probes
             _jwt_kid_missing_count += 1
             if _jwt_kid_missing_count % 10 == 1:  # Log 1st, 11th, 21st, etc.
-                print__debug(f"JWT token missing 'kid' field (#{_jwt_kid_missing_count} - common for test/invalid tokens)")
-            raise HTTPException(status_code=401, detail="Invalid JWT token: missing key ID")
+                print__debug(f"JWT token missing 'kid' field (#{_jwt_kid_missing_count}) - attempting NextAuth.js id_token verification")
+            
+            # NEXTAUTH.JS SUPPORT: Verify id_token directly using Google's tokeninfo endpoint
+            try:
+                print__debug("Attempting NextAuth.js id_token verification via Google tokeninfo endpoint")
+                
+                # Use Google's tokeninfo endpoint to verify the id_token
+                tokeninfo_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
+                response = requests.get(tokeninfo_url, timeout=10)
+                
+                if response.status_code == 200:
+                    tokeninfo = response.json()
+                    print__debug(f"Google tokeninfo response: {tokeninfo}")
+                    
+                    # Verify the audience matches our client ID
+                    expected_aud = os.getenv("GOOGLE_CLIENT_ID")
+                    if tokeninfo.get("aud") != expected_aud:
+                        print__debug(f"Tokeninfo audience mismatch. Expected: {expected_aud}, Got: {tokeninfo.get('aud')}")
+                        raise HTTPException(status_code=401, detail="Invalid token audience")
+                    
+                    # Verify the token is not expired
+                    if int(tokeninfo.get("exp", 0)) < time.time():
+                        print__debug("Tokeninfo shows token has expired")
+                        raise HTTPException(status_code=401, detail="Token has expired")
+                    
+                    # Return the tokeninfo as the payload (it contains email, name, etc.)
+                    print__debug("NextAuth.js id_token verification successful via Google tokeninfo")
+                    return tokeninfo
+                    
+                else:
+                    print__debug(f"Google tokeninfo endpoint returned error: {response.status_code} - {response.text}")
+                    raise HTTPException(status_code=401, detail="Invalid NextAuth.js id_token")
+                    
+            except requests.RequestException as e:
+                print__debug(f"Failed to verify NextAuth.js id_token via Google tokeninfo: {e}")
+                raise HTTPException(status_code=401, detail="Token verification failed - unable to validate NextAuth.js token")
+            except HTTPException:
+                raise  # Re-raise HTTPException as-is
+            except Exception as e:
+                print__debug(f"NextAuth.js id_token verification failed: {e}")
+                raise HTTPException(status_code=401, detail="NextAuth.js token verification failed")
+        
+        # ORIGINAL FLOW: Standard Google JWT token with 'kid' field (for direct Google API calls)
+        try:
+            # Get Google public keys for JWKS verification
+            jwks = requests.get(GOOGLE_JWK_URL).json()
+        except requests.RequestException as e:
+            print__debug(f"Failed to fetch Google JWKS: {e}")
+            raise HTTPException(status_code=401, detail="Token verification failed - unable to fetch Google keys")
         
         # Find matching key
         for key in jwks["keys"]:
             if key["kid"] == unverified_header["kid"]:
                 public_key = RSAAlgorithm.from_jwk(key)
                 try:
-                    # Debug: print the audience in the token and the expected audience
-                    try:
-                        unverified_payload = jwt.decode(token, options={"verify_signature": False})
-                        print__debug(f"Token aud: {unverified_payload.get('aud')}")
-                        print__debug(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
-                    except Exception:
-                        pass  # Ignore debug errors
-                    
                     payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
+                    print__debug("Standard Google JWT token verification successful")
                     return payload
                 except jwt.ExpiredSignatureError:
                     print__debug("JWT token has expired")

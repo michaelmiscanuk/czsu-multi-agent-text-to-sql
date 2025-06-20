@@ -71,6 +71,7 @@ from psycopg_pool import AsyncConnectionPool, ConnectionPool
 from psycopg import AsyncConnection  # Add missing import for direct connection testing
 import threading
 from contextlib import asynccontextmanager
+import time
 
 #==============================================================================
 # DEBUG FUNCTIONS
@@ -162,46 +163,71 @@ def get_connection_string():
     """Get PostgreSQL connection string from environment variables with enhanced cloud deployment configuration."""
     config = get_db_config()
     
-    print__postgres_startup_debug(f"🔗 Building connection string for Supabase")
+    print__postgres_startup_debug(f"🔗 Building connection string for cloud PostgreSQL (Render/Supabase)")
     
-    # ENHANCED: Cloud-optimized connection string for Render/Supabase deployment
+    # ENHANCED: Robust cloud-optimized connection string for Render/Supabase deployment
+    # Based on psycopg best practices and cloud environment requirements
     connection_string = (
         f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}"
-        f"?sslmode=require"                     # Required for Supabase
-        f"&connect_timeout=15"                  # Shorter connection timeout for cloud
-        f"&application_name=czsu_agent"         # App identification
-        f"&keepalives_idle=300"                 # Keep connection alive (5 minutes)
-        f"&keepalives_interval=30"              # Send keepalive every 30 seconds
-        f"&keepalives_count=3"                  # 3 failed keepalives before disconnect
-        f"&tcp_user_timeout=30000"              # TCP timeout (30 seconds)
+        f"?sslmode=require"                     # Required for cloud PostgreSQL
+        f"&connect_timeout=20"                  # Increased timeout for cloud latency
+        f"&application_name=czsu_agent"         # App identification for monitoring
+        # Connection keepalive settings (critical for cloud deployments)
+        f"&keepalives_idle=600"                 # 10 minutes before first keepalive
+        f"&keepalives_interval=30"              # 30 seconds between keepalive probes
+        f"&keepalives_count=3"                  # 3 failed probes before disconnect
+        f"&tcp_user_timeout=60000"              # 60 seconds TCP user timeout
+        # Statement and session timeouts
+        f"&statement_timeout=300000"            # 5 minutes statement timeout
+        f"&idle_in_transaction_session_timeout=600000"  # 10 minutes idle timeout
+        # Network resilience settings
+        f"&target_session_attrs=read-write"     # Ensure we get a writable session
     )
     
     # Log connection details (without password)
     debug_string = connection_string.replace(config['password'], '***')
-    print__postgres_startup_debug(f"🔗 Using cloud-optimized Supabase connection string: {debug_string}")
+    print__postgres_startup_debug(f"🔗 Using enhanced cloud-optimized connection string: {debug_string}")
     
     return connection_string
 
 async def is_pool_healthy(pool: Optional[AsyncConnectionPool]) -> bool:
-    """Check if a connection pool is healthy and open."""
+    """Check if a connection pool is healthy and open with enhanced diagnostics."""
     if pool is None:
+        print__postgresql_debug(f"⚠ Pool is None")
         return False
+        
     try:
         # Check if pool is closed
         if pool.closed:
             print__postgresql_debug(f"⚠ Pool is marked as closed")
             return False
         
-        # Try a quick connection test
-        async with pool.connection() as conn:
-            await conn.execute("SELECT 1")
-        return True
+        # Get pool statistics if available for diagnostics
+        try:
+            stats = pool.get_stats()
+            print__postgresql_debug(f"📊 Pool stats: {stats}")
+        except (AttributeError, Exception) as e:
+            print__postgresql_debug(f"📊 Pool stats unavailable: {e}")
+        
+        # Try a quick connection test with timeout
+        try:
+            async with asyncio.wait_for(pool.connection(), timeout=5) as conn:
+                await asyncio.wait_for(conn.execute("SELECT 1"), timeout=5)
+                print__postgresql_debug(f"✅ Pool health check passed")
+                return True
+        except asyncio.TimeoutError:
+            print__postgresql_debug(f"⚠ Pool health check timed out")
+            return False
+        except Exception as e:
+            print__postgresql_debug(f"⚠ Pool health check failed: {e}")
+            return False
+            
     except Exception as e:
-        print__postgresql_debug(f"⚠ Pool health check failed: {e}")
+        print__postgresql_debug(f"⚠ Pool health check error: {e}")
         return False
 
 async def create_fresh_connection_pool() -> AsyncConnectionPool:
-    """Create a new PostgreSQL connection pool with cloud-optimized settings."""
+    """Create a new PostgreSQL connection pool with cloud-optimized settings and enhanced error handling."""
     try:
         print__postgresql_debug("🔄 Creating fresh PostgreSQL connection pool...")
         
@@ -214,38 +240,88 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
         
         # Construct connection string with SSL configuration
         conninfo = get_connection_string()
-        print__postgresql_debug(f"🔗 Connection string configured (SSL enabled)")
+        print__postgresql_debug(f"🔗 Connection string configured with enhanced cloud settings")
         
-        # CRITICAL: For Supabase transaction mode, disable prepared statements
-        print__postgresql_debug("🔧 Configuring for cloud deployment with enhanced resilience")
+        # CRITICAL: Enhanced configuration for cloud deployment resilience
+        print__postgresql_debug("🔧 Configuring for cloud deployment with maximum resilience")
         
-        # FIXED: Cloud-optimized pool settings for Render/Supabase
+        # ENHANCED: Ultra-robust pool settings based on psycopg best practices
         pool = AsyncConnectionPool(
             conninfo=conninfo,
-            min_size=1,  # Minimum connections in pool
-            max_size=3,  # REDUCED: Lower max to prevent connection exhaustion
-            timeout=15,  # REDUCED: Shorter timeout for acquiring connections
-            max_idle=180,  # REDUCED: 3 minutes idle time (was 5 minutes)
-            max_lifetime=1800,  # REDUCED: 30 minutes lifetime (was 1 hour)
-            reconnect_timeout=30,  # ADDED: Timeout for reconnection attempts
-            open=False,  # IMPORTANT: Don't open in constructor to avoid deprecation warning
-            configure=None,  # Connection configuration function
+            min_size=0,  # CHANGED: Start with 0 to avoid initial connection storms
+            max_size=2,  # REDUCED: Conservative max to prevent connection exhaustion
+            timeout=20,  # INCREASED: Longer timeout for acquiring connections in cloud
+            max_idle=120,  # REDUCED: 2 minutes idle time to prevent stale connections
+            max_lifetime=900,  # REDUCED: 15 minutes lifetime to prevent SSL timeouts
+            reconnect_timeout=60,  # INCREASED: Longer reconnection attempts
+            open=False,  # IMPORTANT: Don't open in constructor
+            # Enhanced connection configuration function
+            configure=None,
+            # Connection health check function
+            check=AsyncConnectionPool.check_connection,  # ADDED: Built-in health checking
             kwargs={
-                "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase transaction mode
+                "prepare_threshold": None,      # CRITICAL: Disable prepared statements for cloud
                 "autocommit": True,             # Use autocommit for better compatibility
-                "connect_timeout": 10,          # ADDED: Connection-level timeout
+                "connect_timeout": 15,          # INCREASED: Connection-level timeout for cloud
+                # Pipeline mode disabled to prevent AsyncPipeline errors
+                "pipeline": False,              # CRITICAL: Disable pipeline mode
             }
         )
         
-        # Explicitly open the pool to avoid deprecation warning
-        print__postgresql_debug("🔧 Opening connection pool explicitly...")
-        await pool.open()
+        # Explicitly open the pool with retries
+        print__postgresql_debug("🔧 Opening connection pool with retry logic...")
+        max_retries = 3
+        retry_delay = 2
         
-        print__postgresql_debug("✅ Connection pool created and opened successfully")
+        for attempt in range(max_retries):
+            try:
+                await asyncio.wait_for(pool.open(), timeout=30)
+                print__postgresql_debug("✅ Connection pool opened successfully")
+                break
+            except asyncio.TimeoutError:
+                print__postgresql_debug(f"⚠️ Pool open timeout on attempt {attempt + 1}/{max_retries}")
+                if attempt == max_retries - 1:
+                    raise
+                await asyncio.sleep(retry_delay * (attempt + 1))
+            except Exception as e:
+                print__postgresql_debug(f"⚠️ Pool open failed on attempt {attempt + 1}/{max_retries}: {e}")
+                if attempt == max_retries - 1:
+                    raise
+                await asyncio.sleep(retry_delay * (attempt + 1))
+        
+        # Validate the pool with a test query
+        try:
+            async with asyncio.wait_for(pool.connection(), timeout=10) as conn:
+                await asyncio.wait_for(conn.execute("SELECT 1, NOW(), version()"), timeout=10)
+            print__postgresql_debug("✅ Pool validation successful")
+        except Exception as e:
+            print__postgresql_debug(f"❌ Pool validation failed: {e}")
+            await pool.close()
+            raise
+        
+        print__postgresql_debug("✅ Fresh connection pool created with enhanced cloud resilience")
         return pool
         
     except Exception as e:
         print__postgresql_debug(f"❌ Failed to create connection pool: {e}")
+        # Enhanced error diagnostics
+        error_msg = str(e).lower()
+        if "ssl" in error_msg:
+            print__postgresql_debug("💡 SSL-related error detected. Check:")
+            print__postgresql_debug("   1. Database SSL configuration")
+            print__postgresql_debug("   2. Network connectivity to database")
+            print__postgresql_debug("   3. Certificate validity")
+        elif "timeout" in error_msg:
+            print__postgresql_debug("💡 Timeout error detected. Check:")
+            print__postgresql_debug("   1. Database server responsiveness")
+            print__postgresql_debug("   2. Network latency")
+            print__postgresql_debug("   3. Connection limits")
+        elif "authentication" in error_msg or "password" in error_msg:
+            print__postgresql_debug("💡 Authentication error detected. Check:")
+            print__postgresql_debug("   1. Database credentials")
+            print__postgresql_debug("   2. User permissions")
+            print__postgresql_debug("   3. Connection limits")
+        
         import traceback
         print__postgresql_debug(f"🔍 Full traceback: {traceback.format_exc()}")
         raise
@@ -626,42 +702,257 @@ async def test_basic_postgres_connection():
         print__postgres_startup_debug(f"❌ Basic connection test failed: {e}")
         return False
 
-async def get_postgres_checkpointer():
-    """Get a PostgreSQL checkpointer with comprehensive error handling."""
+def log_connection_info(host: str, port: str, dbname: str, user: str):
+    """Enhanced connection information logging for debugging."""
+    print__postgres_startup_debug(f"🔗 Enhanced PostgreSQL Connection Configuration:")
+    print__postgres_startup_debug(f"   📡 Host: {host}")
+    print__postgres_startup_debug(f"   🔌 Port: {port}")
+    print__postgres_startup_debug(f"   💾 Database: {dbname}")
+    print__postgres_startup_debug(f"   👤 User: {user}")
+    print__postgres_startup_debug(f"   🔒 SSL: Required (Cloud PostgreSQL)")
+    print__postgres_startup_debug(f"   🔄 Connection Pooling: Enhanced (psycopg 3)")
+    print__postgres_startup_debug(f"   🛡️ Pipeline Mode: Disabled (AsyncPipeline error prevention)")
+
+async def test_pool_connection():
+    """Enhanced test for connection pool creation and functionality."""
     try:
-        print__postgres_startup_debug("🚀 Initializing PostgreSQL checkpointer...")
+        print__api_postgresql("🔍 Testing enhanced connection pool...")
         
-        # Test basic connection first
-        if not await test_basic_postgres_connection():
-            print__postgres_startup_debug("❌ Basic connection test failed - checkpointer creation aborted")
-            raise Exception("PostgreSQL basic connection test failed")
+        # Test pool creation with enhanced settings
+        pool = await create_fresh_connection_pool()
+        print__api_postgresql(f"✅ Enhanced pool created: closed={pool.closed}")
         
-        print__postgres_startup_debug("✅ Basic connection test passed")
+        # Test pool statistics
+        try:
+            stats = pool.get_stats()
+            print__api_postgresql(f"📊 Pool statistics: {stats}")
+        except (AttributeError, Exception) as e:
+            print__api_postgresql(f"📊 Pool statistics unavailable: {e}")
         
-        # Create and setup database objects
+        # Test pool usage with comprehensive queries
+        async with pool.connection() as conn:
+            # Test basic functionality
+            result = await conn.execute("SELECT 1 as test, NOW() as current_time, pg_backend_pid() as pid")
+            row = await result.fetchone()
+            print__api_postgresql(f"✅ Basic query successful: test={row[0]}, pid={row[2]}")
+            
+            # Test transaction handling
+            await conn.execute("BEGIN")
+            await conn.execute("SELECT 1")
+            await conn.execute("COMMIT")
+            print__api_postgresql(f"✅ Transaction test successful")
+            
+            # Test connection info
+            result = await conn.execute("SELECT version(), current_database(), current_user")
+            row = await result.fetchone()
+            print__api_postgresql(f"✅ Connection info: db={row[1]}, user={row[2]}")
+        
+        # Test pool health check
+        is_healthy = await is_pool_healthy(pool)
+        print__api_postgresql(f"✅ Pool health check: {is_healthy}")
+        
+        # Test multiple concurrent connections (if max_size > 1)
+        if hasattr(pool, 'max_size') and pool.max_size > 1:
+            print__api_postgresql("🔍 Testing concurrent connections...")
+            
+            async def test_concurrent_query(query_id):
+                async with pool.connection() as conn:
+                    result = await conn.execute("SELECT %s as query_id, pg_backend_pid() as pid", [query_id])
+                    row = await result.fetchone()
+                    return f"Query {row[0]} -> PID {row[1]}"
+            
+            # Run multiple concurrent queries
+            tasks = [test_concurrent_query(i) for i in range(2)]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for result in results:
+                if isinstance(result, Exception):
+                    print__api_postgresql(f"⚠️ Concurrent query failed: {result}")
+                else:
+                    print__api_postgresql(f"✅ Concurrent query: {result}")
+        
+        # Cleanup
+        await pool.close()
+        print__api_postgresql(f"✅ Pool closed: closed={pool.closed}")
+        
+        return True
+        
+    except Exception as e:
+        print__api_postgresql(f"❌ Enhanced pool connection test failed: {e}")
+        import traceback
+        print__api_postgresql(f"🔍 Full traceback: {traceback.format_exc()}")
+        return False
+
+async def debug_pool_status():
+    """Enhanced debug function to show comprehensive pool status."""
+    global database_pool
+    
+    print__api_postgresql(f"🔍 Enhanced Pool Status Debug:")
+    print__api_postgresql(f"   Global pool exists: {database_pool is not None}")
+    
+    if database_pool:
+        print__api_postgresql(f"   Pool type: {type(database_pool).__name__}")
+        print__api_postgresql(f"   Pool closed: {database_pool.closed}")
+        
+        # Enhanced pool information
+        try:
+            if hasattr(database_pool, 'min_size'):
+                print__api_postgresql(f"   Pool min_size: {database_pool.min_size}")
+            if hasattr(database_pool, 'max_size'):
+                print__api_postgresql(f"   Pool max_size: {database_pool.max_size}")
+            if hasattr(database_pool, 'timeout'):
+                print__api_postgresql(f"   Pool timeout: {database_pool.timeout}")
+                
+            # Try to get enhanced pool stats
+            if hasattr(database_pool, 'get_stats'):
+                stats = database_pool.get_stats()
+                print__api_postgresql(f"   Pool stats: {stats}")
+            else:
+                print__api_postgresql(f"   Pool stats: Not available")
+                
+            # Test health with enhanced diagnostics
+            is_healthy = await is_pool_healthy(database_pool)
+            print__api_postgresql(f"   Pool healthy: {is_healthy}")
+            
+            # Connection test
+            if not database_pool.closed:
+                try:
+                    async with asyncio.wait_for(database_pool.connection(), timeout=5) as conn:
+                        result = await asyncio.wait_for(conn.execute("SELECT pg_backend_pid()"), timeout=5)
+                        row = await result.fetchone()
+                        print__api_postgresql(f"   Test connection PID: {row[0] if row else 'unknown'}")
+                except Exception as conn_error:
+                    print__api_postgresql(f"   Connection test failed: {conn_error}")
+            
+        except Exception as e:
+            print__api_postgresql(f"   Pool status error: {e}")
+    else:
+        print__api_postgresql("   No global pool available")
+    
+    return database_pool
+
+# Enhanced startup and initialization functions
+async def initialize_enhanced_postgres_system():
+    """Initialize the enhanced PostgreSQL connection system with comprehensive testing."""
+    try:
+        print__api_postgresql("🚀 Initializing Enhanced PostgreSQL Connection System")
+        print__api_postgresql("=" * 60)
+        
+        # Step 1: Environment validation
+        print__api_postgresql("📋 Step 1: Environment Validation")
+        env_ok = check_postgres_env_vars()
+        if not env_ok:
+            print__api_postgresql("❌ Environment validation failed")
+            return False
+        print__api_postgresql("✅ Environment validation passed")
+        
+        # Step 2: Basic connection health test
+        print__api_postgresql("\n🔍 Step 2: Basic Connection Health Test")
+        health_ok = await test_connection_health()
+        if not health_ok:
+            print__api_postgresql("❌ Basic connection health test failed")
+            return False
+        print__api_postgresql("✅ Basic connection health test passed")
+        
+        # Step 3: Enhanced pool creation and testing
+        print__api_postgresql("\n🏊 Step 3: Enhanced Pool Creation and Testing")
+        pool_ok = await test_pool_connection()
+        if not pool_ok:
+            print__api_postgresql("❌ Enhanced pool test failed")
+            return False
+        print__api_postgresql("✅ Enhanced pool test passed")
+        
+        # Step 4: Initialize global pool
+        print__api_postgresql("\n🌐 Step 4: Global Pool Initialization")
+        try:
+            global_pool = await get_healthy_pool()
+            if global_pool:
+                print__api_postgresql("✅ Global pool initialized successfully")
+                
+                # Test the global pool
+                async with global_pool.connection() as conn:
+                    result = await conn.execute("SELECT 'Global pool test' as message, NOW() as timestamp")
+                    row = await result.fetchone()
+                    print__api_postgresql(f"✅ Global pool test: {row[0]} at {row[1]}")
+            else:
+                print__api_postgresql("❌ Global pool initialization failed")
+                return False
+        except Exception as e:
+            print__api_postgresql(f"❌ Global pool initialization error: {e}")
+            return False
+        
+        # Step 5: Initialize database tables
+        print__api_postgresql("\n📊 Step 5: Database Schema Initialization")
+        try:
+            await setup_users_threads_runs_table()
+            print__api_postgresql("✅ Database schema initialized successfully")
+        except Exception as e:
+            print__api_postgresql(f"❌ Database schema initialization failed: {e}")
+            return False
+        
+        # Step 6: Start background monitoring (optional)
+        monitoring_enabled = os.getenv("ENABLE_CONNECTION_MONITORING", "true").lower() == "true"
+        if monitoring_enabled and global_pool:
+            print__api_postgresql("\n📡 Step 6: Starting Background Monitoring")
+            try:
+                # Start monitoring task in background
+                monitor_task = asyncio.create_task(monitor_connection_health(global_pool, 60))
+                print__api_postgresql("✅ Background connection monitoring started")
+                
+                # Store the task reference to prevent garbage collection
+                if not hasattr(initialize_enhanced_postgres_system, '_monitor_tasks'):
+                    initialize_enhanced_postgres_system._monitor_tasks = []
+                initialize_enhanced_postgres_system._monitor_tasks.append(monitor_task)
+                
+            except Exception as e:
+                print__api_postgresql(f"⚠️ Background monitoring failed to start: {e}")
+                # Don't fail initialization if monitoring fails
+        else:
+            print__api_postgresql("\n📡 Step 6: Background Monitoring Disabled")
+        
+        print__api_postgresql("\n🎉 Enhanced PostgreSQL Connection System Initialized Successfully!")
+        print__api_postgresql("=" * 60)
+        return True
+        
+    except Exception as e:
+        print__api_postgresql(f"❌ Enhanced PostgreSQL system initialization failed: {e}")
+        import traceback
+        print__api_postgresql(f"🔍 Full traceback: {traceback.format_exc()}")
+        return False
+
+# Enhanced wrapper for backward compatibility
+async def get_postgres_checkpointer():
+    """Get enhanced PostgreSQL checkpointer with improved error handling."""
+    try:
+        print__postgresql_debug("🔄 Creating enhanced PostgreSQL checkpointer...")
+        
+        # Ensure the enhanced system is initialized
         pool = await get_healthy_pool()
-        print__postgres_startup_debug("✅ Healthy connection pool obtained")
+        if not pool:
+            raise Exception("Failed to get healthy connection pool")
         
-        # Setup required tables
-        await setup_users_threads_runs_table()
-        print__postgres_startup_debug("✅ Users threads runs table setup completed")
+        # Create the base checkpointer
+        base_checkpointer = AsyncPostgresSaver(
+            pool,
+            migrations_table="langgraph_migrations",
+            checkpoints_table="langgraph_checkpoints",
+            writes_table="langgraph_writes"
+        )
         
-        # Create the checkpointer
-        checkpointer = AsyncPostgresSaver(pool)
-        await checkpointer.setup()
-        print__postgres_startup_debug("✅ PostgreSQL checkpointer setup completed")
+        # Set up the tables
+        await base_checkpointer.setup()
+        print__postgresql_debug("✅ Enhanced checkpointer tables set up")
         
-        # Wrap with resilient wrapper for better error handling
-        resilient_checkpointer = ResilientPostgreSQLCheckpointer(checkpointer)
-        print__postgres_startup_debug("✅ Resilient wrapper applied")
+        # Wrap with enhanced resilience
+        resilient_checkpointer = ResilientPostgreSQLCheckpointer(base_checkpointer)
         
-        print__postgres_startup_debug("🎉 PostgreSQL checkpointer fully initialized and ready")
+        print__postgresql_debug("✅ Enhanced PostgreSQL checkpointer created successfully")
         return resilient_checkpointer
         
     except Exception as e:
-        print__postgres_startup_debug(f"❌ Failed to create PostgreSQL checkpointer: {e}")
+        print__postgresql_debug(f"❌ Failed to create enhanced PostgreSQL checkpointer: {e}")
         import traceback
-        print__postgres_startup_debug(f"🔍 Full error traceback: {traceback.format_exc()}")
+        print__postgresql_debug(f"🔍 Full traceback: {traceback.format_exc()}")
         raise
 
 def get_sync_postgres_checkpointer():
@@ -883,93 +1174,89 @@ async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id
 
 
 async def monitor_connection_health(pool: AsyncConnectionPool, interval: int = 60):
-    """Monitor connection pool health in the background."""
+    """Enhanced connection pool health monitor with SSL-specific diagnostics."""
+    print__api_postgresql("🔍 Starting enhanced connection pool health monitor")
+    monitor_failures = 0
+    max_consecutive_failures = 3
+    
     try:
         while True:
             try:
-                # Quick health check
-                async with pool.connection() as conn:
-                    await conn.execute("SELECT 1")
+                # Enhanced health check with timeout
+                start_time = time.time()
+                async with asyncio.wait_for(pool.connection(), timeout=10) as conn:
+                    # More comprehensive health check
+                    result = await asyncio.wait_for(
+                        conn.execute("SELECT 1 as health, NOW() as timestamp, pg_backend_pid() as pid"), 
+                        timeout=10
+                    )
+                    row = await result.fetchone()
+                    check_duration = time.time() - start_time
                 
-                # Get pool statistics if available
+                # Get enhanced pool statistics
                 try:
                     stats = pool.get_stats()
-                    print__api_postgresql(f"✓ Connection pool health OK - Stats: {stats}")
-                except AttributeError:
-                    print__api_postgresql("✓ Connection pool health check passed")
-            except Exception as e:
-                print__api_postgresql(f"⚠ Connection pool health check failed: {e}")
-            
-            await asyncio.sleep(interval)
-    except asyncio.CancelledError:
-        print__api_postgresql("📊 Connection monitor stopped")
-
-def log_connection_info(host: str, port: str, dbname: str, user: str):
-    """Log basic connection information for debugging."""
-    print__postgres_startup_debug(f"🔗 Connecting to PostgreSQL:")
-    print__postgres_startup_debug(f"   📡 Host: {host}")
-    print__postgres_startup_debug(f"   🔌 Port: {port}")
-    print__postgres_startup_debug(f"   💾 Database: {dbname}")
-    print__postgres_startup_debug(f"   👤 User: {user}")
-
-# Test and health check functions
-async def test_pool_connection():
-    """Test creating and using a connection pool."""
-    try:
-        print__api_postgresql("🔍 Testing pool connection...")
-        
-        # Test pool creation
-        pool = await create_fresh_connection_pool()
-        print__api_postgresql(f"✅ Pool created successfully: closed={pool.closed}")
-        
-        # Test pool usage
-        async with pool.connection() as conn:
-            result = await conn.execute("SELECT 1 as test, NOW() as current_time")
-            row = await result.fetchone()
-            print__api_postgresql(f"✅ Pool query successful: {row}")
-        
-        # Test pool health check
-        is_healthy = await is_pool_healthy(pool)
-        print__api_postgresql(f"✅ Pool health check: {is_healthy}")
-        
-        # Cleanup
-        await pool.close()
-        print__api_postgresql(f"✅ Pool closed: closed={pool.closed}")
-        
-        return True
-        
-    except Exception as e:
-        print__api_postgresql(f"❌ Pool connection test failed: {e}")
-        return False
-
-async def debug_pool_status():
-    """Debug function to show current pool status."""
-    global database_pool
-    
-    print__api_postgresql(f"🔍 Pool Status Debug:")
-    print__api_postgresql(f"   Global pool exists: {database_pool is not None}")
-    
-    if database_pool:
-        print__api_postgresql(f"   Pool closed: {database_pool.closed}")
-        try:
-            # Try to get pool stats if available
-            if hasattr(database_pool, 'get_stats'):
-                stats = database_pool.get_stats()
-                print__api_postgresql(f"   Pool stats: {stats}")
-            else:
-                print__api_postgresql(f"   Pool stats: Not available")
+                    print__api_postgresql(f"✓ Pool health OK ({check_duration:.2f}s) - Stats: {stats}")
+                except (AttributeError, Exception):
+                    print__api_postgresql(f"✓ Pool health OK ({check_duration:.2f}s) - Backend PID: {row[2] if row else 'unknown'}")
                 
-            # Test health
-            is_healthy = await is_pool_healthy(database_pool)
-            print__api_postgresql(f"   Pool healthy: {is_healthy}")
+                # Reset failure counter on success
+                monitor_failures = 0
+                
+            except asyncio.TimeoutError:
+                monitor_failures += 1
+                print__api_postgresql(f"⚠ Pool health check timeout ({monitor_failures}/{max_consecutive_failures})")
+                
+                if monitor_failures >= max_consecutive_failures:
+                    print__api_postgresql("🚨 Multiple consecutive health check timeouts - pool may need recreation")
+                    # Don't recreate pool from monitor - just log the issue
+                    
+            except Exception as e:
+                monitor_failures += 1
+                error_msg = str(e).lower()
+                
+                # Enhanced SSL-specific error detection
+                if any(pattern in error_msg for pattern in [
+                    "ssl connection has been closed",
+                    "server closed the connection",
+                    "connection to server",
+                    "ssl syscall error",
+                    "eof detected",
+                    "bad connection"
+                ]):
+                    print__api_postgresql(f"🔒 SSL connection error in health check ({monitor_failures}/{max_consecutive_failures}): {e}")
+                elif any(pattern in error_msg for pattern in [
+                    "dbhandler exited",
+                    "pipeline",
+                    "flush request failed",
+                    "lost synchronization"
+                ]):
+                    print__api_postgresql(f"🚨 Critical connection error in health check ({monitor_failures}/{max_consecutive_failures}): {e}")
+                else:
+                    print__api_postgresql(f"⚠ Pool health check failed ({monitor_failures}/{max_consecutive_failures}): {e}")
+                
+                if monitor_failures >= max_consecutive_failures:
+                    print__api_postgresql("🚨 Multiple consecutive health check failures detected")
+                    print__api_postgresql("💡 This may indicate persistent connection issues that require manual intervention")
             
-        except Exception as e:
-            print__api_postgresql(f"   Pool status error: {e}")
-    
-    return database_pool
+            # Dynamic interval based on health
+            sleep_interval = interval
+            if monitor_failures > 0:
+                # More frequent checks when issues are detected
+                sleep_interval = min(interval, 30)
+                print__api_postgresql(f"🔍 Increased monitoring frequency due to {monitor_failures} failures")
+            
+            await asyncio.sleep(sleep_interval)
+            
+    except asyncio.CancelledError:
+        print__api_postgresql("📊 Enhanced connection monitor stopped")
+        raise
+    except Exception as e:
+        print__api_postgresql(f"❌ Connection monitor error: {e}")
+        raise
 
 async def test_connection_health():
-    """Test the health of the PostgreSQL connection using cloud-optimized Supabase settings."""
+    """Enhanced connection health test with comprehensive SSL diagnostics."""
     try:
         config = get_db_config()
         
@@ -980,142 +1267,296 @@ async def test_connection_health():
         # Use the same connection string as the main application for consistency
         connection_string = get_connection_string()
         
-        print__api_postgresql("🔍 Testing Supabase connection health...")
+        print__api_postgresql("🔍 Testing enhanced cloud PostgreSQL connection health...")
+        print__api_postgresql(f"🔗 Host: {config['host']}:{config['port']}")
+        print__api_postgresql(f"🔗 Database: {config['dbname']}")
+        print__api_postgresql(f"🔗 User: {config['user']}")
         
-        # FIXED: Use cloud-optimized settings matching main pool
+        # ENHANCED: Use the same robust settings as main pool for consistency
         pool = AsyncConnectionPool(
             conninfo=connection_string,
             max_size=1,
-            min_size=1,
-            timeout=5,  # Short timeout for health check
+            min_size=0,  # Start with 0 for health check
+            timeout=10,  # Reasonable timeout for health check
             max_idle=60,  # Short idle time for health check
             max_lifetime=300,  # Short lifetime for health check
-            open=False,  # Don't open in constructor to avoid deprecation warning
+            reconnect_timeout=30,  # Shorter reconnect timeout for health check
+            open=False,  # Don't open in constructor
+            check=AsyncConnectionPool.check_connection,  # Use built-in health checking
             kwargs={
-                "prepare_threshold": None,      # CRITICAL: Disable prepared statements for Supabase transaction mode
-                "autocommit": True,             # Use autocommit for better compatibility
-                "connect_timeout": 5,           # Quick connection timeout for health check
+                "prepare_threshold": None,      # CRITICAL: Disable prepared statements
+                "autocommit": True,             # Use autocommit for compatibility
+                "connect_timeout": 10,          # Connection timeout for health check
+                "pipeline": False,              # CRITICAL: Disable pipeline mode
             }
         )
         
-        # Explicitly open the pool
-        await pool.open()
+        # Explicitly open the pool with timeout
+        try:
+            await asyncio.wait_for(pool.open(), timeout=20)
+            print__api_postgresql("✅ Health check pool opened successfully")
+        except asyncio.TimeoutError:
+            print__api_postgresql("❌ Health check pool open timeout")
+            return False
+        except Exception as e:
+            print__api_postgresql(f"❌ Health check pool open failed: {e}")
+            return False
         
-        async with pool.connection() as conn:
-            result = await conn.execute("SELECT 1 as test, NOW() as current_time")
-            row = await result.fetchone()
-            if row and row[0] == 1:
-                print__api_postgresql("✓ Supabase connection health check successful")
-                await pool.close()
-                return True
+        # Comprehensive connection test
+        try:
+            async with asyncio.wait_for(pool.connection(), timeout=10) as conn:
+                # Test multiple operations to ensure full functionality
+                result = await asyncio.wait_for(
+                    conn.execute("SELECT 1 as test, NOW() as current_time, version() as pg_version, pg_backend_pid() as pid"), 
+                    timeout=10
+                )
+                row = await result.fetchone()
+                
+                if row and row[0] == 1:
+                    print__api_postgresql("✅ Enhanced connection health check successful")
+                    print__api_postgresql(f"   📊 Server time: {row[1]}")
+                    print__api_postgresql(f"   📊 Backend PID: {row[3]}")
+                    print__api_postgresql(f"   📊 PostgreSQL: {row[2][:50]}...")
+                    
+                    # Test a simple transaction to ensure full functionality
+                    await conn.execute("BEGIN")
+                    await conn.execute("SELECT 1")
+                    await conn.execute("COMMIT")
+                    print__api_postgresql("✅ Transaction test successful")
+                    
+                    await pool.close()
+                    return True
+                else:
+                    print__api_postgresql("❌ Health check query returned unexpected result")
+                    await pool.close()
+                    return False
+                    
+        except asyncio.TimeoutError:
+            print__api_postgresql("❌ Health check query timeout")
+        except Exception as e:
+            error_msg = str(e).lower()
+            print__api_postgresql(f"❌ Health check query failed: {e}")
+            
+            # Enhanced error diagnostics
+            if "ssl" in error_msg:
+                print__api_postgresql("💡 SSL-related issue detected:")
+                print__api_postgresql("   1. Check database SSL configuration")
+                print__api_postgresql("   2. Verify network connectivity")
+                print__api_postgresql("   3. Check firewall settings")
+            elif "authentication" in error_msg or "password" in error_msg:
+                print__api_postgresql("💡 Authentication issue detected:")
+                print__api_postgresql("   1. Verify database credentials")
+                print__api_postgresql("   2. Check user permissions")
+                print__api_postgresql("   3. Verify connection limits")
+            elif "timeout" in error_msg:
+                print__api_postgresql("💡 Timeout issue detected:")
+                print__api_postgresql("   1. Check database server responsiveness")
+                print__api_postgresql("   2. Verify network latency")
+                print__api_postgresql("   3. Check connection pool settings")
+            elif any(pattern in error_msg for pattern in ["pipeline", "dbhandler", "flush request"]):
+                print__api_postgresql("💡 Pipeline/handler issue detected:")
+                print__api_postgresql("   1. This indicates connection state corruption")
+                print__api_postgresql("   2. Pool recreation may be required")
+                print__api_postgresql("   3. Consider disabling pipeline mode")
         
         await pool.close()
         return False
         
     except Exception as e:
         error_msg = str(e).lower()
-        print__api_postgresql(f"❌ Supabase connection health check failed: {e}")
+        print__api_postgresql(f"❌ Connection health test failed: {e}")
         
-        # Provide specific guidance for common cloud deployment issues
+        # Provide specific guidance based on error type
         if "ssl" in error_msg:
-            print__api_postgresql("💡 SSL Issue: Verify Supabase credentials and IP whitelist")
+            print__api_postgresql("💡 SSL configuration issue - check database SSL settings")
         elif "timeout" in error_msg:
-            print__api_postgresql("💡 Timeout Issue: Check network connectivity to Supabase")
+            print__api_postgresql("💡 Network connectivity issue - check connection to database")
         elif "authentication" in error_msg:
-            print__api_postgresql("💡 Auth Issue: Verify database credentials")
-        elif any(keyword in error_msg for keyword in ["pipeline", "bad", "terminating"]):
-            print__api_postgresql("💡 Pipeline Issue: This may resolve with connection pool recreation")
-            
+            print__api_postgresql("💡 Authentication issue - verify database credentials")
+        
         return False
 
 class ResilientPostgreSQLCheckpointer:
-    """
-    A wrapper around PostgreSQLCheckpointer that handles connection failures gracefully
-    with enhanced retry logic for cloud deployments.
-    """
+    """Enhanced wrapper around PostgresSaver to handle SSL connection drops and AsyncPipeline errors in cloud environments."""
     
     def __init__(self, base_checkpointer):
         self.base_checkpointer = base_checkpointer
-        self.max_retries = 3  # Increased retry count for cloud resilience
+        self._last_pool_recreation = 0
+        self._pool_recreation_cooldown = 30  # 30 seconds cooldown between pool recreations
+
+    async def _enhanced_cloud_resilient_retry(self, operation_name, operation_func, *args, **kwargs):
+        """Enhanced retry logic with SSL-specific error handling and pool recreation."""
+        max_retries = int(os.getenv("CHECKPOINT_MAX_RETRIES", "4"))  # Increased default
+        base_delay = float(os.getenv("CHECKPOINT_RETRY_BASE_DELAY", "1.0"))
+        dbhandler_multiplier = int(os.getenv("DBHANDLER_EXITED_DELAY_MULTIPLIER", "6"))  # Increased
+        ssl_retry_delay = float(os.getenv("SSL_RETRY_DELAY", "5.0"))  # Increased
+        enable_pool_recreation = os.getenv("ENABLE_POOL_RECREATION", "true").lower() == "true"
         
-    async def _cloud_resilient_retry(self, operation_name, operation_func, *args, **kwargs):
-        """Enhanced retry logic for cloud deployment connection failures."""
+        # Enhanced SSL and connection error patterns
+        ssl_connection_errors = [
+            "ssl connection has been closed unexpectedly",
+            "consuming input failed",
+            "server closed the connection unexpectedly",
+            "connection to server",
+            "dbhandler exited",
+            "asyncpipeline",
+            "pipeline",
+            "bad connection",
+            "connection already closed",
+            "flush request failed",
+            "insufficient data",
+            "lost synchronization",
+            "ssl syscall error",
+            "eof detected"
+        ]
         
-        for attempt in range(self.max_retries + 1):
+        critical_errors = [
+            "dbhandler exited",
+            "flush request failed",
+            "asyncpipeline",
+            "lost synchronization"
+        ]
+        
+        for attempt in range(max_retries):
             try:
+                print__postgresql_debug(f"🔄 Attempt {attempt + 1}/{max_retries} for {operation_name}")
                 result = await operation_func(*args, **kwargs)
                 if attempt > 0:
-                    print__postgresql_debug(f"✅ [{operation_name}] Succeeded on attempt {attempt + 1}")
+                    print__postgresql_debug(f"✅ {operation_name} succeeded after {attempt + 1} attempts")
                 return result
                 
             except Exception as e:
                 error_msg = str(e).lower()
+                is_ssl_error = any(pattern in error_msg for pattern in ssl_connection_errors)
+                is_critical_error = any(pattern in error_msg for pattern in critical_errors)
                 
-                # Enhanced error detection for cloud deployment issues
-                is_retryable = any(keyword in error_msg for keyword in [
-                    "connection", "timeout", "network", "ssl", "closed",
-                    "pipeline", "bad", "lost", "terminating", "consuming input failed",
-                    "server closed", "ssl connection has been closed unexpectedly",
-                    "dbhandler exited"
-                ])
+                print__postgresql_debug(f"⚠️ {operation_name} failed (attempt {attempt + 1}/{max_retries}): {e}")
                 
-                # Special handling for pipeline errors (the main issue in your logs)
-                is_pipeline_error = any(keyword in error_msg for keyword in [
-                    "pipeline", "asyncpipeline", "[bad]", "terminating"
-                ])
+                # Enhanced error diagnostics
+                if is_critical_error:
+                    print__postgresql_debug("🚨 CRITICAL ERROR: Database handler or pipeline failure detected")
+                elif is_ssl_error:
+                    print__postgresql_debug("🔒 SSL CONNECTION ERROR: Connection lost or terminated")
                 
-                if attempt < self.max_retries and is_retryable:
-                    # Use longer delay for pipeline errors
-                    if is_pipeline_error:
-                        delay = 2 + (attempt * 2)  # 2s, 4s, 6s for pipeline errors
-                        print__postgresql_debug(f"⚠ [{operation_name}] Pipeline error detected - attempt {attempt + 1} failed, retrying in {delay}s: {e}")
-                    else:
-                        delay = 1 + attempt  # Standard delay: 1s, 2s, 3s
-                        print__postgresql_debug(f"⚠ [{operation_name}] Connection error - attempt {attempt + 1} failed, retrying in {delay}s: {e}")
-                    
-                    await asyncio.sleep(delay)
-                    
-                    # For pipeline errors, try to get a fresh pool connection
-                    if is_pipeline_error and hasattr(self.base_checkpointer, 'conn'):
-                        try:
-                            print__postgresql_debug(f"🔄 [{operation_name}] Testing pool health after pipeline error...")
-                            async with self.base_checkpointer.conn.connection() as test_conn:
-                                await asyncio.wait_for(test_conn.execute("SELECT 1"), timeout=5)
-                            print__postgresql_debug(f"✅ [{operation_name}] Pool health check passed")
-                        except Exception as health_error:
-                            print__postgresql_debug(f"⚠ [{operation_name}] Pool health check failed: {health_error}")
-                            # Mark checkpointer for recreation
-                            if hasattr(self.base_checkpointer, '_fragmentation_reset_needed'):
-                                self.base_checkpointer._fragmentation_reset_needed = True
-                else:
-                    print__postgresql_debug(f"❌ [{operation_name}] Failed after {attempt + 1} attempts: {e}")
-                    
-                    # For final failure on pipeline errors, provide specific guidance
-                    if is_pipeline_error:
-                        print__postgresql_debug(f"💡 [{operation_name}] Pipeline errors often resolve with connection pool recreation")
-                    
+                # Last attempt - don't retry
+                if attempt == max_retries - 1:
+                    print__postgresql_debug(f"❌ {operation_name} failed after {max_retries} attempts")
                     raise
-    
-    # Delegate all operations to the base checkpointer with enhanced retry
+                
+                # Calculate delay with enhanced backoff for different error types
+                if is_critical_error:
+                    # Aggressive backoff for critical errors
+                    delay = ssl_retry_delay * (dbhandler_multiplier ** (attempt + 1))
+                    print__postgresql_debug(f"🚨 Critical error - using aggressive backoff: {delay}s")
+                elif is_ssl_error:
+                    # Extended delay for SSL errors
+                    delay = ssl_retry_delay * (2 ** attempt)
+                    print__postgresql_debug(f"🔒 SSL error - using extended backoff: {delay}s")
+                else:
+                    # Standard exponential backoff
+                    delay = base_delay * (2 ** attempt)
+                    print__postgresql_debug(f"🔄 Standard backoff: {delay}s")
+                
+                # Pool recreation logic for SSL/critical errors
+                if (is_ssl_error or is_critical_error) and enable_pool_recreation:
+                    current_time = time.time()
+                    if current_time - self._last_pool_recreation > self._pool_recreation_cooldown:
+                        print__postgresql_debug("🔄 Attempting pool recreation due to connection error...")
+                        try:
+                            # Force close and recreate the connection pool
+                            await self._recreate_connection_pool()
+                            self._last_pool_recreation = current_time
+                            print__postgresql_debug("✅ Pool recreation successful")
+                            # Shorter delay after successful pool recreation
+                            delay = min(delay, 3)
+                        except Exception as pool_error:
+                            print__postgresql_debug(f"⚠️ Pool recreation failed: {pool_error}")
+                    else:
+                        cooldown_remaining = self._pool_recreation_cooldown - (current_time - self._last_pool_recreation)
+                        print__postgresql_debug(f"⏳ Pool recreation on cooldown ({cooldown_remaining:.1f}s remaining)")
+                
+                print__postgresql_debug(f"⏳ Waiting {delay}s before retry...")
+                await asyncio.sleep(delay)
+        
+        # Should never reach here
+        raise Exception(f"Unexpected end of retry loop for {operation_name}")
+
+    async def _recreate_connection_pool(self):
+        """Recreate the connection pool to handle persistent connection issues."""
+        global database_pool
+        
+        try:
+            print__postgresql_debug("🔄 Recreating connection pool...")
+            
+            # Close existing pool if it exists
+            if database_pool is not None:
+                try:
+                    await asyncio.wait_for(database_pool.close(), timeout=10)
+                    print__postgresql_debug("✅ Old pool closed")
+                except Exception as e:
+                    print__postgresql_debug(f"⚠️ Error closing old pool: {e}")
+                finally:
+                    database_pool = None
+            
+            # Wait a moment for cleanup
+            await asyncio.sleep(1)
+            
+            # Create new pool
+            database_pool = await create_fresh_connection_pool()
+            
+            # Update base checkpointer if it has a pool attribute
+            if hasattr(self.base_checkpointer, 'pool'):
+                old_pool = self.base_checkpointer.pool
+                self.base_checkpointer.pool = database_pool
+                # Close old pool if different
+                if old_pool and old_pool != database_pool:
+                    try:
+                        await old_pool.close()
+                    except:
+                        pass
+            
+            print__postgresql_debug("✅ Connection pool recreation completed")
+            
+        except Exception as e:
+            print__postgresql_debug(f"❌ Failed to recreate connection pool: {e}")
+            raise
+
+    # Enhanced operation wrappers with better error handling
     async def aput(self, config, checkpoint, metadata, new_versions):
-        return await self._cloud_resilient_retry("aput", self.base_checkpointer.aput, config, checkpoint, metadata, new_versions)
+        return await self._enhanced_cloud_resilient_retry("aput", self.base_checkpointer.aput, config, checkpoint, metadata, new_versions)
 
     async def aput_writes(self, config, writes, task_id):
-        return await self._cloud_resilient_retry("aput_writes", self.base_checkpointer.aput_writes, config, writes, task_id)
+        return await self._enhanced_cloud_resilient_retry("aput_writes", self.base_checkpointer.aput_writes, config, writes, task_id)
 
     async def aget(self, config):
-        return await self._cloud_resilient_retry("aget", self.base_checkpointer.aget, config)
+        return await self._enhanced_cloud_resilient_retry("aget", self.base_checkpointer.aget, config)
 
     async def aget_tuple(self, config):
-        return await self._cloud_resilient_retry("aget_tuple", self.base_checkpointer.aget_tuple, config)
+        return await self._enhanced_cloud_resilient_retry("aget_tuple", self.base_checkpointer.aget_tuple, config)
 
     async def alist(self, config, filter=None, before=None, limit=None):
-        # alist returns an async generator, so we need to yield from it
-        # We can't apply retry logic to async generators, so we delegate directly
-        async for item in self.base_checkpointer.alist(config):
-            yield item
+        # Enhanced alist with better error handling for async generators
+        try:
+            async for item in self.base_checkpointer.alist(config, filter=filter, before=before, limit=limit):
+                yield item
+        except Exception as e:
+            error_msg = str(e).lower()
+            if any(pattern in error_msg for pattern in ["ssl", "connection", "dbhandler", "pipeline"]):
+                print__postgresql_debug(f"⚠️ alist encountered connection error: {e}")
+                # Try to recreate pool and retry once
+                try:
+                    await self._recreate_connection_pool()
+                    await asyncio.sleep(2)
+                    async for item in self.base_checkpointer.alist(config, filter=filter, before=before, limit=limit):
+                        yield item
+                except Exception as retry_error:
+                    print__postgresql_debug(f"❌ alist retry failed: {retry_error}")
+                    raise
+            else:
+                raise
 
     def __getattr__(self, name):
+        """Delegate other attributes to the base checkpointer."""
         return getattr(self.base_checkpointer, name)
 
 @asynccontextmanager
