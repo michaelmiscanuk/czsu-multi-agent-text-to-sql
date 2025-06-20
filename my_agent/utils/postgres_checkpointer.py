@@ -177,6 +177,9 @@ def get_connection_string():
         f"&keepalives_interval=30"              # 30 seconds between keepalive probes
         f"&keepalives_count=3"                  # 3 failed probes before disconnect
         f"&tcp_user_timeout=60000"              # 60 seconds TCP user timeout
+        # FIXED: Put statement timeouts back in connection string where they work correctly
+        f"&statement_timeout=300000"            # 5 minutes statement timeout
+        f"&idle_in_transaction_session_timeout=600000"  # 10 minutes idle timeout
         # Network resilience settings
         f"&target_session_attrs=read-write"     # Ensure we get a writable session
     )
@@ -262,8 +265,7 @@ async def create_fresh_connection_pool() -> AsyncConnectionPool:
                 "connect_timeout": 15,          # INCREASED: Connection-level timeout for cloud
                 # Pipeline mode disabled to prevent AsyncPipeline errors
                 "pipeline": False,              # CRITICAL: Disable pipeline mode
-                # Session timeouts (moved from connection string)
-                "options": "-c statement_timeout=300000 -c idle_in_transaction_session_timeout=600000"
+                # FIXED: Removed incorrect options parameter - timeouts are now in connection string
             }
         )
         
@@ -1287,8 +1289,7 @@ async def test_connection_health():
                 "autocommit": True,             # Use autocommit for compatibility
                 "connect_timeout": 10,          # Connection timeout for health check
                 "pipeline": False,              # CRITICAL: Disable pipeline mode
-                # Session timeouts (moved from connection string)
-                "options": "-c statement_timeout=300000 -c idle_in_transaction_session_timeout=600000"
+                # FIXED: Removed incorrect options parameter - timeouts are now in connection string
             }
         )
         
