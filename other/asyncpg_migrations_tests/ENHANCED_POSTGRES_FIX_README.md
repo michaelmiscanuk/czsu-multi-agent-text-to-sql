@@ -150,7 +150,7 @@ port=5432
 dbname=your_database_name
 
 # Enhanced system configuration (optional)
-MY_AGENT_DEBUG=1                           # Enable detailed logging
+DEBUG=1                           # Enable detailed logging
 VERBOSE_SSL_LOGGING=true                   # Enhanced SSL error logging
 ENABLE_CONNECTION_MONITORING=true          # Background health monitoring
 
@@ -178,7 +178,7 @@ This will:
 
 ### 2. **Monitor Enhanced Logging**
 
-With `MY_AGENT_DEBUG=1` enabled, you'll see:
+With `DEBUG=1` enabled, you'll see:
 ```
 [POSTGRES-STARTUP-DEBUG] 🚀 Initializing Enhanced PostgreSQL Connection System
 [POSTGRES-STARTUP-DEBUG] ✅ Enhanced PostgreSQL system initialized successfully
@@ -215,7 +215,7 @@ The enhanced system is **backward compatible** and ready to deploy immediately.
 ### 3. **Enable Enhanced Logging** (Recommended)
 ```bash
 # Add to your Render environment variables
-MY_AGENT_DEBUG=1
+DEBUG=1
 VERBOSE_SSL_LOGGING=true
 ```
 
@@ -253,7 +253,7 @@ ENABLE_CONNECTION_MONITORING=true
 ### **Debug Mode:**
 ```bash
 # Enable all debugging
-MY_AGENT_DEBUG=1
+DEBUG=1
 VERBOSE_SSL_LOGGING=true
 ```
 

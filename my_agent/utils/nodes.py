@@ -21,7 +21,7 @@ import sqlite3
 import chromadb
 
 # Get debug mode from environment variable
-DEBUG_MODE = os.environ.get('MY_AGENT_DEBUG', '0') == '1'
+DEBUG_MODE = os.environ.get('DEBUG', '0') == '1'
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -87,7 +87,7 @@ def print__debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('AGENT_DEBUG', '0')
     if debug_mode == '1':
         print(f"[DEBUG] {msg}")
         import sys
@@ -766,8 +766,8 @@ async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisStat
 async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Rerank hybrid search results using Cohere rerank model. Returns selection codes and Cohere rerank scores."""
     # Force debug mode on for this node to ensure visibility
-    original_debug = os.environ.get('MY_AGENT_DEBUG', '0')
-    os.environ['MY_AGENT_DEBUG'] = '1'
+    original_debug = os.environ.get('DEBUG', '0')
+    os.environ['DEBUG'] = '1'
     
     print__debug(f"🔥🔥🔥 🔄 {RERANK_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥")
     print__debug(f"🔄 {RERANK_NODE_ID}: Enter rerank_node")
@@ -783,7 +783,7 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
     # Check if we have hybrid search results to rerank
     if not hybrid_results:
         print__debug(f"📄 {RERANK_NODE_ID}: No hybrid search results to rerank")
-        os.environ['MY_AGENT_DEBUG'] = original_debug  # Restore debug setting
+        os.environ['DEBUG'] = original_debug  # Restore debug setting
         return {"most_similar_selections": []}
 
     # Debug: Show input to rerank
@@ -808,14 +808,14 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
                 print__debug(f"🎯🎯🎯 🎯 {RERANK_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}")
         
         print__debug(f"🎯🎯🎯 🎯🎯🎯 {RERANK_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯")
-        os.environ['MY_AGENT_DEBUG'] = original_debug  # Restore debug setting
+        os.environ['DEBUG'] = original_debug  # Restore debug setting
         
         return {"most_similar_selections": most_similar}
     except Exception as e:
         print__debug(f"❌ {RERANK_NODE_ID}: Error in reranking: {e}")
         import traceback
         print__debug(f"📄 {RERANK_NODE_ID}: Traceback: {traceback.format_exc()}")
-        os.environ['MY_AGENT_DEBUG'] = original_debug  # Restore debug setting
+        os.environ['DEBUG'] = original_debug  # Restore debug setting
         return {"most_similar_selections": []}
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:

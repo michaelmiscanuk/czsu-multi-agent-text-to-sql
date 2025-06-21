@@ -253,7 +253,7 @@ DO_TESTING = 1
 
 ### **Debug Mode:**
 ```bash
-export MY_AGENT_DEBUG=1
+export DEBUG=1
 python pdf_to_chromadb.py
 ```
 

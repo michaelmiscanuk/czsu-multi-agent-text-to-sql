@@ -5,7 +5,7 @@ import os  # Import os early for environment variable access
 
 def print__startup_debug(msg: str) -> None:
     """Print startup debug messages when debug mode is enabled."""
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[STARTUP-DEBUG] {msg}")
         sys.stdout.flush()
@@ -116,7 +116,7 @@ def print__memory_monitoring(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[MEMORY-MONITORING] {msg}")
         import sys
@@ -444,6 +444,14 @@ async def cleanup_checkpointer():
         finally:
             GLOBAL_CHECKPOINTER = None
             print__startup_debug("✅ Global checkpointer cleared")
+    
+    # Clean up the robust connection pool
+    try:
+        from my_agent.utils.robust_postgres_pool import close_global_pool
+        await close_global_pool()
+        print__startup_debug("✅ Robust connection pool closed")
+    except Exception as e:
+        print__startup_debug(f"⚠️ Error closing robust pool: {e}")
     
     # Simple garbage collection on shutdown
     import gc
@@ -1215,23 +1223,24 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
             pool = await get_healthy_pool()
             
             async with pool.connection() as conn:
-                ownership_result = await conn.execute("""
-                    SELECT COUNT(*) FROM users_threads_runs 
-                    WHERE run_id = %s AND email = %s
-                """, (run_uuid, user_email))
-                
-                ownership_row = await ownership_result.fetchone()
-                ownership_count = ownership_row[0] if ownership_row else 0
-                
-                if ownership_count == 0:
-                    print__feedback_flow(f"🚫 SECURITY: User {user_email} does not own run_id {run_uuid} - feedback denied")
-                    raise HTTPException(
-                        status_code=404,
-                        detail="Run ID not found or access denied"
-                    )
-                
-                print__feedback_flow(f"✅ SECURITY: User {user_email} owns run_id {run_uuid} - feedback authorized")
-                
+                async with conn.cursor() as cur:
+                    await cur.execute("""
+                        SELECT COUNT(*) FROM users_threads_runs 
+                        WHERE run_id = %s AND email = %s
+                    """, (run_uuid, user_email))
+                    
+                    ownership_row = await cur.fetchone()
+                    ownership_count = ownership_row[0] if ownership_row else 0
+                    
+                    if ownership_count == 0:
+                        print__feedback_flow(f"🚫 SECURITY: User {user_email} does not own run_id {run_uuid} - feedback denied")
+                        raise HTTPException(
+                            status_code=404,
+                            detail="Run ID not found or access denied"
+                        )
+                    
+                    print__feedback_flow(f"✅ SECURITY: User {user_email} owns run_id {run_uuid} - feedback authorized")
+                    
         except HTTPException:
             raise
         except Exception as ownership_error:
@@ -1415,112 +1424,45 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
     
     try:
         # Get a healthy checkpointer
+        print__api_postgresql(f"🔧 DEBUG: Getting healthy checkpointer...")
         checkpointer = await get_healthy_checkpointer()
+        print__api_postgresql(f"🔧 DEBUG: Checkpointer type: {type(checkpointer).__name__}")
         
         # Check if we have a PostgreSQL checkpointer (not InMemorySaver)
+        print__api_postgresql(f"🔧 DEBUG: Checking if checkpointer has 'conn' attribute...")
         if not hasattr(checkpointer, 'conn'):
             print__api_postgresql(f"⚠️ No PostgreSQL checkpointer available - nothing to delete")
             return {"message": "No PostgreSQL checkpointer available - nothing to delete"}
         
-        # Access the connection pool through the conn attribute
-        pool = checkpointer.conn
+        print__api_postgresql(f"🔧 DEBUG: Checkpointer has 'conn' attribute")
+        print__api_postgresql(f"🔧 DEBUG: checkpointer.conn type: {type(checkpointer.conn).__name__}")
         
-        async with pool.connection() as conn:
-            await conn.set_autocommit(True)
-            
-            # 🔒 SECURITY CHECK: Verify user owns this thread before deleting
-            print__api_postgresql(f"🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}")
-            
-            ownership_result = await conn.execute("""
-                SELECT COUNT(*) FROM users_threads_runs 
-                WHERE email = %s AND thread_id = %s
-            """, (user_email, thread_id))
-            
-            ownership_row = await ownership_result.fetchone()
-            thread_entries_count = ownership_row[0] if ownership_row else 0
-            
-            if thread_entries_count == 0:
-                print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - deletion denied")
-                return {
-                    "message": "Thread not found or access denied",
-                    "thread_id": thread_id,
-                    "user_email": user_email,
-                    "deleted_counts": {}
-                }
-            
-            print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - deletion authorized")
-            
-            print__api_postgresql(f"🔄 Deleting from checkpoint tables for thread {thread_id}")
-            
-            # Delete from all checkpoint tables
-            tables = ["checkpoint_blobs", "checkpoint_writes", "checkpoints"]
-            deleted_counts = {}
-            
-            for table in tables:
-                try:
-                    # First check if the table exists
-                    result = await conn.execute("""
-                        SELECT EXISTS (
-                            SELECT FROM information_schema.tables 
-                            WHERE table_name = %s
-                        )
-                    """, (table,))
-                    
-                    table_exists = await result.fetchone()
-                    if not table_exists or not table_exists[0]:
-                        print__api_postgresql(f"⚠ Table {table} does not exist, skipping")
-                        deleted_counts[table] = 0
-                        continue
-                    
-                    # Delete records for this thread_id
-                    result = await conn.execute(
-                        f"DELETE FROM {table} WHERE thread_id = %s",
-                        (thread_id,)
-                    )
-                    
-                    deleted_counts[table] = result.rowcount if hasattr(result, 'rowcount') else 0
-                    print__api_postgresql(f"✅ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}")
-                    
-                except Exception as table_error:
-                    print__api_postgresql(f"⚠ Error deleting from table {table}: {table_error}")
-                    deleted_counts[table] = f"Error: {str(table_error)}"
-            
-            # Delete from users_threads_runs table directly within the same transaction
-            print__api_postgresql(f"🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
-            try:
-                result = await conn.execute("""
-                    DELETE FROM users_threads_runs 
-                    WHERE email = %s AND thread_id = %s
-                """, (user_email, thread_id))
-                
-                users_threads_runs_deleted = result.rowcount if hasattr(result, 'rowcount') else 0
-                print__api_postgresql(f"✅ Deleted {users_threads_runs_deleted} entries from users_threads_runs for user {user_email}, thread {thread_id}")
-                
-                deleted_counts["users_threads_runs"] = users_threads_runs_deleted
-                
-            except Exception as e:
-                print__api_postgresql(f"❌ Error deleting from users_threads_runs: {e}")
-                deleted_counts["users_threads_runs"] = f"Error: {str(e)}"
-            
-            # Also call the helper function for additional cleanup (backward compatibility)
-            print__api_postgresql(f"🔄 Additional cleanup via helper function...")
-            thread_entries_result = await delete_user_thread_entries(user_email, thread_id, pool)
-            print__api_postgresql(f"✅ Helper function deletion result: {thread_entries_result}")
-            
-            result_data = {
-                "message": f"Checkpoint records and thread entries deleted for thread_id: {thread_id}",
-                "deleted_counts": deleted_counts,
-                "thread_entries_deleted": thread_entries_result,
-                "thread_id": thread_id,
-                "user_email": user_email
-            }
-            
-            print__api_postgresql(f"🎉 Successfully deleted thread {thread_id} for user {user_email}")
+        # Access the connection through the conn attribute
+        conn_obj = checkpointer.conn
+        print__api_postgresql(f"🔧 DEBUG: Connection object set, type: {type(conn_obj).__name__}")
+        
+        # FIXED: Handle both connection pool and single connection cases
+        if hasattr(conn_obj, 'connection') and callable(getattr(conn_obj, 'connection', None)):
+            # It's a connection pool - use pool.connection()
+            print__api_postgresql(f"🔧 DEBUG: Using connection pool pattern...")
+            async with conn_obj.connection() as conn:
+                print__api_postgresql(f"🔧 DEBUG: Successfully got connection from pool, type: {type(conn).__name__}")
+                result_data = await perform_deletion_operations(conn, user_email, thread_id)
+                return result_data
+        else:
+            # It's a single connection - use it directly
+            print__api_postgresql(f"🔧 DEBUG: Using single connection pattern...")
+            conn = conn_obj
+            print__api_postgresql(f"🔧 DEBUG: Using direct connection, type: {type(conn).__name__}")
+            result_data = await perform_deletion_operations(conn, user_email, thread_id)
             return result_data
             
     except Exception as e:
         error_msg = str(e)
         print__api_postgresql(f"❌ Failed to delete checkpoint records for thread {thread_id}: {e}")
+        print__api_postgresql(f"🔧 DEBUG: Main exception type: {type(e).__name__}")
+        import traceback
+        print__api_postgresql(f"🔧 DEBUG: Main exception traceback: {traceback.format_exc()}")
         
         # If it's a connection error, don't treat it as a failure since it means 
         # there are likely no records to delete anyway
@@ -1537,6 +1479,123 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
             }
         else:
             raise HTTPException(status_code=500, detail=f"Failed to delete checkpoint records: {e}")
+
+async def perform_deletion_operations(conn, user_email: str, thread_id: str):
+    """Perform the actual deletion operations on the given connection."""
+    print__api_postgresql(f"🔧 DEBUG: Starting deletion operations...")
+    
+    print__api_postgresql(f"🔧 DEBUG: Setting autocommit...")
+    await conn.set_autocommit(True)
+    print__api_postgresql(f"🔧 DEBUG: Autocommit set successfully")
+    
+    # 🔒 SECURITY CHECK: Verify user owns this thread before deleting
+    print__api_postgresql(f"🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}")
+    
+    print__api_postgresql(f"🔧 DEBUG: Creating cursor for ownership check...")
+    async with conn.cursor() as cur:
+        print__api_postgresql(f"🔧 DEBUG: Cursor created, executing ownership query...")
+        await cur.execute("""
+            SELECT COUNT(*) FROM users_threads_runs 
+            WHERE email = %s AND thread_id = %s
+        """, (user_email, thread_id))
+        
+        print__api_postgresql(f"🔧 DEBUG: Ownership query executed, fetching result...")
+        ownership_row = await cur.fetchone()
+        thread_entries_count = ownership_row[0] if ownership_row else 0
+        print__api_postgresql(f"🔧 DEBUG: Ownership check complete, count: {thread_entries_count}")
+    
+    if thread_entries_count == 0:
+        print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - deletion denied")
+        return {
+            "message": "Thread not found or access denied",
+            "thread_id": thread_id,
+            "user_email": user_email,
+            "deleted_counts": {}
+        }
+    
+    print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - deletion authorized")
+    
+    print__api_postgresql(f"🔄 Deleting from checkpoint tables for thread {thread_id}")
+    
+    # Delete from all checkpoint tables
+    tables = ["checkpoint_blobs", "checkpoint_writes", "checkpoints"]
+    deleted_counts = {}
+    
+    for table in tables:
+        try:
+            print__api_postgresql(f"🔧 DEBUG: Processing table {table}...")
+            # First check if the table exists
+            print__api_postgresql(f"🔧 DEBUG: Creating cursor for table existence check...")
+            async with conn.cursor() as cur:
+                print__api_postgresql(f"🔧 DEBUG: Executing table existence query for {table}...")
+                await cur.execute("""
+                    SELECT EXISTS (
+                        SELECT FROM information_schema.tables 
+                        WHERE table_name = %s
+                    )
+                """, (table,))
+                
+                print__api_postgresql(f"🔧 DEBUG: Table existence query executed, fetching result...")
+                table_exists = await cur.fetchone()
+                print__api_postgresql(f"🔧 DEBUG: Table {table} exists check result: {table_exists}")
+                
+                if not table_exists or not table_exists[0]:
+                    print__api_postgresql(f"⚠ Table {table} does not exist, skipping")
+                    deleted_counts[table] = 0
+                    continue
+                
+                print__api_postgresql(f"🔧 DEBUG: Table {table} exists, proceeding with deletion...")
+                # Delete records for this thread_id
+                print__api_postgresql(f"🔧 DEBUG: Creating cursor for deletion from {table}...")
+                async with conn.cursor() as del_cur:
+                    print__api_postgresql(f"🔧 DEBUG: Executing DELETE query for {table}...")
+                    await del_cur.execute(
+                        f"DELETE FROM {table} WHERE thread_id = %s",
+                        (thread_id,)
+                    )
+                    
+                    deleted_counts[table] = del_cur.rowcount if hasattr(del_cur, 'rowcount') else 0
+                    print__api_postgresql(f"✅ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}")
+                
+        except Exception as table_error:
+            print__api_postgresql(f"⚠ Error deleting from table {table}: {table_error}")
+            print__api_postgresql(f"🔧 DEBUG: Table error type: {type(table_error).__name__}")
+            import traceback
+            print__api_postgresql(f"🔧 DEBUG: Table error traceback: {traceback.format_exc()}")
+            deleted_counts[table] = f"Error: {str(table_error)}"
+    
+    # Delete from users_threads_runs table directly within the same transaction
+    print__api_postgresql(f"🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
+    try:
+        print__api_postgresql(f"🔧 DEBUG: Creating cursor for users_threads_runs deletion...")
+        async with conn.cursor() as cur:
+            print__api_postgresql(f"🔧 DEBUG: Executing DELETE query for users_threads_runs...")
+            await cur.execute("""
+                DELETE FROM users_threads_runs 
+                WHERE email = %s AND thread_id = %s
+            """, (user_email, thread_id))
+            
+            users_threads_runs_deleted = cur.rowcount if hasattr(cur, 'rowcount') else 0
+            print__api_postgresql(f"✅ Deleted {users_threads_runs_deleted} entries from users_threads_runs for user {user_email}, thread {thread_id}")
+            
+            deleted_counts["users_threads_runs"] = users_threads_runs_deleted
+    
+    except Exception as e:
+        print__api_postgresql(f"❌ Error deleting from users_threads_runs: {e}")
+        print__api_postgresql(f"🔧 DEBUG: users_threads_runs error type: {type(e).__name__}")
+        import traceback
+        print__api_postgresql(f"🔧 DEBUG: users_threads_runs error traceback: {traceback.format_exc()}")
+        deleted_counts["users_threads_runs"] = f"Error: {str(e)}"
+    
+    result_data = {
+        "message": f"Checkpoint records and thread entries deleted for thread_id: {thread_id}",
+        "deleted_counts": deleted_counts,
+        "thread_id": thread_id,
+        "user_email": user_email
+    }
+    
+    print__api_postgresql(f"🎉 Successfully deleted thread {thread_id} for user {user_email}")
+    return result_data
 
 @app.get("/catalog")
 def get_catalog(
@@ -1643,13 +1702,14 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
         
         # Verify thread ownership using users_threads_runs table
         async with checkpointer.conn.connection() as conn:
-            ownership_result = await conn.execute("""
-                SELECT COUNT(*) FROM users_threads_runs 
-                WHERE email = %s AND thread_id = %s
-            """, (user_email, thread_id))
-            
-            ownership_row = await ownership_result.fetchone()
-            thread_entries_count = ownership_row[0] if ownership_row else 0
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    SELECT COUNT(*) FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s
+                """, (user_email, thread_id))
+                
+                ownership_row = await cur.fetchone()
+                thread_entries_count = ownership_row[0] if ownership_row else 0
             
             if thread_entries_count == 0:
                 print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - access denied")
@@ -1847,13 +1907,6 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
         try:
             checkpointer = await get_healthy_checkpointer()
             
-            # REMOVED: No longer check for checkpointer.conn since we use our own database pool
-            # if not hasattr(checkpointer, 'conn'):
-            #     print__api_postgresql(f"⚠️ No PostgreSQL checkpointer available - returning empty messages")
-            #     empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
-            #     _bulk_loading_cache[cache_key] = (empty_result, current_time)
-            #     return empty_result
-            
             # STEP 1: Get all user threads, run-ids, and sentiments in ONE query
             print__api_postgresql(f"🔍 BULK QUERY: Getting all user threads, run-ids, and sentiments")
             user_thread_ids = []
@@ -1864,26 +1917,32 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             from my_agent.utils.postgres_checkpointer import get_healthy_pool
             pool = await get_healthy_pool()
             
-            async with pool.acquire() as conn:
-                # Single query for all threads, run-ids, and sentiments
-                rows = await conn.fetch("""
-                    SELECT 
-                        thread_id, 
-                        run_id, 
-                        prompt, 
-                        timestamp,
-                        sentiment
-                    FROM users_threads_runs 
-                    WHERE email = $1
-                    ORDER BY thread_id, timestamp ASC
-                """, user_email)
+            # FIXED: Use pool.connection() instead of pool.acquire() and update query syntax
+            async with pool.connection() as conn:
+                async with conn.cursor() as cur:
+                    # Single query for all threads, run-ids, and sentiments
+                    # FIXED: Use psycopg format (%s) instead of asyncpg format ($1)
+                    await cur.execute("""
+                        SELECT 
+                            thread_id, 
+                            run_id, 
+                            prompt, 
+                            timestamp,
+                            sentiment
+                        FROM users_threads_runs 
+                        WHERE email = %s
+                        ORDER BY thread_id, timestamp ASC
+                    """, (user_email,))
+                    
+                    rows = await cur.fetchall()
                 
                 for row in rows:
-                    thread_id = row['thread_id']
-                    run_id = row['run_id']
-                    prompt = row['prompt']
-                    timestamp = row['timestamp']
-                    sentiment = row['sentiment']
+                    # FIXED: Use index-based access instead of dict-based for psycopg
+                    thread_id = row[0]  # thread_id
+                    run_id = row[1]     # run_id
+                    prompt = row[2]     # prompt
+                    timestamp = row[3]  # timestamp
+                    sentiment = row[4]  # sentiment
                     
                     # Track unique thread IDs
                     if thread_id not in user_thread_ids:
@@ -2217,33 +2276,35 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
         
         async with pool.connection() as conn:
             print__feedback_flow(f"📊 Executing SQL query for thread {thread_id}")
-            result = await conn.execute("""
-                SELECT run_id, prompt, timestamp
-                FROM users_threads_runs 
-                WHERE email = %s AND thread_id = %s
-                ORDER BY timestamp ASC
-            """, (user_email, thread_id))
-            
-            run_id_data = []
-            async for row in result:
-                print__feedback_flow(f"📝 Processing database row - run_id: {row[0]}, prompt: {row[1][:50]}...")
-                try:
-                    run_uuid = str(uuid.UUID(row[0])) if row[0] else None
-                    if run_uuid:
-                        run_id_data.append({
-                            "run_id": run_uuid,
-                            "prompt": row[1],
-                            "timestamp": row[2].isoformat()
-                        })
-                        print__feedback_flow(f"✅ Valid UUID found: {run_uuid}")
-                    else:
-                        print__feedback_flow(f"⚠ Null run_id found for prompt: {row[1][:50]}...")
-                except ValueError:
-                    print__feedback_flow(f"❌ Invalid UUID in database: {row[0]}")
-                    continue
-            
-            print__feedback_flow(f"📊 Total valid run_ids found: {len(run_id_data)}")
-            return {"run_ids": run_id_data}
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    SELECT run_id, prompt, timestamp
+                    FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s
+                    ORDER BY timestamp ASC
+                """, (user_email, thread_id))
+                
+                run_id_data = []
+                rows = await cur.fetchall()
+                for row in rows:
+                    print__feedback_flow(f"📝 Processing database row - run_id: {row[0]}, prompt: {row[1][:50]}...")
+                    try:
+                        run_uuid = str(uuid.UUID(row[0])) if row[0] else None
+                        if run_uuid:
+                            run_id_data.append({
+                                "run_id": run_uuid,
+                                "prompt": row[1],
+                                "timestamp": row[2].isoformat()
+                            })
+                            print__feedback_flow(f"✅ Valid UUID found: {run_uuid}")
+                        else:
+                            print__feedback_flow(f"⚠ Null run_id found for prompt: {row[1][:50]}...")
+                    except ValueError:
+                        print__feedback_flow(f"❌ Invalid UUID in database: {row[0]}")
+                        continue
+                
+                print__feedback_flow(f"📊 Total valid run_ids found: {len(run_id_data)}")
+                return {"run_ids": run_id_data}
             
     except Exception as e:
         print__feedback_flow(f"🚨 Error fetching run_ids: {str(e)}")
@@ -2285,36 +2346,37 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
         if pool:
             async with pool.connection() as conn:
                 # 🔒 SECURITY: Check in users_threads_runs table with user ownership verification
-                db_result = await conn.execute("""
-                    SELECT email, thread_id, prompt, timestamp
-                    FROM users_threads_runs 
-                    WHERE run_id = %s AND email = %s
-                """, (run_id, user_email))
-                
-                row = await db_result.fetchone()
-                if row:
-                    result["exists_in_database"] = True
-                    result["user_owns_run_id"] = True
-                    result["database_details"] = {
-                        "email": row[0],
-                        "thread_id": row[1],
-                        "prompt": row[2],
-                        "timestamp": row[3].isoformat() if row[3] else None
-                    }
-                    print__debug(f"✅ User {user_email} owns run_id {run_id}")
-                else:
-                    # Check if run_id exists but belongs to different user
-                    db_result_any = await conn.execute("""
-                        SELECT COUNT(*) FROM users_threads_runs WHERE run_id = %s
-                    """, (run_id,))
+                async with conn.cursor() as cur:
+                    await cur.execute("""
+                        SELECT email, thread_id, prompt, timestamp
+                        FROM users_threads_runs 
+                        WHERE run_id = %s AND email = %s
+                    """, (run_id, user_email))
                     
-                    any_row = await db_result_any.fetchone()
-                    if any_row and any_row[0] > 0:
+                    row = await cur.fetchone()
+                    if row:
                         result["exists_in_database"] = True
-                        result["user_owns_run_id"] = False
-                        print__debug(f"🚫 Run_id {run_id} exists but user {user_email} does not own it")
+                        result["user_owns_run_id"] = True
+                        result["database_details"] = {
+                            "email": row[0],
+                            "thread_id": row[1],
+                            "prompt": row[2],
+                            "timestamp": row[3].isoformat() if row[3] else None
+                        }
+                        print__debug(f"✅ User {user_email} owns run_id {run_id}")
                     else:
-                        print__debug(f"❌ Run_id {run_id} not found in database")
+                        # Check if run_id exists but belongs to different user
+                        await cur.execute("""
+                            SELECT COUNT(*) FROM users_threads_runs WHERE run_id = %s
+                        """, (run_id,))
+                        
+                        any_row = await cur.fetchone()
+                        if any_row and any_row[0] > 0:
+                            result["exists_in_database"] = True
+                            result["user_owns_run_id"] = False
+                            print__debug(f"🚫 Run_id {run_id} exists but user {user_email} does not own it")
+                        else:
+                            print__debug(f"❌ Run_id {run_id} not found in database")
     except Exception as e:
         result["database_error"] = str(e)
     
@@ -2367,7 +2429,7 @@ def print__api_postgresql(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[API-PostgreSQL] {msg}")
         import sys
@@ -2379,7 +2441,7 @@ def print__feedback_flow(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[FEEDBACK-FLOW] {msg}")
         import sys
@@ -2391,7 +2453,7 @@ def print__sentiment_flow(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[SENTIMENT-FLOW] {msg}")
         import sys
@@ -2403,7 +2465,7 @@ def print__debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[DEBUG] {msg}")
         import sys

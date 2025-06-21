@@ -223,7 +223,7 @@ async def main():
     print("✅ Environment variables check passed")
     
     # Set enhanced debugging
-    os.environ["MY_AGENT_DEBUG"] = "1"
+    os.environ["DEBUG"] = "1"
     os.environ["VERBOSE_SSL_LOGGING"] = "true"
     os.environ["ENABLE_CONNECTION_MONITORING"] = "false"  # Disable monitoring for tests
     

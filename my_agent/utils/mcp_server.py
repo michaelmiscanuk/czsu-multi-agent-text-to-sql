@@ -30,7 +30,7 @@ def debug_print(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    if os.environ.get('MY_AGENT_DEBUG', '0') == '1':
+    if os.environ.get('DEBUG', '0') == '1':
         print(msg)
 
 class SQLiteQueryTool(BaseTool):

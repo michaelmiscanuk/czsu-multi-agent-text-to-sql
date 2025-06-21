@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-PostgreSQL checkpointer module using asyncpg for all operations.
-Simplified version based on working commit 108 to fix infinite loops and conversation loading issues.
+PostgreSQL checkpointer module using ONLY psycopg3 for all operations.
+Fixed version that eliminates infinite loops, connection leaks, and race conditions.
 """
 
 from __future__ import annotations
@@ -12,14 +12,14 @@ import os
 
 def print__postgres_startup_debug(msg: str) -> None:
     """Print PostgreSQL startup debug messages when debug mode is enabled."""
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[POSTGRES-STARTUP-DEBUG] {msg}")
         sys.stdout.flush()
 
 if sys.platform == "win32":
     import asyncio
-    print__postgres_startup_debug("Windows detected - ensuring asyncpg compatibility")
+    print__postgres_startup_debug("Windows detected - ensuring psycopg3 compatibility")
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 import asyncio
@@ -29,10 +29,8 @@ import uuid
 import time
 from typing import Optional, List, Dict, Any, TYPE_CHECKING
 from datetime import datetime, timedelta
-import asyncpg
 import psycopg
 import psycopg_pool
-import threading
 from contextlib import asynccontextmanager
 
 if TYPE_CHECKING:
@@ -47,15 +45,11 @@ except ImportError as e:
     AsyncPostgresSaver = None
 
 #==============================================================================
-# GLOBALS AND LOCKS - SIMPLIFIED VERSION
+# SIMPLIFIED GLOBALS - SINGLE CONNECTION POOL
 #==============================================================================
-database_pool: Optional[asyncpg.Pool] = None
-psycopg_pool_instance: Optional[psycopg_pool.AsyncConnectionPool] = None
-_pool_lock = threading.Lock()
-_psycopg_pool_lock = threading.Lock()
+# FIXED: Use only one pool type, remove complex locking
+_global_psycopg_pool: Optional[psycopg_pool.AsyncConnectionPool] = None
 _checkpointer_setup_done = False
-_checkpointer_setup_lock = asyncio.Lock()
-_operations_lock = threading.Lock()
 _active_operations = 0
 
 #==============================================================================
@@ -63,104 +57,69 @@ _active_operations = 0
 #==============================================================================
 def print__postgresql_debug(msg: str) -> None:
     """Print PostgreSQL debug messages when debug mode is enabled."""
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[POSTGRESQL-DEBUG] {msg}")
         sys.stdout.flush()
 
 def print__api_postgresql(msg: str) -> None:
     """Print API-PostgreSQL messages when debug mode is enabled."""
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
         print(f"[API-PostgreSQL] {msg}")
         sys.stdout.flush()
 
 async def debug_pool_status() -> Dict[str, Any]:
     """Get debug information about the current pool status."""
-    global database_pool, _active_operations
+    global _global_psycopg_pool, _active_operations
     
     status = {
-        "asyncpg_pool": {
-            "exists": database_pool is not None,
-            "closed": None,
-            "min_size": None,
-            "max_size": None,
-            "current_size": None,
+        "psycopg_pool": {
+            "exists": _global_psycopg_pool is not None,
+            "name": getattr(_global_psycopg_pool, "name", None) if _global_psycopg_pool else None,
         },
         "operations": {
             "active_count": _active_operations,
         },
     }
     
-    if database_pool:
-        status["asyncpg_pool"]["closed"] = getattr(database_pool, "_closed", None)
-        status["asyncpg_pool"]["min_size"] = getattr(database_pool, "_min_size", None)
-        status["asyncpg_pool"]["max_size"] = getattr(database_pool, "_max_size", None)
-        
+    if _global_psycopg_pool:
         try:
-            current_size = len(getattr(database_pool, '_queue', []))
-            status["asyncpg_pool"]["current_size"] = current_size
-        except Exception:
-            pass
+            stats = _global_psycopg_pool.get_stats()
+            status["psycopg_pool"].update(stats)
+        except Exception as e:
+            status["psycopg_pool"]["error"] = str(e)
     
     return status
-
-def _get_pool_lock():
-    """Get the pool lock for thread-safe operations."""
-    return _pool_lock
-
-def _get_operations_lock():
-    """Get the operations lock for thread-safe operations."""
-    return _operations_lock
 
 async def increment_active_operations():
     """Increment active operations counter."""
     global _active_operations
-    with _get_operations_lock():
-        _active_operations += 1
+    _active_operations += 1
 
 async def decrement_active_operations():
     """Decrement active operations counter."""
     global _active_operations
-    with _get_operations_lock():
-        _active_operations = max(0, _active_operations - 1)
+    _active_operations = max(0, _active_operations - 1)
 
 async def get_active_operations_count():
     """Get current active operations count."""
     global _active_operations
-    with _get_operations_lock():
-        return _active_operations
+    return _active_operations
 
-async def force_close_psycopg_pool():
-    """Force close the psycopg connection pool."""
-    global psycopg_pool_instance
-    print__postgresql_debug("Force closing psycopg connection pool...")
+async def force_close_all_connections():
+    """Force close all database connections."""
+    global _global_psycopg_pool
+    print__postgresql_debug("Force closing all database connections...")
     
-    if psycopg_pool_instance:
+    if _global_psycopg_pool:
         try:
-            await psycopg_pool_instance.close()
+            await _global_psycopg_pool.close()
             print__postgresql_debug("Psycopg pool closed successfully")
         except Exception as e:
             print__postgresql_debug(f"Error closing psycopg pool: {e}")
         finally:
-            psycopg_pool_instance = None
-
-async def force_close_all_connections():
-    """Force close all database connections."""
-    global database_pool
-    print__postgresql_debug("Force closing all database connections...")
-    
-    # Close both asyncpg and psycopg pools
-    await force_close_psycopg_pool()
-    
-    if database_pool:
-        try:
-            await database_pool.close()
-            print__postgresql_debug("Database pool closed successfully")
-        except Exception as e:
-            print__postgresql_debug(f"Error closing database pool: {e}")
-        finally:
-            database_pool = None
+            _global_psycopg_pool = None
 
 def get_db_config():
     """Get database configuration from environment variables."""
@@ -193,80 +152,85 @@ def get_connection_string():
     
     return connection_string
 
-async def is_pool_healthy(pool: Optional[asyncpg.Pool]) -> bool:
+async def is_pool_healthy(pool: Optional[psycopg_pool.AsyncConnectionPool]) -> bool:
     """Simple health check for the pool."""
-    if not pool or pool._closed:
+    if not pool:
         return False
     
     try:
-        async with pool.acquire() as conn:
-            await conn.fetchval("SELECT 1")
+        async with pool.connection() as conn:
+            await conn.execute("SELECT 1")
         return True
     except Exception as e:
         print__postgresql_debug(f"Pool health check failed: {e}")
         return False
 
-async def create_fresh_connection_pool() -> Optional[asyncpg.Pool]:
-    """Create a fresh asyncpg connection pool."""
+async def create_fresh_connection_pool() -> Optional[psycopg_pool.AsyncConnectionPool]:
+    """Create a fresh psycopg connection pool."""
     try:
-        config = get_db_config()
-        print__postgresql_debug(f"Creating asyncpg pool: host={config['host']}, db={config['dbname']}")
+        print__postgresql_debug("Creating fresh psycopg connection pool...")
         
-        pool = await asyncpg.create_pool(
-            user=config['user'],
-            password=config['password'],
-            database=config['dbname'],
-            host=config['host'],
-            port=config['port'],
+        pool = psycopg_pool.AsyncConnectionPool(
+            conninfo=get_connection_string(),
             min_size=2,
             max_size=10,
-            statement_cache_size=0  # Disable for pgbouncer compatibility
+            timeout=30,
+            max_waiting=10,
+            max_lifetime=3600,  # 1 hour
+            max_idle=600,       # 10 minutes
+            reconnect_timeout=300,  # 5 minutes
+            kwargs={
+                "autocommit": True,
+                "prepare_threshold": None,  # Disable prepared statements for pgbouncer compatibility
+            },
+            name=f"czsu_pool_{int(time.time())}",
+            open=False
         )
         
-        print__postgresql_debug("Fresh asyncpg pool created successfully")
+        await pool.open()
+        await pool.wait()  # Ensure minimum connections are established
+        
+        print__postgresql_debug("Fresh psycopg pool created successfully")
         return pool
         
     except Exception as e:
         print__postgresql_debug(f"Failed to create fresh pool: {e}")
         return None
 
-async def get_healthy_pool() -> asyncpg.Pool:
-    """Get a healthy asyncpg connection pool - SIMPLIFIED VERSION."""
-    global database_pool
+async def get_healthy_pool() -> psycopg_pool.AsyncConnectionPool:
+    """Get a healthy psycopg connection pool - SIMPLIFIED VERSION."""
+    global _global_psycopg_pool
     
     # Check if pool exists and is healthy
-    if database_pool is not None and not database_pool._closed:
-        is_healthy = await is_pool_healthy(database_pool)
+    if _global_psycopg_pool is not None:
+        is_healthy = await is_pool_healthy(_global_psycopg_pool)
         if is_healthy:
-            return database_pool
+            return _global_psycopg_pool
         else:
             print__postgresql_debug("Existing pool is unhealthy, closing...")
             try:
-                await database_pool.close()
+                await _global_psycopg_pool.close()
             except Exception:
                 pass
-            database_pool = None
+            _global_psycopg_pool = None
     
     # Create new pool
     print__postgresql_debug("Creating new healthy pool...")
-    with _get_pool_lock():
-        # Double-check pattern
-        if database_pool is not None and not database_pool._closed:
-            return database_pool
-        
-        database_pool = await create_fresh_connection_pool()
-        if not database_pool:
-            raise Exception("Failed to create database pool")
-        
-        return database_pool
+    _global_psycopg_pool = await create_fresh_connection_pool()
+    if not _global_psycopg_pool:
+        raise Exception("Failed to create database pool")
+    
+    return _global_psycopg_pool
 
 async def setup_users_threads_runs_table():
-    """Setup the users_threads_runs table for tracking user conversations."""
+    """Setup the users_threads_runs table for tracking user conversations - ROBUST VERSION."""
     try:
         print__postgresql_debug("Setting up users_threads_runs table...")
-        pool = await get_healthy_pool()
         
-        async with pool.acquire() as conn:
+        # Use robust connection handling
+        from .robust_postgres_pool import get_connection
+        
+        async with get_connection() as conn:
             # Create table if it doesn't exist
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS users_threads_runs (
@@ -310,17 +274,19 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
         
         print__api_postgresql(f"Creating thread run entry: user={email}, thread={thread_id}, run={run_id}")
         
+        # FIXED: Use psycopg pool instead of asyncpg
         pool = await get_healthy_pool()
-        async with pool.acquire() as conn:
-            await conn.execute("""
-                INSERT INTO users_threads_runs (email, thread_id, run_id, prompt)
-                VALUES ($1, $2, $3, $4)
-                ON CONFLICT (run_id) DO UPDATE SET
-                    email = EXCLUDED.email,
-                    thread_id = EXCLUDED.thread_id,
-                    prompt = EXCLUDED.prompt,
-                    timestamp = CURRENT_TIMESTAMP
-            """, email, thread_id, run_id, prompt)
+        async with pool.connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    INSERT INTO users_threads_runs (email, thread_id, run_id, prompt)
+                    VALUES (%s, %s, %s, %s)
+                    ON CONFLICT (run_id) DO UPDATE SET
+                        email = EXCLUDED.email,
+                        thread_id = EXCLUDED.thread_id,
+                        prompt = EXCLUDED.prompt,
+                        timestamp = CURRENT_TIMESTAMP
+                """, (email, thread_id, run_id, prompt))
         
         print__api_postgresql(f"Thread run entry created successfully: {run_id}")
         return run_id
@@ -334,15 +300,16 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: 
     try:
         print__api_postgresql(f"Updating sentiment for run {run_id}: {sentiment}")
         
+        # FIXED: Use psycopg pool instead of asyncpg
         pool = await get_healthy_pool()
-        async with pool.acquire() as conn:
-            result = await conn.execute("""
-                UPDATE users_threads_runs 
-                SET sentiment = $1 
-                WHERE run_id = $2
-            """, sentiment, run_id)
-        
-        updated = result.split()[1] if result.startswith('UPDATE') else 0
+        async with pool.connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    UPDATE users_threads_runs 
+                    SET sentiment = %s 
+                    WHERE run_id = %s
+                """, (sentiment, run_id))
+                updated = cur.rowcount
         print__api_postgresql(f"Updated sentiment for {updated} entries")
         return int(updated) > 0
         
@@ -355,15 +322,18 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
     try:
         print__api_postgresql(f"Getting sentiments for thread {thread_id}")
         
+        # FIXED: Use psycopg pool instead of asyncpg
         pool = await get_healthy_pool()
-        async with pool.acquire() as conn:
-            rows = await conn.fetch("""
-                SELECT run_id, sentiment 
-                FROM users_threads_runs 
-                WHERE email = $1 AND thread_id = $2 AND sentiment IS NOT NULL
-            """, email, thread_id)
+        async with pool.connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    SELECT run_id, sentiment 
+                    FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s AND sentiment IS NOT NULL
+                """, (email, thread_id))
+                rows = await cur.fetchall()
         
-        sentiments = {row['run_id']: row['sentiment'] for row in rows}
+        sentiments = {row[0]: row[1] for row in rows}  # row[0] = run_id, row[1] = sentiment
         print__api_postgresql(f"Retrieved {len(sentiments)} sentiments")
         return sentiments
         
@@ -372,60 +342,60 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
         return {}
 
 async def get_user_chat_threads(email: str, connection_pool=None, limit: int = None, offset: int = 0) -> List[Dict[str, Any]]:
-    """Get chat threads for a user with optional pagination - SIMPLIFIED VERSION."""
+    """Get chat threads for a user with optional pagination - ROBUST VERSION."""
     try:
         print__api_postgresql(f"Getting chat threads for user: {email} (limit: {limit}, offset: {offset})")
         
-        if connection_pool:
-            pool = connection_pool
-        else:
-            pool = await get_healthy_pool()
+        # Use robust connection handling
+        from .robust_postgres_pool import get_connection
         
-        async with pool.acquire() as conn:
-            # Build the SQL query with optional pagination
-            base_query = """
-                SELECT 
-                    thread_id,
-                    MAX(timestamp) as latest_timestamp,
-                    COUNT(*) as run_count,
-                    (SELECT prompt FROM users_threads_runs utr2 
-                     WHERE utr2.email = $1 AND utr2.thread_id = utr.thread_id 
-                     ORDER BY timestamp ASC LIMIT 1) as first_prompt
-                FROM users_threads_runs utr
-                WHERE email = $2
-                GROUP BY thread_id
-                ORDER BY latest_timestamp DESC
-            """
-            
-            params = [email, email]
-            
-            # Add pagination if limit is specified
-            if limit is not None:
-                base_query += " LIMIT $3 OFFSET $4"
-                params.extend([limit, offset])
-            
-            rows = await conn.fetch(base_query, *params)
-            
-            threads = []
-            for row in rows:
-                thread_id = row['thread_id']
-                latest_timestamp = row['latest_timestamp']
-                run_count = row['run_count']
-                first_prompt = row['first_prompt']
+        async with get_connection() as conn:
+            async with conn.cursor() as cur:
+                # Build the SQL query with optional pagination
+                base_query = """
+                    SELECT 
+                        thread_id,
+                        MAX(timestamp) as latest_timestamp,
+                        COUNT(*) as run_count,
+                        (SELECT prompt FROM users_threads_runs utr2 
+                         WHERE utr2.email = %s AND utr2.thread_id = utr.thread_id 
+                         ORDER BY timestamp ASC LIMIT 1) as first_prompt
+                    FROM users_threads_runs utr
+                    WHERE email = %s
+                    GROUP BY thread_id
+                    ORDER BY latest_timestamp DESC
+                """
                 
-                # Create a title from the first prompt (limit to 50 characters)
-                title = (first_prompt[:47] + "...") if first_prompt and len(first_prompt) > 50 else (first_prompt or "Untitled Conversation")
+                params = [email, email]
                 
-                threads.append({
-                    "thread_id": thread_id,
-                    "latest_timestamp": latest_timestamp,
-                    "run_count": run_count,
-                    "title": title,
-                    "full_prompt": first_prompt or ""
-                })
-            
-            print__api_postgresql(f"Retrieved {len(threads)} threads for user {email}")
-            return threads
+                # Add pagination if limit is specified
+                if limit is not None:
+                    base_query += " LIMIT %s OFFSET %s"
+                    params.extend([limit, offset])
+                
+                await cur.execute(base_query, params)
+                rows = await cur.fetchall()
+                
+                threads = []
+                for row in rows:
+                    thread_id = row[0]
+                    latest_timestamp = row[1]
+                    run_count = row[2]
+                    first_prompt = row[3]
+                    
+                    # Create a title from the first prompt (limit to 50 characters)
+                    title = (first_prompt[:47] + "...") if first_prompt and len(first_prompt) > 50 else (first_prompt or "Untitled Conversation")
+                    
+                    threads.append({
+                        "thread_id": thread_id,
+                        "latest_timestamp": latest_timestamp,
+                        "run_count": run_count,
+                        "title": title,
+                        "full_prompt": first_prompt or ""
+                    })
+                
+                print__api_postgresql(f"Retrieved {len(threads)} threads for user {email}")
+                return threads
             
     except Exception as e:
         print__api_postgresql(f"Failed to get chat threads for user {email}: {e}")
@@ -434,21 +404,23 @@ async def get_user_chat_threads(email: str, connection_pool=None, limit: int = N
         raise
 
 async def get_user_chat_threads_count(email: str, connection_pool=None) -> int:
-    """Get total count of chat threads for a user."""
+    """Get total count of chat threads for a user - ROBUST VERSION."""
     try:
         print__api_postgresql(f"Getting chat threads count for user: {email}")
         
-        if connection_pool:
-            pool = connection_pool
-        else:
-            pool = await get_healthy_pool()
+        # Use robust connection handling
+        from .robust_postgres_pool import get_connection
         
-        async with pool.acquire() as conn:
-            total_count = await conn.fetchval("""
-                SELECT COUNT(DISTINCT thread_id) as total_threads
-                FROM users_threads_runs
-                WHERE email = $1
-            """, email)
+        async with get_connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    SELECT COUNT(DISTINCT thread_id) as total_threads
+                    FROM users_threads_runs
+                    WHERE email = %s
+                """, (email,))
+                
+                result = await cur.fetchone()
+                total_count = result[0] if result else 0
             
             print__api_postgresql(f"Total threads count for user {email}: {total_count}")
             return total_count or 0
@@ -460,78 +432,55 @@ async def get_user_chat_threads_count(email: str, connection_pool=None) -> int:
         raise
 
 async def get_or_create_psycopg_pool() -> psycopg_pool.AsyncConnectionPool:
-    """Get or create the psycopg connection pool, ensuring it's initialized only once."""
-    global psycopg_pool_instance
-    if psycopg_pool_instance:
-        return psycopg_pool_instance
-
-    # Use a thread-safe lock for pool creation
-    with _psycopg_pool_lock:
-        # Double-check inside the lock
-        if psycopg_pool_instance:
-            return psycopg_pool_instance
-
-        print__postgresql_debug("Creating new psycopg connection pool...")
-        connection_string = get_connection_string()
-        
-        # Connection arguments for psycopg, including disabling auto-prepared statements
-        connection_kwargs = {
-            "autocommit": True,
-            "prepare_threshold": 0,
-        }
-        
-        # Create pool with open=False to avoid deprecation warning, then open it explicitly
-        psycopg_pool_instance = psycopg_pool.AsyncConnectionPool(
-            conninfo=connection_string,
-            kwargs=connection_kwargs,
-            min_size=2,
-            max_size=10,
-            open=False  # Explicitly set to False to avoid deprecation warning
-        )
-        
-        # Open the pool explicitly using the modern approach
-        await psycopg_pool_instance.open()
-        print__postgresql_debug("Psycopg connection pool opened successfully.")
-        return psycopg_pool_instance
+    """Get or create the psycopg connection pool using robust implementation."""
+    from .robust_postgres_pool import get_global_pool
+    
+    print__postgresql_debug("Using robust PostgreSQL connection pool...")
+    
+    # Get the robust pool instance
+    robust_pool = get_global_pool()
+    
+    # Return the underlying psycopg pool for compatibility
+    # This ensures the robust pool is created and healthy
+    return await robust_pool._ensure_pool()
 
 # MODERN CONTEXT MANAGER APPROACH (recommended for new code)
 @asynccontextmanager
 async def modern_psycopg_pool():
     """
-    Modern approach using async context manager for psycopg pool.
-    This is the recommended approach that avoids deprecation warnings.
+    Modern approach using robust connection pool.
+    This is the recommended approach that avoids connection issues.
     
     Usage:
         async with modern_psycopg_pool() as pool:
             async with pool.connection() as conn:
                 await conn.execute("SELECT 1")
     """
-    connection_string = get_connection_string()
+    from .robust_postgres_pool import get_global_pool
     
-    # Connection arguments for psycopg, including disabling auto-prepared statements
-    connection_kwargs = {
-        "autocommit": True,
-        "prepare_threshold": 0,
-    }
+    print__postgresql_debug("Using modern robust psycopg pool...")
     
-    print__postgresql_debug("Creating modern psycopg pool using context manager...")
+    # Get the robust pool instance 
+    robust_pool = get_global_pool()
     
-    # Use the modern context manager approach recommended by psycopg
-    async with psycopg_pool.AsyncConnectionPool(
-        conninfo=connection_string,
-        kwargs=connection_kwargs,
-        min_size=2,
-        max_size=10,
-        open=False  # Explicitly set to avoid warning
-    ) as pool:
-        print__postgresql_debug("Modern psycopg pool opened successfully")
-        yield pool
-        print__postgresql_debug("Modern psycopg pool will be closed automatically")
+    # Ensure the pool is healthy and return it
+    pool = await robust_pool._ensure_pool()
+    
+    print__postgresql_debug("Modern robust psycopg pool ready")
+    yield pool
+    print__postgresql_debug("Modern robust psycopg pool operation completed")
 
 async def cleanup_all_pools():
     """Clean up all connection pools - use this for graceful shutdown."""
     print__postgresql_debug("Starting cleanup of all connection pools...")
+    
+    # Clean up the robust pool
+    from .robust_postgres_pool import close_global_pool
+    await close_global_pool()
+    
+    # Clean up legacy pools if they exist
     await force_close_all_connections()
+    
     print__postgresql_debug("All connection pools cleaned up successfully")
 
 async def delete_user_thread_entries(email: str, thread_id: str, connection_pool=None) -> Dict[str, Any]:
@@ -539,17 +488,21 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
     try:
         print__api_postgresql(f"Deleting thread entries for user: {email}, thread: {thread_id}")
         
+        # FIXED: Use psycopg pool instead of asyncpg
         if connection_pool:
             pool = connection_pool
         else:
             pool = await get_healthy_pool()
         
-        async with pool.acquire() as conn:
+        async with pool.connection() as conn:
             # First, count the entries to be deleted
-            entries_to_delete = await conn.fetchval("""
-                SELECT COUNT(*) FROM users_threads_runs 
-                WHERE email = $1 AND thread_id = $2
-            """, email, thread_id)
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    SELECT COUNT(*) FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s
+                """, (email, thread_id))
+                result = await cur.fetchone()
+                entries_to_delete = result[0] if result else 0
             
             print__api_postgresql(f"Found {entries_to_delete} entries to delete")
             
@@ -562,13 +515,12 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
                 }
             
             # Delete the entries
-            delete_result = await conn.execute("""
-                DELETE FROM users_threads_runs 
-                WHERE email = $1 AND thread_id = $2
-            """, email, thread_id)
-            
-            # Extract deleted count from result status
-            deleted_count = int(delete_result.split()[1]) if delete_result.startswith('DELETE') else 0
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    DELETE FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s
+                """, (email, thread_id))
+                deleted_count = cur.rowcount
             
             print__api_postgresql(f"Deleted {deleted_count} entries for user {email}, thread {thread_id}")
             
@@ -602,29 +554,23 @@ def check_postgres_env_vars():
         return True
 
 async def test_basic_postgres_connection():
-    """Test basic PostgreSQL connection using asyncpg."""
+    """Test basic PostgreSQL connection using psycopg."""
     try:
-        print__postgres_startup_debug("Testing basic asyncpg PostgreSQL connection...")
+        print__postgres_startup_debug("Testing basic psycopg PostgreSQL connection...")
         
         if not check_postgres_env_vars():
             return False
         
-        config = get_db_config()
-        
         # Test direct connection
-        conn = await asyncpg.connect(
-            user=config['user'],
-            password=config['password'],
-            database=config['dbname'],
-            host=config['host'],
-            port=config['port'],
-            statement_cache_size=0
-        )
+        conn = await psycopg.AsyncConnection.connect(get_connection_string())
         
         print__postgres_startup_debug("Direct connection established")
         
         # Get PostgreSQL version
-        version = await conn.fetchval('SELECT version()')
+        async with conn.cursor() as cur:
+            await cur.execute('SELECT version()')
+            result = await cur.fetchone()
+            version = result[0] if result else "Unknown"
         print__postgres_startup_debug(f"PostgreSQL version: {version}")
         
         await conn.close()
@@ -647,9 +593,12 @@ async def test_connection_health():
         
         # Test pool connection
         pool = await get_healthy_pool()
-        async with pool.acquire() as conn:
-            result = await conn.fetchval("SELECT 'health_check'")
-            print__postgresql_debug(f"Pool connection test result: {result}")
+        async with pool.connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute("SELECT 'health_check'")
+                result = await cur.fetchone()
+                result_value = result[0] if result else "No result"
+            print__postgresql_debug(f"Pool connection test result: {result_value}")
         
         print__postgresql_debug("Connection health test passed")
         return True
@@ -660,8 +609,8 @@ async def test_connection_health():
 
 class PostgresCheckpointerManager:
     """
-    Manages the LangGraph AsyncPostgresSaver lifecycle by using a connection
-    pool to prevent errors related to prepared statements in a multi-worker environment.
+    Manages the LangGraph AsyncPostgresSaver lifecycle using a robust connection
+    pool to prevent errors related to prepared statements and connection issues.
     """
 
     def __init__(self):
@@ -670,52 +619,62 @@ class PostgresCheckpointerManager:
         self.checkpointer: Optional[AsyncPostgresSaver] = None
 
     async def __aenter__(self) -> AsyncPostgresSaver:
-        """Enter the async context, get a connection from the pool, and set up the checkpointer."""
+        """Enter the async context, get a connection from the robust pool, and set up the checkpointer."""
         global _checkpointer_setup_done
-        print__postgresql_debug("Starting PostgresCheckpointerManager context (pool-based)...")
+        print__postgresql_debug("Starting PostgresCheckpointerManager context (robust pool)...")
         try:
-            # Get a connection from the pool
-            self.pool = await get_or_create_psycopg_pool()
-            await self.pool.wait() # Ensure pool is ready before getting a connection
+            # Use robust connection pool
+            from .robust_postgres_pool import get_global_pool
+            robust_pool = get_global_pool()
+            
+            # Get the underlying psycopg pool
+            self.pool = await robust_pool._ensure_pool()
+            await self.pool.wait()  # Ensure pool is ready before getting a connection
             self.conn = await self.pool.getconn()
-            print__postgresql_debug("Got connection from psycopg pool.")
+            print__postgresql_debug("Got connection from robust psycopg pool.")
 
             # Instantiate the checkpointer with the connection
             self.checkpointer = AsyncPostgresSaver(conn=self.conn)
 
-            # Set up the checkpointer schema once, using a lock to prevent race conditions
-            async with _checkpointer_setup_lock:
-                if not _checkpointer_setup_done:
-                    try:
-                        print__postgresql_debug("Running checkpointer setup for the first time...")
-                        await self.checkpointer.setup()
-                        print__postgresql_debug("AsyncPostgresSaver setup complete.")
-                        _checkpointer_setup_done = True
-                    except (psycopg.errors.DuplicateTable, psycopg.errors.DuplicateObject):
-                        print__postgresql_debug("Checkpointer tables already exist. Skipping setup.")
-                        _checkpointer_setup_done = True
-                    except psycopg.errors.DuplicatePreparedStatement:
-                        print__postgresql_debug("Ignoring duplicate prepared statement error during setup, assuming another worker succeeded.")
-                        _checkpointer_setup_done = True
-                    except Exception as e:
-                        print__postgresql_debug(f"Error during initial checkpointer setup: {e}")
-                        # We don't re-raise here to allow other workers to proceed,
-                        # but we don't mark setup as done.
+            # Set up the checkpointer schema once, using a simple flag to prevent race conditions
+            if not _checkpointer_setup_done:
+                try:
+                    print__postgresql_debug("Running checkpointer setup for the first time...")
+                    await self.checkpointer.setup()
+                    print__postgresql_debug("AsyncPostgresSaver setup complete.")
+                    _checkpointer_setup_done = True
+                except (psycopg.errors.DuplicateTable, psycopg.errors.DuplicateObject):
+                    print__postgresql_debug("Checkpointer tables already exist. Skipping setup.")
+                    _checkpointer_setup_done = True
+                except psycopg.errors.DuplicatePreparedStatement:
+                    print__postgresql_debug("Ignoring duplicate prepared statement error during setup, assuming another worker succeeded.")
+                    _checkpointer_setup_done = True
+                except Exception as e:
+                    print__postgresql_debug(f"Error during initial checkpointer setup: {e}")
+                    # We don't re-raise here to allow other workers to proceed,
+                    # but we don't mark setup as done.
                         
             return self.checkpointer
         except Exception as e:
             print__postgresql_debug(f"Failed to setup PostgresCheckpointerManager: {e}")
             # Ensure connection is released on failure
             if self.conn and self.pool:
-                await self.pool.putconn(self.conn)
+                try:
+                    await self.pool.putconn(self.conn)
+                except Exception:
+                    pass
             raise
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Exit the async context manager and release the connection to the pool."""
         print__postgresql_debug("Exiting PostgresCheckpointerManager context...")
         if self.conn and self.pool:
-            await self.pool.putconn(self.conn)
-            print__postgresql_debug("Psycopg connection returned to pool.")
+            try:
+                await self.pool.putconn(self.conn)
+                print__postgresql_debug("Psycopg connection returned to robust pool.")
+            except Exception as e:
+                print__postgresql_debug(f"Error returning connection to pool: {e}")
+                # Don't raise here - we're in cleanup
 
 async def get_postgres_checkpointer():
     """Get a PostgreSQL checkpointer manager - POOL-BASED VERSION."""
@@ -725,7 +684,7 @@ async def get_postgres_checkpointer():
         if not AsyncPostgresSaver:
             raise Exception("AsyncPostgresSaver not available")
         
-        # Setup the users_threads_runs table first using our asyncpg pool
+        # Setup the users_threads_runs table first using our psycopg pool
         await setup_users_threads_runs_table()
         
         # Create the checkpointer manager which now uses a connection pool
@@ -811,13 +770,16 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             print__api_postgresql(f"🔒 Verifying thread ownership for user: {user_email}")
             
             try:
-                # FIXED: Use our asyncpg pool instead of checkpointer.conn
-                pool = await get_healthy_pool()
-                async with pool.acquire() as conn:
-                    thread_entries_count = await conn.fetchval("""
-                        SELECT COUNT(*) FROM users_threads_runs 
-                        WHERE email = $1 AND thread_id = $2
-                    """, user_email, thread_id)
+                # Use robust connection handling
+                from .robust_postgres_pool import get_connection
+                async with get_connection() as conn:
+                    async with conn.cursor() as cur:
+                        await cur.execute("""
+                            SELECT COUNT(*) FROM users_threads_runs 
+                            WHERE email = %s AND thread_id = %s
+                        """, (user_email, thread_id))
+                        result = await cur.fetchone()
+                        thread_entries_count = result[0] if result else 0
                     
                     if thread_entries_count == 0:
                         print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - access denied")
@@ -853,7 +815,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             error_msg = str(alist_error).lower()
             print__api_postgresql(f"❌ Error getting checkpoint list: {alist_error}")
             
-            # The retry logic for prepared statements is removed because `prepare_threshold=0`
+            # The retry logic for prepared statements is removed because `prepare_threshold=None`
             # should prevent these errors from happening in the first place.
             
             # If we still don't have checkpoints, try fallback method

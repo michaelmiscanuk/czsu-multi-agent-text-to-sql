@@ -268,7 +268,7 @@ except Exception as response_error:
 
 ### Debug Flags
 ```bash
-export MY_AGENT_DEBUG=1  # Enable detailed logging
+export DEBUG=1  # Enable detailed logging
 ```
 
 ### Key Log Messages
@@ -303,7 +303,7 @@ export MY_AGENT_DEBUG=1  # Enable detailed logging
 ```bash
 MAX_CONCURRENT_ANALYSES=3    # Limit concurrent requests
 MEMORY_LIMIT=536870912       # Memory limit in bytes (512MB)
-MY_AGENT_DEBUG=1            # Enable debug logging
+DEBUG=1            # Enable debug logging
 ```
 
 ### Garbage Collection Tuning

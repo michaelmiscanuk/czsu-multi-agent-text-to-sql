@@ -19,7 +19,7 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 # Enable debug mode
-os.environ['MY_AGENT_DEBUG'] = '1'
+os.environ['DEBUG'] = '1'
 
 from metadata.create_and_load_chromadb import (
     hybrid_search,

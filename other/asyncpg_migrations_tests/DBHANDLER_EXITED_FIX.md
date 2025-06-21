@@ -143,7 +143,7 @@ VERBOSE_SSL_LOGGING=true                    # Enable detailed SSL error logging
 
 ```bash
 # Enable debug logging
-export MY_AGENT_DEBUG=1
+export DEBUG=1
 
 # Monitor SSL-specific issues
 grep "SSL" logs/app.log
@@ -171,7 +171,7 @@ grep "Pool recreation" logs/app.log
 
 3. **Enable Verbose Logging**:
    ```bash
-   export MY_AGENT_DEBUG=1
+   export DEBUG=1
    export VERBOSE_SSL_LOGGING=true
    ```
 

@@ -54,9 +54,9 @@ def print__debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('MY_AGENT_DEBUG', '0')
+    debug_mode = os.environ.get('DEBUG', '0')
     if debug_mode == '1':
-        print(f"[DEBUG] {msg}")
+        print(f"[MAIN_DEBUG] {msg}")
         import sys
         sys.stdout.flush()
 

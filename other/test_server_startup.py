@@ -8,7 +8,7 @@ import os
 import sys
 
 # Set debug mode
-os.environ['MY_AGENT_DEBUG'] = '1'
+os.environ['DEBUG'] = '1'
 
 # Add current directory to path
 sys.path.insert(0, '.')

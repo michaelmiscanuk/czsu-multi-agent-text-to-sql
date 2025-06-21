@@ -43,10 +43,10 @@ print(f"Python path: {sys.path}")
 
 from my_agent import create_graph
 
-# Temporarily override MY_AGENT_DEBUG for this notebook execution
-original_debug_value = os.environ.get('MY_AGENT_DEBUG')
-os.environ['MY_AGENT_DEBUG'] = '0'
-print(f"Temporarily setting MY_AGENT_DEBUG=0 for this notebook execution (was: {original_debug_value})")
+# Temporarily override DEBUG for this notebook execution
+original_debug_value = os.environ.get('DEBUG')
+os.environ['DEBUG'] = '0'
+print(f"Temporarily setting DEBUG=0 for this notebook execution (was: {original_debug_value})")
 
 import uuid
 from langsmith import aevaluate
@@ -230,13 +230,13 @@ if __name__ == "__main__":
 
     asyncio.run(main())
     
-    # Restore original MY_AGENT_DEBUG value
-    print(f"Finished evaluation. Restoring MY_AGENT_DEBUG environment variable...")
+    # Restore original DEBUG value
+    print(f"Finished evaluation. Restoring DEBUG environment variable...")
     if original_debug_value is not None:
-        os.environ['MY_AGENT_DEBUG'] = original_debug_value
-        print(f"Restored MY_AGENT_DEBUG to original value: {original_debug_value}")
+        os.environ['DEBUG'] = original_debug_value
+        print(f"Restored DEBUG to original value: {original_debug_value}")
     else:
         # If it was not set before, remove it
-        if 'MY_AGENT_DEBUG' in os.environ:
-            del os.environ['MY_AGENT_DEBUG']
-            print("Removed temporary MY_AGENT_DEBUG environment variable")
+        if 'DEBUG' in os.environ:
+            del os.environ['DEBUG']
+            print("Removed temporary DEBUG environment variable")

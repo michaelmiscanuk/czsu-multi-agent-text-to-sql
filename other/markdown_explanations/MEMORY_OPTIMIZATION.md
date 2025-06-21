@@ -70,7 +70,7 @@ POSTGRES_POOL_MIN=1
 POSTGRES_POOL_MAX=3
 POSTGRES_POOL_TIMEOUT=30
 MAX_ITERATIONS=1
-MY_AGENT_DEBUG=0
+DEBUG=0
 ```
 
 ### **3. Uvicorn Server Optimization**
@@ -125,7 +125,7 @@ Set these in your Render UI Environment Variables:
 ### **Memory Optimization:**
 ```
 MAX_ITERATIONS=1
-MY_AGENT_DEBUG=0
+DEBUG=0
 ```
 
 ### **PostgreSQL Pool Settings:**
