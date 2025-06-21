@@ -4,6 +4,8 @@ PostgreSQL checkpointer module using asyncpg for all operations.
 Simplified version based on working commit 108 to fix infinite loops and conversation loading issues.
 """
 
+from __future__ import annotations
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 import sys
 import os
@@ -25,12 +27,16 @@ import platform
 import os
 import uuid
 import time
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, TYPE_CHECKING
 from datetime import datetime, timedelta
 import asyncpg
 import psycopg
+import psycopg_pool
 import threading
 from contextlib import asynccontextmanager
+
+if TYPE_CHECKING:
+    from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 # Import LangGraph's built-in PostgreSQL checkpointer
 try:
@@ -44,7 +50,11 @@ except ImportError as e:
 # GLOBALS AND LOCKS - SIMPLIFIED VERSION
 #==============================================================================
 database_pool: Optional[asyncpg.Pool] = None
+psycopg_pool_instance: Optional[psycopg_pool.AsyncConnectionPool] = None
 _pool_lock = threading.Lock()
+_psycopg_pool_lock = threading.Lock()
+_checkpointer_setup_done = False
+_checkpointer_setup_lock = asyncio.Lock()
 _operations_lock = threading.Lock()
 _active_operations = 0
 
@@ -121,10 +131,27 @@ async def get_active_operations_count():
     with _get_operations_lock():
         return _active_operations
 
+async def force_close_psycopg_pool():
+    """Force close the psycopg connection pool."""
+    global psycopg_pool_instance
+    print__postgresql_debug("Force closing psycopg connection pool...")
+    
+    if psycopg_pool_instance:
+        try:
+            await psycopg_pool_instance.close()
+            print__postgresql_debug("Psycopg pool closed successfully")
+        except Exception as e:
+            print__postgresql_debug(f"Error closing psycopg pool: {e}")
+        finally:
+            psycopg_pool_instance = None
+
 async def force_close_all_connections():
     """Force close all database connections."""
     global database_pool
     print__postgresql_debug("Force closing all database connections...")
+    
+    # Close both asyncpg and psycopg pools
+    await force_close_psycopg_pool()
     
     if database_pool:
         try:
@@ -432,6 +459,81 @@ async def get_user_chat_threads_count(email: str, connection_pool=None) -> int:
         print__api_postgresql(f"Full traceback: {traceback.format_exc()}")
         raise
 
+async def get_or_create_psycopg_pool() -> psycopg_pool.AsyncConnectionPool:
+    """Get or create the psycopg connection pool, ensuring it's initialized only once."""
+    global psycopg_pool_instance
+    if psycopg_pool_instance:
+        return psycopg_pool_instance
+
+    # Use a thread-safe lock for pool creation
+    with _psycopg_pool_lock:
+        # Double-check inside the lock
+        if psycopg_pool_instance:
+            return psycopg_pool_instance
+
+        print__postgresql_debug("Creating new psycopg connection pool...")
+        connection_string = get_connection_string()
+        
+        # Connection arguments for psycopg, including disabling auto-prepared statements
+        connection_kwargs = {
+            "autocommit": True,
+            "prepare_threshold": 0,
+        }
+        
+        # Create pool with open=False to avoid deprecation warning, then open it explicitly
+        psycopg_pool_instance = psycopg_pool.AsyncConnectionPool(
+            conninfo=connection_string,
+            kwargs=connection_kwargs,
+            min_size=2,
+            max_size=10,
+            open=False  # Explicitly set to False to avoid deprecation warning
+        )
+        
+        # Open the pool explicitly using the modern approach
+        await psycopg_pool_instance.open()
+        print__postgresql_debug("Psycopg connection pool opened successfully.")
+        return psycopg_pool_instance
+
+# MODERN CONTEXT MANAGER APPROACH (recommended for new code)
+@asynccontextmanager
+async def modern_psycopg_pool():
+    """
+    Modern approach using async context manager for psycopg pool.
+    This is the recommended approach that avoids deprecation warnings.
+    
+    Usage:
+        async with modern_psycopg_pool() as pool:
+            async with pool.connection() as conn:
+                await conn.execute("SELECT 1")
+    """
+    connection_string = get_connection_string()
+    
+    # Connection arguments for psycopg, including disabling auto-prepared statements
+    connection_kwargs = {
+        "autocommit": True,
+        "prepare_threshold": 0,
+    }
+    
+    print__postgresql_debug("Creating modern psycopg pool using context manager...")
+    
+    # Use the modern context manager approach recommended by psycopg
+    async with psycopg_pool.AsyncConnectionPool(
+        conninfo=connection_string,
+        kwargs=connection_kwargs,
+        min_size=2,
+        max_size=10,
+        open=False  # Explicitly set to avoid warning
+    ) as pool:
+        print__postgresql_debug("Modern psycopg pool opened successfully")
+        yield pool
+        print__postgresql_debug("Modern psycopg pool will be closed automatically")
+
+async def cleanup_all_pools():
+    """Clean up all connection pools - use this for graceful shutdown."""
+    print__postgresql_debug("Starting cleanup of all connection pools...")
+    await force_close_all_connections()
+    print__postgresql_debug("All connection pools cleaned up successfully")
+
 async def delete_user_thread_entries(email: str, thread_id: str, connection_pool=None) -> Dict[str, Any]:
     """Delete all entries for a user's thread from users_threads_runs table."""
     try:
@@ -558,52 +660,65 @@ async def test_connection_health():
 
 class PostgresCheckpointerManager:
     """
-    Manages the LangGraph AsyncPostgresSaver lifecycle by creating a properly
-    configured connection that disables automatic prepared statements.
+    Manages the LangGraph AsyncPostgresSaver lifecycle by using a connection
+    pool to prevent errors related to prepared statements in a multi-worker environment.
     """
 
-    def __init__(self, connection_string: str):
-        self.connection_string = connection_string
+    def __init__(self):
+        self.pool: Optional[psycopg_pool.AsyncConnectionPool] = None
         self.conn: Optional[psycopg.AsyncConnection] = None
         self.checkpointer: Optional[AsyncPostgresSaver] = None
 
     async def __aenter__(self) -> AsyncPostgresSaver:
-        """Enter the async context manager, create a configured connection, and set up the checkpointer."""
-        print__postgresql_debug("Starting PostgresCheckpointerManager context...")
+        """Enter the async context, get a connection from the pool, and set up the checkpointer."""
+        global _checkpointer_setup_done
+        print__postgresql_debug("Starting PostgresCheckpointerManager context (pool-based)...")
         try:
-            # Connect using psycopg3, with autocommit=True and prepare_threshold=0
-            # prepare_threshold=0 disables automatic prepared statements, fixing the errors.
-            self.conn = await psycopg.AsyncConnection.connect(
-                self.connection_string,
-                autocommit=True,
-                prepare_threshold=0
-            )
-            print__postgresql_debug("Psycopg connection established with prepare_threshold=0.")
+            # Get a connection from the pool
+            self.pool = await get_or_create_psycopg_pool()
+            await self.pool.wait() # Ensure pool is ready before getting a connection
+            self.conn = await self.pool.getconn()
+            print__postgresql_debug("Got connection from psycopg pool.")
 
             # Instantiate the checkpointer with the connection
             self.checkpointer = AsyncPostgresSaver(conn=self.conn)
-            
-            # Set up the checkpointer schema
-            await self.checkpointer.setup()
-            print__postgresql_debug("AsyncPostgresSaver setup complete.")
-            
+
+            # Set up the checkpointer schema once, using a lock to prevent race conditions
+            async with _checkpointer_setup_lock:
+                if not _checkpointer_setup_done:
+                    try:
+                        print__postgresql_debug("Running checkpointer setup for the first time...")
+                        await self.checkpointer.setup()
+                        print__postgresql_debug("AsyncPostgresSaver setup complete.")
+                        _checkpointer_setup_done = True
+                    except (psycopg.errors.DuplicateTable, psycopg.errors.DuplicateObject):
+                        print__postgresql_debug("Checkpointer tables already exist. Skipping setup.")
+                        _checkpointer_setup_done = True
+                    except psycopg.errors.DuplicatePreparedStatement:
+                        print__postgresql_debug("Ignoring duplicate prepared statement error during setup, assuming another worker succeeded.")
+                        _checkpointer_setup_done = True
+                    except Exception as e:
+                        print__postgresql_debug(f"Error during initial checkpointer setup: {e}")
+                        # We don't re-raise here to allow other workers to proceed,
+                        # but we don't mark setup as done.
+                        
             return self.checkpointer
         except Exception as e:
             print__postgresql_debug(f"Failed to setup PostgresCheckpointerManager: {e}")
-            # Ensure connection is closed on failure
-            if self.conn and not self.conn.closed:
-                await self.conn.close()
+            # Ensure connection is released on failure
+            if self.conn and self.pool:
+                await self.pool.putconn(self.conn)
             raise
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Exit the async context manager and clean up the connection."""
+        """Exit the async context manager and release the connection to the pool."""
         print__postgresql_debug("Exiting PostgresCheckpointerManager context...")
-        if self.conn and not self.conn.closed:
-            await self.conn.close()
-            print__postgresql_debug("Psycopg connection closed.")
+        if self.conn and self.pool:
+            await self.pool.putconn(self.conn)
+            print__postgresql_debug("Psycopg connection returned to pool.")
 
 async def get_postgres_checkpointer():
-    """Get a PostgreSQL checkpointer manager - PROPERLY IMPLEMENTED VERSION."""
+    """Get a PostgreSQL checkpointer manager - POOL-BASED VERSION."""
     try:
         print__postgresql_debug("Creating PostgreSQL checkpointer manager...")
         
@@ -613,12 +728,8 @@ async def get_postgres_checkpointer():
         # Setup the users_threads_runs table first using our asyncpg pool
         await setup_users_threads_runs_table()
         
-        # Get connection string for LangGraph
-        connection_string = get_connection_string()
-        print__postgresql_debug(f"Using connection string for LangGraph: {connection_string[:50]}...")
-        
-        # Create the checkpointer manager
-        checkpointer_manager = PostgresCheckpointerManager(connection_string)
+        # Create the checkpointer manager which now uses a connection pool
+        checkpointer_manager = PostgresCheckpointerManager()
         print__postgresql_debug("PostgresCheckpointerManager created successfully")
         
         return checkpointer_manager
@@ -875,13 +986,13 @@ async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id
         if state_snapshot and state_snapshot.checkpoint:
             channel_values = state_snapshot.checkpoint.get("channel_values", {})
             queries_and_results = channel_values.get("queries_and_results", [])
-            print__api_postgresql(f"✅ Found {len(queries_and_results)} queries from latest checkpoint")
+            print__postgresql_debug(f"✅ Found {len(queries_and_results)} queries from latest checkpoint")
             return [[query, result] for query, result in queries_and_results]
         
         return []
         
     except Exception as e:
-        print__api_postgresql(f"⚠ Could not get queries from checkpoint: {e}")
+        print__postgresql_debug(f"⚠ Could not get queries from checkpoint: {e}")
         return []
 
 if __name__ == "__main__":
