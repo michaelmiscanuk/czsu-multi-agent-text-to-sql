@@ -937,26 +937,26 @@ def verify_google_jwt(token: str):
             unverified_payload = jwt.decode(token, options={"verify_signature": False})
         except jwt.DecodeError as e:
             # This should be rare now due to pre-validation, but keep for edge cases
-            print__debug(f"JWT decode error after pre-validation: {e}")
+            print__DEBUG_TOKEN(f"JWT decode error after pre-validation: {e}")
             raise HTTPException(status_code=401, detail="Invalid JWT token format")
         except Exception as e:
-            print__debug(f"JWT header decode error: {e}")
+            print__DEBUG_TOKEN(f"JWT header decode error: {e}")
             raise HTTPException(status_code=401, detail="Invalid JWT token format")
         
         # Debug: print the audience in the token and the expected audience
-        print__debug(f"Token aud: {unverified_payload.get('aud')}")
-        print__debug(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
+        print__DEBUG_TOKEN(f"Token aud: {unverified_payload.get('aud')}")
+        print__DEBUG_TOKEN(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
         
         # NEW: Check if this is a NextAuth.js id_token (missing 'kid' field)
         if "kid" not in unverified_header:
             # Reduce log noise - only log this every 10th occurrence
             _jwt_kid_missing_count += 1
             if _jwt_kid_missing_count % 10 == 1:  # Log 1st, 11th, 21st, etc.
-                print__debug(f"JWT token missing 'kid' field (#{_jwt_kid_missing_count}) - attempting NextAuth.js id_token verification")
+                print__DEBUG_TOKEN(f"JWT token missing 'kid' field (#{_jwt_kid_missing_count}) - attempting NextAuth.js id_token verification")
             
             # NEXTAUTH.JS SUPPORT: Verify id_token directly using Google's tokeninfo endpoint
             try:
-                print__debug("Attempting NextAuth.js id_token verification via Google tokeninfo endpoint")
+                print__DEBUG_TOKEN("Attempting NextAuth.js id_token verification via Google tokeninfo endpoint")
                 
                 # Use Google's tokeninfo endpoint to verify the id_token
                 tokeninfo_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
@@ -964,34 +964,34 @@ def verify_google_jwt(token: str):
                 
                 if response.status_code == 200:
                     tokeninfo = response.json()
-                    print__debug(f"Google tokeninfo response: {tokeninfo}")
+                    print__DEBUG_TOKEN(f"Google tokeninfo response: {tokeninfo}")
                     
                     # Verify the audience matches our client ID
                     expected_aud = os.getenv("GOOGLE_CLIENT_ID")
                     if tokeninfo.get("aud") != expected_aud:
-                        print__debug(f"Tokeninfo audience mismatch. Expected: {expected_aud}, Got: {tokeninfo.get('aud')}")
+                        print__DEBUG_TOKEN(f"Tokeninfo audience mismatch. Expected: {expected_aud}, Got: {tokeninfo.get('aud')}")
                         raise HTTPException(status_code=401, detail="Invalid token audience")
                     
                     # Verify the token is not expired
                     if int(tokeninfo.get("exp", 0)) < time.time():
-                        print__debug("Tokeninfo shows token has expired")
+                        print__DEBUG_TOKEN("Tokeninfo shows token has expired")
                         raise HTTPException(status_code=401, detail="Token has expired")
                     
                     # Return the tokeninfo as the payload (it contains email, name, etc.)
-                    print__debug("NextAuth.js id_token verification successful via Google tokeninfo")
+                    print__DEBUG_TOKEN("NextAuth.js id_token verification successful via Google tokeninfo")
                     return tokeninfo
                     
                 else:
-                    print__debug(f"Google tokeninfo endpoint returned error: {response.status_code} - {response.text}")
+                    print__DEBUG_TOKEN(f"Google tokeninfo endpoint returned error: {response.status_code} - {response.text}")
                     raise HTTPException(status_code=401, detail="Invalid NextAuth.js id_token")
                     
             except requests.RequestException as e:
-                print__debug(f"Failed to verify NextAuth.js id_token via Google tokeninfo: {e}")
+                print__DEBUG_TOKEN(f"Failed to verify NextAuth.js id_token via Google tokeninfo: {e}")
                 raise HTTPException(status_code=401, detail="Token verification failed - unable to validate NextAuth.js token")
             except HTTPException:
                 raise  # Re-raise HTTPException as-is
             except Exception as e:
-                print__debug(f"NextAuth.js id_token verification failed: {e}")
+                print__DEBUG_TOKEN(f"NextAuth.js id_token verification failed: {e}")
                 raise HTTPException(status_code=401, detail="NextAuth.js token verification failed")
         
         # ORIGINAL FLOW: Standard Google JWT token with 'kid' field (for direct Google API calls)
@@ -999,7 +999,7 @@ def verify_google_jwt(token: str):
             # Get Google public keys for JWKS verification
             jwks = requests.get(GOOGLE_JWK_URL).json()
         except requests.RequestException as e:
-            print__debug(f"Failed to fetch Google JWKS: {e}")
+            print__DEBUG_TOKEN(f"Failed to fetch Google JWKS: {e}")
             raise HTTPException(status_code=401, detail="Token verification failed - unable to fetch Google keys")
         
         # Find matching key
@@ -1008,44 +1008,44 @@ def verify_google_jwt(token: str):
                 public_key = RSAAlgorithm.from_jwk(key)
                 try:
                     payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
-                    print__debug("Standard Google JWT token verification successful")
+                    print__DEBUG_TOKEN("Standard Google JWT token verification successful")
                     return payload
                 except jwt.ExpiredSignatureError:
-                    print__debug("JWT token has expired")
+                    print__DEBUG_TOKEN("JWT token has expired")
                     raise HTTPException(status_code=401, detail="Token has expired")
                 except jwt.InvalidAudienceError:
-                    print__debug("JWT token has invalid audience")
+                    print__DEBUG_TOKEN("JWT token has invalid audience")
                     raise HTTPException(status_code=401, detail="Invalid token audience")
                 except jwt.InvalidSignatureError:
-                    print__debug("JWT token has invalid signature")
+                    print__DEBUG_TOKEN("JWT token has invalid signature")
                     raise HTTPException(status_code=401, detail="Invalid token signature")
                 except jwt.InvalidTokenError as e:
-                    print__debug(f"JWT token is invalid: {e}")
+                    print__DEBUG_TOKEN(f"JWT token is invalid: {e}")
                     raise HTTPException(status_code=401, detail="Invalid token")
                 except jwt.DecodeError as e:
-                    print__debug(f"JWT decode error: {e}")
+                    print__DEBUG_TOKEN(f"JWT decode error: {e}")
                     raise HTTPException(status_code=401, detail="Invalid token format")
                 except Exception as e:
-                    print__debug(f"JWT decode error: {e}")
+                    print__DEBUG_TOKEN(f"JWT decode error: {e}")
                     raise HTTPException(status_code=401, detail="Invalid token")
         
-        print__debug("JWT public key not found in Google JWKS")
+        print__DEBUG_TOKEN("JWT public key not found in Google JWKS")
         raise HTTPException(status_code=401, detail="Invalid token: public key not found")
         
     except HTTPException:
         raise  # Re-raise HTTPException as-is
     except requests.RequestException as e:
-        print__debug(f"Failed to fetch Google JWKS: {e}")
+        print__DEBUG_TOKEN(f"Failed to fetch Google JWKS: {e}")
         raise HTTPException(status_code=401, detail="Token verification failed - unable to validate")
     except jwt.DecodeError as e:
         # This should be rare now due to pre-validation
-        print__debug(f"JWT decode error in main handler: {e}")
+        print__DEBUG_TOKEN(f"JWT decode error in main handler: {e}")
         raise HTTPException(status_code=401, detail="Invalid JWT token format")
     except KeyError as e:
-        print__debug(f"JWT verification KeyError: {e}")
+        print__DEBUG_TOKEN(f"JWT verification KeyError: {e}")
         raise HTTPException(status_code=401, detail="Invalid JWT token structure")
     except Exception as e:
-        print__debug(f"JWT verification failed: {e}")
+        print__DEBUG_TOKEN(f"JWT verification failed: {e}")
         raise HTTPException(status_code=401, detail="Token verification failed")
 
 # Enhanced dependency for JWT authentication with better error handling
@@ -1068,7 +1068,7 @@ def get_current_user(authorization: str = Header(None)):
     except HTTPException:
         raise  # Re-raise HTTPException as-is
     except Exception as e:
-        print__debug(f"Authentication error: {e}")
+        print__DEBUG_TOKEN(f"Authentication error: {e}")
         log_comprehensive_error("authentication", e)
         raise HTTPException(status_code=401, detail="Authentication failed")
 
@@ -2447,6 +2447,18 @@ def print__feedback_flow(msg: str) -> None:
         import sys
         sys.stdout.flush()
 
+def print__DEBUG_TOKEN(msg: str) -> None:
+    """Print DEBUG_TOKEN messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_TOKEN', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_TOKEN] {msg}")
+        import sys
+        sys.stdout.flush()
+        
 def print__sentiment_flow(msg: str) -> None:
     """Print SENTIMENT-FLOW messages when debug mode is enabled.
     

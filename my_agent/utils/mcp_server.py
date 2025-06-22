@@ -24,14 +24,18 @@ DB_PATH = BASE_DIR / "data" / "czsu_data.db"
 
 # Debug constant for tool ID
 SQLITE_TOOL_ID = 21  # Static ID for SQLiteQueryTool
-
-def debug_print(msg: str) -> None:
-    """Print debug messages when debug mode is enabled.
+ 
+def print__tools_debug(msg: str) -> None:
+    """Print TOOLS DEBUG messages when tools debug mode is enabled.
+    
     Args:
         msg: The message to print
     """
-    if os.environ.get('DEBUG', '0') == '1':
-        print(msg)
+    debug_mode = os.environ.get('DEBUG_TOOLS', '0')
+    if debug_mode == '1':
+        print(f"[TOOLS] {msg}")
+        import sys
+        sys.stdout.flush()
 
 class SQLiteQueryTool(BaseTool):
     """Tool for executing SQL queries against a SQLite database."""
@@ -43,10 +47,10 @@ class SQLiteQueryTool(BaseTool):
         """Execute the SQL query and return results."""
         try:
             # Debug print query
-            debug_print(f"{SQLITE_TOOL_ID}: =====================================")
-            debug_print(f"{SQLITE_TOOL_ID}: Executing query:")
-            debug_print(f"{SQLITE_TOOL_ID}: {query}")
-            debug_print(f"{SQLITE_TOOL_ID}: =====================================")
+            print__tools_debug(f"{SQLITE_TOOL_ID}: =====================================")
+            print__tools_debug(f"{SQLITE_TOOL_ID}: Executing query:")
+            print__tools_debug(f"{SQLITE_TOOL_ID}: {query}")
+            print__tools_debug(f"{SQLITE_TOOL_ID}: =====================================")
 
             # Execute SQL query
             with sqlite3.connect(DB_PATH) as conn:
@@ -63,9 +67,9 @@ class SQLiteQueryTool(BaseTool):
                 result_value = str(result)
 
             # Debug print result
-            debug_print(f"{SQLITE_TOOL_ID}: Query result:")
-            debug_print(f"{SQLITE_TOOL_ID}: {result_value}")
-            debug_print(f"{SQLITE_TOOL_ID}: =====================================")
+            print__tools_debug(f"{SQLITE_TOOL_ID}: Query result:")
+            print__tools_debug(f"{SQLITE_TOOL_ID}: {result_value}")
+            print__tools_debug(f"{SQLITE_TOOL_ID}: =====================================")
             
             return result_value
             
@@ -87,7 +91,7 @@ async def create_mcp_server() -> List[BaseTool]:
 
 if __name__ == "__main__":
     # Create and run the server
-    debug_print(f"{SQLITE_TOOL_ID}: =====================================")
-    debug_print(f"{SQLITE_TOOL_ID}: STARTING MCP SERVER")
+    print__tools_debug(f"{SQLITE_TOOL_ID}: =====================================")
+    print__tools_debug(f"{SQLITE_TOOL_ID}: STARTING MCP SERVER")
     server = FastMCP("sqlite_server")
     server.run() 
