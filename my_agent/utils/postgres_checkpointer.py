@@ -231,7 +231,49 @@ async def setup_users_threads_runs_table():
         from .robust_postgres_pool import get_connection
         
         async with get_connection() as conn:
-            # Create table if it doesn't exist
+            # MIGRATION FIX: Check if table exists with old schema and migrate it
+            print__postgresql_debug("Checking for existing table schema...")
+            
+            # Check if table exists and get its schema
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    SELECT column_name, data_type, character_maximum_length
+                    FROM information_schema.columns 
+                    WHERE table_name = 'users_threads_runs'
+                    ORDER BY ordinal_position
+                """)
+                
+                existing_columns = await cur.fetchall()
+                
+            if existing_columns:
+                print__postgresql_debug(f"Found existing table with {len(existing_columns)} columns")
+                
+                # Check if any VARCHAR columns have the wrong size (50 instead of 255)
+                needs_migration = False
+                for col_name, data_type, max_length in existing_columns:
+                    if data_type == 'character varying' and max_length == 50:
+                        print__postgresql_debug(f"Found column '{col_name}' with VARCHAR(50) - needs migration")
+                        needs_migration = True
+                        break
+                
+                if needs_migration:
+                    print__postgresql_debug("MIGRATION REQUIRED: Dropping old table and recreating with correct schema...")
+                    
+                    # Backup existing data (if any)
+                    await conn.execute("""
+                        CREATE TABLE IF NOT EXISTS users_threads_runs_backup AS 
+                        SELECT * FROM users_threads_runs
+                    """)
+                    
+                    print__postgresql_debug("Created backup table users_threads_runs_backup")
+                    
+                    # Drop the old table
+                    await conn.execute("DROP TABLE users_threads_runs CASCADE")
+                    print__postgresql_debug("Dropped old table with incorrect schema")
+                else:
+                    print__postgresql_debug("Existing table schema is correct - no migration needed")
+            
+            # Create table with correct schema
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS users_threads_runs (
                     id SERIAL PRIMARY KEY,
@@ -243,6 +285,41 @@ async def setup_users_threads_runs_table():
                     sentiment BOOLEAN DEFAULT NULL
                 );
             """)
+            
+            print__postgresql_debug("Table created/verified with correct schema (VARCHAR(255))")
+            
+            # Restore data from backup if it exists
+            try:
+                async with conn.cursor() as cur:
+                    # Check if backup table exists
+                    await cur.execute("""
+                        SELECT EXISTS (
+                            SELECT FROM information_schema.tables 
+                            WHERE table_name = 'users_threads_runs_backup'
+                        )
+                    """)
+                    backup_exists = await cur.fetchone()
+                    
+                    if backup_exists and backup_exists[0]:
+                        # Restore data from backup
+                        await cur.execute("""
+                            INSERT INTO users_threads_runs (id, email, thread_id, run_id, prompt, timestamp, sentiment)
+                            SELECT id, email, thread_id, run_id, prompt, timestamp, sentiment 
+                            FROM users_threads_runs_backup
+                            ON CONFLICT (run_id) DO NOTHING
+                        """)
+                        
+                        # Get count of restored records
+                        await cur.execute("SELECT COUNT(*) FROM users_threads_runs")
+                        restored_count = await cur.fetchone()
+                        print__postgresql_debug(f"Restored {restored_count[0] if restored_count else 0} records from backup")
+                        
+                        # Drop backup table
+                        await conn.execute("DROP TABLE users_threads_runs_backup")
+                        print__postgresql_debug("Backup table dropped after successful restoration")
+                        
+            except Exception as restore_error:
+                print__postgresql_debug(f"Note: Could not restore from backup (this is normal for new installations): {restore_error}")
             
             # Create indexes for better performance
             await conn.execute("""
@@ -260,7 +337,7 @@ async def setup_users_threads_runs_table():
                 ON users_threads_runs(email, thread_id);
             """)
             
-            print__postgresql_debug("users_threads_runs table and indexes created/verified")
+            print__postgresql_debug("users_threads_runs table and indexes created/verified with correct schema")
             
     except Exception as e:
         print__postgresql_debug(f"Failed to setup users_threads_runs table: {e}")

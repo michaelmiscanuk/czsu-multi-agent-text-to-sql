@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F8FAFC;
+  --foreground: #181C3A;
+  
+  /* Table font configuration - adjustable */
+  --table-font-family: var(--font-inter, Inter, system-ui, sans-serif);
+  --table-font-size: 0.97rem;
+  --table-line-height: 1.6;
+  --table-header-font-size: 0.875rem;
+  --table-header-font-weight: 600;
+  --table-cell-font-weight: 400;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  color: #181C3A;
+}
+
+strong, b {
+  font-weight: 700;
+}
+
+p, li, span, div, td, th, label, input, button {
+  color: #181C3A;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+.main-content {
+  background: #fff;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem 2rem 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,0.04);
+}
+
+/* Unified light blue theme class */
+.light-blue-theme {
+  background-color: rgb(219 234 254); /* bg-blue-100 */
+  color: #181C3A;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+}
+
+/* Darker blue hover state for light-blue-theme buttons */
+.light-blue-theme:hover:not(:disabled) {
+  background-color: rgb(59 130 246); /* blue-500 */
+  color: white !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md */
+}
+
+/* Ensure child elements inherit hover text color */
+.light-blue-theme:hover:not(:disabled) * {
+  color: white !important;
+}
+
+/* Custom scrollbar styles for chat interface */
+.chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.5);
+  border-radius: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.7);
+}
+
+/* Dataset code badge styling - matches chat interface dataset codes exactly */
+.dataset-code-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem; /* px-3 py-1 */
+  border-radius: 9999px; /* rounded-full */
+  background-color: rgb(239 246 255); /* bg-blue-50 */
+  color: rgb(29 78 216); /* text-blue-700 */
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* font-mono */
+  font-size: 0.75rem; /* text-xs */
+  line-height: 1rem;
+  font-weight: 600; /* font-semibold */
+  transition: all 0.15s ease-in-out; /* transition-all duration-150 */
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+  border: 1px solid rgb(219 234 254); /* border border-blue-100 */
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dataset-code-badge:hover {
+  background-color: rgb(219 234 254); /* hover:bg-blue-100 */
+}
+
+/* Unified main container class - consistent spacing for all menus */
+.main-container-unified {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  padding-left: 0.5rem; /* px-2 */
+  padding-right: 0.5rem; /* px-2 */
+  padding-top: 1.5rem; /* Unified spacing - adjust this value to control all menus */
+  padding-bottom: 1.5rem;
+}
+
+/* Legacy classes - kept for reference but not used */
+.main-container-base {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  padding-left: 0.5rem; /* px-2 */
+  padding-right: 0.5rem; /* px-2 */
+}
+
+.main-container-chat {
+  padding-top: 1rem; /* py-4 equivalent */
+  padding-bottom: 1rem; /* py-4 equivalent */
+}
+
+.main-container-default {
+  padding-top: 2rem; /* py-8 equivalent */
+  padding-bottom: 2rem; /* py-8 equivalent */
+}
+
+/* Unified app container width - consistent across all menus */
+.app-container {
+  width: 80%; /* w-full */
+  max-width: 112rem; /* max-w-7xl */
+  margin-left: auto; /* mx-auto */
+  margin-right: auto; /* mx-auto */
+  padding: 1rem; /* outer padding for all menus */
+}
+
+/* Unified container for all menus - chat, catalog, and data */
+.chat-container {
+  height: calc(100vh - 9rem);
+  max-height: calc(100vh - 9rem);
+}
+
+/* Complete unified white block system - combines all positioning, sizing, and styling */
+.unified-white-block-system {
+  /* Container sizing and positioning */
+  height: calc(100vh - 8.5rem);
+  max-height: calc(100vh - 8.5rem);
+  display: flex;
+  
+  /* Width and centering (from app-container) */
+  width: 80%;
+  max-width: 112rem; /* max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem; /* outer padding for all menus */
+  
+  /* White block appearance */
+  background-color: white;
+  border-radius: 1rem; /* rounded-2xl */
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); /* shadow-2xl */
+  border: 1px solid rgb(243 244 246); /* border border-gray-100 */
+  overflow: hidden;
+}
+
+/* Unified white block for all menus - extracted from working chat menu */
+.unified-white-block {
+  background-color: white; /* bg-white */
+  border-radius: 1rem; /* rounded-2xl */
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); /* shadow-2xl */
+  border: 1px solid rgb(243 244 246); /* border border-gray-100 */
+  overflow: hidden; /* overflow-hidden */
+}
+
+/* Chat white block styling - extracted from chat menu */
+.chat-white-block {
+  background-color: white; /* bg-white */
+  border-radius: 1rem; /* rounded-2xl */
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); /* shadow-2xl */
+  border: 1px solid rgb(243 244 246); /* border border-gray-100 */
+  overflow: hidden; /* overflow-hidden */
+  display: flex; /* Add flex for proper layout */
+  flex-direction: column; /* Stack children vertically */
+}
+
+/* White content block - using exact chat menu styling */
+.content-block {
+  background-color: white; /* bg-white */
+  border-radius: 1rem; /* rounded-2xl */
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); /* shadow-2xl */
+  border: 1px solid rgb(243 244 246); /* border border-gray-100 */
+  overflow: hidden; /* overflow-hidden */
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 10rem); /* Consistent height across all menus */
+}
+
+/* Table container - balanced spacing for catalog/data menus */
+.table-container {
+  padding-top: 0.5rem; /* Slightly increased for balance */
+  padding-left: 0.5rem; /* Keep side padding */
+  padding-right: 0rem; /* Keep side padding */
+  padding-bottom: 0.3rem; /* Slightly increased for balance */
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem; /* Increased from 1.25rem to 1.75rem for more spacing */
+}
+
+/* Filter section spacing */
+.filter-section {
+  margin-bottom: 0; /* Remove default margin, use gap instead */
+}
+
+/* Table section spacing */
+.table-section {
+  flex: 1;
+  overflow: auto; /* Restore scrolling functionality */
+  margin-bottom: 0; /* Remove default margin, use gap instead */
+}
+
+/* Pagination section spacing */
+.pagination-section {
+  margin-top: 0; /* Remove default margin, use gap instead */
+}
+
+/* Enhanced table font styling classes */
+.table-content-font {
+  font-family: var(--table-font-family);
+  font-size: var(--table-font-size);
+  line-height: var(--table-line-height);
+  font-weight: var(--table-cell-font-weight);
+}
+
+.table-header-font {
+  font-family: var(--table-font-family);
+  font-size: var(--table-header-font-size);
+  line-height: var(--table-line-height);
+  font-weight: var(--table-header-font-weight);
+}
+
+.table-description-font {
+  font-family: var(--table-font-family);
+  font-size: var(--table-font-size);
+  line-height: var(--table-line-height);
+  font-weight: var(--table-cell-font-weight);
+}
+
+/* Ensure table cells maintain readability */
+.table-cell-readable {
+  word-break: break-word;
+  white-space: pre-line;
+} 
