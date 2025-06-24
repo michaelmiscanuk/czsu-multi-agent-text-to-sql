@@ -875,7 +875,7 @@ class SentimentRequest(BaseModel):
 
 class ChatThreadResponse(BaseModel):
     thread_id: str
-    latest_timestamp: str
+    latest_timestamp: datetime  # Changed from str to datetime
     run_count: int
     title: str  # Now includes the title from first prompt
     full_prompt: str  # Full prompt text for tooltip
@@ -1488,8 +1488,38 @@ async def get_chat_threads(
         print__chat_threads_debug(f"🔍 Getting chat threads for user: {user_email} (limit: {limit}, offset: {offset})")
         print__chat_threads_debug(f"Getting chat threads for user: {user_email} (limit: {limit}, offset: {offset})")
         threads = await get_user_chat_threads(user_email, limit=limit, offset=offset)
+        print__chat_threads_debug(f"🔍 Retrieved threads: {threads}")
+        if threads is None:
+            print__chat_threads_debug("get_user_chat_threads returned None! Setting to empty list.")
+            threads = []
         print__chat_threads_debug(f"🔍 Retrieved {len(threads)} threads from database")
         print__chat_threads_debug(f"Retrieved {len(threads)} threads for user {user_email}")
+        
+        # Try/except around the for-loop to catch and print any errors
+        try:
+            chat_thread_responses = []
+            for thread in threads:
+                print("[GENERIC-DEBUG] Processing thread dict:", thread)
+                chat_thread_response = ChatThreadResponse(
+                    thread_id=thread['thread_id'],
+                    latest_timestamp=thread['latest_timestamp'],
+                    run_count=thread['run_count'],
+                    title=thread['title'],
+                    full_prompt=thread['full_prompt']
+                )
+                chat_thread_responses.append(chat_thread_response)
+        except Exception as e:
+            import traceback
+            print("[GENERIC-ERROR] Exception in /chat-threads for-loop:", e)
+            print(traceback.format_exc())
+            # Return empty result on error
+            return PaginatedChatThreadsResponse(
+                threads=[],
+                total_count=0,
+                page=page,
+                limit=limit,
+                has_more=False
+            )
         
         # Convert to response format
         print__chat_threads_debug(f"🔍 Converting threads to response format")
@@ -2324,6 +2354,13 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             print__chat_all_messages_debug(f"🔍 Starting post-completion memory check")
             log_memory_usage("bulk_complete")
             print__chat_all_messages_debug(f"🔍 Post-completion memory check completed")
+            
+            # Convert all ChatMessage objects to dicts for JSON serialization
+            for thread_id in all_messages:
+                all_messages[thread_id] = [
+                    msg.model_dump() if hasattr(msg, 'model_dump') else msg.dict()
+                    for msg in all_messages[thread_id]
+                ]
             
             result = {
                 "messages": all_messages,
