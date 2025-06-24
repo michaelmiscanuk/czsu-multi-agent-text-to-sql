@@ -1,7 +1,7 @@
 "use client";
 import InputBar from '@/components/InputBar';
 import MessageArea from '@/components/MessageArea';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
@@ -44,7 +44,18 @@ const INITIAL_MESSAGE = [
 
 export default function ChatPage() {
   const { data: session, status, update } = useSession();
-  const userEmail = session?.user?.email || null;
+  
+  // CRITICAL FIX: Memoize userEmail to prevent re-renders when session object changes
+  const userEmail = useMemo(() => {
+    const email = session?.user?.email || null;
+    console.log('[ChatPage-userEmail] 📧 User email computed:', email);
+    return email;
+  }, [session?.user?.email]);
+  
+  // Debug: Track session changes vs userEmail changes
+  useEffect(() => {
+    console.log('[ChatPage-session] 🔄 Session object changed, status:', status);
+  }, [session, status]);
   
   // Use the new ChatCache context
   const {
@@ -133,6 +144,9 @@ export default function ChatPage() {
   const prevMsgCountRef = React.useRef<number>(1);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
+  
+  // Track the last processed user email to prevent multiple runs
+  const lastProcessedUserRef = useRef<string | null>(null);
   
   // Simple text persistence
   const setCurrentMessageWithPersistence = (message: string) => {
@@ -266,11 +280,19 @@ export default function ChatPage() {
     
     if (status === "unauthenticated") {
       console.log('[ChatPage-useEffect] 🚫 User not authenticated, redirecting to login');
+      lastProcessedUserRef.current = null; // Reset on logout
       return; // Let the AuthGuard handle the redirect
     }
     
     if (status === "authenticated" && userEmail) {
+      // CRITICAL FIX: Prevent multiple runs for the same user
+      if (lastProcessedUserRef.current === userEmail) {
+        console.log('[ChatPage-useEffect] ⏭️ Skipping - already processed user:', userEmail);
+        return;
+      }
+      
       console.log('[ChatPage-useEffect] ✅ User authenticated:', userEmail);
+      lastProcessedUserRef.current = userEmail; // Mark as processed
       
       // Initialize user in context
       setUserEmail(userEmail);
@@ -310,11 +332,13 @@ export default function ChatPage() {
       } else {
         console.log('[ChatPage-useEffect] ⚡ Using cached data - no API call needed');
         // Cache is valid and data should already be loaded by ChatCacheContext
-        // Threads are considered loaded when we have totalThreadsCount > 0
+        
+        // Check threads length at runtime without making it a dependency
+        const currentThreadsLength = threads.length;
         
         // If we have cached threads, we need to trigger the UI update
-        if (threads.length > 0) {
-          console.log('[ChatPage-useEffect] 📤 Found', threads.length, 'cached threads - UI ready');
+        if (currentThreadsLength > 0) {
+          console.log('[ChatPage-useEffect] 📤 Found', currentThreadsLength, 'cached threads - UI ready');
           
           // Restore active thread from localStorage if not already set
           if (!activeThreadId) {
@@ -322,7 +346,7 @@ export default function ChatPage() {
             if (lastActiveThread && threads.find(t => t.thread_id === lastActiveThread)) {
               console.log('[ChatPage-useEffect] 🔄 Restoring cached active thread:', lastActiveThread);
               setActiveThreadId(lastActiveThread);
-            } else if (threads.length > 0) {
+            } else if (currentThreadsLength > 0) {
               // Select the most recent thread if no stored thread
               const mostRecentThread = threads[0]; // threads are sorted by latest_timestamp DESC
               console.log('[ChatPage-useEffect] 🔄 No stored thread, selecting most recent:', mostRecentThread.thread_id);
@@ -336,7 +360,7 @@ export default function ChatPage() {
         }
       }
     }
-  }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length, activeThreadId, setUserEmail, resetPagination, loadThreadsWithPagination, setActiveThreadId]);
+  }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, activeThreadId, setUserEmail, resetPagination, loadThreadsWithPagination, setActiveThreadId]);
 
   // NEW: Initialize currentMessage from localStorage when user authenticates
   useEffect(() => {
@@ -372,7 +396,8 @@ export default function ChatPage() {
 
   // Restore active thread from localStorage after threads are loaded
   useEffect(() => {
-    if (totalThreadsCount > 0 && threads.length > 0 && !activeThreadId) {
+    const currentThreadsLength = threads.length;
+    if (totalThreadsCount > 0 && currentThreadsLength > 0 && !activeThreadId) {
       // Check localStorage for last active thread
       const lastActiveThread = localStorage.getItem('czsu-last-active-chat');
       console.log('[ChatPage-useEffect] 🔄 Checking for last active thread:', lastActiveThread);
@@ -381,14 +406,14 @@ export default function ChatPage() {
         console.log('[ChatPage-useEffect] 🔄 Restoring active thread:', lastActiveThread);
         setActiveThreadId(lastActiveThread);
         // Messages will be loaded by the activeThreadId effect above
-      } else if (threads.length > 0) {
+      } else if (currentThreadsLength > 0) {
         // Select the most recent thread if no stored thread
         const mostRecentThread = threads[0]; // threads are sorted by latest_timestamp DESC
         console.log('[ChatPage-useEffect] 🔄 No stored thread, selecting most recent:', mostRecentThread.thread_id);
         setActiveThreadId(mostRecentThread.thread_id);
       }
     }
-  }, [totalThreadsCount, threads.length, activeThreadId]);
+  }, [totalThreadsCount, activeThreadId]);
 
   // Handle URL storage event for localStorage sync
   useEffect(() => {
@@ -403,7 +428,7 @@ export default function ChatPage() {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  // NEW: Cleanup effect for cross-tab loading state
+  // NEW: Cleanup effect for cross-tab loading state and processed user tracking
   useEffect(() => {
     // Cleanup function when user changes or component unmounts
     return () => {
@@ -415,6 +440,9 @@ export default function ChatPage() {
           console.log('[ChatPage-cleanup] ✅ Cleaned up loading state for:', userEmail);
         }
       }
+      // Reset the processed user ref on cleanup
+      lastProcessedUserRef.current = null;
+      console.log('[ChatPage-cleanup] 🔄 Reset processed user reference');
     };
   }, [userEmail, isLoading, setUserLoadingState]);
 
@@ -855,11 +883,12 @@ export default function ChatPage() {
 
   // Set default active thread when threads are loaded
   useEffect(() => {
-    if (totalThreadsCount > 0 && threads.length > 0 && !activeThreadId) {
+    const currentThreadsLength = threads.length;
+    if (totalThreadsCount > 0 && currentThreadsLength > 0 && !activeThreadId) {
       console.log('[ChatPage-setDefaultThread] 🎯 Setting default active thread to first loaded thread');
       setActiveThreadId(threads[0].thread_id);
     }
-  }, [totalThreadsCount, threads.length, activeThreadId]);
+  }, [totalThreadsCount, activeThreadId]);
 
   // NEW: Response recovery mechanism for memory pressure scenarios
   const checkForNewMessagesAfterTimeout = async (threadId: string, beforeMessageCount: number) => {

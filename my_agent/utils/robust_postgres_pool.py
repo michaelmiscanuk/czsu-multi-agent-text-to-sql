@@ -102,11 +102,11 @@ class RobustPostgresPool:
             kwargs=self._pool_config,
             min_size=2,
             max_size=8,
-            timeout=30,  # 30 seconds timeout for getting connections
-            max_waiting=10,  # Maximum 10 waiting requests
-            max_lifetime=3600,  # 1 hour connection lifetime
-            max_idle=600,  # 10 minutes idle timeout
-            reconnect_timeout=300,  # 5 minutes reconnect timeout
+            timeout=15,
+            max_waiting=5,
+            max_lifetime=1800,
+            max_idle=300,
+            reconnect_timeout=180,
             reconnect_failed=reconnect_failed,
             name=f"robust_pool_{int(time.time())}",
             open=False  # Explicitly set to avoid deprecation warnings

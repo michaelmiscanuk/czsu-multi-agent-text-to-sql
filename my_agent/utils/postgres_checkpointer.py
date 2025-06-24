@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-PostgreSQL checkpointer module using ONLY psycopg3 for all operations.
-Fixed version that eliminates infinite loops, connection leaks, and race conditions.
+PostgreSQL checkpointer module using psycopg3 for all operations.
+Provides async connection pooling, table setup, and checkpoint management for user conversations.
 """
 
 from __future__ import annotations
@@ -173,12 +173,12 @@ async def create_fresh_connection_pool() -> Optional[psycopg_pool.AsyncConnectio
         pool = psycopg_pool.AsyncConnectionPool(
             conninfo=get_connection_string(),
             min_size=2,
-            max_size=10,
-            timeout=30,
-            max_waiting=10,
-            max_lifetime=3600,  # 1 hour
-            max_idle=600,       # 10 minutes
-            reconnect_timeout=300,  # 5 minutes
+            max_size=8,  # Reduced from 10 to 8 for better resource management
+            timeout=15,  # Reduced from 30 to 15 seconds timeout for getting connections
+            max_waiting=5,  # Reduced from 10 to prevent excessive queueing
+            max_lifetime=1800,  # Reduced from 3600 to 30 minutes connection lifetime
+            max_idle=300,       # Reduced from 600 to 5 minutes idle timeout
+            reconnect_timeout=180,  # Reduced from 300 to 3 minutes reconnect timeout
             kwargs={
                 "autocommit": True,
                 "prepare_threshold": None,  # Disable prepared statements for pgbouncer compatibility
@@ -223,56 +223,14 @@ async def get_healthy_pool() -> psycopg_pool.AsyncConnectionPool:
     return _global_psycopg_pool
 
 async def setup_users_threads_runs_table():
-    """Setup the users_threads_runs table for tracking user conversations - ROBUST VERSION."""
+    """Create the users_threads_runs table for tracking user conversations."""
     try:
         print__postgresql_debug("Setting up users_threads_runs table...")
-        
+
         # Use robust connection handling
         from .robust_postgres_pool import get_connection
-        
+
         async with get_connection() as conn:
-            # MIGRATION FIX: Check if table exists with old schema and migrate it
-            print__postgresql_debug("Checking for existing table schema...")
-            
-            # Check if table exists and get its schema
-            async with conn.cursor() as cur:
-                await cur.execute("""
-                    SELECT column_name, data_type, character_maximum_length
-                    FROM information_schema.columns 
-                    WHERE table_name = 'users_threads_runs'
-                    ORDER BY ordinal_position
-                """)
-                
-                existing_columns = await cur.fetchall()
-                
-            if existing_columns:
-                print__postgresql_debug(f"Found existing table with {len(existing_columns)} columns")
-                
-                # Check if any VARCHAR columns have the wrong size (50 instead of 255)
-                needs_migration = False
-                for col_name, data_type, max_length in existing_columns:
-                    if data_type == 'character varying' and max_length == 50:
-                        print__postgresql_debug(f"Found column '{col_name}' with VARCHAR(50) - needs migration")
-                        needs_migration = True
-                        break
-                
-                if needs_migration:
-                    print__postgresql_debug("MIGRATION REQUIRED: Dropping old table and recreating with correct schema...")
-                    
-                    # Backup existing data (if any)
-                    await conn.execute("""
-                        CREATE TABLE IF NOT EXISTS users_threads_runs_backup AS 
-                        SELECT * FROM users_threads_runs
-                    """)
-                    
-                    print__postgresql_debug("Created backup table users_threads_runs_backup")
-                    
-                    # Drop the old table
-                    await conn.execute("DROP TABLE users_threads_runs CASCADE")
-                    print__postgresql_debug("Dropped old table with incorrect schema")
-                else:
-                    print__postgresql_debug("Existing table schema is correct - no migration needed")
-            
             # Create table with correct schema
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS users_threads_runs (
@@ -285,60 +243,27 @@ async def setup_users_threads_runs_table():
                     sentiment BOOLEAN DEFAULT NULL
                 );
             """)
-            
+
             print__postgresql_debug("Table created/verified with correct schema (VARCHAR(255))")
-            
-            # Restore data from backup if it exists
-            try:
-                async with conn.cursor() as cur:
-                    # Check if backup table exists
-                    await cur.execute("""
-                        SELECT EXISTS (
-                            SELECT FROM information_schema.tables 
-                            WHERE table_name = 'users_threads_runs_backup'
-                        )
-                    """)
-                    backup_exists = await cur.fetchone()
-                    
-                    if backup_exists and backup_exists[0]:
-                        # Restore data from backup
-                        await cur.execute("""
-                            INSERT INTO users_threads_runs (id, email, thread_id, run_id, prompt, timestamp, sentiment)
-                            SELECT id, email, thread_id, run_id, prompt, timestamp, sentiment 
-                            FROM users_threads_runs_backup
-                            ON CONFLICT (run_id) DO NOTHING
-                        """)
-                        
-                        # Get count of restored records
-                        await cur.execute("SELECT COUNT(*) FROM users_threads_runs")
-                        restored_count = await cur.fetchone()
-                        print__postgresql_debug(f"Restored {restored_count[0] if restored_count else 0} records from backup")
-                        
-                        # Drop backup table
-                        await conn.execute("DROP TABLE users_threads_runs_backup")
-                        print__postgresql_debug("Backup table dropped after successful restoration")
-                        
-            except Exception as restore_error:
-                print__postgresql_debug(f"Note: Could not restore from backup (this is normal for new installations): {restore_error}")
-            
+
             # Create indexes for better performance
             await conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_users_threads_runs_email 
                 ON users_threads_runs(email);
             """)
-            
+
             await conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_users_threads_runs_thread_id 
                 ON users_threads_runs(thread_id);
             """)
-            
+
             await conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_users_threads_runs_email_thread 
                 ON users_threads_runs(email, thread_id);
             """)
-            
+
             print__postgresql_debug("users_threads_runs table and indexes created/verified with correct schema")
-            
+
     except Exception as e:
         print__postgresql_debug(f"Failed to setup users_threads_runs table: {e}")
         raise
@@ -348,10 +273,7 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
     try:
         if not run_id:
             run_id = str(uuid.uuid4())
-        
         print__api_postgresql(f"Creating thread run entry: user={email}, thread={thread_id}, run={run_id}")
-        
-        # FIXED: Use psycopg pool instead of asyncpg
         pool = await get_healthy_pool()
         async with pool.connection() as conn:
             async with conn.cursor() as cur:
@@ -364,10 +286,8 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
                         prompt = EXCLUDED.prompt,
                         timestamp = CURRENT_TIMESTAMP
                 """, (email, thread_id, run_id, prompt))
-        
         print__api_postgresql(f"Thread run entry created successfully: {run_id}")
         return run_id
-        
     except Exception as e:
         print__api_postgresql(f"Failed to create thread run entry: {e}")
         raise
@@ -376,8 +296,6 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: 
     """Update sentiment for a thread run."""
     try:
         print__api_postgresql(f"Updating sentiment for run {run_id}: {sentiment}")
-        
-        # FIXED: Use psycopg pool instead of asyncpg
         pool = await get_healthy_pool()
         async with pool.connection() as conn:
             async with conn.cursor() as cur:
@@ -389,7 +307,6 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: 
                 updated = cur.rowcount
         print__api_postgresql(f"Updated sentiment for {updated} entries")
         return int(updated) > 0
-        
     except Exception as e:
         print__api_postgresql(f"Failed to update sentiment: {e}")
         return False
@@ -398,8 +315,6 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
     """Get all sentiments for a thread."""
     try:
         print__api_postgresql(f"Getting sentiments for thread {thread_id}")
-        
-        # FIXED: Use psycopg pool instead of asyncpg
         pool = await get_healthy_pool()
         async with pool.connection() as conn:
             async with conn.cursor() as cur:
@@ -409,11 +324,9 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
                     WHERE email = %s AND thread_id = %s AND sentiment IS NOT NULL
                 """, (email, thread_id))
                 rows = await cur.fetchall()
-        
-        sentiments = {row[0]: row[1] for row in rows}  # row[0] = run_id, row[1] = sentiment
+        sentiments = {row[0]: row[1] for row in rows}
         print__api_postgresql(f"Retrieved {len(sentiments)} sentiments")
         return sentiments
-        
     except Exception as e:
         print__api_postgresql(f"Failed to get sentiments: {e}")
         return {}

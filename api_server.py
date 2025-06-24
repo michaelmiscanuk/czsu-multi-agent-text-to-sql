@@ -453,9 +453,6 @@ async def cleanup_checkpointer():
     except Exception as e:
         print__startup_debug(f"⚠️ Error closing robust pool: {e}")
     
-    # Simple garbage collection on shutdown
-    import gc
-    gc.collect()
     log_memory_usage("cleanup_complete")
 
 async def get_healthy_checkpointer():
@@ -485,11 +482,6 @@ async def lifespan(app: FastAPI):
     
     # Setup graceful shutdown handlers
     setup_graceful_shutdown()
-    
-    # Optimize garbage collection for memory efficiency (more aggressive than before)
-    # Based on article findings about memory not being released
-    gc.set_threshold(500, 8, 8)  # Even more aggressive than the current 700, 10, 10
-    print__memory_monitoring(f"Set aggressive GC thresholds: (500, 8, 8)")
     
     await initialize_checkpointer()
     
@@ -1076,30 +1068,44 @@ def get_current_user(authorization: str = Header(None)):
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     """Analyze request with simplified memory monitoring."""
     
-    user_email = user.get("email")
-    if not user_email:
-        raise HTTPException(status_code=401, detail="User email not found in token")
-    
-    print__feedback_flow(f"📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
-    print__debug(f"🔍 ANALYZE REQUEST RECEIVED: thread_id={request.thread_id}, user={user_email}")
-    
-    # Simple memory check
-    log_memory_usage("analysis_start")
-    run_id = None
+    print__analyze_debug(f"🔍 ANALYZE ENDPOINT - ENTRY POINT")
+    print__analyze_debug(f"🔍 Request received: thread_id={request.thread_id}")
+    print__analyze_debug(f"🔍 Request prompt length: {len(request.prompt)}")
     
     try:
+        user_email = user.get("email")
+        print__analyze_debug(f"🔍 User extraction: {user_email}")
+        if not user_email:
+            print__analyze_debug(f"🚨 No user email found in token")
+            raise HTTPException(status_code=401, detail="User email not found in token")
+        
+        print__feedback_flow(f"📝 New analysis request - Thread: {request.thread_id}, User: {user_email}")
+        print__analyze_debug(f"🔍 ANALYZE REQUEST RECEIVED: thread_id={request.thread_id}, user={user_email}")
+        
+        # Simple memory check
+        print__analyze_debug(f"🔍 Starting memory logging")
+        log_memory_usage("analysis_start")
+        run_id = None
+        
+        print__analyze_debug(f"🔍 About to acquire analysis semaphore")
         # Limit concurrent analyses to prevent resource exhaustion
         async with analysis_semaphore:
             print__feedback_flow(f"🔒 Acquired analysis semaphore ({analysis_semaphore._value}/{MAX_CONCURRENT_ANALYSES} available)")
+            print__analyze_debug(f"🔍 Semaphore acquired successfully")
             
             try:
+                print__analyze_debug(f"🔍 About to get healthy checkpointer")
                 print__feedback_flow(f"🔄 Getting healthy checkpointer")
                 checkpointer = await get_healthy_checkpointer()
+                print__analyze_debug(f"🔍 Checkpointer obtained: {type(checkpointer).__name__}")
                 
+                print__analyze_debug(f"🔍 About to create thread run entry")
                 print__feedback_flow(f"🔄 Creating thread run entry")
                 run_id = await create_thread_run_entry(user_email, request.thread_id, request.prompt)
                 print__feedback_flow(f"✅ Generated new run_id: {run_id}")
+                print__analyze_debug(f"🔍 Thread run entry created successfully: {run_id}")
                 
+                print__analyze_debug(f"🔍 About to start analysis_main")
                 print__feedback_flow(f"🚀 Starting analysis")
                 # 8 minute timeout for platform stability
                 result = await asyncio.wait_for(
@@ -1107,39 +1113,52 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                     timeout=480  # 8 minutes timeout
                 )
                 
+                print__analyze_debug(f"🔍 Analysis completed successfully")
                 print__feedback_flow(f"✅ Analysis completed successfully")
                 
             except Exception as analysis_error:
+                print__analyze_debug(f"🚨 Exception in analysis block: {type(analysis_error).__name__}: {str(analysis_error)}")
                 # If there's a database connection issue, try with InMemorySaver as fallback
                 error_msg = str(analysis_error).lower()
+                print__analyze_debug(f"🔍 Error message (lowercase): {error_msg}")
+                
                 if any(keyword in error_msg for keyword in ["pool", "connection", "closed", "timeout", "ssl", "postgres"]):
+                    print__analyze_debug(f"🔍 Database issue detected, attempting fallback")
                     print__feedback_flow(f"⚠️ Database issue detected, trying with InMemorySaver fallback: {analysis_error}")
                     
                     try:
+                        print__analyze_debug(f"🔍 Importing InMemorySaver")
                         from langgraph.checkpoint.memory import InMemorySaver
                         fallback_checkpointer = InMemorySaver()
+                        print__analyze_debug(f"🔍 InMemorySaver created")
                         
                         # Generate a fallback run_id since database creation might have failed
                         if run_id is None:
                             run_id = str(uuid.uuid4())
                             print__feedback_flow(f"✅ Generated fallback run_id: {run_id}")
+                            print__analyze_debug(f"🔍 Generated fallback run_id: {run_id}")
                         
+                        print__analyze_debug(f"🔍 Starting fallback analysis")
                         print__feedback_flow(f"🚀 Starting analysis with InMemorySaver fallback")
                         result = await asyncio.wait_for(
                             analysis_main(request.prompt, thread_id=request.thread_id, checkpointer=fallback_checkpointer, run_id=run_id),
                             timeout=480  # 8 minutes timeout
                         )
                         
+                        print__analyze_debug(f"🔍 Fallback analysis completed successfully")
                         print__feedback_flow(f"✅ Analysis completed successfully with fallback")
                         
                     except Exception as fallback_error:
+                        print__analyze_debug(f"🚨 Fallback also failed: {type(fallback_error).__name__}: {str(fallback_error)}")
                         print__feedback_flow(f"🚨 Fallback analysis also failed: {fallback_error}")
                         raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
                 else:
                     # Re-raise non-database errors
+                    print__analyze_debug(f"🚨 Non-database error, re-raising: {type(analysis_error).__name__}: {str(analysis_error)}")
                     print__feedback_flow(f"🚨 Non-database error: {analysis_error}")
                     raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
             
+            print__analyze_debug(f"🔍 About to prepare response data")
             # Simple response preparation
             response_data = {
                 "prompt": request.prompt,
@@ -1155,15 +1174,25 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 "top_chunks": result.get("top_chunks", []) if isinstance(result, dict) else []
             }
             
+            print__analyze_debug(f"🔍 Response data prepared successfully")
+            print__analyze_debug(f"🔍 Response data keys: {list(response_data.keys())}")
+            print__analyze_debug(f"🔍 ANALYZE ENDPOINT - SUCCESSFUL EXIT")
             return response_data
             
     except asyncio.TimeoutError:
         error_msg = "Analysis timed out after 8 minutes"
+        print__analyze_debug(f"🚨 TIMEOUT ERROR: {error_msg}")
         print__feedback_flow(f"🚨 {error_msg}")
         raise HTTPException(status_code=408, detail=error_msg)
         
+    except HTTPException as http_exc:
+        print__analyze_debug(f"🚨 HTTP EXCEPTION: {http_exc.status_code} - {http_exc.detail}")
+        raise http_exc
+        
     except Exception as e:
         error_msg = f"Analysis failed: {str(e)}"
+        print__analyze_debug(f"🚨 UNEXPECTED EXCEPTION: {type(e).__name__}: {str(e)}")
+        print__analyze_debug(f"🚨 Exception traceback: {traceback.format_exc()}")
         print__feedback_flow(f"🚨 {error_msg}")
         raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
@@ -1360,57 +1389,65 @@ async def get_chat_threads(
     limit: int = Query(10, ge=1, le=50, description="Number of threads per page"),
     user=Depends(get_current_user)
 ) -> PaginatedChatThreadsResponse:
-    """Get paginated chat threads for the authenticated user from PostgreSQL."""
-    
-    user_email = user.get("email")
-    if not user_email:
-        raise HTTPException(status_code=401, detail="User email not found in token")
-    
-    print__api_postgresql(f"Loading chat threads for user: {user_email} (page: {page}, limit: {limit})")
-    
-    # Calculate offset
-    offset = (page - 1) * limit
-    
+    """Get paginated chat threads for the authenticated user."""
     try:
-        # Use simplified approach without complex connection pooling
-        print__api_postgresql(f"Getting chat threads with simplified approach")
+        user_email = user["email"]
+        print__api_postgresql(f"Loading chat threads for user: {user_email} (page: {page}, limit: {limit})")
         
-        # Get total count and threads - the functions will handle their own connections
+        print__api_postgresql("Getting chat threads with simplified approach")
+        
+        # Get total count first
+        print__api_postgresql(f"Getting chat threads count for user: {user_email}")
         total_count = await get_user_chat_threads_count(user_email)
-        threads = await get_user_chat_threads(user_email, None, limit, offset)
+        print__api_postgresql(f"Total threads count for user {user_email}: {total_count}")
         
-        print__api_postgresql(f"Retrieved {len(threads)} threads for user {user_email} (total: {total_count})")
+        # Calculate offset for pagination
+        offset = (page - 1) * limit
+        
+        # Get threads for this page
+        print__api_postgresql(f"Getting chat threads for user: {user_email} (limit: {limit}, offset: {offset})")
+        threads = await get_user_chat_threads(user_email, limit=limit, offset=offset)
+        print__api_postgresql(f"Retrieved {len(threads)} threads for user {user_email}")
         
         # Convert to response format
-        response_threads = []
+        chat_thread_responses = []
         for thread in threads:
-            response_threads.append(ChatThreadResponse(
-                thread_id=thread["thread_id"],
-                latest_timestamp=thread["latest_timestamp"].isoformat(),
-                run_count=thread["run_count"],
-                title=thread["title"],
-                full_prompt=thread["full_prompt"]
-            ))
+            chat_thread_response = ChatThreadResponse(
+                thread_id=thread['thread_id'],
+                latest_timestamp=thread['latest_timestamp'],
+                run_count=thread['run_count'],
+                title=thread['title'],
+                full_prompt=thread['full_prompt']
+            )
+            chat_thread_responses.append(chat_thread_response)
         
-        # Calculate has_more
-        has_more = (offset + len(threads)) < total_count
+        # Calculate pagination info
+        has_more = (offset + len(chat_thread_responses)) < total_count
         
-        paginated_response = PaginatedChatThreadsResponse(
-            threads=response_threads,
+        print__api_postgresql(f"Retrieved {len(threads)} threads for user {user_email} (total: {total_count})")
+        print__api_postgresql(f"Returning {len(chat_thread_responses)} threads to frontend (page {page}/{(total_count + limit - 1) // limit})")
+        
+        return PaginatedChatThreadsResponse(
+            threads=chat_thread_responses,
             total_count=total_count,
             page=page,
             limit=limit,
             has_more=has_more
         )
         
-        print__api_postgresql(f"Returning {len(response_threads)} threads to frontend (page {page}/{((total_count - 1) // limit) + 1})")
-        return paginated_response
-        
     except Exception as e:
-        print__api_postgresql(f"Failed to get chat threads for user {user_email}: {e}")
+        print__api_postgresql(f"❌ Error getting chat threads: {e}")
         import traceback
         print__api_postgresql(f"Full traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to get chat threads: {e}")
+        
+        # Return error response
+        return PaginatedChatThreadsResponse(
+            threads=[],
+            total_count=0,
+            page=page,
+            limit=limit,
+            has_more=False
+        )
 
 @app.delete("/chat/{thread_id}")
 async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)):
@@ -1850,10 +1887,10 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
 # Global cache for bulk loading to prevent repeated calls
 _bulk_loading_cache = {}
 _bulk_loading_locks = defaultdict(asyncio.Lock)
-BULK_CACHE_TIMEOUT = 30  # seconds
+BULK_CACHE_TIMEOUT = 30  # Cache timeout in seconds
 
 def cleanup_bulk_cache():
-    """Clean up expired cache entries to prevent memory leaks."""
+    """Clean up expired cache entries."""
     current_time = time.time()
     expired_keys = []
     
@@ -1863,18 +1900,13 @@ def cleanup_bulk_cache():
     
     for key in expired_keys:
         del _bulk_loading_cache[key]
-        print__memory_monitoring(f"🧹 Cleaned up expired cache entry: {key}")
     
     return len(expired_keys)
 
 @app.get("/chat/all-messages")
 async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
-    """CACHED: Load conversation messages for ALL user threads with request deduplication."""
-    
-    user_email = user.get("email")
-    if not user_email:
-        raise HTTPException(status_code=401, detail="User email not found in token")
-    
+    """Get all chat messages for the authenticated user using bulk loading with improved caching."""
+    user_email = user["email"]
     print__api_postgresql(f"📥 BULK REQUEST: Loading ALL chat messages for user: {user_email}")
     
     # Check if we have a recent cached result
@@ -1885,7 +1917,13 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
         cached_data, cache_time = _bulk_loading_cache[cache_key]
         if current_time - cache_time < BULK_CACHE_TIMEOUT:
             print__api_postgresql(f"✅ CACHE HIT: Returning cached bulk data for {user_email} (age: {current_time - cache_time:.1f}s)")
-            return cached_data
+            
+            # Return cached data with appropriate headers
+            from fastapi.responses import JSONResponse
+            response = JSONResponse(content=cached_data)
+            response.headers["Cache-Control"] = f"public, max-age={int(BULK_CACHE_TIMEOUT - (current_time - cache_time))}"
+            response.headers["ETag"] = f"bulk-{user_email}-{int(cache_time)}"
+            return response
         else:
             print__api_postgresql(f"⏰ CACHE EXPIRED: Cached data too old ({current_time - cache_time:.1f}s), will refresh")
             del _bulk_loading_cache[cache_key]
@@ -2113,23 +2151,25 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             _bulk_loading_cache[cache_key] = (result, current_time)
             print__api_postgresql(f"💾 CACHED: Bulk result for {user_email} (expires in {BULK_CACHE_TIMEOUT}s)")
             
-            return result
+            # Return with cache headers
+            from fastapi.responses import JSONResponse
+            response = JSONResponse(content=result)
+            response.headers["Cache-Control"] = f"public, max-age={BULK_CACHE_TIMEOUT}"
+            response.headers["ETag"] = f"bulk-{user_email}-{int(current_time)}"
+            return response
             
         except Exception as e:
-            error_msg = str(e)
-            print__api_postgresql(f"❌ Failed to bulk load all chat messages for user {user_email}: {e}")
+            print__api_postgresql(f"❌ BULK ERROR: Failed to process bulk request for {user_email}: {e}")
+            import traceback
+            print__api_postgresql(f"Full error traceback: {traceback.format_exc()}")
             
-            # Handle specific database connection errors gracefully
-            if any(keyword in error_msg.lower() for keyword in [
-                "ssl error", "connection", "timeout", "operational error", 
-                "server closed", "bad connection", "consuming input failed"
-            ]):
-                print__api_postgresql(f"⚠ Database connection error - returning empty messages")
-                empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
-                _bulk_loading_cache[cache_key] = (empty_result, current_time)
-                return empty_result
-            else:
-                raise HTTPException(status_code=500, detail=f"Failed to bulk load all chat messages: {e}")
+            # Return empty result but cache it briefly to prevent error loops
+            empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
+            _bulk_loading_cache[cache_key] = (empty_result, current_time)
+            
+            response = JSONResponse(content=empty_result, status_code=500)
+            response.headers["Cache-Control"] = "no-cache, no-store"  # Don't cache errors
+            return response
 
 @app.get("/debug/chat/{thread_id}/checkpoints")
 async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
@@ -2397,10 +2437,6 @@ async def clear_bulk_cache(user=Depends(get_current_user)):
     
     print__memory_monitoring(f"🧹 MANUAL CACHE CLEAR: {cache_entries_before} entries cleared by {user_email}")
     
-    # Run garbage collection after cache clear
-    import gc
-    collected = gc.collect()
-    
     # Check memory after cleanup
     try:
         process = psutil.Process()
@@ -2413,7 +2449,6 @@ async def clear_bulk_cache(user=Depends(get_current_user)):
     return {
         "message": "Cache cleared successfully",
         "cache_entries_cleared": cache_entries_before,
-        "gc_objects_collected": collected,
         "current_memory_mb": round(rss_mb, 1),
         "memory_status": memory_status,
         "cleared_by": user_email,
@@ -2483,6 +2518,18 @@ def print__debug(msg: str) -> None:
         import sys
         sys.stdout.flush()
 
+def print__analyze_debug(msg: str) -> None:
+    """Print DEBUG_ANALYZE messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_ANALYZE', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_ANALYZE] {msg}")
+        import sys
+        sys.stdout.flush()
+        
 # Global exception handlers for proper error handling
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
