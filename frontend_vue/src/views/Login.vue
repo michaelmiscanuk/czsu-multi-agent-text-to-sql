@@ -24,7 +24,7 @@ import AuthButton from '@/components/AuthButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const { isAuthenticated, status } = storeToRefs(authStore)
+const { isAuthenticated } = storeToRefs(authStore)
 
 // Redirect to chat if already authenticated
 watch(() => authStore.isAuthenticated, (isAuthenticated) => {

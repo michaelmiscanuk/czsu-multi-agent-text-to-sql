@@ -1,13 +1,13 @@
 <template>
   <div :class="`flex flex-col items-center justify-center py-4 ${className}`">
     <div 
-      :class="`${sizeClasses[size]} border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2`"
+      :class="`${sizeClasses[size || 'md']} border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-2`"
       role="status"
       aria-label="Loading"
     />
     <div 
       v-if="text"
-      :class="`${textSizes[size]} text-gray-500 text-center`"
+      :class="`${textSizes[size || 'md']} text-gray-500 text-center`"
     >
       {{ text }}
     </div>

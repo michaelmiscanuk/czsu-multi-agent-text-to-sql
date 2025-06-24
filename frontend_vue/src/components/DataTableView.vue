@@ -138,14 +138,14 @@
                     placeholder="Filter..."
                     :value="columnFilters[col] || ''"
                     @input="(e) => handleColumnFilterChange(col, (e.target as HTMLInputElement).value)"
-                    :title="col === 'value' ? 'You can filter using >, <, >=, <=, =, !=, etc. (e.g. \"> 10000\")' : undefined"
+                    v-bind="col === 'value' ? { title: 'You can filter using >, <, >=, <=, =, !=, etc. (e.g. > 10000)' } : {}"
                   />
                   <span
                     v-if="col === 'value'"
                     class="text-gray-400 text-[10px] font-normal block mt-1"
                     style="line-height: 1; font-family: var(--table-font-family)"
                   >
-                    <span title='You can filter using >, <, >=, <=, =, !=, etc. (e.g. "> 10000")'>
+                    <span title='You can filter using >, <, >=, <=, =, !=, etc. (e.g. > 10000)'>
                       e.g. > 10000, <= 500
                     </span>
                   </span>
@@ -233,7 +233,6 @@ const emit = defineEmits<{
 // Composables
 const router = useRouter()
 const authStore = useAuthStore()
-const { idToken } = storeToRefs(authStore)
 
 // Refs
 const inputRef = ref<HTMLInputElement>()
@@ -300,7 +299,7 @@ const filteredRows = computed(() => {
       if (col === 'value') {
         // Numeric filter: support >, >=, <, <=, !=, =, ==, or just a number (equals)
         const match = filter.trim().match(/^(>=|<=|!=|>|<|=|==)?\s*(-?\d+(?:\.\d+)?)/);
-        if (match) {
+        if (match && match[2]) {
           const op = match[1] || '=='
           const num = parseFloat(match[2])
           const cellNum = parseFloat(row[idx])
@@ -439,7 +438,7 @@ const getSortIcon = (col: string): 'asc' | 'desc' | 'none' => {
   return 'none'
 }
 
-const getAriaSortValue = (col: string): string => {
+const getAriaSortValue = (col: string): 'none' | 'ascending' | 'descending' | 'other' => {
   if (sortConfig.value.column === col) {
     if (sortConfig.value.direction === 'asc') return 'ascending'
     if (sortConfig.value.direction === 'desc') return 'descending'
@@ -488,7 +487,10 @@ const fetchTableData = async () => {
     
     columns.value = response.columns || []
     rows.value = response.rows || []
-    selectedColumn.value = response.columns && response.columns.length > 0 ? response.columns[0] : null
+    const firstColumn = response.columns && response.columns.length > 0 ? response.columns[0] : null
+    if (firstColumn !== undefined) {
+      selectedColumn.value = firstColumn
+    }
     columnFilters.value = {}
   } catch (error) {
     console.error('[DataTableView] Error fetching table:', error)

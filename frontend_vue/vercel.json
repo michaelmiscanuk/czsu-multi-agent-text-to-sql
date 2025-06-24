@@ -1,0 +1,72 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/analyze",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/analyze"
+    },
+    {
+      "source": "/api/chat-threads",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/chat-threads"
+    },
+    {
+      "source": "/api/chat/:path*",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/chat/:path*"
+    },
+    {
+      "source": "/api/feedback",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/feedback"
+    },
+    {
+      "source": "/api/sentiment",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/sentiment"
+    },
+    {
+      "source": "/api/catalog",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/catalog"
+    },
+    {
+      "source": "/api/data-tables",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/data-tables"
+    },
+    {
+      "source": "/api/data-table",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/data-table"
+    },
+    {
+      "source": "/api/query",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/query"
+    },
+    {
+      "source": "/api/execute",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/execute"
+    },
+    {
+      "source": "/api/schema",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/schema"
+    },
+    {
+      "source": "/api/validate",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/validate"
+    },
+    {
+      "source": "/api/history",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/history"
+    },
+    {
+      "source": "/api/health",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/health"
+    },
+    {
+      "source": "/api/agents/:path*",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/agents/:path*"
+    },
+    {
+      "source": "/api/debug/:path*",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/debug/:path*"
+    },
+    {
+      "source": "/api/((?!auth).*)",
+      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/$1"
+    }
+  ]
+}

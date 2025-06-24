@@ -10,7 +10,7 @@
         @input="handleChange"
         @keydown="handleKeydown"
         class="flex-grow px-4 py-2 bg-transparent focus:outline-none text-gray-700"
-        :disabled="isLoading"
+        :disabled="isLoading || false"
       />
       <button
         type="submit"

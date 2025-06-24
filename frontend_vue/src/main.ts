@@ -18,7 +18,16 @@ pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 app.use(router);
 
+// Initialize auth store after Pinia is set up
+import { useAuthStore } from './stores/auth';
+
 // Mount app
 app.mount('#app');
+
+// Initialize auth after mounting
+setTimeout(() => {
+  const authStore = useAuthStore();
+  authStore.initialize();
+}, 100);
 
 console.log('[Main] 🚀 Vue application started successfully'); 

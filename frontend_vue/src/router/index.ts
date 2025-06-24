@@ -95,7 +95,7 @@ router.afterEach((to, from) => {
   
   // Update page title
   const baseTitle = 'CZSU Multi-Agent Text-to-SQL';
-  const pageTitle = to.name === 'Home' ? baseTitle : `${to.name} | ${baseTitle}`;
+  const pageTitle = to.name === 'Home' ? baseTitle : `${String(to.name)} | ${baseTitle}`;
   document.title = pageTitle;
 });
 

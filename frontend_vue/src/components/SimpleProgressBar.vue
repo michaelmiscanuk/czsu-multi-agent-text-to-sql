@@ -33,12 +33,13 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const progress = ref(() => {
-  const elapsed = Date.now() - props.startedAt
-  return Math.min(95, (elapsed / PROGRESS_DURATION) * 100) // Cap at 95% until completion
-})
+const progress = ref(0)
 
 const intervalRef = ref<NodeJS.Timeout | null>(null)
+
+const updateProgress = (percent: number) => {
+  progress.value = percent
+}
 
 const update = () => {
   const elapsed = Date.now() - props.startedAt

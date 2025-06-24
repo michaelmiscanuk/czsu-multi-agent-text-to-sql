@@ -102,6 +102,9 @@ const handleImageError = (e: Event) => {
 
 const handleSignIn = async () => {
   try {
+    console.log('[AuthButton] Sign in button clicked');
+    console.log('[AuthButton] window.google:', window.google);
+    console.log('[AuthButton] Client ID:', import.meta.env.VITE_GOOGLE_CLIENT_ID);
     await authStore.signInWithGoogle();
   } catch (error) {
     console.error('[AuthButton] Sign in failed:', error);

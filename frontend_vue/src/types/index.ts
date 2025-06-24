@@ -21,6 +21,7 @@ export interface ChatMessage {
   isLoading?: boolean;
   startedAt?: number;
   isError?: boolean;
+  selectionCode?: string | null;
 }
 
 export interface AnalyzeRequest {

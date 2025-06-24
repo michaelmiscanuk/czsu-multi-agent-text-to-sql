@@ -140,7 +140,7 @@
       <div class="flex justify-center py-6">
         <button
           class="px-4 py-2 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          :disabled="isAnyLoading"
+          :disabled="isAnyLoading || false"
           title="Start a new chat"
           @click="$emit('newChat')"
         >
@@ -214,6 +214,7 @@ import Modal from './Modal.vue'
 import SimpleProgressBar from './SimpleProgressBar.vue'
 import FeedbackComponent from './FeedbackComponent.vue'
 import type { ChatMessage } from '@/types'
+import { useAuthStore } from '@/stores/auth'
 
 // Props
 interface Props {
@@ -250,6 +251,7 @@ const langsmithFeedbackSent = ref<Set<string>>(new Set())
 // Stores and composables
 const chatCacheStore = useChatCacheStore()
 const { sentiments, updateSentiment, loadSentiments, getSentimentForRunId } = useSentiment()
+const authStore = useAuthStore()
 
 // Computed properties
 const sqlModalMessage = computed(() => {
@@ -312,12 +314,14 @@ watch(() => props.threadId, () => {
         // Try to match by order (most recent AI message gets most recent run_id)
         if (index < cachedRunIds.length) {
           const runIdEntry = cachedRunIds[cachedRunIds.length - 1 - index] // Reverse order
-          newMessageRunIds[message.id] = runIdEntry.run_id
-          console.log('[FEEDBACK-DEBUG] Matched message by order:', {
-            messageId: message.id,
-            runId: runIdEntry.run_id,
-            messageIndex: index
-          })
+          if (runIdEntry) {
+            newMessageRunIds[message.id] = runIdEntry.run_id
+            console.log('[FEEDBACK-DEBUG] Matched message by order:', {
+              messageId: message.id,
+              runId: runIdEntry.run_id,
+              messageIndex: index
+            })
+          }
         }
       })
       
@@ -355,7 +359,10 @@ const handleFeedbackSubmit = async (runId: string, feedback: number, comment?: s
   
   try {
     // Update local state immediately for UI responsiveness
-    feedbackState.value[runId] = { feedback, comment }
+    feedbackState.value[runId] = { 
+      feedback, 
+      ...(comment && { comment })
+    }
     
     // Send feedback to LangSmith API
     const feedbackPayload = {
@@ -367,18 +374,19 @@ const handleFeedbackSubmit = async (runId: string, feedback: number, comment?: s
     
     console.log('[FEEDBACK-DEBUG] Sending feedback to LangSmith API:', feedbackPayload)
     
-    const response = await authApiFetch('/api/langsmith-feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(feedbackPayload)
-    })
-    
-    if (!response.ok) {
-      throw new Error(`LangSmith feedback API error: ${response.status}`)
+    // Get auth token first
+    const token = await authStore.getValidToken()
+    if (!token) {
+      throw new Error('No authentication token available')
     }
     
-    const result = await response.json()
-    console.log('[FEEDBACK-DEBUG] LangSmith feedback API response:', result)
+    const response = await authApiFetch('/api/langsmith-feedback', token, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: feedbackPayload
+    })
+    
+    console.log('[FEEDBACK-DEBUG] LangSmith feedback API response:', response)
     
     // Mark as sent to prevent duplicates
     langsmithFeedbackSent.value.add(runId)
@@ -397,7 +405,7 @@ const handleCommentSubmit = async (runId: string, comment: string) => {
     const currentFeedback = feedbackState.value[runId]?.feedback || null
     feedbackState.value[runId] = { 
       feedback: currentFeedback, 
-      comment 
+      ...(comment && { comment })
     }
     
     // Send comment to LangSmith API (as feedback with comment)
@@ -410,18 +418,19 @@ const handleCommentSubmit = async (runId: string, comment: string) => {
     
     console.log('[FEEDBACK-DEBUG] Sending comment to LangSmith API:', feedbackPayload)
     
-    const response = await authApiFetch('/api/langsmith-feedback', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(feedbackPayload)
-    })
-    
-    if (!response.ok) {
-      throw new Error(`LangSmith comment API error: ${response.status}`)
+    // Get auth token first
+    const token = await authStore.getValidToken()
+    if (!token) {
+      throw new Error('No authentication token available')
     }
     
-    const result = await response.json()
-    console.log('[FEEDBACK-DEBUG] LangSmith comment API response:', result)
+    const response = await authApiFetch('/api/langsmith-feedback', token, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: feedbackPayload
+    })
+    
+    console.log('[FEEDBACK-DEBUG] LangSmith comment API response:', response)
     
   } catch (error) {
     console.error('[FEEDBACK-DEBUG] Error submitting comment to LangSmith:', error)

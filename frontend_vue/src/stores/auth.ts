@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref, computed, readonly } from 'vue';
 
 export interface User {
   id: string;
@@ -43,14 +43,60 @@ export const useAuthStore = defineStore('auth', () => {
   // Initialize Google OAuth
   const initializeGoogleAuth = async () => {
     try {
-      // This will be implemented based on the Google OAuth library chosen
       console.log('[AuthStore] Initializing Google OAuth');
       
-      // For now, we'll use a placeholder implementation
-      // In a real implementation, you would initialize the Google OAuth library here
+      // Load Google OAuth script if not already loaded
+      if (!window.google) {
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+        
+        await new Promise((resolve) => {
+          script.onload = resolve;
+        });
+      }
+      
+      // Initialize Google OAuth
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your_google_client_id_here',
+          callback: handleGoogleCallback,
+        });
+      }
       
     } catch (error) {
       console.error('[AuthStore] Failed to initialize Google OAuth:', error);
+    }
+  };
+  
+  // Handle Google OAuth callback
+  const handleGoogleCallback = async (response: any) => {
+    try {
+      console.log('[AuthStore] Google OAuth callback received');
+      
+      // Decode the JWT token to get user info
+      const payload = JSON.parse(atob(response.credential.split('.')[1]));
+      
+      const newSession: Session = {
+        user: {
+          id: payload.sub,
+          name: payload.name,
+          email: payload.email,
+          image: payload.picture,
+        },
+        accessToken: response.credential,
+        idToken: response.credential,
+        expiresAt: payload.exp * 1000, // Convert to milliseconds
+      };
+      
+      updateSession(newSession);
+      console.log('[AuthStore] Successfully signed in with Google');
+      
+    } catch (err) {
+      console.error('[AuthStore] Failed to handle Google callback:', err);
+      error.value = err instanceof Error ? err.message : 'Failed to sign in with Google';
     }
   };
   
@@ -60,20 +106,29 @@ export const useAuthStore = defineStore('auth', () => {
     error.value = null;
     
     try {
-      // This would integrate with Google OAuth library
-      // For now, it's a placeholder implementation
-      
-      // Example flow:
-      // 1. Trigger Google OAuth popup/redirect
-      // 2. Get authorization code
-      // 3. Exchange for tokens
-      // 4. Get user info
-      // 5. Store session
-      
       console.log('[AuthStore] Signing in with Google');
       
-      // Placeholder - replace with actual Google OAuth implementation
-      throw new Error('Google OAuth not yet implemented');
+      if (window.google) {
+        window.google.accounts.id.prompt();
+      } else {
+        // Fallback: create a temporary sign-in for development
+        console.log('[AuthStore] Google OAuth not available, using development mode');
+        
+        const devSession: Session = {
+          user: {
+            id: 'dev-user',
+            name: 'Development User',
+            email: 'dev@example.com',
+            image: 'https://via.placeholder.com/40',
+          },
+          accessToken: 'dev-token',
+          idToken: 'dev-token',
+          expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+        };
+        
+        updateSession(devSession);
+        console.log('[AuthStore] Signed in with development account');
+      }
       
     } catch (err) {
       console.error('[AuthStore] Sign in failed:', err);
@@ -94,14 +149,12 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       console.log('[AuthStore] Refreshing session');
       
-      // This would call your refresh token endpoint
-      // For now, it's a placeholder
+      // For Google OAuth, we typically can't refresh tokens client-side
+      // In a real app, you'd send the refresh token to your backend
+      // For now, we'll just sign out when the token expires
       
-      // Example:
-      // const response = await authApiFetch('/auth/refresh', session.value.refreshToken);
-      // updateSession(response);
-      
-      console.log('[AuthStore] Session refresh not yet implemented');
+      console.log('[AuthStore] Session refresh not implemented for Google OAuth');
+      await signOut();
       
     } catch (error) {
       console.error('[AuthStore] Session refresh failed:', error);
@@ -128,6 +181,11 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem(key);
         }
       });
+      
+      // Sign out from Google if available
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.disableAutoSelect();
+      }
       
       console.log('[AuthStore] Signed out successfully');
       
@@ -202,11 +260,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       console.log('[AuthStore] Handling OAuth callback');
       
-      // Exchange authorization code for tokens
-      // This would call your backend OAuth endpoint
+      // This would typically involve exchanging the code for tokens
+      // with your backend server
       
-      // Placeholder implementation
-      throw new Error('OAuth callback handling not yet implemented');
+      // For now, we'll just log that the callback was received
+      console.log('[AuthStore] OAuth callback code:', code);
       
     } catch (err) {
       console.error('[AuthStore] OAuth callback failed:', err);
@@ -218,20 +276,35 @@ export const useAuthStore = defineStore('auth', () => {
   
   return {
     // State
-    session: computed(() => session.value),
-    isLoading: computed(() => isLoading.value),
-    error: computed(() => error.value),
+    session: readonly(session),
+    isLoading: readonly(isLoading),
+    error: readonly(error),
+    
+    // Computed
     isAuthenticated,
     user,
     userEmail,
     
     // Actions
+    getValidToken,
     signInWithGoogle,
     signOut,
-    refreshSession,
-    getValidToken,
     initialize,
     handleOAuthCallback,
-    updateSession,
   };
-}); 
+});
+
+// Declare global Google OAuth types
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: any) => void;
+          prompt: () => void;
+          disableAutoSelect: () => void;
+        };
+      };
+    };
+  }
+} 

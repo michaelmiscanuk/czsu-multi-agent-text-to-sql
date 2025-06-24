@@ -180,12 +180,14 @@ interface Message {
   }
 }
 
-const INITIAL_MESSAGE = [
+const INITIAL_MESSAGE: ChatMessage[] = [
   {
-    id: 1,
+    id: '1',
+    threadId: '',
+    user: 'assistant',
     content: 'Hi there, how can I help you?',
     isUser: false,
-    type: 'message'
+    createdAt: Date.now(),
   }
 ]
 
@@ -263,7 +265,7 @@ const iteration = ref(0)
 const maxIterations = ref(2)
 
 // Combined loading state
-const isAnyLoading = computed(() => isLoading.value || cacheLoading.value || isUserLoading.value)
+const isAnyLoading = computed(() => isLoading.value || cacheLoading || isUserLoading)
 
 // Refs for DOM elements
 const inputRef = ref<HTMLTextAreaElement>()
@@ -305,12 +307,10 @@ const handleNewChat = async () => {
     const newThreadId = uuidv4()
     const newThread: ChatThreadMeta = {
       thread_id: newThreadId,
-      title: null,
-      user_email: userEmail.value,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      full_prompt: null,
-      message_count: 0
+      title: 'New Chat',
+      latest_timestamp: new Date().toISOString(),
+      run_count: 0,
+      full_prompt: '',
     }
     
     // Add the thread to the store
@@ -322,8 +322,12 @@ const handleNewChat = async () => {
     // Clear current message input
     setCurrentMessageWithPersistence('')
     
-    // Set initial messages
-    setMessages([...INITIAL_MESSAGE])
+    // Set initial messages with proper threadId
+    const initialMessages = INITIAL_MESSAGE.map(msg => ({
+      ...msg,
+      threadId: newThreadId
+    }))
+    setMessages(newThreadId, initialMessages)
     
     console.log('[ChatPage-newChat] ✅ New chat created with ID:', newThreadId)
   } catch (error) {
@@ -341,16 +345,18 @@ const handleRename = async (threadId: string, title: string) => {
     // Update locally first
     updateThread(threadId, { title: title.trim() })
     
+    // Get token and make API call
+    const token = await authStore.getValidToken()
+    if (!token) {
+      throw new Error('No authentication token available')
+    }
+    
     // Then update on server
-    const response = await authApiFetch(`${API_CONFIG.BASE_URL}/api/threads/${threadId}`, {
+    const response = await authApiFetch(`${API_CONFIG.baseUrl}/api/threads/${threadId}`, token, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: title.trim() })
+      data: { title: title.trim() },
     })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
 
     console.log('[ChatPage-rename] ✅ Thread renamed:', threadId, title.trim())
   } catch (error) {
@@ -369,22 +375,28 @@ const handleDelete = async (threadId: string) => {
   try {
     console.log('[ChatPage-delete] 🗑️ Deleting thread:', threadId)
     
+    // Get token and make API call
+    const token = await authStore.getValidToken()
+    if (!token) {
+      throw new Error('No authentication token available')
+    }
+    
     // Delete from server
-    const response = await authApiFetch(`${API_CONFIG.BASE_URL}/api/threads/${threadId}`, {
+    const response = await authApiFetch(`${API_CONFIG.baseUrl}/api/threads/${threadId}`, token, {
       method: 'DELETE'
     })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
     
     // Remove from local state
     removeThread(threadId)
     
     // If this was the active thread, clear active state
-    if (activeThreadId.value === threadId) {
+    if (activeThreadId === threadId) {
       setActiveThreadId(null)
-      setMessages([...INITIAL_MESSAGE])
+      const initialMessages = INITIAL_MESSAGE.map(msg => ({
+        ...msg,
+        threadId: threadId
+      }))
+      setMessages(threadId, initialMessages)
     }
     
     console.log('[ChatPage-delete] ✅ Thread deleted successfully:', threadId)
@@ -401,7 +413,7 @@ const handleSend = async (e: Event) => {
   }
 
   const messageText = currentMessage.value.trim()
-  let currentThreadId = activeThreadId.value
+  let currentThreadId = activeThreadId
 
   try {
     console.log('[ChatPage-send] 📤 Sending message:', messageText.substring(0, 50) + '...')
@@ -411,12 +423,10 @@ const handleSend = async (e: Event) => {
       currentThreadId = uuidv4()
       const newThread: ChatThreadMeta = {
         thread_id: currentThreadId,
-        title: null,
-        user_email: userEmail.value,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        title: 'New Chat',
+        latest_timestamp: new Date().toISOString(),
+        run_count: 0,
         full_prompt: messageText.substring(0, 50),
-        message_count: 0
       }
       
       addThread(newThread)
@@ -427,66 +437,71 @@ const handleSend = async (e: Event) => {
     setCurrentMessageWithPersistence('')
     
     // Add user message
-    const userMessage: Message = {
-      id: Date.now(),
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      threadId: currentThreadId,
+      user: userEmail.value || 'user',
       content: messageText,
       isUser: true,
-      type: 'message'
+      createdAt: Date.now(),
     }
     
-    addMessage(userMessage)
+    addMessage(currentThreadId, userMessage)
     
     // Add loading AI message
-    const loadingMessage: Message = {
-      id: Date.now() + 1,
+    const loadingMessage: ChatMessage = {
+      id: (Date.now() + 1).toString(),
+      threadId: currentThreadId,
+      user: 'assistant',
       content: '',
       isUser: false,
-      type: 'message',
+      createdAt: Date.now(),
       isLoading: true,
       startedAt: Date.now()
     }
     
-    addMessage(loadingMessage)
+    addMessage(currentThreadId, loadingMessage)
     
     // Start loading state
     setLoading(true)
     
+    // Get token and make API call
+    const token = await authStore.getValidToken()
+    if (!token) {
+      throw new Error('No authentication token available')
+    }
+    
     // Send to API
-    const response = await authApiFetch(`${API_CONFIG.BASE_URL}/api/analyze`, {
+    const result = await authApiFetch<AnalyzeResponse>(`${API_CONFIG.baseUrl}/api/analyze`, token, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      data: {
         prompt: messageText,
         thread_id: currentThreadId,
-        user_email: userEmail.value
-      })
+      }
     })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    const result: AnalyzeResponse = await response.json()
     
     // Update the loading message with the response
-    const aiMessage: Message = {
+    const aiMessage: ChatMessage = {
       id: loadingMessage.id,
-      content: result.answer || 'No response received.',
+      threadId: currentThreadId,
+      user: 'assistant',
+      content: result.result || 'No response received.',
       isUser: false,
-      type: 'message',
+      createdAt: Date.now(),
       isLoading: false,
-      selectionCode: result.selection_code,
+      selectionCode: result.top_selection_codes?.[0] || null,
       queriesAndResults: result.queries_and_results || [],
       meta: {
-        datasetUrl: result.dataset_url,
-        datasetsUsed: result.datasets_used,
-        sqlQuery: result.sql_query,
+        datasetUrl: result.datasetUrl || undefined,
+        datasetsUsed: result.queries_and_results?.map(([query]) => query),
+        sqlQuery: result.sql || undefined,
         run_id: result.run_id,
-        topChunks: result.top_chunks
+        topChunks: result.top_chunks || undefined
       }
     }
     
-    updateMessage(loadingMessage.id.toString(), aiMessage)
+    updateMessage(currentThreadId, loadingMessage.id.toString(), aiMessage)
     
     console.log('[ChatPage-send] ✅ Message sent and response received')
     
@@ -494,16 +509,18 @@ const handleSend = async (e: Event) => {
     console.error('[ChatPage-send] ❌ Error sending message:', error)
     
     // Update loading message to show error
-    const errorMessage = {
-      id: Date.now() + 1,
+    const errorMessage: ChatMessage = {
+      id: (Date.now() + 1).toString(),
+      threadId: currentThreadId || 'error',
+      user: 'assistant',
       content: 'Sorry, there was an error processing your request. Please try again.',
       isUser: false,
-      type: 'message',
+      createdAt: Date.now(),
       isLoading: false,
       isError: true
     }
     
-    updateMessage((Date.now() + 1).toString(), errorMessage)
+    updateMessage(currentThreadId || 'error', (Date.now() + 1).toString(), errorMessage)
   } finally {
     setLoading(false)
   }
@@ -542,8 +559,10 @@ onMounted(async () => {
 })
 
 // Watchers
-watch(threadsHasMore, (newHasMore) => {
-  setInfiniteScrollHasMore(newHasMore)
+watch(() => threadsHasMore, (newHasMore) => {
+  if (typeof newHasMore === 'boolean') {
+    setInfiniteScrollHasMore(newHasMore)
+  }
 })
 
 watch(infiniteScrollError, (error) => {
@@ -553,14 +572,14 @@ watch(infiniteScrollError, (error) => {
   }
 })
 
-watch(activeThreadId, async (newThreadId, oldThreadId) => {
-  if (newThreadId && newThreadId !== oldThreadId) {
+watch(() => activeThreadId, async (newThreadId, oldThreadId) => {
+  if (newThreadId && newThreadId !== oldThreadId && typeof newThreadId === 'string') {
     const hasCachedMessages = hasMessagesForThread(newThreadId)
     
     if (!hasCachedMessages) {
       try {
         setLoading(true)
-        await loadAllMessagesFromAPI(newThreadId)
+        await loadAllMessagesFromAPI()
       } catch (error) {
         console.error('[ChatPage] Error loading messages:', error)
       } finally {

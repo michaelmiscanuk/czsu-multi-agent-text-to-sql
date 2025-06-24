@@ -393,7 +393,19 @@ export const useChatCacheStore = defineStore('chatCache', () => {
   const updateThread = (threadId: string, updates: Partial<ChatThreadMeta>) => {
     const index = threads.value.findIndex(t => t.thread_id === threadId);
     if (index !== -1) {
-      threads.value[index] = { ...threads.value[index], ...updates };
+      // Create a safe update that only includes defined values
+      const existingThread = threads.value[index];
+      if (!existingThread) return;
+      
+      const updatedThread: ChatThreadMeta = {
+        thread_id: updates.thread_id ?? existingThread.thread_id,
+        latest_timestamp: updates.latest_timestamp ?? existingThread.latest_timestamp,
+        run_count: updates.run_count ?? existingThread.run_count,
+        title: updates.title ?? existingThread.title,
+        full_prompt: updates.full_prompt ?? existingThread.full_prompt,
+      };
+      
+      threads.value[index] = updatedThread;
       saveToCache();
     }
   };
