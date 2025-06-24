@@ -1,6 +1,6 @@
 @echo off
 
 REM Start frontend server
-cd frontend_vue
+cd frontend
 npm run dev
 cmd /k 
