@@ -106,6 +106,9 @@ from my_agent.utils.postgres_checkpointer import (
     get_thread_run_sentiments
 )
 
+# Application startup time for uptime tracking
+start_time = time.time()
+
 # Read GC memory threshold from environment with default fallback
 GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '1900'))  # 1900MB for 2GB memory allocation
 print__startup_debug(f"🔧 API Server: GC_MEMORY_THRESHOLD set to {GC_MEMORY_THRESHOLD}MB (from environment)")
@@ -348,112 +351,68 @@ async def initialize_checkpointer():
             print__startup_debug(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
             log_memory_usage("startup")
             
-            # Create and initialize the checkpointer manager
-            print__startup_debug("🔧 Creating PostgreSQL checkpointer manager...")
-            checkpointer_manager = await asyncio.wait_for(
-                get_postgres_checkpointer(), 
-                timeout=60  # 1 minute for checkpointer creation
+            # Create and initialize the checkpointer using the OFFICIAL AsyncPostgresSaver method
+            print__startup_debug("🔧 Creating PostgreSQL checkpointer using official factory method...")
+            
+            # Import the corrected PostgreSQL functions
+            from my_agent.utils.postgres_checkpointer import create_async_postgres_saver
+            
+            checkpointer = await asyncio.wait_for(
+                create_async_postgres_saver(), 
+                timeout=60
             )
             
-            # Enter the async context to activate the checkpointer
-            print__startup_debug("🔧 Entering AsyncPostgresSaver context...")
-            GLOBAL_CHECKPOINTER = await checkpointer_manager.__aenter__()
+            print__startup_debug(f"✅ Created checkpointer type: {type(checkpointer).__name__}")
             
-            # Store the manager for cleanup later
-            GLOBAL_CHECKPOINTER._manager = checkpointer_manager
+            # Set the global checkpointer directly (no wrapper needed)
+            GLOBAL_CHECKPOINTER = checkpointer
             
-            # Verify the checkpointer is working
-            print__startup_debug(f"⚠️ Created checkpointer type: {type(GLOBAL_CHECKPOINTER).__name__}")
-            print__startup_debug("✅ LangGraph checkpointer features enabled:")
-            print__startup_debug("   • Proper async context management")
-            print__startup_debug("   • PostgreSQL persistence")
-            print__startup_debug("   • Thread-safe operations")
-            print__startup_debug("   • AsyncPG for custom operations")
+            print__startup_debug("✅ PostgreSQL checkpointer initialized successfully using official AsyncPostgresSaver")
+            log_memory_usage("checkpointer_ready")
             
-            print__startup_debug("✅ PostgreSQL checkpointer initialization completed")
-            print__startup_debug("✅ LangGraph checkpoint tables verified/created")
-            log_memory_usage("checkpointer_initialized")
+        except TimeoutError:
+            print__startup_debug("❌ PostgreSQL checkpointer initialization timed out (60s)")
+            print__startup_debug("🔄 Falling back to InMemorySaver...")
+            from langgraph.checkpoint.memory import MemorySaver
+            GLOBAL_CHECKPOINTER = MemorySaver()
             
-        except asyncio.TimeoutError:
-            print__startup_debug("❌ PostgreSQL checkpointer initialization timeout")
-            print__startup_debug("⚠️ This may indicate network issues or database overload")
-            
-            # Fallback to InMemorySaver for development/testing
-            from langgraph.checkpoint.memory import InMemorySaver
-            GLOBAL_CHECKPOINTER = InMemorySaver()
-            print__startup_debug("⚠️ Falling back to InMemorySaver")
+        except ImportError as e:
+            print__startup_debug(f"❌ PostgreSQL imports failed: {e}")
+            print__startup_debug("🔄 Falling back to InMemorySaver...")
+            from langgraph.checkpoint.memory import MemorySaver
+            GLOBAL_CHECKPOINTER = MemorySaver()
             
         except Exception as e:
             print__startup_debug(f"❌ PostgreSQL checkpointer initialization failed: {e}")
-            print__startup_debug(f"🔍 Error type: {type(e).__name__}")
-            
-            # Enhanced error diagnostics
-            error_msg = str(e).lower()
-            if "ssl" in error_msg:
-                print__startup_debug("💡 SSL-related error detected during initialization")
-                print__startup_debug("   • Check database SSL configuration")
-                print__startup_debug("   • Verify network connectivity")
-                print__startup_debug("   • Check firewall settings")
-            elif "timeout" in error_msg:
-                print__startup_debug("💡 Timeout error detected during initialization")
-                print__startup_debug("   • Check database server responsiveness")
-                print__startup_debug("   • Verify network latency")
-                print__startup_debug("   • Check connection limits")
-            elif "connection" in error_msg:
-                print__startup_debug("💡 Connection error detected during initialization")
-                print__startup_debug("   • Check database connection string")
-                print__startup_debug("   • Verify database server is running")
-                print__startup_debug("   • Check network connectivity")
-            
-            import traceback
-            print__startup_debug(f"🔍 Full traceback: {traceback.format_exc()}")
-            
-            # Fallback to InMemorySaver for development/testing
-            from langgraph.checkpoint.memory import InMemorySaver
-            GLOBAL_CHECKPOINTER = InMemorySaver()
-            print__startup_debug("⚠️ Falling back to InMemorySaver")
-            
-    else:
-        print__startup_debug("⚠️ Global checkpointer already exists - skipping initialization")
+            print__startup_debug("🔄 Falling back to InMemorySaver...")
+            from langgraph.checkpoint.memory import MemorySaver
+            GLOBAL_CHECKPOINTER = MemorySaver()
 
 async def cleanup_checkpointer():
-    """Clean up resources on app shutdown."""
+    """Clean up the global checkpointer on shutdown."""
     global GLOBAL_CHECKPOINTER
-    print__memory_monitoring("🧹 Starting application cleanup...")
-    log_memory_usage("cleanup_start")
+    
+    print__startup_debug("🧹 Starting checkpointer cleanup...")
     
     if GLOBAL_CHECKPOINTER:
         try:
-            # Check if this is our manager-based checkpointer
-            if hasattr(GLOBAL_CHECKPOINTER, '_manager'):
-                print__startup_debug("🧹 Exiting AsyncPostgresSaver context manager...")
-                manager = GLOBAL_CHECKPOINTER._manager
-                await manager.__aexit__(None, None, None)
-                print__startup_debug("✅ AsyncPostgresSaver context manager exited cleanly")
-            elif hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
-                # Fallback for other types of checkpointers
-                if not GLOBAL_CHECKPOINTER.conn.closed:
-                    await GLOBAL_CHECKPOINTER.conn.close()
-                    print__startup_debug("✅ PostgreSQL connection pool closed cleanly")
-                else:
-                    print__startup_debug("⚠️ PostgreSQL connection pool was already closed")
+            # Check if it's an AsyncPostgresSaver that needs proper cleanup
+            if hasattr(GLOBAL_CHECKPOINTER, '__class__') and 'AsyncPostgresSaver' in str(type(GLOBAL_CHECKPOINTER)):
+                print__startup_debug("🔄 Cleaning up AsyncPostgresSaver...")
+                # Use the proper cleanup function
+                from my_agent.utils.postgres_checkpointer import close_async_postgres_saver
+                await close_async_postgres_saver()
             else:
-                print__startup_debug("⚠️ Checkpointer doesn't require connection cleanup")
+                print__startup_debug(f"🔄 Cleaning up {type(GLOBAL_CHECKPOINTER).__name__}...")
+                # For other types (like MemorySaver), no special cleanup needed
+                
         except Exception as e:
             print__startup_debug(f"⚠️ Error during checkpointer cleanup: {e}")
         finally:
             GLOBAL_CHECKPOINTER = None
-            print__startup_debug("✅ Global checkpointer cleared")
-    
-    # Clean up the robust connection pool
-    try:
-        from my_agent.utils.robust_postgres_pool import close_global_pool
-        await close_global_pool()
-        print__startup_debug("✅ Robust connection pool closed")
-    except Exception as e:
-        print__startup_debug(f"⚠️ Error closing robust pool: {e}")
-    
-    log_memory_usage("cleanup_complete")
+            print__startup_debug("✅ Checkpointer cleanup completed")
+    else:
+        print__startup_debug("ℹ️ No checkpointer to clean up")
 
 async def get_healthy_checkpointer():
     """Get a healthy checkpointer instance."""
@@ -602,80 +561,127 @@ async def simplified_memory_monitoring_middleware(request: Request, call_next):
 
 @app.get("/health")
 async def health_check():
-    """Simplified health check endpoint."""
+    """Enhanced health check with memory monitoring and database verification."""
     try:
-        health_data = {
-            "status": "healthy",
-            "timestamp": datetime.now().isoformat(),
-            "app_uptime": str(datetime.now() - _app_startup_time) if _app_startup_time else "unknown",
-            "total_requests_processed": _request_count
-        }
+        # Memory check
+        import psutil
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        memory_percent = process.memory_percent()
         
-        # Simple memory info
-        try:
-            process = psutil.Process()
-            rss_mb = process.memory_info().rss / 1024 / 1024
-            health_data.update({
-                "memory_rss_mb": round(rss_mb, 1),
-                "memory_over_threshold": rss_mb > GC_MEMORY_THRESHOLD
-            })
-        except Exception as mem_error:
-            health_data["memory_error"] = str(mem_error)
+        # Database check with proper AsyncPostgresSaver handling
+        database_healthy = True
+        database_error = None
+        checkpointer_type = "Unknown"
         
-        # Check checkpointer health
         try:
             if GLOBAL_CHECKPOINTER:
-                if hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
-                    if not GLOBAL_CHECKPOINTER.conn.closed:
-                        health_data["database"] = "connected"
-                    else:
-                        health_data["database"] = "disconnected"
-                        health_data["status"] = "degraded"
+                checkpointer_type = type(GLOBAL_CHECKPOINTER).__name__
+                
+                if 'AsyncPostgresSaver' in checkpointer_type:
+                    # Test AsyncPostgresSaver with a simple operation
+                    test_config = {"configurable": {"thread_id": "health_check_test"}}
+                    
+                    # Use aget_tuple() which is a basic read operation
+                    result = await GLOBAL_CHECKPOINTER.aget_tuple(test_config)
+                    # If we get here without exception, the database is healthy
+                    database_healthy = True
                 else:
-                    health_data["database"] = "in_memory_fallback"
-                    health_data["status"] = "degraded"
-            else:
-                health_data["database"] = "not_initialized"
-                health_data["status"] = "degraded"
-        except:
-            health_data["database"] = "error"
-            health_data["status"] = "degraded"
+                    # For other checkpointer types (like MemorySaver)
+                    database_healthy = True
+                    
+        except Exception as e:
+            database_healthy = False
+            database_error = str(e)
         
+        # Response
+        status = "healthy" if database_healthy else "degraded"
+        
+        health_data = {
+            "status": status,
+            "timestamp": datetime.now().isoformat(),
+            "uptime_seconds": time.time() - start_time,
+            "memory": {
+                "rss_mb": round(memory_info.rss / 1024 / 1024, 2),
+                "vms_mb": round(memory_info.vms / 1024 / 1024, 2),
+                "percent": round(memory_percent, 2)
+            },
+            "database": {
+                "healthy": database_healthy,
+                "checkpointer_type": checkpointer_type,
+                "error": database_error
+            },
+            "version": "1.0.0"
+        }
+        
+        if not database_healthy:
+            return JSONResponse(
+                status_code=503,
+                content=health_data
+            )
+            
         return health_data
         
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }
+        )
 
-# NEW: Individual service health checks
 @app.get("/health/database")
 async def database_health_check():
-    """Database-specific health check."""
+    """Detailed database health check."""
     try:
-        if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn') and GLOBAL_CHECKPOINTER.conn:
-            async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
-                await conn.execute("SELECT 1")
-            return {
-                "status": "healthy",
-                "database": "connected",
-                "timestamp": datetime.now().isoformat()
-            }
-        else:
-            return {
-                "status": "degraded",
-                "database": "not_available",
-                "timestamp": datetime.now().isoformat()
-            }
-    except Exception as e:
-        return {
-            "status": "unhealthy",
-            "database": "error",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
+        health_status = {
+            "timestamp": datetime.now().isoformat(),
+            "checkpointer_available": GLOBAL_CHECKPOINTER is not None,
+            "checkpointer_type": type(GLOBAL_CHECKPOINTER).__name__ if GLOBAL_CHECKPOINTER else None,
         }
+        
+        if GLOBAL_CHECKPOINTER and 'AsyncPostgresSaver' in str(type(GLOBAL_CHECKPOINTER)):
+            # Test AsyncPostgresSaver functionality
+            try:
+                test_config = {"configurable": {"thread_id": "db_health_test"}}
+                
+                # Test basic read operation
+                start_time = time.time()
+                result = await GLOBAL_CHECKPOINTER.aget_tuple(test_config)
+                read_latency = time.time() - start_time
+                
+                health_status.update({
+                    "database_connection": "healthy",
+                    "read_latency_ms": round(read_latency * 1000, 2),
+                    "read_test": "passed"
+                })
+                
+            except Exception as e:
+                health_status.update({
+                    "database_connection": "error",
+                    "error": str(e),
+                    "read_test": "failed"
+                })
+                return JSONResponse(status_code=503, content=health_status)
+        else:
+            health_status.update({
+                "database_connection": "using_memory_fallback",
+                "note": "PostgreSQL checkpointer not available"
+            })
+        
+        return health_status
+        
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={
+                "timestamp": datetime.now().isoformat(),
+                "database_connection": "error",
+                "error": str(e)
+            }
+        )
 
 @app.get("/health/memory")
 async def memory_health_check():
@@ -749,6 +755,85 @@ async def rate_limit_health_check():
             "timestamp": datetime.now().isoformat()
         }
 
+@app.get("/health/prepared-statements")
+async def prepared_statements_health_check():
+    """Health check for prepared statements and database connection status."""
+    try:
+        from my_agent.utils.postgres_checkpointer import clear_prepared_statements, get_global_checkpointer
+        
+        # Check if we can get a checkpointer
+        try:
+            checkpointer = await get_global_checkpointer()
+            checkpointer_status = "healthy" if checkpointer else "unavailable"
+        except Exception as e:
+            checkpointer_status = f"error: {str(e)}"
+        
+        # Check prepared statements in the database
+        try:
+            from my_agent.utils.postgres_checkpointer import get_db_config
+            import psycopg
+            
+            config = get_db_config()
+            connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}?sslmode=require"
+            
+            async with await psycopg.AsyncConnection.connect(connection_string) as conn:
+                async with conn.cursor() as cur:
+                    await cur.execute("""
+                        SELECT COUNT(*) as count, 
+                               STRING_AGG(name, ', ') as statement_names
+                        FROM pg_prepared_statements 
+                        WHERE name LIKE '_pg3_%' OR name LIKE '_pg_%';
+                    """)
+                    result = await cur.fetchone()
+                    
+                    prepared_count = result[0] if result else 0
+                    statement_names = result[1] if result and result[1] else "none"
+                    
+                    return {
+                        "status": "healthy",
+                        "checkpointer_status": checkpointer_status,
+                        "prepared_statements_count": prepared_count,
+                        "prepared_statement_names": statement_names,
+                        "timestamp": datetime.now().isoformat()
+                    }
+                    
+        except Exception as db_error:
+            return {
+                "status": "degraded",
+                "checkpointer_status": checkpointer_status,
+                "database_error": str(db_error),
+                "timestamp": datetime.now().isoformat()
+            }
+            
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
+@app.post("/admin/clear-prepared-statements")
+async def clear_prepared_statements_endpoint(user=Depends(get_current_user)):
+    """Manually clear prepared statements (admin endpoint)."""
+    try:
+        from my_agent.utils.postgres_checkpointer import clear_prepared_statements
+        
+        # Clear prepared statements
+        await clear_prepared_statements()
+        
+        return {
+            "status": "success",
+            "message": "Prepared statements cleared successfully",
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
 @app.get("/placeholder/{width}/{height}")
 async def get_placeholder_image(width: int, height: int):
     """Generate a placeholder image with specified dimensions."""
@@ -797,8 +882,8 @@ print__memory_monitoring("📋 Monitoring route registrations for memory leak pr
 # Track all main routes that will be registered
 main_routes = [
     ("/health", "GET"), ("/health/database", "GET"), ("/health/memory", "GET"), 
-    ("/health/rate-limits", "GET"), ("/analyze", "POST"), ("/feedback", "POST"), 
-    ("/sentiment", "POST"), ("/chat/{thread_id}/sentiments", "GET"), 
+    ("/health/rate-limits", "GET"), ("/health/prepared-statements", "GET"), ("/admin/clear-prepared-statements", "POST"), ("/analyze", "POST"), 
+    ("/feedback", "POST"), ("/sentiment", "POST"), ("/chat/{thread_id}/sentiments", "GET"), 
     ("/chat-threads", "GET"), ("/chat/{thread_id}", "DELETE"), 
     ("/catalog", "GET"), ("/data-tables", "GET"), ("/data-table", "GET"),
     ("/chat/{thread_id}/messages", "GET"), ("/chat/all-messages", "GET"), 
@@ -1122,7 +1207,21 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 error_msg = str(analysis_error).lower()
                 print__analyze_debug(f"🔍 Error message (lowercase): {error_msg}")
                 
-                if any(keyword in error_msg for keyword in ["pool", "connection", "closed", "timeout", "ssl", "postgres"]):
+                # ENHANCED: Check for prepared statement errors specifically
+                is_prepared_stmt_error = any(indicator in error_msg for indicator in [
+                    'prepared statement',
+                    'does not exist',
+                    '_pg3_',
+                    '_pg_',
+                    'invalidsqlstatementname'
+                ])
+                
+                if is_prepared_stmt_error:
+                    print__analyze_debug(f"🔧 PREPARED STATEMENT ERROR DETECTED: {analysis_error}")
+                    print__feedback_flow(f"🔧 Prepared statement error detected - this should be handled by retry logic: {analysis_error}")
+                    # Re-raise prepared statement errors - they should be handled by the retry decorator
+                    raise HTTPException(status_code=500, detail="Database prepared statement error. Please try again.")
+                elif any(keyword in error_msg for keyword in ["pool", "connection", "closed", "timeout", "ssl", "postgres"]):
                     print__analyze_debug(f"🔍 Database issue detected, attempting fallback")
                     print__feedback_flow(f"⚠️ Database issue detected, trying with InMemorySaver fallback: {analysis_error}")
                     
@@ -2475,53 +2574,57 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
 
 @app.get("/debug/pool-status")
 async def debug_pool_status():
-    """Debug endpoint to check pool and checkpointer status (no auth required)."""
-    global GLOBAL_CHECKPOINTER
-    
+    """Debug endpoint to check pool status - updated for official AsyncPostgresSaver."""
     try:
+        global GLOBAL_CHECKPOINTER
+        
         status = {
+            "timestamp": datetime.now().isoformat(),
             "global_checkpointer_exists": GLOBAL_CHECKPOINTER is not None,
             "checkpointer_type": type(GLOBAL_CHECKPOINTER).__name__ if GLOBAL_CHECKPOINTER else None,
-            "has_connection_pool": False,
-            "pool_closed": None,
-            "pool_healthy": None,
-            "can_query": False,
-            "timestamp": datetime.now().isoformat()
         }
         
-        if GLOBAL_CHECKPOINTER and hasattr(GLOBAL_CHECKPOINTER, 'conn'):
-            status["has_connection_pool"] = True
-            
-            if GLOBAL_CHECKPOINTER.conn:
-                status["pool_closed"] = GLOBAL_CHECKPOINTER.conn.closed
-                
-                # Test if we can execute a simple query
+        if GLOBAL_CHECKPOINTER:
+            if 'AsyncPostgresSaver' in str(type(GLOBAL_CHECKPOINTER)):
+                # Test AsyncPostgresSaver functionality instead of checking .conn
                 try:
-                    async with GLOBAL_CHECKPOINTER.conn.connection() as conn:
-                        await asyncio.wait_for(conn.execute("SELECT 1"), timeout=5)
-                    status["can_query"] = True
-                    status["pool_healthy"] = True
-                except Exception as e:
-                    status["can_query"] = False
-                    status["pool_healthy"] = False
-                    status["query_error"] = str(e)
-        
-        # Try to get a healthy checkpointer
-        try:
-            healthy_checkpointer = await get_healthy_checkpointer()
-            status["healthy_checkpointer_type"] = type(healthy_checkpointer).__name__
-            status["healthy_checkpointer_available"] = True
-        except Exception as e:
-            status["healthy_checkpointer_available"] = False
-            status["healthy_checkpointer_error"] = str(e)
+                    test_config = {"configurable": {"thread_id": "pool_status_test"}}
+                    start_time = time.time()
+                    
+                    # Test a basic operation to verify the checkpointer is working
+                    result = await GLOBAL_CHECKPOINTER.aget_tuple(test_config)
+                    latency = time.time() - start_time
+                    
+                    status.update({
+                        "asyncpostgressaver_status": "operational",
+                        "test_latency_ms": round(latency * 1000, 2),
+                        "connection_test": "passed"
+                    })
+                    
+                except Exception as test_error:
+                    status.update({
+                        "asyncpostgressaver_status": "error",
+                        "test_error": str(test_error),
+                        "connection_test": "failed"
+                    })
+            else:
+                status.update({
+                    "checkpointer_status": "non_postgres_type",
+                    "note": f"Using {type(GLOBAL_CHECKPOINTER).__name__} instead of AsyncPostgresSaver"
+                })
+        else:
+            status["checkpointer_status"] = "not_initialized"
         
         return status
         
     except Exception as e:
-        return {
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": str(e),
+                "timestamp": datetime.now().isoformat()
+            }
+        )
 
 @app.get("/chat/{thread_id}/run-ids")
 async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):

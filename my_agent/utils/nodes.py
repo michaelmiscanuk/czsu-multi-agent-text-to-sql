@@ -666,9 +666,29 @@ async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisStat
     return {"iteration": current_iteration + 1}
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Submit the final answer to the user."""
+    """Node: Submit the final answer to the user and ensure final_answer is preserved."""
     print__debug(f"📤 {SUBMIT_FINAL_ID}: Enter submit_final_answer_node")
-    return state
+    
+    # Ensure final_answer is properly preserved in the state
+    final_answer = state.get("final_answer", "")
+    if not final_answer:
+        # Try to extract from messages as fallback
+        messages = state.get("messages", [])
+        if messages and len(messages) > 1:
+            final_answer = messages[-1].content if hasattr(messages[-1], 'content') else ""
+    
+    print__debug(f"📤 {SUBMIT_FINAL_ID}: Final answer length: {len(final_answer)} characters")
+    print__debug(f"📤 {SUBMIT_FINAL_ID}: Final answer preview: {final_answer[:100]}...")
+    
+    # Return state with final_answer explicitly preserved
+    return {
+        "final_answer": final_answer,
+        # Preserve other important state
+        "messages": state.get("messages", []),
+        "queries_and_results": state.get("queries_and_results", []),
+        "top_chunks": state.get("top_chunks", []),
+        "top_selection_codes": state.get("top_selection_codes", [])
+    }
 
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Save the result to a file."""

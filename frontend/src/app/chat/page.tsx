@@ -46,6 +46,9 @@ export default function ChatPage() {
   const { data: session, status, update } = useSession();
   const userEmail = session?.user?.email || null;
   
+  // Track if we've already attempted to load threads to prevent infinite loops when user has 0 threads
+  const [hasAttemptedThreadLoad, setHasAttemptedThreadLoad] = useState(false);
+  
   // Use the new ChatCache context
   const {
     threads,
@@ -160,6 +163,9 @@ export default function ChatPage() {
     
     // Set loading state to prevent other tabs from starting concurrent loads
     setUserLoadingState(userEmail, true);
+    
+    // Mark that we've attempted to load threads (prevents infinite loops for users with 0 threads)
+    setHasAttemptedThreadLoad(true);
 
     try {
       // Reset pagination and load initial threads
@@ -181,7 +187,7 @@ export default function ChatPage() {
       // Clear loading state to allow other tabs to load if needed
       setUserLoadingState(userEmail, false);
     }
-  }, [userEmail, checkUserLoadingState, setLoading, setUserLoadingState, resetPagination, loadInitialThreads, isPageRefresh, resetPageRefresh]);
+  }, [userEmail, checkUserLoadingState, setLoading, setUserLoadingState, resetPagination, loadInitialThreads, isPageRefresh, resetPageRefresh, setHasAttemptedThreadLoad]);
 
   // OPTIMIZED: Use cached data only - no more individual API calls
   const loadMessagesFromCheckpoint = async (threadId: string) => {
@@ -286,6 +292,7 @@ export default function ChatPage() {
             
             clearCacheForUserChange(userEmail);
             resetPagination();
+            setHasAttemptedThreadLoad(false); // Reset flag for new user
             
             console.log('[ChatPage-useEffect] ✅ Previous user data cleared - loading fresh data for current user');
             loadThreadsWithPagination();
@@ -297,6 +304,7 @@ export default function ChatPage() {
           // If there's any issue parsing cache, clear it for safety
           clearCacheForUserChange(userEmail);
           resetPagination();
+          setHasAttemptedThreadLoad(false); // Reset flag when clearing cache
           loadThreadsWithPagination();
           return;
         }
@@ -306,6 +314,7 @@ export default function ChatPage() {
       if (isDataStale() || isPageRefresh) {
         console.log('[ChatPage-useEffect] 🔄 Cache is stale or page refresh detected - using pagination');
         resetPagination();
+        setHasAttemptedThreadLoad(false); // Reset flag for fresh load
         loadThreadsWithPagination();
       } else {
         console.log('[ChatPage-useEffect] ⚡ Using cached data - no API call needed');
@@ -330,13 +339,18 @@ export default function ChatPage() {
             }
           }
         } else {
-          console.log('[ChatPage-useEffect] ⚠ No cached threads found - initializing pagination');
-          // Initialize pagination for first-time users
-          loadThreadsWithPagination();
+          console.log('[ChatPage-useEffect] ⚠ No cached threads found - checking if we should initialize pagination');
+          // Only initialize pagination for first-time users if we haven't already attempted to load
+          if (!hasAttemptedThreadLoad) {
+            console.log('[ChatPage-useEffect] 🔄 First attempt - initializing pagination for user with no threads');
+            loadThreadsWithPagination();
+          } else {
+            console.log('[ChatPage-useEffect] ✅ Already attempted to load threads - user has 0 threads, no need to retry');
+          }
         }
       }
     }
-  }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length, activeThreadId, setUserEmail, resetPagination, loadThreadsWithPagination, setActiveThreadId]);
+  }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length, activeThreadId, setUserEmail, resetPagination, loadThreadsWithPagination, setActiveThreadId, hasAttemptedThreadLoad]);
 
   // NEW: Initialize currentMessage from localStorage when user authenticates
   useEffect(() => {

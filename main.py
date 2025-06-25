@@ -35,7 +35,7 @@ load_dotenv()
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
 from my_agent.utils.nodes import MAX_ITERATIONS
-from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer
+from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer, retry_on_prepared_statement_error
 
 # Robust BASE_DIR logic for project root
 try:
@@ -169,6 +169,7 @@ def get_used_selection_codes(queries_and_results: list, top_selection_codes: Lis
 #==============================================================================
 # MAIN FUNCTION
 #==============================================================================
+@retry_on_prepared_statement_error(max_retries=3)
 async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     """Main entry point for the application.
     
@@ -275,8 +276,10 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "iteration": 0,  # Reset for new question
         }
     else:
-        # For new conversations, initialize with complete state
+        # For new conversations, initialize with COMPLETE state including ALL fields from DataAnalysisState
+        # CRITICAL FIX: All state fields must be initialized for checkpointing to work properly
         input_state = {
+            # Basic conversation fields
             "prompt": prompt,
             "rewritten_prompt": None,
             "rewritten_prompt_history": [],
@@ -284,7 +287,18 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "iteration": 0,
             "queries_and_results": [],
             "chromadb_missing": False,
-            "final_answer": ""  # Initialize final_answer field
+            "final_answer": "",  # Initialize final_answer field
+            
+            # MISSING FIELDS - These were causing checkpoint storage issues
+            "reflection_decision": "",  # Last decision from reflection node
+            "hybrid_search_results": [],  # Intermediate hybrid search results before reranking
+            "most_similar_selections": [],  # List of (selection_code, cohere_rerank_score) after reranking
+            "top_selection_codes": [],  # List of top N selection codes
+            
+            # PDF chunk functionality states
+            "hybrid_search_chunks": [],  # Intermediate hybrid search results for PDF chunks
+            "most_similar_chunks": [],  # List of (document, cohere_rerank_score) after reranking PDF chunks  
+            "top_chunks": [],  # List of top N PDF chunks that passed relevance threshold
         }
     
     # Execute the graph with checkpoint configuration and run_id for LangSmith tracing
