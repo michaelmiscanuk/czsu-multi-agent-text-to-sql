@@ -259,7 +259,8 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     print__analysis_tracing_debug(f"39 - GARBAGE COLLECTION: Pre-analysis GC collected {collected} objects")
     
     print__analysis_tracing_debug("40 - CHECKPOINTER SETUP: Setting up checkpointer")
-    # Create the LangGraph execution graph with AsyncPostgresSaver for persistent checkpointing
+    # Create the LangGraph execution graph with standard AsyncPostgresSaver
+    # We use interrupt_after=['save'] and minimal state in save_node to optimize storage
     if checkpointer is None:
         try:
             print__analysis_tracing_debug("41 - POSTGRES CHECKPOINTER: Attempting to get PostgreSQL checkpointer")
@@ -363,29 +364,27 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     print__debug(f"🔍 MEMORY: After graph execution: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)")
     print__analysis_tracing_debug(f"60 - MEMORY CHECK: Memory after graph: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)")
     
-    if memory_growth_graph > 50:  # More than 50MB growth is suspicious
+    if memory_growth_graph > float(os.environ.get('GC_MEMORY_THRESHOLD', '1900')):
         print__debug(f"⚠️ MEMORY: Suspicious growth detected: {memory_growth_graph:.1f}MB during graph execution!")
         print__analysis_tracing_debug(f"61 - MEMORY WARNING: Suspicious memory growth detected: {memory_growth_graph:.1f}MB")
         
-        # EMERGENCY: Force immediate cleanup if growth is excessive
-        if memory_growth_graph > 200:  # More than 200MB growth
-            print__debug(f"🚨 MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - implementing emergency cleanup")
-            print__analysis_tracing_debug(f"62 - MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - emergency cleanup")
-            
-            # Emergency garbage collection
-            collected = gc.collect()
-            print__debug(f"🧹 MEMORY: Emergency GC collected {collected} objects")
-            print__analysis_tracing_debug(f"63 - EMERGENCY GC: Emergency GC collected {collected} objects")
-            
-            # Check memory after emergency GC
-            memory_after_gc = process.memory_info().rss / 1024 / 1024
-            freed_by_gc = memory_after_graph - memory_after_gc
-            print__debug(f"🧹 MEMORY: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
-            print__analysis_tracing_debug(f"64 - EMERGENCY GC RESULT: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
-            
-            # Update memory tracking
-            memory_after_graph = memory_after_gc
-            memory_growth_graph = memory_after_graph - memory_before
+        print__debug(f"🚨 MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - implementing emergency cleanup")
+        print__analysis_tracing_debug(f"62 - MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - emergency cleanup")
+        
+        # Emergency garbage collection
+        collected = gc.collect()
+        print__debug(f"🧹 MEMORY: Emergency GC collected {collected} objects")
+        print__analysis_tracing_debug(f"63 - EMERGENCY GC: Emergency GC collected {collected} objects")
+        
+        # Check memory after emergency GC
+        memory_after_gc = process.memory_info().rss / 1024 / 1024
+        freed_by_gc = memory_after_graph - memory_after_gc
+        print__debug(f"🧹 MEMORY: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
+        print__analysis_tracing_debug(f"64 - EMERGENCY GC RESULT: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
+        
+        # Update memory tracking
+        memory_after_graph = memory_after_gc
+        memory_growth_graph = memory_after_graph - memory_before
     
     print__analysis_tracing_debug("65 - RESULT PROCESSING: Processing graph result")
     # Log details about the result to understand memory usage

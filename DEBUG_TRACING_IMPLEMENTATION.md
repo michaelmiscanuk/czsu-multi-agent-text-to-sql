@@ -10,12 +10,13 @@ This document describes the comprehensive debug tracing system implemented for t
 - **Frontend**: Next.js React app with TypeScript
 - **Backend**: FastAPI Python server with LangGraph multi-agent system
 - **Database**: PostgreSQL with checkpointing
-- **Key Components**: InputBar.tsx, ChatPage.tsx, api_server.py, main.py, my_agent/agent.py
+- **Key Components**: InputBar.tsx, ChatPage.tsx, api_server.py, main.py, my_agent/agent.py, postgres_checkpointer.py
 
 ### Request Flow
 1. **Frontend Flow**: InputBar component → ChatPage handleSend function → API call to /analyze endpoint
 2. **Backend Flow**: api_server.py /analyze endpoint → main.py analysis_main function → LangGraph execution
 3. **Core Logic**: Graph creation in my_agent/agent.py → Node execution in my_agent/utils/nodes.py
+4. **Database Operations**: PostgreSQL checkpointer operations in my_agent/utils/postgres_checkpointer.py
 
 ## Debug Function Implementation
 
@@ -89,6 +90,16 @@ def print__analysis_tracing_debug(msg: str) -> None:
 - Node and edge addition (88-106)
 - Graph compilation (107-111)
 
+#### PostgreSQL Checkpointer (`my_agent/utils/postgres_checkpointer.py`)
+**Steps 200-312** covering:
+- Prepared statement error handling (200-211)
+- Database configuration (212-220)
+- Prepared statement cleanup (221-232)
+- AsyncPostgresSaver creation (233-257)
+- Checkpointer lifecycle management (258-278)
+- Checkpoint operations (279-285)
+- Database operations (286-312)
+
 ## Configuration
 
 ### Environment Variables
@@ -134,6 +145,12 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 [ANALYSIS_TRACING_DEBUG] 🔍 84 - GRAPH CREATION START: Starting graph creation
 [ANALYSIS_TRACING_DEBUG] 🔍 85 - NODES SETUP: Adding nodes to graph
 ...
+
+[Backend - PostgreSQL Checkpointer]
+[ANALYSIS_TRACING_DEBUG] 🔍 200 - PREPARED STATEMENT CHECK: Checking if error is prepared statement related
+[ANALYSIS_TRACING_DEBUG] 🔍 233 - CREATE SAVER START: Starting AsyncPostgresSaver creation
+[ANALYSIS_TRACING_DEBUG] 🔍 241 - OFFICIAL CREATION: Creating AsyncPostgresSaver using official from_conn_string
+...
 ```
 
 ## Benefits
@@ -143,29 +160,68 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 - **Performance Monitoring**: Identify bottlenecks and slow operations
 - **Error Debugging**: Pinpoint exactly where failures occur
 - **Memory Tracking**: Monitor memory usage throughout the pipeline
+- **Database Debugging**: Deep visibility into PostgreSQL operations
 
 ### Production Benefits
 - **Troubleshooting**: Quick identification of issues in production
 - **Performance Analysis**: Understand system behavior under load
 - **User Experience**: Better understanding of user interaction patterns
 - **Scalability Planning**: Data for optimization decisions
+- **Database Health**: Monitor PostgreSQL connection and query performance
 
 ## Technical Implementation Details
 
 ### Numbered Sequence Design
-- **Sequential Numbering**: Steps numbered 00-111+ for chronological flow tracking
-- **Component Separation**: Different number ranges for different components
+- **Sequential Numbering**: Steps numbered 00-312+ for chronological flow tracking
+- **Component Separation**: Different number ranges for different components:
+  - **00**: Frontend InputBar
+  - **01-28**: API Server operations
+  - **29-83**: Main analysis function
+  - **84-111**: Agent graph creation
+  - **200-312**: PostgreSQL checkpointer operations
 - **Logical Grouping**: Related operations grouped in number sequences
 
 ### Error Handling Integration
 - **Fallback Scenarios**: Tracing continues even when primary systems fail
 - **Exception Tracking**: Captures error states and recovery attempts
 - **Memory Monitoring**: Integrated memory leak prevention
+- **Database Recovery**: Prepared statement error handling and recovery
 
 ### Multi-Agent System Coverage
 - **LangGraph Integration**: Traces through complex agent workflows
 - **Database Operations**: PostgreSQL checkpoint operations tracked
 - **API Interactions**: External service calls and responses logged
+- **State Management**: Complete state tracking through checkpoints
+
+### PostgreSQL Checkpointer Tracing Details
+
+#### Prepared Statement Error Handling (200-211)
+- **200-201**: Error detection and classification
+- **202-211**: Retry wrapper logic with cleanup
+
+#### Database Configuration (212-220)
+- **212-213**: Environment variable configuration
+- **214-217**: Connection string generation
+- **218-220**: Environment validation
+
+#### Prepared Statement Cleanup (221-232)
+- **221-225**: Connection establishment for cleanup
+- **226-232**: Statement discovery and removal
+
+#### AsyncPostgresSaver Creation (233-257)
+- **233-238**: Initialization and state cleanup
+- **239-252**: Official AsyncPostgresSaver creation
+- **253-257**: Error handling and cleanup
+
+#### Checkpointer Lifecycle (258-278)
+- **258-267**: Close operations and global state management
+- **268-274**: Custom table setup
+- **275-278**: Compatibility functions
+
+#### Database Operations (279-312)
+- **279-285**: Checkpoint data retrieval
+- **286-291**: Thread run entry creation
+- **292-312**: Conversation message extraction
 
 ## Usage Instructions
 
@@ -180,6 +236,7 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 2. **Backend Traces**: Check server logs/stdout
 3. **Flow Analysis**: Follow numbered sequences to understand execution path
 4. **Performance Analysis**: Look for time gaps between sequential steps
+5. **Database Analysis**: Monitor PostgreSQL operations and connection health
 
 ### Disabling Debug Tracing
 1. Set environment variable: `ANALYSIS_TRACING_DEBUG=0` or remove it
@@ -196,6 +253,7 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 - `api_server.py` - Steps 01-28, debug function implementation
 - `main.py` - Steps 29-83, debug function implementation
 - `my_agent/agent.py` - Steps 84-111, debug function implementation
+- `my_agent/utils/postgres_checkpointer.py` - Steps 200-312, debug function implementation
 
 ## Future Enhancements
 
@@ -205,20 +263,23 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 - **Performance Metrics**: Automatic timing measurements between steps
 - **Visual Tracing**: Web interface for trace visualization
 - **Alert Integration**: Automatic notifications for error conditions
+- **Database Metrics**: Connection pool monitoring and query performance tracking
 
 ### Scalability Considerations
 - **Log Rotation**: Prevent disk space issues in production
 - **Sampling**: Trace only subset of requests under high load
 - **Async Logging**: Non-blocking log writes for performance
 - **Centralized Collection**: Log aggregation for distributed deployments
+- **Database Connection Management**: Pool health monitoring and optimization
 
 ## Conclusion
 
-The implemented debug tracing system provides comprehensive visibility into the multi-agent text-to-SQL application's execution flow. With over 111 numbered trace points across frontend and backend components, developers and operators can now:
+The implemented debug tracing system provides comprehensive visibility into the multi-agent text-to-SQL application's execution flow. With over 312 numbered trace points across frontend, backend, and database components, developers and operators can now:
 
-- **Debug Issues Rapidly**: Pinpoint exact failure locations
-- **Optimize Performance**: Identify bottlenecks and inefficiencies
-- **Monitor System Health**: Track memory usage and resource consumption
+- **Debug Issues Rapidly**: Pinpoint exact failure locations across all layers
+- **Optimize Performance**: Identify bottlenecks and inefficiencies throughout the stack
+- **Monitor System Health**: Track memory usage, database connections, and resource consumption
 - **Improve User Experience**: Understand and optimize user interaction flows
+- **Database Operations**: Deep visibility into PostgreSQL checkpointer operations and health
 
-The system is designed to be production-ready with minimal performance impact when disabled, making it suitable for both development and production environments. 
+The system is designed to be production-ready with minimal performance impact when disabled, making it suitable for both development and production environments. The PostgreSQL checkpointer tracing (steps 200-312) provides particular value for diagnosing database connectivity issues, prepared statement conflicts, and checkpoint operation performance. 

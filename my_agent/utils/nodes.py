@@ -691,7 +691,7 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
     }
 
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Save the result to a file."""
+    """Node: Save the result and create minimal checkpoint with only essential fields."""
     print__debug(f"💾 {SAVE_RESULT_ID}: Enter save_node")
     
     prompt = state["prompt"]
@@ -729,7 +729,22 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     except Exception as e:
         print__debug(f"❌ {SAVE_RESULT_ID}: ⚠️ Error saving JSON: {e}")
     
-    return state
+    # MINIMAL CHECKPOINT STATE: Return only essential fields for checkpointing
+    # This dramatically reduces database storage from full state to just these 5 fields
+    minimal_checkpoint_state = {
+        "prompt": state.get("prompt", ""),
+        "queries_and_results": state.get("queries_and_results", []),
+        "most_similar_selections": state.get("most_similar_selections", []),
+        "most_similar_chunks": state.get("most_similar_chunks", []),
+        "final_answer": final_answer,
+        # Keep messages for API compatibility but don't store large intermediate state
+        "messages": state.get("messages", [])
+    }
+    
+    print__debug(f"💾 {SAVE_RESULT_ID}: Created minimal checkpoint with {len(minimal_checkpoint_state)} essential fields")
+    print__debug(f"💾 {SAVE_RESULT_ID}: Checkpoint fields: {list(minimal_checkpoint_state.keys())}")
+    
+    return minimal_checkpoint_state
 
 async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Perform hybrid search on ChromaDB to retrieve initial candidate documents. Returns hybrid search results as Document objects."""
