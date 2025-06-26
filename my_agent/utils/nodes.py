@@ -81,17 +81,7 @@ EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
 #==============================================================================
 # HELPER FUNCTIONS
 #==============================================================================
-def print__debug(msg: str) -> None:
-    """Print debug messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_AGENT', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG] {msg}")
-        import sys
-        sys.stdout.flush()
+
 
 async def load_schema(state=None):
     """Load the schema metadata from the SQLite database based on top_selection_codes in state."""

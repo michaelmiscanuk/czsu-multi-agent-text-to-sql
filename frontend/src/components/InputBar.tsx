@@ -10,12 +10,12 @@ interface InputBarProps {
 const InputBar = forwardRef<HTMLInputElement, InputBarProps>(({ currentMessage, setCurrentMessage, onSubmit, isLoading = false }, ref) => {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        console.log('🔍 ANALYSIS_TRACING_DEBUG: 00 - INPUT CHANGE: Input field value changed');
+        console.log('🔍 print__analysis_tracing_debug: 00 - INPUT CHANGE: Input field value changed');
         setCurrentMessage(e.target.value)
     }
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        console.log('🔍 ANALYSIS_TRACING_DEBUG: 00 - FORM SUBMIT HANDLER: InputBar form submit handler triggered');
+        console.log('🔍 print__analysis_tracing_debug: 00 - FORM SUBMIT HANDLER: InputBar form submit handler triggered');
         onSubmit(e);
     }
 

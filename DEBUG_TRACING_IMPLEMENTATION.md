@@ -28,16 +28,16 @@ def print__analysis_tracing_debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    analysis_tracing_debug_mode = os.environ.get('ANALYSIS_TRACING_DEBUG', '0')
+    analysis_tracing_debug_mode = os.environ.get('print__analysis_tracing_debug', '0')
     if analysis_tracing_debug_mode == '1':
-        print(f"[ANALYSIS_TRACING_DEBUG] 🔍 {msg}")
+        print(f"[print__analysis_tracing_debug] 🔍 {msg}")
         import sys
         sys.stdout.flush()
 ```
 
 ### Key Features
 - **Icon**: 🔍 (magnifying glass) for easy visual identification
-- **Environment Variable**: `ANALYSIS_TRACING_DEBUG=1` to enable/disable
+- **Environment Variable**: `print__analysis_tracing_debug=1` to enable/disable
 - **Pattern**: Checks env var, prints with prefix, flushes stdout
 - **Flexibility**: Can be toggled on/off without code changes
 
@@ -105,13 +105,13 @@ def print__analysis_tracing_debug(msg: str) -> None:
 ### Environment Variables
 ```bash
 # Enable analysis tracing
-ANALYSIS_TRACING_DEBUG=1
+print__analysis_tracing_debug=1
 ```
 
 ### Frontend Configuration
 ```javascript
 // Frontend uses console.log with same format as backend
-console.log('🔍 ANALYSIS_TRACING_DEBUG: 01 - FORM SUBMIT: Form submission triggered');
+console.log('🔍 print__analysis_tracing_debug: 01 - FORM SUBMIT: Form submission triggered');
 ```
 
 ### Backend Configuration
@@ -125,31 +125,31 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 ### Complete Request Trace
 ```
 [Frontend]
-🔍 ANALYSIS_TRACING_DEBUG: 00 - INPUT CHANGE: User input detected
-🔍 ANALYSIS_TRACING_DEBUG: 01 - FORM SUBMIT: Form submission triggered
-🔍 ANALYSIS_TRACING_DEBUG: 02 - VALIDATION PASSED: Message validation passed
+🔍 print__analysis_tracing_debug: 00 - INPUT CHANGE: User input detected
+🔍 print__analysis_tracing_debug: 01 - FORM SUBMIT: Form submission triggered
+🔍 print__analysis_tracing_debug: 02 - VALIDATION PASSED: Message validation passed
 ...
 
 [Backend - API Server]
-[ANALYSIS_TRACING_DEBUG] 🔍 01 - ANALYZE ENDPOINT ENTRY: Request received
-[ANALYSIS_TRACING_DEBUG] 🔍 02 - USER EXTRACTION: Getting user email from token
-[ANALYSIS_TRACING_DEBUG] 🔍 03 - USER VALIDATION SUCCESS: User user@example.com validated
+[print__analysis_tracing_debug] 🔍 01 - ANALYZE ENDPOINT ENTRY: Request received
+[print__analysis_tracing_debug] 🔍 02 - USER EXTRACTION: Getting user email from token
+[print__analysis_tracing_debug] 🔍 03 - USER VALIDATION SUCCESS: User user@example.com validated
 ...
 
 [Backend - Main Analysis]
-[ANALYSIS_TRACING_DEBUG] 🔍 29 - MAIN ENTRY: main() function entry point
-[ANALYSIS_TRACING_DEBUG] 🔍 30 - COMMAND LINE ARGS: Processing command line arguments
+[print__analysis_tracing_debug] 🔍 29 - MAIN ENTRY: main() function entry point
+[print__analysis_tracing_debug] 🔍 30 - COMMAND LINE ARGS: Processing command line arguments
 ...
 
 [Backend - Agent Graph]
-[ANALYSIS_TRACING_DEBUG] 🔍 84 - GRAPH CREATION START: Starting graph creation
-[ANALYSIS_TRACING_DEBUG] 🔍 85 - NODES SETUP: Adding nodes to graph
+[print__analysis_tracing_debug] 🔍 84 - GRAPH CREATION START: Starting graph creation
+[print__analysis_tracing_debug] 🔍 85 - NODES SETUP: Adding nodes to graph
 ...
 
 [Backend - PostgreSQL Checkpointer]
-[ANALYSIS_TRACING_DEBUG] 🔍 200 - PREPARED STATEMENT CHECK: Checking if error is prepared statement related
-[ANALYSIS_TRACING_DEBUG] 🔍 233 - CREATE SAVER START: Starting AsyncPostgresSaver creation
-[ANALYSIS_TRACING_DEBUG] 🔍 241 - OFFICIAL CREATION: Creating AsyncPostgresSaver using official from_conn_string
+[print__analysis_tracing_debug] 🔍 200 - PREPARED STATEMENT CHECK: Checking if error is prepared statement related
+[print__analysis_tracing_debug] 🔍 233 - CREATE SAVER START: Starting AsyncPostgresSaver creation
+[print__analysis_tracing_debug] 🔍 241 - OFFICIAL CREATION: Creating AsyncPostgresSaver using official from_conn_string
 ...
 ```
 
@@ -226,7 +226,7 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 ## Usage Instructions
 
 ### Enabling Debug Tracing
-1. Set environment variable: `ANALYSIS_TRACING_DEBUG=1`
+1. Set environment variable: `print__analysis_tracing_debug=1`
 2. Restart the application
 3. Submit a request through the frontend
 4. Monitor console/logs for traced output
@@ -239,7 +239,7 @@ print__analysis_tracing_debug("01 - ANALYZE ENDPOINT ENTRY: Request received")
 5. **Database Analysis**: Monitor PostgreSQL operations and connection health
 
 ### Disabling Debug Tracing
-1. Set environment variable: `ANALYSIS_TRACING_DEBUG=0` or remove it
+1. Set environment variable: `print__analysis_tracing_debug=0` or remove it
 2. Restart the application
 3. No performance impact when disabled
 

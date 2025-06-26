@@ -524,14 +524,14 @@ def print__feedback_flow(msg: str) -> None:
         sys.stdout.flush()
 
 def print__DEBUG_TOKEN(msg: str) -> None:
-    """Print DEBUG_TOKEN messages when debug mode is enabled.
+    """Print print__DEBUG_TOKEN messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_TOKEN', '0')
+    debug_mode = os.environ.get('print__DEBUG_TOKEN', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_TOKEN] {msg}")
+        print(f"[print__DEBUG_TOKEN] {msg}")
         import sys
         sys.stdout.flush()
         
@@ -560,182 +560,182 @@ def print__debug(msg: str) -> None:
         sys.stdout.flush()
 
 def print__analyze_debug(msg: str) -> None:
-    """Print DEBUG_ANALYZE messages when debug mode is enabled.
+    """Print print__analyze_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_ANALYZE', '0')
+    debug_mode = os.environ.get('print__analyze_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_ANALYZE] {msg}")
+        print(f"[print__analyze_debug] {msg}")
         import sys
         sys.stdout.flush()
         
 def print__chat_all_messages_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_ALL_MESSAGES messages when debug mode is enabled.
+    """Print print__chat_all_messages_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_CHAT_ALL_MESSAGES', '0')
+    debug_mode = os.environ.get('print__chat_all_messages_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_CHAT_ALL_MESSAGES] {msg}")
+        print(f"[print__chat_all_messages_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__feedback_debug(msg: str) -> None:
-    """Print DEBUG_FEEDBACK messages when debug mode is enabled.
+    """Print print__feedback_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_FEEDBACK', '0')
+    debug_mode = os.environ.get('print__feedback_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_FEEDBACK] {msg}")
+        print(f"[print__feedback_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__sentiment_debug(msg: str) -> None:
-    """Print DEBUG_SENTIMENT messages when debug mode is enabled.
+    """Print print__sentiment_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_SENTIMENT', '0')
+    debug_mode = os.environ.get('print__sentiment_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_SENTIMENT] {msg}")
+        print(f"[print__sentiment_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__chat_threads_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_THREADS messages when debug mode is enabled.
+    """Print print__chat_threads_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_CHAT_THREADS', '0')
+    debug_mode = os.environ.get('print__chat_threads_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_CHAT_THREADS] {msg}")
+        print(f"[print__chat_threads_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__chat_messages_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_MESSAGES messages when debug mode is enabled.
+    """Print print__chat_messages_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_CHAT_MESSAGES', '0')
+    debug_mode = os.environ.get('print__chat_messages_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_CHAT_MESSAGES] {msg}")
+        print(f"[print__chat_messages_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__delete_chat_debug(msg: str) -> None:
-    """Print DEBUG_DELETE_CHAT messages when debug mode is enabled.
+    """Print print__delete_chat_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_DELETE_CHAT', '0')
+    debug_mode = os.environ.get('print__delete_chat_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_DELETE_CHAT] {msg}")
+        print(f"[print__delete_chat_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__chat_sentiments_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_SENTIMENTS messages when debug mode is enabled.
+    """Print print__chat_sentiments_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_CHAT_SENTIMENTS', '0')
+    debug_mode = os.environ.get('print__chat_sentiments_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_CHAT_SENTIMENTS] {msg}")
+        print(f"[print__chat_sentiments_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__catalog_debug(msg: str) -> None:
-    """Print DEBUG_CATALOG messages when debug mode is enabled.
+    """Print print__catalog_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_CATALOG', '0')
+    debug_mode = os.environ.get('print__catalog_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_CATALOG] {msg}")
+        print(f"[print__catalog_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__data_tables_debug(msg: str) -> None:
-    """Print DEBUG_DATA_TABLES messages when debug mode is enabled.
+    """Print print__data_tables_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_DATA_TABLES', '0')
+    debug_mode = os.environ.get('print__data_tables_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_DATA_TABLES] {msg}")
+        print(f"[print__data_tables_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__data_table_debug(msg: str) -> None:
-    """Print DEBUG_DATA_TABLE messages when debug mode is enabled.
+    """Print print__data_table_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_DATA_TABLE', '0')
+    debug_mode = os.environ.get('print__data_table_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_DATA_TABLE] {msg}")
+        print(f"[print__data_table_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__chat_thread_id_checkpoints_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_THREAD_ID_CHECKPOINTS messages when debug mode is enabled.
+    """Print print__chat_thread_id_checkpoints_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_CHAT_THREAD_ID_CHECKPOINTS', '0')
+    debug_mode = os.environ.get('print__chat_thread_id_checkpoints_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_CHAT_THREAD_ID_CHECKPOINTS] {msg}")
+        print(f"[print__chat_thread_id_checkpoints_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__debug_pool_status_debug(msg: str) -> None:
-    """Print DEBUG_DEBUG_POOL_STATUS messages when debug mode is enabled.
+    """Print print__debug_pool_status_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_DEBUG_POOL_STATUS', '0')
+    debug_mode = os.environ.get('print__debug_pool_status_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_DEBUG_POOL_STATUS] {msg}")
+        print(f"[print__debug_pool_status_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__chat_thread_id_run_ids_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_THREAD_ID_RUN_IDS messages when debug mode is enabled.
+    """Print print__chat_thread_id_run_ids_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_CHAT_THREAD_ID_RUN_IDS', '0')
+    debug_mode = os.environ.get('print__chat_thread_id_run_ids_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_CHAT_THREAD_ID_RUN_IDS] {msg}")
+        print(f"[print__chat_thread_id_run_ids_debug] {msg}")
         import sys
         sys.stdout.flush()
 
 def print__debug_run_id_debug(msg: str) -> None:
-    """Print DEBUG_DEBUG_RUN_ID messages when debug mode is enabled.
+    """Print print__debug_run_id_debug messages when debug mode is enabled.
     
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_DEBUG_RUN_ID', '0')
+    debug_mode = os.environ.get('print__debug_run_id_debug', '0')
     if debug_mode == '1':
-        print(f"[DEBUG_DEBUG_RUN_ID] {msg}")
+        print(f"[print__debug_run_id_debug] {msg}")
         import sys
         sys.stdout.flush()
 
@@ -757,9 +757,9 @@ def print__analysis_tracing_debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    analysis_tracing_debug_mode = os.environ.get('ANALYSIS_TRACING_DEBUG', '0')
+    analysis_tracing_debug_mode = os.environ.get('print__analysis_tracing_debug', '0')
     if analysis_tracing_debug_mode == '1':
-        print(f"[ANALYSIS_TRACING_DEBUG] 🔍 {msg}")
+        print(f"[print__analysis_tracing_debug] 🔍 {msg}")
         import sys
         sys.stdout.flush()
 

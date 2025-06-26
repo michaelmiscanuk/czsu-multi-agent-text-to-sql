@@ -45,9 +45,9 @@ def print__analysis_tracing_debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    analysis_tracing_debug_mode = os.environ.get('ANALYSIS_TRACING_DEBUG', '0')
+    analysis_tracing_debug_mode = os.environ.get('print__analysis_tracing_debug', '0')
     if analysis_tracing_debug_mode == '1':
-        print(f"[ANALYSIS_TRACING_DEBUG] 🔍 {msg}")
+        print(f"[print__analysis_tracing_debug] 🔍 {msg}")
         import sys
         sys.stdout.flush()
 

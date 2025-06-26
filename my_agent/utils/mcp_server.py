@@ -31,7 +31,7 @@ def print__tools_debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get('DEBUG_TOOLS', '0')
+    debug_mode = os.environ.get('print__tools_debug', '0')
     if debug_mode == '1':
         print(f"[TOOLS] {msg}")
         import sys
