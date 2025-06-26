@@ -60,6 +60,18 @@ def print__debug(msg: str) -> None:
         import sys
         sys.stdout.flush()
 
+def print__analysis_tracing_debug(msg: str) -> None:
+    """Print analysis tracing debug messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    analysis_tracing_debug_mode = os.environ.get('ANALYSIS_TRACING_DEBUG', '0')
+    if analysis_tracing_debug_mode == '1':
+        print(f"[ANALYSIS_TRACING_DEBUG] 🔍 {msg}")
+        import sys
+        sys.stdout.flush()
+
 #==============================================================================
 # CONSTANTS & CONFIGURATION
 #==============================================================================
@@ -192,9 +204,12 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         dict: A dictionary containing the prompt, result, and thread_id for downstream
               processing or API responses.
     """
+    print__analysis_tracing_debug("29 - MAIN ENTRY: main() function entry point")
+    
     # Handle prompt sourcing - command line args have priority over defaults
     # This allows flexibility in how the application is used
     if prompt is None and __name__ == "__main__":
+        print__analysis_tracing_debug("30 - COMMAND LINE ARGS: Processing command line arguments")
         parser = argparse.ArgumentParser(description='Run data analysis with LangGraph')
         parser.add_argument('prompt', nargs='?', default=DEFAULT_PROMPT,
                            help=f'Analysis prompt (default: "{DEFAULT_PROMPT}")')
@@ -207,48 +222,72 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     
     # Ensure we always have a valid prompt to avoid None-type errors downstream
     if prompt is None:
+        print__analysis_tracing_debug("31 - DEFAULT PROMPT: Using default prompt")
         prompt = DEFAULT_PROMPT
+    else:
+        print__analysis_tracing_debug(f"32 - PROMPT PROVIDED: Using provided prompt (length: {len(prompt)})")
         
     # Use a thread_id for short-term memory (thread-level persistence)
     if thread_id is None:
         thread_id = f"data_analysis_{uuid.uuid4().hex[:8]}"
+        print__analysis_tracing_debug(f"33 - THREAD ID GENERATED: Generated new thread_id {thread_id}")
+    else:
+        print__analysis_tracing_debug(f"34 - THREAD ID PROVIDED: Using provided thread_id {thread_id}")
     
     # Generate run_id if not provided (for command-line usage)
     if run_id is None:
         run_id = str(uuid.uuid4())
+        print__analysis_tracing_debug(f"35 - RUN ID GENERATED: Generated new run_id {run_id}")
+    else:
+        print__analysis_tracing_debug(f"36 - RUN ID PROVIDED: Using provided run_id {run_id}")
     
     # Initialize tracing for debugging and performance monitoring
     # This is crucial for production deployments to track execution paths
     # instrument(project_name="LangGraph_czsu-multi-agent-text-to-sql", framework=Framework.LANGGRAPH)
     
+    print__analysis_tracing_debug("37 - MEMORY MONITORING: Starting memory monitoring")
     # MEMORY LEAK PREVENTION: Track memory before and after analysis
     # Memory monitoring before analysis
     process = psutil.Process()
     memory_before = process.memory_info().rss / 1024 / 1024
     print__debug(f"🔍 MEMORY: Starting analysis with {memory_before:.1f}MB RSS")
+    print__analysis_tracing_debug(f"38 - MEMORY BASELINE: Memory before analysis: {memory_before:.1f}MB RSS")
     
     # Force garbage collection before starting
     collected = gc.collect()
     print__debug(f"🧹 MEMORY: Pre-analysis GC collected {collected} objects")
+    print__analysis_tracing_debug(f"39 - GARBAGE COLLECTION: Pre-analysis GC collected {collected} objects")
     
+    print__analysis_tracing_debug("40 - CHECKPOINTER SETUP: Setting up checkpointer")
     # Create the LangGraph execution graph with AsyncPostgresSaver for persistent checkpointing
     if checkpointer is None:
         try:
+            print__analysis_tracing_debug("41 - POSTGRES CHECKPOINTER: Attempting to get PostgreSQL checkpointer")
             checkpointer = await get_postgres_checkpointer()
+            print__analysis_tracing_debug("42 - POSTGRES SUCCESS: PostgreSQL checkpointer obtained")
         except Exception as e:
+            print__analysis_tracing_debug(f"43 - POSTGRES FAILED: Failed to initialize PostgreSQL checkpointer - {str(e)}")
             print__debug(f"⚠️ Failed to initialize PostgreSQL checkpointer: {e}")
             # Fallback to InMemorySaver to ensure application still works
             from langgraph.checkpoint.memory import InMemorySaver
             checkpointer = InMemorySaver()
+            print__analysis_tracing_debug("44 - INMEMORY FALLBACK: Using InMemorySaver fallback")
             print__debug("⚠️ Using InMemorySaver fallback")
-    
+    else:
+        print__analysis_tracing_debug(f"45 - CHECKPOINTER PROVIDED: Using provided checkpointer ({type(checkpointer).__name__})")
+
+    print__analysis_tracing_debug("46 - GRAPH CREATION: Creating LangGraph execution graph")
     graph = create_graph(checkpointer=checkpointer)
+    print__analysis_tracing_debug("47 - GRAPH CREATED: LangGraph execution graph created successfully")
         
     print__debug(f"🚀 Processing prompt: {prompt} (thread_id={thread_id}, run_id={run_id})")
+    print__analysis_tracing_debug(f"48 - PROCESSING START: Processing prompt with thread_id={thread_id}, run_id={run_id}")
     
     # Configuration for thread-level persistence and LangSmith tracing
     config = {"configurable": {"thread_id": thread_id}, "run_id": run_id}
+    print__analysis_tracing_debug("49 - CONFIG SETUP: Configuration for thread-level persistence and LangSmith tracing")
     
+    print__analysis_tracing_debug("50 - STATE CHECK: Checking for existing state")
     # Check if there's existing state for this thread to determine if this is a new or continuing conversation
     try:
         existing_state = await graph.aget_state({"configurable": {"thread_id": thread_id}})
@@ -259,15 +298,22 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             len(existing_state.values.get("messages", [])) > 0
         )
         print__debug(f"🔍 Found existing state: {existing_state is not None}")
+        print__analysis_tracing_debug(f"51 - STATE CHECK RESULT: Found existing state: {existing_state is not None}")
         if existing_state and existing_state.values:
-            print__debug(f"📋 Message count: {len(existing_state.values.get('messages', []))}")
+            msg_count = len(existing_state.values.get('messages', []))
+            print__debug(f"📋 Message count: {msg_count}")
+            print__analysis_tracing_debug(f"52 - MESSAGE COUNT: Message count: {msg_count}")
         print__debug(f"🔀 Continuing conversation: {is_continuing_conversation}")
+        print__analysis_tracing_debug(f"53 - CONVERSATION TYPE: Continuing conversation: {is_continuing_conversation}")
     except Exception as e:
         print__debug(f"❌ Error checking existing state: {e}")
+        print__analysis_tracing_debug(f"54 - STATE CHECK ERROR: Error checking existing state - {str(e)}")
         is_continuing_conversation = False
     
+    print__analysis_tracing_debug("55 - STATE PREPARATION: Preparing input state")
     # Prepare input state based on whether this is a new or continuing conversation
     if is_continuing_conversation:
+        print__analysis_tracing_debug("56 - CONTINUING CONVERSATION: Preparing state for continuing conversation")
         # For continuing conversations, pass only the fields that need to be updated
         # The checkpointer will merge this with the existing state
         input_state = {
@@ -276,6 +322,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "iteration": 0,  # Reset for new question
         }
     else:
+        print__analysis_tracing_debug("57 - NEW CONVERSATION: Preparing state for new conversation")
         # For new conversations, initialize with COMPLETE state including ALL fields from DataAnalysisState
         # CRITICAL FIX: All state fields must be initialized for checkpointing to work properly
         input_state = {
@@ -301,6 +348,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "top_chunks": [],  # List of top N PDF chunks that passed relevance threshold
         }
     
+    print__analysis_tracing_debug("58 - GRAPH EXECUTION: Starting LangGraph execution")
     # Execute the graph with checkpoint configuration and run_id for LangSmith tracing
     # Checkpoints allow resuming execution if interrupted and maintaining conversation memory
     result = await graph.ainvoke(
@@ -308,58 +356,73 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         config=config
     )
     
+    print__analysis_tracing_debug("59 - GRAPH EXECUTION COMPLETE: LangGraph execution completed")
     # MEMORY LEAK PREVENTION: Monitor memory after graph execution
     memory_after_graph = process.memory_info().rss / 1024 / 1024
     memory_growth_graph = memory_after_graph - memory_before
     print__debug(f"🔍 MEMORY: After graph execution: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)")
+    print__analysis_tracing_debug(f"60 - MEMORY CHECK: Memory after graph: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)")
     
     if memory_growth_graph > 50:  # More than 50MB growth is suspicious
         print__debug(f"⚠️ MEMORY: Suspicious growth detected: {memory_growth_graph:.1f}MB during graph execution!")
+        print__analysis_tracing_debug(f"61 - MEMORY WARNING: Suspicious memory growth detected: {memory_growth_graph:.1f}MB")
         
         # EMERGENCY: Force immediate cleanup if growth is excessive
         if memory_growth_graph > 200:  # More than 200MB growth
             print__debug(f"🚨 MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - implementing emergency cleanup")
+            print__analysis_tracing_debug(f"62 - MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - emergency cleanup")
             
             # Emergency garbage collection
             collected = gc.collect()
             print__debug(f"🧹 MEMORY: Emergency GC collected {collected} objects")
+            print__analysis_tracing_debug(f"63 - EMERGENCY GC: Emergency GC collected {collected} objects")
             
             # Check memory after emergency GC
             memory_after_gc = process.memory_info().rss / 1024 / 1024
             freed_by_gc = memory_after_graph - memory_after_gc
             print__debug(f"🧹 MEMORY: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
+            print__analysis_tracing_debug(f"64 - EMERGENCY GC RESULT: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB")
             
             # Update memory tracking
             memory_after_graph = memory_after_gc
             memory_growth_graph = memory_after_graph - memory_before
     
+    print__analysis_tracing_debug("65 - RESULT PROCESSING: Processing graph result")
     # Log details about the result to understand memory usage
     try:
         result_size = len(str(result)) / 1024 if result else 0  # Size in KB
         print__debug(f"🔍 MEMORY: Result object size: {result_size:.1f}KB")
+        print__analysis_tracing_debug(f"66 - RESULT SIZE: Result object size: {result_size:.1f}KB")
     except:
         print__debug(f"🔍 MEMORY: Could not determine result size")
+        print__analysis_tracing_debug("67 - RESULT SIZE ERROR: Could not determine result size")
         
+    print__analysis_tracing_debug("68 - FINAL CLEANUP: Starting final cleanup and monitoring")
     # MEMORY LEAK PREVENTION: Final cleanup and monitoring before return
     try:
         # Final garbage collection to clean up any temporary objects from graph execution
         collected = gc.collect()
         print__debug(f"🧹 MEMORY: Final cleanup GC collected {collected} objects")
+        print__analysis_tracing_debug(f"69 - FINAL GC: Final cleanup GC collected {collected} objects")
         
         # Final memory check
         memory_final = process.memory_info().rss / 1024 / 1024
         total_growth = memory_final - memory_before
         
         print__debug(f"🔍 MEMORY: Final memory: {memory_final:.1f}MB RSS (total growth: {total_growth:.1f}MB)")
+        print__analysis_tracing_debug(f"70 - FINAL MEMORY: Final memory: {memory_final:.1f}MB RSS (total growth: {total_growth:.1f}MB)")
         
         # Warn about high memory retention patterns
         if total_growth > 100:  # More than 100MB total growth
             print__debug(f"⚠️ MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!")
             print__debug(f"💡 MEMORY: Consider investigating LangGraph nodes for memory leaks")
+            print__analysis_tracing_debug(f"71 - HIGH MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!")
             
     except Exception as memory_error:
         print__debug(f"⚠️ MEMORY: Error during final memory check: {memory_error}")
+        print__analysis_tracing_debug(f"72 - MEMORY ERROR: Error during final memory check - {str(memory_error)}")
         
+    print__analysis_tracing_debug("73 - RESULT EXTRACTION: Extracting values from graph result")
     # Extract values from the graph result dictionary         
     # The graph now uses a messages list: [summary (SystemMessage), last_message (AIMessage)]
     queries_and_results = result["queries_and_results"]
@@ -369,18 +432,24 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     top_selection_codes = result.get("top_selection_codes", [])
     sql_query = queries_and_results[-1][0] if queries_and_results else None
     
+    print__analysis_tracing_debug(f"74 - SELECTION CODES: Processing {len(top_selection_codes)} selection codes")
     # Filter to only include selection codes actually used in queries
     used_selection_codes = get_used_selection_codes(queries_and_results, top_selection_codes)
+    print__analysis_tracing_debug(f"75 - USED CODES: {len(used_selection_codes)} selection codes actually used")
     
     dataset_url = None
     if used_selection_codes:
         dataset_url = f"/datasets/{used_selection_codes[0]}"
+        print__analysis_tracing_debug(f"76 - DATASET URL: Generated dataset URL: {dataset_url}")
 
+    print__analysis_tracing_debug("77 - TOP CHUNKS SERIALIZATION: Converting top_chunks to JSON-serializable format")
     # Convert the result to a JSON-serializable format
     # Convert top_chunks (Document objects) to JSON-serializable format
     top_chunks_serialized = []
     if result.get("top_chunks"):
-        print__debug(f"📦 main.py - Found {len(result['top_chunks'])} top_chunks to serialize")
+        chunk_count = len(result['top_chunks'])
+        print__debug(f"📦 main.py - Found {chunk_count} top_chunks to serialize")
+        print__analysis_tracing_debug(f"78 - CHUNKS FOUND: Found {chunk_count} top_chunks to serialize")
         for i, chunk in enumerate(result["top_chunks"]):
             chunk_data = {
                 "content": chunk.page_content if hasattr(chunk, 'page_content') else str(chunk),
@@ -388,10 +457,14 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             }
             top_chunks_serialized.append(chunk_data)
             if i == 0:  # Log first chunk for debugging
-                print__debug(f"🔍 main.py - First chunk content preview: {chunk_data['content'][:100]}...")
+                content_preview = chunk_data['content'][:100]
+                print__debug(f"🔍 main.py - First chunk content preview: {content_preview}...")
+                print__analysis_tracing_debug(f"79 - FIRST CHUNK: First chunk content preview: {content_preview}...")
     else:
         print__debug("⚠️ main.py - No top_chunks found in result")
+        print__analysis_tracing_debug("80 - NO CHUNKS: No top_chunks found in result")
     
+    print__analysis_tracing_debug("81 - RESULT SERIALIZATION: Creating serializable result dictionary")
     serializable_result = {
         "prompt": prompt,
         "result": final_answer,
@@ -406,6 +479,8 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     }
     
     print__debug(f"📦 main.py - Serializable result includes {len(top_chunks_serialized)} top_chunks")
+    print__analysis_tracing_debug(f"82 - SERIALIZATION COMPLETE: Serializable result includes {len(top_chunks_serialized)} top_chunks")
+    print__analysis_tracing_debug("83 - MAIN EXIT: main() function returning result")
     
     return serializable_result
 

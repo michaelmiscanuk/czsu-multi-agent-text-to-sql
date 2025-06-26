@@ -10,11 +10,17 @@ interface InputBarProps {
 const InputBar = forwardRef<HTMLInputElement, InputBarProps>(({ currentMessage, setCurrentMessage, onSubmit, isLoading = false }, ref) => {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        console.log('🔍 ANALYSIS_TRACING_DEBUG: 00 - INPUT CHANGE: Input field value changed');
         setCurrentMessage(e.target.value)
     }
 
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        console.log('🔍 ANALYSIS_TRACING_DEBUG: 00 - FORM SUBMIT HANDLER: InputBar form submit handler triggered');
+        onSubmit(e);
+    }
+
     return (
-        <form onSubmit={onSubmit} className="p-4 bg-white">
+        <form onSubmit={handleSubmit} className="p-4 bg-white">
             <div className="flex items-center bg-[#F9F9F5] rounded-full p-3 shadow-md border border-gray-200 relative focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 focus-within:z-10 transition-all duration-200">
                 <input
                     ref={ref}

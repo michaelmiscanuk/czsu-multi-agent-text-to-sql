@@ -515,20 +515,28 @@ export default function ChatPage() {
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 01 - FORM SUBMIT: Form submission triggered');
+    
     if (!currentMessage.trim() || isAnyLoading || !userEmail) return;
+    
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 02 - VALIDATION PASSED: Message validation passed');
     
     // CRITICAL: Block if user is already loading in ANY tab before doing anything else
     const existingLoadingState = checkUserLoadingState(userEmail);
     if (existingLoadingState) {
       console.log('[ChatPage-send] 🚫 BLOCKED: User', userEmail, 'is already processing a request in another tab');
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 03 - USER LOADING BLOCKED: User already processing request in another tab');
       return; // Exit immediately - don't allow concurrent requests
     }
 
     console.log('[ChatPage-send] ✅ No existing loading state found, proceeding with request for user:', userEmail);
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 04 - LOADING STATE CLEAR: No existing loading state, proceeding');
     
     const messageText = currentMessage.trim();
     setCurrentMessage("");
     localStorage.removeItem('czsu-draft-message'); // Clear saved draft
+    
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 05 - MESSAGE PREPARED: Message text prepared and input cleared');
     
     // Capture state for recovery mechanism
     const messagesBefore = messages.length;
@@ -537,8 +545,11 @@ export default function ChatPage() {
     setIsLoading(true);
     setLoading(true); // Context loading state - persists across navigation
     
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 06 - LOADING STATES SET: Both local and context loading states set');
+    
     // NEW: Set cross-tab loading state tied to user email IMMEDIATELY
     setUserLoadingState(userEmail, true);
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 07 - CROSS-TAB LOADING: Cross-tab loading state set for user');
     
     let currentThreadId = activeThreadId;
     let shouldUpdateTitle = false;
@@ -557,7 +568,9 @@ export default function ChatPage() {
       addThread(newThread);
       setActiveThreadId(currentThreadId);
       console.log('[ChatPage-send] ✅ Created new thread with title:', newThread.title);
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 08 - NEW THREAD CREATED: New thread created with ID:', currentThreadId);
     } else {
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 09 - EXISTING THREAD: Using existing thread ID:', currentThreadId);
       // Check if existing thread needs title update
       const currentThread = threads.find(t => t.thread_id === currentThreadId);
       const currentMessages = messages.filter(msg => msg.isUser); // Count only user messages
@@ -580,6 +593,7 @@ export default function ChatPage() {
         });
         
         console.log('[ChatPage-send] ✅ Immediately updated existing thread title to:', newTitle);
+        console.log('🔍 ANALYSIS_TRACING_DEBUG: 10 - THREAD TITLE UPDATE: Updated existing thread title');
       }
     }
     
@@ -594,6 +608,7 @@ export default function ChatPage() {
     };
 
     addMessage(currentThreadId, userMessage);
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 11 - USER MESSAGE ADDED: User message added to cache');
     
     // Add loading message
     const loadingMessageId = uuidv4();
@@ -609,6 +624,7 @@ export default function ChatPage() {
     };
 
     addMessage(currentThreadId, loadingMessage);
+    console.log('🔍 ANALYSIS_TRACING_DEBUG: 12 - LOADING MESSAGE ADDED: Loading message added to cache');
     
     try {
       // Get fresh session for authentication
@@ -616,9 +632,11 @@ export default function ChatPage() {
       if (!freshSession?.id_token) {
         throw new Error('No authentication token available');
       }
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 13 - AUTHENTICATION: Fresh session obtained');
 
       // MEMORY PRESSURE HANDLING: Promise.race with timeout monitor for automatic recovery
       console.log('[ChatPage-send] 🚀 Starting API call with memory pressure monitoring...');
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 14 - API CALL START: Starting API call with memory pressure monitoring');
       
       // Track timeout ID separately to avoid circular reference
       let timeoutId: NodeJS.Timeout | null = null;
@@ -627,6 +645,7 @@ export default function ChatPage() {
       const timeoutMonitor = new Promise<AnalyzeResponse>((resolve, reject) => {
         timeoutId = setTimeout(async () => {
           console.log('[ChatPage-TimeoutMonitor] ⏰ 5 minute timeout reached - checking PostgreSQL for completion');
+          console.log('🔍 ANALYSIS_TRACING_DEBUG: 15 - TIMEOUT MONITOR: 5 minute timeout reached, checking PostgreSQL');
           
           try {
             // Check if backend completed and saved to PostgreSQL
@@ -634,6 +653,7 @@ export default function ChatPage() {
             
             if (recoverySuccessful) {
               console.log('[ChatPage-TimeoutMonitor] ✅ Recovery successful from PostgreSQL - backend completed but HTTP response was stuck');
+              console.log('🔍 ANALYSIS_TRACING_DEBUG: 16 - RECOVERY SUCCESS: Recovery successful from PostgreSQL');
               
               // Create a synthetic response since we recovered from PostgreSQL
               resolve({
@@ -651,15 +671,18 @@ export default function ChatPage() {
               } as AnalyzeResponse);
             } else {
               console.log('[ChatPage-TimeoutMonitor] ⏳ Backend still processing - extending timeout and keeping loading state');
+              console.log('🔍 ANALYSIS_TRACING_DEBUG: 17 - TIMEOUT EXTEND: Backend still processing, extending timeout');
               // Don't reject immediately - extend the timeout and keep trying
               // This prevents the loading visual from disappearing while backend is working
               const extendedRecovery = new Promise<AnalyzeResponse>((extendResolve, extendReject) => {
                 setTimeout(async () => {
                   console.log('[ChatPage-TimeoutMonitor] ⏰ Extended timeout (8 minutes total) - final recovery check');
+                  console.log('🔍 ANALYSIS_TRACING_DEBUG: 18 - FINAL TIMEOUT: Extended timeout (8 minutes total) - final recovery check');
                   try {
                     const finalRecovery = await checkForNewMessagesAfterTimeout(currentThreadId, messagesBefore);
                     if (finalRecovery) {
                       console.log('[ChatPage-TimeoutMonitor] ✅ Final recovery successful');
+                      console.log('🔍 ANALYSIS_TRACING_DEBUG: 19 - FINAL RECOVERY SUCCESS: Final recovery successful');
                       extendResolve({
                         prompt: messageText,
                         result: "Response recovered from database after extended processing",
@@ -674,9 +697,11 @@ export default function ChatPage() {
                         recovery_mode: true
                       } as AnalyzeResponse);
                     } else {
+                      console.log('🔍 ANALYSIS_TRACING_DEBUG: 20 - FINAL TIMEOUT FAILED: Final timeout - no response after 8 minutes');
                       extendReject(new Error('Final timeout: No response after 8 minutes'));
                     }
                   } catch (error) {
+                    console.log('🔍 ANALYSIS_TRACING_DEBUG: 21 - FINAL RECOVERY ERROR: Error during final recovery check');
                     extendReject(error);
                   }
                 }, 180000); // Additional 3 minutes (5 + 3 = 8 minutes total)
@@ -687,6 +712,7 @@ export default function ChatPage() {
             }
           } catch (error) {
             console.log('[ChatPage-TimeoutMonitor] ❌ Error during recovery check:', error);
+            console.log('🔍 ANALYSIS_TRACING_DEBUG: 22 - RECOVERY ERROR: Error during recovery check');
             reject(error);
           }
         }, 300000); // Increased from 15000 (15 seconds) to 300000 (5 minutes)
@@ -701,17 +727,22 @@ export default function ChatPage() {
         }),
       });
       
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 23 - API CALL CREATED: API call promise created');
+      
       // CRITICAL: Use Promise.race to handle both API response and timeout recovery
       console.log('[ChatPage-send] 🏁 Racing API call against timeout monitor...');
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 24 - PROMISE RACE: Racing API call against timeout monitor');
       const data = await Promise.race([apiCall, timeoutMonitor]);
       
       // Clear timeout if API call succeeded
       if (timeoutId) {
         clearTimeout(timeoutId);
         console.log('[ChatPage-send] ✅ API call succeeded, timeout monitor cleared');
+        console.log('🔍 ANALYSIS_TRACING_DEBUG: 25 - API SUCCESS: API call succeeded, timeout monitor cleared');
       }
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
+      console.log('🔍 ANALYSIS_TRACING_DEBUG: 26 - RESPONSE RECEIVED: Response received from API with run_id:', data.run_id);
 
       // Debug logging for PDF chunks
       console.log('[ChatPage-send] 🔍 PDF chunks in response:', data.top_chunks?.length || 0);

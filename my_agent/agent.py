@@ -43,6 +43,20 @@ from .utils.nodes import (
 # Load environment variables
 load_dotenv()
 
+import os
+
+def print__analysis_tracing_debug(msg: str) -> None:
+    """Print analysis tracing debug messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    analysis_tracing_debug_mode = os.environ.get('ANALYSIS_TRACING_DEBUG', '0')
+    if analysis_tracing_debug_mode == '1':
+        print(f"[ANALYSIS_TRACING_DEBUG] 🔍 {msg}")
+        import sys
+        sys.stdout.flush()
+
 #==============================================================================
 # GRAPH CREATION
 #==============================================================================
@@ -68,12 +82,16 @@ def create_graph(checkpointer=None):
     Returns:
         A compiled StateGraph ready for execution
     """
+    print__analysis_tracing_debug("84 - GRAPH CREATION START: Starting graph creation")
+    
     # Initialize with our custom state type to track conversation and results
     graph = StateGraph(DataAnalysisState)
+    print__analysis_tracing_debug("85 - STATE GRAPH INIT: StateGraph initialized with DataAnalysisState")
 
     #--------------------------------------------------------------------------
     # Add nodes - each handling a specific step in the process
     #--------------------------------------------------------------------------
+    print__analysis_tracing_debug("86 - ADDING NODES: Adding all graph nodes")
     graph.add_node("rewrite_query", rewrite_query_node)
     graph.add_node("retrieve_similar_selections_hybrid_search", retrieve_similar_selections_hybrid_search_node)
     graph.add_node("rerank", rerank_node)
@@ -92,10 +110,12 @@ def create_graph(checkpointer=None):
     graph.add_node("summarize_messages_query", summarize_messages_node)
     graph.add_node("summarize_messages_reflect", summarize_messages_node)
     graph.add_node("summarize_messages_format", summarize_messages_node)
+    print__analysis_tracing_debug("87 - NODES ADDED: All 17 graph nodes added successfully")
 
     #--------------------------------------------------------------------------
     # Define the graph execution path
     #--------------------------------------------------------------------------
+    print__analysis_tracing_debug("88 - ADDING EDGES: Defining graph execution path")
     # Start: prompt -> rewrite_query -> summarize_messages -> retrieve (both selections and chunks in parallel)
     graph.add_edge(START, "rewrite_query")
     graph.add_edge("rewrite_query", "summarize_messages_rewrite")
@@ -110,34 +130,42 @@ def create_graph(checkpointer=None):
     # PDF chunk path: retrieve -> rerank -> relevant (runs in parallel)
     graph.add_edge("retrieve_similar_chunks_hybrid_search", "rerank_chunks")
     graph.add_edge("rerank_chunks", "relevant_chunks")
+    print__analysis_tracing_debug("89 - PARALLEL EDGES: Added parallel processing edges for selections and chunks")
 
     # Add a synchronization node that both branches feed into
     def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
         """Synchronization node that waits for both selection and chunk processing to complete."""
         print__debug("🔄 SYNC: Both selection and chunk branches completed")
+        print__analysis_tracing_debug("90 - SYNC NODE: Both selection and chunk branches completed")
         return state  # Pass through state unchanged
     
     graph.add_node("route_decision", route_decision_node)
+    print__analysis_tracing_debug("91 - SYNC NODE ADDED: Route decision synchronization node added")
     
     # Both branches feed into the synchronization node
     graph.add_edge("relevant_selections", "route_decision")  
     graph.add_edge("relevant_chunks", "route_decision")
+    print__analysis_tracing_debug("92 - SYNC EDGES: Added edges to synchronization node")
     
     # Single routing logic from the synchronization node
     def route_after_sync(state: DataAnalysisState):
         print__debug("🔀 ROUTING: Making decision after synchronization")
+        print__analysis_tracing_debug("93 - ROUTING DECISION: Making routing decision after synchronization")
         # Check if we have selection codes to proceed with database queries
         if state.get("top_selection_codes") and len(state["top_selection_codes"]) > 0:
             print__debug("🎯 ROUTING: Found selections, proceeding to database schema")
+            print__analysis_tracing_debug(f"94 - SCHEMA ROUTE: Found {len(state['top_selection_codes'])} selections, proceeding to database schema")
             return "get_schema"
         elif state.get("chromadb_missing"):
             print("❌ ERROR: ChromaDB directory is missing. Please unzip or create the ChromaDB at 'metadata/czsu_chromadb'.")
+            print__analysis_tracing_debug("95 - CHROMADB ERROR: ChromaDB directory missing, ending execution")
             return END
         else:
             # No database selections found - proceed directly to answer with available PDF chunks
             print("⚠️ No relevant dataset selections found, proceeding with PDF chunks only")
             chunks_available = len(state.get("top_chunks", []))
             print__debug(f"🔀 ROUTING: Available PDF chunks: {chunks_available}")
+            print__analysis_tracing_debug(f"96 - CHUNKS ONLY ROUTE: No selections found, proceeding with {chunks_available} PDF chunks")
             return "format_answer"
     
     graph.add_conditional_edges(
@@ -149,6 +177,7 @@ def create_graph(checkpointer=None):
             END: END
         }
     )
+    print__analysis_tracing_debug("97 - CONDITIONAL EDGES: Added conditional routing edges after synchronization")
 
     # get_schema -> query_gen (no summarize_messages_schema)
     graph.add_edge("get_schema", "query_gen")
@@ -156,10 +185,14 @@ def create_graph(checkpointer=None):
     # query_gen -> summarize_messages -> reflect/format_answer
     graph.add_edge("query_gen", "summarize_messages_query")
     def route_after_query(state: DataAnalysisState) -> Literal["reflect", "format_answer"]:
-        print(f"🔀 Routing decision, iteration={state.get('iteration', 0)}")
-        if state.get("iteration", 0) >= MAX_ITERATIONS:
+        iteration = state.get('iteration', 0)
+        print(f"🔀 Routing decision, iteration={iteration}")
+        print__analysis_tracing_debug(f"98 - QUERY ROUTING: Making routing decision after query, iteration={iteration}")
+        if iteration >= MAX_ITERATIONS:
+            print__analysis_tracing_debug(f"99 - MAX ITERATIONS: Reached max iterations ({MAX_ITERATIONS}), proceeding to format answer")
             return "format_answer"
         else:
+            print__analysis_tracing_debug(f"100 - REFLECT ROUTE: Iteration {iteration} < {MAX_ITERATIONS}, proceeding to reflect")
             return "reflect"
     graph.add_conditional_edges(
         "summarize_messages_query",
@@ -169,14 +202,18 @@ def create_graph(checkpointer=None):
             "format_answer": "format_answer"
         }
     )
+    print__analysis_tracing_debug("101 - QUERY CONDITIONAL: Added conditional edges after query generation")
 
     # reflect -> summarize_messages -> query_gen/format_answer
     graph.add_edge("reflect", "summarize_messages_reflect")
     def route_after_reflect(state: DataAnalysisState) -> Literal["query_gen", "format_answer"]:
         decision = state.get("reflection_decision", "improve")
+        print__analysis_tracing_debug(f"102 - REFLECT ROUTING: Reflection decision is '{decision}'")
         if decision == "answer":
+            print__analysis_tracing_debug("103 - ANSWER ROUTE: Reflection says answer is ready, proceeding to format")
             return "format_answer"
         else:
+            print__analysis_tracing_debug("104 - IMPROVE ROUTE: Reflection says improve needed, going back to query generation")
             return "query_gen"
     graph.add_conditional_edges(
         "summarize_messages_reflect",
@@ -186,18 +223,28 @@ def create_graph(checkpointer=None):
             "format_answer": "format_answer"
         }
     )
+    print__analysis_tracing_debug("105 - REFLECT CONDITIONAL: Added conditional edges after reflection")
 
     # format_answer -> summarize_messages -> submit_final_answer
     graph.add_edge("format_answer", "summarize_messages_format")
     graph.add_edge("summarize_messages_format", "submit_final_answer")
     graph.add_edge("submit_final_answer", "save")
     graph.add_edge("save", END)
+    print__analysis_tracing_debug("106 - FINAL EDGES: Added final edges to completion")
 
+    print__analysis_tracing_debug("107 - GRAPH COMPILATION: Starting graph compilation with checkpointer")
     # Compile with checkpointing for execution persistence
     # This enables resuming interrupted runs and improves reliability
     if checkpointer is None:
+        print__analysis_tracing_debug("108 - INMEMORY SAVER: No checkpointer provided, using InMemorySaver")
         # Import here to avoid circular imports and provide fallback
         from langgraph.checkpoint.memory import InMemorySaver
         checkpointer = InMemorySaver()
         print("⚠️ Using InMemorySaver fallback - consider using AsyncPostgresSaver for production")
-    return graph.compile(checkpointer=checkpointer) 
+        print__analysis_tracing_debug("109 - INMEMORY CREATED: InMemorySaver fallback created")
+    else:
+        print__analysis_tracing_debug(f"110 - CHECKPOINTER PROVIDED: Using provided checkpointer ({type(checkpointer).__name__})")
+    
+    compiled_graph = graph.compile(checkpointer=checkpointer)
+    print__analysis_tracing_debug("111 - GRAPH COMPILED: Graph successfully compiled and ready for execution")
+    return compiled_graph 
