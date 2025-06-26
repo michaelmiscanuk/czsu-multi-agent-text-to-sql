@@ -86,6 +86,11 @@ def retry_on_prepared_statement_error(max_retries: int = 3):
                     last_error = e
                     print__analysis_tracing_debug(f"205 - RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(e)}")
                     
+                    # CRITICAL: Add full traceback to see exactly where the f-string error is occurring
+                    import traceback
+                    full_traceback = traceback.format_exc()
+                    print__analysis_tracing_debug(f"205.1 - RETRY TRACEBACK: {full_traceback}")
+                    
                     if is_prepared_statement_error(e):
                         print__analysis_tracing_debug(f"206 - PREPARED STATEMENT ERROR: Detected prepared statement error in {func.__name__}")
                         
@@ -552,7 +557,9 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         
         print__analysis_tracing_debug(f"304 - MESSAGE EXTRACTION: Extracting messages from {len(checkpoint_tuples)} checkpoints")
         
-        # OPTIMIZATION: Process only meaningful checkpoints, skip empty ones
+        # FIXED: Two-pass approach to ensure proper prompt->answer ordering
+        # Pass 1: Extract all user prompts first, in checkpoint order
+        user_prompts = []
         for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
             checkpoint = checkpoint_tuple.checkpoint
             metadata = checkpoint_tuple.metadata or {}
@@ -562,7 +569,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                 
             # OPTIMIZATION: Only log for significant checkpoints
             if checkpoint_index < 5 or checkpoint_index % 5 == 0:  # Log first 5, then every 5th
-                print__analysis_tracing_debug(f"305 - PROCESSING CHECKPOINT: Processing checkpoint {checkpoint_index + 1}/{len(checkpoint_tuples)}")
+                print__analysis_tracing_debug(f"305 - PROCESSING CHECKPOINT (Pass 1): Processing checkpoint {checkpoint_index + 1}/{len(checkpoint_tuples)} for user prompts")
             
             # EXTRACT USER PROMPTS from checkpoint metadata writes
             if "writes" in metadata and isinstance(metadata["writes"], dict):
@@ -582,17 +589,20 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                                 "given the conversation", "rewrite", "context:"
                             ]):
                                 seen_prompts.add(prompt.strip())
-                                user_message = {
-                                    "id": f"user_{len(conversation_messages) + 1}",
+                                user_prompts.append({
                                     "content": prompt.strip(),
-                                    "is_user": True,
-                                    "timestamp": datetime.fromtimestamp(1700000000 + checkpoint_index * 1000),
-                                    "checkpoint_order": checkpoint_index,
-                                    "message_order": len(conversation_messages) + 1
-                                }
-                                conversation_messages.append(user_message)
+                                    "checkpoint_index": checkpoint_index
+                                })
                                 print__analysis_tracing_debug(f"306 - USER MESSAGE FOUND: Found user prompt: {prompt[:50]}...")
+        
+        # Pass 2: Extract AI responses and pair them with user prompts
+        ai_responses = []
+        for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
+            checkpoint = checkpoint_tuple.checkpoint
             
+            if not checkpoint:
+                continue
+                
             # EXTRACT AI RESPONSES from channel_values - OPTIMIZED extraction
             if "channel_values" in checkpoint:
                 channel_values = checkpoint["channel_values"]
@@ -606,34 +616,61 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                     final_answer.strip() not in seen_answers):
                     
                     seen_answers.add(final_answer.strip())
-                    ai_message = {
-                        "id": f"ai_{len(conversation_messages) + 1}",
+                    ai_responses.append({
                         "content": final_answer.strip(),
-                        "is_user": False,
-                        "timestamp": datetime.fromtimestamp(1700000000 + checkpoint_index * 1000 + 500),
-                        "checkpoint_order": checkpoint_index,
-                        "message_order": len(conversation_messages) + 1
-                    }
-                    conversation_messages.append(ai_message)
+                        "checkpoint_index": checkpoint_index
+                    })
                     print__analysis_tracing_debug(f"307 - AI MESSAGE FOUND: Found final_answer: {final_answer[:100]}...")
         
-        # Sort all messages by timestamp to ensure proper chronological order
-        conversation_messages.sort(key=lambda x: x.get("timestamp", datetime.now()))
+        # Pass 3: Create properly ordered conversation with guaranteed prompt->answer sequence
+        print__analysis_tracing_debug(f"308 - MESSAGE PAIRING: Creating conversation with {len(user_prompts)} prompts and {len(ai_responses)} responses")
         
-        # Re-assign sequential IDs and message order after sorting
-        for i, msg in enumerate(conversation_messages):
-            msg["message_order"] = i + 1
-            msg["id"] = f"{'user' if msg['is_user'] else 'ai'}_{i + 1}"
+        # Create conversation messages with proper ordering
+        conversation_messages = []
+        message_counter = 0
         
-        print__analysis_tracing_debug(f"309 - CONVERSATION SUCCESS: Extracted {len(conversation_messages)} conversation messages")
+        # Handle multiple prompts and responses by pairing them chronologically
+        for i in range(max(len(user_prompts), len(ai_responses))):
+            # Add user prompt if available
+            if i < len(user_prompts):
+                prompt = user_prompts[i]
+                message_counter += 1
+                user_message = {
+                    "id": f"user_{message_counter}",
+                    "content": prompt["content"],
+                    "is_user": True,
+                    "timestamp": datetime.fromtimestamp(1700000000 + message_counter * 1000),
+                    "checkpoint_order": prompt["checkpoint_index"],
+                    "message_order": message_counter
+                }
+                conversation_messages.append(user_message)
+                print__analysis_tracing_debug(f"309 - ADDED USER MESSAGE: Message {message_counter}: {prompt['content'][:50]}...")
+            
+            # Add AI response if available (always after the user prompt)
+            if i < len(ai_responses):
+                response = ai_responses[i]
+                message_counter += 1
+                ai_message = {
+                    "id": f"ai_{message_counter}",
+                    "content": response["content"],
+                    "is_user": False,
+                    "timestamp": datetime.fromtimestamp(1700000000 + message_counter * 1000),
+                    "checkpoint_order": response["checkpoint_index"],
+                    "message_order": message_counter
+                }
+                conversation_messages.append(ai_message)
+                print__analysis_tracing_debug(f"310 - ADDED AI MESSAGE: Message {message_counter}: {response['content'][:100]}...")
+        
+        # Messages are already in correct order, no need to sort by timestamp
+        print__analysis_tracing_debug(f"311 - CONVERSATION SUCCESS: Created {len(conversation_messages)} conversation messages in proper order")
         
         # OPTIMIZATION: Only log first few messages in detail
-        for i, msg in enumerate(conversation_messages[:3]):  # Show only first 3 messages
+        for i, msg in enumerate(conversation_messages[:6]):  # Show first 6 messages (3 pairs)
             msg_type = "👤 User" if msg["is_user"] else "🤖 AI"
-            print__analysis_tracing_debug(f"310 - MESSAGE {i+1}: {msg_type}: {msg['content'][:50]}...")
+            print__analysis_tracing_debug(f"312 - MESSAGE {i+1}: {msg_type}: {msg['content'][:50]}...")
         
-        if len(conversation_messages) > 3:
-            print__analysis_tracing_debug(f"310 - MESSAGE SUMMARY: ...and {len(conversation_messages) - 3} more messages")
+        if len(conversation_messages) > 6:
+            print__analysis_tracing_debug(f"312 - MESSAGE SUMMARY: ...and {len(conversation_messages) - 6} more messages")
         
         return conversation_messages
         

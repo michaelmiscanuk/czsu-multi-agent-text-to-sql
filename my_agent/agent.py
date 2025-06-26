@@ -32,7 +32,6 @@ from .utils.nodes import (
     retrieve_similar_selections_hybrid_search_node,
     rerank_node,
     relevant_selections_node,
-    print__debug,
     rewrite_query_node,
     summarize_messages_node,
     retrieve_similar_chunks_hybrid_search_node,
@@ -135,7 +134,6 @@ def create_graph(checkpointer=None):
     # Add a synchronization node that both branches feed into
     def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
         """Synchronization node that waits for both selection and chunk processing to complete."""
-        print__debug("🔄 SYNC: Both selection and chunk branches completed")
         print__analysis_tracing_debug("90 - SYNC NODE: Both selection and chunk branches completed")
         return state  # Pass through state unchanged
     
@@ -149,11 +147,9 @@ def create_graph(checkpointer=None):
     
     # Single routing logic from the synchronization node
     def route_after_sync(state: DataAnalysisState):
-        print__debug("🔀 ROUTING: Making decision after synchronization")
         print__analysis_tracing_debug("93 - ROUTING DECISION: Making routing decision after synchronization")
         # Check if we have selection codes to proceed with database queries
         if state.get("top_selection_codes") and len(state["top_selection_codes"]) > 0:
-            print__debug("🎯 ROUTING: Found selections, proceeding to database schema")
             print__analysis_tracing_debug(f"94 - SCHEMA ROUTE: Found {len(state['top_selection_codes'])} selections, proceeding to database schema")
             return "get_schema"
         elif state.get("chromadb_missing"):
@@ -164,7 +160,6 @@ def create_graph(checkpointer=None):
             # No database selections found - proceed directly to answer with available PDF chunks
             print("⚠️ No relevant dataset selections found, proceeding with PDF chunks only")
             chunks_available = len(state.get("top_chunks", []))
-            print__debug(f"🔀 ROUTING: Available PDF chunks: {chunks_available}")
             print__analysis_tracing_debug(f"96 - CHUNKS ONLY ROUTE: No selections found, proceeding with {chunks_available} PDF chunks")
             return "format_answer"
     
@@ -249,7 +244,7 @@ def create_graph(checkpointer=None):
     # This reduces checkpoint storage from 15+ records to just 2 records per analysis
     compiled_graph = graph.compile(
         checkpointer=checkpointer,
-        interrupt_after=["save"]  # Only checkpoint after the save node completes
+        interrupt_after=["submit_final_answer"]  # Only checkpoint after the submit_final_answer node completes
     )
     print__analysis_tracing_debug("111 - GRAPH COMPILED: Graph successfully compiled with selective checkpointing (interrupt_after=['save'])")
     return compiled_graph 

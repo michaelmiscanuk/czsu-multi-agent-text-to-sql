@@ -5,6 +5,7 @@
 # This must be the very first thing that happens to fix psycopg compatibility
 import sys
 import os  # Import os early for environment variable access
+import traceback
 
 def print__startup_debug(msg: str) -> None:
     """Print startup debug messages when debug mode is enabled."""

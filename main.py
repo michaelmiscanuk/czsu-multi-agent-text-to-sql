@@ -281,7 +281,9 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     graph = create_graph(checkpointer=checkpointer)
     print__analysis_tracing_debug("47 - GRAPH CREATED: LangGraph execution graph created successfully")
         
-    print__debug(f"🚀 Processing prompt: {prompt} (thread_id={thread_id}, run_id={run_id})")
+    # FIX: Escape curly braces in prompt to prevent f-string parsing errors
+    prompt_escaped = prompt.replace('{', '{{').replace('}', '}}')
+    print__debug(f"🚀 Processing prompt: {prompt_escaped} (thread_id={thread_id}, run_id={run_id})")
     print__analysis_tracing_debug(f"48 - PROCESSING START: Processing prompt with thread_id={thread_id}, run_id={run_id}")
     
     # Configuration for thread-level persistence and LangSmith tracing
