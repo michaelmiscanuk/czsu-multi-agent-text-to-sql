@@ -1,3 +1,6 @@
+#============================================================
+# CRITICAL INITIALIZATION
+#============================================================
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import sys
@@ -9,7 +12,7 @@ def print__startup_debug(msg: str) -> None:
     if debug_mode == '1':
         print(f"[STARTUP-DEBUG] {msg}")
         sys.stdout.flush()
-
+        
 if sys.platform == "win32":
     import asyncio
     
@@ -54,6 +57,11 @@ if sys.platform == "win32":
             print__startup_debug(f"🔧 API Server: Force-created {type(selector_loop).__name__}")
     except RuntimeError:
         print__startup_debug(f"🔧 API Server: No event loop set yet (will be created as needed)")
+
+
+#============================================================
+# IMPORTS
+#============================================================
 
 import asyncio
 import gc
@@ -101,17 +109,12 @@ from my_agent.utils.postgres_checkpointer import (
     get_queries_and_results_from_latest_checkpoint,
 )
 
+from my_agent.utils.postgres_checkpointer import get_healthy_pool
+
 # Additional imports for sentiment functionality
 from my_agent.utils.postgres_checkpointer import (
     get_thread_run_sentiments
 )
-
-# Application startup time for uptime tracking
-start_time = time.time()
-
-# Read GC memory threshold from environment with default fallback
-GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '1900'))  # 1900MB for 2GB memory allocation
-print__startup_debug(f"🔧 API Server: GC_MEMORY_THRESHOLD set to {GC_MEMORY_THRESHOLD}MB (from environment)")
 
 def print__memory_monitoring(msg: str) -> None:
     """Print MEMORY-MONITORING messages when debug mode is enabled.
@@ -124,7 +127,16 @@ def print__memory_monitoring(msg: str) -> None:
         print(f"[MEMORY-MONITORING] {msg}")
         import sys
         sys.stdout.flush()
+        
+#============================================================
+# CONFIGURATION AND CONSTANTS
+#============================================================
+# Application startup time for uptime tracking
+start_time = time.time()
 
+# Read GC memory threshold from environment with default fallback
+GC_MEMORY_THRESHOLD = int(os.environ.get('GC_MEMORY_THRESHOLD', '1900'))  # 1900MB for 2GB memory allocation
+print__startup_debug(f"🔧 API Server: GC_MEMORY_THRESHOLD set to {GC_MEMORY_THRESHOLD}MB (from environment)")
 # MEMORY LEAK PREVENTION: Simplified global tracking
 _app_startup_time = None
 _memory_baseline = None  # RSS memory at startup
@@ -151,6 +163,33 @@ RATE_LIMIT_MAX_WAIT = 5  # maximum seconds to wait before giving up
 
 # Throttling semaphores per IP to limit concurrent requests
 throttle_semaphores = defaultdict(lambda: asyncio.Semaphore(8))  # Max 8 concurrent requests per IP
+
+# Global cache for bulk loading to prevent repeated calls
+_bulk_loading_cache = {}
+_bulk_loading_locks = defaultdict(asyncio.Lock)
+BULK_CACHE_TIMEOUT = 30  # Cache timeout in seconds
+
+GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
+
+# Global counter for tracking JWT 'kid' missing events to reduce log spam
+_jwt_kid_missing_count = 0
+
+#============================================================
+# UTILITY FUNCTIONS - MEMORY MANAGEMENT
+#============================================================
+def cleanup_bulk_cache():
+    """Clean up expired cache entries."""
+    current_time = time.time()
+    expired_keys = []
+    
+    for cache_key, (cached_data, cache_time) in _bulk_loading_cache.items():
+        if current_time - cache_time > BULK_CACHE_TIMEOUT:
+            expired_keys.append(cache_key)
+    
+    for key in expired_keys:
+        del _bulk_loading_cache[key]
+    
+    return len(expired_keys)
 
 def check_memory_and_gc():
     """Enhanced memory check with cache cleanup and scaling strategy."""
@@ -210,10 +249,6 @@ def log_memory_usage(context: str = ""):
             
     except Exception as e:
         print__memory_monitoring(f"❌ Could not check memory usage: {e}")
-
-def monitor_route_registration(route_path: str, method: str):
-    """Simplified route registration monitoring."""
-    pass  # Simplified - no complex tracking needed
 
 def log_comprehensive_error(context: str, error: Exception, request: Request = None):
     """Simplified error logging."""
@@ -342,6 +377,395 @@ def setup_graceful_shutdown():
     if hasattr(signal, 'SIGUSR1'):
         signal.signal(signal.SIGUSR1, signal_handler)  # User-defined signal
 
+async def perform_deletion_operations(conn, user_email: str, thread_id: str):
+    """Perform the actual deletion operations on the given connection."""
+    print__api_postgresql(f"🔧 DEBUG: Starting deletion operations...")
+    
+    print__api_postgresql(f"🔧 DEBUG: Setting autocommit...")
+    await conn.set_autocommit(True)
+    print__api_postgresql(f"🔧 DEBUG: Autocommit set successfully")
+    
+    # 🔒 SECURITY CHECK: Verify user owns this thread before deleting
+    print__api_postgresql(f"🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}")
+    
+    print__api_postgresql(f"🔧 DEBUG: Creating cursor for ownership check...")
+    async with conn.cursor() as cur:
+        print__api_postgresql(f"🔧 DEBUG: Cursor created, executing ownership query...")
+        # language=SQL
+        await cur.execute("""--sql
+            SELECT COUNT(*) FROM users_threads_runs 
+            WHERE email = %s AND thread_id = %s
+        """, (user_email, thread_id))
+        
+        print__api_postgresql(f"🔧 DEBUG: Ownership query executed, fetching result...")
+        ownership_row = await cur.fetchone()
+        thread_entries_count = ownership_row[0] if ownership_row else 0
+        print__api_postgresql(f"🔧 DEBUG: Ownership check complete, count: {thread_entries_count}")
+    
+    if thread_entries_count == 0:
+        print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - deletion denied")
+        return {
+            "message": "Thread not found or access denied",
+            "thread_id": thread_id,
+            "user_email": user_email,
+            "deleted_counts": {}
+        }
+    
+    print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - deletion authorized")
+    
+    print__api_postgresql(f"🔄 Deleting from checkpoint tables for thread {thread_id}")
+    
+    # Delete from all checkpoint tables
+    tables = ["checkpoint_blobs", "checkpoint_writes", "checkpoints"]
+    deleted_counts = {}
+    
+    for table in tables:
+        try:
+            print__api_postgresql(f"🔧 DEBUG: Processing table {table}...")
+            # First check if the table exists
+            print__api_postgresql(f"🔧 DEBUG: Creating cursor for table existence check...")
+            async with conn.cursor() as cur:
+                print__api_postgresql(f"🔧 DEBUG: Executing table existence query for {table}...")
+                await cur.execute("""
+                    SELECT EXISTS (
+                        SELECT FROM information_schema.tables 
+                        WHERE table_name = %s
+                    )
+                """, (table,))
+                
+                print__api_postgresql(f"🔧 DEBUG: Table existence query executed, fetching result...")
+                table_exists = await cur.fetchone()
+                print__api_postgresql(f"🔧 DEBUG: Table {table} exists check result: {table_exists}")
+                
+                if not table_exists or not table_exists[0]:
+                    print__api_postgresql(f"⚠ Table {table} does not exist, skipping")
+                    deleted_counts[table] = 0
+                    continue
+                
+                print__api_postgresql(f"🔧 DEBUG: Table {table} exists, proceeding with deletion...")
+                # Delete records for this thread_id
+                print__api_postgresql(f"🔧 DEBUG: Creating cursor for deletion from {table}...")
+                async with conn.cursor() as del_cur:
+                    print__api_postgresql(f"🔧 DEBUG: Executing DELETE query for {table}...")
+                    await del_cur.execute(
+                        f"DELETE FROM {table} WHERE thread_id = %s",
+                        (thread_id,)
+                    )
+                    
+                    deleted_counts[table] = del_cur.rowcount if hasattr(del_cur, 'rowcount') else 0
+                    print__api_postgresql(f"✅ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}")
+                
+        except Exception as table_error:
+            print__api_postgresql(f"⚠ Error deleting from table {table}: {table_error}")
+            print__api_postgresql(f"🔧 DEBUG: Table error type: {type(table_error).__name__}")
+            import traceback
+            print__api_postgresql(f"🔧 DEBUG: Table error traceback: {traceback.format_exc()}")
+            deleted_counts[table] = f"Error: {str(table_error)}"
+    
+    # Delete from users_threads_runs table directly within the same transaction
+    print__api_postgresql(f"🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
+    try:
+        print__api_postgresql(f"🔧 DEBUG: Creating cursor for users_threads_runs deletion...")
+        async with conn.cursor() as cur:
+            print__api_postgresql(f"🔧 DEBUG: Executing DELETE query for users_threads_runs...")
+            await cur.execute("""
+                DELETE FROM users_threads_runs 
+                WHERE email = %s AND thread_id = %s
+            """, (user_email, thread_id))
+            
+            users_threads_runs_deleted = cur.rowcount if hasattr(cur, 'rowcount') else 0
+            print__api_postgresql(f"✅ Deleted {users_threads_runs_deleted} entries from users_threads_runs for user {user_email}, thread {thread_id}")
+            
+            deleted_counts["users_threads_runs"] = users_threads_runs_deleted
+    
+    except Exception as e:
+        print__api_postgresql(f"❌ Error deleting from users_threads_runs: {e}")
+        print__api_postgresql(f"🔧 DEBUG: users_threads_runs error type: {type(e).__name__}")
+        import traceback
+        print__api_postgresql(f"🔧 DEBUG: users_threads_runs error traceback: {traceback.format_exc()}")
+        deleted_counts["users_threads_runs"] = f"Error: {str(e)}"
+    
+    result_data = {
+        "message": f"Checkpoint records and thread entries deleted for thread_id: {thread_id}",
+        "deleted_counts": deleted_counts,
+        "thread_id": thread_id,
+        "user_email": user_email
+    }
+    
+    print__api_postgresql(f"🎉 Successfully deleted thread {thread_id} for user {user_email}")
+    return result_data
+
+
+#==============================================================================
+# DEBUG FUNCTIONS
+#==============================================================================        
+def print__api_postgresql(msg: str) -> None:
+    """Print API-PostgreSQL messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[API-PostgreSQL] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__feedback_flow(msg: str) -> None:
+    """Print FEEDBACK-FLOW messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[FEEDBACK-FLOW] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__DEBUG_TOKEN(msg: str) -> None:
+    """Print DEBUG_TOKEN messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_TOKEN', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_TOKEN] {msg}")
+        import sys
+        sys.stdout.flush()
+        
+def print__sentiment_flow(msg: str) -> None:
+    """Print SENTIMENT-FLOW messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[SENTIMENT-FLOW] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__debug(msg: str) -> None:
+    """Print DEBUG messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__analyze_debug(msg: str) -> None:
+    """Print DEBUG_ANALYZE messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_ANALYZE', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_ANALYZE] {msg}")
+        import sys
+        sys.stdout.flush()
+        
+def print__chat_all_messages_debug(msg: str) -> None:
+    """Print DEBUG_CHAT_ALL_MESSAGES messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_CHAT_ALL_MESSAGES', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_CHAT_ALL_MESSAGES] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__feedback_debug(msg: str) -> None:
+    """Print DEBUG_FEEDBACK messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_FEEDBACK', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_FEEDBACK] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__sentiment_debug(msg: str) -> None:
+    """Print DEBUG_SENTIMENT messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_SENTIMENT', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_SENTIMENT] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__chat_threads_debug(msg: str) -> None:
+    """Print DEBUG_CHAT_THREADS messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_CHAT_THREADS', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_CHAT_THREADS] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__chat_messages_debug(msg: str) -> None:
+    """Print DEBUG_CHAT_MESSAGES messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_CHAT_MESSAGES', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_CHAT_MESSAGES] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__delete_chat_debug(msg: str) -> None:
+    """Print DEBUG_DELETE_CHAT messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_DELETE_CHAT', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_DELETE_CHAT] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__chat_sentiments_debug(msg: str) -> None:
+    """Print DEBUG_CHAT_SENTIMENTS messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_CHAT_SENTIMENTS', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_CHAT_SENTIMENTS] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__catalog_debug(msg: str) -> None:
+    """Print DEBUG_CATALOG messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_CATALOG', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_CATALOG] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__data_tables_debug(msg: str) -> None:
+    """Print DEBUG_DATA_TABLES messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_DATA_TABLES', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_DATA_TABLES] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__data_table_debug(msg: str) -> None:
+    """Print DEBUG_DATA_TABLE messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_DATA_TABLE', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_DATA_TABLE] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__chat_thread_id_checkpoints_debug(msg: str) -> None:
+    """Print DEBUG_CHAT_THREAD_ID_CHECKPOINTS messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_CHAT_THREAD_ID_CHECKPOINTS', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_CHAT_THREAD_ID_CHECKPOINTS] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__debug_pool_status_debug(msg: str) -> None:
+    """Print DEBUG_DEBUG_POOL_STATUS messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_DEBUG_POOL_STATUS', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_DEBUG_POOL_STATUS] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__chat_thread_id_run_ids_debug(msg: str) -> None:
+    """Print DEBUG_CHAT_THREAD_ID_RUN_IDS messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_CHAT_THREAD_ID_RUN_IDS', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_CHAT_THREAD_ID_RUN_IDS] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__debug_run_id_debug(msg: str) -> None:
+    """Print DEBUG_DEBUG_RUN_ID messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get('DEBUG_DEBUG_RUN_ID', '0')
+    if debug_mode == '1':
+        print(f"[DEBUG_DEBUG_RUN_ID] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__admin_clear_cache_debug(msg: str) -> None:
+    """Print admin clear cache debug messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    admin_clear_cache_debug_mode = os.environ.get('ADMIN_CLEAR_CACHE_DEBUG', '0')
+    if admin_clear_cache_debug_mode == '1':
+        print(f"[ADMIN_CLEAR_CACHE_DEBUG] {msg}")
+        import sys
+        sys.stdout.flush()
+
+def print__analysis_tracing_debug(msg: str) -> None:
+    """Print analysis tracing debug messages when debug mode is enabled.
+    
+    Args:
+        msg: The message to print
+    """
+    analysis_tracing_debug_mode = os.environ.get('ANALYSIS_TRACING_DEBUG', '0')
+    if analysis_tracing_debug_mode == '1':
+        print(f"[ANALYSIS_TRACING_DEBUG] 🔍 {msg}")
+        import sys
+        sys.stdout.flush()
+
+#============================================================
+# CHECKPOINTER MANAGEMENT
+#============================================================
 async def initialize_checkpointer():
     """Initialize the global checkpointer with proper async context management."""
     global GLOBAL_CHECKPOINTER
@@ -425,6 +849,9 @@ async def get_healthy_checkpointer():
     
     return GLOBAL_CHECKPOINTER
 
+#============================================================
+# APPLICATION SETUP - LIFESPAN AND MIDDLEWARE
+#============================================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
@@ -559,6 +986,330 @@ async def simplified_memory_monitoring_middleware(request: Request, call_next):
     
     return response
 
+#============================================================
+# EXCEPTION HANDLERS
+#============================================================
+# Global exception handlers for proper error handling
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle Pydantic validation errors with proper 422 status code."""
+    print__debug(f"Validation error: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": "Validation error",
+            "errors": exc.errors()
+        }
+    )
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    """Handle HTTP exceptions properly."""
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail}
+    )
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    """Handle ValueError exceptions as 400 Bad Request."""
+    print__debug(f"ValueError: {str(exc)}")
+    return JSONResponse(
+        status_code=400,
+        content={"detail": str(exc)}
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle unexpected exceptions."""
+    print__debug(f"Unexpected error: {type(exc).__name__}: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    )
+
+#============================================================
+# PYDANTIC MODELS
+#============================================================
+class AnalyzeRequest(BaseModel):
+    prompt: str = Field(..., min_length=1, max_length=10000, description="The prompt to analyze")
+    thread_id: str = Field(..., min_length=1, max_length=100, description="The thread ID")
+    
+    @field_validator('prompt')
+    @classmethod
+    def validate_prompt(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Prompt cannot be empty or only whitespace')
+        return v.strip()
+    
+    @field_validator('thread_id')
+    @classmethod
+    def validate_thread_id(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Thread ID cannot be empty or only whitespace')
+        return v.strip()
+
+class FeedbackRequest(BaseModel):
+    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
+    feedback: Optional[int] = Field(None, ge=0, le=1, description="Feedback score: 1 for thumbs up, 0 for thumbs down")
+    comment: Optional[str] = Field(None, max_length=1000, description="Optional comment")
+    
+    @field_validator('run_id')
+    @classmethod
+    def validate_run_id(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Run ID cannot be empty')
+        # Basic UUID format validation
+        import uuid
+        try:
+            uuid.UUID(v.strip())
+        except ValueError:
+            raise ValueError('Run ID must be a valid UUID format')
+        return v.strip()
+    
+    @field_validator('comment')
+    @classmethod
+    def validate_comment(cls, v):
+        if v is not None and len(v.strip()) == 0:
+            return None  # Convert empty string to None
+        return v
+
+class SentimentRequest(BaseModel):
+    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
+    sentiment: Optional[bool] = Field(None, description="Sentiment: true for positive, false for negative, null to clear")
+    
+    @field_validator('run_id')
+    @classmethod
+    def validate_run_id(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Run ID cannot be empty')
+        # Basic UUID format validation
+        import uuid
+        try:
+            uuid.UUID(v.strip())
+        except ValueError:
+            raise ValueError('Run ID must be a valid UUID format')
+        return v.strip()
+
+class ChatThreadResponse(BaseModel):
+    thread_id: str
+    latest_timestamp: datetime  # Changed from str to datetime
+    run_count: int
+    title: str  # Now includes the title from first prompt
+    full_prompt: str  # Full prompt text for tooltip
+
+class PaginatedChatThreadsResponse(BaseModel):
+    threads: List[ChatThreadResponse]
+    total_count: int
+    page: int
+    limit: int
+    has_more: bool
+
+class ChatMessage(BaseModel):
+    id: str
+    threadId: str
+    user: str
+    content: str
+    isUser: bool
+    createdAt: int
+    error: Optional[str] = None
+    meta: Optional[dict] = None
+    queriesAndResults: Optional[List[List[str]]] = None
+    isLoading: Optional[bool] = None
+    startedAt: Optional[int] = None
+    isError: Optional[bool] = None
+
+#============================================================
+# AUTHENTICATION
+#============================================================
+# FIXED: Enhanced JWT verification with NextAuth.js id_token support
+def verify_google_jwt(token: str):
+    global _jwt_kid_missing_count
+    
+    try:
+        # EARLY VALIDATION: Check if token has basic JWT structure before processing
+        # JWT tokens must have exactly 3 parts separated by dots (header.payload.signature)
+        token_parts = token.split('.')
+        if len(token_parts) != 3:
+            # Don't log this as it's a common case for invalid tokens in tests
+            raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        
+        # Additional basic validation - each part should be non-empty and base64-like
+        for i, part in enumerate(token_parts):
+            if not part or len(part) < 4:  # Base64 encoded parts should be at least 4 chars
+                raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        
+        # Get unverified header and payload first - this should now work since we pre-validated the format
+        try:
+            unverified_header = jwt.get_unverified_header(token)
+            unverified_payload = jwt.decode(token, options={"verify_signature": False})
+        except jwt.DecodeError as e:
+            # This should be rare now due to pre-validation, but keep for edge cases
+            print__DEBUG_TOKEN(f"JWT decode error after pre-validation: {e}")
+            raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        except Exception as e:
+            print__DEBUG_TOKEN(f"JWT header decode error: {e}")
+            raise HTTPException(status_code=401, detail="Invalid JWT token format")
+        
+        # Debug: print the audience in the token and the expected audience
+        print__DEBUG_TOKEN(f"Token aud: {unverified_payload.get('aud')}")
+        print__DEBUG_TOKEN(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
+        
+        # NEW: Check if this is a NextAuth.js id_token (missing 'kid' field)
+        if "kid" not in unverified_header:
+            # Reduce log noise - only log this every 10th occurrence
+            _jwt_kid_missing_count += 1
+            if _jwt_kid_missing_count % 10 == 1:  # Log 1st, 11th, 21st, etc.
+                print__DEBUG_TOKEN(f"JWT token missing 'kid' field (#{_jwt_kid_missing_count}) - attempting NextAuth.js id_token verification")
+            
+            # NEXTAUTH.JS SUPPORT: Verify id_token directly using Google's tokeninfo endpoint
+            try:
+                print__DEBUG_TOKEN("Attempting NextAuth.js id_token verification via Google tokeninfo endpoint")
+                
+                # Use Google's tokeninfo endpoint to verify the id_token
+                tokeninfo_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
+                response = requests.get(tokeninfo_url, timeout=10)
+                
+                if response.status_code == 200:
+                    tokeninfo = response.json()
+                    print__DEBUG_TOKEN(f"Google tokeninfo response: {tokeninfo}")
+                    
+                    # Verify the audience matches our client ID
+                    expected_aud = os.getenv("GOOGLE_CLIENT_ID")
+                    if tokeninfo.get("aud") != expected_aud:
+                        print__DEBUG_TOKEN(f"Tokeninfo audience mismatch. Expected: {expected_aud}, Got: {tokeninfo.get('aud')}")
+                        raise HTTPException(status_code=401, detail="Invalid token audience")
+                    
+                    # Verify the token is not expired
+                    if int(tokeninfo.get("exp", 0)) < time.time():
+                        print__DEBUG_TOKEN("Tokeninfo shows token has expired")
+                        raise HTTPException(status_code=401, detail="Token has expired")
+                    
+                    # Return the tokeninfo as the payload (it contains email, name, etc.)
+                    print__DEBUG_TOKEN("NextAuth.js id_token verification successful via Google tokeninfo")
+                    return tokeninfo
+                    
+                else:
+                    print__DEBUG_TOKEN(f"Google tokeninfo endpoint returned error: {response.status_code} - {response.text}")
+                    raise HTTPException(status_code=401, detail="Invalid NextAuth.js id_token")
+                    
+            except requests.RequestException as e:
+                print__DEBUG_TOKEN(f"Failed to verify NextAuth.js id_token via Google tokeninfo: {e}")
+                raise HTTPException(status_code=401, detail="Token verification failed - unable to validate NextAuth.js token")
+            except HTTPException:
+                raise  # Re-raise HTTPException as-is
+            except Exception as e:
+                print__DEBUG_TOKEN(f"NextAuth.js id_token verification failed: {e}")
+                raise HTTPException(status_code=401, detail="NextAuth.js token verification failed")
+        
+        # ORIGINAL FLOW: Standard Google JWT token with 'kid' field (for direct Google API calls)
+        try:
+            # Get Google public keys for JWKS verification
+            jwks = requests.get(GOOGLE_JWK_URL).json()
+        except requests.RequestException as e:
+            print__DEBUG_TOKEN(f"Failed to fetch Google JWKS: {e}")
+            raise HTTPException(status_code=401, detail="Token verification failed - unable to fetch Google keys")
+        
+        # Find matching key
+        for key in jwks["keys"]:
+            if key["kid"] == unverified_header["kid"]:
+                public_key = RSAAlgorithm.from_jwk(key)
+                try:
+                    payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
+                    print__DEBUG_TOKEN("Standard Google JWT token verification successful")
+                    return payload
+                except jwt.ExpiredSignatureError:
+                    print__DEBUG_TOKEN("JWT token has expired")
+                    raise HTTPException(status_code=401, detail="Token has expired")
+                except jwt.InvalidAudienceError:
+                    print__DEBUG_TOKEN("JWT token has invalid audience")
+                    raise HTTPException(status_code=401, detail="Invalid token audience")
+                except jwt.InvalidSignatureError:
+                    print__DEBUG_TOKEN("JWT token has invalid signature")
+                    raise HTTPException(status_code=401, detail="Invalid token signature")
+                except jwt.InvalidTokenError as e:
+                    print__DEBUG_TOKEN(f"JWT token is invalid: {e}")
+                    raise HTTPException(status_code=401, detail="Invalid token")
+                except jwt.DecodeError as e:
+                    print__DEBUG_TOKEN(f"JWT decode error: {e}")
+                    raise HTTPException(status_code=401, detail="Invalid token format")
+                except Exception as e:
+                    print__DEBUG_TOKEN(f"JWT decode error: {e}")
+                    raise HTTPException(status_code=401, detail="Invalid token")
+        
+        print__DEBUG_TOKEN("JWT public key not found in Google JWKS")
+        raise HTTPException(status_code=401, detail="Invalid token: public key not found")
+        
+    except HTTPException:
+        raise  # Re-raise HTTPException as-is
+    except requests.RequestException as e:
+        print__DEBUG_TOKEN(f"Failed to fetch Google JWKS: {e}")
+        raise HTTPException(status_code=401, detail="Token verification failed - unable to validate")
+    except jwt.DecodeError as e:
+        # This should be rare now due to pre-validation
+        print__DEBUG_TOKEN(f"JWT decode error in main handler: {e}")
+        raise HTTPException(status_code=401, detail="Invalid JWT token format")
+    except KeyError as e:
+        print__DEBUG_TOKEN(f"JWT verification KeyError: {e}")
+        raise HTTPException(status_code=401, detail="Invalid JWT token structure")
+    except Exception as e:
+        print__DEBUG_TOKEN(f"JWT verification failed: {e}")
+        raise HTTPException(status_code=401, detail="Token verification failed")
+
+# Enhanced dependency for JWT authentication with better error handling
+def get_current_user(authorization: str = Header(None)):
+    try:
+        if not authorization:
+            raise HTTPException(status_code=401, detail="Missing Authorization header")
+        
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Invalid Authorization header format. Expected 'Bearer <token>'")
+        
+        # Split and validate token extraction
+        auth_parts = authorization.split(" ", 1)
+        if len(auth_parts) != 2 or not auth_parts[1].strip():
+            raise HTTPException(status_code=401, detail="Invalid Authorization header format")
+        
+        token = auth_parts[1].strip()
+        return verify_google_jwt(token)
+        
+    except HTTPException:
+        raise  # Re-raise HTTPException as-is
+    except Exception as e:
+        print__DEBUG_TOKEN(f"Authentication error: {e}")
+        log_comprehensive_error("authentication", e)
+        raise HTTPException(status_code=401, detail="Authentication failed")
+
+#============================================================
+# ROUTE REGISTRATION MONITORING
+#============================================================
+# ROUTE REGISTRATION MONITORING: Track all endpoint registrations to prevent memory leaks
+# This directly addresses the core issue from the "Needle in a haystack" article
+print__memory_monitoring("📋 Monitoring route registrations for memory leak prevention...")
+
+# Track all main routes that will be registered
+main_routes = [
+    ("/health", "GET"), ("/health/database", "GET"), ("/health/memory", "GET"), 
+    ("/health/rate-limits", "GET"), ("/health/prepared-statements", "GET"), ("/admin/clear-prepared-statements", "POST"), ("/analyze", "POST"), 
+    ("/feedback", "POST"), ("/sentiment", "POST"), ("/chat/{thread_id}/sentiments", "GET"), 
+    ("/chat-threads", "GET"), ("/chat/{thread_id}", "DELETE"), 
+    ("/catalog", "GET"), ("/data-tables", "GET"), ("/data-table", "GET"),
+    ("/chat/{thread_id}/messages", "GET"), ("/chat/all-messages", "GET"), 
+    ("/debug/chat/{thread_id}/checkpoints", "GET"),
+    ("/debug/pool-status", "GET"), ("/chat/{thread_id}/run-ids", "GET"),
+    ("/debug/run-id/{run_id}", "GET")
+]
+
+# Route monitoring is performed at runtime through middleware to ensure proper global variable access
+# for route_path, method in main_routes:
+#     monitor_route_registration(route_path, method)
+
+print__memory_monitoring(f"📋 Route monitoring configured for {len(main_routes)} endpoints - tracking occurs at runtime")
+
+
+#============================================================
+# HEALTH CHECK ENDPOINTS
+#============================================================
 @app.get("/health")
 async def health_check():
     """Enhanced health check with memory monitoring and database verification."""
@@ -812,343 +1563,9 @@ async def prepared_statements_health_check():
             "timestamp": datetime.now().isoformat()
         }
 
-@app.post("/admin/clear-prepared-statements")
-async def clear_prepared_statements_endpoint(user=Depends(get_current_user)):
-    """Manually clear prepared statements (admin endpoint)."""
-    try:
-        from my_agent.utils.postgres_checkpointer import clear_prepared_statements
-        
-        # Clear prepared statements
-        await clear_prepared_statements()
-        
-        return {
-            "status": "success",
-            "message": "Prepared statements cleared successfully",
-            "timestamp": datetime.now().isoformat()
-        }
-        
-    except Exception as e:
-        return {
-            "status": "error",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
-        }
-
-@app.get("/placeholder/{width}/{height}")
-async def get_placeholder_image(width: int, height: int):
-    """Generate a placeholder image with specified dimensions."""
-    try:
-        # Validate dimensions
-        width = max(1, min(width, 2000))  # Limit between 1 and 2000 pixels
-        height = max(1, min(height, 2000))
-        
-        # Create a simple SVG placeholder
-        svg_content = f'''<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100%" height="100%" fill="#e5e7eb"/>
-            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="20">{width}x{height}</text>
-        </svg>'''
-        
-        from fastapi.responses import Response
-        return Response(
-            content=svg_content,
-            media_type="image/svg+xml",
-            headers={
-                "Cache-Control": "public, max-age=3600",
-                "Access-Control-Allow-Origin": "*"
-            }
-        )
-        
-    except Exception as e:
-        # Fallback for any errors
-        simple_svg = f'''<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100%" height="100%" fill="#f3f4f6"/>
-            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6b7280" font-size="12">Error</text>
-        </svg>'''
-        
-        from fastapi.responses import Response
-        return Response(
-            content=simple_svg,
-            media_type="image/svg+xml",
-            headers={
-                "Cache-Control": "public, max-age=3600",
-                "Access-Control-Allow-Origin": "*"
-            }
-        )
-
-# ROUTE REGISTRATION MONITORING: Track all endpoint registrations to prevent memory leaks
-# This directly addresses the core issue from the "Needle in a haystack" article
-print__memory_monitoring("📋 Monitoring route registrations for memory leak prevention...")
-
-# Track all main routes that will be registered
-main_routes = [
-    ("/health", "GET"), ("/health/database", "GET"), ("/health/memory", "GET"), 
-    ("/health/rate-limits", "GET"), ("/health/prepared-statements", "GET"), ("/admin/clear-prepared-statements", "POST"), ("/analyze", "POST"), 
-    ("/feedback", "POST"), ("/sentiment", "POST"), ("/chat/{thread_id}/sentiments", "GET"), 
-    ("/chat-threads", "GET"), ("/chat/{thread_id}", "DELETE"), 
-    ("/catalog", "GET"), ("/data-tables", "GET"), ("/data-table", "GET"),
-    ("/chat/{thread_id}/messages", "GET"), ("/chat/all-messages", "GET"), 
-    ("/debug/chat/{thread_id}/checkpoints", "GET"),
-    ("/debug/pool-status", "GET"), ("/chat/{thread_id}/run-ids", "GET"),
-    ("/debug/run-id/{run_id}", "GET")
-]
-
-# Route monitoring is performed at runtime through middleware to ensure proper global variable access
-# for route_path, method in main_routes:
-#     monitor_route_registration(route_path, method)
-
-print__memory_monitoring(f"📋 Route monitoring configured for {len(main_routes)} endpoints - tracking occurs at runtime")
-
-class AnalyzeRequest(BaseModel):
-    prompt: str = Field(..., min_length=1, max_length=10000, description="The prompt to analyze")
-    thread_id: str = Field(..., min_length=1, max_length=100, description="The thread ID")
-    
-    @field_validator('prompt')
-    @classmethod
-    def validate_prompt(cls, v):
-        if not v or not v.strip():
-            raise ValueError('Prompt cannot be empty or only whitespace')
-        return v.strip()
-    
-    @field_validator('thread_id')
-    @classmethod
-    def validate_thread_id(cls, v):
-        if not v or not v.strip():
-            raise ValueError('Thread ID cannot be empty or only whitespace')
-        return v.strip()
-
-class FeedbackRequest(BaseModel):
-    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
-    feedback: Optional[int] = Field(None, ge=0, le=1, description="Feedback score: 1 for thumbs up, 0 for thumbs down")
-    comment: Optional[str] = Field(None, max_length=1000, description="Optional comment")
-    
-    @field_validator('run_id')
-    @classmethod
-    def validate_run_id(cls, v):
-        if not v or not v.strip():
-            raise ValueError('Run ID cannot be empty')
-        # Basic UUID format validation
-        import uuid
-        try:
-            uuid.UUID(v.strip())
-        except ValueError:
-            raise ValueError('Run ID must be a valid UUID format')
-        return v.strip()
-    
-    @field_validator('comment')
-    @classmethod
-    def validate_comment(cls, v):
-        if v is not None and len(v.strip()) == 0:
-            return None  # Convert empty string to None
-        return v
-
-class SentimentRequest(BaseModel):
-    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
-    sentiment: Optional[bool] = Field(None, description="Sentiment: true for positive, false for negative, null to clear")
-    
-    @field_validator('run_id')
-    @classmethod
-    def validate_run_id(cls, v):
-        if not v or not v.strip():
-            raise ValueError('Run ID cannot be empty')
-        # Basic UUID format validation
-        import uuid
-        try:
-            uuid.UUID(v.strip())
-        except ValueError:
-            raise ValueError('Run ID must be a valid UUID format')
-        return v.strip()
-
-class ChatThreadResponse(BaseModel):
-    thread_id: str
-    latest_timestamp: datetime  # Changed from str to datetime
-    run_count: int
-    title: str  # Now includes the title from first prompt
-    full_prompt: str  # Full prompt text for tooltip
-
-class PaginatedChatThreadsResponse(BaseModel):
-    threads: List[ChatThreadResponse]
-    total_count: int
-    page: int
-    limit: int
-    has_more: bool
-
-class ChatMessage(BaseModel):
-    id: str
-    threadId: str
-    user: str
-    content: str
-    isUser: bool
-    createdAt: int
-    error: Optional[str] = None
-    meta: Optional[dict] = None
-    queriesAndResults: Optional[List[List[str]]] = None
-    isLoading: Optional[bool] = None
-    startedAt: Optional[int] = None
-    isError: Optional[bool] = None
-
-GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
-
-# Global counter for tracking JWT 'kid' missing events to reduce log spam
-_jwt_kid_missing_count = 0
-
-# FIXED: Enhanced JWT verification with NextAuth.js id_token support
-def verify_google_jwt(token: str):
-    global _jwt_kid_missing_count
-    
-    try:
-        # EARLY VALIDATION: Check if token has basic JWT structure before processing
-        # JWT tokens must have exactly 3 parts separated by dots (header.payload.signature)
-        token_parts = token.split('.')
-        if len(token_parts) != 3:
-            # Don't log this as it's a common case for invalid tokens in tests
-            raise HTTPException(status_code=401, detail="Invalid JWT token format")
-        
-        # Additional basic validation - each part should be non-empty and base64-like
-        for i, part in enumerate(token_parts):
-            if not part or len(part) < 4:  # Base64 encoded parts should be at least 4 chars
-                raise HTTPException(status_code=401, detail="Invalid JWT token format")
-        
-        # Get unverified header and payload first - this should now work since we pre-validated the format
-        try:
-            unverified_header = jwt.get_unverified_header(token)
-            unverified_payload = jwt.decode(token, options={"verify_signature": False})
-        except jwt.DecodeError as e:
-            # This should be rare now due to pre-validation, but keep for edge cases
-            print__DEBUG_TOKEN(f"JWT decode error after pre-validation: {e}")
-            raise HTTPException(status_code=401, detail="Invalid JWT token format")
-        except Exception as e:
-            print__DEBUG_TOKEN(f"JWT header decode error: {e}")
-            raise HTTPException(status_code=401, detail="Invalid JWT token format")
-        
-        # Debug: print the audience in the token and the expected audience
-        print__DEBUG_TOKEN(f"Token aud: {unverified_payload.get('aud')}")
-        print__DEBUG_TOKEN(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
-        
-        # NEW: Check if this is a NextAuth.js id_token (missing 'kid' field)
-        if "kid" not in unverified_header:
-            # Reduce log noise - only log this every 10th occurrence
-            _jwt_kid_missing_count += 1
-            if _jwt_kid_missing_count % 10 == 1:  # Log 1st, 11th, 21st, etc.
-                print__DEBUG_TOKEN(f"JWT token missing 'kid' field (#{_jwt_kid_missing_count}) - attempting NextAuth.js id_token verification")
-            
-            # NEXTAUTH.JS SUPPORT: Verify id_token directly using Google's tokeninfo endpoint
-            try:
-                print__DEBUG_TOKEN("Attempting NextAuth.js id_token verification via Google tokeninfo endpoint")
-                
-                # Use Google's tokeninfo endpoint to verify the id_token
-                tokeninfo_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
-                response = requests.get(tokeninfo_url, timeout=10)
-                
-                if response.status_code == 200:
-                    tokeninfo = response.json()
-                    print__DEBUG_TOKEN(f"Google tokeninfo response: {tokeninfo}")
-                    
-                    # Verify the audience matches our client ID
-                    expected_aud = os.getenv("GOOGLE_CLIENT_ID")
-                    if tokeninfo.get("aud") != expected_aud:
-                        print__DEBUG_TOKEN(f"Tokeninfo audience mismatch. Expected: {expected_aud}, Got: {tokeninfo.get('aud')}")
-                        raise HTTPException(status_code=401, detail="Invalid token audience")
-                    
-                    # Verify the token is not expired
-                    if int(tokeninfo.get("exp", 0)) < time.time():
-                        print__DEBUG_TOKEN("Tokeninfo shows token has expired")
-                        raise HTTPException(status_code=401, detail="Token has expired")
-                    
-                    # Return the tokeninfo as the payload (it contains email, name, etc.)
-                    print__DEBUG_TOKEN("NextAuth.js id_token verification successful via Google tokeninfo")
-                    return tokeninfo
-                    
-                else:
-                    print__DEBUG_TOKEN(f"Google tokeninfo endpoint returned error: {response.status_code} - {response.text}")
-                    raise HTTPException(status_code=401, detail="Invalid NextAuth.js id_token")
-                    
-            except requests.RequestException as e:
-                print__DEBUG_TOKEN(f"Failed to verify NextAuth.js id_token via Google tokeninfo: {e}")
-                raise HTTPException(status_code=401, detail="Token verification failed - unable to validate NextAuth.js token")
-            except HTTPException:
-                raise  # Re-raise HTTPException as-is
-            except Exception as e:
-                print__DEBUG_TOKEN(f"NextAuth.js id_token verification failed: {e}")
-                raise HTTPException(status_code=401, detail="NextAuth.js token verification failed")
-        
-        # ORIGINAL FLOW: Standard Google JWT token with 'kid' field (for direct Google API calls)
-        try:
-            # Get Google public keys for JWKS verification
-            jwks = requests.get(GOOGLE_JWK_URL).json()
-        except requests.RequestException as e:
-            print__DEBUG_TOKEN(f"Failed to fetch Google JWKS: {e}")
-            raise HTTPException(status_code=401, detail="Token verification failed - unable to fetch Google keys")
-        
-        # Find matching key
-        for key in jwks["keys"]:
-            if key["kid"] == unverified_header["kid"]:
-                public_key = RSAAlgorithm.from_jwk(key)
-                try:
-                    payload = jwt.decode(token, public_key, algorithms=["RS256"], audience=os.getenv("GOOGLE_CLIENT_ID"))
-                    print__DEBUG_TOKEN("Standard Google JWT token verification successful")
-                    return payload
-                except jwt.ExpiredSignatureError:
-                    print__DEBUG_TOKEN("JWT token has expired")
-                    raise HTTPException(status_code=401, detail="Token has expired")
-                except jwt.InvalidAudienceError:
-                    print__DEBUG_TOKEN("JWT token has invalid audience")
-                    raise HTTPException(status_code=401, detail="Invalid token audience")
-                except jwt.InvalidSignatureError:
-                    print__DEBUG_TOKEN("JWT token has invalid signature")
-                    raise HTTPException(status_code=401, detail="Invalid token signature")
-                except jwt.InvalidTokenError as e:
-                    print__DEBUG_TOKEN(f"JWT token is invalid: {e}")
-                    raise HTTPException(status_code=401, detail="Invalid token")
-                except jwt.DecodeError as e:
-                    print__DEBUG_TOKEN(f"JWT decode error: {e}")
-                    raise HTTPException(status_code=401, detail="Invalid token format")
-                except Exception as e:
-                    print__DEBUG_TOKEN(f"JWT decode error: {e}")
-                    raise HTTPException(status_code=401, detail="Invalid token")
-        
-        print__DEBUG_TOKEN("JWT public key not found in Google JWKS")
-        raise HTTPException(status_code=401, detail="Invalid token: public key not found")
-        
-    except HTTPException:
-        raise  # Re-raise HTTPException as-is
-    except requests.RequestException as e:
-        print__DEBUG_TOKEN(f"Failed to fetch Google JWKS: {e}")
-        raise HTTPException(status_code=401, detail="Token verification failed - unable to validate")
-    except jwt.DecodeError as e:
-        # This should be rare now due to pre-validation
-        print__DEBUG_TOKEN(f"JWT decode error in main handler: {e}")
-        raise HTTPException(status_code=401, detail="Invalid JWT token format")
-    except KeyError as e:
-        print__DEBUG_TOKEN(f"JWT verification KeyError: {e}")
-        raise HTTPException(status_code=401, detail="Invalid JWT token structure")
-    except Exception as e:
-        print__DEBUG_TOKEN(f"JWT verification failed: {e}")
-        raise HTTPException(status_code=401, detail="Token verification failed")
-
-# Enhanced dependency for JWT authentication with better error handling
-def get_current_user(authorization: str = Header(None)):
-    try:
-        if not authorization:
-            raise HTTPException(status_code=401, detail="Missing Authorization header")
-        
-        if not authorization.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="Invalid Authorization header format. Expected 'Bearer <token>'")
-        
-        # Split and validate token extraction
-        auth_parts = authorization.split(" ", 1)
-        if len(auth_parts) != 2 or not auth_parts[1].strip():
-            raise HTTPException(status_code=401, detail="Invalid Authorization header format")
-        
-        token = auth_parts[1].strip()
-        return verify_google_jwt(token)
-        
-    except HTTPException:
-        raise  # Re-raise HTTPException as-is
-    except Exception as e:
-        print__DEBUG_TOKEN(f"Authentication error: {e}")
-        log_comprehensive_error("authentication", e)
-        raise HTTPException(status_code=401, detail="Authentication failed")
-
+#============================================================
+# MAIN API ENDPOINTS - ANALYSIS
+#============================================================
 @app.post("/analyze")
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     """Analyze request with simplified memory monitoring."""
@@ -1323,6 +1740,9 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         print__feedback_flow(f"🚨 {error_msg}")
         raise HTTPException(status_code=500, detail="Sorry, there was an error processing your request. Please try again.")
 
+#============================================================
+# MAIN API ENDPOINTS - FEEDBACK AND SENTIMENT
+#============================================================
 @app.post("/feedback")
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
     """Submit feedback for a specific run_id to LangSmith."""
@@ -1392,7 +1812,7 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         try:
             # Get a healthy pool to check ownership
             print__feedback_debug(f"🔍 Importing get_healthy_pool")
-            from my_agent.utils.postgres_checkpointer import get_healthy_pool
+            
             print__feedback_debug(f"🔍 Getting healthy pool")
             pool = await get_healthy_pool()
             print__feedback_debug(f"🔍 Pool obtained: {type(pool).__name__}")
@@ -1406,7 +1826,7 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
                         SELECT COUNT(*) FROM users_threads_runs 
                         WHERE run_id = %s AND email = %s
                     """, (run_uuid, user_email))
-                    
+                                        
                     print__feedback_debug(f"🔍 Ownership query executed, fetching result")
                     ownership_row = await cur.fetchone()
                     ownership_count = ownership_row[0] if ownership_row else 0
@@ -1551,6 +1971,9 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
         print__sentiment_flow(f"🔍 Error type: {type(e).__name__}")
         raise HTTPException(status_code=500, detail=f"Failed to update sentiment: {e}")
 
+#============================================================
+# MAIN API ENDPOINTS - CHAT MANAGEMENT
+#============================================================
 @app.get("/chat/{thread_id}/sentiments")
 async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
     """Get sentiment values for all messages in a thread."""
@@ -1770,123 +2193,9 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
         else:
             raise HTTPException(status_code=500, detail=f"Failed to delete checkpoint records: {e}")
 
-async def perform_deletion_operations(conn, user_email: str, thread_id: str):
-    """Perform the actual deletion operations on the given connection."""
-    print__api_postgresql(f"🔧 DEBUG: Starting deletion operations...")
-    
-    print__api_postgresql(f"🔧 DEBUG: Setting autocommit...")
-    await conn.set_autocommit(True)
-    print__api_postgresql(f"🔧 DEBUG: Autocommit set successfully")
-    
-    # 🔒 SECURITY CHECK: Verify user owns this thread before deleting
-    print__api_postgresql(f"🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}")
-    
-    print__api_postgresql(f"🔧 DEBUG: Creating cursor for ownership check...")
-    async with conn.cursor() as cur:
-        print__api_postgresql(f"🔧 DEBUG: Cursor created, executing ownership query...")
-        await cur.execute("""
-            SELECT COUNT(*) FROM users_threads_runs 
-            WHERE email = %s AND thread_id = %s
-        """, (user_email, thread_id))
-        
-        print__api_postgresql(f"🔧 DEBUG: Ownership query executed, fetching result...")
-        ownership_row = await cur.fetchone()
-        thread_entries_count = ownership_row[0] if ownership_row else 0
-        print__api_postgresql(f"🔧 DEBUG: Ownership check complete, count: {thread_entries_count}")
-    
-    if thread_entries_count == 0:
-        print__api_postgresql(f"🚫 SECURITY: User {user_email} does not own thread {thread_id} - deletion denied")
-        return {
-            "message": "Thread not found or access denied",
-            "thread_id": thread_id,
-            "user_email": user_email,
-            "deleted_counts": {}
-        }
-    
-    print__api_postgresql(f"✅ SECURITY: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - deletion authorized")
-    
-    print__api_postgresql(f"🔄 Deleting from checkpoint tables for thread {thread_id}")
-    
-    # Delete from all checkpoint tables
-    tables = ["checkpoint_blobs", "checkpoint_writes", "checkpoints"]
-    deleted_counts = {}
-    
-    for table in tables:
-        try:
-            print__api_postgresql(f"🔧 DEBUG: Processing table {table}...")
-            # First check if the table exists
-            print__api_postgresql(f"🔧 DEBUG: Creating cursor for table existence check...")
-            async with conn.cursor() as cur:
-                print__api_postgresql(f"🔧 DEBUG: Executing table existence query for {table}...")
-                await cur.execute("""
-                    SELECT EXISTS (
-                        SELECT FROM information_schema.tables 
-                        WHERE table_name = %s
-                    )
-                """, (table,))
-                
-                print__api_postgresql(f"🔧 DEBUG: Table existence query executed, fetching result...")
-                table_exists = await cur.fetchone()
-                print__api_postgresql(f"🔧 DEBUG: Table {table} exists check result: {table_exists}")
-                
-                if not table_exists or not table_exists[0]:
-                    print__api_postgresql(f"⚠ Table {table} does not exist, skipping")
-                    deleted_counts[table] = 0
-                    continue
-                
-                print__api_postgresql(f"🔧 DEBUG: Table {table} exists, proceeding with deletion...")
-                # Delete records for this thread_id
-                print__api_postgresql(f"🔧 DEBUG: Creating cursor for deletion from {table}...")
-                async with conn.cursor() as del_cur:
-                    print__api_postgresql(f"🔧 DEBUG: Executing DELETE query for {table}...")
-                    await del_cur.execute(
-                        f"DELETE FROM {table} WHERE thread_id = %s",
-                        (thread_id,)
-                    )
-                    
-                    deleted_counts[table] = del_cur.rowcount if hasattr(del_cur, 'rowcount') else 0
-                    print__api_postgresql(f"✅ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}")
-                
-        except Exception as table_error:
-            print__api_postgresql(f"⚠ Error deleting from table {table}: {table_error}")
-            print__api_postgresql(f"🔧 DEBUG: Table error type: {type(table_error).__name__}")
-            import traceback
-            print__api_postgresql(f"🔧 DEBUG: Table error traceback: {traceback.format_exc()}")
-            deleted_counts[table] = f"Error: {str(table_error)}"
-    
-    # Delete from users_threads_runs table directly within the same transaction
-    print__api_postgresql(f"🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
-    try:
-        print__api_postgresql(f"🔧 DEBUG: Creating cursor for users_threads_runs deletion...")
-        async with conn.cursor() as cur:
-            print__api_postgresql(f"🔧 DEBUG: Executing DELETE query for users_threads_runs...")
-            await cur.execute("""
-                DELETE FROM users_threads_runs 
-                WHERE email = %s AND thread_id = %s
-            """, (user_email, thread_id))
-            
-            users_threads_runs_deleted = cur.rowcount if hasattr(cur, 'rowcount') else 0
-            print__api_postgresql(f"✅ Deleted {users_threads_runs_deleted} entries from users_threads_runs for user {user_email}, thread {thread_id}")
-            
-            deleted_counts["users_threads_runs"] = users_threads_runs_deleted
-    
-    except Exception as e:
-        print__api_postgresql(f"❌ Error deleting from users_threads_runs: {e}")
-        print__api_postgresql(f"🔧 DEBUG: users_threads_runs error type: {type(e).__name__}")
-        import traceback
-        print__api_postgresql(f"🔧 DEBUG: users_threads_runs error traceback: {traceback.format_exc()}")
-        deleted_counts["users_threads_runs"] = f"Error: {str(e)}"
-    
-    result_data = {
-        "message": f"Checkpoint records and thread entries deleted for thread_id: {thread_id}",
-        "deleted_counts": deleted_counts,
-        "thread_id": thread_id,
-        "user_email": user_email
-    }
-    
-    print__api_postgresql(f"🎉 Successfully deleted thread {thread_id} for user {user_email}")
-    return result_data
-
+#============================================================
+# MAIN API ENDPOINTS - DATA CATALOG
+#============================================================
 @app.get("/catalog")
 def get_catalog(
     page: int = Query(1, ge=1),
@@ -1969,6 +2278,9 @@ def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
             return {"columns": [], "rows": []}
     return {"columns": columns, "rows": rows}
 
+#============================================================
+# MAIN API ENDPOINTS - CHAT MESSAGES
+#============================================================
 @app.get("/chat/{thread_id}/messages")
 async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> List[ChatMessage]:
     """Load conversation messages from PostgreSQL checkpoint history that preserves original user messages."""
@@ -2137,24 +2449,63 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
         else:
             raise HTTPException(status_code=500, detail=f"Failed to load checkpoint messages: {e}")
 
-# Global cache for bulk loading to prevent repeated calls
-_bulk_loading_cache = {}
-_bulk_loading_locks = defaultdict(asyncio.Lock)
-BULK_CACHE_TIMEOUT = 30  # Cache timeout in seconds
-
-def cleanup_bulk_cache():
-    """Clean up expired cache entries."""
-    current_time = time.time()
-    expired_keys = []
+@app.get("/chat/{thread_id}/run-ids")
+async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
+    """Get run_ids for messages in a thread to enable feedback submission."""
     
-    for cache_key, (cached_data, cache_time) in _bulk_loading_cache.items():
-        if current_time - cache_time > BULK_CACHE_TIMEOUT:
-            expired_keys.append(cache_key)
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
     
-    for key in expired_keys:
-        del _bulk_loading_cache[key]
+    print__feedback_flow(f"🔍 Fetching run_ids for thread {thread_id}")
     
-    return len(expired_keys)
+    try:
+        pool = await get_healthy_checkpointer()
+        pool = pool.conn if hasattr(pool, 'conn') else None
+        
+        if not pool:
+            print__feedback_flow("⚠ No pool available for run_id lookup")
+            return {"run_ids": []}
+        
+        async with pool.connection() as conn:
+            print__feedback_flow(f"📊 Executing SQL query for thread {thread_id}")
+            async with conn.cursor() as cur:
+                await cur.execute("""
+                    SELECT run_id, prompt, timestamp
+                    FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s
+                    ORDER BY timestamp ASC
+                """, (user_email, thread_id))
+                
+                run_id_data = []
+                rows = await cur.fetchall()
+                for row in rows:
+                    print__feedback_flow(f"📝 Processing database row - run_id: {row[0]}, prompt: {row[1][:50]}...")
+                    try:
+                        run_uuid = str(uuid.UUID(row[0])) if row[0] else None
+                        if run_uuid:
+                            run_id_data.append({
+                                "run_id": run_uuid,
+                                "prompt": row[1],
+                                "timestamp": row[2].isoformat()
+                            })
+                            print__feedback_flow(f"✅ Valid UUID found: {run_uuid}")
+                        else:
+                            print__feedback_flow(f"⚠ Null run_id found for prompt: {row[1][:50]}...")
+                    except ValueError:
+                        print__feedback_flow(f"❌ Invalid UUID in database: {row[0]}")
+                        continue
+                
+                print__feedback_flow(f"📊 Total valid run_ids found: {len(run_id_data)}")
+                return {"run_ids": run_id_data}
+            
+    except Exception as e:
+        print__feedback_flow(f"🚨 Error fetching run_ids: {str(e)}")
+        return {"run_ids": []}
+    
+#============================================================
+# MAIN API ENDPOINTS - BULK OPERATIONS
+#============================================================
 
 @app.get("/chat/all-messages")
 async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
@@ -2525,6 +2876,9 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             print__chat_all_messages_debug(f"🔍 CHAT_ALL_MESSAGES ENDPOINT - ERROR EXIT")
             return response
 
+#============================================================
+# DEBUG AND ADMIN ENDPOINTS
+#============================================================
 @app.get("/debug/chat/{thread_id}/checkpoints")
 async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
     """Debug endpoint to inspect raw checkpoint data for a thread."""
@@ -2654,60 +3008,6 @@ async def debug_pool_status():
             }
         )
 
-@app.get("/chat/{thread_id}/run-ids")
-async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
-    """Get run_ids for messages in a thread to enable feedback submission."""
-    
-    user_email = user.get("email")
-    if not user_email:
-        raise HTTPException(status_code=401, detail="User email not found in token")
-    
-    print__feedback_flow(f"🔍 Fetching run_ids for thread {thread_id}")
-    
-    try:
-        pool = await get_healthy_checkpointer()
-        pool = pool.conn if hasattr(pool, 'conn') else None
-        
-        if not pool:
-            print__feedback_flow("⚠ No pool available for run_id lookup")
-            return {"run_ids": []}
-        
-        async with pool.connection() as conn:
-            print__feedback_flow(f"📊 Executing SQL query for thread {thread_id}")
-            async with conn.cursor() as cur:
-                await cur.execute("""
-                    SELECT run_id, prompt, timestamp
-                    FROM users_threads_runs 
-                    WHERE email = %s AND thread_id = %s
-                    ORDER BY timestamp ASC
-                """, (user_email, thread_id))
-                
-                run_id_data = []
-                rows = await cur.fetchall()
-                for row in rows:
-                    print__feedback_flow(f"📝 Processing database row - run_id: {row[0]}, prompt: {row[1][:50]}...")
-                    try:
-                        run_uuid = str(uuid.UUID(row[0])) if row[0] else None
-                        if run_uuid:
-                            run_id_data.append({
-                                "run_id": run_uuid,
-                                "prompt": row[1],
-                                "timestamp": row[2].isoformat()
-                            })
-                            print__feedback_flow(f"✅ Valid UUID found: {run_uuid}")
-                        else:
-                            print__feedback_flow(f"⚠ Null run_id found for prompt: {row[1][:50]}...")
-                    except ValueError:
-                        print__feedback_flow(f"❌ Invalid UUID in database: {row[0]}")
-                        continue
-                
-                print__feedback_flow(f"📊 Total valid run_ids found: {len(run_id_data)}")
-                return {"run_ids": run_id_data}
-            
-    except Exception as e:
-        print__feedback_flow(f"🚨 Error fetching run_ids: {str(e)}")
-        return {"run_ids": []}
-
 @app.get("/debug/run-id/{run_id}")
 async def debug_run_id(run_id: str, user=Depends(get_current_user)):
     """Debug endpoint to check if a run_id exists in the database."""
@@ -2813,308 +3113,87 @@ async def clear_bulk_cache(user=Depends(get_current_user)):
         "timestamp": datetime.now().isoformat()
     }
 
-#==============================================================================
-# DEBUG FUNCTIONS
-#==============================================================================
-def print__api_postgresql(msg: str) -> None:
-    """Print API-PostgreSQL messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG', '0')
-    if debug_mode == '1':
-        print(f"[API-PostgreSQL] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__feedback_flow(msg: str) -> None:
-    """Print FEEDBACK-FLOW messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG', '0')
-    if debug_mode == '1':
-        print(f"[FEEDBACK-FLOW] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__DEBUG_TOKEN(msg: str) -> None:
-    """Print DEBUG_TOKEN messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_TOKEN', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_TOKEN] {msg}")
-        import sys
-        sys.stdout.flush()
+@app.post("/admin/clear-prepared-statements")
+async def clear_prepared_statements_endpoint(user=Depends(get_current_user)):
+    """Manually clear prepared statements (admin endpoint)."""
+    try:
+        from my_agent.utils.postgres_checkpointer import clear_prepared_statements
         
-def print__sentiment_flow(msg: str) -> None:
-    """Print SENTIMENT-FLOW messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG', '0')
-    if debug_mode == '1':
-        print(f"[SENTIMENT-FLOW] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__debug(msg: str) -> None:
-    """Print DEBUG messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__analyze_debug(msg: str) -> None:
-    """Print DEBUG_ANALYZE messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_ANALYZE', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_ANALYZE] {msg}")
-        import sys
-        sys.stdout.flush()
+        # Clear prepared statements
+        await clear_prepared_statements()
         
-def print__chat_all_messages_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_ALL_MESSAGES messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_CHAT_ALL_MESSAGES', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_CHAT_ALL_MESSAGES] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__feedback_debug(msg: str) -> None:
-    """Print DEBUG_FEEDBACK messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_FEEDBACK', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_FEEDBACK] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__sentiment_debug(msg: str) -> None:
-    """Print DEBUG_SENTIMENT messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_SENTIMENT', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_SENTIMENT] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__chat_threads_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_THREADS messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_CHAT_THREADS', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_CHAT_THREADS] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__chat_messages_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_MESSAGES messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_CHAT_MESSAGES', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_CHAT_MESSAGES] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__delete_chat_debug(msg: str) -> None:
-    """Print DEBUG_DELETE_CHAT messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_DELETE_CHAT', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_DELETE_CHAT] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__chat_sentiments_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_SENTIMENTS messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_CHAT_SENTIMENTS', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_CHAT_SENTIMENTS] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__catalog_debug(msg: str) -> None:
-    """Print DEBUG_CATALOG messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_CATALOG', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_CATALOG] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__data_tables_debug(msg: str) -> None:
-    """Print DEBUG_DATA_TABLES messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_DATA_TABLES', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_DATA_TABLES] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__data_table_debug(msg: str) -> None:
-    """Print DEBUG_DATA_TABLE messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_DATA_TABLE', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_DATA_TABLE] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__chat_thread_id_checkpoints_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_THREAD_ID_CHECKPOINTS messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_CHAT_THREAD_ID_CHECKPOINTS', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_CHAT_THREAD_ID_CHECKPOINTS] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__debug_pool_status_debug(msg: str) -> None:
-    """Print DEBUG_DEBUG_POOL_STATUS messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_DEBUG_POOL_STATUS', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_DEBUG_POOL_STATUS] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__chat_thread_id_run_ids_debug(msg: str) -> None:
-    """Print DEBUG_CHAT_THREAD_ID_RUN_IDS messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_CHAT_THREAD_ID_RUN_IDS', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_CHAT_THREAD_ID_RUN_IDS] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__debug_run_id_debug(msg: str) -> None:
-    """Print DEBUG_DEBUG_RUN_ID messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG_DEBUG_RUN_ID', '0')
-    if debug_mode == '1':
-        print(f"[DEBUG_DEBUG_RUN_ID] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__admin_clear_cache_debug(msg: str) -> None:
-    """Print admin clear cache debug messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    admin_clear_cache_debug_mode = os.environ.get('ADMIN_CLEAR_CACHE_DEBUG', '0')
-    if admin_clear_cache_debug_mode == '1':
-        print(f"[ADMIN_CLEAR_CACHE_DEBUG] {msg}")
-        import sys
-        sys.stdout.flush()
-
-def print__analysis_tracing_debug(msg: str) -> None:
-    """Print analysis tracing debug messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    analysis_tracing_debug_mode = os.environ.get('ANALYSIS_TRACING_DEBUG', '0')
-    if analysis_tracing_debug_mode == '1':
-        print(f"[ANALYSIS_TRACING_DEBUG] 🔍 {msg}")
-        import sys
-        sys.stdout.flush()
-
-# Global exception handlers for proper error handling
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle Pydantic validation errors with proper 422 status code."""
-    print__debug(f"Validation error: {exc.errors()}")
-    return JSONResponse(
-        status_code=422,
-        content={
-            "detail": "Validation error",
-            "errors": exc.errors()
+        return {
+            "status": "success",
+            "message": "Prepared statements cleared successfully",
+            "timestamp": datetime.now().isoformat()
         }
-    )
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
 
-@app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    """Handle HTTP exceptions properly."""
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail}
-    )
+#============================================================
+# Placeholder Endpoint
+#============================================================
+@app.get("/placeholder/{width}/{height}")
+async def get_placeholder_image(width: int, height: int):
+    """Generate a placeholder image with specified dimensions."""
+    try:
+        # Validate dimensions
+        width = max(1, min(width, 2000))  # Limit between 1 and 2000 pixels
+        height = max(1, min(height, 2000))
+        
+        # Create a simple SVG placeholder
+        svg_content = f'''<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100%" height="100%" fill="#e5e7eb"/>
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="20">{width}x{height}</text>
+        </svg>'''
+        
+        from fastapi.responses import Response
+        return Response(
+            content=svg_content,
+            media_type="image/svg+xml",
+            headers={
+                "Cache-Control": "public, max-age=3600",
+                "Access-Control-Allow-Origin": "*"
+            }
+        )
+        
+    except Exception as e:
+        # Fallback for any errors
+        simple_svg = f'''<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+            <rect width="100%" height="100%" fill="#f3f4f6"/>
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6b7280" font-size="12">Error</text>
+        </svg>'''
+        
+        from fastapi.responses import Response
+        return Response(
+            content=simple_svg,
+            media_type="image/svg+xml",
+            headers={
+                "Cache-Control": "public, max-age=3600",
+                "Access-Control-Allow-Origin": "*"
+            }
+        )
 
-@app.exception_handler(ValueError)
-async def value_error_handler(request: Request, exc: ValueError):
-    """Handle ValueError exceptions as 400 Bad Request."""
-    print__debug(f"ValueError: {str(exc)}")
-    return JSONResponse(
-        status_code=400,
-        content={"detail": str(exc)}
-    )
 
-@app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
-    """Handle unexpected exceptions."""
-    print__debug(f"Unexpected error: {type(exc).__name__}: {str(exc)}")
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal server error"}
-    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
