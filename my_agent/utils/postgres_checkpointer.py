@@ -616,31 +616,6 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                     }
                     conversation_messages.append(ai_message)
                     print__analysis_tracing_debug(f"307 - AI MESSAGE FOUND: Found final_answer: {final_answer[:100]}...")
-                
-                # Method 2: Look for messages with AI content (fallback) - only if no final_answer
-                elif "messages" in channel_values:
-                    messages = channel_values["messages"]
-                    if isinstance(messages, list) and messages:
-                        # OPTIMIZATION: Only check the last message instead of all messages
-                        for msg in reversed(messages[-3:]):  # Check only last 3 messages
-                            if (hasattr(msg, 'content') and 
-                                msg.content and 
-                                getattr(msg, 'type', None) == 'ai' and
-                                len(msg.content.strip()) > 20 and
-                                msg.content.strip() not in seen_answers):
-                                
-                                seen_answers.add(msg.content.strip())
-                                ai_message = {
-                                    "id": f"ai_{len(conversation_messages) + 1}",
-                                    "content": msg.content.strip(),
-                                    "is_user": False,
-                                    "timestamp": datetime.fromtimestamp(1700000000 + checkpoint_index * 1000 + 500),
-                                    "checkpoint_order": checkpoint_index,
-                                    "message_order": len(conversation_messages) + 1
-                                }
-                                conversation_messages.append(ai_message)
-                                print__analysis_tracing_debug(f"308 - AI MESSAGE FALLBACK: Found AI message: {msg.content[:100]}...")
-                                break
         
         # Sort all messages by timestamp to ensure proper chronological order
         conversation_messages.sort(key=lambda x: x.get("timestamp", datetime.now()))
