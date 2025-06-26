@@ -578,7 +578,7 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
         throw new Error('No authentication token available for bulk loading');
       }
       
-      // Step 1: Load all data at once (messages, run-ids, and sentiments)
+      // OPTIMIZATION: Load all data at once with better error handling
       console.log('[ChatCache] 📡 Calling /chat/all-messages endpoint with automatic token refresh...');
       const startTime = Date.now();
       
@@ -599,21 +599,25 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
         sentimentThreads: Object.keys(response.sentiments || {}).length
       });
       
-      // Store all data atomically to prevent partial updates
-      console.log('[ChatCache] 💾 Storing bulk data in cache...');
-      setMessagesState(response.messages || {});
-      setRunIdsState(response.runIds || {});
-      setSentimentsState(response.sentiments || {});
-      
-      console.log('[ChatCache] ✅ Bulk loading completed successfully with automatic token refresh');
-      console.log('[ChatCache] 🎯 Performance benefit: Loaded', totalMessages, 'messages with 1 API call instead of', totalThreadsWithMessages, 'individual calls');
-      
-      // Force save to localStorage immediately after bulk loading
-      saveToStorage({
-        messages: response.messages || {},
-        runIds: response.runIds || {},
-        sentiments: response.sentiments || {}
-      });
+      // OPTIMIZATION: Only update state if we have meaningful data
+      if (totalMessages > 0 || Object.keys(response.runIds || {}).length > 0) {
+        console.log('[ChatCache] 💾 Storing bulk data in cache...');
+        setMessagesState(response.messages || {});
+        setRunIdsState(response.runIds || {});
+        setSentimentsState(response.sentiments || {});
+        
+        // Force save to localStorage immediately after bulk loading
+        saveToStorage({
+          messages: response.messages || {},
+          runIds: response.runIds || {},
+          sentiments: response.sentiments || {}
+        });
+        
+        console.log('[ChatCache] ✅ Bulk loading completed successfully with automatic token refresh');
+        console.log('[ChatCache] 🎯 Performance benefit: Loaded', totalMessages, 'messages with 1 API call instead of', totalThreadsWithMessages, 'individual calls');
+      } else {
+        console.log('[ChatCache] ⚠️ No meaningful data received from bulk loading');
+      }
       
     } catch (error) {
       console.error('[ChatCache] ❌ Error in bulk loading:', error);
@@ -627,7 +631,9 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
         }
       }
       
-      throw error;
+      // Don't throw error - graceful degradation
+      console.log('[ChatCache] 🔄 Bulk loading failed, will rely on individual thread loading');
+      
     } finally {
       setIsLoading(false);
     }

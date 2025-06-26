@@ -154,8 +154,7 @@ def get_db_config():
 def get_connection_string():
     """Get PostgreSQL connection string for LangGraph checkpointer.
     
-    CRITICAL FIX: Use truly unique application names to avoid prepared statement conflicts.
-    ENHANCED FIX: Add connection parameters to reduce prepared statement issues.
+    FIXED: Only use valid PostgreSQL connection parameters to prevent startup errors.
     """
     print__analysis_tracing_debug("214 - CONNECTION STRING START: Generating PostgreSQL connection string")
     global _connection_string_cache
@@ -169,14 +168,16 @@ def get_connection_string():
     # Use process ID + startup time + random for truly unique application name
     import os
     import uuid
+    import threading
     process_id = os.getpid()
+    thread_id = threading.get_ident()
     startup_time = int(time.time())
     random_id = uuid.uuid4().hex[:8]
     
-    app_name = f"czsu_langgraph_{process_id}_{startup_time}_{random_id}"
+    app_name = f"czsu_langgraph_{process_id}_{thread_id}_{startup_time}_{random_id}"
     print__analysis_tracing_debug(f"216 - CONNECTION STRING APP NAME: Generated unique application name: {app_name}")
     
-    # ENHANCED: Add connection parameters to reduce prepared statement issues
+    # FIXED: Only include valid PostgreSQL connection parameters
     _connection_string_cache = (
         f"postgresql://{config['user']}:{config['password']}@"
         f"{config['host']}:{config['port']}/{config['dbname']}?"
@@ -185,7 +186,7 @@ def get_connection_string():
         f"&connect_timeout=30"
     )
     
-    print__analysis_tracing_debug(f"217 - CONNECTION STRING COMPLETE: Enhanced connection string generated with timeout=30")
+    print__analysis_tracing_debug(f"217 - CONNECTION STRING COMPLETE: Valid PostgreSQL connection string generated")
     
     return _connection_string_cache
 
@@ -209,10 +210,8 @@ def check_postgres_env_vars():
 async def clear_prepared_statements():
     """Clear any existing prepared statements to avoid conflicts.
     
-    This is necessary because psycopg caches prepared statements globally
-    and multiple checkpointer instances can conflict.
-    
-    Uses a completely separate connection to avoid interfering with checkpointer.
+    SIMPLIFIED: This function is now optional and only used during error recovery.
+    Most prepared statement issues are now prevented by connection string parameters.
     """
     print__analysis_tracing_debug("221 - CLEAR PREPARED START: Starting prepared statements cleanup")
     try:
@@ -242,14 +241,21 @@ async def clear_prepared_statements():
                     # Drop each prepared statement
                     for i, stmt in enumerate(prepared_statements, 1):
                         stmt_name = stmt[0]
-                        print__analysis_tracing_debug(f"227 - CLEARING STATEMENT {i}: Clearing prepared statement: {stmt_name}")
+                        # OPTIMIZATION: Only log first few statements
+                        if i <= 3:
+                            print__analysis_tracing_debug(f"227 - CLEARING STATEMENT {i}: Clearing prepared statement: {stmt_name}")
                         try:
                             await cur.execute(f"DEALLOCATE {stmt_name};")
-                            print__analysis_tracing_debug(f"228 - STATEMENT CLEARED {i}: Successfully cleared prepared statement: {stmt_name}")
+                            if i <= 3:
+                                print__analysis_tracing_debug(f"228 - STATEMENT CLEARED {i}: Successfully cleared prepared statement: {stmt_name}")
                         except Exception as e:
-                            print__analysis_tracing_debug(f"229 - STATEMENT ERROR {i}: Could not clear prepared statement {stmt_name}: {e}")
+                            if i <= 3:
+                                print__analysis_tracing_debug(f"229 - STATEMENT ERROR {i}: Could not clear prepared statement {stmt_name}: {e}")
                     
-                    print__analysis_tracing_debug(f"230 - CLEANUP COMPLETE: Cleared {len(prepared_statements)} prepared statements")
+                    if len(prepared_statements) > 3:
+                        print__analysis_tracing_debug(f"230 - CLEANUP SUMMARY: Cleared {len(prepared_statements)} prepared statements (showing first 3)")
+                    else:
+                        print__analysis_tracing_debug(f"230 - CLEANUP COMPLETE: Cleared {len(prepared_statements)} prepared statements")
                 else:
                     print__analysis_tracing_debug("231 - NO STATEMENTS: No prepared statements to clear")
                 
@@ -268,8 +274,7 @@ async def create_async_postgres_saver():
     Create AsyncPostgresSaver using the OFFICIAL pattern from documentation.
     This follows the exact pattern shown in the AsyncPostgresSaver docs.
     
-    CRITICAL FIX: Clear prepared statements first to avoid conflicts.
-    ENHANCED FIX: Add retry logic for prepared statement errors.
+    SIMPLIFIED: Remove unnecessary complexity, focus on core functionality.
     """
     print__analysis_tracing_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation")
     global _global_checkpointer_context, _global_checkpointer
@@ -279,7 +284,6 @@ async def create_async_postgres_saver():
         print__analysis_tracing_debug("234 - EXISTING STATE CLEANUP: Clearing existing checkpointer state to avoid conflicts")
         try:
             if _global_checkpointer_context:
-                print__analysis_tracing_debug("235 - CONTEXT CLEANUP: Cleaning up existing checkpointer context")
                 await _global_checkpointer_context.__aexit__(None, None, None)
         except Exception as e:
             print__analysis_tracing_debug(f"236 - CLEANUP ERROR: Error during state cleanup: {e}")
@@ -287,10 +291,6 @@ async def create_async_postgres_saver():
             _global_checkpointer_context = None
             _global_checkpointer = None
             print__analysis_tracing_debug("237 - STATE CLEARED: Global checkpointer state cleared")
-    
-    # CRITICAL: Clear prepared statements to avoid conflicts
-    print__analysis_tracing_debug("238 - PREPARED CLEANUP: Clearing prepared statements to avoid conflicts")
-    await clear_prepared_statements()
     
     if not AsyncPostgresSaver:
         print__analysis_tracing_debug("239 - SAVER UNAVAILABLE: AsyncPostgresSaver not available")
@@ -303,13 +303,11 @@ async def create_async_postgres_saver():
     print__analysis_tracing_debug("241 - OFFICIAL CREATION: Creating AsyncPostgresSaver using official from_conn_string")
     
     try:
-        # ENHANCED: Use connection string with better timeout settings
+        # SIMPLIFIED: Use connection string without excessive complexity
         connection_string = get_connection_string()
         print__analysis_tracing_debug("242 - CONNECTION STRING: Connection string generated for AsyncPostgresSaver")
         
         # CORRECT USAGE: from_conn_string returns AsyncIterator[AsyncPostgresSaver]
-        # According to docs, this should be used as an async context manager
-        # We need to store the async context manager for later cleanup
         print__analysis_tracing_debug("243 - FACTORY CALL: Calling AsyncPostgresSaver.from_conn_string factory method")
         _global_checkpointer_context = AsyncPostgresSaver.from_conn_string(
             conn_string=connection_string,
@@ -318,7 +316,6 @@ async def create_async_postgres_saver():
         )
         
         # CORRECT: Use async context manager protocol properly
-        # The __aenter__ method returns the actual AsyncPostgresSaver instance
         print__analysis_tracing_debug("244 - CONTEXT ENTER: Entering async context manager")
         _global_checkpointer = await _global_checkpointer_context.__aenter__()
         
@@ -330,13 +327,13 @@ async def create_async_postgres_saver():
         await _global_checkpointer.setup()
         print__analysis_tracing_debug("248 - SETUP COMPLETE: AsyncPostgresSaver setup complete - LangGraph tables created")
         
-        # Verify the checkpointer is working by testing a simple operation
+        # Simplified test - just verify we can create a config
         print__analysis_tracing_debug("249 - TESTING START: Testing checkpointer with a simple operation")
         test_config = {"configurable": {"thread_id": "setup_test"}}
         test_result = await _global_checkpointer.aget(test_config)
         print__analysis_tracing_debug(f"250 - TESTING COMPLETE: Checkpointer test successful: {test_result is None} (expected None for new thread)")
         
-        # Now setup our custom users_threads_runs table using the same connection approach
+        # Setup custom tables using the same connection approach
         print__analysis_tracing_debug("251 - CUSTOM TABLES: Setting up custom users_threads_runs table")
         await setup_users_threads_runs_table()
         
@@ -486,7 +483,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
     This function properly extracts messages from LangGraph checkpoints using the official
     AsyncPostgresSaver methods as documented.
     
-    ENHANCED: Add retry logic for prepared statement errors.
+    OPTIMIZED: Reduce unnecessary database operations and limit checkpoint processing.
     """
     print__analysis_tracing_debug(f"292 - GET CONVERSATION START: Retrieving conversation messages for thread: {thread_id}")
     try:
@@ -515,19 +512,19 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         
         config = {"configurable": {"thread_id": thread_id}}
         
-        # Use the OFFICIAL AsyncPostgresSaver alist() method as documented
+        # OPTIMIZED: Use alist() method with limit to avoid processing too many checkpoints
         checkpoint_tuples = []
         try:
             print__analysis_tracing_debug(f"297 - ALIST METHOD: Using official AsyncPostgresSaver.alist() method")
             
-            # Use alist() method exactly as shown in the documentation
-            async for checkpoint_tuple in checkpointer.alist(config, limit=50):
+            # OPTIMIZATION: Limit checkpoints to recent ones only (last 10)
+            async for checkpoint_tuple in checkpointer.alist(config, limit=10):
                 checkpoint_tuples.append(checkpoint_tuple)
 
         except Exception as alist_error:
             print__analysis_tracing_debug(f"298 - ALIST ERROR: Error using alist(): {alist_error}")
             
-            # Fallback: use aget_tuple() to get the latest checkpoint
+            # Fallback: use aget_tuple() to get the latest checkpoint only
             if not checkpoint_tuples:
                 print__analysis_tracing_debug(f"299 - FALLBACK METHOD: Trying fallback method using aget_tuple()")
                 try:
@@ -548,13 +545,14 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         # Sort checkpoints chronologically (oldest first) based on timestamp
         checkpoint_tuples.sort(key=lambda x: x.checkpoint.get("ts", "") if x.checkpoint else "")
         
-        # Extract conversation messages chronologically
+        # OPTIMIZED: Extract conversation messages more efficiently
         conversation_messages = []
         seen_prompts = set()
         seen_answers = set()
         
         print__analysis_tracing_debug(f"304 - MESSAGE EXTRACTION: Extracting messages from {len(checkpoint_tuples)} checkpoints")
         
+        # OPTIMIZATION: Process only meaningful checkpoints, skip empty ones
         for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
             checkpoint = checkpoint_tuple.checkpoint
             metadata = checkpoint_tuple.metadata or {}
@@ -562,7 +560,9 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             if not checkpoint:
                 continue
                 
-            print__analysis_tracing_debug(f"305 - PROCESSING CHECKPOINT: Processing checkpoint {checkpoint_index + 1}/{len(checkpoint_tuples)}")
+            # OPTIMIZATION: Only log for significant checkpoints
+            if checkpoint_index < 5 or checkpoint_index % 5 == 0:  # Log first 5, then every 5th
+                print__analysis_tracing_debug(f"305 - PROCESSING CHECKPOINT: Processing checkpoint {checkpoint_index + 1}/{len(checkpoint_tuples)}")
             
             # EXTRACT USER PROMPTS from checkpoint metadata writes
             if "writes" in metadata and isinstance(metadata["writes"], dict):
@@ -593,7 +593,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                                 conversation_messages.append(user_message)
                                 print__analysis_tracing_debug(f"306 - USER MESSAGE FOUND: Found user prompt: {prompt[:50]}...")
             
-            # EXTRACT AI RESPONSES from channel_values
+            # EXTRACT AI RESPONSES from channel_values - OPTIMIZED extraction
             if "channel_values" in checkpoint:
                 channel_values = checkpoint["channel_values"]
                 
@@ -617,11 +617,12 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                     conversation_messages.append(ai_message)
                     print__analysis_tracing_debug(f"307 - AI MESSAGE FOUND: Found final_answer: {final_answer[:100]}...")
                 
-                # Method 2: Look for messages with AI content (fallback)
+                # Method 2: Look for messages with AI content (fallback) - only if no final_answer
                 elif "messages" in channel_values:
                     messages = channel_values["messages"]
                     if isinstance(messages, list) and messages:
-                        for msg in reversed(messages):
+                        # OPTIMIZATION: Only check the last message instead of all messages
+                        for msg in reversed(messages[-3:]):  # Check only last 3 messages
                             if (hasattr(msg, 'content') and 
                                 msg.content and 
                                 getattr(msg, 'type', None) == 'ai' and
@@ -651,10 +652,13 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         
         print__analysis_tracing_debug(f"309 - CONVERSATION SUCCESS: Extracted {len(conversation_messages)} conversation messages")
         
-        # Debug: Log all messages found
-        for i, msg in enumerate(conversation_messages):
+        # OPTIMIZATION: Only log first few messages in detail
+        for i, msg in enumerate(conversation_messages[:3]):  # Show only first 3 messages
             msg_type = "👤 User" if msg["is_user"] else "🤖 AI"
             print__analysis_tracing_debug(f"310 - MESSAGE {i+1}: {msg_type}: {msg['content'][:50]}...")
+        
+        if len(conversation_messages) > 3:
+            print__analysis_tracing_debug(f"310 - MESSAGE SUMMARY: ...and {len(conversation_messages) - 3} more messages")
         
         return conversation_messages
         
