@@ -392,15 +392,16 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
     print__api_postgresql(f"🔧 DEBUG: Creating cursor for ownership check...")
     async with conn.cursor() as cur:
         print__api_postgresql(f"🔧 DEBUG: Cursor created, executing ownership query...")
-        # language=SQL
-        await cur.execute("""--sql
+        # Fix: Use correct psycopg approach with fetchone() instead of fetchval()
+        await cur.execute("""
             SELECT COUNT(*) FROM users_threads_runs 
             WHERE email = %s AND thread_id = %s
         """, (user_email, thread_id))
         
-        print__api_postgresql(f"🔧 DEBUG: Ownership query executed, fetching result...")
-        ownership_row = await cur.fetchone()
-        thread_entries_count = ownership_row[0] if ownership_row else 0
+        # Get the result row and extract the count value
+        result_row = await cur.fetchone()
+        # Fix: psycopg Row objects don't support [0] indexing, convert to tuple first
+        thread_entries_count = tuple(result_row)[0] if result_row else 0
         print__api_postgresql(f"🔧 DEBUG: Ownership check complete, count: {thread_entries_count}")
     
     if thread_entries_count == 0:
@@ -427,6 +428,7 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
             print__api_postgresql(f"🔧 DEBUG: Creating cursor for table existence check...")
             async with conn.cursor() as cur:
                 print__api_postgresql(f"🔧 DEBUG: Executing table existence query for {table}...")
+                # Fix: Use correct psycopg approach with fetchone() instead of fetchval()
                 await cur.execute("""
                     SELECT EXISTS (
                         SELECT FROM information_schema.tables 
@@ -434,11 +436,14 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
                     )
                 """, (table,))
                 
-                print__api_postgresql(f"🔧 DEBUG: Table existence query executed, fetching result...")
-                table_exists = await cur.fetchone()
+                # Get the result row and extract the boolean value
+                result_row = await cur.fetchone()
+                # Fix: psycopg Row objects don't support [0] indexing, convert to tuple first
+                table_exists = tuple(result_row)[0] if result_row else False
                 print__api_postgresql(f"🔧 DEBUG: Table {table} exists check result: {table_exists}")
                 
-                if not table_exists or not table_exists[0]:
+                # Simple boolean check
+                if not table_exists:
                     print__api_postgresql(f"⚠ Table {table} does not exist, skipping")
                     deleted_counts[table] = 0
                     continue
@@ -1538,8 +1543,9 @@ async def prepared_statements_health_check():
                     """)
                     result = await cur.fetchone()
                     
+                    # Fix: Handle psycopg Row object properly - check if it exists and has data
                     prepared_count = result[0] if result else 0
-                    statement_names = result[1] if result and result[1] else "none"
+                    statement_names = result[1] if result and len(result) > 1 and result[1] else "none"
                     
                     return {
                         "status": "healthy",
@@ -2307,10 +2313,10 @@ async def get_chat_messages(thread_id: str, user=Depends(get_current_user)) -> L
         async with checkpointer.conn.connection() as conn:
             async with conn.cursor() as cur:
                 await cur.execute("""
-                    SELECT COUNT(*) FROM users_threads_runs 
-                    WHERE email = %s AND thread_id = %s
-                """, (user_email, thread_id))
-                
+            SELECT COUNT(*) FROM users_threads_runs 
+            WHERE email = %s AND thread_id = %s
+        """, (user_email, thread_id))
+        
                 ownership_row = await cur.fetchone()
                 thread_entries_count = ownership_row[0] if ownership_row else 0
             
@@ -3198,3 +3204,4 @@ async def get_placeholder_image(width: int, height: int):
 
 
 
+    

@@ -501,14 +501,13 @@ export default function ChatPage() {
   const handleDelete = async (threadId: string) => {
     console.log('[ChatPage-delete] 🔄 Deleting thread:', threadId);
     
-    if (window.confirm('Are you sure you want to delete this chat thread? This cannot be undone.')) {
-      const success = await deleteThreadFromPostgreSQL(threadId);
-      if (success) {
-        console.log('[ChatPage-delete] ✅ Thread deleted successfully');
-      } else {
-        console.error('[ChatPage-delete] ❌ Failed to delete thread');
-        alert('Failed to delete thread. Please try again.');
-      }
+    // Remove confirmation dialog - just delete directly
+    const success = await deleteThreadFromPostgreSQL(threadId);
+    if (success) {
+      console.log('[ChatPage-delete] ✅ Thread deleted successfully');
+    } else {
+      console.error('[ChatPage-delete] ❌ Failed to delete thread');
+      alert('Failed to delete thread. Please try again.');
     }
   };
 
