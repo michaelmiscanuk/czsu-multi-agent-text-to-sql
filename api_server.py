@@ -1527,13 +1527,17 @@ async def prepared_statements_health_check():
         
         # Check prepared statements in the database
         try:
-            from my_agent.utils.postgres_checkpointer import get_db_config
+            from my_agent.utils.postgres_checkpointer import get_db_config, get_connection_kwargs
             import psycopg
             
             config = get_db_config()
+            # Create connection string without prepared statement parameters
             connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}?sslmode=require"
             
-            async with await psycopg.AsyncConnection.connect(connection_string) as conn:
+            # Get connection kwargs for disabling prepared statements
+            connection_kwargs = get_connection_kwargs()
+            
+            async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
                 async with conn.cursor() as cur:
                     await cur.execute("""
                         SELECT COUNT(*) as count, 
@@ -1552,6 +1556,7 @@ async def prepared_statements_health_check():
                         "checkpointer_status": checkpointer_status,
                         "prepared_statements_count": prepared_count,
                         "prepared_statement_names": statement_names,
+                        "connection_kwargs": connection_kwargs,
                         "timestamp": datetime.now().isoformat()
                     }
                     

@@ -159,7 +159,8 @@ def get_db_config():
 def get_connection_string():
     """Get PostgreSQL connection string for LangGraph checkpointer.
     
-    FIXED: Only use valid PostgreSQL connection parameters to prevent startup errors.
+    FIXED: Removed invalid URI query parameters for prepared statements.
+    Prepared statements will be disabled via connection kwargs instead.
     """
     print__analysis_tracing_debug("214 - CONNECTION STRING START: Generating PostgreSQL connection string")
     global _connection_string_cache
@@ -182,7 +183,8 @@ def get_connection_string():
     app_name = f"czsu_langgraph_{process_id}_{thread_id}_{startup_time}_{random_id}"
     print__analysis_tracing_debug(f"216 - CONNECTION STRING APP NAME: Generated unique application name: {app_name}")
     
-    # FIXED: Only include valid PostgreSQL connection parameters
+    # FIXED: Only include valid PostgreSQL URI parameters
+    # Prepared statement parameters must be passed as connection kwargs, not URI params
     _connection_string_cache = (
         f"postgresql://{config['user']}:{config['password']}@"
         f"{config['host']}:{config['port']}/{config['dbname']}?"
@@ -194,6 +196,16 @@ def get_connection_string():
     print__analysis_tracing_debug(f"217 - CONNECTION STRING COMPLETE: Valid PostgreSQL connection string generated")
     
     return _connection_string_cache
+
+def get_connection_kwargs():
+    """Get connection kwargs for disabling prepared statements.
+    
+    Returns connection parameters that should be passed to psycopg connection methods.
+    """
+    return {
+        "autocommit": True,
+        "prepare_threshold": None,  # Disable prepared statements completely
+    }
 
 def check_postgres_env_vars():
     """Check if all required PostgreSQL environment variables are set."""
@@ -216,7 +228,7 @@ async def clear_prepared_statements():
     """Clear any existing prepared statements to avoid conflicts.
     
     SIMPLIFIED: This function is now optional and only used during error recovery.
-    Most prepared statement issues are now prevented by connection string parameters.
+    Most prepared statement issues are now prevented by connection kwargs.
     """
     print__analysis_tracing_debug("221 - CLEAR PREPARED START: Starting prepared statements cleanup")
     try:
@@ -225,11 +237,16 @@ async def clear_prepared_statements():
         import uuid
         cleanup_app_name = f"czsu_cleanup_{uuid.uuid4().hex[:8]}"
         print__analysis_tracing_debug(f"222 - CLEANUP CONNECTION: Creating cleanup connection with app name: {cleanup_app_name}")
+        
+        # Create connection string without prepared statement parameters
         connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}?sslmode=require&application_name={cleanup_app_name}"
+        
+        # Get connection kwargs for disabling prepared statements
+        connection_kwargs = get_connection_kwargs()
         
         import psycopg
         print__analysis_tracing_debug("223 - PSYCOPG CONNECTION: Establishing psycopg connection for cleanup")
-        async with await psycopg.AsyncConnection.connect(connection_string) as conn:
+        async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
             print__analysis_tracing_debug("224 - CONNECTION ESTABLISHED: Cleanup connection established successfully")
             async with conn.cursor() as cur:
                 print__analysis_tracing_debug("225 - CURSOR CREATED: Database cursor created for prepared statement query")
@@ -409,8 +426,9 @@ async def setup_users_threads_runs_table():
         import psycopg
         
         connection_string = get_connection_string()
+        connection_kwargs = get_connection_kwargs()
         print__analysis_tracing_debug("269 - CUSTOM TABLE CONNECTION: Establishing connection for table setup")
-        async with await psycopg.AsyncConnection.connect(connection_string) as conn:
+        async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
             print__analysis_tracing_debug("270 - CUSTOM TABLE CONNECTED: Connection established for table creation")
             # Create table with correct schema
             print__analysis_tracing_debug("271 - CREATE TABLE: Creating users_threads_runs table")
@@ -454,7 +472,9 @@ async def get_direct_connection():
     """Get a direct database connection for users_threads_runs operations."""
     import psycopg
     
-    async with await psycopg.AsyncConnection.connect(get_connection_string()) as conn:
+    connection_string = get_connection_string()
+    connection_kwargs = get_connection_kwargs()
+    async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
         yield conn
 
 # MISSING FUNCTIONS NEEDED BY API SERVER
@@ -464,17 +484,18 @@ async def get_healthy_pool():
         # For the simplified approach, we use direct connections instead of pooling
         # Return a connection factory that mimics pool behavior
         class DirectConnectionFactory:
-            def __init__(self, connection_string):
+            def __init__(self, connection_string, connection_kwargs):
                 self.connection_string = connection_string
+                self.connection_kwargs = connection_kwargs
             
             @asynccontextmanager
             async def connection(self):
                 """Provide a connection that mimics pool.connection() interface."""
                 import psycopg
-                async with await psycopg.AsyncConnection.connect(self.connection_string) as conn:
+                async with await psycopg.AsyncConnection.connect(self.connection_string, **self.connection_kwargs) as conn:
                     yield conn
         
-        return DirectConnectionFactory(get_connection_string())
+        return DirectConnectionFactory(get_connection_string(), get_connection_kwargs())
         
     except Exception as e:
         print__postgresql_debug(f"Failed to create connection factory: {e}")
