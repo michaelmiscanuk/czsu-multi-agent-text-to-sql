@@ -222,12 +222,15 @@ Now process this conversation:
     summary_content_escaped = summary.content.replace('{', '{{').replace('}', '}}')
     prompt_text_escaped = prompt_text.replace('{', '{{').replace('}', '}}')
     
-    human_prompt = f"Summary of conversation so far:\n{summary_content_escaped}\n\nOriginal question: {prompt_text_escaped}\nStandalone Question:"
+    human_prompt = "Summary of conversation so far:\n{summary_content}\n\nOriginal question: {prompt_text}\nStandalone Question:"
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", human_prompt)
     ])
-    result = await llm.ainvoke(prompt.format_messages())
+    result = await llm.ainvoke(prompt.format_messages(
+        summary_content=summary.content,
+        prompt_text=prompt_text
+    ))
     rewritten_prompt = result.content.strip()
     # FIX: Escape curly braces in rewritten_prompt to prevent f-string parsing errors
     rewritten_prompt_escaped = rewritten_prompt.replace('{', '{{').replace('}', '}}')
@@ -369,21 +372,31 @@ IMPORTANT notes about SQL query generation:
 """
     # Build human prompt conditionally to avoid empty "Last message:" section
     human_prompt_parts = [
-        f"User question: {rewritten_prompt or prompt}",
-        f"Schema: {schema}",
-        f"Summary of conversation:\n{summary.content}"
+        "User question: {user_question}",
+        "Schema: {schema}",
+        "Summary of conversation:\n{summary_content}"
     ]
     
     if last_message_content:
-        human_prompt_parts.append(f"Last message:\n{last_message_content}")
+        human_prompt_parts.append("Last message:\n{last_message_content}")
     
     human_prompt = "\n".join(human_prompt_parts)
+    
+    # Create template variables dict
+    template_vars = {
+        "user_question": rewritten_prompt or prompt,
+        "schema": schema,
+        "summary_content": summary.content
+    }
+    
+    if last_message_content:
+        template_vars["last_message_content"] = last_message_content
     
     prompt_template = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", human_prompt)
     ])
-    result = await llm.ainvoke(prompt_template.format_messages())
+    result = await llm.ainvoke(prompt_template.format_messages(**template_vars))
     query = result.content.strip()
     
     print__nodes_debug(f"⚡ {QUERY_GEN_ID}: Generated query: {query}")
@@ -610,16 +623,16 @@ Bad: "The query shows X is 1,234,567"
     
     # Build the formatted prompt with separate sections for SQL and PDF data
     formatted_prompt_parts = [
-        f"Question: {rewritten_prompt or prompt}"
+        "Question: {question}"
     ]
     
     # Add SQL data section if available
     if queries_and_results:
-        formatted_prompt_parts.append(f"SQL Data Context:\n{queries_results_text}")
+        formatted_prompt_parts.append("SQL Data Context:\n{sql_context}")
     
     # Add PDF data section if available
     if pdf_chunks_text:
-        formatted_prompt_parts.append(f"PDF Document Context:\n{pdf_chunks_text}")
+        formatted_prompt_parts.append("PDF Document Context:\n{pdf_context}")
     
     # Add instruction
     if queries_and_results and pdf_chunks_text:
@@ -634,12 +647,23 @@ Bad: "The query shows X is 1,234,567"
     formatted_prompt_parts.append(instruction)
     formatted_prompt = "\n\n".join(formatted_prompt_parts)
     
+    # Prepare template variables
+    template_vars = {
+        "question": rewritten_prompt or prompt
+    }
+    
+    if queries_and_results:
+        template_vars["sql_context"] = queries_results_text
+    
+    if pdf_chunks_text:
+        template_vars["pdf_context"] = pdf_chunks_text
+    
     chain = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
-        ("human", "{input}")
+        ("human", formatted_prompt)
     ])
     result = await llm.ainvoke(
-        chain.format_messages(input=formatted_prompt)
+        chain.format_messages(**template_vars)
     )
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
     
@@ -910,18 +934,17 @@ providing context to an LLM in future queries.
 Be concise but do not omit important details. 
 Do not include any meta-commentary or formatting, just the summary text."""
     
-    # CRITICAL FIX: Escape curly braces in content to prevent LangChain template parsing errors
-    prev_summary_escaped = prev_summary.replace('{', '{{').replace('}', '}}')
-    last_message_content_escaped = last_message_content.replace('{', '{{').replace('}', '}}')
-    
-    human_prompt = f"Previous summary:\n{prev_summary_escaped}\n\nLatest message:\n{last_message_content_escaped}\n\nUpdate the summary to include the latest message."
-    print__nodes_debug(f"📝 SUMMARY: human_prompt: {human_prompt}")
+    human_prompt = "Previous summary:\n{prev_summary}\n\nLatest message:\n{last_message_content}\n\nUpdate the summary to include the latest message."
+    print__nodes_debug(f"📝 SUMMARY: human_prompt template: {human_prompt}")
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
         ("human", human_prompt)
     ])
-    result = await llm.ainvoke(prompt.format_messages())
+    result = await llm.ainvoke(prompt.format_messages(
+        prev_summary=prev_summary,
+        last_message_content=last_message_content
+    ))
     new_summary = result.content.strip()
     print__nodes_debug(f"📝 SUMMARY: Updated summary: {new_summary}")
     
