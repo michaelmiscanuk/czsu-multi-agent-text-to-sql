@@ -45,3 +45,6 @@ next-env.d.ts
 
 analysis_results.json
 analysis_results.txt
+
+test_logs/*
+test_logs*/*

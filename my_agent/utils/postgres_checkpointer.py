@@ -159,8 +159,7 @@ def get_db_config():
 def get_connection_string():
     """Get PostgreSQL connection string for LangGraph checkpointer.
     
-    FIXED: Removed invalid URI query parameters for prepared statements.
-    Prepared statements will be disabled via connection kwargs instead.
+    ENHANCED: Added cloud-optimized connection parameters to prevent connection issues.
     """
     print__analysis_tracing_debug("214 - CONNECTION STRING START: Generating PostgreSQL connection string")
     global _connection_string_cache
@@ -183,27 +182,34 @@ def get_connection_string():
     app_name = f"czsu_langgraph_{process_id}_{thread_id}_{startup_time}_{random_id}"
     print__analysis_tracing_debug(f"216 - CONNECTION STRING APP NAME: Generated unique application name: {app_name}")
     
-    # FIXED: Only include valid PostgreSQL URI parameters
-    # Prepared statement parameters must be passed as connection kwargs, not URI params
+    # ENHANCED: Cloud-optimized connection string with better timeout and keepalive settings
     _connection_string_cache = (
         f"postgresql://{config['user']}:{config['password']}@"
         f"{config['host']}:{config['port']}/{config['dbname']}?"
         f"sslmode=require"
         f"&application_name={app_name}"
-        f"&connect_timeout=30"
+        f"&connect_timeout=20"              # Cloud-friendly timeout
+        f"&keepalives_idle=600"             # 10 minutes before first keepalive
+        f"&keepalives_interval=30"          # 30 seconds between keepalives
+        f"&keepalives_count=3"              # 3 failed keepalives before disconnect
+        f"&tcp_user_timeout=30000"          # 30 seconds TCP timeout
     )
     
-    print__analysis_tracing_debug(f"217 - CONNECTION STRING COMPLETE: Valid PostgreSQL connection string generated")
+    print__analysis_tracing_debug(f"217 - CONNECTION STRING COMPLETE: Cloud-optimized PostgreSQL connection string generated")
     
     return _connection_string_cache
 
 def get_connection_kwargs():
-    """Get connection kwargs for disabling prepared statements.
+    """Get connection kwargs for cloud-optimized connection handling.
+    
+    FIXED: Based on GitHub issue #2967 and LangGraph discussions, 
+    autocommit=False works better with cloud databases like Supabase
+    under concurrent load.
     
     Returns connection parameters that should be passed to psycopg connection methods.
     """
     return {
-        "autocommit": True,
+        "autocommit": False,  # CRITICAL FIX: False works better with cloud databases under load
         "prepare_threshold": None,  # Disable prepared statements completely
     }
 
@@ -285,20 +291,68 @@ async def clear_prepared_statements():
         print__analysis_tracing_debug(f"232 - CLEANUP ERROR: Error clearing prepared statements (non-fatal): {e}")
         # Don't raise - this is a cleanup operation and shouldn't block checkpointer creation
 
-# SIMPLIFIED APPROACH: Use standard AsyncPostgresSaver with selective state management
-# Instead of wrapping the checkpointer, we'll use LangGraph's interrupt mechanism
-# and selective state updates to minimize checkpoint storage
+async def cleanup_all_pools():
+    """
+    Enhanced cleanup function that properly handles modern connection pools.
+    This function ensures all resources are cleaned up properly.
+    """
+    print__analysis_tracing_debug("CLEANUP ALL POOLS START: Starting comprehensive pool cleanup")
+    
+    global _global_checkpointer_context, _global_checkpointer
+    
+    # Clean up the global checkpointer context if it exists
+    if _global_checkpointer_context:
+        try:
+            print__analysis_tracing_debug("CLEANUP: Cleaning up global checkpointer context using modern approach")
+            await _global_checkpointer_context.__aexit__(None, None, None)
+            print__analysis_tracing_debug("CLEANUP: Global checkpointer context cleaned up successfully")
+        except Exception as e:
+            print__analysis_tracing_debug(f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}")
+        finally:
+            _global_checkpointer_context = None
+            _global_checkpointer = None
+    
+    # Force garbage collection to ensure resources are freed
+    import gc
+    gc.collect()
+    print__analysis_tracing_debug("CLEANUP ALL POOLS COMPLETE: All pools and resources cleaned up")
 
-# ENHANCED OFFICIAL ASYNCPOSTGRESSAVER IMPLEMENTATION
+async def force_close_modern_pools():
+    """
+    Force close any remaining modern connection pools.
+    This is a more aggressive cleanup function for troubleshooting.
+    """
+    print__analysis_tracing_debug("FORCE CLOSE START: Force closing all modern connection pools")
+    
+    try:
+        # Clean up the global state
+        await cleanup_all_pools()
+        
+        # Additional cleanup for any lingering connections
+        print__analysis_tracing_debug("FORCE CLOSE: Forcing cleanup of any remaining resources")
+        
+        # Clear any cached connection strings to force recreation
+        global _connection_string_cache
+        _connection_string_cache = None
+        
+        print__analysis_tracing_debug("FORCE CLOSE COMPLETE: Modern pool force close completed")
+        
+    except Exception as e:
+        print__analysis_tracing_debug(f"FORCE CLOSE ERROR: Error during force close: {e}")
+        # Don't re-raise - this is a cleanup function
+
+# ENHANCED OFFICIAL ASYNCPOSTGRESSAVER IMPLEMENTATION WITH CONNECTION POOL
 @retry_on_prepared_statement_error(max_retries=3)
 async def create_async_postgres_saver():
     """
-    Create AsyncPostgresSaver using the OFFICIAL pattern from documentation.
-    This follows the exact pattern shown in the AsyncPostgresSaver docs.
+    Create AsyncPostgresSaver using CLOUD-OPTIMIZED connection pool approach.
     
-    SIMPLIFIED: Remove unnecessary complexity, focus on core functionality.
+    FIXED: Based on GitHub issue #2967, LangGraph discussions, and cloud best practices:
+    - Use autocommit=False for better cloud database compatibility
+    - Implement proper connection pool sizing for concurrent scenarios
+    - Add connection lifecycle management for high-load scenarios
     """
-    print__analysis_tracing_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation")
+    print__analysis_tracing_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with cloud-optimized connection pool")
     global _global_checkpointer_context, _global_checkpointer
     
     # CRITICAL: Clear any existing state first to avoid conflicts
@@ -322,62 +376,123 @@ async def create_async_postgres_saver():
         print__analysis_tracing_debug("240 - ENV VARS MISSING: Missing required PostgreSQL environment variables")
         raise Exception("Missing required PostgreSQL environment variables")
     
-    print__analysis_tracing_debug("241 - OFFICIAL CREATION: Creating AsyncPostgresSaver using official from_conn_string")
+    print__analysis_tracing_debug("241 - CLOUD-OPTIMIZED CREATION: Creating AsyncPostgresSaver using cloud-optimized approach")
     
     try:
-        # SIMPLIFIED: Use connection string without excessive complexity
-        connection_string = get_connection_string()
-        print__analysis_tracing_debug("242 - CONNECTION STRING: Connection string generated for AsyncPostgresSaver")
+        # Try modern connection pool approach first (for high concurrency)
+        try:
+            from psycopg_pool import AsyncConnectionPool
+            
+            # Get connection details
+            connection_string = get_connection_string()
+            connection_kwargs = get_connection_kwargs()
+            
+            print__analysis_tracing_debug("242 - MODERN CONNECTION POOL: Setting up AsyncConnectionPool with cloud-optimized settings")
+            
+            # CLOUD-OPTIMIZED: Smaller pool size, better timeouts for Supabase/cloud databases
+            pool = AsyncConnectionPool(
+                conninfo=connection_string,
+                min_size=1,       # Start small for cloud efficiency
+                max_size=5,       # Reduced from 20 to avoid connection limits on cloud services  
+                timeout=30,       # Longer timeout for cloud latency
+                max_idle=600,     # 10 minutes idle timeout
+                max_lifetime=3600, # 1 hour max connection lifetime for cloud stability
+                kwargs={
+                    **connection_kwargs,
+                    "connect_timeout": 20,  # Cloud-friendly connection timeout
+                    "pipeline": False,      # CRITICAL: Disable pipeline mode for stability
+                },
+                open=False  # CRITICAL: Set to False to avoid deprecation warnings
+            )
+            
+            # MODERN APPROACH: Open the pool explicitly using await (recommended by psycopg)
+            print__analysis_tracing_debug("243 - MODERN POOL OPENING: Opening connection pool using modern await approach")
+            await pool.open()
+            print__analysis_tracing_debug("244 - MODERN POOL OPENED: Connection pool opened successfully using modern approach")
+            
+            # MODERN APPROACH: Create AsyncPostgresSaver with the pool
+            print__analysis_tracing_debug("245 - MODERN SAVER CREATION: Creating AsyncPostgresSaver with modern connection pool")
+            
+            # Try passing pool directly (newer LangGraph versions support this)
+            try:
+                checkpointer = AsyncPostgresSaver(
+                    pool=pool,
+                    pipeline=False,  # Disable pipeline mode for stability
+                    serde=None       # Use default serialization
+                )
+                print__analysis_tracing_debug("246 - MODERN POOL CONSTRUCTOR: Using modern pool constructor")
+            except TypeError:
+                # Fallback: Create with connection from pool (older versions)
+                print__analysis_tracing_debug("247 - MODERN POOL FALLBACK: Using connection from pool approach")
+                async with pool.connection() as conn:
+                    checkpointer = AsyncPostgresSaver(
+                        conn,
+                        pipeline=False,
+                        serde=None
+                    )
+            
+            # Create a modern context manager wrapper for proper cleanup
+            class ModernAsyncPostgresSaverContext:
+                def __init__(self, checkpointer, pool):
+                    self.checkpointer = checkpointer
+                    self.pool = pool
+                    
+                async def __aenter__(self):
+                    return self.checkpointer
+                    
+                async def __aexit__(self, exc_type, exc_val, exc_tb):
+                    # Close the pool when context exits
+                    try:
+                        print__analysis_tracing_debug("Pool cleanup: Closing connection pool using modern approach")
+                        await self.pool.close()
+                        print__analysis_tracing_debug("Pool cleanup: Connection pool closed successfully")
+                    except Exception as e:
+                        print__analysis_tracing_debug(f"Pool cleanup error: {e}")
+            
+            _global_checkpointer_context = ModernAsyncPostgresSaverContext(checkpointer, pool)
+            
+            # Enter the context manager
+            print__analysis_tracing_debug("248 - MODERN CONTEXT ENTER: Entering modern async context manager")
+            _global_checkpointer = await _global_checkpointer_context.__aenter__()
+            
+            print__analysis_tracing_debug("249 - MODERN SAVER CREATED: AsyncPostgresSaver created using modern connection pool approach")
+            
+        except ImportError:
+            print__analysis_tracing_debug("250 - MODERN IMPORT ERROR: psycopg_pool not available, using fallback")
+            raise ImportError("psycopg_pool required")
+            
+    except Exception as pool_error:
+        print__analysis_tracing_debug(f"251 - MODERN POOL ERROR: Pool approach failed: {pool_error}")
+        # Fallback to connection string approach with cloud-optimized settings
+        print__analysis_tracing_debug("252 - CLOUD-OPTIMIZED FALLBACK: Using cloud-optimized connection string approach")
         
-        # CORRECT USAGE: from_conn_string returns AsyncIterator[AsyncPostgresSaver]
-        print__analysis_tracing_debug("243 - FACTORY CALL: Calling AsyncPostgresSaver.from_conn_string factory method")
+        connection_string = get_connection_string()
         _global_checkpointer_context = AsyncPostgresSaver.from_conn_string(
             conn_string=connection_string,
-            pipeline=False,  # Disable pipeline mode for stability
-            serde=None  # Use default serialization
+            pipeline=False,  # CRITICAL: Disable pipeline mode
+            serde=None
         )
         
-        # CORRECT: Use async context manager protocol properly
-        print__analysis_tracing_debug("244 - CONTEXT ENTER: Entering async context manager")
         _global_checkpointer = await _global_checkpointer_context.__aenter__()
-        
-        print__analysis_tracing_debug("245 - SAVER CREATED: AsyncPostgresSaver created using official factory method")
-        print__analysis_tracing_debug(f"246 - SAVER TYPE: Checkpointer type: {type(_global_checkpointer).__name__}")
-        
-        # Setup the checkpointer (creates tables) - REQUIRED by docs
-        print__analysis_tracing_debug("247 - SETUP START: Running checkpointer setup (required by docs)")
-        await _global_checkpointer.setup()
-        print__analysis_tracing_debug("248 - SETUP COMPLETE: AsyncPostgresSaver setup complete - LangGraph tables created")
-        
-        # Simplified test - just verify we can create a config
-        print__analysis_tracing_debug("249 - TESTING START: Testing checkpointer with a simple operation")
-        test_config = {"configurable": {"thread_id": "setup_test"}}
-        test_result = await _global_checkpointer.aget(test_config)
-        print__analysis_tracing_debug(f"250 - TESTING COMPLETE: Checkpointer test successful: {test_result is None} (expected None for new thread)")
-        
-        # Setup custom tables using the same connection approach
-        print__analysis_tracing_debug("251 - CUSTOM TABLES: Setting up custom users_threads_runs table")
-        await setup_users_threads_runs_table()
-        
-        print__analysis_tracing_debug("252 - CREATE SAVER SUCCESS: AsyncPostgresSaver creation completed successfully")
-        return _global_checkpointer
-        
-    except Exception as e:
-        print__analysis_tracing_debug(f"253 - CREATE SAVER ERROR: Failed to create AsyncPostgresSaver: {e}")
-        import traceback
-        print__analysis_tracing_debug(f"254 - CREATE SAVER TRACEBACK: Full traceback: {traceback.format_exc()}")
-        
-        # Clean up on failure
-        if _global_checkpointer_context:
-            print__analysis_tracing_debug("255 - FAILURE CLEANUP: Cleaning up checkpointer context on failure")
-            try:
-                await _global_checkpointer_context.__aexit__(None, None, None)
-            except Exception as cleanup_error:
-                print__analysis_tracing_debug(f"256 - FAILURE CLEANUP ERROR: Error during cleanup: {cleanup_error}")
-            _global_checkpointer_context = None
-        _global_checkpointer = None
-        print__analysis_tracing_debug("257 - CREATE SAVER FAILURE: AsyncPostgresSaver creation failed, re-raising exception")
-        raise
+        print__analysis_tracing_debug("253 - CLOUD-OPTIMIZED FALLBACK SUCCESS: Using cloud-optimized fallback approach")
+    
+    # Setup the checkpointer (creates tables) - REQUIRED by docs
+    print__analysis_tracing_debug("254 - SETUP START: Running checkpointer setup")
+    await _global_checkpointer.setup()
+    print__analysis_tracing_debug("255 - SETUP COMPLETE: AsyncPostgresSaver setup complete")
+    
+    # Test the checkpointer to ensure it's working
+    print__analysis_tracing_debug("256 - TESTING START: Testing checkpointer")
+    test_config = {"configurable": {"thread_id": "setup_test"}}
+    test_result = await _global_checkpointer.aget(test_config)
+    print__analysis_tracing_debug(f"257 - TESTING COMPLETE: Checkpointer test successful: {test_result is None}")
+    
+    # Setup custom tables using the same connection approach
+    print__analysis_tracing_debug("258 - CUSTOM TABLES: Setting up custom users_threads_runs table")
+    await setup_users_threads_runs_table()
+    
+    print__analysis_tracing_debug("259 - CREATE SAVER SUCCESS: Cloud-optimized AsyncPostgresSaver creation completed successfully")
+    return _global_checkpointer
 
 async def close_async_postgres_saver():
     """Close the AsyncPostgresSaver properly using the context manager."""
@@ -985,6 +1100,58 @@ async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id
     except Exception as e:
         print__analysis_tracing_debug(f"285 - GET CHECKPOINT ERROR: Error getting queries and results from checkpoint: {e}")
         return []
+
+#==============================================================================
+# MODERN PSYCOPG CONNECTION POOL CONTEXT MANAGER
+#==============================================================================
+@asynccontextmanager
+async def modern_psycopg_pool():
+    """
+    Modern async context manager for psycopg connection pools.
+    Uses the recommended approach from psycopg documentation to avoid deprecation warnings.
+    
+    Usage:
+        async with modern_psycopg_pool() as pool:
+            async with pool.connection() as conn:
+                await conn.execute("SELECT 1")
+    """
+    print__analysis_tracing_debug("MODERN POOL CONTEXT START: Creating modern psycopg connection pool context")
+    
+    try:
+        from psycopg_pool import AsyncConnectionPool
+        
+        connection_string = get_connection_string()
+        connection_kwargs = get_connection_kwargs()
+        
+        print__analysis_tracing_debug("MODERN POOL CONTEXT: Setting up AsyncConnectionPool with modern context management")
+        
+        # Use the modern async context manager approach recommended by psycopg
+        async with AsyncConnectionPool(
+            conninfo=connection_string,
+            min_size=1,
+            max_size=3,
+            timeout=20,
+            max_idle=300,
+            max_lifetime=1800,
+            kwargs={
+                **connection_kwargs,
+                "connect_timeout": 15,
+                "pipeline": False,  # Disable pipeline mode for stability
+            },
+            open=False  # Explicitly set to avoid deprecation warnings
+        ) as pool:
+            print__analysis_tracing_debug("MODERN POOL CONTEXT: Pool created and opened using modern context manager")
+            yield pool
+            print__analysis_tracing_debug("MODERN POOL CONTEXT: Pool will be automatically closed by context manager")
+    
+    except ImportError as e:
+        print__analysis_tracing_debug(f"MODERN POOL CONTEXT ERROR: psycopg_pool not available: {e}")
+        raise Exception("psycopg_pool is required for modern connection pool approach")
+    except Exception as e:
+        print__analysis_tracing_debug(f"MODERN POOL CONTEXT ERROR: Failed to create modern pool: {e}")
+        raise
+
+#==============================================================================
 
 if __name__ == "__main__":
     import asyncio
