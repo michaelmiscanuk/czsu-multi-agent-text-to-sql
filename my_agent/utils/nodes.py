@@ -8,7 +8,6 @@ including schema loading, query generation, execution, and result formatting.
 # IMPORTS
 #==============================================================================
 import os
-import json
 import sqlite3
 from pathlib import Path
 from langchain_core.messages import AIMessage, SystemMessage
@@ -219,8 +218,8 @@ IMPORTANT:
 Now process this conversation:
 """
     # FIX: Escape curly braces in content to prevent f-string parsing errors
-    summary_content_escaped = summary.content.replace('{', '{{').replace('}', '}}')
-    prompt_text_escaped = prompt_text.replace('{', '{{').replace('}', '}}')
+    summary.content.replace('{', '{{').replace('}', '}}')
+    prompt_text.replace('{', '{{').replace('}', '}}')
     
     human_prompt = "Summary of conversation so far:\n{summary_content}\n\nOriginal question: {prompt_text}\nStandalone Question:"
     prompt = ChatPromptTemplate.from_messages([
@@ -721,7 +720,6 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Enter save_node")
     
     prompt = state["prompt"]
-    messages = state.get("messages", [])
     queries_and_results = state.get("queries_and_results", [])
     
     # FIXED: Use final_answer directly from state instead of extracting from messages
