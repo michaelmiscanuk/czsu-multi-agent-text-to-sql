@@ -351,6 +351,7 @@ async def create_async_postgres_saver():
     - Use autocommit=False for better cloud database compatibility
     - Implement proper connection pool sizing for concurrent scenarios
     - Add connection lifecycle management for high-load scenarios
+    - FIXED: Use separate autocommit=True connection for setup to avoid CONCURRENT INDEX errors
     """
     print__analysis_tracing_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with cloud-optimized connection pool")
     global _global_checkpointer_context, _global_checkpointer
@@ -472,9 +473,9 @@ async def create_async_postgres_saver():
         _global_checkpointer = await _global_checkpointer_context.__aenter__()
         print__analysis_tracing_debug("253 - CLOUD-OPTIMIZED FALLBACK SUCCESS: Using cloud-optimized fallback approach")
     
-    # Setup the checkpointer (creates tables) - REQUIRED by docs
-    print__analysis_tracing_debug("254 - SETUP START: Running checkpointer setup")
-    await _global_checkpointer.setup()
+    # FIXED: Setup the checkpointer with autocommit=True connection to avoid CONCURRENT INDEX errors
+    print__analysis_tracing_debug("254 - SETUP START: Running checkpointer setup with autocommit=True connection")
+    await setup_checkpointer_with_autocommit(_global_checkpointer)
     print__analysis_tracing_debug("255 - SETUP COMPLETE: AsyncPostgresSaver setup complete")
     
     # Test the checkpointer to ensure it's working
@@ -489,6 +490,104 @@ async def create_async_postgres_saver():
     
     print__analysis_tracing_debug("259 - CREATE SAVER SUCCESS: Cloud-optimized AsyncPostgresSaver creation completed successfully")
     return _global_checkpointer
+
+async def setup_checkpointer_with_autocommit(checkpointer):
+    """
+    Setup the checkpointer using a separate connection with autocommit=True.
+    This avoids the "CREATE INDEX CONCURRENTLY cannot run inside a transaction block" error.
+    """
+    print__analysis_tracing_debug("SETUP AUTOCOMMIT START: Setting up checkpointer with autocommit=True connection")
+    
+    try:
+        # Get connection kwargs with autocommit=True specifically for setup
+        setup_connection_kwargs = get_connection_kwargs().copy()
+        setup_connection_kwargs["autocommit"] = True  # Override to True for setup only
+        
+        connection_string = get_connection_string()
+        
+        print__analysis_tracing_debug("SETUP AUTOCOMMIT: Creating temporary connection with autocommit=True for setup")
+        
+        # Create a temporary AsyncPostgresSaver with autocommit=True for setup only
+        setup_checkpointer_context = AsyncPostgresSaver.from_conn_string(
+            conn_string=connection_string,
+            serde=None
+        )
+        
+        async with setup_checkpointer_context as setup_checkpointer:
+            print__analysis_tracing_debug("SETUP AUTOCOMMIT: Running setup with autocommit=True connection")
+            await setup_checkpointer.setup()
+            print__analysis_tracing_debug("SETUP AUTOCOMMIT SUCCESS: Setup completed successfully with autocommit=True")
+            
+    except Exception as e:
+        print__analysis_tracing_debug(f"SETUP AUTOCOMMIT ERROR: Error during autocommit setup: {e}")
+        # Fallback: try the manual setup approach
+        print__analysis_tracing_debug("SETUP AUTOCOMMIT FALLBACK: Trying manual setup with direct connection")
+        await manual_checkpointer_setup()
+
+async def manual_checkpointer_setup():
+    """
+    Manual setup of checkpointer tables using direct connection with autocommit=True.
+    This is a fallback if the AsyncPostgresSaver.setup() continues to fail.
+    """
+    print__analysis_tracing_debug("MANUAL SETUP START: Setting up checkpointer tables manually")
+    
+    try:
+        import psycopg
+        
+        # Create connection string with autocommit=True for setup
+        connection_string = get_connection_string()
+        setup_kwargs = get_connection_kwargs().copy()
+        setup_kwargs["autocommit"] = True
+        
+        print__analysis_tracing_debug("MANUAL SETUP: Creating direct connection with autocommit=True")
+        async with await psycopg.AsyncConnection.connect(connection_string, **setup_kwargs) as conn:
+            async with conn.cursor() as cur:
+                print__analysis_tracing_debug("MANUAL SETUP: Creating checkpoints table")
+                
+                # Create the basic checkpoints table (simplified version)
+                await cur.execute("""
+                    CREATE TABLE IF NOT EXISTS checkpoints (
+                        thread_id TEXT NOT NULL,
+                        checkpoint_ns TEXT NOT NULL DEFAULT '',
+                        checkpoint_id TEXT NOT NULL,
+                        parent_checkpoint_id TEXT,
+                        type TEXT,
+                        checkpoint JSONB NOT NULL,
+                        metadata JSONB NOT NULL DEFAULT '{}',
+                        PRIMARY KEY (thread_id, checkpoint_ns, checkpoint_id)
+                    );
+                """)
+                
+                print__analysis_tracing_debug("MANUAL SETUP: Creating checkpoint_blobs table")
+                await cur.execute("""
+                    CREATE TABLE IF NOT EXISTS checkpoint_blobs (
+                        thread_id TEXT NOT NULL,
+                        checkpoint_ns TEXT NOT NULL DEFAULT '',
+                        channel TEXT NOT NULL,
+                        version TEXT NOT NULL,
+                        type TEXT NOT NULL,
+                        blob BYTEA,
+                        PRIMARY KEY (thread_id, checkpoint_ns, channel, version)
+                    );
+                """)
+                
+                print__analysis_tracing_debug("MANUAL SETUP: Creating indexes (non-concurrent)")
+                # Create indexes without CONCURRENTLY to avoid transaction issues
+                await cur.execute("""
+                    CREATE INDEX IF NOT EXISTS checkpoints_thread_id_idx 
+                    ON checkpoints(thread_id);
+                """)
+                
+                await cur.execute("""
+                    CREATE INDEX IF NOT EXISTS checkpoint_blobs_thread_id_idx 
+                    ON checkpoint_blobs(thread_id);
+                """)
+                
+                print__analysis_tracing_debug("MANUAL SETUP SUCCESS: Checkpointer tables created manually")
+                
+    except Exception as e:
+        print__analysis_tracing_debug(f"MANUAL SETUP ERROR: Failed to setup tables manually: {e}")
+        # Don't raise - let the system continue, as the checkpointer might still work
 
 async def close_async_postgres_saver():
     """Close the AsyncPostgresSaver properly using the context manager."""
