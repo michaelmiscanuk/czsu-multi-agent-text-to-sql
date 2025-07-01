@@ -400,7 +400,6 @@ async def create_async_postgres_saver():
                 kwargs={
                     **connection_kwargs,
                     "connect_timeout": 20,  # Cloud-friendly connection timeout
-                    "pipeline": False,      # CRITICAL: Disable pipeline mode for stability
                 },
                 open=False  # CRITICAL: Set to False to avoid deprecation warnings
             )
@@ -417,7 +416,6 @@ async def create_async_postgres_saver():
             try:
                 checkpointer = AsyncPostgresSaver(
                     pool=pool,
-                    pipeline=False,  # Disable pipeline mode for stability
                     serde=None       # Use default serialization
                 )
                 print__analysis_tracing_debug("246 - MODERN POOL CONSTRUCTOR: Using modern pool constructor")
@@ -427,7 +425,6 @@ async def create_async_postgres_saver():
                 async with pool.connection() as conn:
                     checkpointer = AsyncPostgresSaver(
                         conn,
-                        pipeline=False,
                         serde=None
                     )
             
@@ -469,7 +466,6 @@ async def create_async_postgres_saver():
         connection_string = get_connection_string()
         _global_checkpointer_context = AsyncPostgresSaver.from_conn_string(
             conn_string=connection_string,
-            pipeline=False,  # CRITICAL: Disable pipeline mode
             serde=None
         )
         
@@ -1136,7 +1132,6 @@ async def modern_psycopg_pool():
             kwargs={
                 **connection_kwargs,
                 "connect_timeout": 15,
-                "pipeline": False,  # Disable pipeline mode for stability
             },
             open=False  # Explicitly set to avoid deprecation warnings
         ) as pool:

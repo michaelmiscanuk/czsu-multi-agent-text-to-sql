@@ -119,7 +119,11 @@ dev = [
     "psutil>=5.9.0",
 
     # Graphs
-    "graphviz"
+    "graphviz",
+
+    # Testing
+    "pytest",
+    "httpx"
 ]
 
 [build-system]

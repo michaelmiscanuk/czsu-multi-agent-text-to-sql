@@ -97,6 +97,10 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 # Load environment variables from .env file EARLY
 load_dotenv()
 
+# Read InMemorySaver fallback configuration from environment
+INMEMORY_FALLBACK_ENABLED = os.environ.get('InMemorySaver_fallback', '1') == '1'
+print__startup_debug(f"🔧 API Server: InMemorySaver fallback {'ENABLED' if INMEMORY_FALLBACK_ENABLED else 'DISABLED'} (from environment)")
+
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
     get_postgres_checkpointer,
@@ -1669,6 +1673,13 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                     print__analysis_tracing_debug("16 - DATABASE FALLBACK: Database issue detected, attempting fallback")
                     print__analyze_debug(f"🔍 Database issue detected, attempting fallback")
                     print__feedback_flow(f"⚠️ Database issue detected, trying with InMemorySaver fallback: {analysis_error}")
+                    
+                    # Check if InMemorySaver fallback is enabled
+                    if not INMEMORY_FALLBACK_ENABLED:
+                        print__analysis_tracing_debug("17 - FALLBACK DISABLED: InMemorySaver fallback is disabled by configuration")
+                        print__analyze_debug(f"🚫 InMemorySaver fallback is DISABLED by configuration - re-raising database error")
+                        print__feedback_flow(f"🚫 InMemorySaver fallback disabled - propagating database error: {analysis_error}")
+                        raise HTTPException(status_code=500, detail="Database connection error. Please try again.")
                     
                     try:
                         print__analysis_tracing_debug("17 - FALLBACK INITIALIZATION: Importing InMemorySaver")

@@ -89,3 +89,6 @@ typing_extensions
 
 # Monitoring and utilities
 psutil>=5.9.0
+
+pytest
+httpx
