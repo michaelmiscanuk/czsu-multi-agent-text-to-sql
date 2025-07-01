@@ -5,33 +5,29 @@ Follows official documentation patterns exactly - no custom wrappers needed.
 """
 
 from __future__ import annotations
-
+import asyncio
 import sys
 import os
 import functools
-from typing import Optional, List, Dict, Any, Callable, TypeVar, Awaitable, AsyncIterator, Iterator, Sequence
-
-# CRITICAL: Windows event loop fix MUST be first for PostgreSQL compatibility
-if sys.platform == "win32":
-    import asyncio
-    print(f"[POSTGRES-STARTUP] Windows detected - setting SelectorEventLoop for PostgreSQL compatibility...")
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print(f"[POSTGRES-STARTUP] Event loop policy set successfully")
-
+from typing import Optional, List, Dict, Any, Callable, TypeVar, Awaitable
 import time
 from datetime import datetime
 from contextlib import asynccontextmanager
+import traceback
+import uuid
+import threading
+import gc
+import psycopg
 
-# Import LangGraph's built-in PostgreSQL checkpointer
-try:
-    from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-    print(f"[POSTGRES-STARTUP] LangGraph AsyncPostgresSaver imported successfully")
-except ImportError as e:
-    print(f"[POSTGRES-STARTUP] Failed to import AsyncPostgresSaver: {e}")
-    AsyncPostgresSaver = None
+from psycopg_pool import AsyncConnectionPool
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-from langgraph.checkpoint.base import BaseCheckpointSaver, Checkpoint, CheckpointMetadata, CheckpointTuple
-from langchain_core.runnables import RunnableConfig
+# CRITICAL: Windows event loop fix MUST be first for PostgreSQL compatibility
+if sys.platform == "win32":
+    print("[POSTGRES-STARTUP] Windows detected - setting SelectorEventLoop for PostgreSQL compatibility...")
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    print("[POSTGRES-STARTUP] Event loop policy set successfully")
 
 # Type variable for the retry decorator
 T = TypeVar('T')
@@ -48,7 +44,6 @@ def print__analysis_tracing_debug(msg: str) -> None:
     analysis_tracing_debug_mode = os.environ.get('print__analysis_tracing_debug', '0')
     if analysis_tracing_debug_mode == '1':
         print(f"[print__analysis_tracing_debug] 🔍 {msg}")
-        import sys
         sys.stdout.flush()
 
 #==============================================================================
@@ -87,7 +82,7 @@ def retry_on_prepared_statement_error(max_retries: int = 3):
                     print__analysis_tracing_debug(f"205 - RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(e)}")
                     
                     # CRITICAL: Add full traceback to see exactly where the f-string error is occurring
-                    import traceback
+                    
                     full_traceback = traceback.format_exc()
                     print__analysis_tracing_debug(f"205.1 - RETRY TRACEBACK: {full_traceback}")
                     
@@ -171,9 +166,6 @@ def get_connection_string():
     config = get_db_config()
     
     # Use process ID + startup time + random for truly unique application name
-    import os
-    import uuid
-    import threading
     process_id = os.getpid()
     thread_id = threading.get_ident()
     startup_time = int(time.time())
@@ -195,7 +187,7 @@ def get_connection_string():
         f"&tcp_user_timeout=30000"          # 30 seconds TCP timeout
     )
     
-    print__analysis_tracing_debug(f"217 - CONNECTION STRING COMPLETE: Cloud-optimized PostgreSQL connection string generated")
+    print__analysis_tracing_debug("217 - CONNECTION STRING COMPLETE: Cloud-optimized PostgreSQL connection string generated")
     
     return _connection_string_cache
 
@@ -240,7 +232,7 @@ async def clear_prepared_statements():
     try:
         config = get_db_config()
         # Use a different application name for the cleanup connection
-        import uuid
+        
         cleanup_app_name = f"czsu_cleanup_{uuid.uuid4().hex[:8]}"
         print__analysis_tracing_debug(f"222 - CLEANUP CONNECTION: Creating cleanup connection with app name: {cleanup_app_name}")
         
@@ -250,7 +242,6 @@ async def clear_prepared_statements():
         # Get connection kwargs for disabling prepared statements
         connection_kwargs = get_connection_kwargs()
         
-        import psycopg
         print__analysis_tracing_debug("223 - PSYCOPG CONNECTION: Establishing psycopg connection for cleanup")
         async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
             print__analysis_tracing_debug("224 - CONNECTION ESTABLISHED: Cleanup connection established successfully")
@@ -313,7 +304,7 @@ async def cleanup_all_pools():
             _global_checkpointer = None
     
     # Force garbage collection to ensure resources are freed
-    import gc
+    
     gc.collect()
     print__analysis_tracing_debug("CLEANUP ALL POOLS COMPLETE: All pools and resources cleaned up")
 
@@ -382,7 +373,7 @@ async def create_async_postgres_saver():
     try:
         # Try modern connection pool approach first (for high concurrency)
         try:
-            from psycopg_pool import AsyncConnectionPool
+            
             
             # Get connection details
             connection_string = get_connection_string()
@@ -531,9 +522,7 @@ async def manual_checkpointer_setup():
     """
     print__analysis_tracing_debug("MANUAL SETUP START: Setting up checkpointer tables manually")
     
-    try:
-        import psycopg
-        
+    try:        
         # Create connection string with autocommit=True for setup
         connection_string = get_connection_string()
         setup_kwargs = get_connection_kwargs().copy()
@@ -633,7 +622,6 @@ async def setup_users_threads_runs_table():
     print__analysis_tracing_debug("268 - CUSTOM TABLE START: Setting up users_threads_runs table using direct connection")
     try:
         # Use direct connection for table setup (simpler than pool management)
-        import psycopg
         
         connection_string = get_connection_string()
         connection_kwargs = get_connection_kwargs()
@@ -680,7 +668,6 @@ async def setup_users_threads_runs_table():
 @asynccontextmanager
 async def get_direct_connection():
     """Get a direct database connection for users_threads_runs operations."""
-    import psycopg
     
     connection_string = get_connection_string()
     connection_kwargs = get_connection_kwargs()
@@ -701,7 +688,6 @@ async def get_healthy_pool():
             @asynccontextmanager
             async def connection(self):
                 """Provide a connection that mimics pool.connection() interface."""
-                import psycopg
                 async with await psycopg.AsyncConnection.connect(self.connection_string, **self.connection_kwargs) as conn:
                     yield conn
         
@@ -907,7 +893,6 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         
     except Exception as e:
         print__analysis_tracing_debug(f"311 - CONVERSATION ERROR: Error retrieving messages from checkpoints: {str(e)}")
-        import traceback
         print__analysis_tracing_debug(f"312 - CONVERSATION TRACEBACK: Full traceback: {traceback.format_exc()}")
         return []
 
@@ -920,7 +905,6 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
     """
     print__analysis_tracing_debug(f"286 - CREATE THREAD ENTRY START: Creating thread run entry for user={email}, thread={thread_id}")
     try:
-        import uuid
         if not run_id:
             run_id = str(uuid.uuid4())
             print__analysis_tracing_debug(f"287 - GENERATE RUN ID: Generated new run_id: {run_id}")
@@ -944,7 +928,6 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
     except Exception as e:
         print__analysis_tracing_debug(f"290 - CREATE THREAD ENTRY ERROR: Failed to create thread run entry: {e}")
         # Return the run_id even if database storage fails
-        import uuid
         if not run_id:
             run_id = str(uuid.uuid4())
         print__analysis_tracing_debug(f"291 - CREATE THREAD ENTRY FALLBACK: Returning run_id despite database error: {run_id}")
@@ -1129,30 +1112,75 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
             
     except Exception as e:
         print__api_postgresql(f"Failed to delete thread entries for user {email}, thread {thread_id}: {e}")
-        import traceback
         print__api_postgresql(f"Full traceback: {traceback.format_exc()}")
         raise
 
-# BACKWARD COMPATIBILITY FUNCTIONS
-@retry_on_prepared_statement_error(max_retries=3)
-async def create_minimal_postgres_checkpointer() -> AsyncPostgresSaver:
-    """Create a standard PostgreSQL checkpointer - minimal storage achieved via interrupt_after and save_node."""
-    print__analysis_tracing_debug("275 - MINIMAL CHECKPOINTER START: Creating PostgreSQL checkpointer with optimized storage")
-    
-    # Create the standard AsyncPostgresSaver
-    base_checkpointer = await create_async_postgres_saver()
-    
-    print__analysis_tracing_debug("276 - MINIMAL CHECKPOINTER SUCCESS: PostgreSQL checkpointer created - optimized via interrupt_after and minimal save_node")
-    return base_checkpointer
+# UNIFIED CHECKPOINTER MANAGEMENT - SHARED BY MAIN.PY AND API_SERVER.PY
+#==============================================================================
+# Global checkpointer variable for unified management
+_GLOBAL_CHECKPOINTER = None
 
-async def get_postgres_checkpointer():
-    """Get standard PostgreSQL checkpointer - optimized storage via graph configuration."""
-    print__analysis_tracing_debug("277 - GET POSTGRES START: Getting standard PostgreSQL checkpointer")
-    result = await create_minimal_postgres_checkpointer()
-    print__analysis_tracing_debug("278 - GET POSTGRES SUCCESS: Standard PostgreSQL checkpointer obtained")
-    return result
+async def initialize_checkpointer():
+    """Initialize the global checkpointer with proper async context management."""
+    global _GLOBAL_CHECKPOINTER
+    if _GLOBAL_CHECKPOINTER is None:
+        try:
+            print__analysis_tracing_debug("🚀 UNIFIED: Initializing PostgreSQL Connection System...")
+            print__analysis_tracing_debug(f"🔍 UNIFIED: Current global checkpointer state: {_GLOBAL_CHECKPOINTER}")
+            
+            # Create and initialize the checkpointer using the OFFICIAL AsyncPostgresSaver method
+            print__analysis_tracing_debug("🔧 UNIFIED: Creating PostgreSQL checkpointer using official factory method...")
+            
+            checkpointer = await create_async_postgres_saver()
+            
+            print__analysis_tracing_debug(f"✅ UNIFIED: Created checkpointer type: {type(checkpointer).__name__}")
+            
+            # Set the global checkpointer directly (no wrapper needed)
+            _GLOBAL_CHECKPOINTER = checkpointer
+            
+            print__analysis_tracing_debug("✅ UNIFIED: PostgreSQL checkpointer initialized successfully using official AsyncPostgresSaver")
+            
+        except Exception as e:
+            print__analysis_tracing_debug(f"❌ UNIFIED: PostgreSQL checkpointer initialization failed: {e}")
+            print__analysis_tracing_debug("🔄 UNIFIED: Falling back to InMemorySaver...")
+            _GLOBAL_CHECKPOINTER = MemorySaver()
 
-# Add the missing function back after setup_users_threads_runs_table
+async def cleanup_checkpointer():
+    """Clean up the global checkpointer on shutdown."""
+    global _GLOBAL_CHECKPOINTER
+    
+    print__analysis_tracing_debug("🧹 UNIFIED: Starting checkpointer cleanup...")
+    
+    if _GLOBAL_CHECKPOINTER:
+        try:
+            # Check if it's an AsyncPostgresSaver that needs proper cleanup
+            if hasattr(_GLOBAL_CHECKPOINTER, '__class__') and 'AsyncPostgresSaver' in str(type(_GLOBAL_CHECKPOINTER)):
+                print__analysis_tracing_debug("🔄 UNIFIED: Cleaning up AsyncPostgresSaver...")
+                # Use the proper cleanup function
+                await close_async_postgres_saver()
+            else:
+                print__analysis_tracing_debug(f"🔄 UNIFIED: Cleaning up {type(_GLOBAL_CHECKPOINTER).__name__}...")
+                # For other types (like MemorySaver), no special cleanup needed
+                
+        except Exception as e:
+            print__analysis_tracing_debug(f"⚠️ UNIFIED: Error during checkpointer cleanup: {e}")
+        finally:
+            _GLOBAL_CHECKPOINTER = None
+            print__analysis_tracing_debug("✅ UNIFIED: Checkpointer cleanup completed")
+    else:
+        print__analysis_tracing_debug("ℹ️ UNIFIED: No checkpointer to clean up")
+
+async def get_healthy_checkpointer():
+    """Get a healthy checkpointer instance, initializing if needed."""
+    global _GLOBAL_CHECKPOINTER
+    
+    # With the unified approach, we don't need complex health checking
+    if _GLOBAL_CHECKPOINTER is None:
+        await initialize_checkpointer()
+    
+    return _GLOBAL_CHECKPOINTER
+
+# Add the missing function back after setup_users_threads_runs_table 
 @retry_on_prepared_statement_error(max_retries=2)
 async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id: str):
     """Get queries and results from the latest checkpoint for a thread.
@@ -1212,9 +1240,7 @@ async def modern_psycopg_pool():
     """
     print__analysis_tracing_debug("MODERN POOL CONTEXT START: Creating modern psycopg connection pool context")
     
-    try:
-        from psycopg_pool import AsyncConnectionPool
-        
+    try:        
         connection_string = get_connection_string()
         connection_kwargs = get_connection_kwargs()
         
@@ -1245,11 +1271,7 @@ async def modern_psycopg_pool():
         print__analysis_tracing_debug(f"MODERN POOL CONTEXT ERROR: Failed to create modern pool: {e}")
         raise
 
-#==============================================================================
-
-if __name__ == "__main__":
-    import asyncio
-    
+if __name__ == "__main__":    
     async def test():
         print__postgresql_debug("Testing PostgreSQL checkpointer with official AsyncPostgresSaver...")
         

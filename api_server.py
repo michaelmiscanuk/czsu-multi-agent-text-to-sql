@@ -93,6 +93,7 @@ from dotenv import load_dotenv
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from pathlib import Path
 
 # Load environment variables from .env file EARLY
 load_dotenv()
@@ -101,9 +102,14 @@ load_dotenv()
 INMEMORY_FALLBACK_ENABLED = os.environ.get('InMemorySaver_fallback', '1') == '1'
 print__startup_debug(f"🔧 API Server: InMemorySaver fallback {'ENABLED' if INMEMORY_FALLBACK_ENABLED else 'DISABLED'} (from environment)")
 
+# Constants
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
-    get_postgres_checkpointer,
     create_thread_run_entry,
     update_thread_run_sentiment,
     get_thread_run_sentiments,
@@ -112,6 +118,9 @@ from my_agent.utils.postgres_checkpointer import (
     delete_user_thread_entries,
     get_conversation_messages_from_checkpoints,
     get_queries_and_results_from_latest_checkpoint,
+    initialize_checkpointer,
+    cleanup_checkpointer,
+    get_healthy_checkpointer,
 )
 
 from my_agent.utils.postgres_checkpointer import get_healthy_pool
@@ -468,14 +477,13 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
         except Exception as table_error:
             print__api_postgresql(f"⚠ Error deleting from table {table}: {table_error}")
             print__api_postgresql(f"🔧 DEBUG: Table error type: {type(table_error).__name__}")
-            import traceback
             print__api_postgresql(f"🔧 DEBUG: Table error traceback: {traceback.format_exc()}")
             deleted_counts[table] = f"Error: {str(table_error)}"
     
     # Delete from users_threads_runs table directly within the same transaction
     print__api_postgresql(f"🔄 Deleting thread entries from users_threads_runs for user {user_email}, thread {thread_id}")
     try:
-        print__api_postgresql(f"🔧 DEBUG: Creating cursor for users_threads_runs deletion...")
+        print__api_postgresql("🔧 DEBUG: Creating cursor for users_threads_runs deletion...")
         async with conn.cursor() as cur:
             print__api_postgresql(f"🔧 DEBUG: Executing DELETE query for users_threads_runs...")
             await cur.execute("""
@@ -491,7 +499,6 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
     except Exception as e:
         print__api_postgresql(f"❌ Error deleting from users_threads_runs: {e}")
         print__api_postgresql(f"🔧 DEBUG: users_threads_runs error type: {type(e).__name__}")
-        import traceback
         print__api_postgresql(f"🔧 DEBUG: users_threads_runs error traceback: {traceback.format_exc()}")
         deleted_counts["users_threads_runs"] = f"Error: {str(e)}"
     
@@ -772,92 +779,6 @@ def print__analysis_tracing_debug(msg: str) -> None:
         print(f"[print__analysis_tracing_debug] 🔍 {msg}")
         import sys
         sys.stdout.flush()
-
-#============================================================
-# CHECKPOINTER MANAGEMENT
-#============================================================
-async def initialize_checkpointer():
-    """Initialize the global checkpointer with proper async context management."""
-    global GLOBAL_CHECKPOINTER
-    if GLOBAL_CHECKPOINTER is None:
-        try:
-            print__startup_debug("🚀 Initializing PostgreSQL Connection System...")
-            print__startup_debug(f"🔍 Current global checkpointer state: {GLOBAL_CHECKPOINTER}")
-            log_memory_usage("startup")
-            
-            # Create and initialize the checkpointer using the OFFICIAL AsyncPostgresSaver method
-            print__startup_debug("🔧 Creating PostgreSQL checkpointer using official factory method...")
-            
-            # Import the corrected PostgreSQL functions
-            from my_agent.utils.postgres_checkpointer import create_async_postgres_saver
-            
-            checkpointer = await asyncio.wait_for(
-                create_async_postgres_saver(), 
-                timeout=60
-            )
-            
-            print__startup_debug(f"✅ Created checkpointer type: {type(checkpointer).__name__}")
-            
-            # Set the global checkpointer directly (no wrapper needed)
-            GLOBAL_CHECKPOINTER = checkpointer
-            
-            print__startup_debug("✅ PostgreSQL checkpointer initialized successfully using official AsyncPostgresSaver")
-            log_memory_usage("checkpointer_ready")
-            
-        except TimeoutError:
-            print__startup_debug("❌ PostgreSQL checkpointer initialization timed out (60s)")
-            print__startup_debug("🔄 Falling back to InMemorySaver...")
-            from langgraph.checkpoint.memory import MemorySaver
-            GLOBAL_CHECKPOINTER = MemorySaver()
-            
-        except ImportError as e:
-            print__startup_debug(f"❌ PostgreSQL imports failed: {e}")
-            print__startup_debug("🔄 Falling back to InMemorySaver...")
-            from langgraph.checkpoint.memory import MemorySaver
-            GLOBAL_CHECKPOINTER = MemorySaver()
-            
-        except Exception as e:
-            print__startup_debug(f"❌ PostgreSQL checkpointer initialization failed: {e}")
-            print__startup_debug("🔄 Falling back to InMemorySaver...")
-            from langgraph.checkpoint.memory import MemorySaver
-            GLOBAL_CHECKPOINTER = MemorySaver()
-
-async def cleanup_checkpointer():
-    """Clean up the global checkpointer on shutdown."""
-    global GLOBAL_CHECKPOINTER
-    
-    print__startup_debug("🧹 Starting checkpointer cleanup...")
-    
-    if GLOBAL_CHECKPOINTER:
-        try:
-            # Check if it's an AsyncPostgresSaver that needs proper cleanup
-            if hasattr(GLOBAL_CHECKPOINTER, '__class__') and 'AsyncPostgresSaver' in str(type(GLOBAL_CHECKPOINTER)):
-                print__startup_debug("🔄 Cleaning up AsyncPostgresSaver...")
-                # Use the proper cleanup function
-                from my_agent.utils.postgres_checkpointer import close_async_postgres_saver
-                await close_async_postgres_saver()
-            else:
-                print__startup_debug(f"🔄 Cleaning up {type(GLOBAL_CHECKPOINTER).__name__}...")
-                # For other types (like MemorySaver), no special cleanup needed
-                
-        except Exception as e:
-            print__startup_debug(f"⚠️ Error during checkpointer cleanup: {e}")
-        finally:
-            GLOBAL_CHECKPOINTER = None
-            print__startup_debug("✅ Checkpointer cleanup completed")
-    else:
-        print__startup_debug("ℹ️ No checkpointer to clean up")
-
-async def get_healthy_checkpointer():
-    """Get a healthy checkpointer instance."""
-    global GLOBAL_CHECKPOINTER
-    
-    # With the new AsyncPostgreSQLCheckpointerManager approach, 
-    # we don't need complex health checking - the context manager handles it
-    if GLOBAL_CHECKPOINTER is None:
-        await initialize_checkpointer()
-    
-    return GLOBAL_CHECKPOINTER
 
 #============================================================
 # APPLICATION SETUP - LIFESPAN AND MIDDLEWARE
@@ -1237,12 +1158,12 @@ def verify_google_jwt(token: str):
                 except jwt.InvalidSignatureError:
                     print__DEBUG_TOKEN("JWT token has invalid signature")
                     raise HTTPException(status_code=401, detail="Invalid token signature")
-                except jwt.InvalidTokenError as e:
-                    print__DEBUG_TOKEN(f"JWT token is invalid: {e}")
-                    raise HTTPException(status_code=401, detail="Invalid token")
                 except jwt.DecodeError as e:
                     print__DEBUG_TOKEN(f"JWT decode error: {e}")
                     raise HTTPException(status_code=401, detail="Invalid token format")
+                except jwt.InvalidTokenError as e:
+                    print__DEBUG_TOKEN(f"JWT token is invalid: {e}")
+                    raise HTTPException(status_code=401, detail="Invalid token")
                 except Exception as e:
                     print__DEBUG_TOKEN(f"JWT decode error: {e}")
                     raise HTTPException(status_code=401, detail="Invalid token")
@@ -1941,14 +1862,14 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
         print__sentiment_debug(f"🚨 No user email found in token")
         raise HTTPException(status_code=401, detail="User email not found in token")
     
-    print__sentiment_flow(f"📥 Incoming sentiment update request:")
+    print__sentiment_flow("📥 Incoming sentiment update request:")
     print__sentiment_flow(f"👤 User: {user_email}")
     print__sentiment_flow(f"🔑 Run ID: '{request.run_id}'")
     print__sentiment_flow(f"👍/👎 Sentiment: {request.sentiment}")
     
     try:
         # Validate UUID format
-        print__sentiment_debug(f"🔍 Starting UUID validation")
+        print__sentiment_debug("🔍 Starting UUID validation")
         try:
             run_uuid = str(uuid.UUID(request.run_id))
             print__sentiment_debug(f"🔍 UUID validation successful: '{run_uuid}'")
@@ -1962,14 +1883,14 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
             )
         
         # 🔒 SECURITY: Update sentiment with user email verification
-        print__sentiment_debug(f"🔍 Starting sentiment update with ownership verification")
-        print__sentiment_flow(f"🔒 Verifying ownership before sentiment update")
+        print__sentiment_debug("🔍 Starting sentiment update with ownership verification")
+        print__sentiment_flow("🔒 Verifying ownership before sentiment update")
         success = await update_thread_run_sentiment(run_uuid, request.sentiment, user_email)
         print__sentiment_debug(f"🔍 Sentiment update result: {success}")
         
         if success:
-            print__sentiment_debug(f"🔍 Sentiment update successful")
-            print__sentiment_flow(f"✅ Sentiment successfully updated")
+            print__sentiment_debug("🔍 Sentiment update successful")
+            print__sentiment_flow("✅ Sentiment successfully updated")
             result = {
                 "message": "Sentiment updated successfully", 
                 "run_id": run_uuid,
@@ -1978,8 +1899,8 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
             print__sentiment_debug(f"🔍 SENTIMENT ENDPOINT - SUCCESSFUL EXIT")
             return result
         else:
-            print__sentiment_debug(f"🚨 Sentiment update failed - access denied or not found")
-            print__sentiment_flow(f"❌ Failed to update sentiment - run_id may not exist or access denied")
+            print__sentiment_debug("🚨 Sentiment update failed - access denied or not found")
+            print__sentiment_flow("❌ Failed to update sentiment - run_id may not exist or access denied")
             raise HTTPException(
                 status_code=404,
                 detail=f"Run ID not found or access denied: {run_uuid}"
@@ -2001,14 +1922,14 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
 async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
     """Get sentiment values for all messages in a thread."""
     
-    print__chat_sentiments_debug(f"🔍 CHAT_SENTIMENTS ENDPOINT - ENTRY POINT")
+    print__chat_sentiments_debug("🔍 CHAT_SENTIMENTS ENDPOINT - ENTRY POINT")
     print__chat_sentiments_debug(f"🔍 Request received: thread_id={thread_id}")
     
     user_email = user.get("email")
     print__chat_sentiments_debug(f"🔍 User email extracted: {user_email}")
     
     if not user_email:
-        print__chat_sentiments_debug(f"🚨 No user email found in token")
+        print__chat_sentiments_debug("🚨 No user email found in token")
         raise HTTPException(status_code=401, detail="User email not found in token")
     
     try:
@@ -2018,7 +1939,7 @@ async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
         print__chat_sentiments_debug(f"🔍 Retrieved {len(sentiments)} sentiment values")
         
         print__sentiment_flow(f"✅ Retrieved {len(sentiments)} sentiment values")
-        print__chat_sentiments_debug(f"🔍 CHAT_SENTIMENTS ENDPOINT - SUCCESSFUL EXIT")
+        print__chat_sentiments_debug("🔍 CHAT_SENTIMENTS ENDPOINT - SUCCESSFUL EXIT")
         return sentiments
     
     except Exception as e:
@@ -2035,7 +1956,7 @@ async def get_chat_threads(
 ) -> PaginatedChatThreadsResponse:
     """Get paginated chat threads for the authenticated user."""
     
-    print__chat_threads_debug(f"🔍 CHAT_THREADS ENDPOINT - ENTRY POINT")
+    print__chat_threads_debug("🔍 CHAT_THREADS ENDPOINT - ENTRY POINT")
     print__chat_threads_debug(f"🔍 Request parameters: page={page}, limit={limit}")
     
     try:
@@ -2043,11 +1964,11 @@ async def get_chat_threads(
         print__chat_threads_debug(f"🔍 User email extracted: {user_email}")
         print__chat_threads_debug(f"Loading chat threads for user: {user_email} (page: {page}, limit: {limit})")
         
-        print__chat_threads_debug(f"🔍 Starting simplified approach")
+        print__chat_threads_debug("🔍 Starting simplified approach")
         print__chat_threads_debug("Getting chat threads with simplified approach")
         
         # Get total count first
-        print__chat_threads_debug(f"🔍 Getting total threads count")
+        print__chat_threads_debug("🔍 Getting total threads count")
         print__chat_threads_debug(f"Getting chat threads count for user: {user_email}")
         total_count = await get_user_chat_threads_count(user_email)
         print__chat_threads_debug(f"🔍 Total count retrieved: {total_count}")
@@ -2082,7 +2003,6 @@ async def get_chat_threads(
                 )
                 chat_thread_responses.append(chat_thread_response)
         except Exception as e:
-            import traceback
             print("[GENERIC-ERROR] Exception in /chat-threads for-loop:", e)
             print(traceback.format_exc())
             # Return empty result on error
@@ -2095,7 +2015,7 @@ async def get_chat_threads(
             )
         
         # Convert to response format
-        print__chat_threads_debug(f"🔍 Converting threads to response format")
+        print__chat_threads_debug("🔍 Converting threads to response format")
         chat_thread_responses = []
         for thread in threads:
             chat_thread_response = ChatThreadResponse(
@@ -2121,14 +2041,13 @@ async def get_chat_threads(
             limit=limit,
             has_more=has_more
         )
-        print__chat_threads_debug(f"🔍 CHAT_THREADS ENDPOINT - SUCCESSFUL EXIT")
+        print__chat_threads_debug("🔍 CHAT_THREADS ENDPOINT - SUCCESSFUL EXIT")
         return result
         
     except Exception as e:
         print__chat_threads_debug(f"🚨 Exception in chat threads processing: {type(e).__name__}: {str(e)}")
         print__chat_threads_debug(f"🚨 Chat threads processing traceback: {traceback.format_exc()}")
         print__chat_threads_debug(f"❌ Error getting chat threads: {e}")
-        import traceback
         print__chat_threads_debug(f"Full traceback: {traceback.format_exc()}")
         
         # Return error response
@@ -2139,7 +2058,7 @@ async def get_chat_threads(
             limit=limit,
             has_more=False
         )
-        print__chat_threads_debug(f"🔍 CHAT_THREADS ENDPOINT - ERROR EXIT")
+        print__chat_threads_debug("🔍 CHAT_THREADS ENDPOINT - ERROR EXIT")
         return result
 
 @app.delete("/chat/{thread_id}")
@@ -2197,7 +2116,6 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
         error_msg = str(e)
         print__delete_chat_debug(f"❌ Failed to delete checkpoint records for thread {thread_id}: {e}")
         print__delete_chat_debug(f"🔧 DEBUG: Main exception type: {type(e).__name__}")
-        import traceback
         print__delete_chat_debug(f"🔧 DEBUG: Main exception traceback: {traceback.format_exc()}")
         
         # If it's a connection error, don't treat it as a failure since it means 
@@ -2743,7 +2661,6 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                     except Exception as e:
                         print__chat_all_messages_debug(f"⚠️ Could not get datasets/SQL/chunks from checkpoint for thread {thread_id}: {e}")
                         print__chat_all_messages_debug(f"🔍 Checkpoint metadata error type: {type(e).__name__}")
-                        import traceback
                         print__chat_all_messages_debug(f"🔍 Checkpoint metadata error traceback: {traceback.format_exc()}")
                     
                     # Convert stored messages to frontend format
@@ -2804,7 +2721,6 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 except Exception as e:
                     print__chat_all_messages_debug(f"❌ Error processing thread {thread_id}: {e}")
                     print__chat_all_messages_debug(f"🔍 Thread processing error type: {type(e).__name__}")
-                    import traceback
                     print__chat_all_messages_debug(f"🔍 Thread processing error traceback: {traceback.format_exc()}")
                     return thread_id, []
             
@@ -2840,7 +2756,6 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 if isinstance(result, Exception):
                     print__chat_all_messages_debug(f"⚠ Exception in thread processing: {result}")
                     print__chat_all_messages_debug(f"🔍 Exception type: {type(result).__name__}")
-                    import traceback
                     print__chat_all_messages_debug(f"🔍 Exception traceback: {traceback.format_exc()}")
                     continue
                 
@@ -2886,7 +2801,6 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
         except Exception as e:
             print__chat_all_messages_debug(f"❌ BULK ERROR: Failed to process bulk request for {user_email}: {e}")
             print__chat_all_messages_debug(f"🔍 Main exception type: {type(e).__name__}")
-            import traceback
             print__chat_all_messages_debug(f"Full error traceback: {traceback.format_exc()}")
             
             # Return empty result but cache it briefly to prevent error loops

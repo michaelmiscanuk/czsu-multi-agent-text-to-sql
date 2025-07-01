@@ -35,7 +35,7 @@ load_dotenv()
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
 from my_agent.utils.nodes import MAX_ITERATIONS
-from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer, retry_on_prepared_statement_error
+from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer, retry_on_prepared_statement_error
 
 # Robust BASE_DIR logic for project root
 try:
@@ -264,7 +264,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     if checkpointer is None:
         try:
             print__analysis_tracing_debug("41 - POSTGRES CHECKPOINTER: Attempting to get PostgreSQL checkpointer")
-            checkpointer = await get_postgres_checkpointer()
+            checkpointer = await get_healthy_checkpointer()
             print__analysis_tracing_debug("42 - POSTGRES SUCCESS: PostgreSQL checkpointer obtained")
         except Exception as e:
             print__analysis_tracing_debug(f"43 - POSTGRES FAILED: Failed to initialize PostgreSQL checkpointer - {str(e)}")

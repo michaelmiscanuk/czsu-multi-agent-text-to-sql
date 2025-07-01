@@ -11,13 +11,7 @@ import os
 import sqlite3
 from pathlib import Path
 from langchain_core.messages import AIMessage, SystemMessage
-from langchain_openai import AzureChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-
-import os
-
-import sqlite3
-import chromadb
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION
