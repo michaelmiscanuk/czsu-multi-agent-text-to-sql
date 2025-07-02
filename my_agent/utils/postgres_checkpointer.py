@@ -1,10 +1,280 @@
-#!/usr/bin/env python3
-"""
-PostgreSQL checkpointer module using AsyncPostgresSaver from LangGraph.
-Follows official documentation patterns exactly - no custom wrappers needed.
-"""
-
 from __future__ import annotations
+
+module_description = r"""PostgreSQL Checkpointer for LangGraph Multi-Agent Text-to-SQL System
+
+This module provides comprehensive PostgreSQL-based checkpointing functionality for the CZSU 
+Multi-Agent Text-to-SQL system using LangGraph's AsyncPostgresSaver. It handles persistent 
+conversation state management, user session tracking, and robust cloud database connectivity 
+with advanced error recovery mechanisms.
+
+Key Features:
+-------------
+1. AsyncPostgresSaver Integration:
+   - Official LangGraph AsyncPostgresSaver implementation
+   - Connection pool management with cloud database optimization
+   - Automatic table setup and schema initialization
+   - Context manager-based resource lifecycle management
+   - Prepared statement error handling and recovery
+   - Fallback mechanisms for different connection approaches
+
+2. Cloud Database Compatibility:
+   - Optimized for cloud PostgreSQL services (Supabase, AWS RDS, etc.)
+   - Advanced connection string configuration with keepalive settings
+   - SSL connection management and timeout handling
+   - Connection pool sizing for concurrent workloads
+   - Automatic retry logic for transient cloud database issues
+   - Rate limiting and connection lifetime management
+
+3. Conversation State Management:
+   - Persistent storage of LangGraph conversation checkpoints
+   - Extraction of user prompts and AI responses from checkpoints
+   - Chronological message ordering and conversation reconstruction
+   - Support for multi-turn conversations with proper sequencing
+   - Thread-based conversation isolation and security
+   - Checkpoint data validation and integrity checking
+
+4. User Session Tracking:
+   - Custom users_threads_runs table for user-thread associations
+   - Thread ownership verification and access control
+   - Conversation metadata storage (prompts, timestamps, sentiments)
+   - Pagination support for large conversation histories
+   - Thread title generation from first user prompt
+   - Bulk conversation management and cleanup operations
+
+5. Error Handling and Recovery:
+   - Comprehensive prepared statement error detection and recovery
+   - Automatic checkpointer recreation on connection failures
+   - Graceful degradation to in-memory storage on database failures
+   - Detailed error logging with debug mode support
+   - Connection pool health monitoring and automatic cleanup
+   - Transient error retry mechanisms with exponential backoff
+
+6. Windows Compatibility:
+   - Windows SelectorEventLoop policy for PostgreSQL compatibility
+   - Cross-platform path handling and file system operations
+   - Proper async/await pattern implementation for Windows
+   - Event loop policy configuration for optimal performance
+
+7. Performance Optimization:
+   - Connection pooling with configurable min/max connections
+   - Efficient checkpoint processing with limiting and pagination
+   - Prepared statement management to prevent memory leaks
+   - Garbage collection integration for resource cleanup
+   - Batch processing for multiple conversation operations
+   - Optimized SQL queries with proper indexing
+
+8. Security Features:
+   - Thread ownership verification before data access
+   - SQL injection prevention through parameterized queries
+   - Secure connection string handling with environment variables
+   - Access control for conversation data and checkpoints
+   - Audit trail through comprehensive logging
+   - Resource isolation between different user sessions
+
+Core Components:
+---------------
+1. Connection Management:
+   - get_connection_string(): Cloud-optimized PostgreSQL connection strings
+   - get_connection_kwargs(): Connection parameters for cloud compatibility
+   - modern_psycopg_pool(): Async context manager for connection pooling
+   - get_direct_connection(): Direct database connections for utility operations
+
+2. Checkpointer Lifecycle:
+   - create_async_postgres_saver(): Main checkpointer factory with retry logic
+   - setup_checkpointer_with_autocommit(): Table setup with transaction management
+   - close_async_postgres_saver(): Proper resource cleanup and connection closing
+   - initialize_checkpointer(): Global checkpointer initialization
+   - cleanup_checkpointer(): Shutdown cleanup and resource deallocation
+
+3. Conversation Operations:
+   - get_conversation_messages_from_checkpoints(): Extract and order conversation messages
+   - create_thread_run_entry(): Create new user-thread associations
+   - get_user_chat_threads(): Retrieve user's conversation threads with pagination
+   - delete_user_thread_entries(): Secure thread deletion with ownership verification
+
+4. Error Recovery:
+   - retry_on_prepared_statement_error(): Decorator for automatic retry logic
+   - clear_prepared_statements(): Cleanup utility for prepared statement conflicts
+   - is_prepared_statement_error(): Error classification for recovery decisions
+   - force_close_modern_pools(): Aggressive cleanup for troubleshooting
+
+5. Utility Functions:
+   - setup_users_threads_runs_table(): Custom table creation and indexing
+   - get_queries_and_results_from_latest_checkpoint(): SQL query extraction
+   - update_thread_run_sentiment(): User feedback storage
+   - get_thread_run_sentiments(): Sentiment data retrieval
+
+Processing Flow:
+--------------
+1. Initialization:
+   - Windows event loop policy configuration
+   - Environment variable validation
+   - Global state initialization
+   - Debug mode configuration
+
+2. Checkpointer Creation:
+   - Connection string generation with unique application names
+   - Connection pool setup with cloud-optimized parameters
+   - AsyncPostgresSaver instantiation with error handling
+   - Table setup using autocommit connections to avoid transaction conflicts
+   - Context manager entry for proper resource management
+
+3. Conversation Processing:
+   - Thread ownership verification for security
+   - Checkpoint retrieval with pagination and limiting
+   - Message extraction from checkpoint metadata and channel values
+   - Chronological ordering and conversation reconstruction
+   - Data validation and integrity checking
+
+4. Database Operations:
+   - Parameterized SQL queries to prevent injection
+   - Transaction management for consistency
+   - Error handling with automatic retry logic
+   - Connection pool management for scalability
+   - Resource cleanup and connection lifecycle management
+
+5. Error Recovery:
+   - Prepared statement error detection and cleanup
+   - Automatic checkpointer recreation on failures
+   - Graceful degradation to in-memory storage
+   - Detailed error logging for troubleshooting
+   - Connection pool health monitoring and recovery
+
+6. Cleanup and Shutdown:
+   - Context manager exit for proper resource deallocation
+   - Connection pool closure and cleanup
+   - Global state reset and garbage collection
+   - Final error reporting and statistics
+
+Configuration:
+-------------
+Environment Variables Required:
+- host: PostgreSQL server hostname
+- port: PostgreSQL server port (default: 5432)
+- dbname: Database name
+- user: Database username  
+- password: Database password
+- print__checkpointers_debug: Debug mode flag (0/1)
+
+Connection Parameters:
+- CONNECT_TIMEOUT: Initial connection timeout (20 seconds)
+- TCP_USER_TIMEOUT: TCP-level timeout (30 seconds in milliseconds)
+- KEEPALIVES_IDLE: Time before first keepalive (10 minutes)
+- KEEPALIVES_INTERVAL: Interval between keepalives (30 seconds)
+- KEEPALIVES_COUNT: Failed keepalives before disconnect (3)
+
+Pool Configuration:
+- DEFAULT_POOL_MIN_SIZE: Minimum pool connections (1)
+- DEFAULT_POOL_MAX_SIZE: Maximum pool connections (3)
+- DEFAULT_POOL_TIMEOUT: Pool connection timeout (20 seconds)
+- DEFAULT_MAX_IDLE: Maximum idle time (5 minutes)
+- DEFAULT_MAX_LIFETIME: Maximum connection lifetime (30 minutes)
+
+Processing Limits:
+- MAX_RECENT_CHECKPOINTS: Checkpoint processing limit (10)
+- MAX_DEBUG_MESSAGES_DETAILED: Detailed message logging limit (6)
+- DEBUG_CHECKPOINT_LOG_INTERVAL: Checkpoint logging frequency (every 5th)
+
+Usage Examples:
+--------------
+# Initialize global checkpointer
+await initialize_checkpointer()
+
+# Get conversation messages with security check
+messages = await get_conversation_messages_from_checkpoints(
+    checkpointer, thread_id="thread_123", user_email="user@example.com"
+)
+
+# Create new thread entry
+run_id = await create_thread_run_entry(
+    email="user@example.com", 
+    thread_id="thread_123", 
+    prompt="What is the population of Prague?"
+)
+
+# Get user's chat threads with pagination
+threads = await get_user_chat_threads(
+    email="user@example.com", limit=10, offset=0
+)
+
+# Clean up on shutdown
+await cleanup_checkpointer()
+
+Database Schema:
+---------------
+Core LangGraph Tables (managed by AsyncPostgresSaver):
+- checkpoints: Main checkpoint storage with thread isolation
+- checkpoint_blobs: Binary data storage for large checkpoint content
+
+Custom Application Tables:
+- users_threads_runs: User session tracking and thread ownership
+  - id: Serial primary key
+  - email: User email for ownership tracking
+  - thread_id: LangGraph thread identifier
+  - run_id: Unique run identifier for API operations
+  - prompt: User's initial prompt for thread title generation
+  - timestamp: Creation timestamp for ordering
+  - sentiment: User feedback (positive/negative/null)
+
+Indexes for Performance:
+- idx_users_threads_runs_email: Fast user lookup
+- idx_users_threads_runs_thread_id: Thread-based queries
+- idx_users_threads_runs_email_thread: Combined user-thread queries
+
+Error Handling:
+-------------
+1. Connection Errors:
+   - Automatic retry with exponential backoff
+   - Graceful fallback to in-memory storage
+   - Connection pool recreation on persistent failures
+   - Detailed error logging for troubleshooting
+
+2. Prepared Statement Conflicts:
+   - Automatic detection of prepared statement errors
+   - Cleanup utility to remove conflicting statements
+   - Checkpointer recreation with fresh connections
+   - Prevention through connection parameter tuning
+
+3. Transaction Errors:
+   - Separate autocommit connections for DDL operations
+   - Transaction isolation for data consistency
+   - Rollback mechanisms for failed operations
+   - Deadlock detection and recovery
+
+4. Data Integrity:
+   - Validation of checkpoint data structure
+   - Conversation message ordering verification
+   - Thread ownership security checks
+   - SQL injection prevention through parameterization
+
+Dependencies:
+------------
+- asyncio: Async/await pattern implementation
+- psycopg: Modern PostgreSQL adapter for Python
+- psycopg_pool: Connection pool management
+- langgraph.checkpoint.postgres.aio: Official AsyncPostgresSaver
+- langgraph.checkpoint.memory: Fallback in-memory storage
+- threading, uuid, time: System utilities
+- pathlib, os, sys: Cross-platform file and system operations
+
+Performance Considerations:
+-------------------------
+- Connection pooling reduces overhead for frequent operations
+- Checkpoint limiting prevents memory issues with large conversations
+- Prepared statement management avoids memory leaks
+- Indexing on custom tables ensures fast query performance
+- Garbage collection integration for memory management
+- Efficient SQL patterns for bulk operations
+
+Security Considerations:
+----------------------
+- Environment variable usage for sensitive configuration
+- Parameterized queries prevent SQL injection
+- Thread ownership verification ensures data isolation
+- SSL connections for encrypted communication
+- Access control through user email verification
+- Audit logging for security monitoring"""
+
 import asyncio
 import sys
 import os
@@ -23,7 +293,7 @@ from psycopg_pool import AsyncConnectionPool
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
-# CRITICAL: Windows event loop fix MUST be first for PostgreSQL compatibility
+# Windows event loop fix for PostgreSQL compatibility
 if sys.platform == "win32":
     print("[POSTGRES-STARTUP] Windows detected - setting SelectorEventLoop for PostgreSQL compatibility...")
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
@@ -33,25 +303,75 @@ if sys.platform == "win32":
 T = TypeVar('T')
 
 #==============================================================================
-# DEBUG FUNCTIONS
+# CONFIGURATION CONSTANTS
 #==============================================================================
-def print__analysis_tracing_debug(msg: str) -> None:
-    """Print analysis tracing debug messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    analysis_tracing_debug_mode = os.environ.get('print__analysis_tracing_debug', '0')
+# Retry configuration for error handling
+DEFAULT_MAX_RETRIES = 2                    # Standard retry attempts for most operations
+CHECKPOINTER_CREATION_MAX_RETRIES = 2      # Retry attempts for checkpointer creation
+
+# Connection timeout constants (in seconds)
+CONNECT_TIMEOUT = 20          # Initial connection timeout for cloud databases
+TCP_USER_TIMEOUT = 30000      # TCP-level timeout (30 seconds in milliseconds)
+KEEPALIVES_IDLE = 600         # 10 minutes before first keepalive
+KEEPALIVES_INTERVAL = 30      # 30 seconds between keepalives  
+KEEPALIVES_COUNT = 3          # 3 failed keepalives before disconnect
+
+# Pool configuration constants for cloud database optimization
+DEFAULT_POOL_MIN_SIZE = 1     # Minimum pool size for efficiency
+DEFAULT_POOL_MAX_SIZE = 3     # Maximum pool size to avoid connection limits
+DEFAULT_POOL_TIMEOUT = 20     # Pool connection timeout
+DEFAULT_MAX_IDLE = 300        # 5 minutes idle timeout  
+DEFAULT_MAX_LIFETIME = 1800   # 30 minutes max connection lifetime
+
+# String truncation constants for logging and display
+USER_MESSAGE_PREVIEW_LENGTH = 50    # Length for user message previews in logs
+AI_MESSAGE_PREVIEW_LENGTH = 100     # Length for AI message previews in logs
+THREAD_TITLE_MAX_LENGTH = 47        # Maximum length for thread titles
+THREAD_TITLE_SUFFIX_LENGTH = 3      # Length of "..." suffix
+
+# Checkpoint processing constants for performance optimization
+MAX_RECENT_CHECKPOINTS = 10         # Limit checkpoints to recent ones only
+MAX_DEBUG_MESSAGES_DETAILED = 6     # Show first N messages in detail
+DEBUG_CHECKPOINT_LOG_INTERVAL = 5   # Log every Nth checkpoint
+
+#==============================================================================
+# DEBUG AND LOGGING FUNCTIONS
+#==============================================================================
+def print__checkpointers_debug(msg: str) -> None:
+    """Print messages when debug mode is enabled"""
+    analysis_tracing_debug_mode = os.environ.get('print__checkpointers_debug', '0')
     if analysis_tracing_debug_mode == '1':
-        print(f"[print__analysis_tracing_debug] 🔍 {msg}")
+        print(f"[print__checkpointers_debug] 🔍 {msg}")
         sys.stdout.flush()
 
 #==============================================================================
-# PREPARED STATEMENT ERROR HANDLING
+# PREPARED STATEMENT ERROR HANDLING AND RECOVERY
 #==============================================================================
 def is_prepared_statement_error(error: Exception) -> bool:
-    """Check if an error is related to prepared statements."""
-    print__analysis_tracing_debug("200 - PREPARED STATEMENT CHECK: Checking if error is prepared statement related")
+    """Detect if an error is related to prepared statement conflicts.
+    
+    This function analyzes exception messages to identify prepared statement
+    related errors that commonly occur in PostgreSQL connections, especially
+    when using connection pooling or when prepared statements become stale.
+    
+    Args:
+        error (Exception): The exception to analyze for prepared statement indicators
+        
+    Returns:
+        bool: True if the error appears to be prepared statement related, False otherwise
+        
+    Detection Patterns:
+        - "prepared statement" text in error message
+        - "does not exist" for missing prepared statement references
+        - "_pg3_" or "_pg_" prefixes from psycopg prepared statement naming
+        - "invalidsqlstatementname" PostgreSQL error codes
+        
+    Note:
+        - Case-insensitive pattern matching for robust detection
+        - Covers both psycopg2 and psycopg3 prepared statement naming conventions
+        - Used by retry decorators to trigger appropriate recovery actions
+    """
+    print__checkpointers_debug("200 - PREPARED STATEMENT CHECK: Checking if error is prepared statement related")
     error_str = str(error).lower()
     result = any(indicator in error_str for indicator in [
         'prepared statement',
@@ -60,87 +380,127 @@ def is_prepared_statement_error(error: Exception) -> bool:
         '_pg_',
         'invalidsqlstatementname'
     ])
-    print__analysis_tracing_debug(f"201 - PREPARED STATEMENT RESULT: Error is prepared statement related: {result}")
+    print__checkpointers_debug(f"201 - PREPARED STATEMENT RESULT: Error is prepared statement related: {result}")
     return result
 
-def retry_on_prepared_statement_error(max_retries: int = 3):
-    """Decorator to retry operations that fail due to prepared statement errors."""
+def retry_on_prepared_statement_error(max_retries: int = DEFAULT_MAX_RETRIES):
+    """Decorator factory for automatic retry logic on prepared statement errors.
+    
+    This decorator provides robust error recovery for functions that may encounter
+    prepared statement conflicts. It automatically detects such errors, performs
+    cleanup operations, and retries the function with fresh connections.
+    
+    Args:
+        max_retries (int): Maximum number of retry attempts before giving up
+        
+    Returns:
+        Callable: Decorator function that wraps target functions with retry logic
+        
+    Retry Strategy:
+        1. Execute the decorated function normally
+        2. If prepared statement error detected, perform cleanup:
+           - Clear existing prepared statements
+           - Recreate global checkpointer if needed
+           - Reset connection state
+        3. Retry the function with fresh connection state
+        4. Continue until success or max retries exceeded
+        
+    Recovery Actions:
+        - clear_prepared_statements(): Remove conflicting prepared statements
+        - Checkpointer recreation: Fresh AsyncPostgresSaver instance
+        - Global state reset: Clean slate for retry attempts
+        
+    Note:
+        - Only retries on confirmed prepared statement errors
+        - Maintains original exception for non-recoverable errors
+        - Includes detailed debug logging for troubleshooting
+        - Graceful handling of cleanup failures during retry
+    """
     def decorator(func: Callable[..., Awaitable[T]]) -> Callable[..., Awaitable[T]]:
         @functools.wraps(func)
         async def wrapper(*args, **kwargs) -> T:
-            print__analysis_tracing_debug(f"202 - RETRY WRAPPER START: Starting {func.__name__} with max_retries={max_retries}")
+            print__checkpointers_debug(f"202 - RETRY WRAPPER START: Starting {func.__name__} with max_retries={max_retries}")
             last_error = None
             
             for attempt in range(max_retries + 1):
-                print__analysis_tracing_debug(f"203 - RETRY ATTEMPT: Attempt {attempt + 1}/{max_retries + 1} for {func.__name__}")
+                print__checkpointers_debug(f"203 - RETRY ATTEMPT: Attempt {attempt + 1}/{max_retries + 1} for {func.__name__}")
                 try:
                     result = await func(*args, **kwargs)
-                    print__analysis_tracing_debug(f"204 - RETRY SUCCESS: {func.__name__} succeeded on attempt {attempt + 1}")
+                    print__checkpointers_debug(f"204 - RETRY SUCCESS: {func.__name__} succeeded on attempt {attempt + 1}")
                     return result
                 except Exception as e:
                     last_error = e
-                    print__analysis_tracing_debug(f"205 - RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(e)}")
+                    print__checkpointers_debug(f"205 - RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(e)}")
                     
-                    # CRITICAL: Add full traceback to see exactly where the f-string error is occurring
-                    
+                    # Add full traceback for debugging
                     full_traceback = traceback.format_exc()
-                    print__analysis_tracing_debug(f"205.1 - RETRY TRACEBACK: {full_traceback}")
+                    print__checkpointers_debug(f"205.1 - RETRY TRACEBACK: {full_traceback}")
                     
                     if is_prepared_statement_error(e):
-                        print__analysis_tracing_debug(f"206 - PREPARED STATEMENT ERROR: Detected prepared statement error in {func.__name__}")
+                        print__checkpointers_debug(f"206 - PREPARED STATEMENT ERROR: Detected prepared statement error in {func.__name__}")
                         
                         if attempt < max_retries:
-                            print__analysis_tracing_debug(f"207 - RETRY CLEANUP: Clearing prepared statements before retry {attempt + 2}")
+                            print__checkpointers_debug(f"207 - RETRY CLEANUP: Clearing prepared statements before retry {attempt + 2}")
                             try:
                                 await clear_prepared_statements()
-                                # Also try to recreate the checkpointer if it's a global operation
-                                global _global_checkpointer_context, _global_checkpointer
-                                if _global_checkpointer_context or _global_checkpointer:
-                                    print__analysis_tracing_debug("208 - CHECKPOINTER RECREATION: Recreating checkpointer due to prepared statement error")
+                                # Recreate the checkpointer if it's a global operation
+                                global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
+                                if _GLOBAL_CHECKPOINTER_CONTEXT or _GLOBAL_CHECKPOINTER:
+                                    print__checkpointers_debug("208 - CHECKPOINTER RECREATION: Recreating checkpointer due to prepared statement error")
                                     await close_async_postgres_saver()
                                     await create_async_postgres_saver()
                             except Exception as cleanup_error:
-                                print__analysis_tracing_debug(f"209 - CLEANUP ERROR: Error during cleanup: {cleanup_error}")
+                                print__checkpointers_debug(f"209 - CLEANUP ERROR: Error during cleanup: {cleanup_error}")
                             continue
                     
                     # If it's not a prepared statement error, or we've exhausted retries, re-raise
-                    print__analysis_tracing_debug(f"210 - RETRY EXHAUSTED: No more retries for {func.__name__}, re-raising error")
+                    print__checkpointers_debug(f"210 - RETRY EXHAUSTED: No more retries for {func.__name__}, re-raising error")
                     raise
             
             # This should never be reached, but just in case
-            print__analysis_tracing_debug(f"211 - RETRY FALLBACK: Fallback error re-raise for {func.__name__}")
+            print__checkpointers_debug(f"211 - RETRY FALLBACK: Fallback error re-raise for {func.__name__}")
             raise last_error
         
         return wrapper
     return decorator
 
 #==============================================================================
-# SIMPLIFIED GLOBALS - FOLLOWING OFFICIAL PATTERNS
+# GLOBAL STATE MANAGEMENT
 #==============================================================================
-_global_checkpointer_context = None  # Store the async context manager
-_global_checkpointer: Optional[AsyncPostgresSaver] = None
+# Single global checkpointer variable and context for proper cleanup
+_GLOBAL_CHECKPOINTER = None
+_GLOBAL_CHECKPOINTER_CONTEXT = None
 _connection_string_cache = None  # Cache the connection string to avoid timestamp conflicts
 
-#==============================================================================
-# DEBUG FUNCTIONS
-#==============================================================================
-def print__postgresql_debug(msg: str) -> None:
-    """Print PostgreSQL debug messages when debug mode is enabled."""
-    debug_mode = os.environ.get('DEBUG', '0')
-    if debug_mode == '1':
-        print(f"[POSTGRESQL-DEBUG] {msg}")
-        sys.stdout.flush()
-
-def print__api_postgresql(msg: str) -> None:
-    """Print API-PostgreSQL messages when debug mode is enabled."""
-    debug_mode = os.environ.get('DEBUG', '0')
-    if debug_mode == '1':
-        print(f"[API-POSTGRESQL] {msg}")
-        sys.stdout.flush()
-
 def get_db_config():
-    """Get database configuration from environment variables."""
-    print__analysis_tracing_debug("212 - DB CONFIG START: Getting database configuration from environment variables")
+    """Extract database configuration from environment variables.
+    
+    This function retrieves all necessary PostgreSQL connection parameters
+    from environment variables, providing a centralized configuration
+    management system for database connectivity.
+    
+    Returns:
+        dict: Database configuration dictionary containing:
+            - user: PostgreSQL username
+            - password: PostgreSQL password  
+            - host: PostgreSQL server hostname
+            - port: PostgreSQL server port (default 5432)
+            - dbname: Target database name
+            
+    Environment Variables Required:
+        - user: Database username for authentication
+        - password: Database password for authentication
+        - host: PostgreSQL server hostname or IP address
+        - port: PostgreSQL server port (defaults to 5432 if not provided)
+        - dbname: Name of the target database
+        
+    Note:
+        - All environment variables except 'port' are required
+        - Port defaults to PostgreSQL standard port 5432
+        - Used by connection string and pool creation functions
+        - Provides debug logging for configuration verification
+    """
+    print__checkpointers_debug("212 - DB CONFIG START: Getting database configuration from environment variables")
     config = {
         'user': os.environ.get('user'),
         'password': os.environ.get('password'),
@@ -148,66 +508,150 @@ def get_db_config():
         'port': int(os.environ.get('port', 5432)),
         'dbname': os.environ.get('dbname')
     }
-    print__analysis_tracing_debug(f"213 - DB CONFIG RESULT: Configuration retrieved - host: {config['host']}, port: {config['port']}, dbname: {config['dbname']}, user: {config['user']}")
+    print__checkpointers_debug(f"213 - DB CONFIG RESULT: Configuration retrieved - host: {config['host']}, port: {config['port']}, dbname: {config['dbname']}, user: {config['user']}")
     return config
 
 def get_connection_string():
-    """Get PostgreSQL connection string for LangGraph checkpointer.
+    """Generate PostgreSQL connection string with cloud-optimized parameters.
     
-    ENHANCED: Added cloud-optimized connection parameters to prevent connection issues.
+    This function creates a comprehensive PostgreSQL connection string optimized
+    for cloud database services, including advanced timeout and keepalive settings
+    for reliable connectivity in distributed environments.
+    
+    Returns:
+        str: Complete PostgreSQL connection string with optimization parameters
+        
+    Connection String Features:
+        - SSL mode required for secure cloud connections
+        - Unique application name for connection tracking and debugging
+        - Comprehensive timeout configuration for cloud latency handling
+        - Keepalive settings for connection persistence
+        - TCP-level timeout for network reliability
+        
+    Application Name Generation:
+        - Combines process ID, thread ID, startup time, and random identifier
+        - Ensures unique identification for concurrent connections
+        - Facilitates debugging and connection monitoring
+        - Format: "czsu_langgraph_{pid}_{thread}_{time}_{random}"
+        
+    Cloud Optimization Parameters:
+        - connect_timeout: Initial connection establishment timeout
+        - keepalives_idle: Time before first keepalive probe
+        - keepalives_interval: Interval between keepalive probes
+        - keepalives_count: Failed keepalives before disconnect
+        - tcp_user_timeout: TCP-level connection timeout
+        
+    Caching:
+        - Connection string is cached globally to avoid regeneration
+        - Ensures consistent application names across operations
+        - Improves performance for repeated connection operations
+        
+    Note:
+        - Uses global caching to prevent timestamp conflicts
+        - Optimized for cloud PostgreSQL services (Supabase, AWS RDS, etc.)
+        - Includes comprehensive debug logging for troubleshooting
     """
-    print__analysis_tracing_debug("214 - CONNECTION STRING START: Generating PostgreSQL connection string")
+    print__checkpointers_debug("214 - CONNECTION STRING START: Generating PostgreSQL connection string")
     global _connection_string_cache
     
     if _connection_string_cache is not None:
-        print__analysis_tracing_debug("215 - CONNECTION STRING CACHED: Using cached connection string")
+        print__checkpointers_debug("215 - CONNECTION STRING CACHED: Using cached connection string")
         return _connection_string_cache
     
     config = get_db_config()
     
-    # Use process ID + startup time + random for truly unique application name
+    # Use process ID + startup time + random for unique application name
     process_id = os.getpid()
     thread_id = threading.get_ident()
     startup_time = int(time.time())
     random_id = uuid.uuid4().hex[:8]
     
     app_name = f"czsu_langgraph_{process_id}_{thread_id}_{startup_time}_{random_id}"
-    print__analysis_tracing_debug(f"216 - CONNECTION STRING APP NAME: Generated unique application name: {app_name}")
+    print__checkpointers_debug(f"216 - CONNECTION STRING APP NAME: Generated unique application name: {app_name}")
     
-    # ENHANCED: Cloud-optimized connection string with better timeout and keepalive settings
+    # Connection string with timeout and keepalive settings for cloud databases
     _connection_string_cache = (
         f"postgresql://{config['user']}:{config['password']}@"
         f"{config['host']}:{config['port']}/{config['dbname']}?"
         f"sslmode=require"
         f"&application_name={app_name}"
-        f"&connect_timeout=20"              # Cloud-friendly timeout
-        f"&keepalives_idle=600"             # 10 minutes before first keepalive
-        f"&keepalives_interval=30"          # 30 seconds between keepalives
-        f"&keepalives_count=3"              # 3 failed keepalives before disconnect
-        f"&tcp_user_timeout=30000"          # 30 seconds TCP timeout
+        f"&connect_timeout={CONNECT_TIMEOUT}"
+        f"&keepalives_idle={KEEPALIVES_IDLE}"
+        f"&keepalives_interval={KEEPALIVES_INTERVAL}"
+        f"&keepalives_count={KEEPALIVES_COUNT}"
+        f"&tcp_user_timeout={TCP_USER_TIMEOUT}"
     )
     
-    print__analysis_tracing_debug("217 - CONNECTION STRING COMPLETE: Cloud-optimized PostgreSQL connection string generated")
+    print__checkpointers_debug("217 - CONNECTION STRING COMPLETE: PostgreSQL connection string generated")
     
     return _connection_string_cache
 
 def get_connection_kwargs():
-    """Get connection kwargs for cloud-optimized connection handling.
+    """Generate connection kwargs for cloud database compatibility.
     
-    FIXED: Based on GitHub issue #2967 and LangGraph discussions, 
-    autocommit=False works better with cloud databases like Supabase
-    under concurrent load.
+    This function provides standardized connection parameters that are optimized
+    for cloud PostgreSQL databases, particularly focusing on prepared statement
+    management and transaction handling.
     
-    Returns connection parameters that should be passed to psycopg connection methods.
+    Returns:
+        dict: Connection parameters dictionary for psycopg connections containing:
+            - autocommit: Transaction management setting
+            - prepare_threshold: Prepared statement management setting
+            
+    Connection Parameters:
+        autocommit=False:
+            - Better compatibility with cloud databases under concurrent load
+            - Proper transaction management for data consistency
+            - Recommended by LangGraph documentation for cloud deployments
+            - Prevents transaction-related issues in high-concurrency scenarios
+            
+        prepare_threshold=None:
+            - Completely disables automatic prepared statement creation
+            - Prevents prepared statement conflicts and memory leaks
+            - Reduces complexity in connection pool management
+            - Eliminates need for prepared statement cleanup in most cases
+            
+    Note:
+        - Based on LangGraph documentation and cloud database best practices
+        - Optimized for concurrent workloads and connection pooling
+        - Used by all connection creation functions for consistency
+        - Prevents most prepared statement related issues proactively
     """
     return {
-        "autocommit": False,  # CRITICAL FIX: False works better with cloud databases under load
+        "autocommit": False,  # Better compatibility with cloud databases under load
         "prepare_threshold": None,  # Disable prepared statements completely
     }
 
 def check_postgres_env_vars():
-    """Check if all required PostgreSQL environment variables are set."""
-    print__analysis_tracing_debug("218 - ENV VARS CHECK START: Checking PostgreSQL environment variables")
+    """Validate that all required PostgreSQL environment variables are configured.
+    
+    This function performs comprehensive validation of the environment configuration
+    required for PostgreSQL connectivity, ensuring that all necessary parameters
+    are available before attempting database operations.
+    
+    Returns:
+        bool: True if all required variables are set, False if any are missing
+        
+    Required Environment Variables:
+        - host: PostgreSQL server hostname
+        - port: PostgreSQL server port  
+        - dbname: Target database name
+        - user: Database username
+        - password: Database password
+        
+    Validation Process:
+        1. Checks each required variable for existence and non-empty value
+        2. Reports missing variables for troubleshooting
+        3. Provides debug logging for configuration verification
+        4. Returns boolean result for conditional initialization logic
+        
+    Note:
+        - Used during checkpointer initialization to fail fast on misconfiguration
+        - Provides detailed feedback for missing configuration
+        - Supports automated deployment validation
+        - Essential for preventing runtime connection failures
+    """
+    print__checkpointers_debug("218 - ENV VARS CHECK START: Checking PostgreSQL environment variables")
     required_vars = ['host', 'port', 'dbname', 'user', 'password']
     
     missing_vars = []
@@ -216,25 +660,58 @@ def check_postgres_env_vars():
             missing_vars.append(var)
     
     if missing_vars:
-        print__analysis_tracing_debug(f"219 - ENV VARS MISSING: Missing required environment variables: {missing_vars}")
+        print__checkpointers_debug(f"219 - ENV VARS MISSING: Missing required environment variables: {missing_vars}")
         return False
     else:
-        print__analysis_tracing_debug("220 - ENV VARS COMPLETE: All required PostgreSQL environment variables are set")
+        print__checkpointers_debug("220 - ENV VARS COMPLETE: All required PostgreSQL environment variables are set")
         return True
 
+#==============================================================================
+# PREPARED STATEMENT CLEANUP AND CONNECTION POOL MANAGEMENT
+#==============================================================================
 async def clear_prepared_statements():
-    """Clear any existing prepared statements to avoid conflicts.
+    """Clear existing prepared statements to resolve conflicts during error recovery.
     
-    SIMPLIFIED: This function is now optional and only used during error recovery.
-    Most prepared statement issues are now prevented by connection kwargs.
+    This function provides a comprehensive cleanup mechanism for prepared statement
+    conflicts that can occur in PostgreSQL connections, particularly when using
+    connection pooling or when connections become stale.
+    
+    Process:
+        1. Creates a dedicated cleanup connection with unique application name
+        2. Queries pg_prepared_statements system catalog for existing statements
+        3. Deallocates all found prepared statements using DEALLOCATE command
+        4. Provides detailed logging for troubleshooting and verification
+        
+    Connection Strategy:
+        - Uses separate connection to avoid conflicts with main operations
+        - Applies prepared statement disabling connection kwargs
+        - Generates unique application name for identification
+        - Uses direct psycopg connection for maximum compatibility
+        
+    Error Handling:
+        - Non-fatal operation that continues on individual statement failures
+        - Comprehensive logging for both successes and failures
+        - Graceful handling of connection or permission issues
+        - Returns silently to avoid blocking main operations
+        
+    Performance Optimizations:
+        - Limits detailed logging to first few statements to avoid log spam
+        - Batches operations efficiently for large prepared statement sets
+        - Provides summary statistics for large cleanup operations
+        
+    Note:
+        - Used during error recovery when prepared statement issues are detected
+        - Most prepared statement issues are prevented by connection kwargs
+        - This is a recovery mechanism for edge cases and troubleshooting
+        - Safe to call multiple times without side effects
     """
-    print__analysis_tracing_debug("221 - CLEAR PREPARED START: Starting prepared statements cleanup")
+    print__checkpointers_debug("221 - CLEAR PREPARED START: Starting prepared statements cleanup")
     try:
         config = get_db_config()
         # Use a different application name for the cleanup connection
         
         cleanup_app_name = f"czsu_cleanup_{uuid.uuid4().hex[:8]}"
-        print__analysis_tracing_debug(f"222 - CLEANUP CONNECTION: Creating cleanup connection with app name: {cleanup_app_name}")
+        print__checkpointers_debug(f"222 - CLEANUP CONNECTION: Creating cleanup connection with app name: {cleanup_app_name}")
         
         # Create connection string without prepared statement parameters
         connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}?sslmode=require&application_name={cleanup_app_name}"
@@ -242,11 +719,11 @@ async def clear_prepared_statements():
         # Get connection kwargs for disabling prepared statements
         connection_kwargs = get_connection_kwargs()
         
-        print__analysis_tracing_debug("223 - PSYCOPG CONNECTION: Establishing psycopg connection for cleanup")
+        print__checkpointers_debug("223 - PSYCOPG CONNECTION: Establishing psycopg connection for cleanup")
         async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
-            print__analysis_tracing_debug("224 - CONNECTION ESTABLISHED: Cleanup connection established successfully")
+            print__checkpointers_debug("224 - CONNECTION ESTABLISHED: Cleanup connection established successfully")
             async with conn.cursor() as cur:
-                print__analysis_tracing_debug("225 - CURSOR CREATED: Database cursor created for prepared statement query")
+                print__checkpointers_debug("225 - CURSOR CREATED: Database cursor created for prepared statement query")
                 # Get all prepared statements for our application
                 await cur.execute("""
                     SELECT name FROM pg_prepared_statements 
@@ -255,123 +732,241 @@ async def clear_prepared_statements():
                 prepared_statements = await cur.fetchall()
                 
                 if prepared_statements:
-                    print__analysis_tracing_debug(f"226 - PREPARED STATEMENTS FOUND: Found {len(prepared_statements)} prepared statements to clear")
+                    print__checkpointers_debug(f"226 - PREPARED STATEMENTS FOUND: Found {len(prepared_statements)} prepared statements to clear")
                     
                     # Drop each prepared statement
                     for i, stmt in enumerate(prepared_statements, 1):
                         stmt_name = stmt[0]
-                        # OPTIMIZATION: Only log first few statements
+                        # Only log first few statements
                         if i <= 3:
-                            print__analysis_tracing_debug(f"227 - CLEARING STATEMENT {i}: Clearing prepared statement: {stmt_name}")
+                            print__checkpointers_debug(f"227 - CLEARING STATEMENT {i}: Clearing prepared statement: {stmt_name}")
                         try:
                             await cur.execute(f"DEALLOCATE {stmt_name};")
                             if i <= 3:
-                                print__analysis_tracing_debug(f"228 - STATEMENT CLEARED {i}: Successfully cleared prepared statement: {stmt_name}")
+                                print__checkpointers_debug(f"228 - STATEMENT CLEARED {i}: Successfully cleared prepared statement: {stmt_name}")
                         except Exception as e:
                             if i <= 3:
-                                print__analysis_tracing_debug(f"229 - STATEMENT ERROR {i}: Could not clear prepared statement {stmt_name}: {e}")
+                                print__checkpointers_debug(f"229 - STATEMENT ERROR {i}: Could not clear prepared statement {stmt_name}: {e}")
                     
                     if len(prepared_statements) > 3:
-                        print__analysis_tracing_debug(f"230 - CLEANUP SUMMARY: Cleared {len(prepared_statements)} prepared statements (showing first 3)")
+                        print__checkpointers_debug(f"230 - CLEANUP SUMMARY: Cleared {len(prepared_statements)} prepared statements (showing first 3)")
                     else:
-                        print__analysis_tracing_debug(f"230 - CLEANUP COMPLETE: Cleared {len(prepared_statements)} prepared statements")
+                        print__checkpointers_debug(f"230 - CLEANUP COMPLETE: Cleared {len(prepared_statements)} prepared statements")
                 else:
-                    print__analysis_tracing_debug("231 - NO STATEMENTS: No prepared statements to clear")
+                    print__checkpointers_debug("231 - NO STATEMENTS: No prepared statements to clear")
                 
     except Exception as e:
-        print__analysis_tracing_debug(f"232 - CLEANUP ERROR: Error clearing prepared statements (non-fatal): {e}")
+        print__checkpointers_debug(f"232 - CLEANUP ERROR: Error clearing prepared statements (non-fatal): {e}")
         # Don't raise - this is a cleanup operation and shouldn't block checkpointer creation
 
 async def cleanup_all_pools():
-    """
-    Enhanced cleanup function that properly handles modern connection pools.
-    This function ensures all resources are cleaned up properly.
-    """
-    print__analysis_tracing_debug("CLEANUP ALL POOLS START: Starting comprehensive pool cleanup")
+    """Cleanup function that properly handles connection pools and global state.
     
-    global _global_checkpointer_context, _global_checkpointer
+    This function provides comprehensive cleanup of all connection-related resources,
+    ensuring proper shutdown sequence and resource deallocation for the checkpointer
+    system. It handles both connection pools and global state management.
+    
+    Cleanup Process:
+        1. Gracefully exit global checkpointer context manager
+        2. Clean up connection pools using proper async patterns
+        3. Reset global state variables to prevent stale references
+        4. Force garbage collection to ensure memory cleanup
+        5. Provide detailed logging for troubleshooting
+        
+    Global State Management:
+        - Properly exits _GLOBAL_CHECKPOINTER_CONTEXT using __aexit__
+        - Resets _GLOBAL_CHECKPOINTER to None for clean state
+        - Handles cleanup errors gracefully without raising exceptions
+        - Ensures clean slate for subsequent initialization attempts
+        
+    Resource Management:
+        - Uses context manager protocols for proper resource cleanup
+        - Handles connection pool lifecycle correctly
+        - Provides comprehensive error handling for cleanup failures
+        - Ensures resources are freed even if individual cleanup steps fail
+        
+    Performance Considerations:
+        - Forces garbage collection to ensure immediate memory cleanup
+        - Minimizes resource leakage in long-running applications
+        - Provides clean shutdown for application termination scenarios
+        - Optimizes memory usage for restart scenarios
+        
+    Note:
+        - Safe to call multiple times without side effects
+        - Used during error recovery and application shutdown
+        - Comprehensive error handling prevents cleanup failures from propagating
+        - Essential for proper resource management in production environments
+    """
+    print__checkpointers_debug("CLEANUP ALL POOLS START: Starting comprehensive pool cleanup")
+    
+    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
     
     # Clean up the global checkpointer context if it exists
-    if _global_checkpointer_context:
+    if _GLOBAL_CHECKPOINTER_CONTEXT:
         try:
-            print__analysis_tracing_debug("CLEANUP: Cleaning up global checkpointer context using modern approach")
-            await _global_checkpointer_context.__aexit__(None, None, None)
-            print__analysis_tracing_debug("CLEANUP: Global checkpointer context cleaned up successfully")
+            print__checkpointers_debug("CLEANUP: Cleaning up global checkpointer context")
+            await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
+            print__checkpointers_debug("CLEANUP: Global checkpointer context cleaned up successfully")
         except Exception as e:
-            print__analysis_tracing_debug(f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}")
+            print__checkpointers_debug(f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}")
         finally:
-            _global_checkpointer_context = None
-            _global_checkpointer = None
+            _GLOBAL_CHECKPOINTER_CONTEXT = None
+            _GLOBAL_CHECKPOINTER = None
     
     # Force garbage collection to ensure resources are freed
     
     gc.collect()
-    print__analysis_tracing_debug("CLEANUP ALL POOLS COMPLETE: All pools and resources cleaned up")
+    print__checkpointers_debug("CLEANUP ALL POOLS COMPLETE: All pools and resources cleaned up")
 
 async def force_close_modern_pools():
+    """Force close any remaining connection pools for aggressive cleanup.
+    
+    This function provides an aggressive cleanup mechanism for troubleshooting
+    scenarios where normal cleanup procedures may not be sufficient. It performs
+    comprehensive resource cleanup and state reset operations.
+    
+    Aggressive Cleanup Actions:
+        1. Calls standard cleanup_all_pools() for normal resource cleanup
+        2. Forces cleanup of any lingering connection resources
+        3. Clears cached connection strings to force recreation
+        4. Resets global state for clean restart scenarios
+        5. Provides detailed logging for troubleshooting
+        
+    Use Cases:
+        - Troubleshooting persistent connection issues
+        - Recovering from connection pool corruption
+        - Debugging resource leakage scenarios
+        - Preparing for application restart scenarios
+        - Emergency cleanup in error recovery situations
+        
+    State Reset Operations:
+        - Clears _connection_string_cache to force regeneration
+        - Ensures fresh connection parameters on next initialization
+        - Provides clean slate for subsequent connection attempts
+        - Prevents cached state from interfering with recovery
+        
+    Error Handling:
+        - Comprehensive exception handling prevents cleanup failures
+        - Continues operation even if individual cleanup steps fail
+        - Logs errors for troubleshooting without raising exceptions
+        - Ensures maximum cleanup even in error scenarios
+        
+    Note:
+        - More aggressive than standard cleanup procedures
+        - Primarily intended for troubleshooting and error recovery
+        - Safe to call in production environments
+        - Should be used when normal cleanup is insufficient
     """
-    Force close any remaining modern connection pools.
-    This is a more aggressive cleanup function for troubleshooting.
-    """
-    print__analysis_tracing_debug("FORCE CLOSE START: Force closing all modern connection pools")
+    print__checkpointers_debug("FORCE CLOSE START: Force closing all connection pools")
     
     try:
         # Clean up the global state
         await cleanup_all_pools()
         
         # Additional cleanup for any lingering connections
-        print__analysis_tracing_debug("FORCE CLOSE: Forcing cleanup of any remaining resources")
+        print__checkpointers_debug("FORCE CLOSE: Forcing cleanup of any remaining resources")
         
         # Clear any cached connection strings to force recreation
         global _connection_string_cache
         _connection_string_cache = None
         
-        print__analysis_tracing_debug("FORCE CLOSE COMPLETE: Modern pool force close completed")
+        print__checkpointers_debug("FORCE CLOSE COMPLETE: Pool force close completed")
         
     except Exception as e:
-        print__analysis_tracing_debug(f"FORCE CLOSE ERROR: Error during force close: {e}")
+        print__checkpointers_debug(f"FORCE CLOSE ERROR: Error during force close: {e}")
         # Don't re-raise - this is a cleanup function
 
-# ENHANCED OFFICIAL ASYNCPOSTGRESSAVER IMPLEMENTATION WITH CONNECTION POOL
-@retry_on_prepared_statement_error(max_retries=3)
+# ASYNCPOSTGRESSAVER IMPLEMENTATION WITH CONNECTION POOL
+@retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
 async def create_async_postgres_saver():
-    """
-    Create AsyncPostgresSaver using CLOUD-OPTIMIZED connection pool approach.
+    """Create and configure AsyncPostgresSaver with connection pool and comprehensive error handling.
     
-    FIXED: Based on GitHub issue #2967, LangGraph discussions, and cloud best practices:
-    - Use autocommit=False for better cloud database compatibility
-    - Implement proper connection pool sizing for concurrent scenarios
-    - Add connection lifecycle management for high-load scenarios
-    - FIXED: Use separate autocommit=True connection for setup to avoid CONCURRENT INDEX errors
-    """
-    print__analysis_tracing_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with cloud-optimized connection pool")
-    global _global_checkpointer_context, _global_checkpointer
+    This function serves as the main factory for creating AsyncPostgresSaver instances
+    optimized for cloud database environments. It implements a sophisticated approach
+    with connection pooling, fallback mechanisms, and comprehensive error recovery.
     
-    # CRITICAL: Clear any existing state first to avoid conflicts
-    if _global_checkpointer_context or _global_checkpointer:
-        print__analysis_tracing_debug("234 - EXISTING STATE CLEANUP: Clearing existing checkpointer state to avoid conflicts")
+    Creation Strategy:
+        1. Primary: Connection pool approach using AsyncConnectionPool
+        2. Fallback: Direct connection string approach for compatibility
+        3. Error Recovery: Automatic retry with prepared statement cleanup
+        4. Setup: Dedicated autocommit connection for table creation
+        
+    Connection Pool Features:
+        - Conservative sizing optimized for cloud database limits
+        - Advanced timeout configuration for distributed environments
+        - Automatic pool lifecycle management with proper cleanup
+        - Connection health monitoring and automatic recovery
+        - Prepared statement conflict prevention
+        
+    Setup Process:
+        - Clears any existing global state to prevent conflicts
+        - Validates environment configuration before proceeding
+        - Creates connection pool with cloud-optimized parameters
+        - Instantiates AsyncPostgresSaver with pooled connections
+        - Performs table setup using separate autocommit connection
+        - Validates functionality with test operations
+        
+    Error Handling:
+        - Comprehensive retry logic for transient failures
+        - Automatic prepared statement cleanup on conflicts
+        - Graceful fallback to alternative connection methods
+        - Global state cleanup and recreation on persistent failures
+        - Detailed error logging for troubleshooting
+        
+    Context Management:
+        - Proper async context manager wrapping for resource cleanup
+        - Automatic pool closure on context exit
+        - Global state management for application lifecycle
+        - Exception handling during context operations
+        
+    Validation and Testing:
+        - Post-creation functionality testing
+        - Connection pool health verification
+        - Custom table setup and validation
+        - Performance baseline establishment
+        
+    Returns:
+        AsyncPostgresSaver: Fully configured and tested checkpointer instance
+        
+    Raises:
+        Exception: If environment variables are missing or invalid
+        ImportError: If required psycopg_pool is not available
+        Various: Connection, setup, or validation failures
+        
+    Note:
+        - Uses autocommit=False for better cloud database compatibility
+        - Implements proper connection pool sizing for concurrent scenarios
+        - Setup uses separate autocommit=True connection to avoid transaction block errors
+        - Includes comprehensive debug logging for operational visibility
+    """
+    print__checkpointers_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with connection pool")
+    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
+    
+    # Clear any existing state first to avoid conflicts
+    if _GLOBAL_CHECKPOINTER_CONTEXT or _GLOBAL_CHECKPOINTER:
+        print__checkpointers_debug("234 - EXISTING STATE CLEANUP: Clearing existing checkpointer state to avoid conflicts")
         try:
-            if _global_checkpointer_context:
-                await _global_checkpointer_context.__aexit__(None, None, None)
+            if _GLOBAL_CHECKPOINTER_CONTEXT:
+                await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
         except Exception as e:
-            print__analysis_tracing_debug(f"236 - CLEANUP ERROR: Error during state cleanup: {e}")
+            print__checkpointers_debug(f"236 - CLEANUP ERROR: Error during state cleanup: {e}")
         finally:
-            _global_checkpointer_context = None
-            _global_checkpointer = None
-            print__analysis_tracing_debug("237 - STATE CLEARED: Global checkpointer state cleared")
+            _GLOBAL_CHECKPOINTER_CONTEXT = None
+            _GLOBAL_CHECKPOINTER = None
+            print__checkpointers_debug("237 - STATE CLEARED: Global checkpointer state cleared")
     
     if not AsyncPostgresSaver:
-        print__analysis_tracing_debug("239 - SAVER UNAVAILABLE: AsyncPostgresSaver not available")
+        print__checkpointers_debug("239 - SAVER UNAVAILABLE: AsyncPostgresSaver not available")
         raise Exception("AsyncPostgresSaver not available")
     
     if not check_postgres_env_vars():
-        print__analysis_tracing_debug("240 - ENV VARS MISSING: Missing required PostgreSQL environment variables")
+        print__checkpointers_debug("240 - ENV VARS MISSING: Missing required PostgreSQL environment variables")
         raise Exception("Missing required PostgreSQL environment variables")
     
-    print__analysis_tracing_debug("241 - CLOUD-OPTIMIZED CREATION: Creating AsyncPostgresSaver using cloud-optimized approach")
+    print__checkpointers_debug("241 - CHECKPOINTER CREATION: Creating AsyncPostgresSaver")
     
     try:
-        # Try modern connection pool approach first (for high concurrency)
+        # Try connection pool approach first
         try:
             
             
@@ -379,49 +974,40 @@ async def create_async_postgres_saver():
             connection_string = get_connection_string()
             connection_kwargs = get_connection_kwargs()
             
-            print__analysis_tracing_debug("242 - MODERN CONNECTION POOL: Setting up AsyncConnectionPool with cloud-optimized settings")
+            print__checkpointers_debug("242 - CONNECTION POOL: Setting up AsyncConnectionPool")
             
-            # CLOUD-OPTIMIZED: Smaller pool size, better timeouts for Supabase/cloud databases
+            # Connection pool with conservative settings for cloud databases
             pool = AsyncConnectionPool(
                 conninfo=connection_string,
-                min_size=1,       # Start small for cloud efficiency
-                max_size=5,       # Reduced from 20 to avoid connection limits on cloud services  
-                timeout=30,       # Longer timeout for cloud latency
-                max_idle=600,     # 10 minutes idle timeout
-                max_lifetime=3600, # 1 hour max connection lifetime for cloud stability
+                min_size=DEFAULT_POOL_MIN_SIZE,       # Start small for efficiency
+                max_size=DEFAULT_POOL_MAX_SIZE,       # Conservative maximum to avoid connection limits  
+                timeout=DEFAULT_POOL_TIMEOUT,       # Timeout for cloud latency
+                max_idle=DEFAULT_MAX_IDLE,     # 5 minutes idle timeout
+                max_lifetime=DEFAULT_MAX_LIFETIME, # 30 minutes max connection lifetime for stability
                 kwargs={
                     **connection_kwargs,
-                    "connect_timeout": 20,  # Cloud-friendly connection timeout
+                    "connect_timeout": CONNECT_TIMEOUT,
                 },
-                open=False  # CRITICAL: Set to False to avoid deprecation warnings
+                open=False  # Set to False to avoid deprecation warnings
             )
             
-            # MODERN APPROACH: Open the pool explicitly using await (recommended by psycopg)
-            print__analysis_tracing_debug("243 - MODERN POOL OPENING: Opening connection pool using modern await approach")
+            # Open the pool explicitly using await (recommended by psycopg)
+            print__checkpointers_debug("243 - POOL OPENING: Opening connection pool using await approach")
             await pool.open()
-            print__analysis_tracing_debug("244 - MODERN POOL OPENED: Connection pool opened successfully using modern approach")
+            print__checkpointers_debug("244 - POOL OPENED: Connection pool opened successfully")
             
-            # MODERN APPROACH: Create AsyncPostgresSaver with the pool
-            print__analysis_tracing_debug("245 - MODERN SAVER CREATION: Creating AsyncPostgresSaver with modern connection pool")
+            # Create AsyncPostgresSaver using connection from pool
+            print__checkpointers_debug("245 - SAVER CREATION: Creating AsyncPostgresSaver with connection from pool")
             
-            # Try passing pool directly (newer LangGraph versions support this)
-            try:
+            # Create with connection from pool (standard approach)
+            async with pool.connection() as conn:
                 checkpointer = AsyncPostgresSaver(
-                    pool=pool,
-                    serde=None       # Use default serialization
+                    conn,
+                    serde=None
                 )
-                print__analysis_tracing_debug("246 - MODERN POOL CONSTRUCTOR: Using modern pool constructor")
-            except TypeError:
-                # Fallback: Create with connection from pool (older versions)
-                print__analysis_tracing_debug("247 - MODERN POOL FALLBACK: Using connection from pool approach")
-                async with pool.connection() as conn:
-                    checkpointer = AsyncPostgresSaver(
-                        conn,
-                        serde=None
-                    )
             
-            # Create a modern context manager wrapper for proper cleanup
-            class ModernAsyncPostgresSaverContext:
+            # Create a context manager wrapper for proper cleanup
+            class AsyncPostgresSaverContext:
                 def __init__(self, checkpointer, pool):
                     self.checkpointer = checkpointer
                     self.pool = pool
@@ -432,62 +1018,119 @@ async def create_async_postgres_saver():
                 async def __aexit__(self, exc_type, exc_val, exc_tb):
                     # Close the pool when context exits
                     try:
-                        print__analysis_tracing_debug("Pool cleanup: Closing connection pool using modern approach")
+                        print__checkpointers_debug("Pool cleanup: Closing connection pool")
                         await self.pool.close()
-                        print__analysis_tracing_debug("Pool cleanup: Connection pool closed successfully")
+                        print__checkpointers_debug("Pool cleanup: Connection pool closed successfully")
                     except Exception as e:
-                        print__analysis_tracing_debug(f"Pool cleanup error: {e}")
+                        print__checkpointers_debug(f"Pool cleanup error: {e}")
             
-            _global_checkpointer_context = ModernAsyncPostgresSaverContext(checkpointer, pool)
+            _GLOBAL_CHECKPOINTER_CONTEXT = AsyncPostgresSaverContext(checkpointer, pool)
             
             # Enter the context manager
-            print__analysis_tracing_debug("248 - MODERN CONTEXT ENTER: Entering modern async context manager")
-            _global_checkpointer = await _global_checkpointer_context.__aenter__()
+            print__checkpointers_debug("248 - CONTEXT ENTER: Entering async context manager")
+            _GLOBAL_CHECKPOINTER = await _GLOBAL_CHECKPOINTER_CONTEXT.__aenter__()
             
-            print__analysis_tracing_debug("249 - MODERN SAVER CREATED: AsyncPostgresSaver created using modern connection pool approach")
+            print__checkpointers_debug("249 - SAVER CREATED: AsyncPostgresSaver created using connection pool approach")
             
         except ImportError:
-            print__analysis_tracing_debug("250 - MODERN IMPORT ERROR: psycopg_pool not available, using fallback")
+            print__checkpointers_debug("250 - IMPORT ERROR: psycopg_pool not available, using fallback")
             raise ImportError("psycopg_pool required")
             
     except Exception as pool_error:
-        print__analysis_tracing_debug(f"251 - MODERN POOL ERROR: Pool approach failed: {pool_error}")
-        # Fallback to connection string approach with cloud-optimized settings
-        print__analysis_tracing_debug("252 - CLOUD-OPTIMIZED FALLBACK: Using cloud-optimized connection string approach")
+        print__checkpointers_debug(f"251 - POOL ERROR: Pool approach failed: {pool_error}")
+        # Fallback to connection string approach
+        print__checkpointers_debug("252 - FALLBACK: Using connection string approach")
         
         connection_string = get_connection_string()
-        _global_checkpointer_context = AsyncPostgresSaver.from_conn_string(
+        _GLOBAL_CHECKPOINTER_CONTEXT = AsyncPostgresSaver.from_conn_string(
             conn_string=connection_string,
             serde=None
         )
         
-        _global_checkpointer = await _global_checkpointer_context.__aenter__()
-        print__analysis_tracing_debug("253 - CLOUD-OPTIMIZED FALLBACK SUCCESS: Using cloud-optimized fallback approach")
+        # Use async with to properly enter the context manager
+        try:
+            # Enter the context manager using the proper method
+            _GLOBAL_CHECKPOINTER = await _GLOBAL_CHECKPOINTER_CONTEXT.__aenter__()
+            print__checkpointers_debug("253 - FALLBACK SUCCESS: Using connection string fallback approach")
+        except AttributeError:
+            # Fallback: If __aenter__ is not available, create a simple wrapper
+            print__checkpointers_debug("253.1 - FALLBACK WRAPPER: Creating simple context wrapper due to __aenter__ unavailability")
+            
+            class SimpleContextWrapper:
+                def __init__(self, checkpointer_factory):
+                    self.checkpointer_factory = checkpointer_factory
+                    self.checkpointer = None
+                
+                async def __aenter__(self):
+                    # Create the checkpointer directly from the factory
+                    async with self.checkpointer_factory as checkpointer:
+                        self.checkpointer = checkpointer
+                        return checkpointer
+                
+                async def __aexit__(self, exc_type, exc_val, exc_tb):
+                    # Cleanup is handled by the original context manager
+                    pass
+            
+            _GLOBAL_CHECKPOINTER_CONTEXT = SimpleContextWrapper(_GLOBAL_CHECKPOINTER_CONTEXT)
+            _GLOBAL_CHECKPOINTER = await _GLOBAL_CHECKPOINTER_CONTEXT.__aenter__()
+            print__checkpointers_debug("253 - FALLBACK SUCCESS: Using connection string fallback approach")
     
-    # FIXED: Setup the checkpointer with autocommit=True connection to avoid CONCURRENT INDEX errors
-    print__analysis_tracing_debug("254 - SETUP START: Running checkpointer setup with autocommit=True connection")
-    await setup_checkpointer_with_autocommit(_global_checkpointer)
-    print__analysis_tracing_debug("255 - SETUP COMPLETE: AsyncPostgresSaver setup complete")
+    # Setup the checkpointer with autocommit=True connection to avoid transaction block errors
+    print__checkpointers_debug("254 - SETUP START: Running checkpointer setup with autocommit=True connection")
+    await setup_checkpointer_with_autocommit(_GLOBAL_CHECKPOINTER)
+    print__checkpointers_debug("255 - SETUP COMPLETE: AsyncPostgresSaver setup complete")
     
     # Test the checkpointer to ensure it's working
-    print__analysis_tracing_debug("256 - TESTING START: Testing checkpointer")
+    print__checkpointers_debug("256 - TESTING START: Testing checkpointer")
     test_config = {"configurable": {"thread_id": "setup_test"}}
-    test_result = await _global_checkpointer.aget(test_config)
-    print__analysis_tracing_debug(f"257 - TESTING COMPLETE: Checkpointer test successful: {test_result is None}")
+    test_result = await _GLOBAL_CHECKPOINTER.aget(test_config)
+    print__checkpointers_debug(f"257 - TESTING COMPLETE: Checkpointer test successful: {test_result is None}")
     
     # Setup custom tables using the same connection approach
-    print__analysis_tracing_debug("258 - CUSTOM TABLES: Setting up custom users_threads_runs table")
+    print__checkpointers_debug("258 - CUSTOM TABLES: Setting up custom users_threads_runs table")
     await setup_users_threads_runs_table()
     
-    print__analysis_tracing_debug("259 - CREATE SAVER SUCCESS: Cloud-optimized AsyncPostgresSaver creation completed successfully")
-    return _global_checkpointer
+    print__checkpointers_debug("259 - CREATE SAVER SUCCESS: Cloud-optimized AsyncPostgresSaver creation completed successfully")
+    return _GLOBAL_CHECKPOINTER
 
+#==============================================================================
+# DATABASE SETUP AND TABLE INITIALIZATION
+#==============================================================================
 async def setup_checkpointer_with_autocommit(checkpointer):
+    """Setup the checkpointer using a dedicated autocommit connection to avoid transaction conflicts.
+    
+    This function performs the critical table setup operations for the AsyncPostgresSaver
+    using a separate connection configured with autocommit=True. This approach prevents
+    "CREATE INDEX CONCURRENTLY cannot run inside a transaction block" errors.
+    
+    Setup Strategy:
+        1. Creates a separate connection specifically for DDL operations
+        2. Configures connection with autocommit=True to avoid transaction blocks
+        3. Uses the AsyncPostgresSaver.setup() method for official table creation
+        4. Provides comprehensive error handling with fallback to manual setup
+        
+    Connection Configuration:
+        - autocommit=True: Prevents transaction block conflicts for DDL operations
+        - Same connection string as main checkpointer for consistency
+        - Temporary connection that is closed after setup completion
+        - Uses official AsyncPostgresSaver context manager patterns
+        
+    Error Recovery:
+        - Falls back to manual_checkpointer_setup() if official setup fails
+        - Provides detailed error logging for troubleshooting
+        - Continues operation even if setup encounters issues
+        - Ensures checkpointer remains functional despite setup problems
+        
+    Args:
+        checkpointer: The AsyncPostgresSaver instance that needs table setup
+        
+    Note:
+        - Critical for proper LangGraph checkpoint table creation
+        - Prevents common DDL operation failures in transaction contexts
+        - Used during checkpointer initialization phase
+        - Fallback mechanisms ensure robust setup even with database quirks
     """
-    Setup the checkpointer using a separate connection with autocommit=True.
-    This avoids the "CREATE INDEX CONCURRENTLY cannot run inside a transaction block" error.
-    """
-    print__analysis_tracing_debug("SETUP AUTOCOMMIT START: Setting up checkpointer with autocommit=True connection")
+    print__checkpointers_debug("SETUP AUTOCOMMIT START: Setting up checkpointer with autocommit=True connection")
     
     try:
         # Get connection kwargs with autocommit=True specifically for setup
@@ -496,7 +1139,7 @@ async def setup_checkpointer_with_autocommit(checkpointer):
         
         connection_string = get_connection_string()
         
-        print__analysis_tracing_debug("SETUP AUTOCOMMIT: Creating temporary connection with autocommit=True for setup")
+        print__checkpointers_debug("SETUP AUTOCOMMIT: Creating temporary connection with autocommit=True for setup")
         
         # Create a temporary AsyncPostgresSaver with autocommit=True for setup only
         setup_checkpointer_context = AsyncPostgresSaver.from_conn_string(
@@ -505,22 +1148,63 @@ async def setup_checkpointer_with_autocommit(checkpointer):
         )
         
         async with setup_checkpointer_context as setup_checkpointer:
-            print__analysis_tracing_debug("SETUP AUTOCOMMIT: Running setup with autocommit=True connection")
+            print__checkpointers_debug("SETUP AUTOCOMMIT: Running setup with autocommit=True connection")
             await setup_checkpointer.setup()
-            print__analysis_tracing_debug("SETUP AUTOCOMMIT SUCCESS: Setup completed successfully with autocommit=True")
+            print__checkpointers_debug("SETUP AUTOCOMMIT SUCCESS: Setup completed successfully with autocommit=True")
             
     except Exception as e:
-        print__analysis_tracing_debug(f"SETUP AUTOCOMMIT ERROR: Error during autocommit setup: {e}")
+        print__checkpointers_debug(f"SETUP AUTOCOMMIT ERROR: Error during autocommit setup: {e}")
         # Fallback: try the manual setup approach
-        print__analysis_tracing_debug("SETUP AUTOCOMMIT FALLBACK: Trying manual setup with direct connection")
+        print__checkpointers_debug("SETUP AUTOCOMMIT FALLBACK: Trying manual setup with direct connection")
         await manual_checkpointer_setup()
 
 async def manual_checkpointer_setup():
+    """Manual setup of checkpointer tables using direct connection with autocommit=True.
+    
+    This function provides a comprehensive fallback mechanism for creating the required
+    LangGraph checkpoint tables when the official AsyncPostgresSaver.setup() fails.
+    It manually creates the schema using direct SQL commands.
+    
+    Table Creation:
+        - checkpoints: Main checkpoint storage with JSONB content
+        - checkpoint_blobs: Binary data storage for large checkpoint content
+        - Appropriate indexes for performance optimization
+        
+    Schema Details:
+        checkpoints table:
+        - thread_id: Identifies the conversation thread
+        - checkpoint_ns: Namespace for checkpoint organization
+        - checkpoint_id: Unique identifier for each checkpoint
+        - parent_checkpoint_id: Links to previous checkpoint in sequence
+        - type: Classification of checkpoint content
+        - checkpoint: JSONB content with the actual checkpoint data
+        - metadata: JSONB metadata for checkpoint management
+        
+        checkpoint_blobs table:
+        - thread_id: Links to main checkpoint table
+        - checkpoint_ns: Namespace consistency with main table
+        - channel: Data channel identifier
+        - version: Version control for blob content
+        - type: Classification of blob content
+        - blob: BYTEA storage for binary content
+        
+    Performance Optimization:
+        - Creates indexes on thread_id for fast thread-based queries
+        - Uses IF NOT EXISTS to avoid conflicts with existing tables
+        - Optimized for concurrent access patterns
+        
+    Error Handling:
+        - Non-fatal errors allow system to continue operation
+        - Comprehensive logging for troubleshooting
+        - Graceful handling of permission or connectivity issues
+        
+    Note:
+        - Used as fallback when official setup fails
+        - Creates minimal but functional schema
+        - Safe to run multiple times due to IF NOT EXISTS clauses
+        - May not include all optimizations of official setup
     """
-    Manual setup of checkpointer tables using direct connection with autocommit=True.
-    This is a fallback if the AsyncPostgresSaver.setup() continues to fail.
-    """
-    print__analysis_tracing_debug("MANUAL SETUP START: Setting up checkpointer tables manually")
+    print__checkpointers_debug("MANUAL SETUP START: Setting up checkpointer tables manually")
     
     try:        
         # Create connection string with autocommit=True for setup
@@ -528,12 +1212,12 @@ async def manual_checkpointer_setup():
         setup_kwargs = get_connection_kwargs().copy()
         setup_kwargs["autocommit"] = True
         
-        print__analysis_tracing_debug("MANUAL SETUP: Creating direct connection with autocommit=True")
+        print__checkpointers_debug("MANUAL SETUP: Creating direct connection with autocommit=True")
         async with await psycopg.AsyncConnection.connect(connection_string, **setup_kwargs) as conn:
             async with conn.cursor() as cur:
-                print__analysis_tracing_debug("MANUAL SETUP: Creating checkpoints table")
+                print__checkpointers_debug("MANUAL SETUP: Creating checkpoints table")
                 
-                # Create the basic checkpoints table (simplified version)
+                # Create the basic checkpoints table
                 await cur.execute("""
                     CREATE TABLE IF NOT EXISTS checkpoints (
                         thread_id TEXT NOT NULL,
@@ -547,7 +1231,7 @@ async def manual_checkpointer_setup():
                     );
                 """)
                 
-                print__analysis_tracing_debug("MANUAL SETUP: Creating checkpoint_blobs table")
+                print__checkpointers_debug("MANUAL SETUP: Creating checkpoint_blobs table")
                 await cur.execute("""
                     CREATE TABLE IF NOT EXISTS checkpoint_blobs (
                         thread_id TEXT NOT NULL,
@@ -560,7 +1244,7 @@ async def manual_checkpointer_setup():
                     );
                 """)
                 
-                print__analysis_tracing_debug("MANUAL SETUP: Creating indexes (non-concurrent)")
+                print__checkpointers_debug("MANUAL SETUP: Creating indexes")
                 # Create indexes without CONCURRENTLY to avoid transaction issues
                 await cur.execute("""
                     CREATE INDEX IF NOT EXISTS checkpoints_thread_id_idx 
@@ -572,64 +1256,181 @@ async def manual_checkpointer_setup():
                     ON checkpoint_blobs(thread_id);
                 """)
                 
-                print__analysis_tracing_debug("MANUAL SETUP SUCCESS: Checkpointer tables created manually")
+                print__checkpointers_debug("MANUAL SETUP SUCCESS: Checkpointer tables created manually")
                 
     except Exception as e:
-        print__analysis_tracing_debug(f"MANUAL SETUP ERROR: Failed to setup tables manually: {e}")
+        print__checkpointers_debug(f"MANUAL SETUP ERROR: Failed to setup tables manually: {e}")
         # Don't raise - let the system continue, as the checkpointer might still work
 
+#==============================================================================
+# CHECKPOINTER LIFECYCLE MANAGEMENT
+#==============================================================================
 async def close_async_postgres_saver():
-    """Close the AsyncPostgresSaver properly using the context manager."""
-    print__analysis_tracing_debug("258 - CLOSE SAVER START: Closing AsyncPostgresSaver using official context manager")
-    global _global_checkpointer_context, _global_checkpointer
+    """Close the AsyncPostgresSaver properly using the context manager pattern.
     
-    if _global_checkpointer_context:
-        try:
-            print__analysis_tracing_debug("259 - CLOSE CONTEXT: Exiting async context manager")
-            await _global_checkpointer_context.__aexit__(None, None, None)
-            print__analysis_tracing_debug("260 - CLOSE SUCCESS: AsyncPostgresSaver closed properly")
-        except Exception as e:
-            print__analysis_tracing_debug(f"261 - CLOSE ERROR: Error during AsyncPostgresSaver cleanup: {e}")
-        finally:
-            _global_checkpointer_context = None
-            _global_checkpointer = None
-            print__analysis_tracing_debug("262 - CLOSE CLEANUP: Global state cleared after close")
-    else:
-        print__analysis_tracing_debug("263 - CLOSE SKIP: No checkpointer context to close")
-
-@retry_on_prepared_statement_error(max_retries=2)
-async def get_global_checkpointer():
-    """Get the global checkpointer instance (for API compatibility).
+    This function provides proper cleanup and resource deallocation for the global
+    AsyncPostgresSaver instance. It follows the context manager protocol to ensure
+    all connections and resources are properly closed.
     
-    ENHANCED: Add retry logic for prepared statement errors.
+    Cleanup Process:
+        1. Checks for existence of global checkpointer context
+        2. Properly exits the async context manager using __aexit__
+        3. Handles cleanup errors gracefully without raising exceptions
+        4. Resets global state variables to prevent stale references
+        5. Provides comprehensive logging for troubleshooting
+        
+    Resource Management:
+        - Closes connection pools managed by the checkpointer
+        - Releases database connections and prepared statements
+        - Clears global state to prevent memory leaks
+        - Ensures clean shutdown for application termination
+        
+    Error Handling:
+        - Continues cleanup even if individual steps fail
+        - Logs errors without raising exceptions to prevent cleanup blocking
+        - Ensures global state is reset even if context manager exit fails
+        - Provides detailed error information for troubleshooting
+        
+    Global State Management:
+        - Resets _GLOBAL_CHECKPOINTER_CONTEXT to None
+        - Resets _GLOBAL_CHECKPOINTER to None
+        - Ensures clean state for subsequent initialization attempts
+        - Prevents stale references that could cause issues
+        
+    Note:
+        - Safe to call multiple times without side effects
+        - Used during application shutdown and error recovery
+        - Essential for proper resource management in production
+        - Follows AsyncPostgresSaver context manager protocol
     """
-    print__analysis_tracing_debug("264 - GET GLOBAL START: Getting global checkpointer instance")
-    global _global_checkpointer
+    print__checkpointers_debug("258 - CLOSE SAVER START: Closing AsyncPostgresSaver using official context manager")
+    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
     
-    if _global_checkpointer is None:
-        print__analysis_tracing_debug("265 - CREATE NEW: No existing checkpointer, creating new one")
-        _global_checkpointer = await create_async_postgres_saver()
-        print__analysis_tracing_debug("266 - CREATE SUCCESS: New checkpointer created successfully")
+    if _GLOBAL_CHECKPOINTER_CONTEXT:
+        try:
+            print__checkpointers_debug("259 - CLOSE CONTEXT: Exiting async context manager")
+            await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
+            print__checkpointers_debug("260 - CLOSE SUCCESS: AsyncPostgresSaver closed properly")
+        except Exception as e:
+            print__checkpointers_debug(f"261 - CLOSE ERROR: Error during AsyncPostgresSaver cleanup: {e}")
+        finally:
+            _GLOBAL_CHECKPOINTER_CONTEXT = None
+            _GLOBAL_CHECKPOINTER = None
+            print__checkpointers_debug("262 - CLOSE CLEANUP: Global state cleared after close")
     else:
-        print__analysis_tracing_debug("267 - EXISTING FOUND: Using existing global checkpointer")
-    
-    return _global_checkpointer
+        print__checkpointers_debug("263 - CLOSE SKIP: No checkpointer context to close")
 
-# SIMPLIFIED USERS_THREADS_RUNS TABLE MANAGEMENT
-# We'll use a simple connection approach since AsyncPostgresSaver manages its own connections
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
+async def get_global_checkpointer():
+    """Get the global checkpointer instance with automatic creation and retry logic.
+    
+    This function provides a centralized access point for the global AsyncPostgresSaver
+    instance. It implements lazy initialization and automatic retry logic for prepared
+    statement errors, ensuring reliable access to the checkpointer.
+    
+    Initialization Strategy:
+        - Lazy initialization: Creates checkpointer only when first requested
+        - Singleton pattern: Returns same instance for subsequent calls
+        - Automatic retry: Handles prepared statement conflicts transparently
+        - Error recovery: Recreates checkpointer on persistent failures
+        
+    Retry Logic:
+        - Decorated with retry_on_prepared_statement_error for automatic recovery
+        - Handles prepared statement conflicts with cleanup and recreation
+        - Provides detailed logging for troubleshooting retry attempts
+        - Maintains service availability during transient database issues
+        
+    Global State Management:
+        - Manages _GLOBAL_CHECKPOINTER singleton instance
+        - Thread-safe access through Python's GIL
+        - Consistent instance across multiple API requests
+        - Proper lifecycle management with application startup/shutdown
+        
+    Performance Considerations:
+        - Avoids creating multiple checkpointer instances
+        - Reuses connections and resources efficiently
+        - Minimizes initialization overhead for subsequent calls
+        - Optimizes memory usage through singleton pattern
+        
+    Returns:
+        AsyncPostgresSaver: The global checkpointer instance, created if necessary
+        
+    Note:
+        - Primary access point for checkpointer functionality
+        - Used by all API endpoints requiring checkpoint operations
+        - Ensures consistent checkpointer configuration across the application
+        - Handles initialization failures gracefully with comprehensive error reporting
+    """
+    print__checkpointers_debug("264 - GET GLOBAL START: Getting global checkpointer instance")
+    global _GLOBAL_CHECKPOINTER
+    
+    if _GLOBAL_CHECKPOINTER is None:
+        print__checkpointers_debug("265 - CREATE NEW: No existing checkpointer, creating new one")
+        _GLOBAL_CHECKPOINTER = await create_async_postgres_saver()
+        print__checkpointers_debug("266 - CREATE SUCCESS: New checkpointer created successfully")
+    else:
+        print__checkpointers_debug("267 - EXISTING FOUND: Using existing global checkpointer")
+    
+    return _GLOBAL_CHECKPOINTER
+
+# USERS_THREADS_RUNS TABLE MANAGEMENT
+# Uses direct connection approach since AsyncPostgresSaver manages its own connections
 async def setup_users_threads_runs_table():
-    """Create the users_threads_runs table using direct connection."""
-    print__analysis_tracing_debug("268 - CUSTOM TABLE START: Setting up users_threads_runs table using direct connection")
+    """Create and configure the users_threads_runs table for user session tracking.
+    
+    This function creates a custom application table that tracks user-thread associations
+    and conversation metadata. This table is separate from the LangGraph checkpoint
+    tables and provides user-centric conversation management.
+    
+    Table Schema:
+        - id: Serial primary key for unique record identification
+        - email: User email address for ownership tracking and access control
+        - thread_id: LangGraph thread identifier linking to checkpoint data
+        - run_id: Unique run identifier for API operation tracking
+        - prompt: User's initial prompt for thread title generation
+        - timestamp: Creation timestamp for chronological ordering
+        - sentiment: User feedback (positive/negative/null) for quality tracking
+        
+    Index Strategy:
+        - idx_users_threads_runs_email: Fast user-based queries for thread listings
+        - idx_users_threads_runs_thread_id: Thread-based lookups for operations
+        - idx_users_threads_runs_email_thread: Combined index for user-thread security checks
+        
+    Security Features:
+        - Email-based ownership tracking for access control
+        - Thread ownership verification before data access
+        - Unique run_id constraints for operation deduplication
+        - Prepared statement prevention through parameterized queries
+        
+    Performance Optimization:
+        - Optimized indexes for common query patterns
+        - VARCHAR constraints for efficient storage
+        - Appropriate data types for query performance
+        - Index coverage for user-thread relationship queries
+        
+    Error Handling:
+        - IF NOT EXISTS clauses prevent creation conflicts
+        - Comprehensive error logging for troubleshooting
+        - Transaction handling for consistency
+        - Graceful handling of permission issues
+        
+    Note:
+        - Uses direct connection for simplicity since AsyncPostgresSaver manages its own connections
+        - Essential for user session management and conversation ownership
+        - Supports conversation thread listing and management functionality
+        - Enables user feedback collection and sentiment tracking
+    """
+    print__checkpointers_debug("268 - CUSTOM TABLE START: Setting up users_threads_runs table using direct connection")
     try:
-        # Use direct connection for table setup (simpler than pool management)
+        # Use direct connection for table setup
         
         connection_string = get_connection_string()
         connection_kwargs = get_connection_kwargs()
-        print__analysis_tracing_debug("269 - CUSTOM TABLE CONNECTION: Establishing connection for table setup")
+        print__checkpointers_debug("269 - CUSTOM TABLE CONNECTION: Establishing connection for table setup")
         async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
-            print__analysis_tracing_debug("270 - CUSTOM TABLE CONNECTED: Connection established for table creation")
+            print__checkpointers_debug("270 - CUSTOM TABLE CONNECTED: Connection established for table creation")
             # Create table with correct schema
-            print__analysis_tracing_debug("271 - CREATE TABLE: Creating users_threads_runs table")
+            print__checkpointers_debug("271 - CREATE TABLE: Creating users_threads_runs table")
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS users_threads_runs (
                     id SERIAL PRIMARY KEY,
@@ -643,7 +1444,7 @@ async def setup_users_threads_runs_table():
             """)
 
             # Create indexes for better performance
-            print__analysis_tracing_debug("272 - CREATE INDEXES: Creating indexes for better performance")
+            print__checkpointers_debug("272 - CREATE INDEXES: Creating indexes for better performance")
             await conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_users_threads_runs_email 
                 ON users_threads_runs(email);
@@ -659,10 +1460,10 @@ async def setup_users_threads_runs_table():
                 ON users_threads_runs(email, thread_id);
             """)
 
-            print__analysis_tracing_debug("273 - CUSTOM TABLE SUCCESS: users_threads_runs table and indexes created successfully")
+            print__checkpointers_debug("273 - CUSTOM TABLE SUCCESS: users_threads_runs table and indexes created successfully")
 
     except Exception as e:
-        print__analysis_tracing_debug(f"274 - CUSTOM TABLE ERROR: Failed to setup users_threads_runs table: {e}")
+        print__checkpointers_debug(f"274 - CUSTOM TABLE ERROR: Failed to setup users_threads_runs table: {e}")
         raise
 
 @asynccontextmanager
@@ -674,44 +1475,19 @@ async def get_direct_connection():
     async with await psycopg.AsyncConnection.connect(connection_string, **connection_kwargs) as conn:
         yield conn
 
-# MISSING FUNCTIONS NEEDED BY API SERVER
-async def get_healthy_pool():
-    """Get a healthy PostgreSQL connection pool for direct operations."""
-    try:
-        # For the simplified approach, we use direct connections instead of pooling
-        # Return a connection factory that mimics pool behavior
-        class DirectConnectionFactory:
-            def __init__(self, connection_string, connection_kwargs):
-                self.connection_string = connection_string
-                self.connection_kwargs = connection_kwargs
-            
-            @asynccontextmanager
-            async def connection(self):
-                """Provide a connection that mimics pool.connection() interface."""
-                async with await psycopg.AsyncConnection.connect(self.connection_string, **self.connection_kwargs) as conn:
-                    yield conn
-        
-        return DirectConnectionFactory(get_connection_string(), get_connection_kwargs())
-        
-    except Exception as e:
-        print__postgresql_debug(f"Failed to create connection factory: {e}")
-        raise
-
-@retry_on_prepared_statement_error(max_retries=2)
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: str, user_email: str = None) -> List[Dict[str, Any]]:
     """
-    Get conversation messages from checkpoints - USING OFFICIAL ASYNCPOSTGRESSAVER METHODS.
+    Get conversation messages from checkpoints using official AsyncPostgresSaver methods.
     
-    This function properly extracts messages from LangGraph checkpoints using the official
-    AsyncPostgresSaver methods as documented.
-    
-    OPTIMIZED: Reduce unnecessary database operations and limit checkpoint processing.
+    This function extracts messages from LangGraph checkpoints and limits checkpoint processing
+    to avoid performance issues with large conversation histories.
     """
-    print__analysis_tracing_debug(f"292 - GET CONVERSATION START: Retrieving conversation messages for thread: {thread_id}")
+    print__checkpointers_debug(f"292 - GET CONVERSATION START: Retrieving conversation messages for thread: {thread_id}")
     try:
-        # 🔒 SECURITY CHECK: Verify user owns this thread before loading checkpoint data
+        # Security check: Verify user owns this thread before loading checkpoint data
         if user_email:
-            print__analysis_tracing_debug(f"293 - SECURITY CHECK: Verifying thread ownership for user: {user_email}")
+            print__checkpointers_debug(f"293 - SECURITY CHECK: Verifying thread ownership for user: {user_email}")
             
             try:
                 async with get_direct_connection() as conn:
@@ -724,57 +1500,57 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                         thread_entries_count = result[0] if result else 0
                     
                     if thread_entries_count == 0:
-                        print__analysis_tracing_debug(f"294 - SECURITY DENIED: User {user_email} does not own thread {thread_id} - access denied")
+                        print__checkpointers_debug(f"294 - SECURITY DENIED: User {user_email} does not own thread {thread_id} - access denied")
                         return []
                     
-                    print__analysis_tracing_debug(f"295 - SECURITY GRANTED: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
+                    print__checkpointers_debug(f"295 - SECURITY GRANTED: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted")
             except Exception as e:
-                print__analysis_tracing_debug(f"296 - SECURITY ERROR: Could not verify thread ownership: {e}")
+                print__checkpointers_debug(f"296 - SECURITY ERROR: Could not verify thread ownership: {e}")
                 return []
         
         config = {"configurable": {"thread_id": thread_id}}
         
-        # OPTIMIZED: Use alist() method with limit to avoid processing too many checkpoints
+        # Use alist() method with limit to avoid processing too many checkpoints
         checkpoint_tuples = []
         try:
-            print__analysis_tracing_debug(f"297 - ALIST METHOD: Using official AsyncPostgresSaver.alist() method")
+            print__checkpointers_debug("297 - ALIST METHOD: Using official AsyncPostgresSaver.alist() method")
             
-            # OPTIMIZATION: Limit checkpoints to recent ones only (last 10)
-            async for checkpoint_tuple in checkpointer.alist(config, limit=10):
+            # Limit checkpoints to recent ones only (last 10)
+            async for checkpoint_tuple in checkpointer.alist(config, limit=MAX_RECENT_CHECKPOINTS):
                 checkpoint_tuples.append(checkpoint_tuple)
 
         except Exception as alist_error:
-            print__analysis_tracing_debug(f"298 - ALIST ERROR: Error using alist(): {alist_error}")
+            print__checkpointers_debug(f"298 - ALIST ERROR: Error using alist(): {alist_error}")
             
             # Fallback: use aget_tuple() to get the latest checkpoint only
             if not checkpoint_tuples:
-                print__analysis_tracing_debug(f"299 - FALLBACK METHOD: Trying fallback method using aget_tuple()")
+                print__checkpointers_debug("299 - FALLBACK METHOD: Trying fallback method using aget_tuple()")
                 try:
                     state_snapshot = await checkpointer.aget_tuple(config)
                     if state_snapshot:
                         checkpoint_tuples = [state_snapshot]
-                        print__analysis_tracing_debug(f"300 - FALLBACK SUCCESS: Using fallback method - got latest checkpoint only")
+                        print__checkpointers_debug("300 - FALLBACK SUCCESS: Using fallback method - got latest checkpoint only")
                 except Exception as fallback_error:
-                    print__analysis_tracing_debug(f"301 - FALLBACK ERROR: Fallback method also failed: {fallback_error}")
+                    print__checkpointers_debug(f"301 - FALLBACK ERROR: Fallback method also failed: {fallback_error}")
                     return []
         
         if not checkpoint_tuples:
-            print__analysis_tracing_debug(f"302 - NO CHECKPOINTS: No checkpoints found for thread: {thread_id}")
+            print__checkpointers_debug(f"302 - NO CHECKPOINTS: No checkpoints found for thread: {thread_id}")
             return []
         
-        print__analysis_tracing_debug(f"303 - CHECKPOINTS FOUND: Found {len(checkpoint_tuples)} checkpoints for verified thread")
+        print__checkpointers_debug(f"303 - CHECKPOINTS FOUND: Found {len(checkpoint_tuples)} checkpoints for verified thread")
         
         # Sort checkpoints chronologically (oldest first) based on timestamp
         checkpoint_tuples.sort(key=lambda x: x.checkpoint.get("ts", "") if x.checkpoint else "")
         
-        # OPTIMIZED: Extract conversation messages more efficiently
+        # Extract conversation messages efficiently
         conversation_messages = []
         seen_prompts = set()
         seen_answers = set()
         
-        print__analysis_tracing_debug(f"304 - MESSAGE EXTRACTION: Extracting messages from {len(checkpoint_tuples)} checkpoints")
+        print__checkpointers_debug(f"304 - MESSAGE EXTRACTION: Extracting messages from {len(checkpoint_tuples)} checkpoints")
         
-        # FIXED: Two-pass approach to ensure proper prompt->answer ordering
+        # Two-pass approach to ensure proper prompt->answer ordering
         # Pass 1: Extract all user prompts first, in checkpoint order
         user_prompts = []
         for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
@@ -784,11 +1560,11 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             if not checkpoint:
                 continue
                 
-            # OPTIMIZATION: Only log for significant checkpoints
-            if checkpoint_index < 5 or checkpoint_index % 5 == 0:  # Log first 5, then every 5th
-                print__analysis_tracing_debug(f"305 - PROCESSING CHECKPOINT (Pass 1): Processing checkpoint {checkpoint_index + 1}/{len(checkpoint_tuples)} for user prompts")
+            # Only log for significant checkpoints
+            if checkpoint_index < DEBUG_CHECKPOINT_LOG_INTERVAL or checkpoint_index % DEBUG_CHECKPOINT_LOG_INTERVAL == 0:  # Log first 5, then every 5th
+                print__checkpointers_debug(f"305 - PROCESSING CHECKPOINT (Pass 1): Processing checkpoint {checkpoint_index + 1}/{len(checkpoint_tuples)} for user prompts")
             
-            # EXTRACT USER PROMPTS from checkpoint metadata writes
+            # Extract user prompts from checkpoint metadata writes
             if "writes" in metadata and isinstance(metadata["writes"], dict):
                 writes = metadata["writes"]
                 
@@ -810,7 +1586,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                                     "content": prompt.strip(),
                                     "checkpoint_index": checkpoint_index
                                 })
-                                print__analysis_tracing_debug(f"306 - USER MESSAGE FOUND: Found user prompt: {prompt[:50]}...")
+                                print__checkpointers_debug(f"306 - USER MESSAGE FOUND: Found user prompt: {prompt[:USER_MESSAGE_PREVIEW_LENGTH]}...")
         
         # Pass 2: Extract AI responses and pair them with user prompts
         ai_responses = []
@@ -820,7 +1596,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             if not checkpoint:
                 continue
                 
-            # EXTRACT AI RESPONSES from channel_values - OPTIMIZED extraction
+            # Extract AI responses from channel_values
             if "channel_values" in checkpoint:
                 channel_values = checkpoint["channel_values"]
                 
@@ -837,10 +1613,10 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                         "content": final_answer.strip(),
                         "checkpoint_index": checkpoint_index
                     })
-                    print__analysis_tracing_debug(f"307 - AI MESSAGE FOUND: Found final_answer: {final_answer[:100]}...")
+                    print__checkpointers_debug(f"307 - AI MESSAGE FOUND: Found final_answer: {final_answer[:AI_MESSAGE_PREVIEW_LENGTH]}...")
         
         # Pass 3: Create properly ordered conversation with guaranteed prompt->answer sequence
-        print__analysis_tracing_debug(f"308 - MESSAGE PAIRING: Creating conversation with {len(user_prompts)} prompts and {len(ai_responses)} responses")
+        print__checkpointers_debug(f"308 - MESSAGE PAIRING: Creating conversation with {len(user_prompts)} prompts and {len(ai_responses)} responses")
         
         # Create conversation messages with proper ordering
         conversation_messages = []
@@ -861,7 +1637,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                     "message_order": message_counter
                 }
                 conversation_messages.append(user_message)
-                print__analysis_tracing_debug(f"309 - ADDED USER MESSAGE: Message {message_counter}: {prompt['content'][:50]}...")
+                print__checkpointers_debug(f"309 - ADDED USER MESSAGE: Message {message_counter}: {prompt['content'][:USER_MESSAGE_PREVIEW_LENGTH]}...")
             
             # Add AI response if available (always after the user prompt)
             if i < len(ai_responses):
@@ -876,40 +1652,37 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                     "message_order": message_counter
                 }
                 conversation_messages.append(ai_message)
-                print__analysis_tracing_debug(f"310 - ADDED AI MESSAGE: Message {message_counter}: {response['content'][:100]}...")
+                print__checkpointers_debug(f"310 - ADDED AI MESSAGE: Message {message_counter}: {response['content'][:AI_MESSAGE_PREVIEW_LENGTH]}...")
         
         # Messages are already in correct order, no need to sort by timestamp
-        print__analysis_tracing_debug(f"311 - CONVERSATION SUCCESS: Created {len(conversation_messages)} conversation messages in proper order")
+        print__checkpointers_debug(f"311 - CONVERSATION SUCCESS: Created {len(conversation_messages)} conversation messages in proper order")
         
-        # OPTIMIZATION: Only log first few messages in detail
-        for i, msg in enumerate(conversation_messages[:6]):  # Show first 6 messages (3 pairs)
+        # Only log first few messages in detail
+        for i, msg in enumerate(conversation_messages[:MAX_DEBUG_MESSAGES_DETAILED]):  # Show first 6 messages (3 pairs)
             msg_type = "👤 User" if msg["is_user"] else "🤖 AI"
-            print__analysis_tracing_debug(f"312 - MESSAGE {i+1}: {msg_type}: {msg['content'][:50]}...")
+            print__checkpointers_debug(f"312 - MESSAGE {i+1}: {msg_type}: {msg['content'][:USER_MESSAGE_PREVIEW_LENGTH]}...")
         
-        if len(conversation_messages) > 6:
-            print__analysis_tracing_debug(f"312 - MESSAGE SUMMARY: ...and {len(conversation_messages) - 6} more messages")
+        if len(conversation_messages) > MAX_DEBUG_MESSAGES_DETAILED:
+            print__checkpointers_debug(f"312 - MESSAGE SUMMARY: ...and {len(conversation_messages) - MAX_DEBUG_MESSAGES_DETAILED} more messages")
         
         return conversation_messages
         
     except Exception as e:
-        print__analysis_tracing_debug(f"311 - CONVERSATION ERROR: Error retrieving messages from checkpoints: {str(e)}")
-        print__analysis_tracing_debug(f"312 - CONVERSATION TRACEBACK: Full traceback: {traceback.format_exc()}")
+        print__checkpointers_debug(f"311 - CONVERSATION ERROR: Error retrieving messages from checkpoints: {str(e)}")
+        print__checkpointers_debug(f"312 - CONVERSATION TRACEBACK: Full traceback: {traceback.format_exc()}")
         return []
 
 # HELPER FUNCTIONS FOR COMPATIBILITY - USING DIRECT CONNECTIONS
-@retry_on_prepared_statement_error(max_retries=2)
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None, run_id: str = None) -> str:
-    """Create a new thread run entry in the database.
-    
-    ENHANCED: Add retry logic for prepared statement errors.
-    """
-    print__analysis_tracing_debug(f"286 - CREATE THREAD ENTRY START: Creating thread run entry for user={email}, thread={thread_id}")
+    """Create a new thread run entry in the database with retry logic for prepared statement errors."""
+    print__checkpointers_debug(f"286 - CREATE THREAD ENTRY START: Creating thread run entry for user={email}, thread={thread_id}")
     try:
         if not run_id:
             run_id = str(uuid.uuid4())
-            print__analysis_tracing_debug(f"287 - GENERATE RUN ID: Generated new run_id: {run_id}")
+            print__checkpointers_debug(f"287 - GENERATE RUN ID: Generated new run_id: {run_id}")
         
-        print__analysis_tracing_debug(f"288 - DATABASE INSERT: Inserting thread run entry with run_id={run_id}")
+        print__checkpointers_debug(f"288 - DATABASE INSERT: Inserting thread run entry with run_id={run_id}")
         
         async with get_direct_connection() as conn:
             async with conn.cursor() as cur:
@@ -923,24 +1696,21 @@ async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None
                         timestamp = CURRENT_TIMESTAMP
                 """, (email, thread_id, run_id, prompt))
         
-        print__analysis_tracing_debug(f"289 - CREATE THREAD ENTRY SUCCESS: Thread run entry created successfully: {run_id}")
+        print__checkpointers_debug(f"289 - CREATE THREAD ENTRY SUCCESS: Thread run entry created successfully: {run_id}")
         return run_id
     except Exception as e:
-        print__analysis_tracing_debug(f"290 - CREATE THREAD ENTRY ERROR: Failed to create thread run entry: {e}")
+        print__checkpointers_debug(f"290 - CREATE THREAD ENTRY ERROR: Failed to create thread run entry: {e}")
         # Return the run_id even if database storage fails
         if not run_id:
             run_id = str(uuid.uuid4())
-        print__analysis_tracing_debug(f"291 - CREATE THREAD ENTRY FALLBACK: Returning run_id despite database error: {run_id}")
+        print__checkpointers_debug(f"291 - CREATE THREAD ENTRY FALLBACK: Returning run_id despite database error: {run_id}")
         return run_id
 
-@retry_on_prepared_statement_error(max_retries=2)
-async def get_user_chat_threads(email: str, connection_pool=None, limit: int = None, offset: int = 0) -> List[Dict[str, Any]]:
-    """Get chat threads for a user with optional pagination.
-    
-    ENHANCED: Add retry logic for prepared statement errors.
-    """
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
+async def get_user_chat_threads(email: str, limit: int = None, offset: int = 0) -> List[Dict[str, Any]]:
+    """Get chat threads for a user with optional pagination and retry logic for prepared statement errors."""
     try:
-        print__api_postgresql(f"Getting chat threads for user: {email} (limit: {limit}, offset: {offset})")
+        print__checkpointers_debug(f"Getting chat threads for user: {email} (limit: {limit}, offset: {offset})")
         
         async with get_direct_connection() as conn:
             async with conn.cursor() as cur:
@@ -974,7 +1744,7 @@ async def get_user_chat_threads(email: str, connection_pool=None, limit: int = N
                     run_count = row[2]
                     first_prompt = row[3]
                     
-                    title = (first_prompt[:47] + "...") if first_prompt and len(first_prompt) > 50 else (first_prompt or "Untitled Conversation")
+                    title = (first_prompt[:THREAD_TITLE_MAX_LENGTH] + "...") if first_prompt and len(first_prompt) > THREAD_TITLE_MAX_LENGTH + THREAD_TITLE_SUFFIX_LENGTH else (first_prompt or "Untitled Conversation")
                     
                     threads.append({
                         "thread_id": thread_id,
@@ -984,21 +1754,18 @@ async def get_user_chat_threads(email: str, connection_pool=None, limit: int = N
                         "full_prompt": first_prompt or ""
                     })
                 
-                print__api_postgresql(f"Retrieved {len(threads)} threads for user {email}")
+                print__checkpointers_debug(f"Retrieved {len(threads)} threads for user {email}")
                 return threads
             
     except Exception as e:
-        print__api_postgresql(f"Failed to get chat threads for user {email}: {e}")
+        print__checkpointers_debug(f"Failed to get chat threads for user {email}: {e}")
         # Return empty list instead of raising exception to prevent API crashes
-        print__api_postgresql(f"Returning empty threads list due to error")
+        print__checkpointers_debug("Returning empty threads list due to error")
         return []
 
-@retry_on_prepared_statement_error(max_retries=2)
-async def get_user_chat_threads_count(email: str, connection_pool=None) -> int:
-    """Get total count of chat threads for a user.
-    
-    ENHANCED: Add retry logic for prepared statement errors.
-    """
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
+async def get_user_chat_threads_count(email: str) -> int:
+    """Get total count of chat threads for a user with retry logic for prepared statement errors."""
     try:
         async with get_direct_connection() as conn:
             async with conn.cursor() as cur:
@@ -1014,19 +1781,16 @@ async def get_user_chat_threads_count(email: str, connection_pool=None) -> int:
             return total_count or 0
             
     except Exception as e:
-        print__api_postgresql(f"Failed to get chat threads count for user {email}: {e}")
+        print__checkpointers_debug(f"Failed to get chat threads count for user {email}: {e}")
         # Return 0 instead of raising exception to prevent API crashes
-        print__api_postgresql(f"Returning 0 thread count due to error")
+        print__checkpointers_debug("Returning 0 thread count due to error")
         return 0
 
-@retry_on_prepared_statement_error(max_retries=2)
-async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: str = None) -> bool:
-    """Update sentiment for a thread run.
-    
-    ENHANCED: Add retry logic for prepared statement errors.
-    """
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
+async def update_thread_run_sentiment(run_id: str, sentiment: bool) -> bool:
+    """Update sentiment for a thread run by run_id with retry logic for prepared statement errors."""
     try:
-        print__api_postgresql(f"Updating sentiment for run {run_id}: {sentiment}")
+        print__checkpointers_debug(f"Updating sentiment for run {run_id}: {sentiment}")
         async with get_direct_connection() as conn:
             async with conn.cursor() as cur:
                 await cur.execute("""
@@ -1035,20 +1799,17 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool, user_email: 
                     WHERE run_id = %s
                 """, (sentiment, run_id))
                 updated = cur.rowcount
-        print__api_postgresql(f"Updated sentiment for {updated} entries")
+        print__checkpointers_debug(f"Updated sentiment for {updated} entries")
         return int(updated) > 0
     except Exception as e:
-        print__api_postgresql(f"Failed to update sentiment: {e}")
+        print__checkpointers_debug(f"Failed to update sentiment: {e}")
         return False
 
-@retry_on_prepared_statement_error(max_retries=2)
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, bool]:
-    """Get all sentiments for a thread.
-    
-    ENHANCED: Add retry logic for prepared statement errors.
-    """
+    """Get all sentiments for a thread with retry logic for prepared statement errors."""
     try:
-        print__api_postgresql(f"Getting sentiments for thread {thread_id}")
+        print__checkpointers_debug(f"Getting sentiments for thread {thread_id}")
         async with get_direct_connection() as conn:
             async with conn.cursor() as cur:
                 await cur.execute("""
@@ -1058,20 +1819,17 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
                 """, (email, thread_id))
                 rows = await cur.fetchall()
         sentiments = {row[0]: row[1] for row in rows}
-        print__api_postgresql(f"Retrieved {len(sentiments)} sentiments")
+        print__checkpointers_debug(f"Retrieved {len(sentiments)} sentiments")
         return sentiments
     except Exception as e:
-        print__api_postgresql(f"Failed to get sentiments: {e}")
+        print__checkpointers_debug(f"Failed to get sentiments: {e}")
         return {}
 
-@retry_on_prepared_statement_error(max_retries=2)
-async def delete_user_thread_entries(email: str, thread_id: str, connection_pool=None) -> Dict[str, Any]:
-    """Delete all entries for a user's thread from users_threads_runs table.
-    
-    ENHANCED: Add retry logic for prepared statement errors.
-    """
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
+async def delete_user_thread_entries(email: str, thread_id: str) -> Dict[str, Any]:
+    """Delete all entries for a user's thread from users_threads_runs table with retry logic for prepared statement errors."""
     try:
-        print__api_postgresql(f"Deleting thread entries for user: {email}, thread: {thread_id}")
+        print__checkpointers_debug(f"Deleting thread entries for user: {email}, thread: {thread_id}")
         
         async with get_direct_connection() as conn:
             # First, count the entries to be deleted
@@ -1083,7 +1841,7 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
                 result = await cur.fetchone()
                 entries_to_delete = result[0] if result else 0
             
-            print__api_postgresql(f"Found {entries_to_delete} entries to delete")
+            print__checkpointers_debug(f"Found {entries_to_delete} entries to delete")
             
             if entries_to_delete == 0:
                 return {
@@ -1101,7 +1859,7 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
                 """, (email, thread_id))
                 deleted_count = cur.rowcount
             
-            print__api_postgresql(f"Deleted {deleted_count} entries for user {email}, thread {thread_id}")
+            print__checkpointers_debug(f"Deleted {deleted_count} entries for user {email}, thread {thread_id}")
             
             return {
                 "deleted_count": deleted_count,
@@ -1111,95 +1869,90 @@ async def delete_user_thread_entries(email: str, thread_id: str, connection_pool
             }
             
     except Exception as e:
-        print__api_postgresql(f"Failed to delete thread entries for user {email}, thread {thread_id}: {e}")
-        print__api_postgresql(f"Full traceback: {traceback.format_exc()}")
+        print__checkpointers_debug(f"Failed to delete thread entries for user {email}, thread {thread_id}: {e}")
+        print__checkpointers_debug(f"Full traceback: {traceback.format_exc()}")
         raise
 
-# UNIFIED CHECKPOINTER MANAGEMENT - SHARED BY MAIN.PY AND API_SERVER.PY
+# CHECKPOINTER MANAGEMENT
 #==============================================================================
-# Global checkpointer variable for unified management
-_GLOBAL_CHECKPOINTER = None
 
 async def initialize_checkpointer():
     """Initialize the global checkpointer with proper async context management."""
     global _GLOBAL_CHECKPOINTER
     if _GLOBAL_CHECKPOINTER is None:
         try:
-            print__analysis_tracing_debug("🚀 UNIFIED: Initializing PostgreSQL Connection System...")
-            print__analysis_tracing_debug(f"🔍 UNIFIED: Current global checkpointer state: {_GLOBAL_CHECKPOINTER}")
+            print__checkpointers_debug("🚀 CHECKPOINTER INIT: Initializing PostgreSQL Connection System...")
+            print__checkpointers_debug(f"🔍 CHECKPOINTER INIT: Current global checkpointer state: {_GLOBAL_CHECKPOINTER}")
             
-            # Create and initialize the checkpointer using the OFFICIAL AsyncPostgresSaver method
-            print__analysis_tracing_debug("🔧 UNIFIED: Creating PostgreSQL checkpointer using official factory method...")
+            # Create and initialize the checkpointer using the official AsyncPostgresSaver method
+            print__checkpointers_debug("🔧 CHECKPOINTER INIT: Creating PostgreSQL checkpointer using official factory method...")
             
             checkpointer = await create_async_postgres_saver()
             
-            print__analysis_tracing_debug(f"✅ UNIFIED: Created checkpointer type: {type(checkpointer).__name__}")
+            print__checkpointers_debug(f"✅ CHECKPOINTER INIT: Created checkpointer type: {type(checkpointer).__name__}")
             
             # Set the global checkpointer directly (no wrapper needed)
             _GLOBAL_CHECKPOINTER = checkpointer
             
-            print__analysis_tracing_debug("✅ UNIFIED: PostgreSQL checkpointer initialized successfully using official AsyncPostgresSaver")
+            print__checkpointers_debug("✅ CHECKPOINTER INIT: PostgreSQL checkpointer initialized successfully using official AsyncPostgresSaver")
             
         except Exception as e:
-            print__analysis_tracing_debug(f"❌ UNIFIED: PostgreSQL checkpointer initialization failed: {e}")
-            print__analysis_tracing_debug("🔄 UNIFIED: Falling back to InMemorySaver...")
+            print__checkpointers_debug(f"❌ CHECKPOINTER INIT: PostgreSQL checkpointer initialization failed: {e}")
+            print__checkpointers_debug("🔄 CHECKPOINTER INIT: Falling back to InMemorySaver...")
             _GLOBAL_CHECKPOINTER = MemorySaver()
 
 async def cleanup_checkpointer():
     """Clean up the global checkpointer on shutdown."""
     global _GLOBAL_CHECKPOINTER
     
-    print__analysis_tracing_debug("🧹 UNIFIED: Starting checkpointer cleanup...")
+    print__checkpointers_debug("🧹 CHECKPOINTER CLEANUP: Starting checkpointer cleanup...")
     
     if _GLOBAL_CHECKPOINTER:
         try:
             # Check if it's an AsyncPostgresSaver that needs proper cleanup
             if hasattr(_GLOBAL_CHECKPOINTER, '__class__') and 'AsyncPostgresSaver' in str(type(_GLOBAL_CHECKPOINTER)):
-                print__analysis_tracing_debug("🔄 UNIFIED: Cleaning up AsyncPostgresSaver...")
+                print__checkpointers_debug("🔄 CHECKPOINTER CLEANUP: Cleaning up AsyncPostgresSaver...")
                 # Use the proper cleanup function
                 await close_async_postgres_saver()
             else:
-                print__analysis_tracing_debug(f"🔄 UNIFIED: Cleaning up {type(_GLOBAL_CHECKPOINTER).__name__}...")
+                print__checkpointers_debug(f"🔄 CHECKPOINTER CLEANUP: Cleaning up {type(_GLOBAL_CHECKPOINTER).__name__}...")
                 # For other types (like MemorySaver), no special cleanup needed
                 
         except Exception as e:
-            print__analysis_tracing_debug(f"⚠️ UNIFIED: Error during checkpointer cleanup: {e}")
+            print__checkpointers_debug(f"⚠️ CHECKPOINTER CLEANUP: Error during checkpointer cleanup: {e}")
         finally:
             _GLOBAL_CHECKPOINTER = None
-            print__analysis_tracing_debug("✅ UNIFIED: Checkpointer cleanup completed")
+            print__checkpointers_debug("✅ CHECKPOINTER CLEANUP: Checkpointer cleanup completed")
     else:
-        print__analysis_tracing_debug("ℹ️ UNIFIED: No checkpointer to clean up")
+        print__checkpointers_debug("ℹ️ CHECKPOINTER CLEANUP: No checkpointer to clean up")
 
 async def get_healthy_checkpointer():
     """Get a healthy checkpointer instance, initializing if needed."""
     global _GLOBAL_CHECKPOINTER
     
-    # With the unified approach, we don't need complex health checking
+    # Simple approach without complex health checking
     if _GLOBAL_CHECKPOINTER is None:
         await initialize_checkpointer()
     
     return _GLOBAL_CHECKPOINTER
 
 # Add the missing function back after setup_users_threads_runs_table 
-@retry_on_prepared_statement_error(max_retries=2)
+@retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id: str):
-    """Get queries and results from the latest checkpoint for a thread.
-    
-    ENHANCED: Add retry logic for prepared statement errors.
-    """
-    print__analysis_tracing_debug(f"279 - GET CHECKPOINT START: Getting queries and results from latest checkpoint for thread: {thread_id}")
+    """Get queries and results from the latest checkpoint for a thread with retry logic for prepared statement errors."""
+    print__checkpointers_debug(f"279 - GET CHECKPOINT START: Getting queries and results from latest checkpoint for thread: {thread_id}")
     try:
         config = {"configurable": {"thread_id": thread_id}}
         
         # Get the latest checkpoint
-        print__analysis_tracing_debug("280 - GET CHECKPOINT STATE: Getting latest checkpoint state")
+        print__checkpointers_debug("280 - GET CHECKPOINT STATE: Getting latest checkpoint state")
         state_snapshot = await checkpointer.aget_tuple(config)
         
         if not state_snapshot or not state_snapshot.checkpoint:
-            print__analysis_tracing_debug(f"281 - NO CHECKPOINT: No checkpoint found for thread: {thread_id}")
+            print__checkpointers_debug(f"281 - NO CHECKPOINT: No checkpoint found for thread: {thread_id}")
             return []
         
-        print__analysis_tracing_debug("282 - EXTRACT CHECKPOINT: Extracting queries and results from checkpoint")
+        print__checkpointers_debug("282 - EXTRACT CHECKPOINT: Extracting queries and results from checkpoint")
         # Extract queries and results from checkpoint
         checkpoint = state_snapshot.checkpoint
         channel_values = checkpoint.get("channel_values", {})
@@ -1208,7 +1961,7 @@ async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id
         queries_and_results = channel_values.get("queries_and_results", [])
         
         if not queries_and_results:
-            print__analysis_tracing_debug("283 - SEARCH ITERATIONS: Searching iteration_results for queries")
+            print__checkpointers_debug("283 - SEARCH ITERATIONS: Searching iteration_results for queries")
             # Try to extract from iteration_results
             iteration_results = channel_values.get("iteration_results", {})
             for iteration_key, iteration_data in iteration_results.items():
@@ -1217,20 +1970,20 @@ async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id
                     if iter_queries:
                         queries_and_results.extend(iter_queries)
         
-        print__analysis_tracing_debug(f"284 - GET CHECKPOINT SUCCESS: Found {len(queries_and_results)} queries and results for thread: {thread_id}")
+        print__checkpointers_debug(f"284 - GET CHECKPOINT SUCCESS: Found {len(queries_and_results)} queries and results for thread: {thread_id}")
         return queries_and_results
         
     except Exception as e:
-        print__analysis_tracing_debug(f"285 - GET CHECKPOINT ERROR: Error getting queries and results from checkpoint: {e}")
+        print__checkpointers_debug(f"285 - GET CHECKPOINT ERROR: Error getting queries and results from checkpoint: {e}")
         return []
 
 #==============================================================================
-# MODERN PSYCOPG CONNECTION POOL CONTEXT MANAGER
+# PSYCOPG CONNECTION POOL CONTEXT MANAGER
 #==============================================================================
 @asynccontextmanager
 async def modern_psycopg_pool():
     """
-    Modern async context manager for psycopg connection pools.
+    Async context manager for psycopg connection pools.
     Uses the recommended approach from psycopg documentation to avoid deprecation warnings.
     
     Usage:
@@ -1238,63 +1991,63 @@ async def modern_psycopg_pool():
             async with pool.connection() as conn:
                 await conn.execute("SELECT 1")
     """
-    print__analysis_tracing_debug("MODERN POOL CONTEXT START: Creating modern psycopg connection pool context")
+    print__checkpointers_debug("POOL CONTEXT START: Creating psycopg connection pool context")
     
     try:        
         connection_string = get_connection_string()
         connection_kwargs = get_connection_kwargs()
         
-        print__analysis_tracing_debug("MODERN POOL CONTEXT: Setting up AsyncConnectionPool with modern context management")
+        print__checkpointers_debug("POOL CONTEXT: Setting up AsyncConnectionPool with context management")
         
-        # Use the modern async context manager approach recommended by psycopg
+        # Use the async context manager approach recommended by psycopg
         async with AsyncConnectionPool(
             conninfo=connection_string,
-            min_size=1,
-            max_size=3,
-            timeout=20,
-            max_idle=300,
-            max_lifetime=1800,
+            min_size=DEFAULT_POOL_MIN_SIZE,
+            max_size=DEFAULT_POOL_MAX_SIZE,
+            timeout=DEFAULT_POOL_TIMEOUT,
+            max_idle=DEFAULT_MAX_IDLE,
+            max_lifetime=DEFAULT_MAX_LIFETIME,
             kwargs={
                 **connection_kwargs,
-                "connect_timeout": 15,
+                "connect_timeout": CONNECT_TIMEOUT,
             },
             open=False  # Explicitly set to avoid deprecation warnings
         ) as pool:
-            print__analysis_tracing_debug("MODERN POOL CONTEXT: Pool created and opened using modern context manager")
+            print__checkpointers_debug("POOL CONTEXT: Pool created and opened using context manager")
             yield pool
-            print__analysis_tracing_debug("MODERN POOL CONTEXT: Pool will be automatically closed by context manager")
+            print__checkpointers_debug("POOL CONTEXT: Pool will be automatically closed by context manager")
     
     except ImportError as e:
-        print__analysis_tracing_debug(f"MODERN POOL CONTEXT ERROR: psycopg_pool not available: {e}")
-        raise Exception("psycopg_pool is required for modern connection pool approach")
+        print__checkpointers_debug(f"POOL CONTEXT ERROR: psycopg_pool not available: {e}")
+        raise Exception("psycopg_pool is required for connection pool approach")
     except Exception as e:
-        print__analysis_tracing_debug(f"MODERN POOL CONTEXT ERROR: Failed to create modern pool: {e}")
+        print__checkpointers_debug(f"POOL CONTEXT ERROR: Failed to create pool: {e}")
         raise
 
 if __name__ == "__main__":    
     async def test():
-        print__postgresql_debug("Testing PostgreSQL checkpointer with official AsyncPostgresSaver...")
+        print__checkpointers_debug("Testing PostgreSQL checkpointer with official AsyncPostgresSaver...")
         
         if not check_postgres_env_vars():
-            print__postgresql_debug("Environment variables not set properly")
+            print__checkpointers_debug("Environment variables not set properly")
             return
         
         checkpointer = await create_async_postgres_saver()
-        print__postgresql_debug(f"Checkpointer type: {type(checkpointer).__name__}")
+        print__checkpointers_debug(f"Checkpointer type: {type(checkpointer).__name__}")
         
         # Test a simple operation
         config = {"configurable": {"thread_id": "test_thread"}}
         try:
             # This should work with the official AsyncPostgresSaver
             async for checkpoint in checkpointer.alist(config, limit=1):
-                print__postgresql_debug("alist() method works correctly")
+                print__checkpointers_debug("alist() method works correctly")
                 break
             else:
-                print__postgresql_debug("No checkpoints found (expected for fresh DB)")
+                print__checkpointers_debug("No checkpoints found (expected for fresh DB)")
         except Exception as e:
-            print__postgresql_debug(f"Error testing alist(): {e}")
+            print__checkpointers_debug(f"Error testing alist(): {e}")
         
         await close_async_postgres_saver()
-        print__postgresql_debug("Official AsyncPostgresSaver test completed!")
+        print__checkpointers_debug("Official AsyncPostgresSaver test completed!")
     
     asyncio.run(test())

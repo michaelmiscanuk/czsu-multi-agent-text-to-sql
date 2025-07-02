@@ -121,9 +121,8 @@ from my_agent.utils.postgres_checkpointer import (
     initialize_checkpointer,
     cleanup_checkpointer,
     get_healthy_checkpointer,
+    get_direct_connection
 )
-
-from my_agent.utils.postgres_checkpointer import get_healthy_pool
 
 # Additional imports for sentiment functionality
 from my_agent.utils.postgres_checkpointer import (
@@ -517,14 +516,10 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
 # DEBUG FUNCTIONS
 #==============================================================================        
 def print__api_postgresql(msg: str) -> None:
-    """Print API-PostgreSQL messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('DEBUG', '0')
+    """Print API-PostgreSQL messages when debug mode is enabled."""
+    debug_mode = os.environ.get('print__api_postgresql', '0')
     if debug_mode == '1':
-        print(f"[API-PostgreSQL] {msg}")
+        print(f"[print__api_postgresql] {msg}")
         import sys
         sys.stdout.flush()
 
@@ -1755,10 +1750,10 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         
         try:
             # Get a healthy pool to check ownership
-            print__feedback_debug(f"🔍 Importing get_healthy_pool")
+            print__feedback_debug(f"🔍 Importing get_direct_connection")
             
             print__feedback_debug(f"🔍 Getting healthy pool")
-            pool = await get_healthy_pool()
+            pool = await get_direct_connection()
             print__feedback_debug(f"🔍 Pool obtained: {type(pool).__name__}")
             
             print__feedback_debug(f"🔍 Getting connection from pool")
@@ -2522,11 +2517,11 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             all_run_ids = {}
             all_sentiments = {}
             
-            # FIXED: Use our working get_healthy_pool() function instead of checkpointer.conn
-            print__chat_all_messages_debug(f"🔍 Importing get_healthy_pool")
-            from my_agent.utils.postgres_checkpointer import get_healthy_pool
+            # FIXED: Use our working get_direct_connection() function instead of checkpointer.conn
+            print__chat_all_messages_debug(f"🔍 Importing get_direct_connection")
+            from my_agent.utils.postgres_checkpointer import get_direct_connection
             print__chat_all_messages_debug(f"🔍 Getting healthy pool")
-            pool = await get_healthy_pool()
+            pool = await get_direct_connection()
             print__chat_all_messages_debug(f"🔍 Pool obtained: {type(pool).__name__}")
             
             # FIXED: Use pool.connection() instead of pool.acquire() and update query syntax
