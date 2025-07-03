@@ -1880,7 +1880,7 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
         # 🔒 SECURITY: Update sentiment with user email verification
         print__sentiment_debug("🔍 Starting sentiment update with ownership verification")
         print__sentiment_flow("🔒 Verifying ownership before sentiment update")
-        success = await update_thread_run_sentiment(run_uuid, request.sentiment, user_email)
+        success = await update_thread_run_sentiment(run_uuid, request.sentiment)
         print__sentiment_debug(f"🔍 Sentiment update result: {success}")
         
         if success:
@@ -2520,13 +2520,11 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             # FIXED: Use our working get_direct_connection() function instead of checkpointer.conn
             print__chat_all_messages_debug(f"🔍 Importing get_direct_connection")
             from my_agent.utils.postgres_checkpointer import get_direct_connection
-            print__chat_all_messages_debug(f"🔍 Getting healthy pool")
-            pool = await get_direct_connection()
-            print__chat_all_messages_debug(f"🔍 Pool obtained: {type(pool).__name__}")
+            print__chat_all_messages_debug(f"🔍 Getting direct connection")
             
-            # FIXED: Use pool.connection() instead of pool.acquire() and update query syntax
-            print__chat_all_messages_debug(f"🔍 Getting connection from pool")
-            async with pool.connection() as conn:
+            # FIXED: Use get_direct_connection() as async context manager
+            print__chat_all_messages_debug(f"🔍 Using direct connection context manager")
+            async with get_direct_connection() as conn:
                 print__chat_all_messages_debug(f"🔍 Connection obtained: {type(conn).__name__}")
                 async with conn.cursor() as cur:
                     print__chat_all_messages_debug(f"🔍 Cursor created, executing bulk query")
