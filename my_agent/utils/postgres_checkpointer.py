@@ -299,8 +299,6 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     print("[POSTGRES-STARTUP] Event loop policy set successfully")
 
-# Type variable for the retry decorator
-T = TypeVar('T')
 
 #==============================================================================
 # CONFIGURATION CONSTANTS
@@ -333,6 +331,18 @@ THREAD_TITLE_SUFFIX_LENGTH = 3      # Length of "..." suffix
 MAX_RECENT_CHECKPOINTS = 10         # Limit checkpoints to recent ones only
 MAX_DEBUG_MESSAGES_DETAILED = 6     # Show first N messages in detail
 DEBUG_CHECKPOINT_LOG_INTERVAL = 5   # Log every Nth checkpoint
+
+#==============================================================================
+# Global State Management
+## Single global checkpointer variable and context for proper cleanup
+_GLOBAL_CHECKPOINTER = None
+_GLOBAL_CHECKPOINTER_CONTEXT = None
+
+## Cache the connection string to avoid timestamp conflicts
+_CONNECTION_STRING_CACHE = None
+
+# Type variable for the retry decorator
+T = TypeVar('T')
 
 #==============================================================================
 # DEBUG AND LOGGING FUNCTIONS
@@ -464,14 +474,6 @@ def retry_on_prepared_statement_error(max_retries: int = DEFAULT_MAX_RETRIES):
         return wrapper
     return decorator
 
-#==============================================================================
-# GLOBAL STATE MANAGEMENT
-#==============================================================================
-# Single global checkpointer variable and context for proper cleanup
-_GLOBAL_CHECKPOINTER = None
-_GLOBAL_CHECKPOINTER_CONTEXT = None
-_connection_string_cache = None  # Cache the connection string to avoid timestamp conflicts
-
 def get_db_config():
     """Extract database configuration from environment variables.
     
@@ -552,11 +554,11 @@ def get_connection_string():
         - Includes comprehensive debug logging for troubleshooting
     """
     print__checkpointers_debug("214 - CONNECTION STRING START: Generating PostgreSQL connection string")
-    global _connection_string_cache
+    global _CONNECTION_STRING_CACHE
     
-    if _connection_string_cache is not None:
+    if _CONNECTION_STRING_CACHE is not None:
         print__checkpointers_debug("215 - CONNECTION STRING CACHED: Using cached connection string")
-        return _connection_string_cache
+        return _CONNECTION_STRING_CACHE
     
     config = get_db_config()
     
@@ -570,7 +572,7 @@ def get_connection_string():
     print__checkpointers_debug(f"216 - CONNECTION STRING APP NAME: Generated unique application name: {app_name}")
     
     # Connection string with timeout and keepalive settings for cloud databases
-    _connection_string_cache = (
+    _CONNECTION_STRING_CACHE = (
         f"postgresql://{config['user']}:{config['password']}@"
         f"{config['host']}:{config['port']}/{config['dbname']}?"
         f"sslmode=require"
@@ -584,7 +586,7 @@ def get_connection_string():
     
     print__checkpointers_debug("217 - CONNECTION STRING COMPLETE: PostgreSQL connection string generated")
     
-    return _connection_string_cache
+    return _CONNECTION_STRING_CACHE
 
 def get_connection_kwargs():
     """Generate connection kwargs for cloud database compatibility.
@@ -758,123 +760,6 @@ async def clear_prepared_statements():
     except Exception as e:
         print__checkpointers_debug(f"232 - CLEANUP ERROR: Error clearing prepared statements (non-fatal): {e}")
         # Don't raise - this is a cleanup operation and shouldn't block checkpointer creation
-
-async def cleanup_all_pools():
-    """Cleanup function that properly handles connection pools and global state.
-    
-    This function provides comprehensive cleanup of all connection-related resources,
-    ensuring proper shutdown sequence and resource deallocation for the checkpointer
-    system. It handles both connection pools and global state management.
-    
-    Cleanup Process:
-        1. Gracefully exit global checkpointer context manager
-        2. Clean up connection pools using proper async patterns
-        3. Reset global state variables to prevent stale references
-        4. Force garbage collection to ensure memory cleanup
-        5. Provide detailed logging for troubleshooting
-        
-    Global State Management:
-        - Properly exits _GLOBAL_CHECKPOINTER_CONTEXT using __aexit__
-        - Resets _GLOBAL_CHECKPOINTER to None for clean state
-        - Handles cleanup errors gracefully without raising exceptions
-        - Ensures clean slate for subsequent initialization attempts
-        
-    Resource Management:
-        - Uses context manager protocols for proper resource cleanup
-        - Handles connection pool lifecycle correctly
-        - Provides comprehensive error handling for cleanup failures
-        - Ensures resources are freed even if individual cleanup steps fail
-        
-    Performance Considerations:
-        - Forces garbage collection to ensure immediate memory cleanup
-        - Minimizes resource leakage in long-running applications
-        - Provides clean shutdown for application termination scenarios
-        - Optimizes memory usage for restart scenarios
-        
-    Note:
-        - Safe to call multiple times without side effects
-        - Used during error recovery and application shutdown
-        - Comprehensive error handling prevents cleanup failures from propagating
-        - Essential for proper resource management in production environments
-    """
-    print__checkpointers_debug("CLEANUP ALL POOLS START: Starting comprehensive pool cleanup")
-    
-    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
-    
-    # Clean up the global checkpointer context if it exists
-    if _GLOBAL_CHECKPOINTER_CONTEXT:
-        try:
-            print__checkpointers_debug("CLEANUP: Cleaning up global checkpointer context")
-            await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
-            print__checkpointers_debug("CLEANUP: Global checkpointer context cleaned up successfully")
-        except Exception as e:
-            print__checkpointers_debug(f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}")
-        finally:
-            _GLOBAL_CHECKPOINTER_CONTEXT = None
-            _GLOBAL_CHECKPOINTER = None
-    
-    # Force garbage collection to ensure resources are freed
-    
-    gc.collect()
-    print__checkpointers_debug("CLEANUP ALL POOLS COMPLETE: All pools and resources cleaned up")
-
-async def force_close_modern_pools():
-    """Force close any remaining connection pools for aggressive cleanup.
-    
-    This function provides an aggressive cleanup mechanism for troubleshooting
-    scenarios where normal cleanup procedures may not be sufficient. It performs
-    comprehensive resource cleanup and state reset operations.
-    
-    Aggressive Cleanup Actions:
-        1. Calls standard cleanup_all_pools() for normal resource cleanup
-        2. Forces cleanup of any lingering connection resources
-        3. Clears cached connection strings to force recreation
-        4. Resets global state for clean restart scenarios
-        5. Provides detailed logging for troubleshooting
-        
-    Use Cases:
-        - Troubleshooting persistent connection issues
-        - Recovering from connection pool corruption
-        - Debugging resource leakage scenarios
-        - Preparing for application restart scenarios
-        - Emergency cleanup in error recovery situations
-        
-    State Reset Operations:
-        - Clears _connection_string_cache to force regeneration
-        - Ensures fresh connection parameters on next initialization
-        - Provides clean slate for subsequent connection attempts
-        - Prevents cached state from interfering with recovery
-        
-    Error Handling:
-        - Comprehensive exception handling prevents cleanup failures
-        - Continues operation even if individual cleanup steps fail
-        - Logs errors for troubleshooting without raising exceptions
-        - Ensures maximum cleanup even in error scenarios
-        
-    Note:
-        - More aggressive than standard cleanup procedures
-        - Primarily intended for troubleshooting and error recovery
-        - Safe to call in production environments
-        - Should be used when normal cleanup is insufficient
-    """
-    print__checkpointers_debug("FORCE CLOSE START: Force closing all connection pools")
-    
-    try:
-        # Clean up the global state
-        await cleanup_all_pools()
-        
-        # Additional cleanup for any lingering connections
-        print__checkpointers_debug("FORCE CLOSE: Forcing cleanup of any remaining resources")
-        
-        # Clear any cached connection strings to force recreation
-        global _connection_string_cache
-        _connection_string_cache = None
-        
-        print__checkpointers_debug("FORCE CLOSE COMPLETE: Pool force close completed")
-        
-    except Exception as e:
-        print__checkpointers_debug(f"FORCE CLOSE ERROR: Error during force close: {e}")
-        # Don't re-raise - this is a cleanup function
 
 # ASYNCPOSTGRESSAVER IMPLEMENTATION WITH CONNECTION POOL
 @retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
@@ -1077,7 +962,7 @@ async def create_async_postgres_saver():
     
     # Setup the checkpointer with autocommit=True connection to avoid transaction block errors
     print__checkpointers_debug("254 - SETUP START: Running checkpointer setup with autocommit=True connection")
-    await setup_checkpointer_with_autocommit(_GLOBAL_CHECKPOINTER)
+    await setup_checkpointer_with_autocommit()
     print__checkpointers_debug("255 - SETUP COMPLETE: AsyncPostgresSaver setup complete")
     
     # Test the checkpointer to ensure it's working
@@ -1096,10 +981,10 @@ async def create_async_postgres_saver():
 #==============================================================================
 # DATABASE SETUP AND TABLE INITIALIZATION
 #==============================================================================
-async def setup_checkpointer_with_autocommit(checkpointer):
-    """Setup the checkpointer using a dedicated autocommit connection to avoid transaction conflicts.
+async def setup_checkpointer_with_autocommit():
+    """Setup the checkpointer tables using a dedicated autocommit connection to avoid transaction conflicts.
     
-    This function performs the critical table setup operations for the AsyncPostgresSaver
+    This function performs the critical table setup operations for AsyncPostgresSaver
     using a separate connection configured with autocommit=True. This approach prevents
     "CREATE INDEX CONCURRENTLY cannot run inside a transaction block" errors.
     
@@ -1107,7 +992,7 @@ async def setup_checkpointer_with_autocommit(checkpointer):
         1. Creates a separate connection specifically for DDL operations
         2. Configures connection with autocommit=True to avoid transaction blocks
         3. Uses the AsyncPostgresSaver.setup() method for official table creation
-        4. Provides comprehensive error handling with fallback to manual setup
+        4. Provides comprehensive error handling with detailed logging
         
     Connection Configuration:
         - autocommit=True: Prevents transaction block conflicts for DDL operations
@@ -1116,21 +1001,17 @@ async def setup_checkpointer_with_autocommit(checkpointer):
         - Uses official AsyncPostgresSaver context manager patterns
         
     Error Recovery:
-        - Falls back to manual_checkpointer_setup() if official setup fails
         - Provides detailed error logging for troubleshooting
-        - Continues operation even if setup encounters issues
-        - Ensures checkpointer remains functional despite setup problems
-        
-    Args:
-        checkpointer: The AsyncPostgresSaver instance that needs table setup
+        - Raises exceptions to prevent proceeding with broken setup
+        - Ensures database is properly configured before checkpointer use
         
     Note:
         - Critical for proper LangGraph checkpoint table creation
         - Prevents common DDL operation failures in transaction contexts
         - Used during checkpointer initialization phase
-        - Fallback mechanisms ensure robust setup even with database quirks
+        - Must be called before using any AsyncPostgresSaver instances
     """
-    print__checkpointers_debug("SETUP AUTOCOMMIT START: Setting up checkpointer with autocommit=True connection")
+    print__checkpointers_debug("SETUP AUTOCOMMIT START: Setting up checkpointer tables with autocommit=True connection")
     
     try:
         # Get connection kwargs with autocommit=True specifically for setup
@@ -1153,114 +1034,8 @@ async def setup_checkpointer_with_autocommit(checkpointer):
             print__checkpointers_debug("SETUP AUTOCOMMIT SUCCESS: Setup completed successfully with autocommit=True")
             
     except Exception as e:
-        print__checkpointers_debug(f"SETUP AUTOCOMMIT ERROR: Error during autocommit setup: {e}")
-        # Fallback: try the manual setup approach
-        print__checkpointers_debug("SETUP AUTOCOMMIT FALLBACK: Trying manual setup with direct connection")
-        await manual_checkpointer_setup()
-
-async def manual_checkpointer_setup():
-    """Manual setup of checkpointer tables using direct connection with autocommit=True.
-    
-    This function provides a comprehensive fallback mechanism for creating the required
-    LangGraph checkpoint tables when the official AsyncPostgresSaver.setup() fails.
-    It manually creates the schema using direct SQL commands.
-    
-    Table Creation:
-        - checkpoints: Main checkpoint storage with JSONB content
-        - checkpoint_blobs: Binary data storage for large checkpoint content
-        - Appropriate indexes for performance optimization
-        
-    Schema Details:
-        checkpoints table:
-        - thread_id: Identifies the conversation thread
-        - checkpoint_ns: Namespace for checkpoint organization
-        - checkpoint_id: Unique identifier for each checkpoint
-        - parent_checkpoint_id: Links to previous checkpoint in sequence
-        - type: Classification of checkpoint content
-        - checkpoint: JSONB content with the actual checkpoint data
-        - metadata: JSONB metadata for checkpoint management
-        
-        checkpoint_blobs table:
-        - thread_id: Links to main checkpoint table
-        - checkpoint_ns: Namespace consistency with main table
-        - channel: Data channel identifier
-        - version: Version control for blob content
-        - type: Classification of blob content
-        - blob: BYTEA storage for binary content
-        
-    Performance Optimization:
-        - Creates indexes on thread_id for fast thread-based queries
-        - Uses IF NOT EXISTS to avoid conflicts with existing tables
-        - Optimized for concurrent access patterns
-        
-    Error Handling:
-        - Non-fatal errors allow system to continue operation
-        - Comprehensive logging for troubleshooting
-        - Graceful handling of permission or connectivity issues
-        
-    Note:
-        - Used as fallback when official setup fails
-        - Creates minimal but functional schema
-        - Safe to run multiple times due to IF NOT EXISTS clauses
-        - May not include all optimizations of official setup
-    """
-    print__checkpointers_debug("MANUAL SETUP START: Setting up checkpointer tables manually")
-    
-    try:        
-        # Create connection string with autocommit=True for setup
-        connection_string = get_connection_string()
-        setup_kwargs = get_connection_kwargs().copy()
-        setup_kwargs["autocommit"] = True
-        
-        print__checkpointers_debug("MANUAL SETUP: Creating direct connection with autocommit=True")
-        async with await psycopg.AsyncConnection.connect(connection_string, **setup_kwargs) as conn:
-            async with conn.cursor() as cur:
-                print__checkpointers_debug("MANUAL SETUP: Creating checkpoints table")
-                
-                # Create the basic checkpoints table
-                await cur.execute("""
-                    CREATE TABLE IF NOT EXISTS checkpoints (
-                        thread_id TEXT NOT NULL,
-                        checkpoint_ns TEXT NOT NULL DEFAULT '',
-                        checkpoint_id TEXT NOT NULL,
-                        parent_checkpoint_id TEXT,
-                        type TEXT,
-                        checkpoint JSONB NOT NULL,
-                        metadata JSONB NOT NULL DEFAULT '{}',
-                        PRIMARY KEY (thread_id, checkpoint_ns, checkpoint_id)
-                    );
-                """)
-                
-                print__checkpointers_debug("MANUAL SETUP: Creating checkpoint_blobs table")
-                await cur.execute("""
-                    CREATE TABLE IF NOT EXISTS checkpoint_blobs (
-                        thread_id TEXT NOT NULL,
-                        checkpoint_ns TEXT NOT NULL DEFAULT '',
-                        channel TEXT NOT NULL,
-                        version TEXT NOT NULL,
-                        type TEXT NOT NULL,
-                        blob BYTEA,
-                        PRIMARY KEY (thread_id, checkpoint_ns, channel, version)
-                    );
-                """)
-                
-                print__checkpointers_debug("MANUAL SETUP: Creating indexes")
-                # Create indexes without CONCURRENTLY to avoid transaction issues
-                await cur.execute("""
-                    CREATE INDEX IF NOT EXISTS checkpoints_thread_id_idx 
-                    ON checkpoints(thread_id);
-                """)
-                
-                await cur.execute("""
-                    CREATE INDEX IF NOT EXISTS checkpoint_blobs_thread_id_idx 
-                    ON checkpoint_blobs(thread_id);
-                """)
-                
-                print__checkpointers_debug("MANUAL SETUP SUCCESS: Checkpointer tables created manually")
-                
-    except Exception as e:
-        print__checkpointers_debug(f"MANUAL SETUP ERROR: Failed to setup tables manually: {e}")
-        # Don't raise - let the system continue, as the checkpointer might still work
+        print__checkpointers_debug(f"SETUP AUTOCOMMIT ERROR: Setup failed: {e}")
+        raise
 
 #==============================================================================
 # CHECKPOINTER LIFECYCLE MANAGEMENT
@@ -1600,7 +1375,7 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
             if "channel_values" in checkpoint:
                 channel_values = checkpoint["channel_values"]
                 
-                # Method 1: Look for final_answer (the main AI response)
+                # Look for final_answer (the main AI response)
                 final_answer = channel_values.get("final_answer")
                 if (final_answer and 
                     isinstance(final_answer, str) and 
