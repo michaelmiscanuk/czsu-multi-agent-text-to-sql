@@ -228,8 +228,6 @@ def create_graph(checkpointer=None):
     print__analysis_tracing_debug("106 - FINAL EDGES: Added final edges to completion")
 
     print__analysis_tracing_debug("107 - GRAPH COMPILATION: Starting graph compilation with checkpointer")
-    # Compile with SELECTIVE checkpointing - only checkpoint after 'save' node
-    # This dramatically reduces database storage from 15+ records to just 2 records per analysis
     if checkpointer is None:
         print__analysis_tracing_debug("108 - INMEMORY SAVER: No checkpointer provided, using InMemorySaver")
         # Import here to avoid circular imports and provide fallback
@@ -240,11 +238,9 @@ def create_graph(checkpointer=None):
     else:
         print__analysis_tracing_debug(f"110 - CHECKPOINTER PROVIDED: Using provided checkpointer ({type(checkpointer).__name__})")
     
-    # OPTIMAL SOLUTION: Use interrupt_after to only checkpoint when analysis is complete
-    # This reduces checkpoint storage from 15+ records to just 2 records per analysis
+    # Compile the graph with the checkpointer
     compiled_graph = graph.compile(
-        checkpointer=checkpointer,
-        interrupt_after=["submit_final_answer"]  # Only checkpoint after the submit_final_answer node completes
+        checkpointer=checkpointer
     )
-    print__analysis_tracing_debug("111 - GRAPH COMPILED: Graph successfully compiled with selective checkpointing (interrupt_after=['save'])")
+    print__analysis_tracing_debug("111 - GRAPH COMPILED: Graph successfully compiled with checkpointer")
     return compiled_graph 

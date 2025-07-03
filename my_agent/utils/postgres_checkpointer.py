@@ -812,24 +812,11 @@ async def cleanup_all_pools():
         try:
             print__checkpointers_debug("CLEANUP: Cleaning up global checkpointer context")
             
-            # Special handling for AsyncConnectionPool contexts to ensure workers are cancelled
-            if hasattr(_GLOBAL_CHECKPOINTER_CONTEXT, 'pool'):
-                pool = _GLOBAL_CHECKPOINTER_CONTEXT.pool
-                print__checkpointers_debug("CLEANUP: Found AsyncConnectionPool - cancelling background workers")
-                
-                # Close pool with proper worker termination
-                try:
-                    await pool.close()
-                    print__checkpointers_debug("CLEANUP: Pool closed successfully")
-                except Exception as pool_error:
-                    print__checkpointers_debug(f"CLEANUP WARNING: Error closing pool: {pool_error}")
-                    
-                # Give workers time to terminate
-                await asyncio.sleep(0.1)
+            # _GLOBAL_CHECKPOINTER_CONTEXT is now a connection pool, so close it directly
+            print__checkpointers_debug("CLEANUP: Found connection pool - closing it")
+            await _GLOBAL_CHECKPOINTER_CONTEXT.close()
+            print__checkpointers_debug("CLEANUP: Connection pool closed successfully")
             
-            # Exit context manager
-            await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
-            print__checkpointers_debug("CLEANUP: Global checkpointer context cleaned up successfully")
         except Exception as e:
             print__checkpointers_debug(f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}")
         finally:
@@ -902,67 +889,8 @@ async def force_close_modern_pools():
 # ASYNCPOSTGRESSAVER IMPLEMENTATION WITH CONNECTION POOL
 @retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
 async def create_async_postgres_saver():
-    """Create and configure AsyncPostgresSaver with connection pool and comprehensive error handling.
-    
-    This function serves as the main factory for creating AsyncPostgresSaver instances
-    optimized for cloud database environments. It implements a sophisticated approach
-    with connection pooling, fallback mechanisms, and comprehensive error recovery.
-    
-    Creation Strategy:
-        1. Primary: Connection pool approach using AsyncConnectionPool
-        2. Fallback: Direct connection string approach for compatibility
-        3. Error Recovery: Automatic retry with prepared statement cleanup
-        4. Setup: Dedicated autocommit connection for table creation
-        
-    Connection Pool Features:
-        - Conservative sizing optimized for cloud database limits
-        - Advanced timeout configuration for distributed environments
-        - Automatic pool lifecycle management with proper cleanup
-        - Connection health monitoring and automatic recovery
-        - Prepared statement conflict prevention
-        
-    Setup Process:
-        - Clears any existing global state to prevent conflicts
-        - Validates environment configuration before proceeding
-        - Creates connection pool with cloud-optimized parameters
-        - Instantiates AsyncPostgresSaver with pooled connections
-        - Performs table setup using separate autocommit connection
-        - Validates functionality with test operations
-        
-    Error Handling:
-        - Comprehensive retry logic for transient failures
-        - Automatic prepared statement cleanup on conflicts
-        - Graceful fallback to alternative connection methods
-        - Global state cleanup and recreation on persistent failures
-        - Detailed error logging for troubleshooting
-        
-    Context Management:
-        - Proper async context manager wrapping for resource cleanup
-        - Automatic pool closure on context exit
-        - Global state management for application lifecycle
-        - Exception handling during context operations
-        
-    Validation and Testing:
-        - Post-creation functionality testing
-        - Connection pool health verification
-        - Custom table setup and validation
-        - Performance baseline establishment
-        
-    Returns:
-        AsyncPostgresSaver: Fully configured and tested checkpointer instance
-        
-    Raises:
-        Exception: If environment variables are missing or invalid
-        ImportError: If required psycopg_pool is not available
-        Various: Connection, setup, or validation failures
-        
-    Note:
-        - Uses autocommit=False for better cloud database compatibility
-        - Implements proper connection pool sizing for concurrent scenarios
-        - Setup uses separate autocommit=True connection to avoid transaction block errors
-        - Includes comprehensive debug logging for operational visibility
-    """
-    print__checkpointers_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with connection pool")
+    """Create and configure AsyncPostgresSaver with connection string approach."""
+    print__checkpointers_debug("233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with connection string")
     global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
     
     # Clear any existing state first to avoid conflicts
@@ -970,138 +898,69 @@ async def create_async_postgres_saver():
         print__checkpointers_debug("234 - EXISTING STATE CLEANUP: Clearing existing checkpointer state to avoid conflicts")
         try:
             if _GLOBAL_CHECKPOINTER_CONTEXT:
-                await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
+                await _GLOBAL_CHECKPOINTER_CONTEXT.close()
         except Exception as e:
             print__checkpointers_debug(f"236 - CLEANUP ERROR: Error during state cleanup: {e}")
         finally:
             _GLOBAL_CHECKPOINTER_CONTEXT = None
             _GLOBAL_CHECKPOINTER = None
             print__checkpointers_debug("237 - STATE CLEARED: Global checkpointer state cleared")
-    
+
     if not AsyncPostgresSaver:
         print__checkpointers_debug("239 - SAVER UNAVAILABLE: AsyncPostgresSaver not available")
         raise Exception("AsyncPostgresSaver not available")
-    
+
     if not check_postgres_env_vars():
         print__checkpointers_debug("240 - ENV VARS MISSING: Missing required PostgreSQL environment variables")
         raise Exception("Missing required PostgreSQL environment variables")
-    
-    print__checkpointers_debug("241 - CHECKPOINTER CREATION: Creating AsyncPostgresSaver")
+
+    print__checkpointers_debug("241 - CHECKPOINTER CREATION: Creating AsyncPostgresSaver using connection pool approach")
     
     try:
-        # Try connection pool approach first
-        try:
-            
-            
-            # Get connection details
-            connection_string = get_connection_string()
-            connection_kwargs = get_connection_kwargs()
-            
-            print__checkpointers_debug("242 - CONNECTION POOL: Setting up AsyncConnectionPool")
-            
-            # Connection pool with conservative settings for cloud databases
-            pool = AsyncConnectionPool(
-                conninfo=connection_string,
-                min_size=DEFAULT_POOL_MIN_SIZE,       # Start small for efficiency
-                max_size=DEFAULT_POOL_MAX_SIZE,       # Conservative maximum to avoid connection limits  
-                timeout=DEFAULT_POOL_TIMEOUT,       # Timeout for cloud latency
-                max_idle=DEFAULT_MAX_IDLE,     # 5 minutes idle timeout
-                max_lifetime=DEFAULT_MAX_LIFETIME, # 30 minutes max connection lifetime for stability
-                kwargs={
-                    **connection_kwargs,
-                    "connect_timeout": CONNECT_TIMEOUT,
-                },
-                open=False  # Set to False to avoid deprecation warnings
-            )
-            
-            # Open the pool explicitly using await (recommended by psycopg)
-            print__checkpointers_debug("243 - POOL OPENING: Opening connection pool using await approach")
-            await pool.open()
-            print__checkpointers_debug("244 - POOL OPENED: Connection pool opened successfully")
-            
-            # Create AsyncPostgresSaver using connection from pool
-            print__checkpointers_debug("245 - SAVER CREATION: Creating AsyncPostgresSaver with connection from pool")
-            
-            # Create with connection from pool (standard approach)
-            async with pool.connection() as conn:
-                checkpointer = AsyncPostgresSaver(
-                    conn,
-                    serde=None
-                )
-            
-            # Create a context manager wrapper for proper cleanup
-            class AsyncPostgresSaverContext:
-                def __init__(self, checkpointer, pool):
-                    self.checkpointer = checkpointer
-                    self.pool = pool
-                    
-                async def __aenter__(self):
-                    return self.checkpointer
-                    
-                async def __aexit__(self, exc_type, exc_val, exc_tb):
-                    # Close the pool when context exits
-                    try:
-                        print__checkpointers_debug("Pool cleanup: Closing connection pool")
-                        await self.pool.close()
-                        print__checkpointers_debug("Pool cleanup: Connection pool closed successfully")
-                    except Exception as e:
-                        print__checkpointers_debug(f"Pool cleanup error: {e}")
-            
-            _GLOBAL_CHECKPOINTER_CONTEXT = AsyncPostgresSaverContext(checkpointer, pool)
-            
-            # Enter the context manager
-            print__checkpointers_debug("248 - CONTEXT ENTER: Entering async context manager")
-            _GLOBAL_CHECKPOINTER = await _GLOBAL_CHECKPOINTER_CONTEXT.__aenter__()
-            
-            print__checkpointers_debug("249 - SAVER CREATED: AsyncPostgresSaver created using connection pool approach")
-            
-        except ImportError:
-            print__checkpointers_debug("250 - IMPORT ERROR: psycopg_pool not available, using fallback")
-            raise ImportError("psycopg_pool required")
-            
-    except Exception as pool_error:
-        print__checkpointers_debug(f"251 - POOL ERROR: Pool approach failed: {pool_error}")
-        # Fallback to connection string approach
-        print__checkpointers_debug("252 - FALLBACK: Using connection string approach")
-        
+        # Use connection pool approach to ensure proper connection configuration
         connection_string = get_connection_string()
-        _GLOBAL_CHECKPOINTER_CONTEXT = AsyncPostgresSaver.from_conn_string(
-            conn_string=connection_string,
-            serde=None
+        connection_kwargs = get_connection_kwargs()
+        
+        print__checkpointers_debug("242 - CONNECTION POOL: Creating connection pool with proper kwargs")
+        
+        # Create connection pool with our connection kwargs
+        pool = AsyncConnectionPool(
+            conninfo=connection_string,
+            min_size=DEFAULT_POOL_MIN_SIZE,
+            max_size=DEFAULT_POOL_MAX_SIZE,
+            timeout=DEFAULT_POOL_TIMEOUT,
+            max_idle=DEFAULT_MAX_IDLE,
+            max_lifetime=DEFAULT_MAX_LIFETIME,
+            kwargs=connection_kwargs,
+            open=False
         )
         
-        # Use async with to properly enter the context manager
-        try:
-            # Enter the context manager using the proper method
-            _GLOBAL_CHECKPOINTER = await _GLOBAL_CHECKPOINTER_CONTEXT.__aenter__()
-            print__checkpointers_debug("253 - FALLBACK SUCCESS: Using connection string fallback approach")
-        except AttributeError:
-            # Fallback: If __aenter__ is not available, create a simple wrapper
-            print__checkpointers_debug("253.1 - FALLBACK WRAPPER: Creating simple context wrapper due to __aenter__ unavailability")
-            
-            class SimpleContextWrapper:
-                def __init__(self, checkpointer_factory):
-                    self.checkpointer_factory = checkpointer_factory
-                    self.checkpointer = None
-                
-                async def __aenter__(self):
-                    # Create the checkpointer directly from the factory
-                    async with self.checkpointer_factory as checkpointer:
-                        self.checkpointer = checkpointer
-                        return checkpointer
-                
-                async def __aexit__(self, exc_type, exc_val, exc_tb):
-                    # Cleanup is handled by the original context manager
-                    pass
-            
-            _GLOBAL_CHECKPOINTER_CONTEXT = SimpleContextWrapper(_GLOBAL_CHECKPOINTER_CONTEXT)
-            _GLOBAL_CHECKPOINTER = await _GLOBAL_CHECKPOINTER_CONTEXT.__aenter__()
-            print__checkpointers_debug("253 - FALLBACK SUCCESS: Using connection string fallback approach")
-    
-    # Setup the checkpointer with autocommit=True connection to avoid transaction block errors
-    print__checkpointers_debug("254 - SETUP START: Running checkpointer setup with autocommit=True connection")
-    await setup_checkpointer_with_autocommit()
-    print__checkpointers_debug("255 - SETUP COMPLETE: AsyncPostgresSaver setup complete")
+        # Open the pool
+        await pool.open()
+        print__checkpointers_debug("247 - POOL OPENED: Connection pool opened successfully")
+        
+        # Create checkpointer with the pool
+        _GLOBAL_CHECKPOINTER = AsyncPostgresSaver(pool, serde=None)
+        _GLOBAL_CHECKPOINTER_CONTEXT = pool  # Store pool for cleanup
+        
+        print__checkpointers_debug("249 - SAVER CREATED: AsyncPostgresSaver created with connection pool")
+        
+        # Setup LangGraph tables - use autocommit connection for DDL operations
+        print__checkpointers_debug("254 - SETUP START: Running setup with autocommit connection")
+        await setup_checkpointer_with_autocommit()
+        print__checkpointers_debug("255 - SETUP COMPLETE: AsyncPostgresSaver setup completed with autocommit")
+        
+    except Exception as creation_error:
+        print__checkpointers_debug(f"251 - CREATION ERROR: Failed to create AsyncPostgresSaver: {creation_error}")
+        # Clean up on failure
+        if _GLOBAL_CHECKPOINTER_CONTEXT:
+            try:
+                await _GLOBAL_CHECKPOINTER_CONTEXT.close()
+            except:
+                pass
+            _GLOBAL_CHECKPOINTER_CONTEXT = None
+            _GLOBAL_CHECKPOINTER = None
+        raise
     
     # Test the checkpointer to ensure it's working
     print__checkpointers_debug("256 - TESTING START: Testing checkpointer")
@@ -1109,15 +968,15 @@ async def create_async_postgres_saver():
     test_result = await _GLOBAL_CHECKPOINTER.aget(test_config)
     print__checkpointers_debug(f"257 - TESTING COMPLETE: Checkpointer test successful: {test_result is None}")
     
-    # Setup custom tables using the same connection approach
+    # Setup custom tables using direct connection (separate from checkpointer)
     print__checkpointers_debug("258 - CUSTOM TABLES: Setting up custom users_threads_runs table")
     await setup_users_threads_runs_table()
     
-    print__checkpointers_debug("259 - CREATE SAVER SUCCESS: Cloud-optimized AsyncPostgresSaver creation completed successfully")
+    print__checkpointers_debug("259 - CREATE SAVER SUCCESS: AsyncPostgresSaver creation completed successfully")
     return _GLOBAL_CHECKPOINTER
 
 #==============================================================================
-# DATABASE SETUP AND TABLE INITIALIZATION
+# DATABASE SETUP AND TABLE INITIALIZATION  
 #==============================================================================
 async def setup_checkpointer_with_autocommit():
     """Setup the checkpointer tables using a dedicated autocommit connection to avoid transaction conflicts.
