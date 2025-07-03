@@ -341,6 +341,9 @@ _GLOBAL_CHECKPOINTER_CONTEXT = None
 ## Cache the connection string to avoid timestamp conflicts
 _CONNECTION_STRING_CACHE = None
 
+## Lock for checkpointer initialization to prevent race conditions
+_CHECKPOINTER_INIT_LOCK = None
+
 # Type variable for the retry decorator
 T = TypeVar('T')
 
@@ -761,6 +764,141 @@ async def clear_prepared_statements():
         print__checkpointers_debug(f"232 - CLEANUP ERROR: Error clearing prepared statements (non-fatal): {e}")
         # Don't raise - this is a cleanup operation and shouldn't block checkpointer creation
 
+
+async def cleanup_all_pools():
+    """Cleanup function that properly handles connection pools and global state.
+    
+    This function provides comprehensive cleanup of all connection-related resources,
+    ensuring proper shutdown sequence and resource deallocation for the checkpointer
+    system. It handles both connection pools and global state management.
+    
+    Cleanup Process:
+        1. Gracefully exit global checkpointer context manager
+        2. Clean up connection pools using proper async patterns
+        3. Reset global state variables to prevent stale references
+        4. Force garbage collection to ensure memory cleanup
+        5. Provide detailed logging for troubleshooting
+        
+    Global State Management:
+        - Properly exits _GLOBAL_CHECKPOINTER_CONTEXT using __aexit__
+        - Resets _GLOBAL_CHECKPOINTER to None for clean state
+        - Handles cleanup errors gracefully without raising exceptions
+        - Ensures clean slate for subsequent initialization attempts
+        
+    Resource Management:
+        - Uses context manager protocols for proper resource cleanup
+        - Handles connection pool lifecycle correctly
+        - Provides comprehensive error handling for cleanup failures
+        - Ensures resources are freed even if individual cleanup steps fail
+        
+    Performance Considerations:
+        - Forces garbage collection to ensure immediate memory cleanup
+        - Minimizes resource leakage in long-running applications
+        - Provides clean shutdown for application termination scenarios
+        - Optimizes memory usage for restart scenarios
+        
+    Note:
+        - Safe to call multiple times without side effects
+        - Used during error recovery and application shutdown
+        - Comprehensive error handling prevents cleanup failures from propagating
+        - Essential for proper resource management in production environments
+    """
+    print__checkpointers_debug("CLEANUP ALL POOLS START: Starting comprehensive pool cleanup")
+    
+    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
+    
+    # Clean up the global checkpointer context if it exists
+    if _GLOBAL_CHECKPOINTER_CONTEXT:
+        try:
+            print__checkpointers_debug("CLEANUP: Cleaning up global checkpointer context")
+            
+            # Special handling for AsyncConnectionPool contexts to ensure workers are cancelled
+            if hasattr(_GLOBAL_CHECKPOINTER_CONTEXT, 'pool'):
+                pool = _GLOBAL_CHECKPOINTER_CONTEXT.pool
+                print__checkpointers_debug("CLEANUP: Found AsyncConnectionPool - cancelling background workers")
+                
+                # Close pool with proper worker termination
+                try:
+                    await pool.close()
+                    print__checkpointers_debug("CLEANUP: Pool closed successfully")
+                except Exception as pool_error:
+                    print__checkpointers_debug(f"CLEANUP WARNING: Error closing pool: {pool_error}")
+                    
+                # Give workers time to terminate
+                await asyncio.sleep(0.1)
+            
+            # Exit context manager
+            await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
+            print__checkpointers_debug("CLEANUP: Global checkpointer context cleaned up successfully")
+        except Exception as e:
+            print__checkpointers_debug(f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}")
+        finally:
+            _GLOBAL_CHECKPOINTER_CONTEXT = None
+            _GLOBAL_CHECKPOINTER = None
+    
+    # Force garbage collection to ensure resources are freed
+    gc.collect()
+    print__checkpointers_debug("CLEANUP ALL POOLS COMPLETE: All pools and resources cleaned up")
+
+async def force_close_modern_pools():
+    """Force close any remaining connection pools for aggressive cleanup.
+    
+    This function provides an aggressive cleanup mechanism for troubleshooting
+    scenarios where normal cleanup procedures may not be sufficient. It performs
+    comprehensive resource cleanup and state reset operations.
+    
+    Aggressive Cleanup Actions:
+        1. Calls standard cleanup_all_pools() for normal resource cleanup
+        2. Forces cleanup of any lingering connection resources
+        3. Clears cached connection strings to force recreation
+        4. Resets global state for clean restart scenarios
+        5. Provides detailed logging for troubleshooting
+        
+    Use Cases:
+        - Troubleshooting persistent connection issues
+        - Recovering from connection pool corruption
+        - Debugging resource leakage scenarios
+        - Preparing for application restart scenarios
+        - Emergency cleanup in error recovery situations
+        
+    State Reset Operations:
+        - Clears _CONNECTION_STRING_CACHE to force regeneration
+        - Ensures fresh connection parameters on next initialization
+        - Provides clean slate for subsequent connection attempts
+        - Prevents cached state from interfering with recovery
+        
+    Error Handling:
+        - Comprehensive exception handling prevents cleanup failures
+        - Continues operation even if individual cleanup steps fail
+        - Logs errors for troubleshooting without raising exceptions
+        - Ensures maximum cleanup even in error scenarios
+        
+    Note:
+        - More aggressive than standard cleanup procedures
+        - Primarily intended for troubleshooting and error recovery
+        - Safe to call in production environments
+        - Should be used when normal cleanup is insufficient
+    """
+    print__checkpointers_debug("FORCE CLOSE START: Force closing all connection pools")
+    
+    try:
+        # Clean up the global state
+        await cleanup_all_pools()
+        
+        # Additional cleanup for any lingering connections
+        print__checkpointers_debug("FORCE CLOSE: Forcing cleanup of any remaining resources")
+        
+        # Clear any cached connection strings to force recreation
+        global _CONNECTION_STRING_CACHE
+        _CONNECTION_STRING_CACHE = None
+        
+        print__checkpointers_debug("FORCE CLOSE COMPLETE: Pool force close completed")
+        
+    except Exception as e:
+        print__checkpointers_debug(f"FORCE CLOSE ERROR: Error during force close: {e}")
+        # Don't re-raise - this is a cleanup function
+
+
 # ASYNCPOSTGRESSAVER IMPLEMENTATION WITH CONNECTION POOL
 @retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
 async def create_async_postgres_saver():
@@ -1041,59 +1179,30 @@ async def setup_checkpointer_with_autocommit():
 # CHECKPOINTER LIFECYCLE MANAGEMENT
 #==============================================================================
 async def close_async_postgres_saver():
-    """Close the AsyncPostgresSaver properly using the context manager pattern.
+    """Close the AsyncPostgresSaver properly using the existing cleanup_all_pools() function.
     
     This function provides proper cleanup and resource deallocation for the global
-    AsyncPostgresSaver instance. It follows the context manager protocol to ensure
-    all connections and resources are properly closed.
+    AsyncPostgresSaver instance by utilizing the existing comprehensive cleanup_all_pools()
+    function instead of duplicating cleanup logic.
     
     Cleanup Process:
-        1. Checks for existence of global checkpointer context
-        2. Properly exits the async context manager using __aexit__
-        3. Handles cleanup errors gracefully without raising exceptions
-        4. Resets global state variables to prevent stale references
-        5. Provides comprehensive logging for troubleshooting
-        
-    Resource Management:
-        - Closes connection pools managed by the checkpointer
-        - Releases database connections and prepared statements
-        - Clears global state to prevent memory leaks
+        - Uses cleanup_all_pools() for comprehensive resource cleanup
+        - Handles all connection pools, global state, and resource deallocation
+        - Provides proper error handling and logging
         - Ensures clean shutdown for application termination
         
-    Error Handling:
-        - Continues cleanup even if individual steps fail
-        - Logs errors without raising exceptions to prevent cleanup blocking
-        - Ensures global state is reset even if context manager exit fails
-        - Provides detailed error information for troubleshooting
-        
-    Global State Management:
-        - Resets _GLOBAL_CHECKPOINTER_CONTEXT to None
-        - Resets _GLOBAL_CHECKPOINTER to None
-        - Ensures clean state for subsequent initialization attempts
-        - Prevents stale references that could cause issues
-        
     Note:
+        - Now uses the existing cleanup_all_pools() function to avoid code duplication
+        - Maintains all the same cleanup capabilities with better code organization
         - Safe to call multiple times without side effects
         - Used during application shutdown and error recovery
-        - Essential for proper resource management in production
-        - Follows AsyncPostgresSaver context manager protocol
     """
-    print__checkpointers_debug("258 - CLOSE SAVER START: Closing AsyncPostgresSaver using official context manager")
-    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
+    print__checkpointers_debug("CLOSE SAVER: Closing AsyncPostgresSaver using cleanup_all_pools()")
     
-    if _GLOBAL_CHECKPOINTER_CONTEXT:
-        try:
-            print__checkpointers_debug("259 - CLOSE CONTEXT: Exiting async context manager")
-            await _GLOBAL_CHECKPOINTER_CONTEXT.__aexit__(None, None, None)
-            print__checkpointers_debug("260 - CLOSE SUCCESS: AsyncPostgresSaver closed properly")
-        except Exception as e:
-            print__checkpointers_debug(f"261 - CLOSE ERROR: Error during AsyncPostgresSaver cleanup: {e}")
-        finally:
-            _GLOBAL_CHECKPOINTER_CONTEXT = None
-            _GLOBAL_CHECKPOINTER = None
-            print__checkpointers_debug("262 - CLOSE CLEANUP: Global state cleared after close")
-    else:
-        print__checkpointers_debug("263 - CLOSE SKIP: No checkpointer context to close")
+    # Use the existing comprehensive cleanup function instead of duplicating logic
+    await cleanup_all_pools()
+    
+    print__checkpointers_debug("CLOSE SAVER: AsyncPostgresSaver closed successfully using cleanup_all_pools()")
 
 @retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def get_global_checkpointer():
@@ -1677,7 +1786,7 @@ async def initialize_checkpointer():
             _GLOBAL_CHECKPOINTER = MemorySaver()
 
 async def cleanup_checkpointer():
-    """Clean up the global checkpointer on shutdown."""
+    """Clean up the global checkpointer on shutdown using force_close_modern_pools() for thorough cleanup."""
     global _GLOBAL_CHECKPOINTER
     
     print__checkpointers_debug("🧹 CHECKPOINTER CLEANUP: Starting checkpointer cleanup...")
@@ -1686,12 +1795,13 @@ async def cleanup_checkpointer():
         try:
             # Check if it's an AsyncPostgresSaver that needs proper cleanup
             if hasattr(_GLOBAL_CHECKPOINTER, '__class__') and 'AsyncPostgresSaver' in str(type(_GLOBAL_CHECKPOINTER)):
-                print__checkpointers_debug("🔄 CHECKPOINTER CLEANUP: Cleaning up AsyncPostgresSaver...")
-                # Use the proper cleanup function
-                await close_async_postgres_saver()
+                print__checkpointers_debug("🔄 CHECKPOINTER CLEANUP: Cleaning up AsyncPostgresSaver using force_close_modern_pools()...")
+                # Use the more thorough cleanup function for shutdown scenarios
+                await force_close_modern_pools()
             else:
                 print__checkpointers_debug(f"🔄 CHECKPOINTER CLEANUP: Cleaning up {type(_GLOBAL_CHECKPOINTER).__name__}...")
                 # For other types (like MemorySaver), no special cleanup needed
+                _GLOBAL_CHECKPOINTER = None
                 
         except Exception as e:
             print__checkpointers_debug(f"⚠️ CHECKPOINTER CLEANUP: Error during checkpointer cleanup: {e}")
@@ -1702,12 +1812,19 @@ async def cleanup_checkpointer():
         print__checkpointers_debug("ℹ️ CHECKPOINTER CLEANUP: No checkpointer to clean up")
 
 async def get_healthy_checkpointer():
-    """Get a healthy checkpointer instance, initializing if needed."""
-    global _GLOBAL_CHECKPOINTER
+    """Get a healthy checkpointer instance, initializing if needed with thread-safe initialization."""
+    global _GLOBAL_CHECKPOINTER, _CHECKPOINTER_INIT_LOCK
     
-    # Simple approach without complex health checking
+    # Initialize lock lazily to avoid event loop issues
+    if _CHECKPOINTER_INIT_LOCK is None:
+        _CHECKPOINTER_INIT_LOCK = asyncio.Lock()
+    
+    # Use double-checked locking pattern to prevent race conditions
     if _GLOBAL_CHECKPOINTER is None:
-        await initialize_checkpointer()
+        async with _CHECKPOINTER_INIT_LOCK:
+            # Check again after acquiring lock to avoid duplicate initialization
+            if _GLOBAL_CHECKPOINTER is None:
+                await initialize_checkpointer()
     
     return _GLOBAL_CHECKPOINTER
 
