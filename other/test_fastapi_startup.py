@@ -17,13 +17,14 @@ async def test_fastapi_startup():
     """Test the FastAPI startup process"""
     print("🔍 Testing FastAPI startup process...")
     
-    # Test 1: Import api_server
-    print("\n1. Importing api_server...")
+    # Test 1: Import api.main instead of api_server
+    print("\n1. Importing api.main...")
     try:
-        import api_server
-        print("✅ api_server imported successfully")
+        from api.main import app
+        from api.config.settings import GLOBAL_CHECKPOINTER
+        print("✅ api.main imported successfully")
     except Exception as e:
-        print(f"❌ Failed to import api_server: {e}")
+        print(f"❌ Failed to import api.main: {e}")
         return
     
     # Test 2: Test the lifespan startup manually
@@ -31,15 +32,16 @@ async def test_fastapi_startup():
     try:
         # Simulate the FastAPI lifespan startup
         print("🔄 Running initialize_checkpointer()...")
-        await api_server.initialize_checkpointer()
+        from my_agent.utils.postgres_checkpointer import initialize_checkpointer
+        await initialize_checkpointer()
         
-        print(f"✅ Checkpointer initialized: {type(api_server.GLOBAL_CHECKPOINTER).__name__}")
+        print(f"✅ Checkpointer initialized: {type(GLOBAL_CHECKPOINTER).__name__}")
         
         # Check checkpointer type
-        if hasattr(api_server.GLOBAL_CHECKPOINTER, 'conn'):
+        if hasattr(GLOBAL_CHECKPOINTER, 'conn'):
             print(f"✅ Has PostgreSQL connection pool")
-            if api_server.GLOBAL_CHECKPOINTER.conn:
-                print(f"✅ Connection pool exists: closed={api_server.GLOBAL_CHECKPOINTER.conn.closed}")
+            if GLOBAL_CHECKPOINTER.conn:
+                print(f"✅ Connection pool exists: closed={GLOBAL_CHECKPOINTER.conn.closed}")
             else:
                 print(f"⚠️ Connection pool is None")
         else:
@@ -53,7 +55,8 @@ async def test_fastapi_startup():
     # Test 3: Test health check
     print("\n3. Testing health check...")
     try:
-        health_result = await api_server.health_check()
+        from api.routes.health import health_check
+        health_result = await health_check()
         print(f"✅ Health check result: {health_result}")
     except Exception as e:
         print(f"❌ Health check failed: {e}")
@@ -61,7 +64,8 @@ async def test_fastapi_startup():
     # Test 4: Test get_healthy_checkpointer
     print("\n4. Testing get_healthy_checkpointer...")
     try:
-        healthy_checkpointer = await api_server.get_healthy_checkpointer()
+        from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer
+        healthy_checkpointer = await get_healthy_checkpointer()
         print(f"✅ Healthy checkpointer: {type(healthy_checkpointer).__name__}")
         
         if hasattr(healthy_checkpointer, 'conn'):

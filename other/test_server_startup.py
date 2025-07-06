@@ -17,23 +17,25 @@ async def test_server_startup():
     """Test the server startup components individually"""
     print("🔍 Testing server startup components...")
     
-    # Test 1: Import api_server
-    print("\n1. Testing api_server import...")
+    # Test 1: Import api.main instead of api_server
+    print("\n1. Testing api.main import...")
     try:
-        import api_server
-        print("✅ api_server imported successfully")
+        from api.main import app
+        from api.config.settings import GLOBAL_CHECKPOINTER
+        print("✅ api.main imported successfully")
     except Exception as e:
-        print(f"❌ Failed to import api_server: {e}")
+        print(f"❌ Failed to import api.main: {e}")
         return
     
     # Test 2: Test checkpointer initialization directly
     print("\n2. Testing checkpointer initialization...")
     try:
-        await api_server.initialize_checkpointer()
-        print(f"✅ Checkpointer initialized: {type(api_server.GLOBAL_CHECKPOINTER).__name__}")
+        from my_agent.utils.postgres_checkpointer import initialize_checkpointer
+        await initialize_checkpointer()
+        print(f"✅ Checkpointer initialized: {type(GLOBAL_CHECKPOINTER).__name__}")
         
         # Check checkpointer type
-        if hasattr(api_server.GLOBAL_CHECKPOINTER, 'conn'):
+        if hasattr(GLOBAL_CHECKPOINTER, 'conn'):
             print(f"✅ Has PostgreSQL connection pool")
         else:
             print(f"⚠️ Using InMemorySaver fallback")
@@ -46,7 +48,6 @@ async def test_server_startup():
     # Test 3: Test FastAPI app creation
     print("\n3. Testing FastAPI app...")
     try:
-        app = api_server.app
         print(f"✅ FastAPI app created: {type(app).__name__}")
     except Exception as e:
         print(f"❌ Failed to create FastAPI app: {e}")
@@ -54,7 +55,8 @@ async def test_server_startup():
     # Test 4: Test health endpoint directly
     print("\n4. Testing health endpoint function...")
     try:
-        health_result = await api_server.health_check()
+        from api.routes.health import health_check
+        health_result = await health_check()
         print(f"✅ Health check result: {health_result}")
     except Exception as e:
         print(f"❌ Health check failed: {e}")

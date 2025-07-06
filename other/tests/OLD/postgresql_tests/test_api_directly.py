@@ -5,7 +5,9 @@ Test script to directly test the message loading API functionality.
 
 import asyncio
 import sys
-from api_server import get_chat_messages, get_healthy_checkpointer
+# Updated imports to use new modular structure
+from api.routes.messages import get_chat_messages
+from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer
 from unittest.mock import MagicMock
 
 class MockUser:

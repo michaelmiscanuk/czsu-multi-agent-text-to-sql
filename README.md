@@ -20,7 +20,7 @@
    .venv\Scripts\activate
    uv pip install .
    uv pip install .[dev]
-   uvicorn api_server:app --host 0.0.0.0 --port 8000 --log-level info --reload
+   uvicorn api.main:app --host 0.0.0.0 --port 8000 --log-level info --reload
    ```
    
    If there is some problem with libraries, delete .venv folder and run commands above
@@ -65,7 +65,7 @@
    pip install --upgrade pip
    pip install .
    pip install .[dev]
-   uvicorn api_server:app --reload --reload-exclude .venv
+   uvicorn api.main:app --reload --reload-exclude .venv
    ```
    
    If there is some problem with libraries, delete .venv folder and run commands above

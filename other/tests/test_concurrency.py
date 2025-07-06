@@ -25,18 +25,18 @@ from datetime import timedelta
 
 
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
-# This prevents conflicts with api_server.py's event loop setup
+# This prevents conflicts with the modular API structure's event loop setup
 if sys.platform == "win32":
     print("[POSTGRES-STARTUP] Windows detected - setting SelectorEventLoop for PostgreSQL compatibility...")
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     print("[POSTGRES-STARTUP] Event loop policy set successfully")
 
 # Add the root directory to Python path to import from main scripts
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Constants
 try:
-    BASE_DIR = Path(__file__).resolve().parents[3]
+    BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
@@ -48,8 +48,10 @@ from my_agent.utils.postgres_checkpointer import (
     cleanup_checkpointer
 )
 
-# Import main application and dependencies from our existing scripts
-# from api_server import app, get_current_user, AnalyzeRequest  # No longer needed for HTTP requests
+# Import main application and dependencies from the new modular structure
+# from api.main import app  # No longer needed for HTTP requests
+# from api.dependencies.auth import get_current_user  # No longer needed for HTTP requests  
+# from api.models.requests import AnalyzeRequest  # No longer needed for HTTP requests
 
 # Test configuration
 TEST_EMAIL = "test_user@example.com"
@@ -422,7 +424,7 @@ async def async_cleanup():
         # Close any remaining PostgreSQL connections
         await close_async_postgres_saver()
         
-        # CRITICAL: Also cleanup any global checkpointer from api_server
+        # CRITICAL: Also cleanup any global checkpointer from the modular API structure
         try:
             await cleanup_checkpointer()
         except Exception as e:
@@ -443,7 +445,7 @@ async def main():
     if not await check_server_connectivity():
         print("❌ Server connectivity check failed!")
         print("   Please start your uvicorn server first:")
-        print(f"   uvicorn api_server:app --host 0.0.0.0 --port 8000")
+        print(f"   uvicorn api.main:app --host 0.0.0.0 --port 8000")
         return False
     
     # Setup test environment
