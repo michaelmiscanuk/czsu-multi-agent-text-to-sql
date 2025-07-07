@@ -1,0 +1,396 @@
+<mxfile host="65bd71144e">
+    <diagram id="codeviz-diagram" name="System Diagram">
+        <mxGraphModel dx="1386" dy="1598" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" value="Search Results" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="1" vertex="1">
+                    <mxGeometry x="80" y="-10" width="1404" height="2310" as="geometry"/>
+                </mxCell>
+                <mxCell id="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="450" y="450" width="418" height="670" as="geometry"/>
+                </mxCell>
+                <mxCell id="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" value="cook_meal()&lt;br&gt;Meal Preparation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" vertex="1">
+                    <mxGeometry x="40" y="440" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" value="next_step()&lt;br&gt;Utility Function" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" vertex="1">
+                    <mxGeometry x="133" y="570" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" value="serve_customer()&lt;br&gt;Customer Handler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" vertex="1">
+                    <mxGeometry x="60" y="280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" value="simple_restaurant_demo()&lt;br&gt;Main Orchestrator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" vertex="1">
+                    <mxGeometry x="90" y="120" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="stepCounter_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" value="step_counter&lt;br&gt;Global Variable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" vertex="1">
+                    <mxGeometry x="218" y="250" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper_label" value="High-Level Architecture" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="458" y="458" width="342" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="872" y="440" width="542" height="840" as="geometry"/>
+                </mxCell>
+                <mxCell id="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="asyncio.gather()&lt;br&gt;Concurrency Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="226" y="280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="asyncioSleep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="asyncio.sleep()&lt;br&gt;Yield Control" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="306" y="740" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="cook_meal()&lt;br&gt;Meal Preparation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="326" y="580" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="eventLoop_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="asyncio Event Loop&lt;br&gt;Scheduler" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="76" y="280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="serveCustomer1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="serve_customer(Alice)&lt;br&gt;Coroutine Instance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="356" y="420" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="serveCustomer2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="serve_customer(Bob)&lt;br&gt;Coroutine Instance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="206" y="440" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="serveCustomer3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="serve_customer(Carol)&lt;br&gt;Coroutine Instance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="54" y="440" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" value="simple_restaurant_demo()&lt;br&gt;Orchestrator" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1">
+                    <mxGeometry x="226" y="120" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper_label" value="Mid-Level Component Interaction" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="880" y="448" width="466" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="60" y="480" width="390" height="1830" as="geometry"/>
+                </mxCell>
+                <mxCell id="Orchestration_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="90" y="380" width="260" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="asyncio.gather()&lt;br&gt;Concurrent Execution" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="Orchestration_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="40" y="280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="simple_restaurant_demo()&lt;br&gt;Main Coroutine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="Orchestration_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="60" y="120" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Orchestration_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="Orchestration" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="98" y="388" width="184" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="subGraph0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="120" y="1440" width="260" height="380" as="geometry"/>
+                </mxCell>
+                <mxCell id="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="next_step()&lt;br&gt;Synchronous Function" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="subGraph0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="stepCounter_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="step_counter&lt;br&gt;Global Variable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="subGraph0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="60" y="280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="subGraph0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="Global State and Utility" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="128" y="1448" width="184" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="subGraph1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="50" y="830" width="280" height="540" as="geometry"/>
+                </mxCell>
+                <mxCell id="asyncioSleep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="asyncio.sleep(cook_time)&lt;br&gt;Yields Control" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="subGraph1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="40" y="440" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="cook_meal(name, cook_time)&lt;br&gt;Coroutine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="subGraph1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="60" y="280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="serve_customer(customer_name, meal, cook_time)&lt;br&gt;Coroutine" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="subGraph1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="80" y="120" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="subGraph1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="Core Asynchronous Operations" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="58" y="838" width="204" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="subGraph3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="" style="html=1;whiteSpace=wrap;container=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;fillOpacity=20;strokeWidth=2;containerType=none;recursiveResize=0;movable=1;resizable=1;autosize=0;dropTarget=0" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="110" y="90" width="240" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="asyncioRun_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" value="asyncio.run()&lt;br&gt;Event Loop Manager" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="subGraph3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1">
+                    <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="subGraph3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="Execution Entry Point" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" parent="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1">
+                    <mxGeometry x="118" y="98" width="164" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper_label" value="Low-Level Implementation Details" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;labelBackgroundColor=white;spacing=5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="68" y="488" width="314" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="search-result-17b9ac036e335721f4e7b3880aa2afd0" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="195" y="80" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="report-section-17b9ac036e335721f4e7b3880aa2afd0-0" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="195" y="190" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="report-section-17b9ac036e335721f4e7b3880aa2afd0-1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="569" y="280" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="report-section-17b9ac036e335721f4e7b3880aa2afd0-2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="1046" y="270" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="report-section-17b9ac036e335721f4e7b3880aa2afd0-3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" vertex="1">
+                    <mxGeometry x="165" y="300" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="terminal-17b9ac036e335721f4e7b3880aa2afd0" value="Terminal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5" parent="1" vertex="1">
+                    <mxGeometry x="654" y="2522" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-edge-search-to-terminal-17b9ac036e335721f4e7b3880aa2afd0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="search-results-group-17b9ac036e335721f4e7b3880aa2afd0" target="terminal-17b9ac036e335721f4e7b3880aa2afd0" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-edge-search-to-terminal-17b9ac036e335721f4e7b3880aa2afd0_label" value="Provides context to" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-edge-search-to-terminal-17b9ac036e335721f4e7b3880aa2afd0" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_serveCustomer_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" target="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_serveCustomer_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture_label" value="orchestrates" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_simpleRestaurantDemo_serveCustomer_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_cookMeal_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" target="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_cookMeal_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture_label" value="delegates to" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_serveCustomer_cookMeal_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_stepCounter_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" target="stepCounter_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_stepCounter_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture_label" value="uses for tracking" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_simpleRestaurantDemo_stepCounter_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_nextStep_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" target="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_nextStep_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture_label" value="uses for tracking" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_simpleRestaurantDemo_nextStep_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_nextStep_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" target="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_nextStep_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture_label" value="uses for tracking" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_serveCustomer_nextStep_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_nextStep_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" target="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_nextStep_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture_label" value="uses for tracking" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_cookMeal_nextStep_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-1-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="report-section-17b9ac036e335721f4e7b3880aa2afd0-1" target="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-1-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper_label" value="Diagram" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-1-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-High-Level-Architecture-wrapper" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_asyncioGather_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_asyncioGather_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="runs concurrently" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_simpleRestaurantDemo_asyncioGather_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer1_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="serveCustomer1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer1_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="manages" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_asyncioGather_serveCustomer1_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer2_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="serveCustomer2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer2_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="manages" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_asyncioGather_serveCustomer2_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer3_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="serveCustomer3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer3_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="manages" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_asyncioGather_serveCustomer3_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer1_cookMeal_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="serveCustomer1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer1_cookMeal_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="await" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_serveCustomer1_cookMeal_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer2_cookMeal_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="serveCustomer2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer2_cookMeal_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="await" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_serveCustomer2_cookMeal_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer3_cookMeal_6_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="serveCustomer3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer3_cookMeal_6_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="await" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_serveCustomer3_cookMeal_6_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_asyncioSleep_7_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="asyncioSleep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_asyncioSleep_7_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="yields control via" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_cookMeal_asyncioSleep_7_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_asyncioSleep_eventLoop_8_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="asyncioSleep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="eventLoop_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_asyncioSleep_eventLoop_8_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="returns control to" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_asyncioSleep_eventLoop_8_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_eventLoop_serveCustomer2_9_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="eventLoop_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="serveCustomer2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_eventLoop_serveCustomer2_9_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="switches to other tasks" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_eventLoop_serveCustomer2_9_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_eventLoop_serveCustomer3_10_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="eventLoop_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="serveCustomer3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_eventLoop_serveCustomer3_10_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="switches to other tasks" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_eventLoop_serveCustomer3_10_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_eventLoop_serveCustomer1_11_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="eventLoop_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" target="serveCustomer1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_eventLoop_serveCustomer1_11_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction_label" value="resumes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_eventLoop_serveCustomer1_11_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-2-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="report-section-17b9ac036e335721f4e7b3880aa2afd0-2" target="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-2-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper_label" value="Diagram" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-2-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Mid-Level-Component-Interaction-wrapper" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_nextStep_stepCounter_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="stepCounter_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_nextStep_stepCounter_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="increments" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_nextStep_stepCounter_0_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_nextStep_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_nextStep_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_cookMeal_nextStep_1_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_asyncioSleep_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="asyncioSleep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_cookMeal_asyncioSleep_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="simulates I/O with" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_cookMeal_asyncioSleep_2_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_nextStep_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="nextStep_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_nextStep_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="uses" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_serveCustomer_nextStep_3_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_cookMeal_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="cookMeal_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_serveCustomer_cookMeal_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="await for meal" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_serveCustomer_cookMeal_4_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_stepCounter_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="stepCounter_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_stepCounter_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="resets" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_simpleRestaurantDemo_stepCounter_5_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_asyncioGather_6_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_simpleRestaurantDemo_asyncioGather_6_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="runs multiple" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_simpleRestaurantDemo_asyncioGather_6_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer_7_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="asyncioGather_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="serveCustomer_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_asyncioGather_serveCustomer_7_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="of" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_asyncioGather_serveCustomer_7_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-L_asyncioRun_simpleRestaurantDemo_8_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="asyncioRun_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" target="simpleRestaurantDemo_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-L_asyncioRun_simpleRestaurantDemo_8_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details_label" value="executes" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-L_asyncioRun_simpleRestaurantDemo_8_d78d4f505535dfa1d36386de1dc5ef8e_section_section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-3-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="report-section-17b9ac036e335721f4e7b3880aa2afd0-3" target="section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-3-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper_label" value="Diagram" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-3-to-section-diagram-17b9ac036e335721f4e7b3880aa2afd0-Low-Level-Implementation-Details-wrapper" vertex="1" connectable="0">
+                    <mxGeometry x="-0.2" y="10" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge-search-result-17b9ac036e335721f4e7b3880aa2afd0-to-report-section-17b9ac036e335721f4e7b3880aa2afd0-0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="search-result-17b9ac036e335721f4e7b3880aa2afd0" target="report-section-17b9ac036e335721f4e7b3880aa2afd0-0" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-0-to-report-section-17b9ac036e335721f4e7b3880aa2afd0-1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="report-section-17b9ac036e335721f4e7b3880aa2afd0-0" target="report-section-17b9ac036e335721f4e7b3880aa2afd0-1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-0-to-report-section-17b9ac036e335721f4e7b3880aa2afd0-2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="report-section-17b9ac036e335721f4e7b3880aa2afd0-0" target="report-section-17b9ac036e335721f4e7b3880aa2afd0-2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge-report-section-17b9ac036e335721f4e7b3880aa2afd0-0-to-report-section-17b9ac036e335721f4e7b3880aa2afd0-3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#808080;strokeWidth=2;jumpStyle=arc;jumpSize=10;spacing=15;labelBackgroundColor=white;labelBorderColor=none" parent="1" source="report-section-17b9ac036e335721f4e7b3880aa2afd0-0" target="report-section-17b9ac036e335721f4e7b3880aa2afd0-3" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

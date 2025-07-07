@@ -356,12 +356,27 @@ async def run_concurrency_test() -> ConcurrencyTestResults:
         print(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
 
         # Create concurrent tasks
-        tasks = [
-            make_analyze_request(client, thread_id_1, TEST_PROMPTS[0], results),
-            make_analyze_request(client, thread_id_2, TEST_PROMPTS[1], results),
-            make_analyze_request(client, thread_id_2, TEST_PROMPTS[2], results),
-            make_analyze_request(client, thread_id_2, TEST_PROMPTS[3], results),
-        ]
+        print("============================================================")
+        print("🔍 STARTING CONCURRENT REQUEST 1 (Thread 1)")
+        print("============================================================")
+        task1 = make_analyze_request(client, thread_id_1, TEST_PROMPTS[0], results)
+
+        print("============================================================")
+        print("🔍 STARTING CONCURRENT REQUEST 2 (Thread 2)")
+        print("============================================================")
+        task2 = make_analyze_request(client, thread_id_2, TEST_PROMPTS[1], results)
+
+        print("============================================================")
+        print("🔍 STARTING CONCURRENT REQUEST 3 (Thread 2)")
+        print("============================================================")
+        task3 = make_analyze_request(client, thread_id_2, TEST_PROMPTS[2], results)
+
+        print("============================================================")
+        print("🔍 STARTING CONCURRENT REQUEST 4 (Thread 2)")
+        print("============================================================")
+        task4 = make_analyze_request(client, thread_id_2, TEST_PROMPTS[3], results)
+
+        tasks = [task1, task2, task3, task4]
 
         # Run tasks concurrently
         print("⚡ Executing concurrent requests...")
@@ -385,9 +400,13 @@ async def run_concurrency_test() -> ConcurrencyTestResults:
 
 def analyze_concurrency_results(results: ConcurrencyTestResults):
     """Analyze and display the concurrency test results."""
-    print("\n" + "=" * 60)
+    print("============================================================")
+    print("============================================================")
+    print("============================================================")
     print("📊 CONCURRENCY TEST RESULTS ANALYSIS")
-    print("=" * 60)
+    print("============================================================")
+    print("============================================================")
+    print("============================================================")
 
     summary = results.get_summary()
 

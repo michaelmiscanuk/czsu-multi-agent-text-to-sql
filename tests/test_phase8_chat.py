@@ -437,9 +437,24 @@ async def run_chat_endpoints_test() -> ChatTestResults:
         print_test_status(f"🔖 Test thread IDs: {TEST_THREAD_ID}, {TEST_THREAD_ID_2}")
 
         # Test all chat endpoints
+        print("============================================================")
+        print("🔍 TESTING GET THREAD SENTIMENTS")
+        print("============================================================")
         await test_get_thread_sentiments(client, results)
+
+        print("============================================================")
+        print("🔍 TESTING GET CHAT THREADS")
+        print("============================================================")
         await test_get_chat_threads(client, results)
+
+        print("============================================================")
+        print("🔍 TESTING GET ALL CHAT MESSAGES")
+        print("============================================================")
         await test_get_all_chat_messages(client, results)
+
+        print("============================================================")
+        print("🔍 TESTING DELETE CHAT CHECKPOINTS")
+        print("============================================================")
         await test_delete_chat_checkpoints(client, results)
 
         # Add a small delay to ensure all results are recorded
@@ -451,9 +466,13 @@ async def run_chat_endpoints_test() -> ChatTestResults:
 
 def analyze_chat_test_results(results: ChatTestResults):
     """Analyze and display the chat test results."""
-    print_test_status("\n" + "=" * 60)
+    print_test_status("============================================================")
+    print_test_status("============================================================")
+    print_test_status("============================================================")
     print_test_status("📊 CHAT ENDPOINTS TEST RESULTS")
-    print_test_status("=" * 60)
+    print_test_status("============================================================")
+    print_test_status("============================================================")
+    print_test_status("============================================================")
 
     summary = results.get_summary()
 
