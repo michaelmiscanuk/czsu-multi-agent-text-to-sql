@@ -1,349 +1,759 @@
 #!/usr/bin/env python3
 """
-Test for Phase 8.5: Update Chat Routes with Actual Implementation  
-Based on test_concurrency.py pattern - imports functionality from main scripts
+Test for Phase 8.5: Chat Routes with Real HTTP Testing
+Based on test_concurrency.py pattern - makes real HTTP requests to running server
 """
 
-# CRITICAL: Set Windows event loop policy FIRST, before other imports
-import sys
+import asyncio
 import os
-if sys.platform == "win32":
-    import asyncio
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+import sys
+import time
+import traceback
+import uuid
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List
 
-# Load environment variables early
-from dotenv import load_dotenv
-load_dotenv()
+import httpx
+import pytest
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
+if sys.platform == "win32":
+    print(
+        "[POSTGRES-STARTUP] Windows detected - setting SelectorEventLoop for PostgreSQL compatibility..."
+    )
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    print("[POSTGRES-STARTUP] Event loop policy set successfully")
+
+# Add the root directory to Python path to import from main scripts
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Constants
 try:
-    from pathlib import Path
     BASE_DIR = Path(__file__).resolve().parents[1]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-# Standard imports
-import asyncio
-import time
-import httpx
-import uuid
-import traceback
-from datetime import datetime
-from pathlib import Path
+from my_agent.utils.postgres_checkpointer import (
+    check_postgres_env_vars,
+    cleanup_checkpointer,
+    close_async_postgres_saver,
+    create_async_postgres_saver,
+    get_db_config,
+)
 
-# Add project root to path
-sys.path.insert(0, str(BASE_DIR))
+# Test configuration
+TEST_EMAIL = "test_user@example.com"
+TEST_THREAD_ID = f"test_thread_{uuid.uuid4().hex[:8]}"
+TEST_THREAD_ID_2 = f"test_thread_{uuid.uuid4().hex[:8]}"
 
-# Test imports from extracted modules
-try:
-    from api.routes.chat import get_thread_sentiments, get_chat_threads, delete_chat_checkpoints
-    print("✅ Successfully imported chat management functions")
-except Exception as e:
-    print(f"❌ Failed to import chat management functions: {e}")
-    print(f"❌ BASE_DIR: {BASE_DIR}")
-    print(f"❌ sys.path: {sys.path}")
-    print(f"❌ Full traceback:\n{traceback.format_exc()}")
-    sys.exit(1)
+# Server configuration for real HTTP requests
+SERVER_BASE_URL = "http://localhost:8000"
+REQUEST_TIMEOUT = 30  # seconds for chat endpoints (less intensive than analyze)
+
 
 def print_test_status(message: str):
     """Print test status messages with timestamp."""
     timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
     print(f"[{timestamp}] {message}")
 
-def create_mock_user():
-    """Create a mock user for testing."""
-    return {"email": "test@example.com"}
 
-def test_phase8_chat_management_imports():
-    """Test that chat management routes can be imported successfully."""
-    print_test_status("🔍 Testing Phase 8.5 chat management imports...")
-    
+def create_test_jwt_token(email: str = TEST_EMAIL):
+    """Create a simple test JWT token for authentication."""
     try:
-        # Test imports
-        from api.routes.chat import router, get_thread_sentiments, get_chat_threads, delete_chat_checkpoints
-        assert callable(get_thread_sentiments), "get_thread_sentiments should be callable"
-        print_test_status("✅ get_thread_sentiments function imported successfully")
-        
-        assert callable(get_chat_threads), "get_chat_threads should be callable"
-        print_test_status("✅ get_chat_threads function imported successfully")
-        
-        assert callable(delete_chat_checkpoints), "delete_chat_checkpoints should be callable"
-        print_test_status("✅ delete_chat_checkpoints function imported successfully")
-        
-        # Test router
-        from fastapi import APIRouter
-        assert isinstance(router, APIRouter), "router should be APIRouter instance"
-        print_test_status("✅ chat router imported successfully")
-        
-        print_test_status("✅ Phase 8.5 chat management imports test PASSED")
-        return True
-        
+        import jwt
+
+        # Use the actual Google Client ID that the server expects
+        google_client_id = (
+            "722331814120-9kdm64s2mp9cq8kig0mvrluf1eqkso74.apps.googleusercontent.com"
+        )
+
+        payload = {
+            "email": email,
+            "aud": google_client_id,
+            "exp": datetime.utcnow() + timedelta(hours=1),
+            "iat": datetime.utcnow(),
+            "iss": "test_issuer",
+            "name": "Test User",
+            "given_name": "Test",
+            "family_name": "User",
+        }
+        # Use a simple test secret - in real scenarios this would be properly configured
+        token = jwt.encode(payload, "test_secret", algorithm="HS256")
+        print_test_status(
+            f"🔧 TEST TOKEN: Created JWT token with correct audience: {google_client_id}"
+        )
+        return token
+    except ImportError:
+        print_test_status("⚠️ JWT library not available, using simple Bearer token")
+        return "test_token_placeholder"
+
+
+class ChatTestResults:
+    """Class to track and analyze chat test results."""
+
+    def __init__(self):
+        self.results: List[Dict[str, Any]] = []
+        self.errors: List[Dict[str, Any]] = []
+        self.start_time = None
+        self.end_time = None
+
+    def add_result(
+        self,
+        endpoint: str,
+        method: str,
+        status_code: int,
+        response_data: Dict,
+        response_time: float,
+    ):
+        """Add a successful test result."""
+        result = {
+            "endpoint": endpoint,
+            "method": method,
+            "status_code": status_code,
+            "response_data": response_data,
+            "response_time": response_time,
+            "timestamp": datetime.now().isoformat(),
+            "success": 200 <= status_code < 300,
+        }
+        self.results.append(result)
+        print_test_status(
+            f"✅ Result: {method} {endpoint} - Status {status_code}, Time {response_time:.2f}s"
+        )
+
+    def add_error(
+        self, endpoint: str, method: str, error: Exception, response_time: float = None
+    ):
+        """Add an error result."""
+        error_info = {
+            "endpoint": endpoint,
+            "method": method,
+            "error": str(error),
+            "error_type": type(error).__name__,
+            "response_time": response_time,
+            "timestamp": datetime.now().isoformat(),
+        }
+        self.errors.append(error_info)
+        print_test_status(f"❌ Error: {method} {endpoint} - {str(error)}")
+
+    def get_summary(self) -> Dict[str, Any]:
+        """Get a summary of test results."""
+        total_requests = len(self.results) + len(self.errors)
+        successful_requests = len([r for r in self.results if r["success"]])
+        failed_requests = len(self.errors) + len(
+            [r for r in self.results if not r["success"]]
+        )
+
+        if self.results:
+            avg_response_time = sum(r["response_time"] for r in self.results) / len(
+                self.results
+            )
+            max_response_time = max(r["response_time"] for r in self.results)
+            min_response_time = min(r["response_time"] for r in self.results)
+        else:
+            avg_response_time = max_response_time = min_response_time = 0
+
+        total_test_time = None
+        if self.start_time and self.end_time:
+            total_test_time = (self.end_time - self.start_time).total_seconds()
+
+        return {
+            "total_requests": total_requests,
+            "successful_requests": successful_requests,
+            "failed_requests": failed_requests,
+            "success_rate": (
+                (successful_requests / total_requests * 100)
+                if total_requests > 0
+                else 0
+            ),
+            "average_response_time": avg_response_time,
+            "max_response_time": max_response_time,
+            "min_response_time": min_response_time,
+            "total_test_time": total_test_time,
+            "errors": self.errors,
+        }
+
+
+async def check_server_connectivity():
+    """Check if the server is running and accessible."""
+    print_test_status(f"🔍 Checking server connectivity at {SERVER_BASE_URL}...")
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
+            response = await client.get(f"{SERVER_BASE_URL}/health")
+            if response.status_code == 200:
+                print_test_status("✅ Server is running and accessible")
+                return True
+            else:
+                print_test_status(
+                    f"❌ Server responded with status {response.status_code}"
+                )
+                return False
     except Exception as e:
-        print_test_status(f"❌ Phase 8.5 chat management imports test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
+        print_test_status(f"❌ Cannot connect to server: {e}")
+        print_test_status(f"   Make sure uvicorn is running at {SERVER_BASE_URL}")
         return False
 
-def test_chat_function_structure():
-    """Test that chat management functions have correct structure."""
-    print_test_status("🔍 Testing chat management function structure...")
-    
-    try:
-        from api.routes.chat import get_thread_sentiments, get_chat_threads, delete_chat_checkpoints
-        from api.models.responses import PaginatedChatThreadsResponse
-        from api.dependencies.auth import get_current_user
-        from inspect import signature
-        
-        # Test get_thread_sentiments signature
-        sig = signature(get_thread_sentiments)
-        params = list(sig.parameters.keys())
-        assert 'thread_id' in params, "get_thread_sentiments should have 'thread_id' parameter"
-        assert 'user' in params, "get_thread_sentiments should have 'user' parameter"
-        print_test_status("✅ get_thread_sentiments has correct signature")
-        
-        # Test get_chat_threads signature
-        sig = signature(get_chat_threads)
-        params = list(sig.parameters.keys())
-        assert 'page' in params, "get_chat_threads should have 'page' parameter"
-        assert 'limit' in params, "get_chat_threads should have 'limit' parameter"
-        assert 'user' in params, "get_chat_threads should have 'user' parameter"
-        print_test_status("✅ get_chat_threads has correct signature")
-        
-        # Test delete_chat_checkpoints signature
-        sig = signature(delete_chat_checkpoints)
-        params = list(sig.parameters.keys())
-        assert 'thread_id' in params, "delete_chat_checkpoints should have 'thread_id' parameter"
-        assert 'user' in params, "delete_chat_checkpoints should have 'user' parameter"
-        print_test_status("✅ delete_chat_checkpoints has correct signature")
-        
-        print_test_status("✅ Chat management function structure test PASSED")
-        return True
-        
-    except Exception as e:
-        print_test_status(f"❌ Chat management function structure test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
+
+def setup_test_environment():
+    """Set up the test environment and check prerequisites."""
+    print_test_status("🔧 Setting up test environment...")
+
+    # Check if PostgreSQL environment variables are set
+    if not check_postgres_env_vars():
+        print_test_status(
+            "❌ PostgreSQL environment variables are not properly configured!"
+        )
+        print_test_status("Required variables: host, port, dbname, user, password")
+        print_test_status(f"Current config: {get_db_config()}")
         return False
 
-async def test_get_thread_sentiments_implementation():
-    """Test that get_thread_sentiments function is now fully implemented."""
-    print_test_status("🔍 Testing get_thread_sentiments implementation...")
-    
+    print_test_status("✅ PostgreSQL environment variables are configured")
+
+    # Check if USE_TEST_TOKENS is set for the server
+    use_test_tokens = os.getenv("USE_TEST_TOKENS", "0")
+    if use_test_tokens != "1":
+        print_test_status(
+            "⚠️  WARNING: USE_TEST_TOKENS environment variable is not set to '1'"
+        )
+        print_test_status("   The server needs USE_TEST_TOKENS=1 to accept test tokens")
+        print_test_status(
+            "   Set this environment variable in your server environment:"
+        )
+        print_test_status("   SET USE_TEST_TOKENS=1 (Windows)")
+        print_test_status("   export USE_TEST_TOKENS=1 (Linux/Mac)")
+        print_test_status(
+            "   Continuing test anyway - this may cause 401 authentication errors"
+        )
+    else:
+        print_test_status(
+            "✅ USE_TEST_TOKENS=1 - test tokens will be accepted by server"
+        )
+
+    print_test_status("✅ Test environment setup complete")
+    return True
+
+
+async def test_get_thread_sentiments(
+    client: httpx.AsyncClient, results: ChatTestResults
+):
+    """Test GET /chat/{thread_id}/sentiments endpoint."""
+    print_test_status(f"🔍 Testing GET /chat/{TEST_THREAD_ID}/sentiments")
+    start_time = time.time()
+
     try:
-        from api.routes.chat import get_thread_sentiments
-        
-        # Create mock parameters for testing 
-        mock_thread_id = "test-thread-123"
-        mock_user = create_mock_user()
-        
-        # Test that function exists and is properly structured
-        # The function should handle complex dependencies like:
-        # - Database functions (get_thread_run_sentiments)
-        # - Thread ownership verification
-        
-        print_test_status("✅ get_thread_sentiments function fully extracted and implemented")
-        print_test_status("✅ Function handles: database sentiment queries, ownership verification")
-        
-        # NOTE: We don't actually call the function here since it requires
-        # real database connections
-        print_test_status("ℹ️ Function fully implemented - requires real DB for testing")
-        
-        print_test_status("✅ get_thread_sentiments implementation test PASSED")
-        return True
-        
+        token = create_test_jwt_token()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        response = await client.get(
+            f"/chat/{TEST_THREAD_ID}/sentiments", headers=headers
+        )
+        response_time = time.time() - start_time
+
+        if response.status_code == 200:
+            response_data = response.json()
+            results.add_result(
+                f"/chat/{TEST_THREAD_ID}/sentiments",
+                "GET",
+                response.status_code,
+                response_data,
+                response_time,
+            )
+            print_test_status(
+                f"✅ Sentiments response: {len(response_data)} sentiment entries"
+            )
+        else:
+            try:
+                error_data = response.json()
+                error_message = error_data.get("detail", f"HTTP {response.status_code}")
+            except Exception:
+                error_message = f"HTTP {response.status_code}: {response.text}"
+            results.add_error(
+                f"/chat/{TEST_THREAD_ID}/sentiments",
+                "GET",
+                Exception(error_message),
+                response_time,
+            )
+
     except Exception as e:
-        print_test_status(f"❌ get_thread_sentiments implementation test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
+        response_time = time.time() - start_time
+        results.add_error(f"/chat/{TEST_THREAD_ID}/sentiments", "GET", e, response_time)
+
+
+async def test_get_chat_threads(client: httpx.AsyncClient, results: ChatTestResults):
+    """Test GET /chat-threads endpoint with pagination."""
+    print_test_status("🔍 Testing GET /chat-threads")
+    start_time = time.time()
+
+    try:
+        token = create_test_jwt_token()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Test with pagination parameters
+        params = {"page": 1, "limit": 10}
+        response = await client.get("/chat-threads", headers=headers, params=params)
+        response_time = time.time() - start_time
+
+        if response.status_code == 200:
+            response_data = response.json()
+            results.add_result(
+                "/chat-threads",
+                "GET",
+                response.status_code,
+                response_data,
+                response_time,
+            )
+            print_test_status(
+                f"✅ Chat threads response: {len(response_data.get('threads', []))} threads"
+            )
+            print_test_status(f"   Total count: {response_data.get('total_count', 0)}")
+            print_test_status(f"   Has more: {response_data.get('has_more', False)}")
+        else:
+            try:
+                error_data = response.json()
+                error_message = error_data.get("detail", f"HTTP {response.status_code}")
+            except Exception:
+                error_message = f"HTTP {response.status_code}: {response.text}"
+            results.add_error(
+                "/chat-threads", "GET", Exception(error_message), response_time
+            )
+
+    except Exception as e:
+        response_time = time.time() - start_time
+        results.add_error("/chat-threads", "GET", e, response_time)
+
+
+async def test_get_all_chat_messages(
+    client: httpx.AsyncClient, results: ChatTestResults
+):
+    """Test GET /chat/all-messages endpoint."""
+    print_test_status("🔍 Testing GET /chat/all-messages")
+    start_time = time.time()
+
+    try:
+        token = create_test_jwt_token()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        response = await client.get("/chat/all-messages", headers=headers)
+        response_time = time.time() - start_time
+
+        if response.status_code == 200:
+            response_data = response.json()
+            results.add_result(
+                "/chat/all-messages",
+                "GET",
+                response.status_code,
+                response_data,
+                response_time,
+            )
+
+            # Analyze the bulk response structure
+            messages = response_data.get("messages", {})
+            run_ids = response_data.get("runIds", {})
+            sentiments = response_data.get("sentiments", {})
+
+            print_test_status("✅ All messages response:")
+            print_test_status(f"   Messages for {len(messages)} threads")
+            print_test_status(f"   Run IDs for {len(run_ids)} threads")
+            print_test_status(f"   Sentiments for {len(sentiments)} threads")
+
+            # Count total messages
+            total_messages = sum(
+                len(thread_messages) for thread_messages in messages.values()
+            )
+            print_test_status(f"   Total messages: {total_messages}")
+
+        else:
+            try:
+                error_data = response.json()
+                error_message = error_data.get("detail", f"HTTP {response.status_code}")
+            except Exception:
+                error_message = f"HTTP {response.status_code}: {response.text}"
+            results.add_error(
+                "/chat/all-messages", "GET", Exception(error_message), response_time
+            )
+
+    except Exception as e:
+        response_time = time.time() - start_time
+        results.add_error("/chat/all-messages", "GET", e, response_time)
+
+
+async def test_delete_chat_checkpoints(
+    client: httpx.AsyncClient, results: ChatTestResults
+):
+    """Test DELETE /chat/{thread_id} endpoint."""
+    print_test_status(f"🔍 Testing DELETE /chat/{TEST_THREAD_ID_2}")
+    start_time = time.time()
+
+    try:
+        token = create_test_jwt_token()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        response = await client.delete(f"/chat/{TEST_THREAD_ID_2}", headers=headers)
+        response_time = time.time() - start_time
+
+        if response.status_code == 200:
+            response_data = response.json()
+            results.add_result(
+                f"/chat/{TEST_THREAD_ID_2}",
+                "DELETE",
+                response.status_code,
+                response_data,
+                response_time,
+            )
+            print_test_status(
+                f"✅ Delete response: {response_data.get('message', 'Success')}"
+            )
+        else:
+            try:
+                error_data = response.json()
+                error_message = error_data.get("detail", f"HTTP {response.status_code}")
+            except Exception:
+                error_message = f"HTTP {response.status_code}: {response.text}"
+            results.add_error(
+                f"/chat/{TEST_THREAD_ID_2}",
+                "DELETE",
+                Exception(error_message),
+                response_time,
+            )
+
+    except Exception as e:
+        response_time = time.time() - start_time
+        results.add_error(f"/chat/{TEST_THREAD_ID_2}", "DELETE", e, response_time)
+
+
+async def run_chat_endpoints_test() -> ChatTestResults:
+    """Run comprehensive tests for all chat endpoints."""
+    print_test_status("🎯 Starting comprehensive chat endpoints test...")
+
+    results = ChatTestResults()
+    results.start_time = datetime.now()
+
+    async with httpx.AsyncClient(
+        base_url=SERVER_BASE_URL, timeout=httpx.Timeout(REQUEST_TIMEOUT)
+    ) as client:
+
+        print_test_status(f"🌐 Server URL: {SERVER_BASE_URL}")
+        print_test_status(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
+        print_test_status(f"🔖 Test thread IDs: {TEST_THREAD_ID}, {TEST_THREAD_ID_2}")
+
+        # Test all chat endpoints
+        await test_get_thread_sentiments(client, results)
+        await test_get_chat_threads(client, results)
+        await test_get_all_chat_messages(client, results)
+        await test_delete_chat_checkpoints(client, results)
+
+        # Add a small delay to ensure all results are recorded
+        await asyncio.sleep(0.1)
+
+    results.end_time = datetime.now()
+    return results
+
+
+def analyze_chat_test_results(results: ChatTestResults):
+    """Analyze and display the chat test results."""
+    print_test_status("\n" + "=" * 60)
+    print_test_status("📊 CHAT ENDPOINTS TEST RESULTS")
+    print_test_status("=" * 60)
+
+    summary = results.get_summary()
+
+    print_test_status(f"🔢 Total Requests: {summary['total_requests']}")
+    print_test_status(f"✅ Successful: {summary['successful_requests']}")
+    print_test_status(f"❌ Failed: {summary['failed_requests']}")
+    print_test_status(f"📈 Success Rate: {summary['success_rate']:.1f}%")
+
+    if summary["total_test_time"]:
+        print_test_status(f"⏱️  Total Test Time: {summary['total_test_time']:.2f}s")
+
+    if summary["successful_requests"] > 0:
+        print_test_status(
+            f"⚡ Avg Response Time: {summary['average_response_time']:.2f}s"
+        )
+        print_test_status(f"🏆 Best Response Time: {summary['min_response_time']:.2f}s")
+        print_test_status(
+            f"🐌 Worst Response Time: {summary['max_response_time']:.2f}s"
+        )
+
+    # Show individual results
+    print_test_status("\n📋 Individual Endpoint Results:")
+    for i, result in enumerate(results.results, 1):
+        status_emoji = "✅" if result["success"] else "❌"
+        print_test_status(
+            f"  {i}. {status_emoji} {result['method']} {result['endpoint']} | "
+            f"Status: {result['status_code']} | Time: {result['response_time']:.2f}s"
+        )
+
+    # Show errors if any
+    if results.errors:
+        print_test_status("\n❌ Errors Encountered:")
+        for i, error in enumerate(results.errors, 1):
+            print_test_status(
+                f"  {i}. {error['method']} {error['endpoint']} | Error: {error['error']}"
+            )
+
+    # Analysis
+    print_test_status("\n🔍 CHAT ENDPOINTS ANALYSIS:")
+
+    # Check which endpoints are working
+    endpoint_status = {}
+    for result in results.results:
+        endpoint = result["endpoint"]
+        if endpoint not in endpoint_status:
+            endpoint_status[endpoint] = {"success": 0, "total": 0}
+        endpoint_status[endpoint]["total"] += 1
+        if result["success"]:
+            endpoint_status[endpoint]["success"] += 1
+
+    for error in results.errors:
+        endpoint = error["endpoint"]
+        if endpoint not in endpoint_status:
+            endpoint_status[endpoint] = {"success": 0, "total": 0}
+        endpoint_status[endpoint]["total"] += 1
+
+    for endpoint, stats in endpoint_status.items():
+        success_rate = (
+            (stats["success"] / stats["total"] * 100) if stats["total"] > 0 else 0
+        )
+        status_emoji = (
+            "✅" if success_rate == 100 else "⚠️" if success_rate > 0 else "❌"
+        )
+        print_test_status(
+            f"{status_emoji} {endpoint}: {success_rate:.0f}% success ({stats['success']}/{stats['total']})"
+        )
+
+    return summary
+
+
+async def test_database_connectivity():
+    """Test basic database connectivity before running chat tests."""
+    print_test_status("🔍 Testing database connectivity...")
+    try:
+        # Test database connection using our existing functionality
+        print_test_status("🔧 Creating database checkpointer...")
+        checkpointer = await create_async_postgres_saver()
+        if checkpointer:
+            print_test_status("✅ Database checkpointer created successfully")
+            # Test a simple operation
+            test_config = {"configurable": {"thread_id": "connectivity_test"}}
+            _ = await checkpointer.aget(test_config)
+            print_test_status("✅ Database connectivity test passed")
+            await close_async_postgres_saver()
+            print_test_status("✅ Database connection closed properly")
+            return True
+        else:
+            print_test_status("❌ Failed to create database checkpointer")
+            return False
+    except Exception as e:
+        print_test_status(f"❌ Database connectivity test failed: {str(e)}")
         return False
 
-async def test_get_chat_threads_implementation():
-    """Test that get_chat_threads function is now fully implemented."""
-    print_test_status("🔍 Testing get_chat_threads implementation...")
-    
+
+def cleanup_test_environment():
+    """Clean up the test environment."""
+    print_test_status("🧹 Cleaning up test environment...")
+    print_test_status("✅ Test environment cleanup complete")
+
+
+async def setup_debug_environment(client: httpx.AsyncClient):
+    """Setup debug environment for this specific test."""
+    print_test_status("🔧 Setting up debug environment via API...")
+
+    token = create_test_jwt_token()
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Set debug variables specific to this test
+    debug_vars = {
+        "print__chat_all_messages_debug": "1",
+        "print__chat_sentiments_debug": "1",
+        "print__chat_threads_debug": "1",
+        "print__delete_chat_debug": "1",
+        "print__sentiment_flow": "1",
+    }
+
     try:
-        from api.routes.chat import get_chat_threads
-        
-        # Create mock parameters for testing
-        mock_user = create_mock_user()
-        
-        # Test that function exists and is properly structured
-        # The function should handle complex dependencies like:
-        # - Database connection and complex queries
-        # - Thread ownership verification
-        # - Pagination logic
-        
-        print_test_status("✅ get_chat_threads function fully extracted and implemented")
-        print_test_status("✅ Function handles: database queries, pagination, thread ownership")
-        
-        # NOTE: We don't actually call the function here since it requires
-        # real database connections
-        print_test_status("ℹ️ Function fully implemented - requires real DB for testing")
-        
-        print_test_status("✅ get_chat_threads implementation test PASSED")
-        return True
-        
+        response = await client.post("/debug/set-env", headers=headers, json=debug_vars)
+        if response.status_code == 200:
+            print_test_status("✅ Debug environment configured successfully")
+            return True
+        else:
+            print_test_status(f"⚠️ Debug setup failed: {response.status_code}")
+            return False
     except Exception as e:
-        print_test_status(f"❌ get_chat_threads implementation test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
+        print_test_status(f"⚠️ Debug setup error: {e}")
         return False
 
-async def test_delete_chat_checkpoints_implementation():
-    """Test that delete_chat_checkpoints function is now fully implemented."""
-    print_test_status("🔍 Testing delete_chat_checkpoints implementation...")
-    
-    try:
-        from api.routes.chat import delete_chat_checkpoints
-        
-        # Create mock parameters for testing
-        mock_thread_id = "test-thread-123"
-        mock_user = create_mock_user()
-        
-        # Test that function exists and is properly structured
-        # The function should handle complex dependencies like:
-        # - Database connection and deletion operations
-        # - Checkpoint cleanup
-        # - Thread ownership verification
-        
-        print_test_status("✅ delete_chat_checkpoints function fully extracted and implemented")
-        print_test_status("✅ Function handles: database deletions, checkpoint cleanup, ownership verification")
-        
-        # NOTE: We don't actually call the function here since it requires
-        # real database connections
-        print_test_status("ℹ️ Function fully implemented - requires real DB for testing")
-        
-        print_test_status("✅ delete_chat_checkpoints implementation test PASSED")
-        return True
-        
-    except Exception as e:
-        print_test_status(f"❌ delete_chat_checkpoints implementation test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
 
-def test_chat_router_structure():
-    """Test that chat router is properly structured."""
-    print_test_status("🔍 Testing chat router structure...")
-    
-    try:
-        from api.routes.chat import router
-        from fastapi import APIRouter
-        
-        # Test router type
-        assert isinstance(router, APIRouter), "Should be APIRouter instance"
-        print_test_status("✅ Router is correct APIRouter instance")
-        
-        # Test that router has routes (they should be registered when module loads)
-        # Note: Routes are registered via decorators, so they should exist
-        print_test_status("✅ Router properly configured for chat management endpoints")
-        
-        print_test_status("✅ Chat router structure test PASSED")
-        return True
-        
-    except Exception as e:
-        print_test_status(f"❌ Chat router structure test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
+async def cleanup_debug_environment(client: httpx.AsyncClient):
+    """Reset debug environment after test."""
+    print_test_status("🧹 Resetting debug environment...")
 
-def test_chat_dependencies():
-    """Test that chat routes have proper authentication dependencies."""
-    print_test_status("🔍 Testing chat dependencies...")
-    
-    try:
-        # Test that auth dependencies are properly imported
-        from api.dependencies.auth import get_current_user
-        assert callable(get_current_user), "get_current_user should be callable"
-        print_test_status("✅ Authentication dependencies imported")
-        
-        # Test that models are properly imported
-        from api.models.responses import ChatThreadResponse, PaginatedChatThreadsResponse
-        print_test_status("✅ Response models imported")
-        
-        # Test that debug functions are properly imported
-        from api.utils.debug import print__chat_sentiments_debug, print__chat_threads_debug, print__delete_chat_debug
-        assert callable(print__chat_sentiments_debug), "print__chat_sentiments_debug should be callable"
-        assert callable(print__chat_threads_debug), "print__chat_threads_debug should be callable"
-        assert callable(print__delete_chat_debug), "print__delete_chat_debug should be callable"
-        print_test_status("✅ Debug utilities imported")
-        
-        print_test_status("✅ Chat dependencies test PASSED")
-        return True
-        
-    except Exception as e:
-        print_test_status(f"❌ Chat dependencies test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
+    token = create_test_jwt_token()
+    headers = {"Authorization": f"Bearer {token}"}
 
-def test_placeholder_endpoints_moved():
-    """Test that feedback and message endpoints properly indicate they were moved."""
-    print_test_status("🔍 Testing placeholder endpoints moved correctly...")
-    
+    # Pass the same debug variables that were set, so they can be reset to original values
+    debug_vars = {
+        "print__chat_all_messages_debug": "1",
+        "print__chat_sentiments_debug": "1",
+        "print__chat_threads_debug": "1",
+        "print__delete_chat_debug": "1",
+        "print__sentiment_flow": "1",
+    }
+
     try:
-        from api.routes.chat import submit_feedback, update_sentiment, get_chat_messages, get_message_run_ids
-        
-        # These functions should exist but indicate they were moved to other routers
-        assert callable(submit_feedback), "submit_feedback should still exist as placeholder"
-        assert callable(update_sentiment), "update_sentiment should still exist as placeholder"
-        assert callable(get_chat_messages), "get_chat_messages should still exist as placeholder"
-        assert callable(get_message_run_ids), "get_message_run_ids should still exist as placeholder"
-        
-        print_test_status("✅ Placeholder endpoints exist and indicate proper movement")
-        print_test_status("✅ Phase 8.4 endpoints moved to api/routes/feedback.py")
-        print_test_status("✅ Phase 8.6 endpoints moved to api/routes/messages.py")
-        
-        print_test_status("✅ Placeholder endpoints moved test PASSED")
-        return True
-        
+        response = await client.post(
+            "/debug/reset-env", headers=headers, json=debug_vars
+        )
+        if response.status_code == 200:
+            print_test_status("✅ Debug environment reset to original .env values")
+        else:
+            print_test_status(f"⚠️ Debug reset failed: {response.status_code}")
     except Exception as e:
-        print_test_status(f"❌ Placeholder endpoints moved test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
+        print_test_status(f"⚠️ Debug reset error: {e}")
+
+
+async def async_cleanup():
+    """Async cleanup for database connections."""
+    try:
+        # Close any remaining PostgreSQL connections
+        await close_async_postgres_saver()
+
+        # CRITICAL: Also cleanup any global checkpointer from the modular API structure
+        try:
+            await cleanup_checkpointer()
+        except Exception as e:
+            print_test_status(f"⚠️ Warning during global checkpointer cleanup: {e}")
+
+        # Give extra time for all tasks to finish
+        await asyncio.sleep(0.2)
+
+    except Exception as e:
+        print_test_status(f"⚠️ Warning during async cleanup: {e}")
+
 
 async def main():
-    """Run all Phase 8.5 chat management tests."""
-    print_test_status("🚀 Starting Phase 8.5 Chat Management Routes Tests")
-    print_test_status(f"📂 BASE_DIR: {BASE_DIR}")
-    print_test_status("=" * 80)
-    
-    all_tests_passed = True
-    
-    # Run all tests
-    tests = [
-        ("Chat Management Imports", test_phase8_chat_management_imports),
-        ("Chat Function Structure", test_chat_function_structure),
-        ("Get Thread Sentiments Implementation", test_get_thread_sentiments_implementation),
-        ("Get Chat Threads Implementation", test_get_chat_threads_implementation),
-        ("Delete Chat Checkpoints Implementation", test_delete_chat_checkpoints_implementation),
-        ("Chat Router Structure", test_chat_router_structure),
-        ("Chat Dependencies", test_chat_dependencies),
-        ("Placeholder Endpoints Moved", test_placeholder_endpoints_moved),
-    ]
-    
-    for test_name, test_func in tests:
-        print_test_status(f"\n📋 Running test: {test_name}")
-        print_test_status("-" * 60)
-        
-        try:
-            if asyncio.iscoroutinefunction(test_func):
-                result = await test_func()
-            else:
-                result = test_func()
-            if not result:
-                all_tests_passed = False
-        except Exception as e:
-            print_test_status(f"❌ Test {test_name} crashed: {e}")
-            print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-            all_tests_passed = False
-    
-    # Final summary
-    print_test_status("=" * 80)
-    if all_tests_passed:
-        print_test_status("🎉 ALL PHASE 8.5 CHAT MANAGEMENT TESTS PASSED!")
-        print_test_status("✅ Chat management routes extraction successful")
-        print_test_status("✅ get_thread_sentiments endpoint fully implemented")
-        print_test_status("✅ get_chat_threads endpoint fully implemented")
-        print_test_status("✅ delete_chat_checkpoints endpoint fully implemented")
-        print_test_status("✅ Router and dependencies working correctly")
-        print_test_status("✅ Proper separation from feedback and message routes")
-    else:
-        print_test_status("❌ SOME PHASE 8.5 CHAT MANAGEMENT TESTS FAILED!")
-        sys.exit(1)
+    """Main test execution function."""
+    print_test_status("🚀 Chat Endpoints Test Starting...")
+    print_test_status("=" * 60)
+
+    # Check if server is running
+    if not await check_server_connectivity():
+        print_test_status("❌ Server connectivity check failed!")
+        print_test_status("   Please start your uvicorn server first:")
+        print_test_status(f"   uvicorn api.main:app --host 0.0.0.0 --port 8000")
+        return False
+
+    # Setup test environment
+    if not setup_test_environment():
+        print_test_status("❌ Test environment setup failed!")
+        return False
+
+    try:
+        # Test database connectivity first
+        if not await test_database_connectivity():
+            print_test_status("❌ Database connectivity test failed!")
+            return False
+
+        print_test_status(
+            "✅ Database connectivity confirmed - proceeding with chat endpoints test"
+        )
+
+        # Create HTTP client for the entire test session
+        async with httpx.AsyncClient(
+            base_url=SERVER_BASE_URL, timeout=httpx.Timeout(REQUEST_TIMEOUT)
+        ) as client:
+
+            # Setup debug environment for this test
+            if not await setup_debug_environment(client):
+                print_test_status(
+                    "⚠️ Debug environment setup failed, continuing without debug"
+                )
+
+            # Run the chat endpoints test
+            results = await run_chat_endpoints_test()
+
+            # Cleanup debug environment
+            await cleanup_debug_environment(client)
+
+        # Analyze results
+        summary = analyze_chat_test_results(results)
+
+        # Determine overall test success
+        # Test passes if:
+        # 1. At least 75% of requests succeeded (allows for some endpoints to be empty but functional)
+        # 2. No empty/unknown error messages (server properly handled all requests)
+
+        has_empty_errors = any(
+            error.get("error", "").strip() == ""
+            or "Unknown error" in error.get("error", "")
+            for error in summary["errors"]
+        )
+
+        test_passed = (
+            not has_empty_errors  # No empty/unknown errors
+            and summary["total_requests"] > 0  # Some requests were made
+            and summary["success_rate"] >= 75.0  # At least 75% success rate
+        )
+
+        if has_empty_errors:
+            print_test_status(
+                "❌ Test failed: Server returned empty error messages (potential crash/hang)"
+            )
+        elif summary["success_rate"] < 75.0:
+            print_test_status(
+                f"❌ Test failed: Success rate too low ({summary['success_rate']:.1f}% < 75%)"
+            )
+        else:
+            print_test_status(
+                f"✅ Test criteria met: {summary['success_rate']:.1f}% success rate with proper error handling"
+            )
+
+        print_test_status(
+            f"\n🏁 OVERALL TEST RESULT: {'✅ PASSED' if test_passed else '❌ FAILED'}"
+        )
+
+        return test_passed
+
+    except Exception as e:
+        print_test_status(f"❌ Test execution failed: {str(e)}")
+        traceback.print_exc()
+        return False
+
+    finally:
+        cleanup_test_environment()
+        # CRITICAL: Close database connections before event loop ends
+        await async_cleanup()
+
+
+# Test runner for pytest
+@pytest.mark.asyncio
+async def test_chat_endpoints():
+    """Pytest-compatible test function."""
+    result = await main()
+    assert result, "Chat endpoints test failed"
+
 
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    # Debug variables are now set dynamically via API calls in setup_debug_environment()
+    # This allows per-test-script debug configuration without hardcoding in server
+
+    async def main_with_cleanup():
+        try:
+            result = await main()
+            return result
+        except KeyboardInterrupt:
+            print_test_status("\n⛔ Test interrupted by user")
+            return False
+        except Exception as e:
+            print_test_status(f"\n💥 Unexpected error: {str(e)}")
+            traceback.print_exc()
+            return False
+        finally:
+            await async_cleanup()
+
+    try:
+        test_result = asyncio.run(main_with_cleanup())
+        sys.exit(0 if test_result else 1)
+    except Exception as e:
+        print_test_status(f"\n💥 Fatal error: {str(e)}")
+        traceback.print_exc()
+        sys.exit(1)
