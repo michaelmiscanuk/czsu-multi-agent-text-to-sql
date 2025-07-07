@@ -1258,8 +1258,8 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         try:
             print__checkpointers_debug("297 - ALIST METHOD: Using official AsyncPostgresSaver.alist() method")
             
-            # Limit checkpoints to recent ones only (last 10)
-            async for checkpoint_tuple in checkpointer.alist(config, limit=MAX_RECENT_CHECKPOINTS):
+            # Increase limit to capture all checkpoints for complete conversation
+            async for checkpoint_tuple in checkpointer.alist(config, limit=200):
                 checkpoint_tuples.append(checkpoint_tuple)
 
         except Exception as alist_error:
@@ -1283,93 +1283,61 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
         
         print__checkpointers_debug(f"303 - CHECKPOINTS FOUND: Found {len(checkpoint_tuples)} checkpoints for verified thread")
         
-        # Sort checkpoints chronologically (oldest first) based on timestamp
-        checkpoint_tuples.sort(key=lambda x: x.checkpoint.get("ts", "") if x.checkpoint else "")
+        # Sort checkpoints by step number (chronological order)
+        checkpoint_tuples.sort(key=lambda x: x.metadata.get("step", 0) if x.metadata else 0)
         
-        # Extract conversation messages efficiently
-        conversation_messages = []
-        seen_prompts = set()
-        seen_answers = set()
+        # Extract prompts and answers
+        prompts = []
+        answers = []
         
         print__checkpointers_debug(f"304 - MESSAGE EXTRACTION: Extracting messages from {len(checkpoint_tuples)} checkpoints")
         
-        # Two-pass approach to ensure proper prompt->answer ordering
-        # Pass 1: Extract all user prompts first, in checkpoint order
-        user_prompts = []
         for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
-            checkpoint = checkpoint_tuple.checkpoint
             metadata = checkpoint_tuple.metadata or {}
+            step = metadata.get("step", 0)
             
-            if not checkpoint:
-                continue
-                
-            # Only log for significant checkpoints
-            if checkpoint_index < DEBUG_CHECKPOINT_LOG_INTERVAL or checkpoint_index % DEBUG_CHECKPOINT_LOG_INTERVAL == 0:  # Log first 5, then every 5th
-                print__checkpointers_debug(f"305 - PROCESSING CHECKPOINT (Pass 1): Processing checkpoint {checkpoint_index + 1}/{len(checkpoint_tuples)} for user prompts")
+            # Extract user prompts from metadata.writes.__start__.prompt
+            writes = metadata.get("writes", {})
+            if isinstance(writes, dict) and "__start__" in writes:
+                start_data = writes["__start__"]
+                if isinstance(start_data, dict) and "prompt" in start_data:
+                    prompt = start_data["prompt"]
+                    if prompt and prompt.strip():
+                        prompts.append({
+                            "content": prompt.strip(),
+                            "step": step,
+                            "checkpoint_index": checkpoint_index
+                        })
+                        print__checkpointers_debug(f"305 - USER PROMPT FOUND: Step {step}: {prompt[:50]}...")
             
-            # Extract user prompts from checkpoint metadata writes
-            if "writes" in metadata and isinstance(metadata["writes"], dict):
-                writes = metadata["writes"]
-                
-                for node_name, node_data in writes.items():
-                    if isinstance(node_data, dict):
-                        prompt = node_data.get("prompt")
-                        if (prompt and 
-                            prompt.strip() and 
-                            prompt.strip() not in seen_prompts and
-                            len(prompt.strip()) > 5):
-                            
-                            # Filter out rewritten prompts
-                            if not any(indicator in prompt.lower() for indicator in [
-                                "standalone question:", "rephrase", "follow up", "conversation so far",
-                                "given the conversation", "rewrite", "context:"
-                            ]):
-                                seen_prompts.add(prompt.strip())
-                                user_prompts.append({
-                                    "content": prompt.strip(),
-                                    "checkpoint_index": checkpoint_index
-                                })
-                                print__checkpointers_debug(f"306 - USER MESSAGE FOUND: Found user prompt: {prompt[:USER_MESSAGE_PREVIEW_LENGTH]}...")
+            # Extract AI answers from metadata.writes.submit_final_answer.final_answer
+            if isinstance(writes, dict) and "submit_final_answer" in writes:
+                submit_data = writes["submit_final_answer"]
+                if isinstance(submit_data, dict) and "final_answer" in submit_data:
+                    final_answer = submit_data["final_answer"]
+                    if final_answer and final_answer.strip():
+                        answers.append({
+                            "content": final_answer.strip(),
+                            "step": step,
+                            "checkpoint_index": checkpoint_index
+                        })
+                        print__checkpointers_debug(f"306 - AI ANSWER FOUND: Step {step}: {final_answer[:50]}...")
         
-        # Pass 2: Extract AI responses and pair them with user prompts
-        ai_responses = []
-        for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
-            checkpoint = checkpoint_tuple.checkpoint
-            
-            if not checkpoint:
-                continue
-                
-            # Extract AI responses from channel_values
-            if "channel_values" in checkpoint:
-                channel_values = checkpoint["channel_values"]
-                
-                # Look for final_answer (the main AI response)
-                final_answer = channel_values.get("final_answer")
-                if (final_answer and 
-                    isinstance(final_answer, str) and 
-                    final_answer.strip() and 
-                    len(final_answer.strip()) > 20 and 
-                    final_answer.strip() not in seen_answers):
-                    
-                    seen_answers.add(final_answer.strip())
-                    ai_responses.append({
-                        "content": final_answer.strip(),
-                        "checkpoint_index": checkpoint_index
-                    })
-                    print__checkpointers_debug(f"307 - AI MESSAGE FOUND: Found final_answer: {final_answer[:AI_MESSAGE_PREVIEW_LENGTH]}...")
+        # Sort prompts and answers by step number
+        prompts.sort(key=lambda x: x["step"])
+        answers.sort(key=lambda x: x["step"])
         
-        # Pass 3: Create properly ordered conversation with guaranteed prompt->answer sequence
-        print__checkpointers_debug(f"308 - MESSAGE PAIRING: Creating conversation with {len(user_prompts)} prompts and {len(ai_responses)} responses")
+        print__checkpointers_debug(f"307 - MESSAGE PAIRING: Found {len(prompts)} prompts and {len(answers)} answers")
         
-        # Create conversation messages with proper ordering
+        # Create conversation messages by pairing prompts and answers
         conversation_messages = []
         message_counter = 0
         
-        # Handle multiple prompts and responses by pairing them chronologically
-        for i in range(max(len(user_prompts), len(ai_responses))):
+        # Pair prompts with answers based on order
+        for i in range(max(len(prompts), len(answers))):
             # Add user prompt if available
-            if i < len(user_prompts):
-                prompt = user_prompts[i]
+            if i < len(prompts):
+                prompt = prompts[i]
                 message_counter += 1
                 user_message = {
                     "id": f"user_{message_counter}",
@@ -1377,44 +1345,45 @@ async def get_conversation_messages_from_checkpoints(checkpointer, thread_id: st
                     "is_user": True,
                     "timestamp": datetime.fromtimestamp(1700000000 + message_counter * 1000),
                     "checkpoint_order": prompt["checkpoint_index"],
-                    "message_order": message_counter
+                    "message_order": message_counter,
+                    "step": prompt["step"]
                 }
                 conversation_messages.append(user_message)
-                print__checkpointers_debug(f"309 - ADDED USER MESSAGE: Message {message_counter}: {prompt['content'][:USER_MESSAGE_PREVIEW_LENGTH]}...")
+                print__checkpointers_debug(f"308 - ADDED USER MESSAGE: Step {prompt['step']}: {prompt['content'][:50]}...")
             
-            # Add AI response if available (always after the user prompt)
-            if i < len(ai_responses):
-                response = ai_responses[i]
+            # Add AI response if available
+            if i < len(answers):
+                answer = answers[i]
                 message_counter += 1
                 ai_message = {
                     "id": f"ai_{message_counter}",
-                    "content": response["content"],
+                    "content": answer["content"],
                     "is_user": False,
                     "timestamp": datetime.fromtimestamp(1700000000 + message_counter * 1000),
-                    "checkpoint_order": response["checkpoint_index"],
-                    "message_order": message_counter
+                    "checkpoint_order": answer["checkpoint_index"],
+                    "message_order": message_counter,
+                    "step": answer["step"]
                 }
                 conversation_messages.append(ai_message)
-                print__checkpointers_debug(f"310 - ADDED AI MESSAGE: Message {message_counter}: {response['content'][:AI_MESSAGE_PREVIEW_LENGTH]}...")
+                print__checkpointers_debug(f"309 - ADDED AI MESSAGE: Step {answer['step']}: {answer['content'][:50]}...")
         
-        # Messages are already in correct order, no need to sort by timestamp
-        print__checkpointers_debug(f"311 - CONVERSATION SUCCESS: Created {len(conversation_messages)} conversation messages in proper order")
+        print__checkpointers_debug(f"310 - CONVERSATION SUCCESS: Created {len(conversation_messages)} conversation messages in proper order")
         
-        # Only log first few messages in detail
-        for i, msg in enumerate(conversation_messages[:MAX_DEBUG_MESSAGES_DETAILED]):  # Show first 6 messages (3 pairs)
+        # Log first few messages for debugging
+        for i, msg in enumerate(conversation_messages[:6]):
             msg_type = "👤 User" if msg["is_user"] else "🤖 AI"
-            print__checkpointers_debug(f"312 - MESSAGE {i+1}: {msg_type}: {msg['content'][:USER_MESSAGE_PREVIEW_LENGTH]}...")
+            print__checkpointers_debug(f"311 - MESSAGE {i+1}: {msg_type} (Step {msg['step']}): {msg['content'][:50]}...")
         
-        if len(conversation_messages) > MAX_DEBUG_MESSAGES_DETAILED:
-            print__checkpointers_debug(f"312 - MESSAGE SUMMARY: ...and {len(conversation_messages) - MAX_DEBUG_MESSAGES_DETAILED} more messages")
+        if len(conversation_messages) > 6:
+            print__checkpointers_debug(f"312 - MESSAGE SUMMARY: ...and {len(conversation_messages) - 6} more messages")
         
         return conversation_messages
         
     except Exception as e:
-        print__checkpointers_debug(f"311 - CONVERSATION ERROR: Error retrieving messages from checkpoints: {str(e)}")
-        print__checkpointers_debug(f"312 - CONVERSATION TRACEBACK: Full traceback: {traceback.format_exc()}")
+        print__checkpointers_debug(f"313 - CONVERSATION ERROR: Error retrieving messages from checkpoints: {str(e)}")
+        print__checkpointers_debug(f"314 - CONVERSATION TRACEBACK: Full traceback: {traceback.format_exc()}")
         return []
-
+    
 # HELPER FUNCTIONS FOR COMPATIBILITY - USING DIRECT CONNECTIONS
 @retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def create_thread_run_entry(email: str, thread_id: str, prompt: str = None, run_id: str = None) -> str:
@@ -1687,45 +1656,74 @@ async def get_healthy_checkpointer():
     
     return _GLOBAL_CHECKPOINTER
 
-# Add the missing function back after setup_users_threads_runs_table 
 @retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def get_queries_and_results_from_latest_checkpoint(checkpointer, thread_id: str):
-    """Get queries and results from the latest checkpoint for a thread with retry logic for prepared statement errors."""
-    print__checkpointers_debug(f"279 - GET CHECKPOINT START: Getting queries and results from latest checkpoint for thread: {thread_id}")
+    """Get queries and results from checkpoints for a thread with retry logic for prepared statement errors."""
+    print__checkpointers_debug(f"279 - GET CHECKPOINT START: Getting queries and results from checkpoints for thread: {thread_id}")
     try:
         config = {"configurable": {"thread_id": thread_id}}
         
-        # Get the latest checkpoint
-        print__checkpointers_debug("280 - GET CHECKPOINT STATE: Getting latest checkpoint state")
-        state_snapshot = await checkpointer.aget_tuple(config)
+        # Get all checkpoints to find all queries_and_results
+        checkpoint_tuples = []
+        try:
+            print__checkpointers_debug("280 - ALIST METHOD: Using official AsyncPostgresSaver.alist() method")
+            
+            # Get all checkpoints to capture complete queries and results
+            async for checkpoint_tuple in checkpointer.alist(config, limit=200):
+                checkpoint_tuples.append(checkpoint_tuple)
+
+        except Exception as alist_error:
+            print__checkpointers_debug(f"281 - ALIST ERROR: Error using alist(): {alist_error}")
+            
+            # Fallback: use aget_tuple() to get the latest checkpoint only
+            try:
+                print__checkpointers_debug("282 - FALLBACK METHOD: Trying fallback method using aget_tuple()")
+                state_snapshot = await checkpointer.aget_tuple(config)
+                if state_snapshot:
+                    checkpoint_tuples = [state_snapshot]
+                    print__checkpointers_debug("283 - FALLBACK SUCCESS: Using fallback method - got latest checkpoint only")
+            except Exception as fallback_error:
+                print__checkpointers_debug(f"284 - FALLBACK ERROR: Fallback method also failed: {fallback_error}")
+                return []
         
-        if not state_snapshot or not state_snapshot.checkpoint:
-            print__checkpointers_debug(f"281 - NO CHECKPOINT: No checkpoint found for thread: {thread_id}")
+        if not checkpoint_tuples:
+            print__checkpointers_debug(f"285 - NO CHECKPOINTS: No checkpoints found for thread: {thread_id}")
             return []
         
-        print__checkpointers_debug("282 - EXTRACT CHECKPOINT: Extracting queries and results from checkpoint")
-        # Extract queries and results from checkpoint
-        checkpoint = state_snapshot.checkpoint
-        channel_values = checkpoint.get("channel_values", {})
+        print__checkpointers_debug(f"286 - CHECKPOINTS FOUND: Found {len(checkpoint_tuples)} checkpoints for thread")
         
-        # Look for queries_and_results in various places
-        queries_and_results = channel_values.get("queries_and_results", [])
+        # Sort checkpoints by step number (chronological order)
+        checkpoint_tuples.sort(key=lambda x: x.metadata.get("step", 0) if x.metadata else 0)
         
-        if not queries_and_results:
-            print__checkpointers_debug("283 - SEARCH ITERATIONS: Searching iteration_results for queries")
-            # Try to extract from iteration_results
-            iteration_results = channel_values.get("iteration_results", {})
-            for iteration_key, iteration_data in iteration_results.items():
-                if isinstance(iteration_data, dict):
-                    iter_queries = iteration_data.get("queries_and_results", [])
-                    if iter_queries:
-                        queries_and_results.extend(iter_queries)
+        # Extract queries_and_results from all checkpoints
+        all_queries_and_results = []
         
-        print__checkpointers_debug(f"284 - GET CHECKPOINT SUCCESS: Found {len(queries_and_results)} queries and results for thread: {thread_id}")
-        return queries_and_results
+        print__checkpointers_debug(f"287 - QUERIES EXTRACTION: Extracting queries_and_results from {len(checkpoint_tuples)} checkpoints")
+        
+        for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
+            metadata = checkpoint_tuple.metadata or {}
+            step = metadata.get("step", 0)
+            
+            # Extract queries_and_results from metadata.writes.submit_final_answer.queries_and_results
+            writes = metadata.get("writes", {})
+            if isinstance(writes, dict) and "submit_final_answer" in writes:
+                submit_data = writes["submit_final_answer"]
+                if isinstance(submit_data, dict) and "queries_and_results" in submit_data:
+                    queries_and_results = submit_data["queries_and_results"]
+                    if queries_and_results:
+                        # If it's a list, extend; if it's a single item, append
+                        if isinstance(queries_and_results, list):
+                            all_queries_and_results.extend(queries_and_results)
+                            print__checkpointers_debug(f"288 - QUERIES FOUND: Step {step}: Found {len(queries_and_results)} queries and results")
+                        else:
+                            all_queries_and_results.append(queries_and_results)
+                            print__checkpointers_debug(f"289 - QUERIES FOUND: Step {step}: Found 1 query and result")
+        
+        print__checkpointers_debug(f"290 - GET CHECKPOINT SUCCESS: Found {len(all_queries_and_results)} total queries and results for thread: {thread_id}")
+        return all_queries_and_results
         
     except Exception as e:
-        print__checkpointers_debug(f"285 - GET CHECKPOINT ERROR: Error getting queries and results from checkpoint: {e}")
+        print__checkpointers_debug(f"291 - GET CHECKPOINT ERROR: Error getting queries and results from checkpoints: {e}")
         return []
 
 #==============================================================================

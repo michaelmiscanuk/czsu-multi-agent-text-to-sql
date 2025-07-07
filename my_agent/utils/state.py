@@ -64,7 +64,6 @@ class DataAnalysisState(TypedDict):
     most_similar_selections: List[Tuple[str, float]]  # List of (selection_code, cohere_rerank_score) after reranking
     top_selection_codes: List[str]  # List of top N selection codes (e.g., top 3)
     chromadb_missing: bool  # True if ChromaDB directory is missing, else False or not present
-    # New PDF chunk functionality states
     hybrid_search_chunks: List[Document]  # Intermediate hybrid search results for PDF chunks before reranking
     most_similar_chunks: List[Tuple[Document, float]]  # List of (document, cohere_rerank_score) after reranking PDF chunks
     top_chunks: List[Document]  # List of top N PDF chunks that passed relevance threshold

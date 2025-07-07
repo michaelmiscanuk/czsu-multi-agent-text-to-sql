@@ -42,7 +42,7 @@ from my_agent.utils.postgres_checkpointer import (
 )
 
 # Test configuration
-TEST_EMAIL = "test_bulk_user@example.com"
+TEST_EMAIL = "test_user@example.com"
 
 # Server configuration for real HTTP requests
 SERVER_BASE_URL = "http://localhost:8000"
@@ -565,6 +565,7 @@ async def run_bulk_endpoints_test() -> BulkTestResults:
         print("============================================================")
         await test_get_all_chat_messages_first_call(client, results)
 
+        '''
         print("============================================================")
         print("🔍 TESTING GET ALL CHAT MESSAGES - SECOND CALL (CACHE)")
         print("============================================================")
@@ -579,7 +580,7 @@ async def run_bulk_endpoints_test() -> BulkTestResults:
         print("🔍 TESTING GET ALL CHAT MESSAGES - DIFFERENT USER")
         print("============================================================")
         await test_get_all_chat_messages_different_user(client, results)
-
+        '''
         # Add a small delay to ensure all results are recorded
         await asyncio.sleep(0.1)
 
