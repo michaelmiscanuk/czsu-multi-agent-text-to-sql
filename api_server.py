@@ -476,7 +476,7 @@
 #         # Fix: Use correct psycopg approach with fetchone() instead of fetchval()
 #         await cur.execute(
 #             """
-#             SELECT COUNT(*) FROM users_threads_runs 
+#             SELECT COUNT(*) FROM users_threads_runs
 #             WHERE email = %s AND thread_id = %s
 #         """,
 #             (user_email, thread_id),
@@ -526,7 +526,7 @@
 #                 await cur.execute(
 #                     """
 #                     SELECT EXISTS (
-#                         SELECT FROM information_schema.tables 
+#                         SELECT FROM information_schema.tables
 #                         WHERE table_name = %s
 #                     )
 #                 """,
@@ -593,7 +593,7 @@
 #             )
 #             await cur.execute(
 #                 """
-#                 DELETE FROM users_threads_runs 
+#                 DELETE FROM users_threads_runs
 #                 WHERE email = %s AND thread_id = %s
 #             """,
 #                 (user_email, thread_id),
@@ -1081,13 +1081,13 @@
 
 #     # Only check memory for heavy operations
 #     request_path = request.url.path
-#     if any(path in request_path for path in ["/analyze", "/chat/all-messages"]):
+#     if any(path in request_path for path in ["/analyze", "/chat/all-messages-for-all-threads"]):
 #         log_memory_usage(f"before_{request_path.replace('/', '_')}")
 
 #     response = await call_next(request)
 
 #     # Check memory after heavy operations
-#     if any(path in request_path for path in ["/analyze", "/chat/all-messages"]):
+#     if any(path in request_path for path in ["/analyze", "/chat/all-messages-for-all-threads"]):
 #         log_memory_usage(f"after_{request_path.replace('/', '_')}")
 
 #     return response
@@ -1614,7 +1614,7 @@
 #     ("/data-tables", "GET"),
 #     ("/data-table", "GET"),
 #     ("/chat/{thread_id}/messages", "GET"),
-#     ("/chat/all-messages", "GET"),
+#     ("/chat/all-messages-for-all-threads", "GET"),
 #     ("/debug/chat/{thread_id}/checkpoints", "GET"),
 #     ("/debug/pool-status", "GET"),
 #     ("/chat/{thread_id}/run-ids", "GET"),
@@ -1883,9 +1883,9 @@
 #                 async with conn.cursor() as cur:
 #                     await cur.execute(
 #                         """
-#                         SELECT COUNT(*) as count, 
+#                         SELECT COUNT(*) as count,
 #                                STRING_AGG(name, ', ') as statement_names
-#                         FROM pg_prepared_statements 
+#                         FROM pg_prepared_statements
 #                         WHERE name LIKE '_pg3_%' OR name LIKE '_pg_%';
 #                     """
 #                     )
@@ -2360,7 +2360,7 @@
 #                     print__feedback_debug(f"🔍 Executing ownership query")
 #                     await cur.execute(
 #                         """
-#                         SELECT COUNT(*) FROM users_threads_runs 
+#                         SELECT COUNT(*) FROM users_threads_runs
 #                         WHERE run_id = %s AND email = %s
 #                     """,
 #                         (run_uuid, user_email),
@@ -2951,7 +2951,7 @@
 #             async with conn.cursor() as cur:
 #                 await cur.execute(
 #                     """
-#             SELECT COUNT(*) FROM users_threads_runs 
+#             SELECT COUNT(*) FROM users_threads_runs
 #             WHERE email = %s AND thread_id = %s
 #         """,
 #                     (user_email, thread_id),
@@ -3185,7 +3185,7 @@
 #                 await cur.execute(
 #                     """
 #                     SELECT run_id, prompt, timestamp
-#                     FROM users_threads_runs 
+#                     FROM users_threads_runs
 #                     WHERE email = %s AND thread_id = %s
 #                     ORDER BY timestamp ASC
 #                 """,
@@ -3232,7 +3232,7 @@
 # # ============================================================
 
 
-# @app.get("/chat/all-messages")
+# @app.get("/chat/all-messages-for-all-threads")
 # async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
 #     """Get all chat messages for the authenticated user using bulk loading with improved caching."""
 
@@ -3357,13 +3357,13 @@
 #                     # FIXED: Use psycopg format (%s) instead of asyncpg format ($1)
 #                     await cur.execute(
 #                         """
-#                         SELECT 
-#                             thread_id, 
-#                             run_id, 
-#                             prompt, 
+#                         SELECT
+#                             thread_id,
+#                             run_id,
+#                             prompt,
 #                             timestamp,
 #                             sentiment
-#                         FROM users_threads_runs 
+#                         FROM users_threads_runs
 #                         WHERE email = %s
 #                         ORDER BY thread_id, timestamp ASC
 #                     """,
@@ -3983,7 +3983,7 @@
 #                     await cur.execute(
 #                         """
 #                         SELECT email, thread_id, prompt, timestamp
-#                         FROM users_threads_runs 
+#                         FROM users_threads_runs
 #                         WHERE run_id = %s AND email = %s
 #                     """,
 #                         (run_id, user_email),

@@ -49,6 +49,9 @@ from api.utils.memory import log_memory_usage
 
 # Import database connection functions
 sys.path.insert(0, str(BASE_DIR))
+# NEW: Import for calling the single-thread endpoint
+import httpx
+
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
     create_thread_run_entry,
@@ -60,6 +63,111 @@ load_dotenv()
 
 # Create router for analysis endpoints
 router = APIRouter()
+
+
+async def get_thread_metadata_from_single_thread_endpoint(
+    thread_id: str, user_email: str
+) -> dict:
+    """Call the single-thread endpoint to get metadata for a specific thread."""
+    try:
+        print__analyze_debug(
+            f"🔍 Calling single-thread endpoint for thread: {thread_id}"
+        )
+        print__analysis_tracing_debug(
+            f"METADATA EXTRACTION: Calling /chat/all-messages-for-one-thread/{thread_id}"
+        )
+
+        # Import the single-thread function directly to avoid HTTP overhead
+        from unittest.mock import Mock
+
+        from fastapi import Request
+
+        from api.routes.chat import get_all_chat_messages_for_one_thread
+
+        # Create a mock user object
+        mock_user = {"email": user_email}
+
+        # Call the function directly instead of making HTTP request
+        print__analyze_debug(f"🔍 Calling single-thread function directly")
+        result = await get_all_chat_messages_for_one_thread(thread_id, mock_user)
+
+        if isinstance(result, dict):
+            # If it's a direct dict response (from cache hit or direct return)
+            response_data = result
+        else:
+            # If it's a JSONResponse object, extract the content
+            if hasattr(result, "body"):
+                import json
+
+                response_data = json.loads(result.body.decode())
+            else:
+                print__analyze_debug(
+                    f"⚠️ Unexpected response type from single-thread endpoint: {type(result)}"
+                )
+                return {}
+
+        print__analyze_debug(
+            f"🔍 Single-thread endpoint returned {len(response_data.get('messages', []))} messages"
+        )
+
+        # Extract metadata from the latest AI message
+        messages = response_data.get("messages", [])
+        run_ids = response_data.get("runIds", [])
+        sentiments = response_data.get("sentiments", {})
+
+        # Find the latest AI message that has metadata
+        latest_ai_message = None
+        for message in reversed(messages):
+            if not message.get("isUser", True) and message.get("meta"):
+                latest_ai_message = message
+                break
+
+        metadata = {}
+        if latest_ai_message and latest_ai_message.get("meta"):
+            meta = latest_ai_message["meta"]
+            metadata.update(
+                {
+                    "top_selection_codes": meta.get("datasetsUsed", []),
+                    "datasets_used": meta.get("datasetsUsed", []),
+                    "queries_and_results": latest_ai_message.get(
+                        "queriesAndResults", []
+                    ),
+                    "sql": meta.get("sqlQuery"),
+                    "dataset_url": meta.get("datasetUrl"),
+                    "top_chunks": meta.get("topChunks", []),
+                }
+            )
+            print__analyze_debug(
+                f"🔍 Extracted metadata: top_selection_codes={len(metadata.get('top_selection_codes', []))}"
+            )
+        else:
+            print__analyze_debug(
+                f"⚠️ No AI message with metadata found in single-thread response"
+            )
+            # Return empty metadata if no AI message found
+            metadata = {
+                "top_selection_codes": [],
+                "datasets_used": [],
+                "queries_and_results": [],
+                "sql": None,
+                "dataset_url": None,
+                "top_chunks": [],
+            }
+
+        return metadata
+
+    except Exception as e:
+        print__analyze_debug(f"🚨 Error calling single-thread endpoint: {e}")
+        print__analysis_tracing_debug(f"METADATA EXTRACTION ERROR: {e}")
+        # Return empty metadata on error
+        return {
+            "top_selection_codes": [],
+            "datasets_used": [],
+            "queries_and_results": [],
+            "sql": None,
+            "dataset_url": None,
+            "top_chunks": [],
+        }
 
 
 @router.post("/analyze")
@@ -322,7 +430,22 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 "24 - RESPONSE PREPARATION: Preparing response data"
             )
             print__analyze_debug(f"🔍 About to prepare response data")
-            # Simple response preparation
+
+            # NEW: Get metadata from single-thread endpoint instead of analysis result
+            print__analysis_tracing_debug(
+                "24a - METADATA EXTRACTION: Getting metadata from single-thread endpoint"
+            )
+            print__analyze_debug(
+                f"🔍 Getting metadata from single-thread endpoint for thread: {request.thread_id}"
+            )
+            thread_metadata = await get_thread_metadata_from_single_thread_endpoint(
+                request.thread_id, user_email
+            )
+            print__analyze_debug(
+                f"🔍 Retrieved metadata from single-thread endpoint: {list(thread_metadata.keys())}"
+            )
+
+            # Simple response preparation with metadata from single-thread endpoint
             response_data = {
                 "prompt": request.prompt,
                 "result": (
@@ -330,32 +453,41 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                     if isinstance(result, dict) and "result" in result
                     else str(result)
                 ),
-                "queries_and_results": (
-                    result.get("queries_and_results", [])
-                    if isinstance(result, dict)
-                    else []
-                ),
+                "queries_and_results": thread_metadata.get("queries_and_results", []),
                 "thread_id": request.thread_id,
-                "top_selection_codes": (
-                    result.get("top_selection_codes", [])
-                    if isinstance(result, dict)
-                    else []
-                ),
+                "top_selection_codes": thread_metadata.get("top_selection_codes", []),
+                "datasets_used": thread_metadata.get("datasets_used", []),
                 "iteration": (
                     result.get("iteration", 0) if isinstance(result, dict) else 0
                 ),
                 "max_iterations": (
                     result.get("max_iterations", 2) if isinstance(result, dict) else 2
                 ),
-                "sql": result.get("sql", None) if isinstance(result, dict) else None,
-                "datasetUrl": (
-                    result.get("datasetUrl", None) if isinstance(result, dict) else None
-                ),
+                "sql": thread_metadata.get("sql", None),
+                "datasetUrl": thread_metadata.get("dataset_url", None),
                 "run_id": run_id,
-                "top_chunks": (
-                    result.get("top_chunks", []) if isinstance(result, dict) else []
-                ),
+                "top_chunks": thread_metadata.get("top_chunks", []),
             }
+
+            # DEBUG: Log what was extracted for metadata from single-thread endpoint
+            print__analyze_debug(
+                f"🔍 DEBUG RESPONSE: datasets_used extracted from single-thread: {response_data['datasets_used']}"
+            )
+            print__analyze_debug(
+                f"🔍 DEBUG RESPONSE: top_selection_codes extracted from single-thread: {response_data['top_selection_codes']}"
+            )
+            print__analyze_debug(
+                f"🔍 DEBUG RESPONSE: queries_and_results count: {len(response_data['queries_and_results'])}"
+            )
+            print__analyze_debug(
+                f"🔍 DEBUG RESPONSE: sql query available: {'Yes' if response_data['sql'] else 'No'}"
+            )
+            print__analyze_debug(
+                f"🔍 DEBUG RESPONSE: top_chunks count: {len(response_data['top_chunks'])}"
+            )
+            print__analyze_debug(
+                f"🔍 DEBUG RESPONSE: datasetUrl: {response_data['datasetUrl']}"
+            )
 
             print__analysis_tracing_debug(
                 f"25 - RESPONSE SUCCESS: Response data prepared with {len(response_data.keys())} keys"

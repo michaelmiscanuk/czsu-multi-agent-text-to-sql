@@ -78,7 +78,7 @@ export function useSentiment(): UseSentimentReturn {
         console.log('[SENTIMENT-HOOK] Bulk loading should have loaded all sentiments - no fallback API call needed');
         
         // REMOVED: No more fallback API calls - bulk loading handles everything
-        // The bulk loading via /chat/all-messages should have loaded all sentiments
+        // The bulk loading via /chat/all-messages-for-all-threads should have loaded all sentiments
         // If there are no cached sentiments, it means this thread has no sentiments
       }
     } catch (error) {

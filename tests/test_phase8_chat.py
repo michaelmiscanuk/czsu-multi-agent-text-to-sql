@@ -322,45 +322,61 @@ async def test_get_chat_threads(client: httpx.AsyncClient, results: ChatTestResu
         results.add_error("/chat-threads", "GET", e, response_time)
 
 
-async def test_get_all_chat_messages(
+async def test_get_all_messages_for_one_thread(
     client: httpx.AsyncClient, results: ChatTestResults
 ):
-    """Test GET /chat/all-messages endpoint."""
-    print_test_status("🔍 Testing GET /chat/all-messages")
+    """Test GET /chat/all-messages-for-one-thread/{thread_id} endpoint."""
+    print_test_status(
+        f"🔍 Testing GET /chat/all-messages-for-one-thread/{TEST_THREAD_ID}"
+    )
     start_time = time.time()
 
     try:
         token = create_test_jwt_token()
         headers = {"Authorization": f"Bearer {token}"}
 
-        response = await client.get("/chat/all-messages", headers=headers)
+        response = await client.get(
+            f"/chat/all-messages-for-one-thread/{TEST_THREAD_ID}", headers=headers
+        )
         response_time = time.time() - start_time
 
         if response.status_code == 200:
             response_data = response.json()
             results.add_result(
-                "/chat/all-messages",
+                f"/chat/all-messages-for-one-thread/{TEST_THREAD_ID}",
                 "GET",
                 response.status_code,
                 response_data,
                 response_time,
             )
 
-            # Analyze the bulk response structure
-            messages = response_data.get("messages", {})
-            run_ids = response_data.get("runIds", {})
+            # Analyze the single thread response structure
+            messages = response_data.get("messages", [])
+            run_ids = response_data.get("runIds", [])
             sentiments = response_data.get("sentiments", {})
 
-            print_test_status("✅ All messages response:")
-            print_test_status(f"   Messages for {len(messages)} threads")
-            print_test_status(f"   Run IDs for {len(run_ids)} threads")
-            print_test_status(f"   Sentiments for {len(sentiments)} threads")
+            print_test_status("✅ Single thread messages response:")
+            print_test_status(f"   Messages: {len(messages)}")
+            print_test_status(f"   Run IDs: {len(run_ids)}")
+            print_test_status(f"   Sentiments: {len(sentiments)}")
 
-            # Count total messages
-            total_messages = sum(
-                len(thread_messages) for thread_messages in messages.values()
-            )
-            print_test_status(f"   Total messages: {total_messages}")
+            # Check for cache headers
+            cache_control = response.headers.get("Cache-Control", "")
+            etag = response.headers.get("ETag", "")
+            if cache_control or etag:
+                print_test_status(f"   Cache-Control: {cache_control}")
+                print_test_status(f"   ETag: {etag}")
+
+            # Validate response structure
+            if isinstance(messages, list):
+                print_test_status("✅ Messages is a list (single thread format)")
+            else:
+                print_test_status("⚠️ Messages is not a list - unexpected format")
+
+            if isinstance(run_ids, list):
+                print_test_status("✅ Run IDs is a list (single thread format)")
+            else:
+                print_test_status("⚠️ Run IDs is not a list - unexpected format")
 
         else:
             try:
@@ -369,12 +385,20 @@ async def test_get_all_chat_messages(
             except Exception:
                 error_message = f"HTTP {response.status_code}: {response.text}"
             results.add_error(
-                "/chat/all-messages", "GET", Exception(error_message), response_time
+                f"/chat/all-messages-for-one-thread/{TEST_THREAD_ID}",
+                "GET",
+                Exception(error_message),
+                response_time,
             )
 
     except Exception as e:
         response_time = time.time() - start_time
-        results.add_error("/chat/all-messages", "GET", e, response_time)
+        results.add_error(
+            f"/chat/all-messages-for-one-thread/{TEST_THREAD_ID}",
+            "GET",
+            e,
+            response_time,
+        )
 
 
 async def test_delete_chat_checkpoints(
@@ -448,9 +472,9 @@ async def run_chat_endpoints_test() -> ChatTestResults:
         await test_get_chat_threads(client, results)
 
         print("============================================================")
-        print("🔍 TESTING GET ALL CHAT MESSAGES")
+        print("🔍 TESTING GET ALL MESSAGES FOR ONE THREAD")
         print("============================================================")
-        await test_get_all_chat_messages(client, results)
+        await test_get_all_messages_for_one_thread(client, results)
 
         print("============================================================")
         print("🔍 TESTING DELETE CHAT CHECKPOINTS")

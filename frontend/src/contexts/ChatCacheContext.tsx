@@ -579,14 +579,14 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       }
       
       // OPTIMIZATION: Load all data at once with better error handling
-      console.log('[ChatCache] 📡 Calling /chat/all-messages endpoint with automatic token refresh...');
+      console.log('[ChatCache] 📡 Calling /chat/all-messages-for-all-threads endpoint with automatic token refresh...');
       const startTime = Date.now();
       
       const response = await authApiFetch<{
         messages: { [threadId: string]: any[] };
         runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
         sentiments: { [threadId: string]: { [runId: string]: boolean } };
-      }>('/chat/all-messages', freshSession.id_token);
+      }>('/chat/all-messages-for-all-threads', freshSession.id_token);
       
       const loadTime = Date.now() - startTime;
       const totalThreadsWithMessages = Object.keys(response.messages || {}).length;

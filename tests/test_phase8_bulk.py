@@ -234,18 +234,93 @@ def setup_test_environment():
     return True
 
 
-async def test_get_all_chat_messages_first_call(
+async def test_get_all_chat_messages(
     client: httpx.AsyncClient, results: BulkTestResults
 ):
-    """Test GET /chat/all-messages endpoint - first call (should be fresh, no cache)."""
-    print_test_status("🔍 Testing GET /chat/all-messages (first call - no cache)")
+    """Test GET /chat/all-messages-for-all-threads endpoint (moved from test_phase8_chat.py)."""
+    print_test_status("🔍 Testing GET /chat/all-messages-for-all-threads (basic test)")
     start_time = time.time()
 
     try:
         token = create_test_jwt_token()
         headers = {"Authorization": f"Bearer {token}"}
 
-        response = await client.get("/chat/all-messages", headers=headers)
+        response = await client.get(
+            "/chat/all-messages-for-all-threads", headers=headers
+        )
+        response_time = time.time() - start_time
+
+        if response.status_code == 200:
+            response_data = response.json()
+
+            # Extract cache information if available
+            cache_info = None
+            if "Cache-Control" in response.headers or "ETag" in response.headers:
+                cache_info = {
+                    "cache_control": response.headers.get("Cache-Control", ""),
+                    "etag": response.headers.get("ETag", ""),
+                    "response_time": response_time,
+                }
+
+            results.add_result(
+                "/chat/all-messages-for-all-threads",
+                "GET",
+                response.status_code,
+                response_data,
+                response_time,
+                cache_info,
+            )
+
+            # Analyze the bulk response structure
+            messages = response_data.get("messages", {})
+            run_ids = response_data.get("runIds", {})
+            sentiments = response_data.get("sentiments", {})
+
+            print_test_status("✅ All messages response:")
+            print_test_status(f"   Messages for {len(messages)} threads")
+            print_test_status(f"   Run IDs for {len(run_ids)} threads")
+            print_test_status(f"   Sentiments for {len(sentiments)} threads")
+
+            # Count total messages
+            total_messages = sum(
+                len(thread_messages) for thread_messages in messages.values()
+            )
+            print_test_status(f"   Total messages: {total_messages}")
+
+        else:
+            try:
+                error_data = response.json()
+                error_message = error_data.get("detail", f"HTTP {response.status_code}")
+            except Exception:
+                error_message = f"HTTP {response.status_code}: {response.text}"
+            results.add_error(
+                "/chat/all-messages-for-all-threads",
+                "GET",
+                Exception(error_message),
+                response_time,
+            )
+
+    except Exception as e:
+        response_time = time.time() - start_time
+        results.add_error("/chat/all-messages-for-all-threads", "GET", e, response_time)
+
+
+async def test_get_all_chat_messages_first_call(
+    client: httpx.AsyncClient, results: BulkTestResults
+):
+    """Test GET /chat/all-messages-for-all-threads endpoint - first call (should be fresh, no cache)."""
+    print_test_status(
+        "🔍 Testing GET /chat/all-messages-for-all-threads (first call - no cache)"
+    )
+    start_time = time.time()
+
+    try:
+        token = create_test_jwt_token()
+        headers = {"Authorization": f"Bearer {token}"}
+
+        response = await client.get(
+            "/chat/all-messages-for-all-threads", headers=headers
+        )
         response_time = time.time() - start_time
 
         if response.status_code == 200:
@@ -259,7 +334,7 @@ async def test_get_all_chat_messages_first_call(
             }
 
             results.add_result(
-                "/chat/all-messages",
+                "/chat/all-messages-for-all-threads",
                 "GET",
                 response.status_code,
                 response_data,
@@ -295,20 +370,23 @@ async def test_get_all_chat_messages_first_call(
             except Exception:
                 error_message = f"HTTP {response.status_code}: {response.text}"
             results.add_error(
-                "/chat/all-messages", "GET", Exception(error_message), response_time
+                "/chat/all-messages-for-all-threads",
+                "GET",
+                Exception(error_message),
+                response_time,
             )
 
     except Exception as e:
         response_time = time.time() - start_time
-        results.add_error("/chat/all-messages", "GET", e, response_time)
+        results.add_error("/chat/all-messages-for-all-threads", "GET", e, response_time)
 
 
 async def test_get_all_chat_messages_second_call(
     client: httpx.AsyncClient, results: BulkTestResults
 ):
-    """Test GET /chat/all-messages endpoint - second call (should be cached)."""
+    """Test GET /chat/all-messages-for-all-threads endpoint - second call (should be cached)."""
     print_test_status(
-        "🔍 Testing GET /chat/all-messages (second call - should be cached)"
+        "🔍 Testing GET /chat/all-messages-for-all-threads (second call - should be cached)"
     )
     start_time = time.time()
 
@@ -316,7 +394,9 @@ async def test_get_all_chat_messages_second_call(
         token = create_test_jwt_token()
         headers = {"Authorization": f"Bearer {token}"}
 
-        response = await client.get("/chat/all-messages", headers=headers)
+        response = await client.get(
+            "/chat/all-messages-for-all-threads", headers=headers
+        )
         response_time = time.time() - start_time
 
         if response.status_code == 200:
@@ -330,7 +410,7 @@ async def test_get_all_chat_messages_second_call(
             }
 
             results.add_result(
-                "/chat/all-messages",
+                "/chat/all-messages-for-all-threads",
                 "GET",
                 response.status_code,
                 response_data,
@@ -374,20 +454,23 @@ async def test_get_all_chat_messages_second_call(
             except Exception:
                 error_message = f"HTTP {response.status_code}: {response.text}"
             results.add_error(
-                "/chat/all-messages", "GET", Exception(error_message), response_time
+                "/chat/all-messages-for-all-threads",
+                "GET",
+                Exception(error_message),
+                response_time,
             )
 
     except Exception as e:
         response_time = time.time() - start_time
-        results.add_error("/chat/all-messages", "GET", e, response_time)
+        results.add_error("/chat/all-messages-for-all-threads", "GET", e, response_time)
 
 
 async def test_get_all_chat_messages_concurrent_calls(
     client: httpx.AsyncClient, results: BulkTestResults
 ):
-    """Test GET /chat/all-messages endpoint - concurrent calls (should test locking)."""
+    """Test GET /chat/all-messages-for-all-threads endpoint - concurrent calls (should test locking)."""
     print_test_status(
-        "🔍 Testing GET /chat/all-messages (concurrent calls - test locking)"
+        "🔍 Testing GET /chat/all-messages-for-all-threads (concurrent calls - test locking)"
     )
 
     async def make_concurrent_request(request_id: int):
@@ -397,7 +480,9 @@ async def test_get_all_chat_messages_concurrent_calls(
             token = create_test_jwt_token()
             headers = {"Authorization": f"Bearer {token}"}
 
-            response = await client.get("/chat/all-messages", headers=headers)
+            response = await client.get(
+                "/chat/all-messages-for-all-threads", headers=headers
+            )
             response_time = time.time() - start_time
 
             if response.status_code == 200:
@@ -412,7 +497,7 @@ async def test_get_all_chat_messages_concurrent_calls(
                 }
 
                 results.add_result(
-                    f"/chat/all-messages (concurrent-{request_id})",
+                    f"/chat/all-messages-for-all-threads (concurrent-{request_id})",
                     "GET",
                     response.status_code,
                     response_data,
@@ -434,7 +519,7 @@ async def test_get_all_chat_messages_concurrent_calls(
                 except Exception:
                     error_message = f"HTTP {response.status_code}: {response.text}"
                 results.add_error(
-                    f"/chat/all-messages (concurrent-{request_id})",
+                    f"/chat/all-messages-for-all-threads (concurrent-{request_id})",
                     "GET",
                     Exception(error_message),
                     response_time,
@@ -444,7 +529,10 @@ async def test_get_all_chat_messages_concurrent_calls(
         except Exception as e:
             response_time = time.time() - start_time
             results.add_error(
-                f"/chat/all-messages (concurrent-{request_id})", "GET", e, response_time
+                f"/chat/all-messages-for-all-threads (concurrent-{request_id})",
+                "GET",
+                e,
+                response_time,
             )
             return response_time, None
 
@@ -472,9 +560,9 @@ async def test_get_all_chat_messages_concurrent_calls(
 async def test_get_all_chat_messages_different_user(
     client: httpx.AsyncClient, results: BulkTestResults
 ):
-    """Test GET /chat/all-messages endpoint with different user (should be separate cache)."""
+    """Test GET /chat/all-messages-for-all-threads endpoint with different user (should be separate cache)."""
     print_test_status(
-        "🔍 Testing GET /chat/all-messages (different user - separate cache)"
+        "🔍 Testing GET /chat/all-messages-for-all-threads (different user - separate cache)"
     )
     start_time = time.time()
 
@@ -484,7 +572,9 @@ async def test_get_all_chat_messages_different_user(
         token = create_test_jwt_token(different_email)
         headers = {"Authorization": f"Bearer {token}"}
 
-        response = await client.get("/chat/all-messages", headers=headers)
+        response = await client.get(
+            "/chat/all-messages-for-all-threads", headers=headers
+        )
         response_time = time.time() - start_time
 
         if response.status_code == 200:
@@ -499,7 +589,7 @@ async def test_get_all_chat_messages_different_user(
             }
 
             results.add_result(
-                "/chat/all-messages (different-user)",
+                "/chat/all-messages-for-all-threads (different-user)",
                 "GET",
                 response.status_code,
                 response_data,
@@ -531,7 +621,7 @@ async def test_get_all_chat_messages_different_user(
             except Exception:
                 error_message = f"HTTP {response.status_code}: {response.text}"
             results.add_error(
-                "/chat/all-messages (different-user)",
+                "/chat/all-messages-for-all-threads (different-user)",
                 "GET",
                 Exception(error_message),
                 response_time,
@@ -540,7 +630,10 @@ async def test_get_all_chat_messages_different_user(
     except Exception as e:
         response_time = time.time() - start_time
         results.add_error(
-            "/chat/all-messages (different-user)", "GET", e, response_time
+            "/chat/all-messages-for-all-threads (different-user)",
+            "GET",
+            e,
+            response_time,
         )
 
 
@@ -561,11 +654,16 @@ async def run_bulk_endpoints_test() -> BulkTestResults:
 
         # Test bulk endpoints in sequence
         print("============================================================")
+        print("🔍 TESTING GET ALL CHAT MESSAGES - BASIC TEST")
+        print("============================================================")
+        await test_get_all_chat_messages(client, results)
+
+        print("============================================================")
         print("🔍 TESTING GET ALL CHAT MESSAGES - FIRST CALL")
         print("============================================================")
         await test_get_all_chat_messages_first_call(client, results)
 
-        '''
+        """
         print("============================================================")
         print("🔍 TESTING GET ALL CHAT MESSAGES - SECOND CALL (CACHE)")
         print("============================================================")
@@ -580,7 +678,7 @@ async def run_bulk_endpoints_test() -> BulkTestResults:
         print("🔍 TESTING GET ALL CHAT MESSAGES - DIFFERENT USER")
         print("============================================================")
         await test_get_all_chat_messages_different_user(client, results)
-        '''
+        """
         # Add a small delay to ensure all results are recorded
         await asyncio.sleep(0.1)
 
@@ -654,7 +752,11 @@ def analyze_bulk_test_results(results: BulkTestResults):
             )
 
     # Check for performance patterns
-    bulk_results = [r for r in results.results if "/chat/all-messages" in r["endpoint"]]
+    bulk_results = [
+        r
+        for r in results.results
+        if "/chat/all-messages-for-all-threads" in r["endpoint"]
+    ]
     if len(bulk_results) >= 2:
         first_call = None
         second_call = None

@@ -119,6 +119,20 @@ def print__chat_all_messages_debug(msg: str) -> None:
         sys.stdout.flush()
 
 
+def print__chat_all_messages_one_thread_debug(msg: str) -> None:
+    """Print print__chat_all_messages_one_thread_debug messages when debug mode is enabled.
+
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get("print__chat_all_messages_one_thread_debug", "0")
+    if debug_mode == "1":
+        print(f"[print__chat_all_messages_one_thread_debug] {msg}")
+        import sys
+
+        sys.stdout.flush()
+
+
 def print__feedback_debug(msg: str) -> None:
     """Print print__feedback_debug messages when debug mode is enabled.
 

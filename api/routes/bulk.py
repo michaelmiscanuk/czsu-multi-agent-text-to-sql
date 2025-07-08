@@ -36,6 +36,9 @@ from api.dependencies.auth import get_current_user
 # Import models
 from api.models.responses import ChatMessage
 
+# Import the reusable function from chat.py
+from api.routes.chat import get_thread_messages_with_metadata
+
 # Import debug functions
 from api.utils.debug import print__chat_all_messages_debug
 
@@ -44,10 +47,8 @@ from api.utils.memory import log_memory_usage
 
 # Import database connection functions
 from my_agent.utils.postgres_checkpointer import (
-    get_conversation_messages_from_checkpoints,
     get_direct_connection,
     get_healthy_checkpointer,
-    get_queries_and_results_from_latest_checkpoint,
 )
 
 # Load environment variables
@@ -62,7 +63,7 @@ MAX_CONCURRENT_BULK_THREADS = int(
 )  # Read from .env with fallback to 3
 
 
-@router.get("/chat/all-messages")
+@router.get("/chat/all-messages-for-all-threads")
 async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
     """Get all chat messages for the authenticated user using bulk loading with improved caching."""
 
@@ -281,190 +282,10 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 try:
                     print__chat_all_messages_debug(f"🔄 Processing thread {thread_id}")
 
-                    # Use the working function
-                    print__chat_all_messages_debug(
-                        f"🔍 Getting conversation messages from checkpoints for thread: {thread_id}"
+                    # Use the new reusable function from chat.py
+                    chat_messages = await get_thread_messages_with_metadata(
+                        checkpointer, thread_id, user_email, "cached_bulk_processing"
                     )
-                    stored_messages = await get_conversation_messages_from_checkpoints(
-                        checkpointer, thread_id, user_email
-                    )
-
-                    if not stored_messages:
-                        print__chat_all_messages_debug(
-                            f"⚠ No messages found in checkpoints for thread {thread_id}"
-                        )
-                        return thread_id, []
-
-                    print__chat_all_messages_debug(
-                        f"📄 Found {len(stored_messages)} messages for thread {thread_id}"
-                    )
-
-                    # Get additional metadata from latest checkpoint
-                    print__chat_all_messages_debug(
-                        f"🔍 Getting queries and results from latest checkpoint for thread: {thread_id}"
-                    )
-                    queries_and_results = (
-                        await get_queries_and_results_from_latest_checkpoint(
-                            checkpointer, thread_id
-                        )
-                    )
-                    print__chat_all_messages_debug(
-                        f"🔍 Retrieved {len(queries_and_results) if queries_and_results else 0} queries and results"
-                    )
-
-                    # Get dataset information and SQL query from latest checkpoint
-                    datasets_used = []
-                    sql_query = None
-                    top_chunks = []
-
-                    try:
-                        print__chat_all_messages_debug(
-                            f"🔍 Getting state snapshot for thread: {thread_id}"
-                        )
-                        config = {"configurable": {"thread_id": thread_id}}
-                        state_snapshot = await checkpointer.aget_tuple(config)
-
-                        if state_snapshot and state_snapshot.checkpoint:
-                            print__chat_all_messages_debug(
-                                f"🔍 State snapshot found for thread: {thread_id}"
-                            )
-                            channel_values = state_snapshot.checkpoint.get(
-                                "channel_values", {}
-                            )
-                            top_selection_codes = channel_values.get(
-                                "top_selection_codes", []
-                            )
-                            datasets_used = top_selection_codes
-                            print__chat_all_messages_debug(
-                                f"🔍 Found {len(datasets_used)} datasets used"
-                            )
-
-                            # Get PDF chunks
-                            checkpoint_top_chunks = channel_values.get("top_chunks", [])
-                            print__chat_all_messages_debug(
-                                f"🔍 Found {len(checkpoint_top_chunks)} PDF chunks in checkpoint"
-                            )
-                            if checkpoint_top_chunks:
-                                for j, chunk in enumerate(checkpoint_top_chunks):
-                                    print__chat_all_messages_debug(
-                                        f"🔍 Processing PDF chunk {j+1}/{len(checkpoint_top_chunks)}"
-                                    )
-                                    chunk_data = {
-                                        "content": (
-                                            chunk.page_content
-                                            if hasattr(chunk, "page_content")
-                                            else str(chunk)
-                                        ),
-                                        "metadata": (
-                                            chunk.metadata
-                                            if hasattr(chunk, "metadata")
-                                            else {}
-                                        ),
-                                    }
-                                    top_chunks.append(chunk_data)
-                                print__chat_all_messages_debug(
-                                    f"🔍 Processed {len(top_chunks)} PDF chunks"
-                                )
-
-                            # Extract SQL query
-                            if queries_and_results:
-                                sql_query = (
-                                    queries_and_results[-1][0]
-                                    if queries_and_results[-1]
-                                    else None
-                                )
-                                print__chat_all_messages_debug(
-                                    f"🔍 SQL query extracted: {'Yes' if sql_query else 'No'}"
-                                )
-                        else:
-                            print__chat_all_messages_debug(
-                                f"🔍 No state snapshot found for thread: {thread_id}"
-                            )
-
-                    except Exception as e:
-                        print__chat_all_messages_debug(
-                            f"⚠️ Could not get datasets/SQL/chunks from checkpoint for thread {thread_id}: {e}"
-                        )
-                        print__chat_all_messages_debug(
-                            f"🔍 Checkpoint metadata error type: {type(e).__name__}"
-                        )
-                        print__chat_all_messages_debug(
-                            f"🔍 Checkpoint metadata error traceback: {traceback.format_exc()}"
-                        )
-
-                    # Convert stored messages to frontend format
-                    chat_messages = []
-                    print__chat_all_messages_debug(
-                        f"🔍 Converting {len(stored_messages)} stored messages to frontend format"
-                    )
-
-                    for i, stored_msg in enumerate(stored_messages):
-                        print__chat_all_messages_debug(
-                            f"🔍 Processing stored message {i+1}/{len(stored_messages)}"
-                        )
-                        # Create meta information for AI messages
-                        meta_info = {}
-                        if not stored_msg["is_user"]:
-                            print__chat_all_messages_debug(
-                                "🔍 Processing AI message - adding metadata"
-                            )
-                            if queries_and_results:
-                                meta_info["queriesAndResults"] = queries_and_results
-                                print__chat_all_messages_debug(
-                                    "🔍 Added queries and results to meta"
-                                )
-                            if datasets_used:
-                                meta_info["datasetsUsed"] = datasets_used
-                                print__chat_all_messages_debug(
-                                    "🔍 Added {len(datasets_used)} datasets to meta"
-                                )
-                            if sql_query:
-                                meta_info["sqlQuery"] = sql_query
-                                print__chat_all_messages_debug(
-                                    "🔍 Added SQL query to meta"
-                                )
-                            if top_chunks:
-                                meta_info["topChunks"] = top_chunks
-                                print__chat_all_messages_debug(
-                                    f"🔍 Added {len(top_chunks)} chunks to meta"
-                                )
-                            meta_info["source"] = "cached_bulk_processing"
-                        else:
-                            print__chat_all_messages_debug(
-                                "🔍 Processing user message - no metadata needed"
-                            )
-
-                        queries_results_for_frontend = None
-                        if not stored_msg["is_user"] and queries_and_results:
-                            queries_results_for_frontend = queries_and_results
-                            print__chat_all_messages_debug(
-                                "🔍 Set queries_results_for_frontend for AI message"
-                            )
-
-                        is_user_flag = stored_msg["is_user"]
-                        print__chat_all_messages_debug(
-                            f"🔍 Creating ChatMessage: isUser={is_user_flag}"
-                        )
-
-                        chat_message = ChatMessage(
-                            id=stored_msg["id"],
-                            threadId=thread_id,
-                            user=user_email if is_user_flag else "AI",
-                            content=stored_msg["content"],
-                            isUser=is_user_flag,
-                            createdAt=int(stored_msg["timestamp"].timestamp() * 1000),
-                            error=None,
-                            meta=meta_info if meta_info else None,
-                            queriesAndResults=queries_results_for_frontend,
-                            isLoading=False,
-                            startedAt=None,
-                            isError=False,
-                        )
-
-                        chat_messages.append(chat_message)
-                        print__chat_all_messages_debug(
-                            "🔍 ChatMessage created and added to list"
-                        )
 
                     print__chat_all_messages_debug(
                         f"✅ Processed {len(chat_messages)} messages for thread {thread_id}"

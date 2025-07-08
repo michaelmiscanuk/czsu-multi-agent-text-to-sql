@@ -8,7 +8,7 @@
 
 ### 1. Enhanced API Endpoint
 
-**Endpoint:** `GET /chat/all-messages`
+**Endpoint:** `GET /chat/all-messages-for-all-threads`
 
 **New Response Format:**
 ```typescript
@@ -26,7 +26,7 @@
 - ✅ Includes security checks to ensure user owns all accessed threads
 
 ### 2. Route Monitoring Updated
-- ✅ Added `/chat/all-messages` to memory leak prevention tracking
+- ✅ Added `/chat/all-messages-for-all-threads` to memory leak prevention tracking
 
 ## ✅ Frontend Changes Implemented
 
@@ -68,7 +68,7 @@ interface CacheData {
 ```typescript  
 // When user loads threads (app startup/refresh)
 1. GET /chat-threads                    // Load thread list
-2. GET /chat/all-messages              // Load ALL messages, run-ids, and sentiments at once
+2. GET /chat/all-messages-for-all-threads              // Load ALL messages, run-ids, and sentiments at once
 // When user clicks chat items
 3. [NO API CALLS] - Load from localStorage cache
 // = 2 API calls total (regardless of number of threads)
@@ -114,7 +114,7 @@ sequenceDiagram
     API->>PostgreSQL: Load user threads
     PostgreSQL-->>API: Thread list
     API-->>Frontend: Thread list
-    Frontend->>API: GET /chat/all-messages
+    Frontend->>API: GET /chat/all-messages-for-all-threads
     API->>PostgreSQL: Bulk load all data
     PostgreSQL-->>API: All messages, run-ids, sentiments
     API-->>Frontend: Complete data set
@@ -159,7 +159,7 @@ To verify the implementation works:
 2. **Test the bulk loading:**
    - Open browser and login
    - Check browser console for logs like:
-     - `[ChatCache] 📡 Calling /chat/all-messages endpoint...`
+     - `[ChatCache] 📡 Calling /chat/all-messages-for-all-threads endpoint...`
      - `[ChatCache] ✅ Bulk loading completed successfully`
 
 3. **Test cached navigation:**
@@ -188,7 +188,7 @@ The implementation is **complete and ready for testing**. The user should now ex
 ## Migration Strategy
 
 ### Phase 1: Backend Deployment
-1. Deploy the new `/chat/all-messages` endpoint
+1. Deploy the new `/chat/all-messages-for-all-threads` endpoint
 2. Keep existing `/chat/{thread_id}/messages` endpoint for backward compatibility
 3. Test the new endpoint with existing frontend
 

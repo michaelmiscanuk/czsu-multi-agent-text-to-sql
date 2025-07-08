@@ -239,13 +239,19 @@ async def simplified_memory_monitoring_middleware(request: Request, call_next):
 
     # Only check memory for heavy operations
     request_path = request.url.path
-    if any(path in request_path for path in ["/analyze", "/chat/all-messages"]):
+    if any(
+        path in request_path
+        for path in ["/analyze", "/chat/all-messages-for-all-threads"]
+    ):
         log_memory_usage(f"before_{request_path.replace('/', '_')}")
 
     response = await call_next(request)
 
     # Check memory after heavy operations
-    if any(path in request_path for path in ["/analyze", "/chat/all-messages"]):
+    if any(
+        path in request_path
+        for path in ["/analyze", "/chat/all-messages-for-all-threads"]
+    ):
         log_memory_usage(f"after_{request_path.replace('/', '_')}")
 
     return response

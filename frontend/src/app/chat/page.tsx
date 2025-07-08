@@ -229,39 +229,53 @@ export default function ChatPage() {
     setActiveThreadId(threadId);
     
     // REMOVED: No more individual API calls
-    // The bulk loading via /chat/all-messages should have loaded all messages
+    // The bulk loading via /chat/all-messages-for-all-threads should have loaded all messages
     // If there are no cached messages, it means this thread has no messages or bulk loading failed
   };
 
   const deleteThreadFromPostgreSQL = async (threadId: string) => {
+    console.log('[ChatPage-deleteThread] 🔄 Starting delete process for thread:', threadId);
+    
     if (!threadId || !userEmail) {
+      console.error('[ChatPage-deleteThread] ❌ Missing threadId or userEmail:', { threadId, userEmail });
       return false;
     }
     
     try {
+      console.log('[ChatPage-deleteThread] 🔑 Getting fresh session for authentication...');
       // Get fresh session for authentication
       const freshSession = await getSession();
       if (!freshSession?.id_token) {
+        console.error('[ChatPage-deleteThread] ❌ No authentication token available');
         throw new Error('No authentication token available');
       }
 
-      await authApiFetch(`/chat/${threadId}`, freshSession.id_token, {
+      console.log('[ChatPage-deleteThread] 🚀 Making DELETE request to /chat/' + threadId);
+      const response = await authApiFetch(`/chat/${threadId}`, freshSession.id_token, {
         method: 'DELETE',
       });
 
-      console.log('[ChatPage-deleteThread] ✅ Thread deleted successfully');
+      console.log('[ChatPage-deleteThread] ✅ DELETE request successful:', response);
+      console.log('[ChatPage-deleteThread] 📋 Response data:', response);
       
       // Update cache through context
+      console.log('[ChatPage-deleteThread] 🔄 Removing thread from cache...');
       removeThread(threadId);
       
       // If this was the active thread, clear it
       if (activeThreadId === threadId) {
+        console.log('[ChatPage-deleteThread] 🔄 Clearing active thread (was deleted)');
         setActiveThreadId(null);
       }
       
+      console.log('[ChatPage-deleteThread] ✅ Thread deleted successfully');
       return true;
     } catch (error) {
       console.error('[ChatPage-deleteThread] ❌ Error deleting thread:', error);
+      console.error('[ChatPage-deleteThread] ❌ Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      });
       return false;
     }
   };
@@ -507,6 +521,28 @@ export default function ChatPage() {
       console.log('[ChatPage-delete] ✅ Thread deleted successfully');
     } else {
       console.error('[ChatPage-delete] ❌ Failed to delete thread');
+      alert('Failed to delete thread. Please try again.');
+    }
+  };
+
+  const handleDeleteWithEventHandling = async (e: React.MouseEvent, threadId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('[ChatPage-delete] 🔄 Delete button clicked for thread:', threadId);
+    console.log('[ChatPage-delete] 📋 Event target:', e.target);
+    console.log('[ChatPage-delete] 📋 Current target:', e.currentTarget);
+    
+    try {
+      const success = await deleteThreadFromPostgreSQL(threadId);
+      if (success) {
+        console.log('[ChatPage-delete] ✅ Thread deleted successfully');
+      } else {
+        console.error('[ChatPage-delete] ❌ Failed to delete thread');
+        alert('Failed to delete thread. Please try again.');
+      }
+    } catch (error) {
+      console.error('[ChatPage-delete] ❌ Error in delete handler:', error);
       alert('Failed to delete thread. Please try again.');
     }
   };
@@ -926,7 +962,7 @@ export default function ChatPage() {
         messages: { [threadId: string]: any[] };
         runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
         sentiments: { [threadId: string]: { [runId: string]: boolean } };
-      }>('/chat/all-messages', freshSession.id_token);
+      }>('/chat/all-messages-for-all-threads', freshSession.id_token);
       
       const freshMessages = response.messages[threadId] || [];
       console.log('[ChatPage-Recovery] 📄 Fresh messages from PostgreSQL:', freshMessages.length);
@@ -1138,9 +1174,10 @@ export default function ChatPage() {
                         <div className="truncate block leading-tight">{s.title || 'New Chat'}</div>
                       </button>
                       <button
-                        className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors"
+                        className="flex-shrink-0 ml-1 text-gray-400 hover:text-red-500 text-lg font-bold px-2 py-1 rounded transition-colors cursor-pointer"
                         title="Delete chat"
-                        onClick={() => handleDelete(s.thread_id)}
+                        onClick={(e) => handleDeleteWithEventHandling(e, s.thread_id)}
+                        style={{ pointerEvents: 'auto', userSelect: 'none' }}
                       >
                         ×
                       </button>
