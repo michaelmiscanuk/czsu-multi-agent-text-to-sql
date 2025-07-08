@@ -958,13 +958,15 @@ export default function ChatPage() {
       }
       
       // Get fresh data from API to check for new messages
+      // Use the single-thread endpoint for efficiency
+      console.log('[ChatPage-Recovery] 📡 Calling single-thread endpoint for recovery');
       const response = await authApiFetch<{
-        messages: { [threadId: string]: any[] };
-        runIds: { [threadId: string]: { run_id: string; prompt: string; timestamp: string }[] };
-        sentiments: { [threadId: string]: { [runId: string]: boolean } };
-      }>('/chat/all-messages-for-all-threads', freshSession.id_token);
+        messages: any[];
+        runIds: { run_id: string; prompt: string; timestamp: string }[];
+        sentiments: { [runId: string]: boolean };
+      }>(`/chat/all-messages-for-one-thread/${threadId}`, freshSession.id_token);
       
-      const freshMessages = response.messages[threadId] || [];
+      const freshMessages = response.messages || [];
       console.log('[ChatPage-Recovery] 📄 Fresh messages from PostgreSQL:', freshMessages.length);
       
       if (freshMessages.length > beforeMessageCount) {
@@ -974,8 +976,9 @@ export default function ChatPage() {
         setMessages(threadId, freshMessages);
         
         // Update run-ids and sentiments if available
-        if (response.runIds[threadId]) {
+        if (response.runIds) {
           console.log('[ChatPage-Recovery] 📝 Updating cached run-ids and sentiments');
+          // This part needs a new context function if we want to update runIds and sentiments from here
         }
         
         console.log('[ChatPage-Recovery] ✅ Chat recovered successfully - new messages are now visible');
