@@ -13,12 +13,14 @@ export interface ChatMessage {
   id: string;
   threadId: string;
   user: string;
-  content: string;
-  isUser: boolean;
   createdAt: number;
+  prompt?: string;
+  final_answer?: string;
+  queries_and_results?: [string, string][];
+  datasets_used?: string[];
+  top_chunks?: Array<{ content: string; metadata: Record<string, any> }>;
+  sql_query?: string;
   error?: string;
-  meta?: Record<string, any>;
-  queriesAndResults?: [string, string][];
   isLoading?: boolean;
   startedAt?: number;
   isError?: boolean;

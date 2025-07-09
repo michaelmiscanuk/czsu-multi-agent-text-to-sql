@@ -606,219 +606,195 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                         </div>
                     </div>
                 ) : (
-                    messages.map((message) => (
-                        <div key={message.id} className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} mb-6`}>
-                            <div className="flex flex-col max-w-2xl w-full">
-                                {/* Message Content */}
-                                <div
-                                    className={`transition-all duration-200 rounded-2xl px-6 py-4 w-full select-text shadow-lg group
-                                        ${message.isUser
-                                            ? 'light-blue-theme font-semibold hover:shadow-xl'
-                                            : message.isError
-                                                ? 'bg-red-50 border border-red-200 text-red-800 hover:shadow-xl hover:border-red-300'
-                                                : 'bg-white border border-blue-100 text-gray-800 hover:shadow-xl hover:border-blue-200'}
-                                    `}
-                                    style={{ 
-                                        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
-                                        fontSize: '0.97rem', 
-                                        lineHeight: 1.6, 
-                                        wordBreak: 'break-word', 
-                                        whiteSpace: 'pre-line' 
-                                    }}
-                                >
-                                    {message.isLoading && !message.content ? (
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-                                            <span className="text-gray-600">Analyzing your request...</span>
-                                        </div>
-                                    ) : (
-                                        message.content || (
-                                            // Fallback if content is empty but not in loading state
-                                            <span className="text-gray-400 text-xs italic">Waiting for response...</span>
-                                        )
-                                    )}
-                                    {message.isUser ? null : console.log('[FEEDBACK-DEBUG] Message meta:', JSON.stringify({
-                                        id: message.id,
-                                        has_meta: !!message.meta,
-                                        run_id: message.meta?.run_id || 'none',
-                                        meta_keys: message.meta ? Object.keys(message.meta) : []
-                                    }))}
-                                </div>
-                                {/* Dataset used and SQL button for AI answers */}
-                                {(() => {
-                                    // CRITICAL DEBUG: Log message state during render
-                                    if (!message.isUser && !message.isLoading) {
-                                        console.log('[MessageArea-render] 🔍 Rendering message:', message.id);
-                                        console.log('[MessageArea-render] 🔍 Message meta:', message.meta);
-                                        console.log('[MessageArea-render] 🔍 DatasetsUsed:', message.meta?.datasetsUsed);
-                                        console.log('[MessageArea-render] 🔍 DatasetsUsed length:', message.meta?.datasetsUsed?.length);
-                                        console.log('[MessageArea-render] 🔍 Condition check:', 
-                                            (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length));
-                                    }
-                                    
-                                    return !message.isUser && !message.isLoading && (message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length);
-                                })() && (
-                                    <div className="mt-3 flex items-center justify-between flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
-                                        <div className="flex items-center space-x-3 flex-wrap">
-                                            {/* Show multiple dataset codes if available */}
-                                            {message.meta?.datasetsUsed && message.meta.datasetsUsed.length > 0 ? (
-                                                <div className="flex items-center space-x-2 flex-wrap">
-                                                    <span className="text-xs text-gray-500 mr-1" style={{ marginLeft: '1rem' }}>Dataset{message.meta.datasetsUsed.length > 1 ? 's' : ''} used:</span>
-                                                    {message.meta.datasetsUsed.map((code: string, index: number) => (
-                                                        <Link
-                                                            key={index}
-                                                            href={`/data?table=${encodeURIComponent(code)}`}
-                                                            className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
-                                                            style={{ textDecoration: 'none' }}
-                                                        >
-                                                            {code}
-                                                        </Link>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                /* Fallback to old single dataset approach for backward compatibility */
-                                                (message.selectionCode || message.meta?.datasetUrl) && (
-                                                    <div>
-                                                        <span className="text-xs text-gray-500 mr-1" style={{ marginLeft: '1rem' }}>Dataset used:</span>
-                                                        <Link
-                                                            href={`/data?table=${encodeURIComponent(message.selectionCode || message.meta?.datasetUrl.replace('/datasets/', ''))}`}
-                                                            className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
-                                                            style={{ textDecoration: 'none' }}
-                                                        >
-                                                            {message.selectionCode || (message.meta?.datasetUrl ? message.meta.datasetUrl.replace('/datasets/', '') : '')}
-                                                        </Link>
+                    messages.map((message) => {
+                        // Determine if message is from user based on presence of prompt
+                        const isUser = !!message.prompt;
+                        const content = isUser ? message.prompt : message.final_answer;
+                        
+                        return (
+                            <div key={message.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-6`}>
+                                <div className="flex flex-col max-w-2xl w-full">
+                                    {/* Message Content */}
+                                    <div
+                                        className={`transition-all duration-200 rounded-2xl px-6 py-4 w-full select-text shadow-lg group
+                                            ${isUser
+                                                ? 'light-blue-theme font-semibold hover:shadow-xl'
+                                                : message.isError
+                                                    ? 'bg-red-50 border border-red-200 text-red-800 hover:shadow-xl hover:border-red-300'
+                                                    : 'bg-white border border-blue-100 text-gray-800 hover:shadow-xl hover:border-blue-200'}
+                                        `}
+                                        style={{ 
+                                            fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                            fontSize: '0.97rem', 
+                                            lineHeight: 1.6, 
+                                            wordBreak: 'break-word', 
+                                            whiteSpace: 'pre-line' 
+                                        }}
+                                    >
+                                        {message.isLoading && !content ? (
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+                                                <span className="text-gray-600">Analyzing your request...</span>
+                                            </div>
+                                        ) : (
+                                            content || (
+                                                <span className="text-gray-400 text-xs italic">Waiting for response...</span>
+                                            )
+                                        )}
+                                    </div>
+
+                                    {/* Dataset used and SQL button for AI answers */}
+                                    {!isUser && !message.isLoading && (message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
+                                        <div className="mt-3 flex items-center justify-between flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
+                                            <div className="flex items-center space-x-3 flex-wrap">
+                                                {/* Show datasets */}
+                                                {message.datasets_used && message.datasets_used.length > 0 && (
+                                                    <div className="flex items-center space-x-2 flex-wrap">
+                                                        <span className="text-xs text-gray-500 mr-1" style={{ marginLeft: '1rem' }}>Dataset{message.datasets_used.length > 1 ? 's' : ''} used:</span>
+                                                        {message.datasets_used.map((code: string, index: number) => (
+                                                            <Link
+                                                                key={index}
+                                                                href={`/data?table=${encodeURIComponent(code)}`}
+                                                                className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
+                                                                style={{ textDecoration: 'none' }}
+                                                            >
+                                                                {code}
+                                                            </Link>
+                                                        ))}
                                                     </div>
-                                                )
-                                            )}
-                                            {message.meta?.sqlQuery && (
-                                                <button
-                                                    className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
-                                                    onClick={() => onSQLClick(message.id)}
-                                                >
-                                                    SQL
-                                                </button>
-                                            )}
-                                            {message.meta?.topChunks && message.meta.topChunks.length > 0 && (
-                                                <button
-                                                    className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
-                                                    onClick={() => onPDFClick(message.id)}
-                                                >
-                                                    PDF
-                                                </button>
+                                                )}
+
+                                                {/* Action Buttons */}
+                                                {message.sql_query && (
+                                                    <button
+                                                        className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
+                                                        onClick={() => onSQLClick(message.id)}
+                                                    >
+                                                        SQL
+                                                    </button>
+                                                )}
+                                                {message.top_chunks && message.top_chunks.length > 0 && (
+                                                    <button
+                                                        className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
+                                                        onClick={() => onPDFClick(message.id)}
+                                                    >
+                                                        PDF
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            {/* Feedback component */}
+                                            {threadId && (
+                                                <FeedbackComponent
+                                                    messageId={message.id}
+                                                    runId={messageRunIds[message.id]}
+                                                    threadId={threadId}
+                                                    onFeedbackSubmit={handleFeedbackSubmit}
+                                                    onCommentSubmit={handleCommentSubmit}
+                                                    feedbackState={feedbackState}
+                                                    currentSentiment={getSentimentForRunId(messageRunIds[message.id] || '')}
+                                                    onSentimentUpdate={updateSentiment}
+                                                />
                                             )}
                                         </div>
-                                        
-                                        {/* Feedback component aligned to the right */}
-                                        {threadId && (
+                                    )}
+
+                                    {/* Show feedback even when no datasets/SQL */}
+                                    {!isUser && !message.isLoading && threadId && !(message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
+                                        <div className="mt-3 flex justify-end">
                                             <FeedbackComponent
                                                 messageId={message.id}
-                                                runId={message.meta?.run_id || messageRunIds[message.id]}
+                                                runId={messageRunIds[message.id]}
                                                 threadId={threadId}
                                                 onFeedbackSubmit={handleFeedbackSubmit}
                                                 onCommentSubmit={handleCommentSubmit}
                                                 feedbackState={feedbackState}
-                                                currentSentiment={getSentimentForRunId(message.meta?.run_id || messageRunIds[message.id] || '')}
+                                                currentSentiment={getSentimentForRunId(messageRunIds[message.id] || '')}
                                                 onSentimentUpdate={updateSentiment}
                                             />
-                                        )}
-                                        
-                                        {/* SQL Modal for this message */}
-                                        {openSQLModalForMsgId === message.id && (
-                                            <Modal open={true} onClose={onCloseSQLModal}>
-                                                <h2 className="text-lg font-bold mb-4">SQL Commands & Results</h2>
-                                                <div className="max-h-[60vh] overflow-y-auto pr-2 chat-scrollbar">
-                                                    {(() => {
-                                                        const uniqueQueriesAndResults = Array.from(
-                                                            new Map((message.queriesAndResults || []).map(([q, r]: [string, string]) => [q, [q, r]])).values()
-                                                        ) as [string, string][];
-                                                        if (uniqueQueriesAndResults.length === 0) {
-                                                            return <div className="text-gray-500">No SQL commands available.</div>;
-                                                        }
-                                                        return (
-                                                            <div className="space-y-6">
-                                                                {uniqueQueriesAndResults.map(([sql, result]: [string, string], idx: number) => (
-                                                                    <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
-                                                                        <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">SQL Command {idx + 1}</div>
-                                                                        <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-900">
-                                                                            {sql.split('\n').map((line: string, i: number) => (
-                                                                                <React.Fragment key={i}>
-                                                                                    {line}
-                                                                                    {i !== sql.split('\n').length - 1 && <br />}
-                                                                                </React.Fragment>
-                                                                            ))}
-                                                                        </div>
-                                                                        <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-700 border-t border-gray-200">Result</div>
-                                                                        <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-800">
-                                                                            {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                </div>
-                                            </Modal>
-                                        )}
+                                        </div>
+                                    )}
 
-                                        {/* PDF Modal for this message */}
-                                        {openPDFModalForMsgId === message.id && (
-                                            <Modal open={true} onClose={onClosePDFModal}>
-                                                <h2 className="text-lg font-bold mb-4">PDF Document Chunks</h2>
-                                                <div className="max-h-[60vh] overflow-y-auto pr-2 chat-scrollbar">
-                                                    {(() => {
-                                                        const topChunks = message.meta?.topChunks || [];
-                                                        if (topChunks.length === 0) {
-                                                            return <div className="text-gray-500">No PDF chunks available.</div>;
-                                                        }
-                                                        return (
-                                                            <div className="space-y-6">
-                                                                {topChunks.map((chunk: any, idx: number) => (
-                                                                    <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
-                                                                        <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">
-                                                                            PDF Chunk {idx + 1}
-                                                                            {chunk.source_file && (
-                                                                                <span className="ml-2 font-normal text-gray-600">
-                                                                                    , {chunk.source_file}
-                                                                                </span>
-                                                                            )}
-                                                                            {chunk.page_number && (
-                                                                                <span className="ml-1 font-normal text-gray-600">
-                                                                                    , page {chunk.page_number}
-                                                                                </span>
-                                                                            )}
-                                                                        </div>
-                                                                        <div className="p-3 text-xs whitespace-pre-line text-gray-800 leading-relaxed">
-                                                                            {chunk.page_content}
-                                                                        </div>
+                                    {/* SQL Modal */}
+                                    {openSQLModalForMsgId === message.id && (
+                                        <Modal open={true} onClose={onCloseSQLModal}>
+                                            <h2 className="text-lg font-bold mb-4">SQL Commands & Results</h2>
+                                            <div className="max-h-[60vh] overflow-y-auto pr-2 chat-scrollbar">
+                                                {(() => {
+                                                    const uniqueQueriesAndResults = Array.from(
+                                                        new Map((message.queries_and_results || []).map(([q, r]: [string, string]) => [q, [q, r]])).values()
+                                                    ) as [string, string][];
+                                                    if (uniqueQueriesAndResults.length === 0) {
+                                                        return <div className="text-gray-500">No SQL commands available.</div>;
+                                                    }
+                                                    return (
+                                                        <div className="space-y-6">
+                                                            {uniqueQueriesAndResults.map(([sql, result]: [string, string], idx: number) => (
+                                                                <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
+                                                                    <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">SQL Command {idx + 1}</div>
+                                                                    <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-900">
+                                                                        {sql.split('\n').map((line: string, i: number) => (
+                                                                            <React.Fragment key={i}>
+                                                                                {line}
+                                                                                {i !== sql.split('\n').length - 1 && <br />}
+                                                                            </React.Fragment>
+                                                                        ))}
                                                                     </div>
-                                                                ))}
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                </div>
-                                            </Modal>
-                                        )}
-                                    </div>
-                                )}
-                                
-                                {/* Show feedback component even when no datasets/SQL - for messages without metadata */}
-                                {!message.isUser && !message.isLoading && threadId && !(message.selectionCode || message.meta?.datasetUrl || message.meta?.datasetsUsed?.length || message.meta?.sqlQuery || message.meta?.topChunks?.length) && (
-                                    <div className="mt-3 flex justify-end">
-                                        <FeedbackComponent
-                                            messageId={message.id}
-                                            runId={message.meta?.run_id || messageRunIds[message.id]}
-                                            threadId={threadId}
-                                            onFeedbackSubmit={handleFeedbackSubmit}
-                                            onCommentSubmit={handleCommentSubmit}
-                                            feedbackState={feedbackState}
-                                            currentSentiment={getSentimentForRunId(message.meta?.run_id || messageRunIds[message.id] || '')}
-                                            onSentimentUpdate={updateSentiment}
-                                        />
-                                    </div>
-                                )}
+                                                                    <div className="bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-700 border-t border-gray-200">Result</div>
+                                                                    <div className="p-3 font-mono text-xs whitespace-pre-line text-gray-800">
+                                                                        {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        </Modal>
+                                    )}
+
+                                    {/* PDF Modal */}
+                                    {openPDFModalForMsgId === message.id && (
+                                        <Modal open={true} onClose={onClosePDFModal}>
+                                            <h2 className="text-lg font-bold mb-4">PDF Document Chunks</h2>
+                                            <div className="max-h-[60vh] overflow-y-auto pr-2 chat-scrollbar">
+                                                {(() => {
+                                                    const chunks = message.top_chunks || [];
+                                                    if (chunks.length === 0) {
+                                                        return <div className="text-gray-500">No PDF chunks available.</div>;
+                                                    }
+                                                    return (
+                                                        <div className="space-y-6">
+                                                            {chunks.map((chunk: any, idx: number) => (
+                                                                <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
+                                                                    <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">
+                                                                        PDF Chunk {idx + 1}
+                                                                        {chunk.source_file && (
+                                                                            <span className="ml-2 font-normal text-gray-600">
+                                                                                , {chunk.source_file}
+                                                                            </span>
+                                                                        )}
+                                                                        {chunk.page_number && (
+                                                                            <span className="ml-1 font-normal text-gray-600">
+                                                                                , page {chunk.page_number}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="p-3 text-xs whitespace-pre-line text-gray-800 leading-relaxed">
+                                                                        {chunk.page_content}
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        </Modal>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))
+                        );
+                    })
                 )}
                 
                 {/* New Chat Button at bottom of scrollable content */}

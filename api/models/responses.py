@@ -44,12 +44,14 @@ class ChatMessage(BaseModel):
     id: str
     threadId: str
     user: str
-    content: str
-    isUser: bool
     createdAt: int
+    prompt: Optional[str] = None
+    final_answer: Optional[str] = None
+    queries_and_results: Optional[List[List[str]]] = None
+    datasets_used: Optional[List[str]] = None
+    top_chunks: Optional[List[dict]] = None
+    sql_query: Optional[str] = None
     error: Optional[str] = None
-    meta: Optional[dict] = None
-    queriesAndResults: Optional[List[List[str]]] = None
     isLoading: Optional[bool] = None
     startedAt: Optional[int] = None
     isError: Optional[bool] = None 

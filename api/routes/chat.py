@@ -312,35 +312,6 @@ async def get_thread_messages_with_metadata(
             f"🔍 INTERACTION SUCCESS: Created {len(interactions)} complete interactions"
         )
 
-        # Get global metadata from latest checkpoint if needed
-        # Currently no global metadata needed since everything is now per-interaction
-
-        try:
-            print__chat_all_messages_debug(
-                f"🔍 Getting global state snapshot for thread: {thread_id}"
-            )
-            state_snapshot = await checkpointer.aget_tuple(config)
-
-            if state_snapshot and state_snapshot.checkpoint:
-                print__chat_all_messages_debug(
-                    f"🔍 State snapshot found for thread: {thread_id}"
-                )
-                # Future: Add any truly global metadata extraction here if needed
-            else:
-                print__chat_all_messages_debug(
-                    f"🔍 No state snapshot found for thread: {thread_id}"
-                )
-
-        except Exception as e:
-            print__chat_all_messages_debug(
-                f"⚠️ Could not get global metadata from checkpoint for thread {thread_id}: {e}"
-            )
-            print__chat_all_messages_debug(
-                f"🔍 Checkpoint metadata error type: {type(e).__name__}"
-            )
-            print__chat_all_messages_debug(
-                f"🔍 Checkpoint metadata error traceback: {traceback.format_exc()}"
-            )
 
         if not interactions:
             print__chat_all_messages_debug(
@@ -361,123 +332,40 @@ async def get_thread_messages_with_metadata(
                 f"🔍 Processing interaction {i+1}/{len(interactions)}: Step {interaction['step']}"
             )
 
-            # Add user message if prompt exists
-            if "prompt" in interaction:
-                message_counter += 1
-                user_message = ChatMessage(
-                    id=f"user_{message_counter}",
-                    threadId=thread_id,
-                    user=user_email,
-                    content=interaction["prompt"],
-                    isUser=True,
-                    createdAt=int(
-                        datetime.fromtimestamp(
-                            1700000000 + message_counter * 1000
-                        ).timestamp()
-                        * 1000
-                    ),
-                    error=None,
-                    meta=None,
-                    queriesAndResults=None,
-                    isLoading=False,
-                    startedAt=None,
-                    isError=False,
-                )
-                chat_messages.append(user_message)
-                print__chat_all_messages_debug(
-                    f"🔍 ADDED USER MESSAGE: Step {interaction['step']}: {interaction['prompt'][:50]}..."
-                )
+            message_counter += 1
+            chat_message = ChatMessage(
+                id=f"msg_{message_counter}",
+                threadId=thread_id,
+                user=user_email,
+                createdAt=int(
+                    datetime.fromtimestamp(
+                        1700000000 + message_counter * 1000
+                    ).timestamp()
+                    * 1000
+                ),
+                prompt=interaction.get("prompt"),
+                final_answer=interaction.get("final_answer"),
+                queries_and_results=interaction.get("queries_and_results"),
+                datasets_used=interaction.get("datasets_used"),
+                top_chunks=interaction.get("top_chunks"),
+                sql_query=None,
+                error=None,
+                isLoading=False,
+                startedAt=None,
+                isError=False,
+            )
 
-            # Add AI message if final_answer exists
-            if "final_answer" in interaction:
-                message_counter += 1
+            # Extract SQL query from queries_and_results if available
+            if chat_message.queries_and_results and len(chat_message.queries_and_results) > 0:
+                try:
+                    chat_message.sql_query = chat_message.queries_and_results[0][0] if chat_message.queries_and_results[0] else None
+                except (IndexError, TypeError):
+                    chat_message.sql_query = None
 
-                # Create meta information for this specific interaction
-                meta_info = {}
-
-                # Add interaction-specific metadata
-                if "queries_and_results" in interaction:
-                    meta_info["queriesAndResults"] = interaction["queries_and_results"]
-                    print__chat_all_messages_debug(
-                        "🔍 Added interaction-specific queries and results to meta"
-                    )
-
-                # Add per-interaction datasets used
-                if "datasets_used" in interaction:
-                    meta_info["datasetsUsed"] = interaction["datasets_used"]
-                    print__chat_all_messages_debug(
-                        f"🔍 Added {len(interaction['datasets_used'])} datasets to meta for this interaction"
-                    )
-
-                # Add per-interaction top chunks
-                if "top_chunks" in interaction:
-                    meta_info["topChunks"] = interaction["top_chunks"]
-                    print__chat_all_messages_debug(
-                        f"🔍 Added {len(interaction['top_chunks'])} chunks to meta for this interaction"
-                    )
-
-                # Add global metadata (applies to all AI messages)
-                # Removed top_chunks from here as it's now per-interaction
-
-                # Extract SQL query from this interaction's queries_and_results
-                sql_query = None
-                if (
-                    "queries_and_results" in interaction
-                    and interaction["queries_and_results"]
-                ):
-                    try:
-                        # Get the first query from this interaction's queries_and_results
-                        if (
-                            isinstance(interaction["queries_and_results"], list)
-                            and len(interaction["queries_and_results"]) > 0
-                        ):
-                            sql_query = (
-                                interaction["queries_and_results"][0][0]
-                                if interaction["queries_and_results"][0]
-                                else None
-                            )
-                        print__chat_all_messages_debug(
-                            f"🔍 SQL query extracted from interaction: {'Yes' if sql_query else 'No'}"
-                        )
-                    except (IndexError, TypeError) as e:
-                        print__chat_all_messages_debug(
-                            f"🔍 Could not extract SQL query from interaction: {e}"
-                        )
-
-                if sql_query:
-                    meta_info["sqlQuery"] = sql_query
-                    print__chat_all_messages_debug("🔍 Added SQL query to meta")
-
-                meta_info["source"] = source_context
-
-                # Use interaction-specific queries_and_results for frontend
-                queries_results_for_frontend = interaction.get(
-                    "queries_and_results", None
-                )
-
-                ai_message = ChatMessage(
-                    id=f"ai_{message_counter}",
-                    threadId=thread_id,
-                    user="AI",
-                    content=interaction["final_answer"],
-                    isUser=False,
-                    createdAt=int(
-                        datetime.fromtimestamp(
-                            1700000000 + message_counter * 1000
-                        ).timestamp()
-                        * 1000
-                    ),
-                    error=None,
-                    meta=meta_info if meta_info else None,
-                    queriesAndResults=queries_results_for_frontend,
-                    isLoading=False,
-                    startedAt=None,
-                    isError=False,
-                )
-                chat_messages.append(ai_message)
-                print__chat_all_messages_debug(
-                    f"🔍 ADDED AI MESSAGE: Step {interaction['step']}: {interaction['final_answer'][:50]}..."
-                )
+            chat_messages.append(chat_message)
+            print__chat_all_messages_debug(
+                f"🔍 ADDED MESSAGE: Step {interaction['step']}: prompt={interaction.get('prompt', '')[:50]} final_answer={interaction.get('final_answer', '')[:50]}..."
+            )
 
         print__chat_all_messages_debug(
             f"✅ Processed {len(chat_messages)} messages for thread {thread_id}"

@@ -11,28 +11,6 @@ import { API_CONFIG, authApiFetch } from '@/lib/api';
 import { useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
-interface Message {
-  id: number;
-  content: string;
-  isUser: boolean;
-  type: string;
-  isLoading?: boolean;
-  startedAt?: number;
-  isError?: boolean;
-  selectionCode?: string | null;
-  queriesAndResults?: [string, string][];
-  meta?: {
-    datasetUrl?: string;
-    datasetsUsed?: string[];  // Array of dataset codes actually used in queries
-    sqlQuery?: string;
-    run_id?: string;
-    topChunks?: Array<{
-      content: string;
-      metadata: Record<string, any>;
-    }>;
-  };
-}
-
 const INITIAL_MESSAGE = [
   {
     id: 1,
@@ -608,7 +586,7 @@ export default function ChatPage() {
       console.log('🔍 print__analysis_tracing_debug: 09 - EXISTING THREAD: Using existing thread ID:', currentThreadId);
       // Check if existing thread needs title update
       const currentThread = threads.find(t => t.thread_id === currentThreadId);
-      const currentMessages = messages.filter(msg => msg.isUser); // Count only user messages
+      const currentMessages = messages.filter(msg => msg.user === userEmail); // Count only user messages
       
       // Update title if:
       // 1. Current title is generic ("New Chat" or empty)
@@ -637,9 +615,16 @@ export default function ChatPage() {
       id: uuidv4(),
       threadId: currentThreadId,
       user: userEmail,
-      content: messageText,
-      isUser: true,
       createdAt: Date.now(),
+      prompt: messageText,
+      final_answer: messageText,
+      queries_and_results: [],
+      datasets_used: [],
+      sql_query: undefined,
+      top_chunks: [],
+      isLoading: false,
+      isError: false,
+      error: undefined
     };
 
     addMessage(currentThreadId, userMessage);
@@ -651,11 +636,16 @@ export default function ChatPage() {
       id: loadingMessageId,
       threadId: currentThreadId,
       user: 'assistant',
-      content: '',
-      isUser: false,
       createdAt: Date.now(),
+      prompt: '',
+      final_answer: '',
+      queries_and_results: [],
+      datasets_used: [],
+      sql_query: undefined,
+      top_chunks: [],
       isLoading: true,
-      startedAt: Date.now()
+      isError: false,
+      error: undefined
     };
 
     addMessage(currentThreadId, loadingMessage);
@@ -790,31 +780,27 @@ export default function ChatPage() {
         id: loadingMessageId,
         threadId: currentThreadId,
         user: 'assistant',
-        content: data.result,
-        isUser: false,
         createdAt: Date.now(),
+        prompt: messageText,
+        final_answer: data.result,
+        queries_and_results: data.queries_and_results || [],
+        datasets_used: data.top_selection_codes || [],
+        sql_query: data.sql || undefined,
+        top_chunks: data.top_chunks || [],
         isLoading: false,
-        queriesAndResults: data.queries_and_results || [],
-        meta: {
-          datasetsUsed: data.top_selection_codes || [],
-          sqlQuery: data.sql || null,
-          iteration: data.iteration || 0,
-          maxIterations: data.max_iterations || 2,
-          datasetUrl: data.datasetUrl || null,
-          runId: data.run_id,
-          topChunks: data.top_chunks || []
-        }
+        isError: false,
+        error: undefined
       };
 
       // Debug logging for message meta
-      console.log('[ChatPage-send] 📋 Message meta topChunks:', responseMessage.meta?.topChunks?.length || 0);
-      if (responseMessage.meta && responseMessage.meta.topChunks && responseMessage.meta.topChunks.length > 0) {
-        console.log('[ChatPage-send] 📄 Message meta first chunk:', responseMessage.meta.topChunks[0].content?.substring(0, 100) + '...');
+      console.log('[ChatPage-send] 📋 Message meta topChunks:', responseMessage.top_chunks?.length || 0);
+      if (responseMessage.top_chunks && responseMessage.top_chunks.length > 0) {
+        console.log('[ChatPage-send] 📄 Message meta first chunk:', responseMessage.top_chunks[0].content?.substring(0, 100) + '...');
       }
 
       // CRITICAL DEBUG: Log datasetsUsed before update
-      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.meta?.datasetsUsed);
-      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full meta:', JSON.stringify(responseMessage.meta, null, 2));
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.datasets_used);
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full meta:', JSON.stringify(responseMessage, null, 2));
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - loadingMessageId:', loadingMessageId);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - currentThreadId:', currentThreadId);
 
@@ -826,8 +812,8 @@ export default function ChatPage() {
         const updatedMessage = currentMessages.find(msg => msg.id === loadingMessageId);
         console.log('[ChatPage-send] 🔍 AFTER updateMessage - found updated message:', !!updatedMessage);
         if (updatedMessage) {
-          console.log('[ChatPage-send] 🔍 AFTER updateMessage - datasetsUsed:', updatedMessage.meta?.datasetsUsed);
-          console.log('[ChatPage-send] 🔍 AFTER updateMessage - full meta:', JSON.stringify(updatedMessage.meta, null, 2));
+          console.log('[ChatPage-send] 🔍 AFTER updateMessage - datasetsUsed:', updatedMessage.datasets_used);
+          console.log('[ChatPage-send] 🔍 AFTER updateMessage - full meta:', JSON.stringify(updatedMessage, null, 2));
         } else {
           console.log('[ChatPage-send] ⚠️ AFTER updateMessage - message not found with ID:', loadingMessageId);
           console.log('[ChatPage-send] ⚠️ AFTER updateMessage - current message IDs:', currentMessages.map(m => m.id));
@@ -865,9 +851,13 @@ export default function ChatPage() {
           id: loadingMessageId,
           threadId: currentThreadId,
           user: 'assistant',
-          content: 'I apologize, but I encountered an issue while processing your request. This might be due to high server load. Please try again, or refresh the page to see if your response was saved.',
-          isUser: false,
           createdAt: Date.now(),
+          prompt: messageText,
+          final_answer: 'I apologize, but I encountered an issue while processing your request. This might be due to high server load. Please try again, or refresh the page to see if your response was saved.',
+          queries_and_results: [],
+          datasets_used: [],
+          sql_query: undefined,
+          top_chunks: [],
           isLoading: false,
           isError: true,
           error: error instanceof Error ? error.message : 'Unknown error'
