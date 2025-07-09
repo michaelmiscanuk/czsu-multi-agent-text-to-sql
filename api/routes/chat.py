@@ -190,13 +190,11 @@ async def get_thread_messages_with_metadata(
             key=lambda x: x.metadata.get("step", 0) if x.metadata else 0
         )
 
-        # Extract all metadata in one pass through the checkpoints
-        prompts = []
-        answers = []
-        all_queries_and_results = []
+        # Extract all interactions in one pass through the checkpoints
+        interactions = []
 
         print__chat_all_messages_debug(
-            f"🔍 METADATA EXTRACTION: Extracting all metadata from {len(checkpoint_tuples)} checkpoints"
+            f"🔍 INTERACTION EXTRACTION: Extracting complete interactions from {len(checkpoint_tuples)} checkpoints"
         )
 
         for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
@@ -204,74 +202,122 @@ async def get_thread_messages_with_metadata(
             step = metadata.get("step", 0)
             writes = metadata.get("writes", {})
 
-            # Extract user prompts from metadata.writes.__start__.prompt
+            interaction = {
+                "step": step,
+                "checkpoint_index": checkpoint_index,
+            }
+
+            # Extract user prompt from metadata.writes.__start__.prompt
             if isinstance(writes, dict) and "__start__" in writes:
                 start_data = writes["__start__"]
                 if isinstance(start_data, dict) and "prompt" in start_data:
                     prompt = start_data["prompt"]
                     if prompt and prompt.strip():
-                        prompts.append(
-                            {
-                                "content": prompt.strip(),
-                                "step": step,
-                                "checkpoint_index": checkpoint_index,
-                            }
-                        )
+                        interaction["prompt"] = prompt.strip()
                         print__chat_all_messages_debug(
                             f"🔍 USER PROMPT FOUND: Step {step}: {prompt[:50]}..."
                         )
 
-            # Extract AI answers and queries_and_results from metadata.writes.submit_final_answer
+            # Extract AI answer and all metadata from metadata.writes.submit_final_answer
             if isinstance(writes, dict) and "submit_final_answer" in writes:
                 submit_data = writes["submit_final_answer"]
                 if isinstance(submit_data, dict):
-                    # Extract AI answers
+                    # Extract final answer
                     if "final_answer" in submit_data:
                         final_answer = submit_data["final_answer"]
                         if final_answer and final_answer.strip():
-                            answers.append(
-                                {
-                                    "content": final_answer.strip(),
-                                    "step": step,
-                                    "checkpoint_index": checkpoint_index,
-                                }
-                            )
+                            interaction["final_answer"] = final_answer.strip()
                             print__chat_all_messages_debug(
                                 f"🔍 AI ANSWER FOUND: Step {step}: {final_answer[:50]}..."
                             )
 
-                    # Extract queries and results
+                    # Extract queries and results (only for this interaction)
                     if "queries_and_results" in submit_data:
                         queries_and_results = submit_data["queries_and_results"]
                         if queries_and_results:
-                            # If it's a list, extend; if it's a single item, append
-                            if isinstance(queries_and_results, list):
-                                all_queries_and_results.extend(queries_and_results)
+                            interaction["queries_and_results"] = queries_and_results
+                            print__chat_all_messages_debug(
+                                f"🔍 QUERIES FOUND: Step {step}: Found queries and results for this interaction"
+                            )
+
+                    # Extract datasets used from top_selection_codes (only for this interaction)
+                    if "top_selection_codes" in submit_data:
+                        top_selection_codes = submit_data["top_selection_codes"]
+                        if top_selection_codes:
+                            interaction["datasets_used"] = top_selection_codes
+                            print__chat_all_messages_debug(
+                                f"🔍 DATASETS FOUND: Step {step}: Found {len(top_selection_codes)} datasets for this interaction"
+                            )
+
+                    # Extract top chunks (only for this interaction)
+                    if "top_chunks" in submit_data:
+                        top_chunks_raw = submit_data["top_chunks"]
+                        if top_chunks_raw:
+                            chunks_processed = []
+                            for chunk in top_chunks_raw:
+                                try:
+                                    # Extract page_content and metadata
+                                    chunk_data = {
+                                        "page_content": (
+                                            chunk.page_content
+                                            if hasattr(chunk, "page_content")
+                                            else chunk.get("page_content", "")
+                                        )
+                                    }
+
+                                    # Extract metadata (source_file, page_number, etc.)
+                                    metadata = (
+                                        chunk.metadata
+                                        if hasattr(chunk, "metadata")
+                                        else chunk.get("metadata", {})
+                                    )
+
+                                    if metadata:
+                                        if "source_file" in metadata:
+                                            chunk_data["source_file"] = metadata[
+                                                "source_file"
+                                            ]
+                                        if "page_number" in metadata:
+                                            chunk_data["page_number"] = metadata[
+                                                "page_number"
+                                            ]
+                                        # Add any other metadata fields that might be useful
+                                        chunk_data["metadata"] = metadata
+
+                                    chunks_processed.append(chunk_data)
+
+                                except Exception as chunk_error:
+                                    print__chat_all_messages_debug(
+                                        f"🔍 Error processing chunk: {chunk_error}"
+                                    )
+                                    continue
+
+                            if chunks_processed:
+                                interaction["top_chunks"] = chunks_processed
                                 print__chat_all_messages_debug(
-                                    f"🔍 QUERIES FOUND: Step {step}: Found {len(queries_and_results)} queries and results"
-                                )
-                            else:
-                                all_queries_and_results.append(queries_and_results)
-                                print__chat_all_messages_debug(
-                                    f"🔍 QUERIES FOUND: Step {step}: Found 1 query and result"
+                                    f"🔍 CHUNKS FOUND: Step {step}: Found {len(chunks_processed)} chunks for this interaction"
                                 )
 
-        # Sort prompts and answers by step number
-        prompts.sort(key=lambda x: x["step"])
-        answers.sort(key=lambda x: x["step"])
+                    # Extract other metadata that might be in submit_final_answer
+                    # (This is where we could extract other per-interaction metadata)
+
+            # Only add interaction if it has either prompt or final_answer
+            if "prompt" in interaction or "final_answer" in interaction:
+                interactions.append(interaction)
+
+        # Sort interactions by step number (chronological order)
+        interactions.sort(key=lambda x: x["step"])
 
         print__chat_all_messages_debug(
-            f"🔍 MESSAGE PAIRING: Found {len(prompts)} prompts, {len(answers)} answers, {len(all_queries_and_results)} queries and results"
+            f"🔍 INTERACTION SUCCESS: Created {len(interactions)} complete interactions"
         )
 
-        # Get additional metadata from latest checkpoint (datasets, SQL query, PDF chunks)
-        datasets_used = []
-        sql_query = None
-        top_chunks = []
+        # Get global metadata from latest checkpoint if needed
+        # Currently no global metadata needed since everything is now per-interaction
 
         try:
             print__chat_all_messages_debug(
-                f"🔍 Getting state snapshot for thread: {thread_id}"
+                f"🔍 Getting global state snapshot for thread: {thread_id}"
             )
             state_snapshot = await checkpointer.aget_tuple(config)
 
@@ -279,48 +325,7 @@ async def get_thread_messages_with_metadata(
                 print__chat_all_messages_debug(
                     f"🔍 State snapshot found for thread: {thread_id}"
                 )
-                channel_values = state_snapshot.checkpoint.get("channel_values", {})
-                top_selection_codes = channel_values.get("top_selection_codes", [])
-                datasets_used = top_selection_codes
-                print__chat_all_messages_debug(
-                    f"🔍 Found {len(datasets_used)} datasets used"
-                )
-
-                # Get PDF chunks
-                checkpoint_top_chunks = channel_values.get("top_chunks", [])
-                print__chat_all_messages_debug(
-                    f"🔍 Found {len(checkpoint_top_chunks)} PDF chunks in checkpoint"
-                )
-                if checkpoint_top_chunks:
-                    for j, chunk in enumerate(checkpoint_top_chunks):
-                        print__chat_all_messages_debug(
-                            f"🔍 Processing PDF chunk {j+1}/{len(checkpoint_top_chunks)}"
-                        )
-                        chunk_data = {
-                            "content": (
-                                chunk.page_content
-                                if hasattr(chunk, "page_content")
-                                else str(chunk)
-                            ),
-                            "metadata": (
-                                chunk.metadata if hasattr(chunk, "metadata") else {}
-                            ),
-                        }
-                        top_chunks.append(chunk_data)
-                    print__chat_all_messages_debug(
-                        f"🔍 Processed {len(top_chunks)} PDF chunks"
-                    )
-
-                # Extract SQL query from queries and results
-                if all_queries_and_results:
-                    sql_query = (
-                        all_queries_and_results[-1][0]
-                        if all_queries_and_results[-1]
-                        else None
-                    )
-                    print__chat_all_messages_debug(
-                        f"🔍 SQL query extracted: {'Yes' if sql_query else 'No'}"
-                    )
+                # Future: Add any truly global metadata extraction here if needed
             else:
                 print__chat_all_messages_debug(
                     f"🔍 No state snapshot found for thread: {thread_id}"
@@ -328,7 +333,7 @@ async def get_thread_messages_with_metadata(
 
         except Exception as e:
             print__chat_all_messages_debug(
-                f"⚠️ Could not get datasets/SQL/chunks from checkpoint for thread {thread_id}: {e}"
+                f"⚠️ Could not get global metadata from checkpoint for thread {thread_id}: {e}"
             )
             print__chat_all_messages_debug(
                 f"🔍 Checkpoint metadata error type: {type(e).__name__}"
@@ -337,131 +342,142 @@ async def get_thread_messages_with_metadata(
                 f"🔍 Checkpoint metadata error traceback: {traceback.format_exc()}"
             )
 
-        # Create conversation messages by pairing prompts and answers
-        conversation_messages = []
-        message_counter = 0
-
-        # Pair prompts with answers based on order
-        for i in range(max(len(prompts), len(answers))):
-            # Add user prompt if available
-            if i < len(prompts):
-                prompt = prompts[i]
-                message_counter += 1
-                user_message = {
-                    "id": f"user_{message_counter}",
-                    "content": prompt["content"],
-                    "is_user": True,
-                    "timestamp": datetime.fromtimestamp(
-                        1700000000 + message_counter * 1000
-                    ),
-                    "checkpoint_order": prompt["checkpoint_index"],
-                    "message_order": message_counter,
-                    "step": prompt["step"],
-                }
-                conversation_messages.append(user_message)
-                print__chat_all_messages_debug(
-                    f"🔍 ADDED USER MESSAGE: Step {prompt['step']}: {prompt['content'][:50]}..."
-                )
-
-            # Add AI response if available
-            if i < len(answers):
-                answer = answers[i]
-                message_counter += 1
-                ai_message = {
-                    "id": f"ai_{message_counter}",
-                    "content": answer["content"],
-                    "is_user": False,
-                    "timestamp": datetime.fromtimestamp(
-                        1700000000 + message_counter * 1000
-                    ),
-                    "checkpoint_order": answer["checkpoint_index"],
-                    "message_order": message_counter,
-                    "step": answer["step"],
-                }
-                conversation_messages.append(ai_message)
-                print__chat_all_messages_debug(
-                    f"🔍 ADDED AI MESSAGE: Step {answer['step']}: {answer['content'][:50]}..."
-                )
-
-        print__chat_all_messages_debug(
-            f"🔍 CONVERSATION SUCCESS: Created {len(conversation_messages)} conversation messages in proper order"
-        )
-
-        if not conversation_messages:
+        if not interactions:
             print__chat_all_messages_debug(
-                f"⚠ No messages found for thread {thread_id}"
+                f"⚠ No interactions found for thread {thread_id}"
             )
             return []
 
-        # Convert to ChatMessage objects with all metadata
+        # Convert interactions to ChatMessage objects
         chat_messages = []
+        message_counter = 0
+
         print__chat_all_messages_debug(
-            f"🔍 Converting {len(conversation_messages)} stored messages to frontend format"
+            f"🔍 Converting {len(interactions)} interactions to ChatMessage objects"
         )
 
-        for i, stored_msg in enumerate(conversation_messages):
+        for i, interaction in enumerate(interactions):
             print__chat_all_messages_debug(
-                f"🔍 Processing stored message {i+1}/{len(conversation_messages)}"
+                f"🔍 Processing interaction {i+1}/{len(interactions)}: Step {interaction['step']}"
             )
-            # Create meta information for AI messages
-            meta_info = {}
-            if not stored_msg["is_user"]:
-                print__chat_all_messages_debug(
-                    "🔍 Processing AI message - adding metadata"
+
+            # Add user message if prompt exists
+            if "prompt" in interaction:
+                message_counter += 1
+                user_message = ChatMessage(
+                    id=f"user_{message_counter}",
+                    threadId=thread_id,
+                    user=user_email,
+                    content=interaction["prompt"],
+                    isUser=True,
+                    createdAt=int(
+                        datetime.fromtimestamp(
+                            1700000000 + message_counter * 1000
+                        ).timestamp()
+                        * 1000
+                    ),
+                    error=None,
+                    meta=None,
+                    queriesAndResults=None,
+                    isLoading=False,
+                    startedAt=None,
+                    isError=False,
                 )
-                if all_queries_and_results:
-                    meta_info["queriesAndResults"] = all_queries_and_results
+                chat_messages.append(user_message)
+                print__chat_all_messages_debug(
+                    f"🔍 ADDED USER MESSAGE: Step {interaction['step']}: {interaction['prompt'][:50]}..."
+                )
+
+            # Add AI message if final_answer exists
+            if "final_answer" in interaction:
+                message_counter += 1
+
+                # Create meta information for this specific interaction
+                meta_info = {}
+
+                # Add interaction-specific metadata
+                if "queries_and_results" in interaction:
+                    meta_info["queriesAndResults"] = interaction["queries_and_results"]
                     print__chat_all_messages_debug(
-                        "🔍 Added queries and results to meta"
+                        "🔍 Added interaction-specific queries and results to meta"
                     )
-                if datasets_used:
-                    meta_info["datasetsUsed"] = datasets_used
+
+                # Add per-interaction datasets used
+                if "datasets_used" in interaction:
+                    meta_info["datasetsUsed"] = interaction["datasets_used"]
                     print__chat_all_messages_debug(
-                        f"🔍 Added {len(datasets_used)} datasets to meta"
+                        f"🔍 Added {len(interaction['datasets_used'])} datasets to meta for this interaction"
                     )
+
+                # Add per-interaction top chunks
+                if "top_chunks" in interaction:
+                    meta_info["topChunks"] = interaction["top_chunks"]
+                    print__chat_all_messages_debug(
+                        f"🔍 Added {len(interaction['top_chunks'])} chunks to meta for this interaction"
+                    )
+
+                # Add global metadata (applies to all AI messages)
+                # Removed top_chunks from here as it's now per-interaction
+
+                # Extract SQL query from this interaction's queries_and_results
+                sql_query = None
+                if (
+                    "queries_and_results" in interaction
+                    and interaction["queries_and_results"]
+                ):
+                    try:
+                        # Get the first query from this interaction's queries_and_results
+                        if (
+                            isinstance(interaction["queries_and_results"], list)
+                            and len(interaction["queries_and_results"]) > 0
+                        ):
+                            sql_query = (
+                                interaction["queries_and_results"][0][0]
+                                if interaction["queries_and_results"][0]
+                                else None
+                            )
+                        print__chat_all_messages_debug(
+                            f"🔍 SQL query extracted from interaction: {'Yes' if sql_query else 'No'}"
+                        )
+                    except (IndexError, TypeError) as e:
+                        print__chat_all_messages_debug(
+                            f"🔍 Could not extract SQL query from interaction: {e}"
+                        )
+
                 if sql_query:
                     meta_info["sqlQuery"] = sql_query
                     print__chat_all_messages_debug("🔍 Added SQL query to meta")
-                if top_chunks:
-                    meta_info["topChunks"] = top_chunks
-                    print__chat_all_messages_debug(
-                        f"🔍 Added {len(top_chunks)} chunks to meta"
-                    )
+
                 meta_info["source"] = source_context
-            else:
-                print__chat_all_messages_debug(
-                    "🔍 Processing user message - no metadata needed"
+
+                # Use interaction-specific queries_and_results for frontend
+                queries_results_for_frontend = interaction.get(
+                    "queries_and_results", None
                 )
 
-            queries_results_for_frontend = None
-            if not stored_msg["is_user"] and all_queries_and_results:
-                queries_results_for_frontend = all_queries_and_results
-                print__chat_all_messages_debug(
-                    "🔍 Set queries_results_for_frontend for AI message"
+                ai_message = ChatMessage(
+                    id=f"ai_{message_counter}",
+                    threadId=thread_id,
+                    user="AI",
+                    content=interaction["final_answer"],
+                    isUser=False,
+                    createdAt=int(
+                        datetime.fromtimestamp(
+                            1700000000 + message_counter * 1000
+                        ).timestamp()
+                        * 1000
+                    ),
+                    error=None,
+                    meta=meta_info if meta_info else None,
+                    queriesAndResults=queries_results_for_frontend,
+                    isLoading=False,
+                    startedAt=None,
+                    isError=False,
                 )
-
-            is_user_flag = stored_msg["is_user"]
-            print__chat_all_messages_debug(
-                f"🔍 Creating ChatMessage: isUser={is_user_flag}"
-            )
-
-            chat_message = ChatMessage(
-                id=stored_msg["id"],
-                threadId=thread_id,
-                user=user_email if is_user_flag else "AI",
-                content=stored_msg["content"],
-                isUser=is_user_flag,
-                createdAt=int(stored_msg["timestamp"].timestamp() * 1000),
-                error=None,
-                meta=meta_info if meta_info else None,
-                queriesAndResults=queries_results_for_frontend,
-                isLoading=False,
-                startedAt=None,
-                isError=False,
-            )
-
-            chat_messages.append(chat_message)
-            print__chat_all_messages_debug("🔍 ChatMessage created and added to list")
+                chat_messages.append(ai_message)
+                print__chat_all_messages_debug(
+                    f"🔍 ADDED AI MESSAGE: Step {interaction['step']}: {interaction['final_answer'][:50]}..."
+                )
 
         print__chat_all_messages_debug(
             f"✅ Processed {len(chat_messages)} messages for thread {thread_id}"
@@ -764,290 +780,78 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
 async def get_all_chat_messages_for_one_thread(
     thread_id: str, user=Depends(get_current_user)
 ) -> Dict:
-    """Get all chat messages for a specific thread using the same logic as bulk loading."""
+    """Get all chat messages for a specific thread, packaged in a dictionary with metadata."""
 
     print__chat_all_messages_one_thread_debug(
         "🔍 CHAT_SINGLE_THREAD ENDPOINT - ENTRY POINT"
     )
 
     user_email = user["email"]
-    print__chat_all_messages_one_thread_debug(f"🔍 User email extracted: {user_email}")
     print__chat_all_messages_one_thread_debug(
         f"📥 SINGLE THREAD REQUEST: Loading chat messages for thread: {thread_id}, user: {user_email}"
     )
 
-    # Check if we have a recent cached result
-    cache_key = f"single_thread_{thread_id}_{user_email}"
-    current_time = time.time()
-    print__chat_all_messages_one_thread_debug(f"🔍 Cache key: {cache_key}")
-    print__chat_all_messages_one_thread_debug(f"🔍 Current time: {current_time}")
+    try:
+        checkpointer = await get_healthy_checkpointer()
 
-    if cache_key in _bulk_loading_cache:
-        print__chat_all_messages_one_thread_debug("🔍 Cache entry found for thread")
-        cached_data, cache_time = _bulk_loading_cache[cache_key]
-        cache_age = current_time - cache_time
-        print__chat_all_messages_one_thread_debug(
-            f"🔍 Cache age: {cache_age:.1f}s (timeout: {BULK_CACHE_TIMEOUT}s)"
+        # Get all messages and their per-interaction metadata
+        chat_messages = await get_thread_messages_with_metadata(
+            checkpointer, thread_id, user_email, "single_thread_processing"
         )
 
-        if cache_age < BULK_CACHE_TIMEOUT:
-            print__chat_all_messages_one_thread_debug(
-                f"✅ CACHE HIT: Returning cached thread data for {thread_id} (age: {cache_age:.1f}s)"
-            )
-
-            # Return cached data with appropriate headers
-            response = JSONResponse(content=cached_data)
-            response.headers["Cache-Control"] = (
-                f"public, max-age={int(BULK_CACHE_TIMEOUT - cache_age)}"
-            )
-            response.headers["ETag"] = f"thread-{thread_id}-{int(cache_time)}"
-            print__chat_all_messages_one_thread_debug(
-                "🔍 CHAT_SINGLE_THREAD ENDPOINT - CACHE HIT EXIT"
-            )
-            return response
-        else:
-            print__chat_all_messages_one_thread_debug(
-                f"⏰ CACHE EXPIRED: Cached data too old ({cache_age:.1f}s), will refresh"
-            )
-            del _bulk_loading_cache[cache_key]
-            print__chat_all_messages_one_thread_debug("🔍 Expired cache entry deleted")
-    else:
-        print__chat_all_messages_one_thread_debug("🔍 No cache entry found for thread")
-
-    # Use a lock to prevent multiple simultaneous requests for the same thread
-    lock_key = f"{thread_id}_{user_email}"
-    print__chat_all_messages_one_thread_debug(
-        f"🔍 Attempting to acquire lock for thread: {lock_key}"
-    )
-    async with _bulk_loading_locks[lock_key]:
-        print__chat_all_messages_one_thread_debug(
-            f"🔒 Lock acquired for thread: {lock_key}"
-        )
-
-        # Double-check cache after acquiring lock (another request might have completed)
-        if cache_key in _bulk_loading_cache:
-            print__chat_all_messages_one_thread_debug(
-                "🔍 Double-checking cache after lock acquisition"
-            )
-            cached_data, cache_time = _bulk_loading_cache[cache_key]
-            cache_age = current_time - cache_time
-            if cache_age < BULK_CACHE_TIMEOUT:
-                print__chat_all_messages_one_thread_debug(
-                    f"✅ CACHE HIT (after lock): Returning cached thread data for {thread_id}"
+        # Get run-ids and sentiments for the entire thread
+        thread_run_ids = []
+        thread_sentiments = {}
+        async with get_direct_connection() as conn:
+            async with conn.cursor() as cur:
+                await cur.execute(
+                    """
+                    SELECT run_id, prompt, timestamp, sentiment
+                    FROM users_threads_runs 
+                    WHERE email = %s AND thread_id = %s
+                    ORDER BY timestamp ASC
+                """,
+                    (user_email, thread_id),
                 )
-                print__chat_all_messages_one_thread_debug(
-                    "🔍 CHAT_SINGLE_THREAD ENDPOINT - CACHE HIT AFTER LOCK EXIT"
+                rows = await cur.fetchall()
+
+            for row in rows:
+                run_id, prompt, timestamp, sentiment = row
+                thread_run_ids.append(
+                    {
+                        "run_id": run_id,
+                        "prompt": prompt,
+                        "timestamp": timestamp.isoformat(),
+                    }
                 )
-                return cached_data
-            else:
-                print__chat_all_messages_one_thread_debug(
-                    "🔍 Cache still expired after lock, proceeding with fresh request"
-                )
+                if sentiment is not None:
+                    thread_sentiments[run_id] = sentiment
+
+        # Serialize ChatMessage objects to dictionaries for the final JSON response
+        chat_messages_serialized = [
+            msg.model_dump(exclude_none=True) for msg in chat_messages
+        ]
+
+        # Package everything into the dictionary structure the frontend expects
+        result = {
+            "messages": chat_messages_serialized,
+            "runIds": thread_run_ids,
+            "sentiments": thread_sentiments,
+        }
 
         print__chat_all_messages_one_thread_debug(
-            f"🔄 CACHE MISS: Processing fresh request for thread: {thread_id}"
+            f"✅ SINGLE THREAD PROCESSING COMPLETE: Returning {len(chat_messages)} messages and metadata."
         )
 
-        # Simple memory check before starting
-        print__chat_all_messages_one_thread_debug("🔍 Starting memory check")
-        log_memory_usage("single_thread_start")
-        print__chat_all_messages_one_thread_debug("🔍 Memory check completed")
+        return result
 
-        try:
-            print__chat_all_messages_one_thread_debug("🔍 Getting healthy checkpointer")
-            checkpointer = await get_healthy_checkpointer()
-            print__chat_all_messages_one_thread_debug(
-                f"🔍 Checkpointer obtained: {type(checkpointer).__name__}"
-            )
-
-            # STEP 1: Get run-ids and sentiments for this specific thread
-            print__chat_all_messages_one_thread_debug(
-                f"🔍 SINGLE THREAD QUERY: Getting run-ids and sentiments for thread: {thread_id}"
-            )
-            thread_run_ids = []
-            thread_sentiments = {}
-
-            # Get run-ids and sentiments for the specific thread
-            print__chat_all_messages_one_thread_debug("🔍 Getting direct connection")
-            print__chat_all_messages_one_thread_debug(
-                "🔍 Using direct connection context manager"
-            )
-            async with get_direct_connection() as conn:
-                print__chat_all_messages_one_thread_debug(
-                    f"🔍 Connection obtained: {type(conn).__name__}"
-                )
-                async with conn.cursor() as cur:
-                    print__chat_all_messages_one_thread_debug(
-                        "🔍 Cursor created, executing single thread query"
-                    )
-                    # Query for specific thread only
-                    await cur.execute(
-                        """
-                        SELECT 
-                            run_id, 
-                            prompt, 
-                            timestamp,
-                            sentiment
-                        FROM users_threads_runs 
-                        WHERE email = %s AND thread_id = %s
-                        ORDER BY timestamp ASC
-                    """,
-                        (user_email, thread_id),
-                    )
-
-                    print__chat_all_messages_one_thread_debug(
-                        "🔍 Single thread query executed, fetching results"
-                    )
-                    rows = await cur.fetchall()
-                    print__chat_all_messages_one_thread_debug(
-                        f"🔍 Retrieved {len(rows)} rows from database for thread {thread_id}"
-                    )
-
-                for i, row in enumerate(rows):
-                    print__chat_all_messages_one_thread_debug(
-                        f"🔍 Processing row {i+1}/{len(rows)}"
-                    )
-                    run_id = row[0]  # run_id
-                    prompt = row[1]  # prompt
-                    timestamp = row[2]  # timestamp
-                    sentiment = row[3]  # sentiment
-
-                    print__chat_all_messages_one_thread_debug(
-                        f"🔍 Row data: run_id={run_id}, prompt_length={len(prompt) if prompt else 0}"
-                    )
-
-                    # Build run-ids list
-                    thread_run_ids.append(
-                        {
-                            "run_id": run_id,
-                            "prompt": prompt,
-                            "timestamp": timestamp.isoformat(),
-                        }
-                    )
-
-                    # Build sentiments dictionary
-                    if sentiment is not None:
-                        thread_sentiments[run_id] = sentiment
-                        print__chat_all_messages_one_thread_debug(
-                            f"🔍 Added sentiment for run_id {run_id}: {sentiment}"
-                        )
-
-            print__chat_all_messages_one_thread_debug(
-                f"📊 SINGLE THREAD: Found {len(thread_run_ids)} run_ids for thread {thread_id}"
-            )
-            print__chat_all_messages_one_thread_debug(
-                f"📊 SINGLE THREAD: Found {len(thread_sentiments)} sentiments for thread {thread_id}"
-            )
-
-            if not thread_run_ids:
-                print__chat_all_messages_one_thread_debug(
-                    f"⚠ No data found for thread {thread_id} - returning empty result"
-                )
-                empty_result = {"messages": [], "runIds": [], "sentiments": {}}
-                _bulk_loading_cache[cache_key] = (empty_result, current_time)
-                print__chat_all_messages_one_thread_debug(
-                    "🔍 CHAT_SINGLE_THREAD ENDPOINT - EMPTY RESULT EXIT"
-                )
-                return empty_result
-
-            # STEP 2: Process the single thread (no loop needed)
-            print__chat_all_messages_one_thread_debug(
-                f"🔄 Processing single thread: {thread_id}"
-            )
-
-            # Use the new reusable function to get messages with metadata
-            print__chat_all_messages_one_thread_debug(
-                f"🔍 Using reusable function to get messages for thread: {thread_id}"
-            )
-            chat_messages = await get_thread_messages_with_metadata(
-                checkpointer, thread_id, user_email, "single_thread_processing"
-            )
-
-            if not chat_messages:
-                print__chat_all_messages_one_thread_debug(
-                    f"⚠ No messages found for thread {thread_id} - returning empty result"
-                )
-                empty_result = {
-                    "messages": [],
-                    "runIds": thread_run_ids,
-                    "sentiments": thread_sentiments,
-                }
-                _bulk_loading_cache[cache_key] = (empty_result, current_time)
-                return empty_result
-
-            print__chat_all_messages_one_thread_debug(
-                f"✅ Processed {len(chat_messages)} messages for thread {thread_id}"
-            )
-
-            print__chat_all_messages_one_thread_debug(
-                f"✅ SINGLE THREAD PROCESSING COMPLETE: {len(chat_messages)} messages"
-            )
-
-            # Simple memory check after completion
-            print__chat_all_messages_one_thread_debug(
-                "🔍 Starting post-completion memory check"
-            )
-            log_memory_usage("single_thread_complete")
-            print__chat_all_messages_one_thread_debug(
-                "🔍 Post-completion memory check completed"
-            )
-
-            # Convert all ChatMessage objects to dicts for JSON serialization
-            chat_messages_serialized = [
-                msg.model_dump() if hasattr(msg, "model_dump") else msg.dict()
-                for msg in chat_messages
-            ]
-
-            result = {
-                "messages": chat_messages_serialized,
-                "runIds": thread_run_ids,
-                "sentiments": thread_sentiments,
-            }
-            print__chat_all_messages_one_thread_debug(
-                f"🔍 Result dictionary created with {len(result)} keys"
-            )
-
-            # Cache the result
-            _bulk_loading_cache[cache_key] = (result, current_time)
-            print__chat_all_messages_one_thread_debug(
-                f"💾 CACHED: Single thread result for {thread_id} (expires in {BULK_CACHE_TIMEOUT}s)"
-            )
-
-            # Return with cache headers
-            response = JSONResponse(content=result)
-            response.headers["Cache-Control"] = f"public, max-age={BULK_CACHE_TIMEOUT}"
-            response.headers["ETag"] = f"thread-{thread_id}-{int(current_time)}"
-            print__chat_all_messages_one_thread_debug(
-                "🔍 JSONResponse created with cache headers"
-            )
-            print__chat_all_messages_one_thread_debug(
-                "🔍 CHAT_SINGLE_THREAD ENDPOINT - SUCCESSFUL EXIT"
-            )
-            return response
-
-        except Exception as e:
-            print__chat_all_messages_one_thread_debug(
-                f"❌ SINGLE THREAD ERROR: Failed to process request for thread {thread_id}: {e}"
-            )
-            print__chat_all_messages_one_thread_debug(
-                f"🔍 Main exception type: {type(e).__name__}"
-            )
-            print__chat_all_messages_one_thread_debug(
-                f"Full error traceback: {traceback.format_exc()}"
-            )
-
-            # Return empty result but cache it briefly to prevent error loops
-            empty_result = {"messages": [], "runIds": [], "sentiments": {}}
-            _bulk_loading_cache[cache_key] = (empty_result, current_time)
-            print__chat_all_messages_one_thread_debug(
-                "🔍 Cached empty result due to error"
-            )
-
-            response = JSONResponse(content=empty_result, status_code=500)
-            response.headers["Cache-Control"] = (
-                "no-cache, no-store"  # Don't cache errors
-            )
-            print__chat_all_messages_one_thread_debug(
-                "🔍 CHAT_SINGLE_THREAD ENDPOINT - ERROR EXIT"
-            )
-            return response
+    except Exception as e:
+        print__chat_all_messages_one_thread_debug(
+            f"❌ SINGLE THREAD ERROR: Failed to process request for thread {thread_id}: {e}"
+        )
+        print__chat_all_messages_one_thread_debug(
+            f"Full error traceback: {traceback.format_exc()}"
+        )
+        raise HTTPException(
+            status_code=500, detail="Failed to process chat thread"
+        ) from e

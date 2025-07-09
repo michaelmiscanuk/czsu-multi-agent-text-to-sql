@@ -775,13 +775,20 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                                 {topChunks.map((chunk: any, idx: number) => (
                                                                     <div key={idx} className="bg-gray-50 rounded border border-gray-200 p-0">
                                                                         <div className="bg-gray-100 px-4 py-2 rounded-t text-xs font-semibold text-gray-700 border-b border-gray-200">
-                                                                            PDF Chunk {idx + 1} 
-                                                                            {chunk.metadata?.source && (
-                                                                                <span className="ml-2 text-gray-600">({chunk.metadata.source})</span>
+                                                                            PDF Chunk {idx + 1}
+                                                                            {chunk.source_file && (
+                                                                                <span className="ml-2 font-normal text-gray-600">
+                                                                                    , {chunk.source_file}
+                                                                                </span>
+                                                                            )}
+                                                                            {chunk.page_number && (
+                                                                                <span className="ml-1 font-normal text-gray-600">
+                                                                                    , page {chunk.page_number}
+                                                                                </span>
                                                                             )}
                                                                         </div>
                                                                         <div className="p-3 text-xs whitespace-pre-line text-gray-800 leading-relaxed">
-                                                                            {chunk.content}
+                                                                            {chunk.page_content}
                                                                         </div>
                                                                     </div>
                                                                 ))}
