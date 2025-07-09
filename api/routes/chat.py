@@ -8,6 +8,7 @@ import time
 
 # Standard imports
 import traceback
+from datetime import datetime
 from typing import Dict, List
 
 from dotenv import load_dotenv
@@ -62,10 +63,8 @@ from api.config.settings import (
 )
 from api.utils.debug import print__chat_all_messages_debug
 from my_agent.utils.postgres_checkpointer import (
-    get_conversation_messages_from_checkpoints,
     get_direct_connection,
     get_healthy_checkpointer,
-    get_queries_and_results_from_latest_checkpoint,
     get_thread_run_sentiments,
     get_user_chat_threads,
     get_user_chat_threads_count,
@@ -84,6 +83,13 @@ async def get_thread_messages_with_metadata(
     """
     Extract and process all messages for a single thread with metadata.
 
+    This function consolidates checkpoint processing to extract all metadata in one pass:
+    - User prompts and AI responses
+    - Queries and results
+    - Datasets used
+    - SQL queries
+    - PDF chunks
+
     Args:
         checkpointer: The database checkpointer instance
         thread_id: The thread ID to process
@@ -99,36 +105,166 @@ async def get_thread_messages_with_metadata(
     )
 
     try:
-        # Get conversation messages from checkpoints
-        print__chat_all_messages_debug(
-            f"🔍 Getting conversation messages from checkpoints for thread: {thread_id}"
-        )
-        stored_messages = await get_conversation_messages_from_checkpoints(
-            checkpointer, thread_id, user_email
-        )
-
-        if not stored_messages:
+        # Security check: Verify user owns this thread before loading checkpoint data
+        if user_email:
             print__chat_all_messages_debug(
-                f"⚠ No messages found in checkpoints for thread {thread_id}"
+                f"🔍 SECURITY CHECK: Verifying thread ownership for user: {user_email}"
+            )
+
+            try:
+                async with get_direct_connection() as conn:
+                    async with conn.cursor() as cur:
+                        await cur.execute(
+                            """
+                            SELECT COUNT(*) FROM users_threads_runs 
+                            WHERE email = %s AND thread_id = %s
+                        """,
+                            (user_email, thread_id),
+                        )
+                        result = await cur.fetchone()
+                        thread_entries_count = result[0] if result else 0
+
+                    if thread_entries_count == 0:
+                        print__chat_all_messages_debug(
+                            f"🔍 SECURITY DENIED: User {user_email} does not own thread {thread_id} - access denied"
+                        )
+                        return []
+
+                    print__chat_all_messages_debug(
+                        f"🔍 SECURITY GRANTED: User {user_email} owns thread {thread_id} ({thread_entries_count} entries) - access granted"
+                    )
+            except Exception as e:
+                print__chat_all_messages_debug(
+                    f"🔍 SECURITY ERROR: Could not verify thread ownership: {e}"
+                )
+                return []
+
+        config = {"configurable": {"thread_id": thread_id}}
+
+        # Get checkpoint tuples using alist() with fallback to aget_tuple()
+        checkpoint_tuples = []
+        try:
+            print__chat_all_messages_debug(
+                "🔍 ALIST METHOD: Using official AsyncPostgresSaver.alist() method"
+            )
+
+            # Get all checkpoints to capture complete conversation and metadata
+            async for checkpoint_tuple in checkpointer.alist(config, limit=200):
+                checkpoint_tuples.append(checkpoint_tuple)
+
+        except Exception as alist_error:
+            print__chat_all_messages_debug(
+                f"🔍 ALIST ERROR: Error using alist(): {alist_error}"
+            )
+
+            # Fallback: use aget_tuple() to get the latest checkpoint only
+            if not checkpoint_tuples:
+                print__chat_all_messages_debug(
+                    "🔍 FALLBACK METHOD: Trying fallback method using aget_tuple()"
+                )
+                try:
+                    state_snapshot = await checkpointer.aget_tuple(config)
+                    if state_snapshot:
+                        checkpoint_tuples = [state_snapshot]
+                        print__chat_all_messages_debug(
+                            "🔍 FALLBACK SUCCESS: Using fallback method - got latest checkpoint only"
+                        )
+                except Exception as fallback_error:
+                    print__chat_all_messages_debug(
+                        f"🔍 FALLBACK ERROR: Fallback method also failed: {fallback_error}"
+                    )
+                    return []
+
+        if not checkpoint_tuples:
+            print__chat_all_messages_debug(
+                f"🔍 NO CHECKPOINTS: No checkpoints found for thread: {thread_id}"
             )
             return []
 
         print__chat_all_messages_debug(
-            f"📄 Found {len(stored_messages)} messages for thread {thread_id}"
+            f"🔍 CHECKPOINTS FOUND: Found {len(checkpoint_tuples)} checkpoints for verified thread"
         )
 
-        # Get additional metadata from latest checkpoint
-        print__chat_all_messages_debug(
-            f"🔍 Getting queries and results from latest checkpoint for thread: {thread_id}"
-        )
-        queries_and_results = await get_queries_and_results_from_latest_checkpoint(
-            checkpointer, thread_id
-        )
-        print__chat_all_messages_debug(
-            f"🔍 Retrieved {len(queries_and_results) if queries_and_results else 0} queries and results"
+        # Sort checkpoints by step number (chronological order)
+        checkpoint_tuples.sort(
+            key=lambda x: x.metadata.get("step", 0) if x.metadata else 0
         )
 
-        # Get dataset information and SQL query from latest checkpoint
+        # Extract all metadata in one pass through the checkpoints
+        prompts = []
+        answers = []
+        all_queries_and_results = []
+
+        print__chat_all_messages_debug(
+            f"🔍 METADATA EXTRACTION: Extracting all metadata from {len(checkpoint_tuples)} checkpoints"
+        )
+
+        for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
+            metadata = checkpoint_tuple.metadata or {}
+            step = metadata.get("step", 0)
+            writes = metadata.get("writes", {})
+
+            # Extract user prompts from metadata.writes.__start__.prompt
+            if isinstance(writes, dict) and "__start__" in writes:
+                start_data = writes["__start__"]
+                if isinstance(start_data, dict) and "prompt" in start_data:
+                    prompt = start_data["prompt"]
+                    if prompt and prompt.strip():
+                        prompts.append(
+                            {
+                                "content": prompt.strip(),
+                                "step": step,
+                                "checkpoint_index": checkpoint_index,
+                            }
+                        )
+                        print__chat_all_messages_debug(
+                            f"🔍 USER PROMPT FOUND: Step {step}: {prompt[:50]}..."
+                        )
+
+            # Extract AI answers and queries_and_results from metadata.writes.submit_final_answer
+            if isinstance(writes, dict) and "submit_final_answer" in writes:
+                submit_data = writes["submit_final_answer"]
+                if isinstance(submit_data, dict):
+                    # Extract AI answers
+                    if "final_answer" in submit_data:
+                        final_answer = submit_data["final_answer"]
+                        if final_answer and final_answer.strip():
+                            answers.append(
+                                {
+                                    "content": final_answer.strip(),
+                                    "step": step,
+                                    "checkpoint_index": checkpoint_index,
+                                }
+                            )
+                            print__chat_all_messages_debug(
+                                f"🔍 AI ANSWER FOUND: Step {step}: {final_answer[:50]}..."
+                            )
+
+                    # Extract queries and results
+                    if "queries_and_results" in submit_data:
+                        queries_and_results = submit_data["queries_and_results"]
+                        if queries_and_results:
+                            # If it's a list, extend; if it's a single item, append
+                            if isinstance(queries_and_results, list):
+                                all_queries_and_results.extend(queries_and_results)
+                                print__chat_all_messages_debug(
+                                    f"🔍 QUERIES FOUND: Step {step}: Found {len(queries_and_results)} queries and results"
+                                )
+                            else:
+                                all_queries_and_results.append(queries_and_results)
+                                print__chat_all_messages_debug(
+                                    f"🔍 QUERIES FOUND: Step {step}: Found 1 query and result"
+                                )
+
+        # Sort prompts and answers by step number
+        prompts.sort(key=lambda x: x["step"])
+        answers.sort(key=lambda x: x["step"])
+
+        print__chat_all_messages_debug(
+            f"🔍 MESSAGE PAIRING: Found {len(prompts)} prompts, {len(answers)} answers, {len(all_queries_and_results)} queries and results"
+        )
+
+        # Get additional metadata from latest checkpoint (datasets, SQL query, PDF chunks)
         datasets_used = []
         sql_query = None
         top_chunks = []
@@ -137,7 +273,6 @@ async def get_thread_messages_with_metadata(
             print__chat_all_messages_debug(
                 f"🔍 Getting state snapshot for thread: {thread_id}"
             )
-            config = {"configurable": {"thread_id": thread_id}}
             state_snapshot = await checkpointer.aget_tuple(config)
 
             if state_snapshot and state_snapshot.checkpoint:
@@ -176,10 +311,12 @@ async def get_thread_messages_with_metadata(
                         f"🔍 Processed {len(top_chunks)} PDF chunks"
                     )
 
-                # Extract SQL query
-                if queries_and_results:
+                # Extract SQL query from queries and results
+                if all_queries_and_results:
                     sql_query = (
-                        queries_and_results[-1][0] if queries_and_results[-1] else None
+                        all_queries_and_results[-1][0]
+                        if all_queries_and_results[-1]
+                        else None
                     )
                     print__chat_all_messages_debug(
                         f"🔍 SQL query extracted: {'Yes' if sql_query else 'No'}"
@@ -200,15 +337,71 @@ async def get_thread_messages_with_metadata(
                 f"🔍 Checkpoint metadata error traceback: {traceback.format_exc()}"
             )
 
-        # Convert stored messages to frontend format
-        chat_messages = []
+        # Create conversation messages by pairing prompts and answers
+        conversation_messages = []
+        message_counter = 0
+
+        # Pair prompts with answers based on order
+        for i in range(max(len(prompts), len(answers))):
+            # Add user prompt if available
+            if i < len(prompts):
+                prompt = prompts[i]
+                message_counter += 1
+                user_message = {
+                    "id": f"user_{message_counter}",
+                    "content": prompt["content"],
+                    "is_user": True,
+                    "timestamp": datetime.fromtimestamp(
+                        1700000000 + message_counter * 1000
+                    ),
+                    "checkpoint_order": prompt["checkpoint_index"],
+                    "message_order": message_counter,
+                    "step": prompt["step"],
+                }
+                conversation_messages.append(user_message)
+                print__chat_all_messages_debug(
+                    f"🔍 ADDED USER MESSAGE: Step {prompt['step']}: {prompt['content'][:50]}..."
+                )
+
+            # Add AI response if available
+            if i < len(answers):
+                answer = answers[i]
+                message_counter += 1
+                ai_message = {
+                    "id": f"ai_{message_counter}",
+                    "content": answer["content"],
+                    "is_user": False,
+                    "timestamp": datetime.fromtimestamp(
+                        1700000000 + message_counter * 1000
+                    ),
+                    "checkpoint_order": answer["checkpoint_index"],
+                    "message_order": message_counter,
+                    "step": answer["step"],
+                }
+                conversation_messages.append(ai_message)
+                print__chat_all_messages_debug(
+                    f"🔍 ADDED AI MESSAGE: Step {answer['step']}: {answer['content'][:50]}..."
+                )
+
         print__chat_all_messages_debug(
-            f"🔍 Converting {len(stored_messages)} stored messages to frontend format"
+            f"🔍 CONVERSATION SUCCESS: Created {len(conversation_messages)} conversation messages in proper order"
         )
 
-        for i, stored_msg in enumerate(stored_messages):
+        if not conversation_messages:
             print__chat_all_messages_debug(
-                f"🔍 Processing stored message {i+1}/{len(stored_messages)}"
+                f"⚠ No messages found for thread {thread_id}"
+            )
+            return []
+
+        # Convert to ChatMessage objects with all metadata
+        chat_messages = []
+        print__chat_all_messages_debug(
+            f"🔍 Converting {len(conversation_messages)} stored messages to frontend format"
+        )
+
+        for i, stored_msg in enumerate(conversation_messages):
+            print__chat_all_messages_debug(
+                f"🔍 Processing stored message {i+1}/{len(conversation_messages)}"
             )
             # Create meta information for AI messages
             meta_info = {}
@@ -216,8 +409,8 @@ async def get_thread_messages_with_metadata(
                 print__chat_all_messages_debug(
                     "🔍 Processing AI message - adding metadata"
                 )
-                if queries_and_results:
-                    meta_info["queriesAndResults"] = queries_and_results
+                if all_queries_and_results:
+                    meta_info["queriesAndResults"] = all_queries_and_results
                     print__chat_all_messages_debug(
                         "🔍 Added queries and results to meta"
                     )
@@ -241,8 +434,8 @@ async def get_thread_messages_with_metadata(
                 )
 
             queries_results_for_frontend = None
-            if not stored_msg["is_user"] and queries_and_results:
-                queries_results_for_frontend = queries_and_results
+            if not stored_msg["is_user"] and all_queries_and_results:
+                queries_results_for_frontend = all_queries_and_results
                 print__chat_all_messages_debug(
                     "🔍 Set queries_results_for_frontend for AI message"
                 )
