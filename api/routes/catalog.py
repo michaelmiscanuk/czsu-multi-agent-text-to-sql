@@ -1,18 +1,22 @@
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
-import sys
 import os
+import sys
+
 if sys.platform == "win32":
     import asyncio
+
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Load environment variables early
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Constants
 try:
     from pathlib import Path
+
     BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
@@ -20,7 +24,8 @@ except NameError:
 # Standard imports
 import sqlite3
 from typing import Optional
-from fastapi import APIRouter, Query, Depends
+
+from fastapi import APIRouter, Depends, Query
 
 # Import authentication dependencies
 from api.dependencies.auth import get_current_user
@@ -31,12 +36,13 @@ from api.utils.debug import print__debug
 # Create router for catalog endpoints
 router = APIRouter()
 
+
 @router.get("/catalog")
 def get_catalog(
     page: int = Query(1, ge=1),
     q: Optional[str] = None,
     page_size: int = Query(10, ge=1, le=10000),
-    user=Depends(get_current_user)
+    user=Depends(get_current_user),
 ):
     db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
     offset = (page - 1) * page_size
@@ -66,13 +72,16 @@ def get_catalog(
     ]
     return {"results": results, "total": total, "page": page, "page_size": page_size}
 
+
 @router.get("/data-tables")
 def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
     db_path = "data/czsu_data.db"
     desc_db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+        cursor.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        )
         tables = [row[0] for row in cursor.fetchall()]
     if q:
         q_lower = q.lower()
@@ -82,17 +91,19 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
     try:
         with sqlite3.connect(desc_db_path) as desc_conn:
             desc_cursor = desc_conn.cursor()
-            desc_cursor.execute("SELECT selection_code, short_description FROM selection_descriptions")
+            desc_cursor.execute(
+                "SELECT selection_code, short_description FROM selection_descriptions"
+            )
             for code, short_desc in desc_cursor.fetchall():
                 desc_map[code] = short_desc
     except Exception as e:
         print__debug(f"Error fetching short_descriptions: {e}")
     # Build result list
     result = [
-        {"selection_code": t, "short_description": desc_map.get(t, "")}
-        for t in tables
+        {"selection_code": t, "short_description": desc_map.get(t, "")} for t in tables
     ]
     return {"tables": result}
+
 
 @router.get("/data-table")
 def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
@@ -111,4 +122,4 @@ def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
         except Exception as e:
             print__debug(f"Error fetching table '{table}': {e}")
             return {"columns": [], "rows": []}
-    return {"columns": columns, "rows": rows} 
+    return {"columns": columns, "rows": rows}

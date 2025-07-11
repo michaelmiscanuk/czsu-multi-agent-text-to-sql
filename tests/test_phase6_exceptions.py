@@ -4,15 +4,18 @@ Test for Phase 6: Extract Exception Handlers
 Based on test_concurrency.py pattern - imports functionality from main scripts
 """
 
+import os
+
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 import sys
-import os
+
 if sys.platform == "win32":
     import asyncio
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Load environment variables early
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Constants
@@ -24,15 +27,16 @@ except NameError:
 
 # Standard imports
 import asyncio
+import json
 import time
 import traceback
 from datetime import datetime
 from pathlib import Path
-import json
-from fastapi import Request, FastAPI
+
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from starlette.exceptions import HTTPException as StarletteHTTPException
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Add project root to path
 sys.path.insert(0, str(BASE_DIR))
@@ -40,10 +44,10 @@ sys.path.insert(0, str(BASE_DIR))
 # Test imports from extracted modules
 try:
     from api.exceptions.handlers import (
-        validation_exception_handler,
+        general_exception_handler,
         http_exception_handler,
+        validation_exception_handler,
         value_error_handler,
-        general_exception_handler
     )
     print("✅ Successfully imported exception handlers")
 except Exception as e:
@@ -248,8 +252,12 @@ async def test_exception_handler_integration():
     
     try:
         # Test that debug functions are properly imported and accessible
-        from api.utils.debug import print__debug, print__analyze_debug, print__analysis_tracing_debug
-        
+        from api.utils.debug import (
+            print__analysis_tracing_debug,
+            print__analyze_debug,
+            print__debug,
+        )
+
         # Verify the handlers can access debug functions
         mock_request = MockRequest(url="http://test.example.com/integration-test")
         

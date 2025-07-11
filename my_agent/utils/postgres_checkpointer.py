@@ -282,7 +282,7 @@ import time
 import traceback
 import uuid
 from contextlib import asynccontextmanager
-from datetime import datetime
+from pathlib import Path
 from typing import Any, Awaitable, Callable, Dict, List, TypeVar
 
 import psycopg
@@ -346,16 +346,15 @@ _CHECKPOINTER_INIT_LOCK = None
 # Type variable for the retry decorator
 T = TypeVar("T")
 
+# Get base directory
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:
+    BASE_DIR = Path(os.getcwd()).parents[0]
 
-# ==============================================================================
-# DEBUG AND LOGGING FUNCTIONS
-# ==============================================================================
-def print__checkpointers_debug(msg: str) -> None:
-    """Print messages when debug mode is enabled"""
-    analysis_tracing_debug_mode = os.environ.get("print__checkpointers_debug", "0")
-    if analysis_tracing_debug_mode == "1":
-        print(f"[print__checkpointers_debug] 🔍 {msg}")
-        sys.stdout.flush()
+
+# Import debug functions from utils
+from api.utils.debug import print__checkpointers_debug
 
 
 # ==============================================================================

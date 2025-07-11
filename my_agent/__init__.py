@@ -5,7 +5,9 @@ agent_type = "basic1"  # Options: "basic1_multiple_queries", "basic2",
 if agent_type == "basic1":
     from .agent import create_graph
 else:
-    raise ValueError(f"Unknown agent type: {agent_type}. Valid options are: 'basic_reflection', 'initial'")
+    raise ValueError(
+        f"Unknown agent type: {agent_type}. Valid options are: 'basic_reflection', 'initial'"
+    )
 
 # __all__ controls what gets exported when using wildcard imports (from my_agent import *)
 # By only including 'create_graph', we maintain a clean public API that hides internal

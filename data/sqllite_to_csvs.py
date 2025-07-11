@@ -1,6 +1,8 @@
-import sqlite3
 import os
+import sqlite3
+
 import pandas as pd
+
 
 def export_all_sqlite_to_csvs(db_path: str = None, output_folder: str = None) -> None:
     """
@@ -14,8 +16,8 @@ def export_all_sqlite_to_csvs(db_path: str = None, output_folder: str = None) ->
         script_dir = os.path.dirname(os.path.abspath(__file__))
 
         # Use provided db_path or default
-        db_path = db_path or os.path.join(script_dir, 'czsu_data.db')
-        output_folder = output_folder or os.path.join(script_dir, 'CSVs')
+        db_path = db_path or os.path.join(script_dir, "czsu_data.db")
+        output_folder = output_folder or os.path.join(script_dir, "CSVs")
 
         # Create output folder if it doesn't exist
         os.makedirs(output_folder, exist_ok=True)
@@ -34,8 +36,8 @@ def export_all_sqlite_to_csvs(db_path: str = None, output_folder: str = None) ->
                 # Read table into DataFrame
                 df = pd.read_sql_query(f'SELECT * FROM "{table}"', conn)
                 # Write to CSV with semicolon separator
-                csv_path = os.path.join(output_folder, f'{table}.csv')
-                df.to_csv(csv_path, sep=';', index=False, encoding='utf-8')
+                csv_path = os.path.join(output_folder, f"{table}.csv")
+                df.to_csv(csv_path, sep=";", index=False, encoding="utf-8")
                 print(f"Exported table {table} to {csv_path}")
                 exported_count += 1
             except Exception as e:
@@ -49,10 +51,11 @@ def export_all_sqlite_to_csvs(db_path: str = None, output_folder: str = None) ->
     except Exception as e:
         print(f"Error occurred: {str(e)}")
 
+
 # Example usage
 if __name__ == "__main__":
     # Option 1: Export from default db to default folder
     # export_all_sqlite_to_csvs()
 
     # Option 2: Export from specific db to specific folder
-    export_all_sqlite_to_csvs(None, "data/CSVs") 
+    export_all_sqlite_to_csvs(None, "data/CSVs")

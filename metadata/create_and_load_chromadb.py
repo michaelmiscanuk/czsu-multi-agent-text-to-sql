@@ -127,39 +127,40 @@ Error Handling:
 - Token limit errors
 - Chunk processing errors"""
 
+import hashlib
+import logging
+
 #==============================================================================
 # IMPORTS
 #==============================================================================
 # Standard library imports
 import os
-from pathlib import Path
-import sys
+import re
 import sqlite3
-import hashlib
-from uuid import uuid4
+import sys
 import time
-from datetime import datetime
+import unicodedata
+from collections import Counter
 from dataclasses import dataclass, field
-from typing import Dict, Any, List, Tuple, Set
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Set, Tuple
+from uuid import uuid4
 
 # Third-party imports
 import chromadb
-import tqdm as tqdm_module
-import tiktoken
-from langchain_chroma import Chroma
-from langchain_openai import OpenAIEmbeddings, AzureOpenAIEmbeddings
-from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
-from langchain_core.documents import Document
 import cohere
+import numpy as np
 import openpyxl
+import tiktoken
+import tqdm as tqdm_module
+from langchain.retrievers import EnsembleRetriever
+from langchain_chroma import Chroma
+from langchain_community.retrievers import BM25Retriever
+from langchain_core.documents import Document
+from langchain_openai import AzureOpenAIEmbeddings, OpenAIEmbeddings
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
-import unicodedata
-import re
-from collections import Counter
-import numpy as np
-import logging
 
 # Add this import after the other imports
 try:
@@ -181,7 +182,10 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 # Local Imports
-from my_agent.utils.models import get_azure_embedding_model, get_langchain_azure_embedding_model
+from my_agent.utils.models import (
+    get_azure_embedding_model,
+    get_langchain_azure_embedding_model,
+)
 
 #==============================================================================
 # CONSTANTS & CONFIGURATION

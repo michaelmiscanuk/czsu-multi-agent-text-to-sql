@@ -102,27 +102,28 @@ Error Handling:
 - Database connection errors are handled gracefully
 - API timeouts are handled with 5-minute limit per record"""
 
+import csv
+import json
+import logging
+
 #===============================================================================
 # IMPORTS
 #===============================================================================
 # Standard library imports
 import os
+import sqlite3
 import sys
 import time
-import json
-import csv
-import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional
-from dataclasses import dataclass, field
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Dict, Optional
 
 # Third-party imports
 import pandas as pd
-import sqlite3
-from dotenv import load_dotenv
 import tqdm as tqdm_module
+from dotenv import load_dotenv
 
 # Local imports
 try:
@@ -135,6 +136,7 @@ sys.path.append(str(BASE_DIR))
 
 # Import the get_azure_llm_gpt_4o function
 from my_agent.utils.models import get_azure_llm_gpt_4o
+
 
 #===============================================================================
 # CUSTOM EXCEPTIONS

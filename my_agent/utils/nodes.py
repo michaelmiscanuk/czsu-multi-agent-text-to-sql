@@ -4,18 +4,19 @@ This module defines all the node functions used in the LangGraph workflow,
 including schema loading, query generation, execution, and result formatting.
 """
 
-#==============================================================================
+# ==============================================================================
 # IMPORTS
-#==============================================================================
+# ==============================================================================
 import os
 import sqlite3
 from pathlib import Path
+
 from langchain_core.messages import AIMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
 
-#==============================================================================
+# ==============================================================================
 # CONSTANTS & CONFIGURATION
-#==============================================================================
+# ==============================================================================
 # Static IDs for easier debug‑tracking
 GET_SCHEMA_ID = 3
 QUERY_GEN_ID = 4
@@ -38,28 +39,36 @@ try:
     BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
-    
-    
-from .mcp_server import create_mcp_server
-from .state import DataAnalysisState
-from metadata.create_and_load_chromadb import (
-    get_langchain_chroma_vectorstore,
-    cohere_rerank,
-    hybrid_search
-)
-from my_agent.utils.models import get_azure_llm_gpt_4o, get_azure_llm_gpt_4o_mini, get_ollama_llm
+
+
+# Import debug functions from utils
+from api.utils.debug import print__nodes_debug
 
 # PDF chunk functionality imports
-from data.pdf_to_chromadb import (
-    hybrid_search as pdf_hybrid_search,
-    cohere_rerank as pdf_cohere_rerank,
-    COLLECTION_NAME as PDF_COLLECTION_NAME,
-    CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
+from data.pdf_to_chromadb import CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
+from data.pdf_to_chromadb import COLLECTION_NAME as PDF_COLLECTION_NAME
+from data.pdf_to_chromadb import cohere_rerank as pdf_cohere_rerank
+from data.pdf_to_chromadb import hybrid_search as pdf_hybrid_search
+from metadata.create_and_load_chromadb import (
+    cohere_rerank,
+    get_langchain_chroma_vectorstore,
+    hybrid_search,
 )
+from my_agent.utils.models import (
+    get_azure_llm_gpt_4o,
+    get_azure_llm_gpt_4o_mini,
+    get_ollama_llm,
+)
+
+from .mcp_server import create_mcp_server
+from .state import DataAnalysisState
+
 PDF_FUNCTIONALITY_AVAILABLE = True
 
 # Configurable iteration limit to prevent excessive looping
-MAX_ITERATIONS = int(os.environ.get('MAX_ITERATIONS', '1'))  # Configurable via environment variable, default 2
+MAX_ITERATIONS = int(
+    os.environ.get("MAX_ITERATIONS", "1")
+)  # Configurable via environment variable, default 2
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 ROUTE_DECISION_ID = 11  # ID for routing decision function
 REFLECT_NODE_ID = 12
@@ -68,26 +77,20 @@ CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
 CHROMA_COLLECTION_NAME = "czsu_selections_chromadb"
 EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
 
-#==============================================================================
-# HELPER FUNCTIONS
-#==============================================================================
-def print__nodes_debug(msg: str) -> None:
-    """Print print__nodes_debug messages when debug mode is enabled.
-    
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get('print__nodes_debug', '0')
-    if debug_mode == '1':
-        print(f"[print__nodes_debug] {msg}")
-        import sys
-        sys.stdout.flush()
 
+# ==============================================================================
+# HELPER FUNCTIONS
+# ==============================================================================
 async def load_schema(state=None):
     """Load the schema metadata from the SQLite database based on top_selection_codes in state."""
     if state and state.get("top_selection_codes"):
         selection_codes = state["top_selection_codes"]
-        db_path = BASE_DIR / "metadata" / "llm_selection_descriptions" / "selection_descriptions.db"
+        db_path = (
+            BASE_DIR
+            / "metadata"
+            / "llm_selection_descriptions"
+            / "selection_descriptions.db"
+        )
         schemas = []
         try:
             conn = sqlite3.connect(str(db_path))
@@ -98,37 +101,44 @@ async def load_schema(state=None):
                     SELECT extended_description FROM selection_descriptions
                     WHERE selection_code = ? AND extended_description IS NOT NULL AND extended_description != ''
                     """,
-                    (selection_code,)
+                    (selection_code,),
                 )
                 row = cursor.fetchone()
                 if row:
                     schemas.append(f"Dataset: {selection_code}.\n" + row[0])
                 else:
-                    schemas.append(f"No schema found for selection_code {selection_code}.")
+                    schemas.append(
+                        f"No schema found for selection_code {selection_code}."
+                    )
         except Exception as e:
             schemas.append(f"Error loading schema from DB: {e}")
         finally:
-            if 'conn' in locals():
+            if "conn" in locals():
                 conn.close()
         return "\n**************\n".join(schemas)
     # fallback
     return "No selection_code provided in state."
 
-#==============================================================================
+
+# ==============================================================================
 # NODE FUNCTIONS
-#==============================================================================
+# ==============================================================================
 async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Rewrite the user's prompt using an LLM, using only the summary and the current prompt.
     The messages list is always set to [summary, rewritten_message].
     """
     print__nodes_debug("🧠 REWRITE: Enter rewrite_query_node (simplified)")
-    
+
     prompt_text = state["prompt"]
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
-    
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
+
     llm = get_azure_llm_gpt_4o(temperature=0.0)
-    
+
     system_prompt = """
 Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language, that can be used to query a vector database.
 
@@ -212,80 +222,91 @@ IMPORTANT:
 Now process this conversation:
 """
     # FIX: Escape curly braces in content to prevent f-string parsing errors
-    summary.content.replace('{', '{{').replace('}', '}}')
-    prompt_text.replace('{', '{{').replace('}', '}}')
-    
+    summary.content.replace("{", "{{").replace("}", "}}")
+    prompt_text.replace("{", "{{").replace("}", "}}")
+
     human_prompt = "Summary of conversation so far:\n{summary_content}\n\nOriginal question: {prompt_text}\nStandalone Question:"
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", human_prompt)
-    ])
-    result = await llm.ainvoke(prompt.format_messages(
-        summary_content=summary.content,
-        prompt_text=prompt_text
-    ))
+    prompt = ChatPromptTemplate.from_messages(
+        [("system", system_prompt), ("human", human_prompt)]
+    )
+    result = await llm.ainvoke(
+        prompt.format_messages(summary_content=summary.content, prompt_text=prompt_text)
+    )
     rewritten_prompt = result.content.strip()
     # FIX: Escape curly braces in rewritten_prompt to prevent f-string parsing errors
-    rewritten_prompt_escaped = rewritten_prompt.replace('{', '{{').replace('}', '}}')
+    rewritten_prompt_escaped = rewritten_prompt.replace("{", "{{").replace("}", "}}")
     print__nodes_debug(f"🚀 REWRITE: Rewritten prompt: {rewritten_prompt_escaped}")
     if not hasattr(result, "id") or not result.id:
         result.id = "rewrite_query"
-    
-    return {
-        "rewritten_prompt": rewritten_prompt,
-        "messages": [summary, result]
-    }
+
+    return {"rewritten_prompt": rewritten_prompt, "messages": [summary, result]}
+
 
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Get schema details for relevant columns. Messages list is always [summary, last_message]."""
     print__nodes_debug(f"💾 {GET_SCHEMA_ID}: Enter get_schema_node")
-    
+
     top_selection_codes = state.get("top_selection_codes")
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
-    
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
+
     schema = await load_schema({"top_selection_codes": top_selection_codes})
     msg = AIMessage(content=f"Schema details: {schema}", id="schema_details")
-    
+
     return {"messages": [summary, msg]}
+
 
 async def query_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Generate SQL query based on question and schema. Messages list is always [summary, last_message]."""
     print__nodes_debug(f"🧠 {QUERY_GEN_ID}: Enter query_node")
-    
+
     current_iteration = state.get("iteration", 0)
     existing_queries = state.get("queries_and_results", [])
     messages = state.get("messages", [])
     rewritten_prompt = state.get("rewritten_prompt")
     prompt = state["prompt"]
     top_selection_codes = state.get("top_selection_codes")
-    
+
     # Log current state for debugging
-    print__nodes_debug(f"🔄 {QUERY_GEN_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries)}")
-    
+    print__nodes_debug(
+        f"🔄 {QUERY_GEN_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries)}"
+    )
+
     # Check for potential query loops by examining recent queries
     if len(existing_queries) >= 3:
         recent_queries = [q for q, r in existing_queries[-3:]]
         print__nodes_debug(f"🔄 {QUERY_GEN_ID}: Recent queries: {recent_queries}")
-    
+
     llm = get_azure_llm_gpt_4o(temperature=0.0)
     # llm = get_ollama_llm("qwen:7b")
     tools = await create_mcp_server()
     sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
-    
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
+
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
     last_message = messages[1] if len(messages) > 1 else None
-    
+
     # Skip last message if it's schema details to avoid duplication
     # (schema is already included separately in the prompt)
-    if last_message and hasattr(last_message, 'id') and last_message.id == "schema_details":
+    if (
+        last_message
+        and hasattr(last_message, "id")
+        and last_message.id == "schema_details"
+    ):
         last_message_content = ""
     else:
         last_message_content = last_message.content if last_message else ""
-    
+
     # Load schema before building the prompt
     schema = await load_schema({"top_selection_codes": top_selection_codes})
-    
+
     system_prompt = """
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
 Your task is to translate the user's natural-language question into a SQLITE SQL query and execute it using the sqlite_query tool.
@@ -367,33 +388,32 @@ IMPORTANT notes about SQL query generation:
     human_prompt_parts = [
         "User question: {user_question}",
         "Schema: {schema}",
-        "Summary of conversation:\n{summary_content}"
+        "Summary of conversation:\n{summary_content}",
     ]
-    
+
     if last_message_content:
         human_prompt_parts.append("Last message:\n{last_message_content}")
-    
+
     human_prompt = "\n".join(human_prompt_parts)
-    
+
     # Create template variables dict
     template_vars = {
         "user_question": rewritten_prompt or prompt,
         "schema": schema,
-        "summary_content": summary.content
+        "summary_content": summary.content,
     }
-    
+
     if last_message_content:
         template_vars["last_message_content"] = last_message_content
-    
-    prompt_template = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", human_prompt)
-    ])
+
+    prompt_template = ChatPromptTemplate.from_messages(
+        [("system", system_prompt), ("human", human_prompt)]
+    )
     result = await llm.ainvoke(prompt_template.format_messages(**template_vars))
     query = result.content.strip()
-    
+
     print__nodes_debug(f"⚡ {QUERY_GEN_ID}: Generated query: {query}")
-    
+
     try:
         tool_result = await sqlite_tool.ainvoke({"query": query})
         if isinstance(tool_result, Exception):
@@ -402,7 +422,9 @@ IMPORTANT notes about SQL query generation:
             new_queries = [(query, f"Error: {str(tool_result)}")]
             last_message = AIMessage(content=error_msg)
         else:
-            print__nodes_debug(f"✅ {QUERY_GEN_ID}: Successfully executed query: {query}")
+            print__nodes_debug(
+                f"✅ {QUERY_GEN_ID}: Successfully executed query: {query}"
+            )
             print__nodes_debug(f"📊 {QUERY_GEN_ID}: Query result: {tool_result}")
             new_queries = [(query, tool_result)]
             # Format the last message to include both query and result
@@ -413,67 +435,92 @@ IMPORTANT notes about SQL query generation:
         print__nodes_debug(f"❌ {QUERY_GEN_ID}: {error_msg}")
         new_queries = [(query, f"Error: {str(e)}")]
         last_message = AIMessage(content=error_msg)
-    
-    print__nodes_debug(f"🔄 {QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}")
-    
+
+    print__nodes_debug(
+        f"🔄 {QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}"
+    )
+
     return {
         "rewritten_prompt": rewritten_prompt,
         "messages": [summary, last_message],
         "iteration": current_iteration,
-        "queries_and_results": new_queries
+        "queries_and_results": new_queries,
     }
+
 
 async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Reflect on the current state and provide feedback for next query or decide to answer.
     Messages list is always [summary, last_message].
     """
     print__nodes_debug(f"💭 {REFLECT_NODE_ID}: Enter reflect_node")
-    
+
     current_iteration = state.get("iteration", 0)
     queries_and_results = state.get("queries_and_results", [])
     messages = state.get("messages", [])
     rewritten_prompt = state.get("rewritten_prompt")
     prompt = state["prompt"]
-    
+
     total_queries = len(queries_and_results)
-    
-    print__nodes_debug(f"🧠 {REFLECT_NODE_ID}: Current iteration: {current_iteration}, Total queries: {total_queries}")
-    
+
+    print__nodes_debug(
+        f"🧠 {REFLECT_NODE_ID}: Current iteration: {current_iteration}, Total queries: {total_queries}"
+    )
+
     # Force answer if we've hit iteration limit or have too many queries
     if current_iteration >= MAX_ITERATIONS:
-        print__nodes_debug(f"🔄 {REFLECT_NODE_ID}: Forcing answer due to iteration limit ({current_iteration} >= {MAX_ITERATIONS})")
+        print__nodes_debug(
+            f"🔄 {REFLECT_NODE_ID}: Forcing answer due to iteration limit ({current_iteration} >= {MAX_ITERATIONS})"
+        )
         # Create a simple reflection message
-        summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
+        summary = (
+            messages[0]
+            if messages and isinstance(messages[0], SystemMessage)
+            else SystemMessage(content="")
+        )
         from langchain_core.messages import AIMessage
-        result = AIMessage(content="Maximum iterations reached. Proceeding to answer with available data.", id="reflect_forced")
+
+        result = AIMessage(
+            content="Maximum iterations reached. Proceeding to answer with available data.",
+            id="reflect_forced",
+        )
         return {
             "messages": [summary, result],
             "reflection_decision": "answer",
-            "iteration": current_iteration
+            "iteration": current_iteration,
         }
-    
+
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
     last_message = messages[1] if len(messages) > 1 else None
     last_message_content = last_message.content if last_message else ""
-    
+
     # Limit the queries_results_text to prevent token overflow
     # Only include the last few queries to prevent token overflow
     max_queries_for_reflection = 5  # Show only last 5 queries in reflection
-    recent_queries = queries_and_results[-max_queries_for_reflection:] if len(queries_and_results) > max_queries_for_reflection else queries_and_results
-    
+    recent_queries = (
+        queries_and_results[-max_queries_for_reflection:]
+        if len(queries_and_results) > max_queries_for_reflection
+        else queries_and_results
+    )
+
     queries_results_text = "\n\n".join(
-        f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
+        f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}"
         for i, (query, result) in enumerate(recent_queries)
     )
-    
+
     # Add summary if we're showing limited queries
     if len(queries_and_results) > max_queries_for_reflection:
         total_queries_note = f"\n[Note: Showing last {max_queries_for_reflection} of {len(queries_and_results)} total queries]"
         queries_results_text = total_queries_note + "\n\n" + queries_results_text
-    
-    print__nodes_debug(f"🧠 {REFLECT_NODE_ID}: Processing {len(recent_queries)} queries for reflection (total: {len(queries_and_results)})")
-    
+
+    print__nodes_debug(
+        f"🧠 {REFLECT_NODE_ID}: Processing {len(recent_queries)} queries for reflection (total: {len(queries_and_results)})"
+    )
+
     system_prompt = """
 You are a data analysis reflection agent.
 Your task is to analyze the current state and provide detailed feedback to guide the next query.
@@ -510,19 +557,24 @@ how to improve the SQL QUERY - so phrase it like instructions.
 
 REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: improve' on its own line.
 """
-    prompt_template = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "Original question: {question}\n\nSummary of conversation:\n{summary}\nLast message:\n{last_message}\n\nCurrent queries and results:\n{results}\n\nWhat feedback can you provide to guide the next query? Should we answer now or improve further?")
-    ])
+    prompt_template = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            (
+                "human",
+                "Original question: {question}\n\nSummary of conversation:\n{summary}\nLast message:\n{last_message}\n\nCurrent queries and results:\n{results}\n\nWhat feedback can you provide to guide the next query? Should we answer now or improve further?",
+            ),
+        ]
+    )
     result = await llm.ainvoke(
         prompt_template.format_messages(
             question=rewritten_prompt or prompt,
             summary=summary.content,
             last_message=last_message_content,
-            results=queries_results_text
+            results=queries_results_text,
         )
     )
-    content = result.content if hasattr(result, 'content') else str(result)
+    content = result.content if hasattr(result, "content") else str(result)
     if "DECISION: answer" in content:
         reflection_decision = "answer"
         print__nodes_debug(f"✅ {REFLECT_NODE_ID}: Decision: answer")
@@ -530,55 +582,70 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
         reflection_decision = "improve"
         # Increment iteration when deciding to improve
         current_iteration += 1
-        print__nodes_debug(f"🔄 {REFLECT_NODE_ID}: Decision: improve (iteration will be: {current_iteration})")
-    
+        print__nodes_debug(
+            f"🔄 {REFLECT_NODE_ID}: Decision: improve (iteration will be: {current_iteration})"
+        )
+
     if not hasattr(result, "id") or not result.id:
         result.id = "reflect"
-    
+
     new_messages = [summary, result] if last_message else [summary]
-    
+
     return {
         "messages": new_messages,
         "reflection_decision": reflection_decision,
-        "iteration": current_iteration
+        "iteration": current_iteration,
     }
+
 
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Format the query result into a natural language answer. Messages list is always [summary, last_message]."""
     print__nodes_debug(f"🎨 {FORMAT_ANSWER_ID}: Enter format_answer_node")
-    
+
     queries_and_results = state.get("queries_and_results", [])
     top_chunks = state.get("top_chunks", [])
     rewritten_prompt = state.get("rewritten_prompt")
     prompt = state["prompt"]
     messages = state.get("messages", [])
-    
+
     # Add debug logging for PDF chunks
     print__nodes_debug(f"📄 {FORMAT_ANSWER_ID}: PDF chunks count: {len(top_chunks)}")
     if top_chunks:
-        print__nodes_debug(f"📄 {FORMAT_ANSWER_ID}: First chunk preview: {top_chunks[0].page_content[:100] if hasattr(top_chunks[0], 'page_content') else str(top_chunks[0])[:100]}...")
-    
+        print__nodes_debug(
+            f"📄 {FORMAT_ANSWER_ID}: First chunk preview: {top_chunks[0].page_content[:100] if hasattr(top_chunks[0], 'page_content') else str(top_chunks[0])[:100]}..."
+        )
+
     llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
-    
+
     # Prepare SQL queries and results context
     queries_results_text = "\n\n".join(
-        f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}" 
+        f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}"
         for i, (query, result) in enumerate(queries_and_results)
     )
-    
+
     # Prepare PDF chunks context separately
     pdf_chunks_text = ""
     if top_chunks:
-        print__nodes_debug(f"📄 {FORMAT_ANSWER_ID}: Including {len(top_chunks)} PDF chunks in context")
+        print__nodes_debug(
+            f"📄 {FORMAT_ANSWER_ID}: Including {len(top_chunks)} PDF chunks in context"
+        )
         chunks_content = []
-        for i, chunk in enumerate(top_chunks[:10], 1):  # Limit to top 10 chunks to prevent token overflow
-            source = chunk.metadata.get('source', 'unknown') if chunk.metadata else 'unknown'
-            content = chunk.page_content if hasattr(chunk, 'page_content') else str(chunk)
+        for i, chunk in enumerate(
+            top_chunks[:10], 1
+        ):  # Limit to top 10 chunks to prevent token overflow
+            source = (
+                chunk.metadata.get("source", "unknown") if chunk.metadata else "unknown"
+            )
+            content = (
+                chunk.page_content if hasattr(chunk, "page_content") else str(chunk)
+            )
             chunks_content.append(f"PDF Source {i} ({source}):\n{content}")
         pdf_chunks_text = "\n\n".join(chunks_content)
     else:
-        print__nodes_debug(f"📄 {FORMAT_ANSWER_ID}: No PDF chunks available for context")
-    
+        print__nodes_debug(
+            f"📄 {FORMAT_ANSWER_ID}: No PDF chunks available for context"
+        )
+
     system_prompt = """
 You are a bilingual (Czech/English) data analyst. Respond strictly using provided SQL results and PDF document context:
 
@@ -613,92 +680,109 @@ Example regarding numeric output:
 Good: "X is 1234567 while Y is 7654321"
 Bad: "The query shows X is 1,234,567"
 """
-    
+
     # Build the formatted prompt with separate sections for SQL and PDF data
-    formatted_prompt_parts = [
-        "Question: {question}"
-    ]
-    
+    formatted_prompt_parts = ["Question: {question}"]
+
     # Add SQL data section if available
     if queries_and_results:
         formatted_prompt_parts.append("SQL Data Context:\n{sql_context}")
-    
+
     # Add PDF data section if available
     if pdf_chunks_text:
         formatted_prompt_parts.append("PDF Document Context:\n{pdf_context}")
-    
+
     # Add instruction
     if queries_and_results and pdf_chunks_text:
         instruction = "Please answer the question based on both the SQL queries/results and the PDF document context provided."
     elif queries_and_results:
-        instruction = "Please answer the question based on the SQL queries and results provided."
+        instruction = (
+            "Please answer the question based on the SQL queries and results provided."
+        )
     elif pdf_chunks_text:
-        instruction = "Please answer the question based on the PDF document context provided."
+        instruction = (
+            "Please answer the question based on the PDF document context provided."
+        )
     else:
         instruction = "No data context available to answer the question."
-    
+
     formatted_prompt_parts.append(instruction)
     formatted_prompt = "\n\n".join(formatted_prompt_parts)
-    
+
     # Prepare template variables
-    template_vars = {
-        "question": rewritten_prompt or prompt
-    }
-    
+    template_vars = {"question": rewritten_prompt or prompt}
+
     if queries_and_results:
         template_vars["sql_context"] = queries_results_text
-    
+
     if pdf_chunks_text:
         template_vars["pdf_context"] = pdf_chunks_text
-    
-    chain = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", formatted_prompt)
-    ])
-    result = await llm.ainvoke(
-        chain.format_messages(**template_vars)
+
+    chain = ChatPromptTemplate.from_messages(
+        [("system", system_prompt), ("human", formatted_prompt)]
     )
+    result = await llm.ainvoke(chain.format_messages(**template_vars))
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
-    
+
     # Extract the final answer content
-    final_answer_content = result.content if hasattr(result, 'content') else str(result)
+    final_answer_content = result.content if hasattr(result, "content") else str(result)
     # FIX: Escape curly braces in final_answer_content to prevent f-string parsing errors
-    final_answer_preview = final_answer_content[:100].replace('{', '{{').replace('}', '}}')
-    print__nodes_debug(f"📄 {FORMAT_ANSWER_ID}: Final answer: {final_answer_preview}...")
-    
+    final_answer_preview = (
+        final_answer_content[:100].replace("{", "{{").replace("}", "}}")
+    )
+    print__nodes_debug(
+        f"📄 {FORMAT_ANSWER_ID}: Final answer: {final_answer_preview}..."
+    )
+
     # Update messages state (existing logic)
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
     if not hasattr(result, "id") or not result.id:
         result.id = "format_answer"
-    
+
     # Add final debug logging
-    print__nodes_debug(f"📄 {FORMAT_ANSWER_ID}: Preserving {len(top_chunks)} PDF chunks for frontend")
-    
+    print__nodes_debug(
+        f"📄 {FORMAT_ANSWER_ID}: Preserving {len(top_chunks)} PDF chunks for frontend"
+    )
+
     return {
         "messages": [summary, result],
         "final_answer": final_answer_content,
-        "top_chunks": top_chunks  # Preserve chunks for frontend instead of clearing them
+        "top_chunks": top_chunks,  # Preserve chunks for frontend instead of clearing them
     }
+
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Increment the iteration counter and return updated state."""
     print__nodes_debug(f"🔄 {INCREMENT_ITERATION_ID}: Enter increment_iteration_node")
-    
+
     current_iteration = state.get("iteration", 0)
     return {"iteration": current_iteration + 1}
+
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Submit the final answer to the user and ensure final_answer is preserved."""
     print__nodes_debug(f"📤 {SUBMIT_FINAL_ID}: Enter submit_final_answer_node")
-    
+
     # Ensure final_answer is properly preserved in the state
     final_answer = state.get("final_answer", "")
-    
-    print__nodes_debug(f"📤 {SUBMIT_FINAL_ID}: Final answer length: {len(final_answer)} characters")
+
+    print__nodes_debug(
+        f"📤 {SUBMIT_FINAL_ID}: Final answer length: {len(final_answer)} characters"
+    )
     # FIX: Escape curly braces in final_answer to prevent f-string parsing errors
-    final_answer_preview = (final_answer[:100] if final_answer else '').replace('{', '{{').replace('}', '}}')
-    print__nodes_debug(f"📤 {SUBMIT_FINAL_ID}: Final answer preview: {final_answer_preview}...")
-    
+    final_answer_preview = (
+        (final_answer[:100] if final_answer else "")
+        .replace("{", "{{")
+        .replace("}", "}}")
+    )
+    print__nodes_debug(
+        f"📤 {SUBMIT_FINAL_ID}: Final answer preview: {final_answer_preview}..."
+    )
+
     # Return state with final_answer explicitly preserved
     return {
         "final_answer": final_answer,
@@ -706,51 +790,65 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
         "messages": state.get("messages", []),
         "queries_and_results": state.get("queries_and_results", []),
         "top_chunks": state.get("top_chunks", []),
-        "top_selection_codes": state.get("top_selection_codes", [])
+        "top_selection_codes": state.get("top_selection_codes", []),
     }
+
 
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Save the result and create minimal checkpoint with only essential fields."""
     print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Enter save_node")
-    
+
     prompt = state["prompt"]
     queries_and_results = state.get("queries_and_results", [])
-    
+
     # FIXED: Use final_answer directly from state instead of extracting from messages
-    final_answer = state.get("final_answer", "")    
+    final_answer = state.get("final_answer", "")
     # FIX: Escape curly braces in final_answer to prevent f-string parsing errors
-    final_answer_preview = (final_answer[:100] if final_answer else 'EMPTY').replace('{', '{{').replace('}', '}}')
-    print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Final answer from state: '{final_answer_preview}'...")
-    
+    final_answer_preview = (
+        (final_answer[:100] if final_answer else "EMPTY")
+        .replace("{", "{{")
+        .replace("}", "}}")
+    )
+    print__nodes_debug(
+        f"💾 {SAVE_RESULT_ID}: Final answer from state: '{final_answer_preview}'..."
+    )
+
     result_path = BASE_DIR / "analysis_results.txt"
     result_obj = {
         "prompt": prompt,
         "result": final_answer,
-        "queries_and_results": [{"query": q, "result": r} for q, r in queries_and_results]
+        "queries_and_results": [
+            {"query": q, "result": r} for q, r in queries_and_results
+        ],
     }
-    
+
     # Stream write to text file (no memory issues)
-    with result_path.open("a", encoding='utf-8') as f:
+    with result_path.open("a", encoding="utf-8") as f:
         f.write(f"Prompt: {prompt}\n")
         f.write(f"Result: {final_answer}\n")
         f.write("Queries and Results:\n")
         for query, result in queries_and_results:
             f.write(f"  Query: {query}\n")
             f.write(f"  Result: {result}\n")
-        f.write("----------------------------------------------------------------------------\n")
-    
+        f.write(
+            "----------------------------------------------------------------------------\n"
+        )
+
     # Append to a JSONL (JSON Lines) file for memory efficiency
     json_result_path = BASE_DIR / "analysis_results.jsonl"
-    
+
     try:
         # Simply append one JSON object per line (no loading existing file)
-        with json_result_path.open("a", encoding='utf-8') as f:
+        with json_result_path.open("a", encoding="utf-8") as f:
             import json
-            f.write(json.dumps(result_obj, ensure_ascii=False) + '\n')
-        print__nodes_debug(f"✅ {SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}")
+
+            f.write(json.dumps(result_obj, ensure_ascii=False) + "\n")
+        print__nodes_debug(
+            f"✅ {SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}"
+        )
     except Exception as e:
         print__nodes_debug(f"❌ {SAVE_RESULT_ID}: ⚠️ Error saving JSON: {e}")
-    
+
     # MINIMAL CHECKPOINT STATE: Return only essential fields for checkpointing
     # This dramatically reduces database storage from full state to just these 5 fields
     minimal_checkpoint_state = {
@@ -760,21 +858,36 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         "most_similar_chunks": state.get("most_similar_chunks", []),
         "final_answer": final_answer,  # Now correctly uses the final_answer from state
         # Keep messages for API compatibility but don't store large intermediate state
-        "messages": state.get("messages", [])
+        "messages": state.get("messages", []),
     }
-    
-    print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Created minimal checkpoint with {len(minimal_checkpoint_state)} essential fields")
-    print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Checkpoint fields: {list(minimal_checkpoint_state.keys())}")
+
+    print__nodes_debug(
+        f"💾 {SAVE_RESULT_ID}: Created minimal checkpoint with {len(minimal_checkpoint_state)} essential fields"
+    )
+    print__nodes_debug(
+        f"💾 {SAVE_RESULT_ID}: Checkpoint fields: {list(minimal_checkpoint_state.keys())}"
+    )
     # FIX: Escape curly braces in the final debug message as well
-    final_answer_debug = (final_answer[:100] if final_answer else 'EMPTY').replace('{', '{{').replace('}', '}}')
-    print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Final answer being stored: '{final_answer_debug}'...")
-    
+    final_answer_debug = (
+        (final_answer[:100] if final_answer else "EMPTY")
+        .replace("{", "{{")
+        .replace("}", "}}")
+    )
+    print__nodes_debug(
+        f"💾 {SAVE_RESULT_ID}: Final answer being stored: '{final_answer_debug}'..."
+    )
+
     return minimal_checkpoint_state
 
-async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisState) -> DataAnalysisState:
+
+async def retrieve_similar_selections_hybrid_search_node(
+    state: DataAnalysisState,
+) -> DataAnalysisState:
     """Node: Perform hybrid search on ChromaDB to retrieve initial candidate documents. Returns hybrid search results as Document objects."""
-    print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node")
-    
+    print__nodes_debug(
+        f"🔍 {HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node"
+    )
+
     query = state.get("rewritten_prompt") or state["prompt"]
     n_results = state.get("n_results", 20)
 
@@ -784,57 +897,80 @@ async def retrieve_similar_selections_hybrid_search_node(state: DataAnalysisStat
     # Check if ChromaDB directory exists
     chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
     if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
-        print__nodes_debug(f"📄 {HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}")
+        print__nodes_debug(
+            f"📄 {HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}"
+        )
         return {"hybrid_search_results": [], "chromadb_missing": True}
 
     try:
         # Use the same method as the test script to get ChromaDB collection directly
         import chromadb
+
         client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
         collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
-        print__nodes_debug(f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized directly")
-        
+        print__nodes_debug(
+            f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized directly"
+        )
+
         hybrid_results = hybrid_search(collection, query, n_results=n_results)
-        print__nodes_debug(f"📊 {HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results")
-        
+        print__nodes_debug(
+            f"📊 {HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results"
+        )
+
         # Convert dict results to Document objects for compatibility
         from langchain_core.documents import Document
+
         hybrid_docs = []
         for result in hybrid_results:
-            doc = Document(
-                page_content=result['document'],
-                metadata=result['metadata']
-            )
+            doc = Document(page_content=result["document"], metadata=result["metadata"])
             hybrid_docs.append(doc)
-        
+
         # Debug: Show detailed hybrid search results
-        print__nodes_debug(f"📄 {HYBRID_SEARCH_NODE_ID}: Detailed hybrid search results:")
+        print__nodes_debug(
+            f"📄 {HYBRID_SEARCH_NODE_ID}: Detailed hybrid search results:"
+        )
         for i, doc in enumerate(hybrid_docs[:10], 1):  # Show first 10
-            selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
-            content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
-            print__nodes_debug(f"📄 {HYBRID_SEARCH_NODE_ID}: #{i}: {selection} | Content: {content_preview}...")
-        
-        print__nodes_debug(f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}")
-        
+            selection = doc.metadata.get("selection") if doc.metadata else "N/A"
+            content_preview = (
+                doc.page_content[:100].replace("\n", " ")
+                if hasattr(doc, "page_content")
+                else "N/A"
+            )
+            print__nodes_debug(
+                f"📄 {HYBRID_SEARCH_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
+            )
+
+        print__nodes_debug(
+            f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}"
+        )
+
         return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
         print__nodes_debug(f"❌ {HYBRID_SEARCH_NODE_ID}: Error in hybrid search: {e}")
         import traceback
-        print__nodes_debug(f"📄 {HYBRID_SEARCH_NODE_ID}: Traceback: {traceback.format_exc()}")
+
+        print__nodes_debug(
+            f"📄 {HYBRID_SEARCH_NODE_ID}: Traceback: {traceback.format_exc()}"
+        )
         return {"hybrid_search_results": []}
+
 
 async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Rerank hybrid search results using Cohere rerank model. Returns selection codes and Cohere rerank scores."""
-    
-    print__nodes_debug(f"🔥🔥🔥 🔄 {RERANK_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥")
+
+    print__nodes_debug(
+        f"🔥🔥🔥 🔄 {RERANK_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥"
+    )
     print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Enter rerank_node")
-    
+
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_results", [])
-    n_results = state.get("n_results", 20) 
+    n_results = state.get("n_results", 20)
 
     print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Query: {query}")
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}")
+    print__nodes_debug(
+        f"🔄 {RERANK_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
+    )
     print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Requested n_results: {n_results}")
 
     # Check if we have hybrid search results to rerank
@@ -845,15 +981,25 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
     # Debug: Show input to rerank
     print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Input hybrid results for reranking:")
     for i, doc in enumerate(hybrid_results[:10], 1):  # Show first 10
-        selection = doc.metadata.get('selection') if doc.metadata else 'N/A'
-        content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
-        print__nodes_debug(f"🔄 {RERANK_NODE_ID}: #{i}: {selection} | Content: {content_preview}...")
+        selection = doc.metadata.get("selection") if doc.metadata else "N/A"
+        content_preview = (
+            doc.page_content[:100].replace("\n", " ")
+            if hasattr(doc, "page_content")
+            else "N/A"
+        )
+        print__nodes_debug(
+            f"🔄 {RERANK_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
+        )
 
     try:
-        print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents")
+        print__nodes_debug(
+            f"🔄 {RERANK_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
+        )
         reranked = cohere_rerank(query, hybrid_results, top_n=n_results)
-        print__nodes_debug(f"📊 {RERANK_NODE_ID}: Cohere returned {len(reranked)} reranked results")
-        
+        print__nodes_debug(
+            f"📊 {RERANK_NODE_ID}: Cohere returned {len(reranked)} reranked results"
+        )
+
         most_similar = []
         for i, (doc, res) in enumerate(reranked, 1):
             selection_code = doc.metadata.get("selection") if doc.metadata else None
@@ -861,60 +1007,81 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
             most_similar.append((selection_code, score))
             # Debug: Show detailed rerank results
             if i <= 10:  # Show top 10 results
-                print__nodes_debug(f"🎯🎯🎯 🎯 {RERANK_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}")
-        
-        print__nodes_debug(f"🎯🎯🎯 🎯🎯🎯 {RERANK_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯")
-        
+                print__nodes_debug(
+                    f"🎯🎯🎯 🎯 {RERANK_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}"
+                )
+
+        print__nodes_debug(
+            f"🎯🎯🎯 🎯🎯🎯 {RERANK_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
+        )
+
         return {"most_similar_selections": most_similar}
     except Exception as e:
         print__nodes_debug(f"❌ {RERANK_NODE_ID}: Error in reranking: {e}")
         import traceback
+
         print__nodes_debug(f"📄 {RERANK_NODE_ID}: Traceback: {traceback.format_exc()}")
         return {"most_similar_selections": []}
+
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Select the top 3 reranked selections if their Cohere relevance score exceeds the threshold (0.005)."""
     print__nodes_debug(f"🎯 {RELEVANT_NODE_ID}: Enter relevant_selections_node")
     SIMILARITY_THRESHOLD = 0.0005  # Minimum Cohere rerank score required
-    
+
     most_similar = state.get("most_similar_selections", [])
-    
+
     # Select up to 3 top selections above threshold
-    top_selection_codes = [sel for sel, score in most_similar if sel is not None and score is not None and score >= SIMILARITY_THRESHOLD][:3]
-    print__nodes_debug(f"🎯 {RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}")
-    
+    top_selection_codes = [
+        sel
+        for sel, score in most_similar
+        if sel is not None and score is not None and score >= SIMILARITY_THRESHOLD
+    ][:3]
+    print__nodes_debug(
+        f"🎯 {RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}"
+    )
+
     result = {
         "top_selection_codes": top_selection_codes,
         "hybrid_search_results": [],
-        "most_similar_selections": []
+        "most_similar_selections": [],
     }
-    
+
     # If no selections pass the threshold, set final_answer for frontend
     if not top_selection_codes:
-        print__nodes_debug(f"📄 {RELEVANT_NODE_ID}: No selections passed the threshold - setting final_answer")
+        print__nodes_debug(
+            f"📄 {RELEVANT_NODE_ID}: No selections passed the threshold - setting final_answer"
+        )
         result["final_answer"] = "No Relevant Selections Found"
-    
+
     return result
+
 
 async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Summarize the conversation so far, always setting messages to [summary, last_message]."""
     print__nodes_debug("📝 SUMMARY: Enter summarize_messages_node")
-    
+
     messages = state.get("messages", [])
-    summary = messages[0] if messages and isinstance(messages[0], SystemMessage) else SystemMessage(content="")
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
     last_message = messages[1] if len(messages) > 1 else None
     prev_summary = summary.content
     last_message_content = last_message.content if last_message else ""
-    
+
     print__nodes_debug(f"📝 SUMMARY: prev_summary: '{prev_summary}'")
     print__nodes_debug(f"📝 SUMMARY: last_message_content: '{last_message_content}'")
-    
+
     if not prev_summary and not last_message_content:
-        print__nodes_debug("📝 SUMMARY: Skipping summarization (no previous summary or last message).")
+        print__nodes_debug(
+            "📝 SUMMARY: Skipping summarization (no previous summary or last message)."
+        )
         return {"messages": [summary] if not last_message else [summary, last_message]}
-    
+
     llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
-    
+
     system_prompt = """
 You are a conversation summarization agent.
 Your job is to maintain a concise, cumulative summary of a data analysis conversation between a 
@@ -925,117 +1092,165 @@ context from the latest message. The summary should be suitable for
 providing context to an LLM in future queries. 
 Be concise but do not omit important details. 
 Do not include any meta-commentary or formatting, just the summary text."""
-    
+
     human_prompt = "Previous summary:\n{prev_summary}\n\nLatest message:\n{last_message_content}\n\nUpdate the summary to include the latest message."
     print__nodes_debug(f"📝 SUMMARY: human_prompt template: {human_prompt}")
-    
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", human_prompt)
-    ])
-    result = await llm.ainvoke(prompt.format_messages(
-        prev_summary=prev_summary,
-        last_message_content=last_message_content
-    ))
+
+    prompt = ChatPromptTemplate.from_messages(
+        [("system", system_prompt), ("human", human_prompt)]
+    )
+    result = await llm.ainvoke(
+        prompt.format_messages(
+            prev_summary=prev_summary, last_message_content=last_message_content
+        )
+    )
     new_summary = result.content.strip()
     print__nodes_debug(f"📝 SUMMARY: Updated summary: {new_summary}")
-    
+
     summary_msg = SystemMessage(content=new_summary)
     new_messages = [summary_msg, last_message] if last_message else [summary_msg]
-    
-    print__nodes_debug(f"📝 SUMMARY: New messages: {[getattr(m, 'content', None) for m in new_messages]}")
-    
+
+    print__nodes_debug(
+        f"📝 SUMMARY: New messages: {[getattr(m, 'content', None) for m in new_messages]}"
+    )
+
     return {"messages": new_messages}
 
-#==============================================================================
+
+# ==============================================================================
 # PDF CHUNK NODES
-#==============================================================================
-async def retrieve_similar_chunks_hybrid_search_node(state: DataAnalysisState) -> DataAnalysisState:
+# ==============================================================================
+async def retrieve_similar_chunks_hybrid_search_node(
+    state: DataAnalysisState,
+) -> DataAnalysisState:
     """Node: Perform hybrid search on PDF ChromaDB to retrieve initial candidate document chunks. Returns hybrid search results as Document objects."""
-    print__nodes_debug(f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Enter retrieve_similar_chunks_hybrid_search_node")
-    
+    print__nodes_debug(
+        f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Enter retrieve_similar_chunks_hybrid_search_node"
+    )
+
     if not PDF_FUNCTIONALITY_AVAILABLE:
-        print__nodes_debug(f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF functionality not available")
+        print__nodes_debug(
+            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF functionality not available"
+        )
         return {"hybrid_search_chunks": []}
-    
+
     query = state.get("rewritten_prompt") or state["prompt"]
     n_results = state.get("n_results", 10)
-    
+
     print__nodes_debug(f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Query: {query}")
-    print__nodes_debug(f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Requested n_results: {n_results}")
-    
+    print__nodes_debug(
+        f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Requested n_results: {n_results}"
+    )
+
     # Check if PDF ChromaDB directory exists
     if not PDF_CHROMA_DB_PATH.exists() or not PDF_CHROMA_DB_PATH.is_dir():
-        print__nodes_debug(f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB directory not found at {PDF_CHROMA_DB_PATH}")
+        print__nodes_debug(
+            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB directory not found at {PDF_CHROMA_DB_PATH}"
+        )
         return {"hybrid_search_chunks": []}
-    
+
     try:
         # Use the PDF ChromaDB collection directly
         import chromadb
+
         client = chromadb.PersistentClient(path=str(PDF_CHROMA_DB_PATH))
         collection = client.get_collection(name=PDF_COLLECTION_NAME)
-        print__nodes_debug(f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized directly")
-        
+        print__nodes_debug(
+            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized directly"
+        )
+
         hybrid_results = pdf_hybrid_search(collection, query, n_results=n_results)
-        print__nodes_debug(f"📊 {RETRIEVE_CHUNKS_NODE_ID}: Retrieved {len(hybrid_results)} PDF hybrid search results")
-        
+        print__nodes_debug(
+            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: Retrieved {len(hybrid_results)} PDF hybrid search results"
+        )
+
         # Convert dict results to Document objects for compatibility
         from langchain_core.documents import Document
+
         hybrid_docs = []
         for result in hybrid_results:
-            doc = Document(
-                page_content=result['document'],
-                metadata=result['metadata']
-            )
+            doc = Document(page_content=result["document"], metadata=result["metadata"])
             hybrid_docs.append(doc)
-        
+
         # Debug: Show detailed hybrid search results
-        print__nodes_debug(f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Detailed PDF hybrid search results:")
+        print__nodes_debug(
+            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Detailed PDF hybrid search results:"
+        )
         for i, doc in enumerate(hybrid_docs[:5], 1):  # Show first 5
-            source = doc.metadata.get('source') if doc.metadata else 'N/A'
-            content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
-            print__nodes_debug(f"📄 {RETRIEVE_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}...")
-        
+            source = doc.metadata.get("source") if doc.metadata else "N/A"
+            content_preview = (
+                doc.page_content[:100].replace("\n", " ")
+                if hasattr(doc, "page_content")
+                else "N/A"
+            )
+            print__nodes_debug(
+                f"📄 {RETRIEVE_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}..."
+            )
+
         return {"hybrid_search_chunks": hybrid_docs}
     except Exception as e:
-        print__nodes_debug(f"❌ {RETRIEVE_CHUNKS_NODE_ID}: Error in PDF hybrid search: {e}")
+        print__nodes_debug(
+            f"❌ {RETRIEVE_CHUNKS_NODE_ID}: Error in PDF hybrid search: {e}"
+        )
         import traceback
-        print__nodes_debug(f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}")
+
+        print__nodes_debug(
+            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}"
+        )
         return {"hybrid_search_chunks": []}
+
 
 async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Rerank PDF chunk hybrid search results using Cohere rerank model. Returns document-score pairs."""
     print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Enter rerank_chunks_node")
-    
+
     if not PDF_FUNCTIONALITY_AVAILABLE:
-        print__nodes_debug(f"📄 {RERANK_CHUNKS_NODE_ID}: PDF functionality not available")
+        print__nodes_debug(
+            f"📄 {RERANK_CHUNKS_NODE_ID}: PDF functionality not available"
+        )
         return {"most_similar_chunks": []}
-    
+
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_chunks", [])
     n_results = state.get("n_results", 5)
-    
+
     print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Query: {query}")
-    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Number of PDF hybrid results received: {len(hybrid_results)}")
+    print__nodes_debug(
+        f"🔄 {RERANK_CHUNKS_NODE_ID}: Number of PDF hybrid results received: {len(hybrid_results)}"
+    )
     print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Requested n_results: {n_results}")
-    
+
     # Check if we have hybrid search results to rerank
     if not hybrid_results:
-        print__nodes_debug(f"📄 {RERANK_CHUNKS_NODE_ID}: No PDF hybrid search results to rerank")
+        print__nodes_debug(
+            f"📄 {RERANK_CHUNKS_NODE_ID}: No PDF hybrid search results to rerank"
+        )
         return {"most_similar_chunks": []}
-    
+
     # Debug: Show input to rerank
-    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Input PDF hybrid results for reranking:")
+    print__nodes_debug(
+        f"🔄 {RERANK_CHUNKS_NODE_ID}: Input PDF hybrid results for reranking:"
+    )
     for i, doc in enumerate(hybrid_results[:5], 1):  # Show first 5
-        source = doc.metadata.get('source') if doc.metadata else 'N/A'
-        content_preview = doc.page_content[:100].replace('\n', ' ') if hasattr(doc, 'page_content') else 'N/A'
-        print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}...")
-    
+        source = doc.metadata.get("source") if doc.metadata else "N/A"
+        content_preview = (
+            doc.page_content[:100].replace("\n", " ")
+            if hasattr(doc, "page_content")
+            else "N/A"
+        )
+        print__nodes_debug(
+            f"🔄 {RERANK_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}..."
+        )
+
     try:
-        print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Calling PDF cohere_rerank with {len(hybrid_results)} documents")
+        print__nodes_debug(
+            f"🔄 {RERANK_CHUNKS_NODE_ID}: Calling PDF cohere_rerank with {len(hybrid_results)} documents"
+        )
         reranked = pdf_cohere_rerank(query, hybrid_results, top_n=n_results)
-        print__nodes_debug(f"📄 {RERANK_CHUNKS_NODE_ID}: PDF Cohere returned {len(reranked)} reranked results")
-        
+        print__nodes_debug(
+            f"📄 {RERANK_CHUNKS_NODE_ID}: PDF Cohere returned {len(reranked)} reranked results"
+        )
+
         most_similar = []
         for i, (doc, res) in enumerate(reranked, 1):
             score = res.relevance_score
@@ -1043,37 +1258,56 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
             # Debug: Show detailed rerank results
             if i <= 5:  # Show top 5 results
                 source = doc.metadata.get("source") if doc.metadata else "unknown"
-                print__nodes_debug(f"🎯🎯🎯 🎯 {RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}")
-        
-        print__nodes_debug(f"🎯🎯🎯 🎯🎯🎯 {RERANK_CHUNKS_NODE_ID}: FINAL PDF RERANK OUTPUT: {len(most_similar)} chunks 🎯🎯🎯")
-        
+                print__nodes_debug(
+                    f"🎯🎯🎯 🎯 {RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}"
+                )
+
+        print__nodes_debug(
+            f"🎯🎯🎯 🎯🎯🎯 {RERANK_CHUNKS_NODE_ID}: FINAL PDF RERANK OUTPUT: {len(most_similar)} chunks 🎯🎯🎯"
+        )
+
         return {"most_similar_chunks": most_similar}
     except Exception as e:
         print__nodes_debug(f"❌ {RERANK_CHUNKS_NODE_ID}: Error in PDF reranking: {e}")
         import traceback
-        print__nodes_debug(f"📄 {RERANK_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}")
+
+        print__nodes_debug(
+            f"📄 {RERANK_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}"
+        )
         return {"most_similar_chunks": []}
+
 
 async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Select PDF chunks that exceed the relevance threshold (0.01)."""
     print__nodes_debug(f"🎯 {RELEVANT_CHUNKS_NODE_ID}: Enter relevant_chunks_node")
     SIMILARITY_THRESHOLD = 0.01  # Higher threshold for PDF chunks as requested
-    
+
     most_similar = state.get("most_similar_chunks", [])
-    
+
     # Select chunks above threshold
-    top_chunks = [doc for doc, score in most_similar if score is not None and score >= SIMILARITY_THRESHOLD]
-    print__nodes_debug(f"📄 {RELEVANT_CHUNKS_NODE_ID}: top_chunks: {len(top_chunks)} chunks passed threshold {SIMILARITY_THRESHOLD}")
-    
+    top_chunks = [
+        doc
+        for doc, score in most_similar
+        if score is not None and score >= SIMILARITY_THRESHOLD
+    ]
+    print__nodes_debug(
+        f"📄 {RELEVANT_CHUNKS_NODE_ID}: top_chunks: {len(top_chunks)} chunks passed threshold {SIMILARITY_THRESHOLD}"
+    )
+
     # Debug: Show what passed
     for i, chunk in enumerate(top_chunks[:5], 1):
-        source = chunk.metadata.get('source') if chunk.metadata else 'unknown'
-        content_preview = chunk.page_content[:100].replace('\n', ' ') if hasattr(chunk, 'page_content') else 'N/A'
-        print__nodes_debug(f"📄 {RELEVANT_CHUNKS_NODE_ID}: Chunk #{i}: {source} | Content: {content_preview}...")
-    
+        source = chunk.metadata.get("source") if chunk.metadata else "unknown"
+        content_preview = (
+            chunk.page_content[:100].replace("\n", " ")
+            if hasattr(chunk, "page_content")
+            else "N/A"
+        )
+        print__nodes_debug(
+            f"📄 {RELEVANT_CHUNKS_NODE_ID}: Chunk #{i}: {source} | Content: {content_preview}..."
+        )
+
     return {
         "top_chunks": top_chunks,
         "hybrid_search_chunks": [],
-        "most_similar_chunks": []
+        "most_similar_chunks": [],
     }
-

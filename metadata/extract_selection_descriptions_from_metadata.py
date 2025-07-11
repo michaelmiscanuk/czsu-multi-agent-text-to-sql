@@ -1,8 +1,9 @@
-import json
-import requests
 import csv
+import json
 import time
 from pathlib import Path
+
+import requests
 from tqdm import tqdm
 
 # Configuration

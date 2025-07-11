@@ -361,3 +361,45 @@ def print__memory_monitoring(msg: str) -> None:
     if debug_mode == "1":
         print(f"[MEMORY-MONITORING] {msg}")
         sys.stdout.flush()
+
+
+def print__nodes_debug(msg: str) -> None:
+    """Print print__nodes_debug messages when debug mode is enabled.
+
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get("print__nodes_debug", "0")
+    if debug_mode == "1":
+        print(f"[print__nodes_debug] {msg}")
+        import sys
+
+        sys.stdout.flush()
+
+
+def print__tools_debug(msg: str) -> None:
+    """Print TOOLS DEBUG messages when tools debug mode is enabled.
+
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get("print__tools_debug", "0")
+    if debug_mode == "1":
+        print(f"[TOOLS] {msg}")
+        import sys
+
+        sys.stdout.flush()
+
+
+def print__checkpointers_debug(msg: str) -> None:
+    """Print print__checkpointers_debug messages when tools debug mode is enabled.
+
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get("print__checkpointers_debug", "0")
+    if debug_mode == "1":
+        print(f"[print__checkpointers_debug] {msg}")
+        import sys
+
+        sys.stdout.flush()

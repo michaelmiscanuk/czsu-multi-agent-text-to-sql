@@ -29,7 +29,7 @@ from typing import List
 
 import psutil
 from dotenv import load_dotenv
-from langchain_core.messages import AIMessage, BaseMessage, SystemMessage
+from langchain_core.messages import AIMessage, SystemMessage
 
 # Load environment variables
 load_dotenv()
@@ -50,37 +50,8 @@ except NameError:
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-
-# ==============================================================================
-# DEBUG FUNCTIONS
-# ==============================================================================
-def print__debug(msg: str) -> None:
-    """Print debug messages when debug mode is enabled.
-
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get("DEBUG", "0")
-    if debug_mode == "1":
-        print(f"[MAIN_DEBUG] {msg}")
-        import sys
-
-        sys.stdout.flush()
-
-
-def print__analysis_tracing_debug(msg: str) -> None:
-    """Print analysis tracing debug messages when debug mode is enabled.
-
-    Args:
-        msg: The message to print
-    """
-    analysis_tracing_debug_mode = os.environ.get("print__analysis_tracing_debug", "0")
-    if analysis_tracing_debug_mode == "1":
-        print(f"[print__analysis_tracing_debug] 🔍 {msg}")
-        import sys
-
-        sys.stdout.flush()
-
+# Import debug functions from utils
+from api.utils.debug import print__analysis_tracing_debug, print__debug
 
 # ==============================================================================
 # CONSTANTS & CONFIGURATION

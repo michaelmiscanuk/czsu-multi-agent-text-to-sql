@@ -40,12 +40,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from api.utils.debug import print__memory_monitoring, print__startup_debug
 
-# Import functionality from main scripts (not reimplementing!)
-from other.tests.test_concurrency import (
-    check_server_connectivity,
-    create_test_jwt_token,
-)
-
 # Test configuration
 SERVER_BASE_URL = "http://localhost:8000"
 REQUEST_TIMEOUT = 30.0
