@@ -312,7 +312,6 @@ async def get_thread_messages_with_metadata(
             f"🔍 INTERACTION SUCCESS: Created {len(interactions)} complete interactions"
         )
 
-
         if not interactions:
             print__chat_all_messages_debug(
                 f"⚠ No interactions found for thread {thread_id}"
@@ -356,9 +355,16 @@ async def get_thread_messages_with_metadata(
             )
 
             # Extract SQL query from queries_and_results if available
-            if chat_message.queries_and_results and len(chat_message.queries_and_results) > 0:
+            if (
+                chat_message.queries_and_results
+                and len(chat_message.queries_and_results) > 0
+            ):
                 try:
-                    chat_message.sql_query = chat_message.queries_and_results[0][0] if chat_message.queries_and_results[0] else None
+                    chat_message.sql_query = (
+                        chat_message.queries_and_results[0][0]
+                        if chat_message.queries_and_results[0]
+                        else None
+                    )
                 except (IndexError, TypeError):
                     chat_message.sql_query = None
 
