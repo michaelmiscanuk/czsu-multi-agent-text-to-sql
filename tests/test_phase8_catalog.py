@@ -131,7 +131,7 @@ class CatalogTestResults:
         )
 
     def add_error(
-        self, test_id: str, endpoint: str, description: str, error: Exception, response_time: float = None
+        self, test_id: str, endpoint: str, description: str, error: Exception, response_time: float = None, response_data: dict = None
     ):
         """Add an error result."""
         error_info = {
@@ -143,6 +143,7 @@ class CatalogTestResults:
             "response_time": response_time,
             "timestamp": datetime.now().isoformat(),
             "error_obj": error,  # Store the actual error object to access server_tracebacks
+            "response_data": response_data,  # Store server response data (may include traceback)
         }
         self.errors.append(error_info)
         print(f"❌ Error added: Test {test_id}, {endpoint} ({description}), Error: {str(error)}")
@@ -423,6 +424,7 @@ async def make_catalog_request(
                     error_data = response.json()
                     error_message = error_data.get("detail", f"HTTP {response.status_code}: {response.text}")
                 except Exception:
+                    error_data = None
                     error_message = f"HTTP {response.status_code}: {response.text}"
                 
                 print(f"❌ Test {test_id} - Expected success but got HTTP {response.status_code}: {error_message}")
@@ -437,7 +439,7 @@ async def make_catalog_request(
                     for i, tb in enumerate(error_info["server_tracebacks"], 1):
                         print(f"   Server Traceback #{i}: {tb['exception_type']}: {tb['exception_message']}")
                 
-                results.add_error(test_id, endpoint, description, error_obj, response_time)
+                results.add_error(test_id, endpoint, description, error_obj, response_time, response_data=error_data)
         else:
             # Expected to fail (validation error)
             if response.status_code == 422:  # Validation error

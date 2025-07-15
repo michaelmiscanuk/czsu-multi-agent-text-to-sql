@@ -312,6 +312,18 @@ def save_test_failures_traceback(
                 str(error.get('error', 'No error message available')),
                 ""
             ])
+
+            # Add server traceback from response_data if present
+            traceback_text = None
+            if 'response_data' in error and isinstance(error['response_data'], dict):
+                traceback_text = error['response_data'].get('traceback')
+            if traceback_text:
+                content_lines.extend([
+                    "SERVER TRACEBACK FROM RESPONSE:",
+                    "-" * 40,
+                    traceback_text,
+                    ""
+                ])
             
             # Check if this error has detailed server traceback info
             if hasattr(error, 'server_tracebacks') or 'server_tracebacks' in error:

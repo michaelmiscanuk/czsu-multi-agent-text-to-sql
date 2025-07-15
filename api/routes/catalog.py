@@ -112,7 +112,7 @@ def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
         print__debug("No table specified")
         return {"columns": [], "rows": []}
     print__debug(f"Requested table: {table}")
-    with sqlite3.connect(db_pFDGDFGFDGath) as conn:
+    with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
         try:
             cursor.execute(f"SELECT * FROM '{table}' LIMIT 10000")

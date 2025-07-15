@@ -319,6 +319,11 @@ async def value_error_handler(request: Request, exc: ValueError):
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle unexpected exceptions."""
+    import os
+    if os.getenv("DEBUG_TRACEBACK", "0") == "1":
+        tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+        print__debug(f"Unexpected error (with traceback): {type(exc).__name__}: {str(exc)}\n{tb}")
+        return JSONResponse(status_code=500, content={"detail": str(exc), "traceback": tb})
     print__debug(f"Unexpected error: {type(exc).__name__}: {str(exc)}")
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
