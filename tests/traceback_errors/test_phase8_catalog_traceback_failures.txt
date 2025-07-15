@@ -1,0 +1,63 @@
+====================================================================================================
+TEST FAILURE TRACEBACK REPORT
+Generated: 2025-07-11 21:37:58
+Test File: test_phase8_catalog.py
+====================================================================================================
+
+ADDITIONAL TEST INFORMATION:
+--------------------------------------------------
+Server URL: http://localhost:8000
+Request Timeout: 30s
+Total Test Queries: 10
+Test Start Time: 2025-07-11 21:37:51
+Test End Time: 2025-07-11 21:37:58
+Server Tracebacks Captured: 0
+
+
+TOTAL FAILED TESTS: 2
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: test_10
+Endpoint: /data-table
+Description: Invalid table query
+Error Type: Exception
+Timestamp: 2025-07-11T21:37:57.017599
+
+Response Time: 0.00s
+
+ERROR MESSAGE:
+------------------------------
+Expected success but got: Internal server error
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: test_11
+Endpoint: /data-table
+Description: Real table query: CEN0101CT01
+Error Type: Exception
+Timestamp: 2025-07-11T21:37:57.793816
+
+Response Time: 0.27s
+
+ERROR MESSAGE:
+------------------------------
+Expected success but got: Internal server error
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 11
+Successful Requests: 9
+Failed Requests: 2
+Success Rate: 81.81818181818183%
+Average Response Time: 0.010117901696099175s
+Total Test Time: 6.303533s
+
+====================================================================================================
+End of traceback report for test_phase8_catalog.py
+Generated: 2025-07-11 21:37:58
+====================================================================================================
