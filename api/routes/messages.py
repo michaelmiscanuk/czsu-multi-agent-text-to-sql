@@ -44,6 +44,7 @@ from api.utils.debug import (
 
 # Import database connection functions
 sys.path.insert(0, str(BASE_DIR))
+from api.helpers import traceback_json_response
 from api.routes.chat import get_thread_messages_with_metadata
 from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer
 
@@ -137,6 +138,9 @@ async def get_chat_messages(
             )
             return []
         else:
+            resp = traceback_json_response(e)
+            if resp:
+                return resp
             raise HTTPException(
                 status_code=500, detail=f"Failed to load checkpoint messages: {e}"
             )
@@ -205,4 +209,7 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
 
     except Exception as e:
         print__feedback_flow(f"🚨 Error fetching run_ids: {str(e)}")
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return {"run_ids": []}

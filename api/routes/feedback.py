@@ -46,6 +46,8 @@ from api.utils.debug import (
 
 # Import database connection functions
 sys.path.insert(0, str(BASE_DIR))
+# Import helpers
+from api.helpers import traceback_json_response
 from my_agent.utils.postgres_checkpointer import (
     get_direct_connection,
     update_thread_run_sentiment,
@@ -248,6 +250,9 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         )
         print__feedback_flow(f"🚨 LangSmith feedback submission error: {str(e)}")
         print__feedback_flow(f"🔍 Error type: {type(e).__name__}")
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {e}")
 
 
@@ -326,4 +331,7 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
         )
         print__sentiment_flow(f"🚨 Sentiment update error: {str(e)}")
         print__sentiment_flow(f"🔍 Error type: {type(e).__name__}")
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         raise HTTPException(status_code=500, detail=f"Failed to update sentiment: {e}")

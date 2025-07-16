@@ -61,6 +61,7 @@ from api.config.settings import (
     _bulk_loading_cache,
     _bulk_loading_locks,
 )
+from api.helpers import traceback_json_response
 from api.utils.debug import print__chat_all_messages_debug
 from my_agent.utils.postgres_checkpointer import (
     get_direct_connection,
@@ -427,6 +428,9 @@ async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
         print__sentiment_flow(
             f"❌ Failed to get sentiments for thread {thread_id}: {e}"
         )
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         raise HTTPException(
             status_code=500, detail=f"Failed to get sentiments: {e}"
         ) from e
@@ -549,7 +553,9 @@ async def get_chat_threads(
         )
         print__chat_threads_debug(f"❌ Error getting chat threads: {e}")
         print__chat_threads_debug(f"Full traceback: {traceback.format_exc()}")
-
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         # Return error response
         result = PaginatedChatThreadsResponse(
             threads=[], total_count=0, page=page, limit=limit, has_more=False
@@ -640,9 +646,6 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
         print__delete_chat_debug(
             f"🔧 DEBUG: Main exception traceback: {traceback.format_exc()}"
         )
-
-        # If it's a connection error, don't treat it as a failure since it means
-        # there are likely no records to delete anyway
         if any(
             keyword in error_msg.lower()
             for keyword in [
@@ -665,6 +668,9 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
                 "warning": "Database connection issues",
             }
         else:
+            resp = traceback_json_response(e)
+            if resp:
+                return resp
             raise HTTPException(
                 status_code=500, detail=f"Failed to delete checkpoint records: {e}"
             ) from e
@@ -746,6 +752,9 @@ async def get_all_chat_messages_for_one_thread(
         print__chat_all_messages_one_thread_debug(
             f"Full error traceback: {traceback.format_exc()}"
         )
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         raise HTTPException(
             status_code=500, detail="Failed to process chat thread"
         ) from e

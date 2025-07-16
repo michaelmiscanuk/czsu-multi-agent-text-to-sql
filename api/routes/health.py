@@ -42,6 +42,7 @@ from api.config.settings import (
     rate_limit_storage,
     start_time,
 )
+from api.helpers import traceback_json_response
 from api.utils.memory import cleanup_bulk_cache
 
 # Create router for health endpoints
@@ -110,6 +111,9 @@ async def health_check():
         return health_data
 
     except Exception as e:
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return JSONResponse(
             status_code=500,
             content={
@@ -172,6 +176,9 @@ async def database_health_check():
         return health_status
 
     except Exception as e:
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return JSONResponse(
             status_code=500,
             content={
@@ -229,6 +236,9 @@ async def memory_health_check():
             "timestamp": datetime.now().isoformat(),
         }
     except Exception as e:
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return {
             "status": "error",
             "error": str(e),
@@ -253,6 +263,9 @@ async def rate_limit_health_check():
             "timestamp": datetime.now().isoformat(),
         }
     except Exception as e:
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return {
             "status": "error",
             "error": str(e),
@@ -332,6 +345,9 @@ async def prepared_statements_health_check():
             }
 
     except Exception as e:
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return {
             "status": "unhealthy",
             "error": str(e),

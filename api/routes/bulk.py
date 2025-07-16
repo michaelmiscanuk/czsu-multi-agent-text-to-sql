@@ -33,6 +33,9 @@ from api.config.settings import (
 # Import authentication dependencies
 from api.dependencies.auth import get_current_user
 
+# Import traceback helper
+from api.helpers import traceback_json_response
+
 # Import models
 from api.models.responses import ChatMessage
 
@@ -427,6 +430,10 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             empty_result = {"messages": {}, "runIds": {}, "sentiments": {}}
             _bulk_loading_cache[cache_key] = (empty_result, current_time)
             print__chat_all_messages_debug("🔍 Cached empty result due to error")
+
+            resp = traceback_json_response(e)
+            if resp:
+                return resp
 
             response = JSONResponse(content=empty_result, status_code=500)
             response.headers["Cache-Control"] = (

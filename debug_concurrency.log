@@ -1,0 +1,84 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.9, pytest-8.4.1, pluggy-1.6.0
+rootdir: C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql
+configfile: pyproject.toml
+plugins: anyio-4.9.0, langsmith-0.3.34, asyncio-1.1.0
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 2 items
+
+tests\test_concurrency.py FF                                             [100%]
+
+================================== FAILURES ===================================
+_________________________ test_database_connectivity __________________________
+async def functions are not natively supported.
+You need to install a suitable plugin for your async framework, for example:
+  - anyio
+  - pytest-asyncio
+  - pytest-tornasync
+  - pytest-trio
+  - pytest-twisted
+______________________ test_analyze_endpoint_concurrency ______________________
+
+    @pytest.mark.asyncio
+    async def test_analyze_endpoint_concurrency():
+        """Pytest-compatible test function."""
+        result = await main()
+>       assert result, "Concurrency test failed"
+E       AssertionError: Concurrency test failed
+E       assert False
+
+tests\test_concurrency.py:691: AssertionError
+---------------------------- Captured stdout call -----------------------------
+\U0001f680 PostgreSQL Concurrency Test Starting...\n============================================================\n\U0001f50d Checking server connectivity at http://localhost:8000...\n\u2705 Server is running and accessible\n\U0001f527 Setting up test environment...\n\u2705 PostgreSQL environment variables are configured\n\u2705 USE_TEST_TOKENS=1 - test tokens will be accepted by server\n\u2705 Test environment setup complete (using real HTTP requests)\n\U0001f50d Testing database connectivity...\n\U0001f527 Creating database checkpointer...\n\u2705 Database checkpointer created successfully\n\u2705 Database connectivity test passed\n\u2705 Database connection closed properly\n\u2705 Database connectivity confirmed - proceeding with concurrency test\n\U0001f527 Setting up debug environment via API...\n\U0001f527 TEST TOKEN: Created JWT token with correct audience: 722331814120-9kdm64s2mp9cq8kig0mvrluf1eqkso74.apps.googleusercontent.com\n\u2705 Debug environment configured successfully\n\U0001f3af Starting concurrency test with simultaneous requests...\n\U0001f4cb Test threads: ['test_thread_5d4a043d', 'test_thread_705cbc3d']\n\U0001f4cb Test prompts: ['Porovnej narust poctu lidi v Brne a Praze v poslednich letech.', 'Kontrastuj uroven zivota v Brne a v Praze.']\n\U0001f310 Server URL: http://localhost:8000\n\u23f1\ufe0f Request timeout: 180s\n============================================================\n\U0001f50d STARTING CONCURRENT REQUEST 1 (Thread 1)\n============================================================\n============================================================\n\U0001f50d STARTING CONCURRENT REQUEST 2 (Thread 2)\n============================================================\n\u26a1 Executing concurrent requests...\n\U0001f4a1 Note: Analysis requests can take 30-60+ seconds, please wait...\n\U0001f680 Starting request for thread test_thread_5d4a043d\n\U0001f527 TEST TOKEN: Created JWT token with correct audience: 722331814120-9kdm64s2mp9cq8kig0mvrluf1eqkso74.apps.googleusercontent.com\n\U0001f680 Starting request for thread test_thread_705cbc3d\n\U0001f527 TEST TOKEN: Created JWT token with correct audience: 722331814120-9kdm64s2mp9cq8kig0mvrluf1eqkso74.apps.googleusercontent.com\n[DEBUG] Error response body for thread test_thread_705cbc3d: {"detail":"Sorry, there was an error processing your request. Please try again."}\n[DEBUG] error_info for thread test_thread_705cbc3d: {'has_server_errors': False, 'has_client_errors': False, 'server_tracebacks': [], 'server_error_messages': [], 'client_error': None, 'http_status': 500, 'response_body': '{"detail":"Sorry, there was an error processing your request. Please try again."}'}\n\u274c Error added: Thread test_thread_705cbc3d, Error: Unknown error\n[DEBUG] Error response body for thread test_thread_5d4a043d: {"detail":"Sorry, there was an error processing your request. Please try again."}\n[DEBUG] error_info for thread test_thread_5d4a043d: {'has_server_errors': False, 'has_client_errors': False, 'server_tracebacks': [], 'server_error_messages': [], 'client_error': None, 'http_status': 500, 'response_body': '{"detail":"Sorry, there was an error processing your request. Please try again."}'}\n\u274c Error added: Thread test_thread_5d4a043d, Error: Unknown error\n\U0001f9f9 Resetting debug environment...\n\U0001f527 TEST TOKEN: Created JWT token with correct audience: 722331814120-9kdm64s2mp9cq8kig0mvrluf1eqkso74.apps.googleusercontent.com\n\u2705 Debug environment reset to original .env values\n============================================================\n============================================================\n============================================================\n\U0001f4ca CONCURRENCY TEST RESULTS ANALYSIS\n============================================================\n============================================================\n============================================================\n\U0001f522 Total Requests: 2\n\u2705 Successful: 0\n\u274c Failed: 2\n\U0001f4c8 Success Rate: 0.0%\n\u23f1\ufe0f  Total Test Time: 48.68s\n\U0001f3af Concurrent Requests Completed: \u274c NO\n\n\U0001f4cb Individual Request Results:\n\n\u274c Errors Encountered:\n  1. Thread: test_thread_... | Error: Unknown error\n  2. Thread: test_thread_... | Error: Unknown error\n\n\U0001f50d CONCURRENCY ANALYSIS:\n\u274c Concurrent requests failed - potential database connection issues\n\n\U0001f4dd Saving failure traceback information...\n\n\U0001f4dd Traceback report saved to: tests\\traceback_errors\\test_concurrency_traceback_failures.txt\n\U0001f4ca Report contains 2 error(s)\n\u2139\ufe0f  No server tracebacks were captured (this might indicate the server didn't log errors)\n\u274c Test failed: Server returned empty error messages (potential crash/hang)\n\n\U0001f3c1 OVERALL TEST RESULT: \u274c FAILED\n\U0001f9f9 Cleaning up test environment...\n\u2705 Test environment cleanup complete
+------------------------------ Captured log call ------------------------------
+DEBUG    httpcore.connection:_trace.py:87 connect_tcp.started host='localhost' port=8000 local_address=None timeout=180 socket_options=None
+DEBUG    httpcore.connection:_trace.py:87 connect_tcp.started host='localhost' port=8000 local_address=None timeout=180 socket_options=None
+DEBUG    httpcore.connection:_trace.py:87 connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x00000201A34E2150>
+DEBUG    httpcore.connection:_trace.py:87 connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x00000201A34E2A90>
+DEBUG    httpcore.http11:_trace.py:87 send_request_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 send_request_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 send_request_headers.complete
+DEBUG    httpcore.http11:_trace.py:87 send_request_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 send_request_headers.complete
+DEBUG    httpcore.http11:_trace.py:87 send_request_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 send_request_body.complete
+DEBUG    httpcore.http11:_trace.py:87 receive_response_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 send_request_body.complete
+DEBUG    httpcore.http11:_trace.py:87 receive_response_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 receive_response_headers.complete return_value=(b'HTTP/1.1', 500, b'Internal Server Error', [(b'date', b'Wed, 16 Jul 2025 11:04:05 GMT'), (b'server', b'uvicorn'), (b'content-length', b'81'), (b'content-type', b'application/json')])
+INFO     httpx:_client.py:1740 HTTP Request: POST http://localhost:8000/analyze "HTTP/1.1 500 Internal Server Error"
+DEBUG    httpcore.http11:_trace.py:87 receive_response_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 receive_response_body.complete
+DEBUG    httpcore.http11:_trace.py:87 response_closed.started
+DEBUG    httpcore.http11:_trace.py:87 response_closed.complete
+DEBUG    httpcore.http11:_trace.py:87 receive_response_headers.complete return_value=(b'HTTP/1.1', 500, b'Internal Server Error', [(b'date', b'Wed, 16 Jul 2025 11:04:05 GMT'), (b'server', b'uvicorn'), (b'content-length', b'81'), (b'content-type', b'application/json')])
+INFO     httpx:_client.py:1740 HTTP Request: POST http://localhost:8000/analyze "HTTP/1.1 500 Internal Server Error"
+DEBUG    httpcore.http11:_trace.py:87 receive_response_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 receive_response_body.complete
+DEBUG    httpcore.http11:_trace.py:87 response_closed.started
+DEBUG    httpcore.http11:_trace.py:87 response_closed.complete
+DEBUG    httpcore.connection:_trace.py:87 close.started
+DEBUG    httpcore.connection:_trace.py:87 close.complete
+DEBUG    httpcore.connection:_trace.py:87 close.started
+DEBUG    httpcore.connection:_trace.py:87 close.complete
+DEBUG    httpcore.connection:_trace.py:87 close.started
+DEBUG    httpcore.connection:_trace.py:87 close.complete
+DEBUG    httpcore.connection:_trace.py:87 connect_tcp.started host='localhost' port=8000 local_address=None timeout=180 socket_options=None
+DEBUG    httpcore.connection:_trace.py:87 connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x00000201A2FAE8D0>
+DEBUG    httpcore.http11:_trace.py:87 send_request_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 send_request_headers.complete
+DEBUG    httpcore.http11:_trace.py:87 send_request_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 send_request_body.complete
+DEBUG    httpcore.http11:_trace.py:87 receive_response_headers.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'date', b'Wed, 16 Jul 2025 11:04:54 GMT'), (b'server', b'uvicorn'), (b'content-length', b'185'), (b'content-type', b'application/json')])
+INFO     httpx:_client.py:1740 HTTP Request: POST http://localhost:8000/debug/reset-env "HTTP/1.1 200 OK"
+DEBUG    httpcore.http11:_trace.py:87 receive_response_body.started request=<Request [b'POST']>
+DEBUG    httpcore.http11:_trace.py:87 receive_response_body.complete
+DEBUG    httpcore.http11:_trace.py:87 response_closed.started
+DEBUG    httpcore.http11:_trace.py:87 response_closed.complete
+DEBUG    httpcore.connection:_trace.py:87 close.started
+DEBUG    httpcore.connection:_trace.py:87 close.complete
+=========================== short test summary info ===========================
+FAILED tests/test_concurrency.py::test_database_connectivity - Failed: async ...
+FAILED tests/test_concurrency.py::test_analyze_endpoint_concurrency - Asserti...
+============================= 2 failed in 56.27s ==============================

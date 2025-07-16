@@ -1,0 +1,211 @@
+====================================================================================================
+TEST FAILURE TRACEBACK REPORT
+Generated: 2025-07-16 15:37:43
+Test File: test_concurrency.py
+====================================================================================================
+
+ADDITIONAL TEST INFORMATION:
+--------------------------------------------------
+Server URL: http://localhost:8000
+Request Timeout: 180s
+Total Test Prompts: 2
+Test Start Time: 2025-07-16 15:36:51
+Test End Time: 2025-07-16 15:37:43
+Server Tracebacks Captured: 0
+
+
+TOTAL FAILED TESTS: 2
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: Unknown
+Endpoint: Unknown
+Description: Unknown
+Error Type: Exception
+Timestamp: 2025-07-16T15:37:41.827421
+
+Response Time: 50.27s
+
+ERROR MESSAGE:
+------------------------------
+Unknown error
+
+SERVER TRACEBACK FROM RESPONSE:
+----------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\api\routes\analysis.py", line 264, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\asyncio\tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\my_agent\utils\postgres_checkpointer.py", line 454, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\main.py", line 406, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2596, in astream
+    async with AsyncPregelLoop(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1393, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\contextlib.py", line 745, in __aexit__
+    raise exc_details[1]
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\contextlib.py", line 728, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\executor.py", line 209, in __aexit__
+    raise exc
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1260, in _checkpointer_put_after_previous
+    await prev
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1260, in _checkpointer_put_after_previous
+    await prev
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1262, in _checkpointer_put_after_previous
+    await cast(BaseCheckpointSaver, self.checkpointer).aput(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\checkpoint\postgres\aio.py", line 267, in aput
+    await cur.execute(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\cursor_async.py", line 93, in execute
+    await self._conn.wait(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\connection_async.py", line 439, in wait
+    return await waiting.wait_async(gen, self.pgconn.socket, interval=interval)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\waiting.py", line 131, in wait_async
+    s = next(gen)
+        ^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_cursor_base.py", line 194, in _execute_gen
+    pgq = self._convert_query(query, params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_cursor_base.py", line 453, in _convert_query
+    pgq.convert(query, params)
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_queries.py", line 95, in convert
+    self.dump(vars)
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_queries.py", line 106, in dump
+    self.params = self._tx.dump_sequence(params, self._want_formats)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "psycopg_binary\\_psycopg/transform.pyx", line 351, in psycopg_binary._psycopg.Transformer.dump_sequence
+  File "psycopg_binary\\_psycopg/transform.pyx", line 402, in psycopg_binary._psycopg.Transformer.dump_sequence
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\types\json.py", line 149, in dump
+    if isinstance((data := dumps(obj)), str):
+                           ^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type SystemMessage is not JSON serializable
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: Unknown
+Endpoint: Unknown
+Description: Unknown
+Error Type: Exception
+Timestamp: 2025-07-16T15:37:43.414331
+
+Response Time: 51.86s
+
+ERROR MESSAGE:
+------------------------------
+Unknown error
+
+SERVER TRACEBACK FROM RESPONSE:
+----------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\api\routes\analysis.py", line 264, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\asyncio\tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\my_agent\utils\postgres_checkpointer.py", line 454, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\main.py", line 406, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\__init__.py", line 2596, in astream
+    async with AsyncPregelLoop(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1393, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\contextlib.py", line 745, in __aexit__
+    raise exc_details[1]
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\contextlib.py", line 728, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\executor.py", line 209, in __aexit__
+    raise exc
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1260, in _checkpointer_put_after_previous
+    await prev
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1260, in _checkpointer_put_after_previous
+    await prev
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\pregel\loop.py", line 1262, in _checkpointer_put_after_previous
+    await cast(BaseCheckpointSaver, self.checkpointer).aput(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\langgraph\checkpoint\postgres\aio.py", line 267, in aput
+    await cur.execute(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\cursor_async.py", line 93, in execute
+    await self._conn.wait(
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\connection_async.py", line 439, in wait
+    return await waiting.wait_async(gen, self.pgconn.socket, interval=interval)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\waiting.py", line 131, in wait_async
+    s = next(gen)
+        ^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_cursor_base.py", line 194, in _execute_gen
+    pgq = self._convert_query(query, params)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_cursor_base.py", line 453, in _convert_query
+    pgq.convert(query, params)
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_queries.py", line 95, in convert
+    self.dump(vars)
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\_queries.py", line 106, in dump
+    self.params = self._tx.dump_sequence(params, self._want_formats)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "psycopg_binary\\_psycopg/transform.pyx", line 351, in psycopg_binary._psycopg.Transformer.dump_sequence
+  File "psycopg_binary\\_psycopg/transform.pyx", line 402, in psycopg_binary._psycopg.Transformer.dump_sequence
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\.venv\Lib\site-packages\psycopg\types\json.py", line 149, in dump
+    if isinstance((data := dumps(obj)), str):
+                           ^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\mmiscanuk\AppData\Roaming\uv\python\cpython-3.11.9-windows-x86_64-none\Lib\json\encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type SystemMessage is not JSON serializable
+
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 2
+Successful Requests: 0
+Failed Requests: 2
+Success Rate: 0.0%
+Average Response Time: 0s
+Total Test Time: 52.339499s
+
+====================================================================================================
+End of traceback report for test_concurrency.py
+Generated: 2025-07-16 15:37:43
+====================================================================================================

@@ -25,6 +25,8 @@ except NameError:
 from fastapi import APIRouter
 from fastapi.responses import Response
 
+from api.helpers import traceback_json_response
+
 # Create router for miscellaneous endpoints
 router = APIRouter()
 
@@ -53,12 +55,20 @@ async def get_placeholder_image(width: int, height: int):
         )
 
     except Exception as e:
-        # Fallback for any errors
-        simple_svg = f"""<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100%" height="100%" fill="#f3f4f6"/>
-            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#6b7280" font-size="12">Error</text>
-        </svg>"""
-
+        resp = traceback_json_response(e)
+        if resp is not None:
+            # For SVG, return the traceback as text in SVG format
+            tb = resp.body.decode() if hasattr(resp, "body") else str(resp)
+            tb_svg = f"""<svg width=\"1000\" height=\"200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" fill=\"#f3f4f6\"/><text x=\"10\" y=\"20\" fill=\"#6b7280\" font-size=\"12\">{tb.replace('<','&lt;').replace('>','&gt;')}</text></svg>"""
+            return Response(
+                content=tb_svg,
+                media_type="image/svg+xml",
+                headers={
+                    "Cache-Control": "public, max-age=3600",
+                    "Access-Control-Allow-Origin": "*",
+                },
+            )
+        simple_svg = f"""<svg width=\"100\" height=\"100\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"100%\" height=\"100%\" fill=\"#f3f4f6\"/><text x=\"50%\" y=\"50%\" dominant-baseline=\"middle\" text-anchor=\"middle\" fill=\"#6b7280\" font-size=\"12\">Error</text></svg>"""
         return Response(
             content=simple_svg,
             media_type="image/svg+xml",

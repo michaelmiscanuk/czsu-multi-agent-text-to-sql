@@ -48,6 +48,7 @@ from api.utils.memory import print__memory_monitoring
 
 # Import database connection functions
 sys.path.insert(0, str(BASE_DIR))
+from api.helpers import traceback_json_response
 from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer
 
 # Create router for debug endpoints
@@ -134,6 +135,9 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
 
     except Exception as e:
         print__debug(f"❌ Error inspecting checkpoints: {e}")
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return {"error": str(e)}
 
 
@@ -274,8 +278,10 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
                             print__debug(f"❌ Run_id {run_id} not found in database")
     except Exception as e:
         result["database_error"] = str(e)
-
-    return result
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
+        return result
 
 
 @router.post("/admin/clear-cache")
@@ -339,6 +345,9 @@ async def clear_prepared_statements_endpoint(user=Depends(get_current_user)):
 
     except Exception as e:
         print__debug(f"❌ Error clearing prepared statements: {e}")
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
         return {"error": str(e)}
 
 

@@ -23,6 +23,7 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 
 # Import configuration and globals
 from api.config.settings import (
@@ -52,6 +53,7 @@ sys.path.insert(0, str(BASE_DIR))
 # NEW: Import for calling the single-thread endpoint
 import httpx
 
+from api.helpers import traceback_json_response
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
     create_thread_run_entry,
@@ -159,6 +161,11 @@ async def get_thread_metadata_from_single_thread_endpoint(
     except Exception as e:
         print__analyze_debug(f"🚨 Error calling single-thread endpoint: {e}")
         print__analysis_tracing_debug(f"METADATA EXTRACTION ERROR: {e}")
+
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
+
         # Return empty metadata on error
         return {
             "top_selection_codes": [],
@@ -303,6 +310,11 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                     print__feedback_flow(
                         f"🔧 Prepared statement error detected - this should be handled by retry logic: {analysis_error}"
                     )
+
+                    resp = traceback_json_response(analysis_error)
+                    if resp:
+                        return resp
+
                     # Re-raise prepared statement errors - they should be handled by the retry decorator
                     raise HTTPException(
                         status_code=500,
@@ -340,6 +352,10 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                         print__feedback_flow(
                             f"🚫 InMemorySaver fallback disabled - propagating database error: {analysis_error}"
                         )
+                        resp = traceback_json_response(analysis_error)
+                        if resp:
+                            return resp
+
                         raise HTTPException(
                             status_code=500,
                             detail="Database connection error. Please try again. {analysis_error}",
@@ -408,6 +424,10 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                         print__feedback_flow(
                             f"🚨 Fallback analysis also failed: {fallback_error}"
                         )
+                        resp = traceback_json_response(fallback_error)
+                        if resp:
+                            return resp
+
                         raise HTTPException(
                             status_code=500,
                             detail="Sorry, there was an error processing your request. Please try again.",
@@ -421,6 +441,11 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                         f"🚨 Non-database error, re-raising: {type(analysis_error).__name__}: {str(analysis_error)}"
                     )
                     print__feedback_flow(f"🚨 Non-database error: {analysis_error}")
+
+                    resp = traceback_json_response(analysis_error)
+                    if resp:
+                        return resp
+
                     raise HTTPException(
                         status_code=500,
                         detail="Sorry, there was an error processing your request. Please try again.",
@@ -504,6 +529,11 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         )
         print__analyze_debug(f"🚨 TIMEOUT ERROR: {error_msg}")
         print__feedback_flow(f"🚨 {error_msg}")
+
+        resp = traceback_json_response(asyncio.TimeoutError)
+        if resp:
+            return resp
+
         raise HTTPException(status_code=408, detail=error_msg)
 
     except HTTPException as http_exc:
@@ -513,6 +543,10 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         print__analyze_debug(
             f"🚨 HTTP EXCEPTION: {http_exc.status_code} - {http_exc.detail}"
         )
+        resp = traceback_json_response(http_exc)
+        if resp:
+            return resp
+
         raise http_exc
 
     except Exception as e:
@@ -523,6 +557,10 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         print__analyze_debug(f"🚨 UNEXPECTED EXCEPTION: {type(e).__name__}: {str(e)}")
         print__analyze_debug(f"🚨 Exception traceback: {traceback.format_exc()}")
         print__feedback_flow(f"🚨 {error_msg}")
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
+
         raise HTTPException(
             status_code=500,
             detail="Sorry, there was an error processing your request. Please try again.",

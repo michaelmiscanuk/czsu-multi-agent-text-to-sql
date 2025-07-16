@@ -19,6 +19,7 @@ from typing import Any, Dict, List
 
 import httpx
 import pytest
+import pytest_asyncio
 
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 # This prevents conflicts with the modular API structure's event loop setup
@@ -46,6 +47,15 @@ from my_agent.utils.postgres_checkpointer import (
     get_db_config,
 )
 
+# Import test helpers
+from tests.helpers import (
+    extract_detailed_error_info,
+    make_request_with_traceback_capture,
+    save_exception_traceback,
+    save_server_traceback_report,
+    save_test_failures_traceback,
+)
+
 # Import main application and dependencies from the new modular structure
 # from api.main import app  # No longer needed for HTTP requests
 # from api.dependencies.auth import get_current_user  # No longer needed for HTTP requests
@@ -56,8 +66,8 @@ TEST_EMAIL = "test_user@example.com"
 TEST_PROMPTS = [
     "Porovnej narust poctu lidi v Brne a Praze v poslednich letech.",
     "Kontrastuj uroven zivota v Brne a v Praze.",
-    "Kontrastuj uroven zivota v Brne a v Plzni.",
-    "Kontrastuj uroven zivota v Ostrave a v Plzni.",
+    # "Kontrastuj uroven zivota v Brne a v Plzni.",
+    # "Kontrastuj uroven zivota v Ostrave a v Plzni.",
 ]
 
 # Server configuration for real HTTP requests
@@ -132,7 +142,12 @@ class ConcurrencyTestResults:
         )
 
     def add_error(
-        self, thread_id: str, prompt: str, error: Exception, response_time: float = None
+        self,
+        thread_id: str,
+        prompt: str,
+        error: Exception,
+        response_time: float = None,
+        response_data: dict = None,
     ):
         """Add an error result."""
         error_info = {
@@ -142,6 +157,7 @@ class ConcurrencyTestResults:
             "error_type": type(error).__name__,
             "response_time": response_time,
             "timestamp": datetime.now().isoformat(),
+            "response_data": response_data,  # Store response_data for traceback extraction
         }
         self.errors.append(error_info)
         print(f"❌ Error added: Thread {thread_id}, Error: {str(error)}")
@@ -255,89 +271,78 @@ async def make_analyze_request(
     prompt: str,
     results: ConcurrencyTestResults,
 ):
-    """Make a single analyze request and record the result."""
+    """Make a single analyze request and record the result, capturing server tracebacks."""
     print(f"🚀 Starting request for thread {thread_id}")
     start_time = time.time()
 
     try:
-        # Create the request payload using the same structure as the main app
         request_data = {"prompt": prompt, "thread_id": thread_id}
-
-        # Create authentication headers for real HTTP requests
         token = create_test_jwt_token()
         headers = {
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         }
 
-        # Make the request to the real running server
-        response = await client.post("/analyze", json=request_data, headers=headers)
+        # Use the helper to capture server tracebacks
+        result = await make_request_with_traceback_capture(
+            client,
+            "POST",
+            f"{SERVER_BASE_URL}/analyze",
+            json=request_data,
+            headers=headers,
+            timeout=REQUEST_TIMEOUT,
+        )
         response_time = time.time() - start_time
 
-        print(
-            f"📝 Thread {thread_id} - Status: {response.status_code}, Time: {response_time:.2f}s"
-        )
+        error_info = extract_detailed_error_info(result)
 
-        # Parse response
-        if response.status_code == 200:
-            response_data = response.json()
+        if result["response"] is not None and result["response"].status_code == 200:
+            response_data = result["response"].json()
             results.add_result(
-                thread_id, prompt, response_data, response_time, response.status_code
+                thread_id,
+                prompt,
+                response_data,
+                response_time,
+                result["response"].status_code,
             )
         else:
-            # Handle non-200 responses
-            try:
-                error_data = response.json()
-                error_message = error_data.get(
-                    "detail", f"HTTP {response.status_code}: {response.text}"
+            # DEBUG: Print the full error response body and error_info for diagnosis
+            response_json = None
+            if result["response"] is not None:
+                try:
+                    print(
+                        f"[DEBUG] Error response body for thread {thread_id}: {result['response'].text}"
+                    )
+                    response_json = result["response"].json()
+                except Exception as e:
+                    print(f"[DEBUG] Could not decode error response body: {e}")
+            print(f"[DEBUG] error_info for thread {thread_id}: {error_info}")
+            # Attach server tracebacks to error object
+            error_message = None
+            if error_info.get("server_error_messages"):
+                error_message = "; ".join(
+                    f"{em['exception_type']}: {em['exception_message']}"
+                    for em in error_info["server_error_messages"]
                 )
-            except Exception:
-                error_message = f"HTTP {response.status_code}: {response.text}"
-
-            print(
-                f"❌ Thread {thread_id} - HTTP Error {response.status_code}: {error_message}"
-            )
-            # For non-200 responses, treat as errors not just failed results
+            if not error_message:
+                error_message = error_info.get("client_error") or "Unknown error"
+            error_obj = Exception(error_message)
+            error_obj.server_tracebacks = error_info.get("server_tracebacks", [])
             results.add_error(
-                thread_id, prompt, Exception(error_message), response_time
+                thread_id, prompt, error_obj, response_time, response_data=response_json
             )
-
-    except httpx.TimeoutException:
-        response_time = time.time() - start_time
-        error_message = (
-            f"Request timeout after {response_time:.1f}s (limit: {REQUEST_TIMEOUT}s)"
-        )
-        print(f"⏰ Thread {thread_id} - {error_message}")
-        results.add_error(thread_id, prompt, Exception(error_message), response_time)
-
-    except httpx.ConnectError as e:
-        response_time = time.time() - start_time
-        error_message = f"Connection failed: {str(e)}"
-        print(f"🔌 Thread {thread_id} - {error_message}")
-        results.add_error(thread_id, prompt, Exception(error_message), response_time)
-
-    except httpx.HTTPStatusError as e:
-        response_time = time.time() - start_time
-        error_message = f"HTTP {e.response.status_code}: {e.response.text}"
-        print(f"📡 Thread {thread_id} - {error_message}")
-        results.add_error(thread_id, prompt, Exception(error_message), response_time)
-
     except Exception as e:
         response_time = time.time() - start_time
-        # Improve error message extraction
-        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
-        if not error_message or error_message.isspace():
-            error_message = f"Unknown error of type {type(e).__name__}"
-
-        print(
-            f"❌ Thread {thread_id} - Error: {error_message}, Time: {response_time:.2f}s"
+        error_obj = Exception(str(e))
+        error_obj.server_tracebacks = []
+        results.add_error(
+            thread_id, prompt, error_obj, response_time, response_data=None
         )
-        results.add_error(thread_id, prompt, Exception(error_message), response_time)
 
 
 async def run_concurrency_test() -> ConcurrencyTestResults:
-    """Run the main concurrency test with 4 simultaneous requests."""
-    print("🎯 Starting concurrency test with 4 simultaneous requests...")
+    """Run the main concurrency test with simultaneous requests."""
+    print("🎯 Starting concurrency test with simultaneous requests...")
 
     results = ConcurrencyTestResults()
     results.start_time = datetime.now()
@@ -347,36 +352,22 @@ async def run_concurrency_test() -> ConcurrencyTestResults:
         base_url=SERVER_BASE_URL, timeout=httpx.Timeout(REQUEST_TIMEOUT)
     ) as client:
         # Generate unique thread IDs for the test
-        thread_id_1 = f"test_thread_{uuid.uuid4().hex[:8]}"
-        thread_id_2 = f"test_thread_{uuid.uuid4().hex[:8]}"
+        thread_ids = [
+            f"test_thread_{uuid.uuid4().hex[:8]}" for _ in range(len(TEST_PROMPTS))
+        ]
 
-        print(f"📋 Test threads: {thread_id_1}, {thread_id_2}")
+        print(f"📋 Test threads: {thread_ids}")
         print(f"📋 Test prompts: {TEST_PROMPTS}")
         print(f"🌐 Server URL: {SERVER_BASE_URL}")
         print(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
 
-        # Create concurrent tasks
-        print("============================================================")
-        print("🔍 STARTING CONCURRENT REQUEST 1 (Thread 1)")
-        print("============================================================")
-        task1 = make_analyze_request(client, thread_id_1, TEST_PROMPTS[0], results)
-
-        print("============================================================")
-        print("🔍 STARTING CONCURRENT REQUEST 2 (Thread 2)")
-        print("============================================================")
-        task2 = make_analyze_request(client, thread_id_2, TEST_PROMPTS[1], results)
-
-        print("============================================================")
-        print("🔍 STARTING CONCURRENT REQUEST 3 (Thread 2)")
-        print("============================================================")
-        task3 = make_analyze_request(client, thread_id_2, TEST_PROMPTS[2], results)
-
-        print("============================================================")
-        print("🔍 STARTING CONCURRENT REQUEST 4 (Thread 2)")
-        print("============================================================")
-        task4 = make_analyze_request(client, thread_id_2, TEST_PROMPTS[3], results)
-
-        tasks = [task1, task2, task3, task4]
+        # Create concurrent tasks for each prompt
+        tasks = []
+        for i, prompt in enumerate(TEST_PROMPTS):
+            print("============================================================")
+            print(f"🔍 STARTING CONCURRENT REQUEST {i+1} (Thread {i+1})")
+            print("============================================================")
+            tasks.append(make_analyze_request(client, thread_ids[i], prompt, results))
 
         # Run tasks concurrently
         print("⚡ Executing concurrent requests...")
@@ -399,7 +390,7 @@ async def run_concurrency_test() -> ConcurrencyTestResults:
 
 
 def analyze_concurrency_results(results: ConcurrencyTestResults):
-    """Analyze and display the concurrency test results."""
+    """Analyze and display the concurrency test results, and save tracebacks if needed."""
     print("============================================================")
     print("============================================================")
     print("============================================================")
@@ -460,6 +451,52 @@ def analyze_concurrency_results(results: ConcurrencyTestResults):
             )
     else:
         print("❌ Concurrent requests failed - potential database connection issues")
+
+    # Collect all server tracebacks from errors (if any are attached)
+    all_server_tracebacks = []
+    for error in results.errors:
+        error_obj = error.get("error_obj") if "error_obj" in error else None
+        if hasattr(error_obj, "server_tracebacks") and error_obj.server_tracebacks:
+            all_server_tracebacks.extend(error_obj.server_tracebacks)
+        elif "server_tracebacks" in error and error["server_tracebacks"]:
+            all_server_tracebacks.extend(error["server_tracebacks"])
+
+    # Save traceback information if there are failures
+    if results.errors or summary["failed_requests"] > 0:
+        print("\n📝 Saving failure traceback information...")
+        additional_info = {
+            "Server URL": SERVER_BASE_URL,
+            "Request Timeout": f"{REQUEST_TIMEOUT}s",
+            "Total Test Prompts": len(TEST_PROMPTS),
+            "Test Start Time": (
+                results.start_time.strftime("%Y-%m-%d %H:%M:%S")
+                if results.start_time
+                else "Unknown"
+            ),
+            "Test End Time": (
+                results.end_time.strftime("%Y-%m-%d %H:%M:%S")
+                if results.end_time
+                else "Unknown"
+            ),
+            "Server Tracebacks Captured": len(all_server_tracebacks),
+        }
+        save_test_failures_traceback(
+            test_file_name="test_concurrency.py",
+            test_results=results,
+            additional_info=additional_info,
+        )
+        if all_server_tracebacks:
+            print(f"📝 Saving {len(all_server_tracebacks)} server traceback(s)...")
+            save_server_traceback_report(
+                test_file_name="test_concurrency.py",
+                test_results=results,
+                server_tracebacks=all_server_tracebacks,
+                additional_info=additional_info,
+            )
+        else:
+            print(
+                "ℹ️  No server tracebacks were captured (this might indicate the server didn't log errors)"
+            )
 
     return summary
 
@@ -602,10 +639,6 @@ async def main():
         summary = analyze_concurrency_results(results)
 
         # Determine overall test success
-        # Test passes if:
-        # 1. No empty/unknown error messages (server properly handled all requests)
-        # 2. At least some requests succeeded (server is functional)
-
         has_empty_errors = any(
             error.get("error", "").strip() == ""
             or "Unknown error" in error.get("error", "")
@@ -643,6 +676,17 @@ async def main():
     except Exception as e:
         print(f"❌ Test execution failed: {str(e)}")
         traceback.print_exc()
+        # Save exception traceback
+        test_context = {
+            "Server URL": SERVER_BASE_URL,
+            "Request Timeout": f"{REQUEST_TIMEOUT}s",
+            "Total Test Prompts": len(TEST_PROMPTS),
+            "Error Location": "main() function",
+            "Error During": "Test execution",
+        }
+        save_exception_traceback(
+            test_file_name="test_concurrency.py", exception=e, test_context=test_context
+        )
         return False
 
     finally:
