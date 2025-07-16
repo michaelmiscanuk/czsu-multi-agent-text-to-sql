@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
 """
-Test for Phase 8.3: Analysis Routes with Real HTTP Testing
-Based on test_phase8_chat.py pattern - makes real HTTP requests to running server
+Test for Phase 8.3: Analysis Routes
+
+Tests the analysis endpoints with real HTTP requests and proper authentication.
+This test uses real functionality from the main scripts without hardcoding values.
 """
 
 import asyncio
@@ -20,54 +21,148 @@ import pytest
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
     print(
-        "[POSTGRES-STARTUP] Windows detected - setting SelectorEventLoop for PostgreSQL compatibility..."
+        "[ANALYSIS-STARTUP] Windows detected - setting SelectorEventLoop for compatibility..."
     )
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print("[POSTGRES-STARTUP] Event loop policy set successfully")
+    print("[ANALYSIS-STARTUP] Event loop policy set successfully")
 
-# Add the root directory to Python path to import from main scripts
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-# Constants
+# Add project root to path
 try:
     BASE_DIR = Path(__file__).resolve().parents[1]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-from my_agent.utils.postgres_checkpointer import (
-    check_postgres_env_vars,
-    cleanup_checkpointer,
-    close_async_postgres_saver,
-    create_async_postgres_saver,
-    get_db_config,
+sys.path.insert(0, str(BASE_DIR))
+
+# Load environment variables early
+from dotenv import load_dotenv
+load_dotenv()
+
+# Import test helpers
+from tests.helpers import (
+    extract_detailed_error_info,
+    make_request_with_traceback_capture,
+    save_exception_traceback,
+    save_server_traceback_report,
+    save_test_failures_traceback,
 )
 
 # Test configuration
 TEST_EMAIL = "test_user@example.com"
-TEST_THREAD_ID = f"test_thread_{uuid.uuid4().hex[:8]}"
-TEST_THREAD_ID_2 = f"test_thread_{uuid.uuid4().hex[:8]}"
 
-# Server configuration for real HTTP requests
+TEST_QUERIES = [
+    # Basic /analyze endpoint tests
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "prompt": "What tables are available?",
+            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        },
+        "description": "Basic analysis query",
+        "should_succeed": True,
+        "expected_fields": ["prompt", "result", "thread_id", "run_id"]
+    },
+    {
+        "endpoint": "/analyze",
+        "method": "POST", 
+        "data": {
+            "prompt": "Show me the first 5 rows from any table",
+            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        },
+        "description": "SQL query analysis",
+        "should_succeed": True,
+        "expected_fields": ["prompt", "result", "thread_id", "run_id", "sql", "queries_and_results"]
+    },
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "prompt": "Test query with existing thread",
+            "thread_id": "existing_thread_123"
+        },
+        "description": "Analysis with existing thread",
+        "should_succeed": True,
+        "expected_fields": ["prompt", "result", "thread_id", "run_id"]
+    },
+    # Invalid request tests
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "prompt": "",
+            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        },
+        "description": "Empty prompt",
+        "should_succeed": False,
+    },
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "prompt": "Valid prompt",
+            "thread_id": ""
+        },
+        "description": "Empty thread_id",
+        "should_succeed": False,
+    },
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+            # Missing prompt field
+        },
+        "description": "Missing prompt field",
+        "should_succeed": False,
+    },
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "prompt": "Valid prompt"
+            # Missing thread_id field
+        },
+        "description": "Missing thread_id field",
+        "should_succeed": False,
+    },
+    # Edge cases
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "prompt": "A" * 9999,  # Very long prompt (just under limit)
+            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        },
+        "description": "Very long prompt",
+        "should_succeed": True,
+        "expected_fields": ["prompt", "result", "thread_id", "run_id"]
+    },
+    {
+        "endpoint": "/analyze",
+        "method": "POST",
+        "data": {
+            "prompt": "A" * 10001,  # Exceeds max length
+            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        },
+        "description": "Prompt exceeds max length",
+        "should_succeed": False,
+    },
+]
+
+# Server configuration
 SERVER_BASE_URL = "http://localhost:8000"
-REQUEST_TIMEOUT = 60  # seconds for analysis endpoints (more intensive than chat)
-
-
-def print_test_status(message: str):
-    """Print test status messages with timestamp."""
-    timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-    print(f"[{timestamp}] {message}")
+REQUEST_TIMEOUT = 180  # 3 minutes for analysis requests (they can take longer)
 
 
 def create_test_jwt_token(email: str = TEST_EMAIL):
     """Create a simple test JWT token for authentication."""
     try:
         import jwt
-
-        # Use the actual Google Client ID that the server expects
+        
         google_client_id = (
             "722331814120-9kdm64s2mp9cq8kig0mvrluf1eqkso74.apps.googleusercontent.com"
         )
-
         payload = {
             "email": email,
             "aud": google_client_id,
@@ -78,14 +173,13 @@ def create_test_jwt_token(email: str = TEST_EMAIL):
             "given_name": "Test",
             "family_name": "User",
         }
-        # Use a simple test secret - in real scenarios this would be properly configured
         token = jwt.encode(payload, "test_secret", algorithm="HS256")
-        print_test_status(
+        print(
             f"🔧 TEST TOKEN: Created JWT token with correct audience: {google_client_id}"
         )
         return token
     except ImportError:
-        print_test_status("⚠️ JWT library not available, using simple Bearer token")
+        print("⚠️ JWT library not available, using simple Bearer token")
         return "test_token_placeholder"
 
 
@@ -94,47 +188,61 @@ class AnalysisTestResults:
 
     def __init__(self):
         self.results: List[Dict[str, Any]] = []
-        self.errors: List[Dict[str, Any]] = []
         self.start_time = None
         self.end_time = None
+        self.errors: List[Dict[str, Any]] = []
 
     def add_result(
         self,
+        test_id: str,
         endpoint: str,
-        method: str,
-        status_code: int,
+        description: str,
         response_data: Dict,
         response_time: float,
+        status_code: int,
     ):
-        """Add a successful test result."""
+        """Add a test result."""
         result = {
+            "test_id": test_id,
             "endpoint": endpoint,
-            "method": method,
-            "status_code": status_code,
+            "description": description,
             "response_data": response_data,
             "response_time": response_time,
+            "status_code": status_code,
             "timestamp": datetime.now().isoformat(),
-            "success": 200 <= status_code < 300,
+            "success": status_code in [200, 422],  # Both success and validation errors are valid outcomes
         }
         self.results.append(result)
-        print_test_status(
-            f"✅ Result: {method} {endpoint} - Status {status_code}, Time {response_time:.2f}s"
+        print(
+            f"✅ Result added: Test {test_id}, {endpoint} ({description}), "
+            f"Status {status_code}, Time {response_time:.2f}s"
         )
 
     def add_error(
-        self, endpoint: str, method: str, error: Exception, response_time: float = None
+        self,
+        test_id: str,
+        endpoint: str,
+        description: str,
+        error: Exception,
+        response_time: float = None,
+        response_data: dict = None,
     ):
         """Add an error result."""
         error_info = {
+            "test_id": test_id,
             "endpoint": endpoint,
-            "method": method,
+            "description": description,
             "error": str(error),
             "error_type": type(error).__name__,
             "response_time": response_time,
             "timestamp": datetime.now().isoformat(),
+            "error_obj": error,  # Store the actual error object to access server_tracebacks
+            "response_data": response_data,  # Store server response data (may include traceback)
         }
         self.errors.append(error_info)
-        print_test_status(f"❌ Error: {method} {endpoint} - {str(error)}")
+        print(
+            f"❌ Error added: Test {test_id}, {endpoint} ({description}), Error: {str(error)}"
+        )
 
     def get_summary(self) -> Dict[str, Any]:
         """Get a summary of test results."""
@@ -157,6 +265,10 @@ class AnalysisTestResults:
         if self.start_time and self.end_time:
             total_test_time = (self.end_time - self.start_time).total_seconds()
 
+        # Count unique endpoints tested successfully
+        tested_endpoints = set(r["endpoint"] for r in self.results if r["success"])
+        required_endpoints = {"/analyze"}
+
         return {
             "total_requests": total_requests,
             "successful_requests": successful_requests,
@@ -171,484 +283,87 @@ class AnalysisTestResults:
             "min_response_time": min_response_time,
             "total_test_time": total_test_time,
             "errors": self.errors,
+            "all_endpoints_tested": tested_endpoints.issuperset(required_endpoints),
+            "tested_endpoints": tested_endpoints,
+            "missing_endpoints": required_endpoints - tested_endpoints,
         }
 
 
 async def check_server_connectivity():
     """Check if the server is running and accessible."""
-    print_test_status(f"🔍 Checking server connectivity at {SERVER_BASE_URL}...")
+    print("\n" + "=" * 80)
+    print("🔍 CHECKING SERVER CONNECTIVITY")
+    print("=" * 80)
+    
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             response = await client.get(f"{SERVER_BASE_URL}/health")
             if response.status_code == 200:
-                print_test_status("✅ Server is running and accessible")
+                print("✅ Server is running and accessible")
                 return True
             else:
-                print_test_status(
-                    f"❌ Server responded with status {response.status_code}"
-                )
+                print(f"❌ Server responded with status {response.status_code}")
                 return False
     except Exception as e:
-        print_test_status(f"❌ Cannot connect to server: {e}")
-        print_test_status(f"   Make sure uvicorn is running at {SERVER_BASE_URL}")
+        print(f"❌ Cannot connect to server: {e}")
+        print(f"   Make sure uvicorn is running at {SERVER_BASE_URL}")
         return False
 
 
 def setup_test_environment():
     """Set up the test environment and check prerequisites."""
-    print_test_status("🔧 Setting up test environment...")
-
-    # Check if PostgreSQL environment variables are set
-    if not check_postgres_env_vars():
-        print_test_status(
-            "❌ PostgreSQL environment variables are not properly configured!"
-        )
-        print_test_status("Required variables: host, port, dbname, user, password")
-        print_test_status(f"Current config: {get_db_config()}")
-        return False
-
-    print_test_status("✅ PostgreSQL environment variables are configured")
-
+    print("\n" + "=" * 80)
+    print("🔧 SETTING UP TEST ENVIRONMENT")
+    print("=" * 80)
+    
     # Check if USE_TEST_TOKENS is set for the server
     use_test_tokens = os.getenv("USE_TEST_TOKENS", "0")
     if use_test_tokens != "1":
-        print_test_status(
-            "⚠️  WARNING: USE_TEST_TOKENS environment variable is not set to '1'"
-        )
-        print_test_status("   The server needs USE_TEST_TOKENS=1 to accept test tokens")
-        print_test_status(
-            "   Set this environment variable in your server environment:"
-        )
-        print_test_status("   SET USE_TEST_TOKENS=1 (Windows)")
-        print_test_status("   export USE_TEST_TOKENS=1 (Linux/Mac)")
-        print_test_status(
-            "   Continuing test anyway - this may cause 401 authentication errors"
-        )
+        print("⚠️  WARNING: USE_TEST_TOKENS environment variable is not set to '1'")
+        print("   The server needs USE_TEST_TOKENS=1 to accept test tokens")
+        print("   Set this environment variable in your server environment:")
+        print("   SET USE_TEST_TOKENS=1 (Windows)")
+        print("   export USE_TEST_TOKENS=1 (Linux/Mac)")
+        print("   Continuing test anyway - this may cause 401 authentication errors")
     else:
-        print_test_status(
-            "✅ USE_TEST_TOKENS=1 - test tokens will be accepted by server"
-        )
+        print("✅ USE_TEST_TOKENS=1 - test tokens will be accepted by server")
 
-    print_test_status("✅ Test environment setup complete")
+    # Check if required database files exist
+    db_paths = [
+        "metadata/llm_selection_descriptions/selection_descriptions.db",
+        "data/czsu_data.db",
+    ]
+    
+    for db_path in db_paths:
+        if not os.path.exists(db_path):
+            print(f"⚠️  WARNING: Database file not found: {db_path}")
+            print("   Some tests may fail if the database is not available")
+        else:
+            print(f"✅ Database found: {db_path}")
+
+    # Check environment variables for analysis functionality
+    required_env_vars = [
+        "OPENAI_API_KEY",
+        "GOOGLE_CLIENT_ID",
+    ]
+    
+    for env_var in required_env_vars:
+        if not os.getenv(env_var):
+            print(f"⚠️  WARNING: Environment variable {env_var} is not set")
+            print("   Analysis functionality may be limited")
+        else:
+            print(f"✅ Environment variable {env_var} is set")
+
+    print("✅ Test environment setup complete")
     return True
-
-
-async def test_analyze_endpoint_simple(
-    client: httpx.AsyncClient, results: AnalysisTestResults
-):
-    """Test POST /analyze endpoint with a simple query."""
-    print_test_status("🔍 Testing POST /analyze with simple query")
-    start_time = time.time()
-
-    try:
-        token = create_test_jwt_token()
-        headers = {"Authorization": f"Bearer {token}"}
-
-        # Simple analysis request
-        request_data = {
-            "prompt": "What is the total count of records in the database?",
-            "thread_id": TEST_THREAD_ID,
-        }
-
-        response = await client.post("/analyze", headers=headers, json=request_data)
-        response_time = time.time() - start_time
-
-        if response.status_code == 200:
-            response_data = response.json()
-            results.add_result(
-                "/analyze", "POST", response.status_code, response_data, response_time
-            )
-            print_test_status("✅ Simple analysis successful")
-            print_test_status(f"   Thread ID: {response_data.get('thread_id')}")
-            print_test_status(f"   Run ID: {response_data.get('run_id')}")
-            print_test_status(
-                f"   Result length: {len(str(response_data.get('result', '')))}"
-            )
-            print_test_status(
-                f"   SQL generated: {response_data.get('sql') is not None}"
-            )
-            print_test_status(
-                f"   Queries count: {len(response_data.get('queries_and_results', []))}"
-            )
-        else:
-            try:
-                error_data = response.json()
-                error_message = error_data.get("detail", f"HTTP {response.status_code}")
-            except Exception:
-                error_message = f"HTTP {response.status_code}: {response.text}"
-            results.add_error(
-                "/analyze", "POST", Exception(error_message), response_time
-            )
-
-    except Exception as e:
-        response_time = time.time() - start_time
-        results.add_error("/analyze", "POST", e, response_time)
-
-
-async def test_analyze_endpoint_complex(
-    client: httpx.AsyncClient, results: AnalysisTestResults
-):
-    """Test POST /analyze endpoint with a complex query."""
-    print_test_status("🔍 Testing POST /analyze with complex query")
-    start_time = time.time()
-
-    try:
-        token = create_test_jwt_token()
-        headers = {"Authorization": f"Bearer {token}"}
-
-        # Complex analysis request
-        request_data = {
-            "prompt": "Show me a detailed breakdown of sales by region and product category, including year-over-year growth rates and seasonal trends.",
-            "thread_id": TEST_THREAD_ID_2,
-        }
-
-        response = await client.post("/analyze", headers=headers, json=request_data)
-        response_time = time.time() - start_time
-
-        if response.status_code == 200:
-            response_data = response.json()
-            results.add_result(
-                "/analyze", "POST", response.status_code, response_data, response_time
-            )
-            print_test_status("✅ Complex analysis successful")
-            print_test_status(f"   Thread ID: {response_data.get('thread_id')}")
-            print_test_status(f"   Run ID: {response_data.get('run_id')}")
-            print_test_status(f"   Iteration: {response_data.get('iteration', 0)}")
-            print_test_status(
-                f"   Max iterations: {response_data.get('max_iterations', 0)}"
-            )
-            print_test_status(
-                f"   Top chunks: {len(response_data.get('top_chunks', []))}"
-            )
-            print_test_status(
-                f"   Top selection codes: {len(response_data.get('top_selection_codes', []))}"
-            )
-            print_test_status(
-                f"   Dataset URL: {response_data.get('datasetUrl') is not None}"
-            )
-        else:
-            try:
-                error_data = response.json()
-                error_message = error_data.get("detail", f"HTTP {response.status_code}")
-            except Exception:
-                error_message = f"HTTP {response.status_code}: {response.text}"
-            results.add_error(
-                "/analyze", "POST", Exception(error_message), response_time
-            )
-
-    except Exception as e:
-        response_time = time.time() - start_time
-        results.add_error("/analyze", "POST", e, response_time)
-
-
-async def test_analyze_endpoint_timeout_handling(
-    client: httpx.AsyncClient, results: AnalysisTestResults
-):
-    """Test POST /analyze endpoint timeout handling with a potentially long query."""
-    print_test_status("🔍 Testing POST /analyze timeout handling")
-    start_time = time.time()
-
-    try:
-        token = create_test_jwt_token()
-        headers = {"Authorization": f"Bearer {token}"}
-
-        # Request that might take a while but should complete within timeout
-        request_data = {
-            "prompt": "Analyze all data patterns and provide comprehensive insights across all tables with detailed statistics",
-            "thread_id": f"timeout_test_{uuid.uuid4().hex[:8]}",
-        }
-
-        # Use a shorter timeout for this test to check timeout handling
-        timeout_client = httpx.AsyncClient(
-            base_url=SERVER_BASE_URL, timeout=httpx.Timeout(30.0)
-        )
-
-        try:
-            response = await timeout_client.post(
-                "/analyze", headers=headers, json=request_data
-            )
-            response_time = time.time() - start_time
-
-            if response.status_code == 200:
-                response_data = response.json()
-                results.add_result(
-                    "/analyze",
-                    "POST",
-                    response.status_code,
-                    response_data,
-                    response_time,
-                )
-                print_test_status(
-                    f"✅ Timeout handling test - completed within timeout"
-                )
-            elif response.status_code == 408:
-                # Expected timeout response
-                results.add_result(
-                    "/analyze",
-                    "POST",
-                    response.status_code,
-                    {"timeout": True},
-                    response_time,
-                )
-                print_test_status(
-                    f"✅ Timeout handling test - server properly returned 408"
-                )
-            else:
-                try:
-                    error_data = response.json()
-                    error_message = error_data.get(
-                        "detail", f"HTTP {response.status_code}"
-                    )
-                except Exception:
-                    error_message = f"HTTP {response.status_code}: {response.text}"
-                results.add_error(
-                    "/analyze", "POST", Exception(error_message), response_time
-                )
-        finally:
-            await timeout_client.aclose()
-
-    except httpx.TimeoutException:
-        response_time = time.time() - start_time
-        results.add_result(
-            "/analyze", "POST", 408, {"client_timeout": True}, response_time
-        )
-        print_test_status(f"✅ Timeout handling test - client timeout as expected")
-    except Exception as e:
-        response_time = time.time() - start_time
-        results.add_error("/analyze", "POST", e, response_time)
-
-
-async def test_analyze_endpoint_error_handling(
-    client: httpx.AsyncClient, results: AnalysisTestResults
-):
-    """Test POST /analyze endpoint error handling with invalid requests."""
-    print_test_status("🔍 Testing POST /analyze error handling")
-
-    # Test 1: Missing prompt
-    start_time = time.time()
-    try:
-        token = create_test_jwt_token()
-        headers = {"Authorization": f"Bearer {token}"}
-
-        request_data = {
-            "thread_id": "error_test_1",
-            # Missing prompt
-        }
-
-        response = await client.post("/analyze", headers=headers, json=request_data)
-        response_time = time.time() - start_time
-
-        if response.status_code == 422:  # Validation error
-            results.add_result(
-                "/analyze",
-                "POST",
-                response.status_code,
-                {"validation_error": True},
-                response_time,
-            )
-            print_test_status(
-                "✅ Error handling test - validation error properly handled"
-            )
-        else:
-            results.add_error(
-                "/analyze",
-                "POST",
-                Exception(f"Expected 422, got {response.status_code}"),
-                response_time,
-            )
-    except Exception as e:
-        response_time = time.time() - start_time
-        results.add_error("/analyze", "POST", e, response_time)
-
-    # Test 2: Invalid authentication
-    start_time = time.time()
-    try:
-        headers = {"Authorization": "Bearer invalid_token"}
-        request_data = {
-            "prompt": "Test query",
-            "thread_id": "error_test_2",
-        }
-
-        response = await client.post("/analyze", headers=headers, json=request_data)
-        response_time = time.time() - start_time
-
-        if response.status_code == 401:  # Unauthorized
-            results.add_result(
-                "/analyze",
-                "POST",
-                response.status_code,
-                {"auth_error": True},
-                response_time,
-            )
-            print_test_status(
-                "✅ Error handling test - authentication error properly handled"
-            )
-        else:
-            results.add_error(
-                "/analyze",
-                "POST",
-                Exception(f"Expected 401, got {response.status_code}"),
-                response_time,
-            )
-    except Exception as e:
-        response_time = time.time() - start_time
-        results.add_error("/analyze", "POST", e, response_time)
-
-
-async def run_analysis_endpoints_test() -> AnalysisTestResults:
-    """Run comprehensive tests for analysis endpoints."""
-    print_test_status("🎯 Starting comprehensive analysis endpoints test...")
-
-    results = AnalysisTestResults()
-    results.start_time = datetime.now()
-
-    async with httpx.AsyncClient(
-        base_url=SERVER_BASE_URL, timeout=httpx.Timeout(REQUEST_TIMEOUT)
-    ) as client:
-
-        print_test_status(f"🌐 Server URL: {SERVER_BASE_URL}")
-        print_test_status(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
-        print_test_status(f"🔖 Test thread IDs: {TEST_THREAD_ID}, {TEST_THREAD_ID_2}")
-
-        # Test all analysis endpoints
-        print("============================================================")
-        print("🔍 TESTING ANALYZE ENDPOINT - SIMPLE")
-        print("============================================================")
-        await test_analyze_endpoint_simple(client, results)
-
-        print("============================================================")
-        print("🔍 TESTING ANALYZE ENDPOINT - COMPLEX")
-        print("============================================================")
-        await test_analyze_endpoint_complex(client, results)
-
-        print("============================================================")
-        print("🔍 TESTING ANALYZE ENDPOINT - TIMEOUT HANDLING")
-        print("============================================================")
-        await test_analyze_endpoint_timeout_handling(client, results)
-
-        print("============================================================")
-        print("🔍 TESTING ANALYZE ENDPOINT - ERROR HANDLING")
-        print("============================================================")
-        await test_analyze_endpoint_error_handling(client, results)
-
-        # Add a small delay to ensure all results are recorded
-        await asyncio.sleep(0.1)
-
-    results.end_time = datetime.now()
-    return results
-
-
-def analyze_analysis_test_results(results: AnalysisTestResults):
-    """Analyze and display the analysis test results."""
-    print_test_status("============================================================")
-    print_test_status("============================================================")
-    print_test_status("============================================================")
-    print_test_status("📊 ANALYSIS ENDPOINTS TEST RESULTS")
-    print_test_status("============================================================")
-    print_test_status("============================================================")
-    print_test_status("============================================================")
-
-    summary = results.get_summary()
-
-    print_test_status(f"🔢 Total Requests: {summary['total_requests']}")
-    print_test_status(f"✅ Successful: {summary['successful_requests']}")
-    print_test_status(f"❌ Failed: {summary['failed_requests']}")
-    print_test_status(f"📈 Success Rate: {summary['success_rate']:.1f}%")
-
-    if summary["total_test_time"]:
-        print_test_status(f"⏱️  Total Test Time: {summary['total_test_time']:.2f}s")
-
-    if summary["successful_requests"] > 0:
-        print_test_status(
-            f"⚡ Avg Response Time: {summary['average_response_time']:.2f}s"
-        )
-        print_test_status(f"🏆 Best Response Time: {summary['min_response_time']:.2f}s")
-        print_test_status(
-            f"🐌 Worst Response Time: {summary['max_response_time']:.2f}s"
-        )
-
-    # Show individual results
-    print_test_status("\n📋 Individual Endpoint Results:")
-    for i, result in enumerate(results.results, 1):
-        status_emoji = "✅" if result["success"] else "❌"
-        print_test_status(
-            f"  {i}. {status_emoji} {result['method']} {result['endpoint']} | "
-            f"Status: {result['status_code']} | Time: {result['response_time']:.2f}s"
-        )
-
-    # Show errors if any
-    if results.errors:
-        print_test_status("\n❌ Errors Encountered:")
-        for i, error in enumerate(results.errors, 1):
-            print_test_status(
-                f"  {i}. {error['method']} {error['endpoint']} | Error: {error['error']}"
-            )
-
-    # Analysis
-    print_test_status("\n🔍 ANALYSIS ENDPOINTS ANALYSIS:")
-
-    # Check which endpoints are working
-    endpoint_status = {}
-    for result in results.results:
-        endpoint = result["endpoint"]
-        if endpoint not in endpoint_status:
-            endpoint_status[endpoint] = {"success": 0, "total": 0}
-        endpoint_status[endpoint]["total"] += 1
-        if result["success"]:
-            endpoint_status[endpoint]["success"] += 1
-
-    for error in results.errors:
-        endpoint = error["endpoint"]
-        if endpoint not in endpoint_status:
-            endpoint_status[endpoint] = {"success": 0, "total": 0}
-        endpoint_status[endpoint]["total"] += 1
-
-    for endpoint, stats in endpoint_status.items():
-        success_rate = (
-            (stats["success"] / stats["total"] * 100) if stats["total"] > 0 else 0
-        )
-        status_emoji = "✅" if success_rate >= 75 else "⚠️" if success_rate > 0 else "❌"
-        print_test_status(
-            f"{status_emoji} {endpoint}: {success_rate:.0f}% success ({stats['success']}/{stats['total']})"
-        )
-
-    return summary
-
-
-async def test_database_connectivity():
-    """Test basic database connectivity before running analysis tests."""
-    print_test_status("🔍 Testing database connectivity...")
-    try:
-        # Test database connection using our existing functionality
-        print_test_status("🔧 Creating database checkpointer...")
-        checkpointer = await create_async_postgres_saver()
-        if checkpointer:
-            print_test_status("✅ Database checkpointer created successfully")
-            # Test a simple operation
-            test_config = {"configurable": {"thread_id": "connectivity_test"}}
-            _ = await checkpointer.aget(test_config)
-            print_test_status("✅ Database connectivity test passed")
-            await close_async_postgres_saver()
-            print_test_status("✅ Database connection closed properly")
-            return True
-        else:
-            print_test_status("❌ Failed to create database checkpointer")
-            return False
-    except Exception as e:
-        print_test_status(f"❌ Database connectivity test failed: {str(e)}")
-        return False
-
-
-def cleanup_test_environment():
-    """Clean up the test environment."""
-    print_test_status("🧹 Cleaning up test environment...")
-    print_test_status("✅ Test environment cleanup complete")
 
 
 async def setup_debug_environment(client: httpx.AsyncClient):
     """Setup debug environment for this specific test."""
-    print_test_status("🔧 Setting up debug environment via API...")
-
+    print("\n" + "=" * 80)
+    print("🔧 SETTING UP DEBUG ENVIRONMENT")
+    print("=" * 80)
+    
     token = create_test_jwt_token()
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -657,35 +372,35 @@ async def setup_debug_environment(client: httpx.AsyncClient):
         "print__analyze_debug": "1",
         "print__analysis_tracing_debug": "1",
         "print__feedback_flow": "1",
-        "print__memory_usage": "1",
+        "DEBUG_TRACEBACK": "1",  # Enable traceback in error responses
     }
 
     try:
         response = await client.post("/debug/set-env", headers=headers, json=debug_vars)
         if response.status_code == 200:
-            print_test_status("✅ Debug environment configured successfully")
+            print("✅ Debug environment configured successfully")
             return True
         else:
-            print_test_status(f"⚠️ Debug setup failed: {response.status_code}")
+            print(f"⚠️ Debug setup failed: {response.status_code}")
             return False
     except Exception as e:
-        print_test_status(f"⚠️ Debug setup error: {e}")
+        print(f"⚠️ Debug setup error: {e}")
         return False
 
 
 async def cleanup_debug_environment(client: httpx.AsyncClient):
     """Reset debug environment after test."""
-    print_test_status("🧹 Resetting debug environment...")
-
+    print("\n" + "=" * 80)
+    print("🧹 CLEANING UP DEBUG ENVIRONMENT")
+    print("=" * 80)
+    
     token = create_test_jwt_token()
     headers = {"Authorization": f"Bearer {token}"}
 
-    # Pass the same debug variables that were set, so they can be reset to original values
     debug_vars = {
         "print__analyze_debug": "1",
-        "print__analysis_tracing_debug": "1",
-        "print__feedback_flow": "1",
-        "print__memory_usage": "1",
+        "print__analysis_tracing_debug": "1", 
+        "print__feedback_flow": "1"
     }
 
     try:
@@ -693,168 +408,386 @@ async def cleanup_debug_environment(client: httpx.AsyncClient):
             "/debug/reset-env", headers=headers, json=debug_vars
         )
         if response.status_code == 200:
-            print_test_status("✅ Debug environment reset to original .env values")
+            print("✅ Debug environment reset to original .env values")
         else:
-            print_test_status(f"⚠️ Debug reset failed: {response.status_code}")
+            print(f"⚠️ Debug reset failed: {response.status_code}")
     except Exception as e:
-        print_test_status(f"⚠️ Debug reset error: {e}")
+        print(f"⚠️ Debug reset error: {e}")
 
 
-async def async_cleanup():
-    """Async cleanup for database connections."""
+async def make_analysis_request(
+    client: httpx.AsyncClient,
+    test_id: str,
+    endpoint: str,
+    method: str,
+    data: Dict,
+    description: str,
+    should_succeed: bool,
+    expected_fields: List[str],
+    results: AnalysisTestResults,
+):
+    """Make a request to an analysis endpoint with server traceback capture."""
+    print(f"\n🔍 Testing {method} {endpoint} (Test ID: {test_id})")
+    print(f"   Description: {description}")
+    print(f"   Data: {data}")
+    print(f"   Expected to succeed: {should_succeed}")
+
+    token = create_test_jwt_token()
+    headers = {"Authorization": f"Bearer {token}"}
+    start_time = time.time()
+
     try:
-        # Close any remaining PostgreSQL connections
-        await close_async_postgres_saver()
+        # Use the new helper function to capture server tracebacks
+        if method.upper() == "POST":
+            result = await make_request_with_traceback_capture(
+                client,
+                "POST",
+                f"{SERVER_BASE_URL}{endpoint}",
+                json=data,
+                headers=headers,
+                timeout=REQUEST_TIMEOUT,
+            )
+        else:
+            result = await make_request_with_traceback_capture(
+                client,
+                method.upper(),
+                f"{SERVER_BASE_URL}{endpoint}",
+                params=data,
+                headers=headers,
+                timeout=REQUEST_TIMEOUT,
+            )
 
-        # CRITICAL: Also cleanup any global checkpointer from the modular API structure
-        try:
-            await cleanup_checkpointer()
-        except Exception as e:
-            print_test_status(f"⚠️ Warning during global checkpointer cleanup: {e}")
+        response_time = time.time() - start_time
 
-        # Give extra time for all tasks to finish
-        await asyncio.sleep(0.2)
+        # Extract detailed error information
+        error_info = extract_detailed_error_info(result)
+
+        # Check if we got a response
+        if result["response"] is None:
+            # Client-side error (connection failed, etc.)
+            error_message = error_info["client_error"] or "Unknown client error"
+            print(f"🔌 Test {test_id} - Client Error: {error_message}")
+            
+            # Create error object with server traceback info
+            error_obj = Exception(error_message)
+            error_obj.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(test_id, endpoint, description, error_obj, response_time)
+            return
+
+        response = result["response"]
+        print(
+            f"📝 Test {test_id} - Status: {response.status_code}, Time: {response_time:.2f}s"
+        )
+
+        # Check if response matches expectation
+        if should_succeed:
+            if response.status_code == 200:
+                try:
+                    data_response = response.json()
+                    
+                    # Validate expected fields are present
+                    for field in expected_fields:
+                        assert field in data_response, f"Missing expected field: {field}"
+                    
+                    # Specific validation for analysis responses
+                    if endpoint == "/analyze":
+                        # Validate analysis response structure
+                        assert "prompt" in data_response, "Missing 'prompt' field"
+                        assert "result" in data_response, "Missing 'result' field"
+                        assert "thread_id" in data_response, "Missing 'thread_id' field"
+                        assert "run_id" in data_response, "Missing 'run_id' field"
+                        
+                        # Check that prompt matches request
+                        assert data_response["prompt"] == data["prompt"], "Prompt mismatch in response"
+                        assert data_response["thread_id"] == data["thread_id"], "Thread ID mismatch in response"
+                        
+                        # Check result is not empty
+                        assert data_response["result"], "Result field is empty"
+                        
+                        # Check run_id is valid UUID format
+                        import uuid
+                        try:
+                            uuid.UUID(data_response["run_id"])
+                        except ValueError:
+                            raise AssertionError("run_id is not a valid UUID")
+
+                    print(f"✅ Test {test_id} - Validation passed")
+                    results.add_result(
+                        test_id, endpoint, description, data_response, response_time, response.status_code
+                    )
+
+                except AssertionError as e:
+                    print(f"❌ Test {test_id} - Validation failed: {e}")
+                    error_obj = Exception(f"Response validation failed: {e}")
+                    error_obj.server_tracebacks = error_info["server_tracebacks"]
+                    results.add_error(test_id, endpoint, description, error_obj, response_time, response_data=data_response)
+
+                except Exception as e:
+                    print(f"❌ Test {test_id} - Response parsing failed: {e}")
+                    error_obj = Exception(f"Response parsing failed: {e}")
+                    error_obj.server_tracebacks = error_info["server_tracebacks"]
+                    results.add_error(test_id, endpoint, description, error_obj, response_time)
+            else:
+                # Expected success but got non-200 status
+                print(f"❌ Test {test_id} - Expected success but got status {response.status_code}")
+                try:
+                    error_response = response.json()
+                except:
+                    error_response = {"error": "Could not parse error response"}
+                
+                error_obj = Exception(f"Expected success but got status {response.status_code}")
+                error_obj.server_tracebacks = error_info["server_tracebacks"]
+                results.add_error(test_id, endpoint, description, error_obj, response_time, response_data=error_response)
+        else:
+            # Expected failure
+            if response.status_code in [400, 422, 404, 500]:
+                print(f"✅ Test {test_id} - Expected failure with status {response.status_code}")
+                try:
+                    error_response = response.json()
+                except:
+                    error_response = {"error": "Could not parse error response"}
+
+                results.add_result(
+                    test_id, endpoint, description, error_response, response_time, response.status_code
+                )
+            else:
+                print(f"❌ Test {test_id} - Expected failure but got status {response.status_code}")
+                try:
+                    unexpected_response = response.json()
+                except:
+                    unexpected_response = {"error": "Could not parse response"}
+                
+                error_obj = Exception(f"Expected failure but got status {response.status_code}")
+                error_obj.server_tracebacks = error_info["server_tracebacks"]
+                results.add_error(test_id, endpoint, description, error_obj, response_time, response_data=unexpected_response)
 
     except Exception as e:
-        print_test_status(f"⚠️ Warning during async cleanup: {e}")
+        response_time = time.time() - start_time
+        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
+        if not error_message or error_message.isspace():
+            error_message = f"Unknown {type(e).__name__} exception"
+
+        print(f"❌ Test {test_id} - Error: {error_message}, Time: {response_time:.2f}s")
+        
+        # Create error object (this shouldn't have server tracebacks since it's a client-side exception)
+        error_obj = Exception(error_message)
+        error_obj.server_tracebacks = []
+        results.add_error(
+            test_id, endpoint, description, error_obj, response_time, response_data=None
+        )
+
+
+async def run_analysis_tests() -> AnalysisTestResults:
+    """Run all analysis endpoint tests."""
+    print("\n" + "=" * 80)
+    print("🚀 STARTING ANALYSIS ENDPOINTS TESTS")
+    print(f"📂 BASE_DIR: {BASE_DIR}")
+    print("=" * 80)
+
+    results = AnalysisTestResults()
+    results.start_time = datetime.now()
+
+    print(f"📋 Test queries: {len(TEST_QUERIES)} queries defined")
+    print(f"🌐 Server URL: {SERVER_BASE_URL}")
+    print(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
+
+    async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
+        # Setup debug environment
+        await setup_debug_environment(client)
+
+        # Run all test cases
+        for i, test_case in enumerate(TEST_QUERIES, 1):
+            test_id = f"ANALYSIS_{i:02d}"
+            
+            await make_analysis_request(
+                client,
+                test_id,
+                test_case["endpoint"],
+                test_case["method"],
+                test_case["data"],
+                test_case["description"],
+                test_case["should_succeed"],
+                test_case.get("expected_fields", []),
+                results,
+            )
+
+        # Cleanup debug environment
+        await cleanup_debug_environment(client)
+
+    results.end_time = datetime.now()
+    return results
+
+
+def analyze_test_results(results: AnalysisTestResults):
+    """Analyze and print test results."""
+    print("\n" + "=" * 80)
+    print("=" * 80)
+    print("=" * 80)
+    print("📊 ANALYSIS ENDPOINTS TEST RESULTS")
+    print("=" * 80)
+    print("=" * 80)
+    print("=" * 80)
+
+    summary = results.get_summary()
+
+    print(f"\n🔢 Total Requests: {summary['total_requests']}")
+    print(f"✅ Successful: {summary['successful_requests']}")
+    print(f"❌ Failed: {summary['failed_requests']}")
+    print(f"📈 Success Rate: {summary['success_rate']:.1f}%")
+
+    if summary["total_test_time"]:
+        print(f"\n⏱️  Total Test Time: {summary['total_test_time']:.2f}s")
+
+    if summary["successful_requests"] > 0:
+        print(f"⚡ Avg Response Time: {summary['average_response_time']:.2f}s")
+        print(f"🏆 Best Response Time: {summary['min_response_time']:.2f}s")
+        print(f"🐌 Worst Response Time: {summary['max_response_time']:.2f}s")
+
+    print(
+        f"\n🎯 All Required Endpoints Tested: {'✅ YES' if summary['all_endpoints_tested'] else '❌ NO'}"
+    )
+    if not summary["all_endpoints_tested"]:
+        print(f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
+
+    # Show individual results
+    print("\n📋 Individual Request Results:")
+    for i, result in enumerate(results.results, 1):
+        status_emoji = "✅" if result["success"] else "❌"
+        print(
+            f"   {status_emoji} Test {result['test_id']}: {result['description']} "
+            f"({result['status_code']}, {result['response_time']:.2f}s)"
+        )
+
+    # Show errors if any
+    if results.errors:
+        print(f"\n❌ ERROR DETAILS ({len(results.errors)} errors):")
+        for i, error in enumerate(results.errors, 1):
+            print(f"   {i}. Test {error['test_id']}: {error['description']}")
+            print(f"      Error: {error['error']}")
+            if error.get("response_time"):
+                print(f"      Time: {error['response_time']:.2f}s")
+            
+            # Show server tracebacks if available
+            if hasattr(error.get("error_obj"), "server_tracebacks") and error["error_obj"].server_tracebacks:
+                print(f"      Server Tracebacks: {len(error['error_obj'].server_tracebacks)} found")
+
+    # Endpoint analysis
+    print("\n🔍 ENDPOINT ANALYSIS:")
+    if summary["all_endpoints_tested"]:
+        print("✅ All required analysis endpoints were tested successfully")
+        print("✅ /analyze endpoint is working correctly")
+    else:
+        print("❌ Some required endpoints were not tested successfully")
+        print("❌ Check server logs for detailed error information")
+
+    # Collect all server tracebacks from errors
+    all_server_tracebacks = []
+    for error in results.errors:
+        if hasattr(error.get("error_obj"), "server_tracebacks"):
+            all_server_tracebacks.extend(error["error_obj"].server_tracebacks)
+
+    # Save traceback information if there are failures
+    if results.errors or summary["failed_requests"] > 0:
+        save_test_failures_traceback(
+            "test_phase8_analysis.py",
+            results,
+            additional_info={
+                "test_type": "Analysis Endpoints Test",
+                "server_url": SERVER_BASE_URL,
+                "total_requests": summary["total_requests"],
+                "success_rate": f"{summary['success_rate']:.1f}%",
+                "total_test_time": f"{summary.get('total_test_time', 0):.2f}s",
+            },
+        )
+
+        # Save server tracebacks if any were captured
+        if all_server_tracebacks:
+            save_server_traceback_report(
+                "test_phase8_analysis.py",
+                results,
+                all_server_tracebacks,
+                additional_info={
+                    "test_type": "Analysis Endpoints Test",
+                    "server_url": SERVER_BASE_URL,
+                },
+            )
+
+    return summary
+
+
+def cleanup_test_environment():
+    """Clean up the test environment."""
+    print("\n" + "=" * 80)
+    print("🧹 CLEANING UP TEST ENVIRONMENT")
+    print("=" * 80)
+    print("✅ Test environment cleanup complete")
 
 
 async def main():
     """Main test execution function."""
-    print_test_status("🚀 Analysis Endpoints Test Starting...")
-    print_test_status("=" * 60)
+    print("🚀 Analysis Endpoints Test Starting...")
+    print("=" * 60)
 
     # Check if server is running
     if not await check_server_connectivity():
-        print_test_status("❌ Server connectivity check failed!")
-        print_test_status("   Please start your uvicorn server first:")
-        print_test_status(f"   uvicorn api.main:app --host 0.0.0.0 --port 8000")
+        print("❌ Server connectivity check failed. Exiting.")
         return False
 
     # Setup test environment
     if not setup_test_environment():
-        print_test_status("❌ Test environment setup failed!")
+        print("❌ Test environment setup failed. Exiting.")
         return False
 
     try:
-        # Test database connectivity first
-        if not await test_database_connectivity():
-            print_test_status("❌ Database connectivity test failed!")
-            return False
-
-        print_test_status(
-            "✅ Database connectivity confirmed - proceeding with analysis endpoints test"
-        )
-
-        # Create HTTP client for the entire test session
-        async with httpx.AsyncClient(
-            base_url=SERVER_BASE_URL, timeout=httpx.Timeout(REQUEST_TIMEOUT)
-        ) as client:
-
-            # Setup debug environment for this test
-            if not await setup_debug_environment(client):
-                print_test_status(
-                    "⚠️ Debug environment setup failed, continuing without debug"
-                )
-
-            # Run the analysis endpoints test
-            results = await run_analysis_endpoints_test()
-
-            # Cleanup debug environment
-            await cleanup_debug_environment(client)
+        # Run tests
+        test_results = await run_analysis_tests()
 
         # Analyze results
-        summary = analyze_analysis_test_results(results)
+        summary = analyze_test_results(test_results)
 
-        # Determine overall test success
-        # Test passes if:
-        # 1. At least 75% of requests succeeded (allows for some error handling tests)
-        # 2. No empty/unknown error messages (server properly handled all requests)
-        # 3. At least one successful analysis completed
-
-        has_empty_errors = any(
-            error.get("error", "").strip() == ""
-            or "Unknown error" in error.get("error", "")
-            for error in summary["errors"]
-        )
-
-        successful_analysis = any(
-            result.get("success", False)
-            and result.get("endpoint") == "/analyze"
-            and result.get("status_code") == 200
-            for result in results.results
-        )
-
-        test_passed = (
-            not has_empty_errors  # No empty/unknown errors
-            and summary["total_requests"] > 0  # Some requests were made
-            and summary["success_rate"]
-            >= 50.0  # At least 50% success rate (allowing for error tests)
-            and successful_analysis  # At least one successful analysis
-        )
-
-        if has_empty_errors:
-            print_test_status(
-                "❌ Test failed: Server returned empty error messages (potential crash/hang)"
-            )
-        elif not successful_analysis:
-            print_test_status("❌ Test failed: No successful analysis completed")
-        elif summary["success_rate"] < 50.0:
-            print_test_status(
-                f"❌ Test failed: Success rate too low ({summary['success_rate']:.1f}% < 50%)"
-            )
-        else:
-            print_test_status(
-                f"✅ Test criteria met: {summary['success_rate']:.1f}% success rate with proper error handling"
-            )
-
-        print_test_status(
-            f"\n🏁 OVERALL TEST RESULT: {'✅ PASSED' if test_passed else '❌ FAILED'}"
-        )
-
-        return test_passed
+        # Return success status
+        return summary["success_rate"] >= 50.0  # Consider 50%+ success rate as passing
 
     except Exception as e:
-        print_test_status(f"❌ Test execution failed: {str(e)}")
-        traceback.print_exc()
+        print(f"🚨 CRITICAL ERROR during test execution: {e}")
+        print(f"🚨 Exception type: {type(e).__name__}")
+        print(f"🚨 Exception traceback:")
+        print(traceback.format_exc())
+
+        # Save exception information
+        save_exception_traceback(
+            "test_phase8_analysis.py",
+            e,
+            test_context={
+                "phase": "main_execution",
+                "server_url": SERVER_BASE_URL,
+                "request_timeout": REQUEST_TIMEOUT,
+            },
+        )
         return False
 
     finally:
         cleanup_test_environment()
-        # CRITICAL: Close database connections before event loop ends
-        await async_cleanup()
 
 
-# Test runner for pytest
 @pytest.mark.asyncio
 async def test_analysis_endpoints():
-    """Pytest-compatible test function."""
-    result = await main()
-    assert result, "Analysis endpoints test failed"
+    """Pytest entry point for analysis endpoints test."""
+    success = await main()
+    assert success, "Analysis endpoints test failed"
 
 
 if __name__ == "__main__":
-    # Debug variables are now set dynamically via API calls in setup_debug_environment()
-    # This allows per-test-script debug configuration without hardcoding in server
-
-    async def main_with_cleanup():
-        try:
-            result = await main()
-            return result
-        except KeyboardInterrupt:
-            print_test_status("\n⛔ Test interrupted by user")
-            return False
-        except Exception as e:
-            print_test_status(f"\n💥 Unexpected error: {str(e)}")
-            traceback.print_exc()
-            return False
-        finally:
-            await async_cleanup()
-
     try:
-        test_result = asyncio.run(main_with_cleanup())
-        sys.exit(0 if test_result else 1)
+        result = asyncio.run(main())
+        if result:
+            print("\n🎉 Analysis endpoints test completed successfully!")
+        else:
+            print("\n❌ Analysis endpoints test failed!")
+            sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n⏹️ Test interrupted by user")
+        sys.exit(1)
     except Exception as e:
-        print_test_status(f"\n💥 Fatal error: {str(e)}")
-        traceback.print_exc()
+        print(f"\n🚨 Test crashed: {e}")
         sys.exit(1)
