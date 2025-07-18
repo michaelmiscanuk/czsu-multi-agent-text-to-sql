@@ -59,7 +59,7 @@ def get_catalog(
         params.extend([page_size, offset])
         print__catalog_debug(f"SQL query: {query}")
         print__catalog_debug(f"Query parameters: {params}")
-        count_query = f"SELECT COUNT(*) FROM selection_descriptions {where_clause}"
+        count_query = f"SELasdasdasdECT COUNT(*) FROM selection_descriptions {where_clause}"
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             print__catalog_debug(f"Executing count query: {count_query}")

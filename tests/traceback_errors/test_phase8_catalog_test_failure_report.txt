@@ -1,0 +1,73 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-07-18 11:44:56
+Test File: test_phase8_catalog.py
+====================================================================================================
+
+TOTAL FAILED TESTS: 3
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: test_1
+Endpoint: /catalog
+Description: Basic catalog query
+Error Type: Exception
+Timestamp: 2025-07-18T11:44:55.361406
+
+Response Time: 0.00s
+
+SERVER TRACEBACK (CLEANED):
+----------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\api\routes\catalog.py", line 66, in get_catalog
+    cursor.execute(count_query, params[:-2] if q else [])
+sqlite3.OperationalError: near "SELasdasdasdECT": syntax error
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: test_2
+Endpoint: /catalog
+Description: Paginated catalog query
+Error Type: Exception
+Timestamp: 2025-07-18T11:44:55.467828
+
+Response Time: 0.00s
+
+SERVER TRACEBACK (CLEANED):
+----------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\api\routes\catalog.py", line 66, in get_catalog
+    cursor.execute(count_query, params[:-2] if q else [])
+sqlite3.OperationalError: near "SELasdasdasdECT": syntax error
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #3
+============================================================
+Test ID: test_3
+Endpoint: /catalog
+Description: Catalog search query
+Error Type: Exception
+Timestamp: 2025-07-18T11:44:55.577852
+
+Response Time: 0.00s
+
+SERVER TRACEBACK (CLEANED):
+----------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\api\routes\catalog.py", line 66, in get_catalog
+    cursor.execute(count_query, params[:-2] if q else [])
+sqlite3.OperationalError: near "SELasdasdasdECT": syntax error
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 11
+Successful Requests: 8
+Failed Requests: 3
+Success Rate: 72.72727272727273%
+Average Response Time: 0.007997184991836548s
+Total Test Time: 1.9865s
