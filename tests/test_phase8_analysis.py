@@ -5,6 +5,12 @@ Tests the analysis endpoints with real HTTP requests and proper authentication.
 This test uses real functionality from the main scripts without hardcoding values.
 """
 
+from tests.helpers import (
+    extract_detailed_error_info,
+    make_request_with_traceback_capture,
+    save_traceback_report,
+)
+from dotenv import load_dotenv
 import asyncio
 import os
 import sys
@@ -35,120 +41,116 @@ except NameError:
 sys.path.insert(0, str(BASE_DIR))
 
 # Load environment variables early
-from dotenv import load_dotenv
 load_dotenv()
 
 # Import test helpers
-from tests.helpers import (
-    extract_detailed_error_info,
-    make_request_with_traceback_capture,
-    save_exception_traceback,
-    save_server_traceback_report,
-    save_test_failures_traceback,
-)
 
 # Test configuration
 TEST_EMAIL = "test_user@example.com"
 
-TEST_QUERIES = [
-    # Basic /analyze endpoint tests
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "prompt": "What tables are available?",
-            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+
+def generate_test_queries():
+    """Generate test queries with fresh UUIDs each time."""
+    return [
+        # Basic /analyze endpoint tests
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "What tables are available?",
+                "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+            },
+            "description": "Basic analysis query",
+            "should_succeed": True,
+            "expected_fields": ["prompt", "result", "thread_id", "run_id"]
         },
-        "description": "Basic analysis query",
-        "should_succeed": True,
-        "expected_fields": ["prompt", "result", "thread_id", "run_id"]
-    },
-    {
-        "endpoint": "/analyze",
-        "method": "POST", 
-        "data": {
-            "prompt": "Show me the first 5 rows from any table",
-            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "Show me the first 5 rows from any table",
+                "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+            },
+            "description": "SQL query analysis",
+            "should_succeed": True,
+            "expected_fields": ["prompt", "result", "thread_id", "run_id", "sql", "queries_and_results"]
         },
-        "description": "SQL query analysis",
-        "should_succeed": True,
-        "expected_fields": ["prompt", "result", "thread_id", "run_id", "sql", "queries_and_results"]
-    },
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "prompt": "Test query with existing thread",
-            "thread_id": "existing_thread_123"
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "Test query with existing thread",
+                "thread_id": "existing_thread_123"
+            },
+            "description": "Analysis with existing thread",
+            "should_succeed": True,
+            "expected_fields": ["prompt", "result", "thread_id", "run_id"]
         },
-        "description": "Analysis with existing thread",
-        "should_succeed": True,
-        "expected_fields": ["prompt", "result", "thread_id", "run_id"]
-    },
-    # Invalid request tests
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "prompt": "",
-            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        # Invalid request tests
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "",
+                "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+            },
+            "description": "Empty prompt",
+            "should_succeed": False,
         },
-        "description": "Empty prompt",
-        "should_succeed": False,
-    },
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "prompt": "Valid prompt",
-            "thread_id": ""
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "Valid prompt",
+                "thread_id": ""
+            },
+            "description": "Empty thread_id",
+            "should_succeed": False,
         },
-        "description": "Empty thread_id",
-        "should_succeed": False,
-    },
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
-            # Missing prompt field
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+                # Missing prompt field
+            },
+            "description": "Missing prompt field",
+            "should_succeed": False,
         },
-        "description": "Missing prompt field",
-        "should_succeed": False,
-    },
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "prompt": "Valid prompt"
-            # Missing thread_id field
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "Valid prompt"
+                # Missing thread_id field
+            },
+            "description": "Missing thread_id field",
+            "should_succeed": False,
         },
-        "description": "Missing thread_id field",
-        "should_succeed": False,
-    },
-    # Edge cases
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "prompt": "A" * 9999,  # Very long prompt (just under limit)
-            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        # Edge cases
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "A" * 9999,  # Very long prompt (just under limit)
+                "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+            },
+            "description": "Very long prompt",
+            "should_succeed": True,
+            "expected_fields": ["prompt", "result", "thread_id", "run_id"]
         },
-        "description": "Very long prompt",
-        "should_succeed": True,
-        "expected_fields": ["prompt", "result", "thread_id", "run_id"]
-    },
-    {
-        "endpoint": "/analyze",
-        "method": "POST",
-        "data": {
-            "prompt": "A" * 10001,  # Exceeds max length
-            "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+        {
+            "endpoint": "/analyze",
+            "method": "POST",
+            "data": {
+                "prompt": "A" * 10001,  # Exceeds max length
+                "thread_id": f"test_thread_{uuid.uuid4().hex[:8]}"
+            },
+            "description": "Prompt exceeds max length",
+            "should_succeed": False,
         },
-        "description": "Prompt exceeds max length",
-        "should_succeed": False,
-    },
-]
+    ]
+
 
 # Server configuration
 SERVER_BASE_URL = "http://localhost:8000"
@@ -159,7 +161,7 @@ def create_test_jwt_token(email: str = TEST_EMAIL):
     """Create a simple test JWT token for authentication."""
     try:
         import jwt
-        
+
         google_client_id = (
             "722331814120-9kdm64s2mp9cq8kig0mvrluf1eqkso74.apps.googleusercontent.com"
         )
@@ -210,7 +212,8 @@ class AnalysisTestResults:
             "response_time": response_time,
             "status_code": status_code,
             "timestamp": datetime.now().isoformat(),
-            "success": status_code in [200, 422],  # Both success and validation errors are valid outcomes
+            # Both success and validation errors are valid outcomes
+            "success": status_code in [200, 422],
         }
         self.results.append(result)
         print(
@@ -237,7 +240,8 @@ class AnalysisTestResults:
             "response_time": response_time,
             "timestamp": datetime.now().isoformat(),
             "error_obj": error,  # Store the actual error object to access server_tracebacks
-            "response_data": response_data,  # Store server response data (may include traceback)
+            # Store server response data (may include traceback)
+            "response_data": response_data,
         }
         self.errors.append(error_info)
         print(
@@ -266,7 +270,8 @@ class AnalysisTestResults:
             total_test_time = (self.end_time - self.start_time).total_seconds()
 
         # Count unique endpoints tested successfully
-        tested_endpoints = set(r["endpoint"] for r in self.results if r["success"])
+        tested_endpoints = set(r["endpoint"]
+                               for r in self.results if r["success"])
         required_endpoints = {"/analyze"}
 
         return {
@@ -294,7 +299,7 @@ async def check_server_connectivity():
     print("\n" + "=" * 80)
     print("🔍 CHECKING SERVER CONNECTIVITY")
     print("=" * 80)
-    
+
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             response = await client.get(f"{SERVER_BASE_URL}/health")
@@ -315,7 +320,7 @@ def setup_test_environment():
     print("\n" + "=" * 80)
     print("🔧 SETTING UP TEST ENVIRONMENT")
     print("=" * 80)
-    
+
     # Check if USE_TEST_TOKENS is set for the server
     use_test_tokens = os.getenv("USE_TEST_TOKENS", "0")
     if use_test_tokens != "1":
@@ -333,7 +338,7 @@ def setup_test_environment():
         "metadata/llm_selection_descriptions/selection_descriptions.db",
         "data/czsu_data.db",
     ]
-    
+
     for db_path in db_paths:
         if not os.path.exists(db_path):
             print(f"⚠️  WARNING: Database file not found: {db_path}")
@@ -346,7 +351,7 @@ def setup_test_environment():
         "OPENAI_API_KEY",
         "GOOGLE_CLIENT_ID",
     ]
-    
+
     for env_var in required_env_vars:
         if not os.getenv(env_var):
             print(f"⚠️  WARNING: Environment variable {env_var} is not set")
@@ -363,7 +368,7 @@ async def setup_debug_environment(client: httpx.AsyncClient):
     print("\n" + "=" * 80)
     print("🔧 SETTING UP DEBUG ENVIRONMENT")
     print("=" * 80)
-    
+
     token = create_test_jwt_token()
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -393,14 +398,15 @@ async def cleanup_debug_environment(client: httpx.AsyncClient):
     print("\n" + "=" * 80)
     print("🧹 CLEANING UP DEBUG ENVIRONMENT")
     print("=" * 80)
-    
+
     token = create_test_jwt_token()
     headers = {"Authorization": f"Bearer {token}"}
 
     debug_vars = {
         "print__analyze_debug": "1",
-        "print__analysis_tracing_debug": "1", 
-        "print__feedback_flow": "1"
+        "print__analysis_tracing_debug": "1",
+        "print__feedback_flow": "1",
+        "DEBUG_TRACEBACK": "1",
     }
 
     try:
@@ -467,11 +473,15 @@ async def make_analysis_request(
             # Client-side error (connection failed, etc.)
             error_message = error_info["client_error"] or "Unknown client error"
             print(f"🔌 Test {test_id} - Client Error: {error_message}")
-            
+
+            # DEBUG: Print detailed error info for diagnosis
+            print(f"[DEBUG] Full error_info for test {test_id}: {error_info}")
+
             # Create error object with server traceback info
             error_obj = Exception(error_message)
             error_obj.server_tracebacks = error_info["server_tracebacks"]
-            results.add_error(test_id, endpoint, description, error_obj, response_time)
+            results.add_error(test_id, endpoint, description,
+                              error_obj, response_time)
             return
 
         response = result["response"]
@@ -479,16 +489,21 @@ async def make_analysis_request(
             f"📝 Test {test_id} - Status: {response.status_code}, Time: {response_time:.2f}s"
         )
 
+        # DEBUG: If there are server tracebacks, log them
+        if error_info.get("server_tracebacks"):
+            print(
+                f"[DEBUG] Server tracebacks captured for test {test_id}: {len(error_info['server_tracebacks'])} found")
+
         # Check if response matches expectation
         if should_succeed:
             if response.status_code == 200:
                 try:
                     data_response = response.json()
-                    
+
                     # Validate expected fields are present
                     for field in expected_fields:
                         assert field in data_response, f"Missing expected field: {field}"
-                    
+
                     # Specific validation for analysis responses
                     if endpoint == "/analyze":
                         # Validate analysis response structure
@@ -496,14 +511,14 @@ async def make_analysis_request(
                         assert "result" in data_response, "Missing 'result' field"
                         assert "thread_id" in data_response, "Missing 'thread_id' field"
                         assert "run_id" in data_response, "Missing 'run_id' field"
-                        
+
                         # Check that prompt matches request
                         assert data_response["prompt"] == data["prompt"], "Prompt mismatch in response"
                         assert data_response["thread_id"] == data["thread_id"], "Thread ID mismatch in response"
-                        
+
                         # Check result is not empty
                         assert data_response["result"], "Result field is empty"
-                        
+
                         # Check run_id is valid UUID format
                         import uuid
                         try:
@@ -519,56 +534,107 @@ async def make_analysis_request(
                 except AssertionError as e:
                     print(f"❌ Test {test_id} - Validation failed: {e}")
                     error_obj = Exception(f"Response validation failed: {e}")
-                    error_obj.server_tracebacks = error_info["server_tracebacks"]
-                    results.add_error(test_id, endpoint, description, error_obj, response_time, response_data=data_response)
+                    error_obj.server_tracebacks = error_info.get(
+                        "server_tracebacks", [])
+                    results.add_error(test_id, endpoint, description,
+                                      error_obj, response_time, response_data=data_response)
 
                 except Exception as e:
                     print(f"❌ Test {test_id} - Response parsing failed: {e}")
                     error_obj = Exception(f"Response parsing failed: {e}")
-                    error_obj.server_tracebacks = error_info["server_tracebacks"]
-                    results.add_error(test_id, endpoint, description, error_obj, response_time)
+                    error_obj.server_tracebacks = error_info.get(
+                        "server_tracebacks", [])
+                    results.add_error(test_id, endpoint,
+                                      description, error_obj, response_time)
             else:
                 # Expected success but got non-200 status
-                print(f"❌ Test {test_id} - Expected success but got status {response.status_code}")
+                print(
+                    f"❌ Test {test_id} - Expected success but got status {response.status_code}")
+
+                # DEBUG: Print the full error response body and error_info for diagnosis
                 try:
                     error_response = response.json()
+                    print(
+                        f"[DEBUG] Error response body for test {test_id}: {response.text}")
                 except:
-                    error_response = {"error": "Could not parse error response"}
-                
-                error_obj = Exception(f"Expected success but got status {response.status_code}")
-                error_obj.server_tracebacks = error_info["server_tracebacks"]
-                results.add_error(test_id, endpoint, description, error_obj, response_time, response_data=error_response)
+                    error_response = {
+                        "error": "Could not parse error response"}
+                    print(
+                        f"[DEBUG] Could not decode error response body for test {test_id}")
+
+                print(f"[DEBUG] error_info for test {test_id}: {error_info}")
+
+                # Create error with proper server traceback attachment
+                error_message = None
+                if error_info.get("server_error_messages"):
+                    error_message = "; ".join(
+                        f"{em['exception_type']}: {em['exception_message']}"
+                        for em in error_info["server_error_messages"]
+                    )
+                if not error_message:
+                    error_message = f"Expected success but got status {response.status_code}"
+
+                error_obj = Exception(error_message)
+                error_obj.server_tracebacks = error_info.get(
+                    "server_tracebacks", [])
+                results.add_error(test_id, endpoint, description, error_obj,
+                                  response_time, response_data=error_response)
         else:
             # Expected failure
             if response.status_code in [400, 422, 404, 500]:
-                print(f"✅ Test {test_id} - Expected failure with status {response.status_code}")
+                print(
+                    f"✅ Test {test_id} - Expected failure with status {response.status_code}")
                 try:
                     error_response = response.json()
                 except:
-                    error_response = {"error": "Could not parse error response"}
+                    error_response = {
+                        "error": "Could not parse error response"}
 
                 results.add_result(
                     test_id, endpoint, description, error_response, response_time, response.status_code
                 )
             else:
-                print(f"❌ Test {test_id} - Expected failure but got status {response.status_code}")
+                print(
+                    f"❌ Test {test_id} - Expected failure but got status {response.status_code}")
+
+                # DEBUG: Print the full response body and error_info for diagnosis
                 try:
                     unexpected_response = response.json()
+                    print(
+                        f"[DEBUG] Unexpected response body for test {test_id}: {response.text}")
                 except:
                     unexpected_response = {"error": "Could not parse response"}
-                
-                error_obj = Exception(f"Expected failure but got status {response.status_code}")
-                error_obj.server_tracebacks = error_info["server_tracebacks"]
-                results.add_error(test_id, endpoint, description, error_obj, response_time, response_data=unexpected_response)
+                    print(
+                        f"[DEBUG] Could not decode unexpected response body for test {test_id}")
+
+                print(f"[DEBUG] error_info for test {test_id}: {error_info}")
+
+                # Create error with proper server traceback attachment
+                error_message = None
+                if error_info.get("server_error_messages"):
+                    error_message = "; ".join(
+                        f"{em['exception_type']}: {em['exception_message']}"
+                        for em in error_info["server_error_messages"]
+                    )
+                if not error_message:
+                    error_message = f"Expected failure but got status {response.status_code}"
+
+                error_obj = Exception(error_message)
+                error_obj.server_tracebacks = error_info.get(
+                    "server_tracebacks", [])
+                results.add_error(test_id, endpoint, description, error_obj,
+                                  response_time, response_data=unexpected_response)
 
     except Exception as e:
         response_time = time.time() - start_time
-        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
+        error_message = str(e) if str(e).strip(
+        ) else f"{type(e).__name__}: {repr(e)}"
         if not error_message or error_message.isspace():
             error_message = f"Unknown {type(e).__name__} exception"
 
-        print(f"❌ Test {test_id} - Error: {error_message}, Time: {response_time:.2f}s")
-        
+        print(
+            f"❌ Test {test_id} - Error: {error_message}, Time: {response_time:.2f}s")
+
         # Create error object (this shouldn't have server tracebacks since it's a client-side exception)
         error_obj = Exception(error_message)
         error_obj.server_tracebacks = []
@@ -587,7 +653,10 @@ async def run_analysis_tests() -> AnalysisTestResults:
     results = AnalysisTestResults()
     results.start_time = datetime.now()
 
-    print(f"📋 Test queries: {len(TEST_QUERIES)} queries defined")
+    # Generate fresh test queries
+    test_queries = generate_test_queries()
+
+    print(f"📋 Test queries: {len(test_queries)} queries defined")
     print(f"🌐 Server URL: {SERVER_BASE_URL}")
     print(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
 
@@ -596,9 +665,9 @@ async def run_analysis_tests() -> AnalysisTestResults:
         await setup_debug_environment(client)
 
         # Run all test cases
-        for i, test_case in enumerate(TEST_QUERIES, 1):
+        for i, test_case in enumerate(test_queries, 1):
             test_id = f"ANALYSIS_{i:02d}"
-            
+
             await make_analysis_request(
                 client,
                 test_id,
@@ -647,7 +716,8 @@ def analyze_test_results(results: AnalysisTestResults):
         f"\n🎯 All Required Endpoints Tested: {'✅ YES' if summary['all_endpoints_tested'] else '❌ NO'}"
     )
     if not summary["all_endpoints_tested"]:
-        print(f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
+        print(
+            f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
 
     # Show individual results
     print("\n📋 Individual Request Results:")
@@ -666,10 +736,25 @@ def analyze_test_results(results: AnalysisTestResults):
             print(f"      Error: {error['error']}")
             if error.get("response_time"):
                 print(f"      Time: {error['response_time']:.2f}s")
-            
+
             # Show server tracebacks if available
             if hasattr(error.get("error_obj"), "server_tracebacks") and error["error_obj"].server_tracebacks:
-                print(f"      Server Tracebacks: {len(error['error_obj'].server_tracebacks)} found")
+                print(
+                    f"      Server Tracebacks: {len(error['error_obj'].server_tracebacks)} found")
+                for j, tb in enumerate(error["error_obj"].server_tracebacks, 1):
+                    print(
+                        f"        TB{j}: {tb.get('exception_type', 'Unknown')}: {tb.get('exception_message', 'Unknown')}")
+            else:
+                print(f"      Server Tracebacks: None captured")
+
+            # Show response data if available
+            if error.get("response_data"):
+                if isinstance(error["response_data"], dict) and "traceback" in error["response_data"]:
+                    print(f"      Response contains server traceback: Yes")
+                else:
+                    print(f"      Response data available: Yes (no traceback)")
+            else:
+                print(f"      Response data: None")
 
     # Endpoint analysis
     print("\n🔍 ENDPOINT ANALYSIS:")
@@ -683,14 +768,16 @@ def analyze_test_results(results: AnalysisTestResults):
     # Collect all server tracebacks from errors
     all_server_tracebacks = []
     for error in results.errors:
-        if hasattr(error.get("error_obj"), "server_tracebacks"):
+        if hasattr(error.get("error_obj"), "server_tracebacks") and error["error_obj"].server_tracebacks:
             all_server_tracebacks.extend(error["error_obj"].server_tracebacks)
+            print(
+                f"[DEBUG] Found {len(error['error_obj'].server_tracebacks)} server tracebacks in error {error.get('test_id')}")
 
     # Save traceback information if there are failures
     if results.errors or summary["failed_requests"] > 0:
-        save_test_failures_traceback(
-            "test_phase8_analysis.py",
-            results,
+        save_traceback_report(
+            report_type="test_failure",
+            test_results=results,
             additional_info={
                 "test_type": "Analysis Endpoints Test",
                 "server_url": SERVER_BASE_URL,
@@ -702,15 +789,19 @@ def analyze_test_results(results: AnalysisTestResults):
 
         # Save server tracebacks if any were captured
         if all_server_tracebacks:
-            save_server_traceback_report(
-                "test_phase8_analysis.py",
-                results,
-                all_server_tracebacks,
+            print(
+                f"[DEBUG] Saving {len(all_server_tracebacks)} server tracebacks to separate report")
+            save_traceback_report(
+                report_type="server_traceback",
+                test_results=results,
+                server_tracebacks=all_server_tracebacks,
                 additional_info={
                     "test_type": "Analysis Endpoints Test",
                     "server_url": SERVER_BASE_URL,
                 },
             )
+        else:
+            print("[DEBUG] No server tracebacks captured to save")
 
     return summary
 
@@ -746,7 +837,8 @@ async def main():
         summary = analyze_test_results(test_results)
 
         # Return success status
-        return summary["success_rate"] >= 50.0  # Consider 50%+ success rate as passing
+        # Consider 50%+ success rate as passing
+        return summary["success_rate"] >= 50.0
 
     except Exception as e:
         print(f"🚨 CRITICAL ERROR during test execution: {e}")
@@ -755,9 +847,9 @@ async def main():
         print(traceback.format_exc())
 
         # Save exception information
-        save_exception_traceback(
-            "test_phase8_analysis.py",
-            e,
+        save_traceback_report(
+            report_type="exception",
+            exception=e,
             test_context={
                 "phase": "main_execution",
                 "server_url": SERVER_BASE_URL,

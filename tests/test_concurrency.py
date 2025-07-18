@@ -7,6 +7,18 @@ and PostgreSQL checkpointer stability under load.
 This test uses real functionality from the main scripts without hardcoding values.
 """
 
+from tests.helpers import (
+    extract_detailed_error_info,
+    make_request_with_traceback_capture,
+    save_traceback_report,
+)
+from my_agent.utils.postgres_checkpointer import (
+    check_postgres_env_vars,
+    cleanup_checkpointer,
+    close_async_postgres_saver,
+    create_async_postgres_saver,
+    get_db_config,
+)
 import asyncio
 import os
 import sys
@@ -39,22 +51,8 @@ try:
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-from my_agent.utils.postgres_checkpointer import (
-    check_postgres_env_vars,
-    cleanup_checkpointer,
-    close_async_postgres_saver,
-    create_async_postgres_saver,
-    get_db_config,
-)
 
 # Import test helpers
-from tests.helpers import (
-    extract_detailed_error_info,
-    make_request_with_traceback_capture,
-    save_exception_traceback,
-    save_server_traceback_report,
-    save_test_failures_traceback,
-)
 
 # Import main application and dependencies from the new modular structure
 # from api.main import app  # No longer needed for HTTP requests
@@ -325,9 +323,11 @@ async def make_analyze_request(
                     for em in error_info["server_error_messages"]
                 )
             if not error_message:
-                error_message = error_info.get("client_error") or "Unknown error"
+                error_message = error_info.get(
+                    "client_error") or "Unknown error"
             error_obj = Exception(error_message)
-            error_obj.server_tracebacks = error_info.get("server_tracebacks", [])
+            error_obj.server_tracebacks = error_info.get(
+                "server_tracebacks", [])
             results.add_error(
                 thread_id, prompt, error_obj, response_time, response_data=response_json
             )
@@ -367,7 +367,8 @@ async def run_concurrency_test() -> ConcurrencyTestResults:
             print("============================================================")
             print(f"🔍 STARTING CONCURRENT REQUEST {i+1} (Thread {i+1})")
             print("============================================================")
-            tasks.append(make_analyze_request(client, thread_ids[i], prompt, results))
+            tasks.append(make_analyze_request(
+                client, thread_ids[i], prompt, results))
 
         # Run tasks concurrently
         print("⚡ Executing concurrent requests...")
@@ -480,15 +481,16 @@ def analyze_concurrency_results(results: ConcurrencyTestResults):
             ),
             "Server Tracebacks Captured": len(all_server_tracebacks),
         }
-        save_test_failures_traceback(
-            test_file_name="test_concurrency.py",
+        save_traceback_report(
+            report_type="test_failure",
             test_results=results,
             additional_info=additional_info,
         )
         if all_server_tracebacks:
-            print(f"📝 Saving {len(all_server_tracebacks)} server traceback(s)...")
-            save_server_traceback_report(
-                test_file_name="test_concurrency.py",
+            print(
+                f"📝 Saving {len(all_server_tracebacks)} server traceback(s)...")
+            save_traceback_report(
+                report_type="server_traceback",
                 test_results=results,
                 server_tracebacks=all_server_tracebacks,
                 additional_info=additional_info,
@@ -539,7 +541,8 @@ async def setup_debug_environment(client: httpx.AsyncClient):
     headers = {"Authorization": f"Bearer {token}"}
 
     # Set debug variables specific to this test
-    debug_vars = {"print__analysis_tracing_debug": "1", "print__analyze_debug": "1"}
+    debug_vars = {"print__analysis_tracing_debug": "1",
+                  "print__analyze_debug": "1"}
 
     try:
         response = await client.post("/debug/set-env", headers=headers, json=debug_vars)
@@ -562,7 +565,11 @@ async def cleanup_debug_environment(client: httpx.AsyncClient):
     headers = {"Authorization": f"Bearer {token}"}
 
     # Pass the same debug variables that were set, so they can be reset to original values
-    debug_vars = {"print__analysis_tracing_debug": "1", "print__analyze_debug": "1"}
+    debug_vars = {
+        "print__analysis_tracing_debug": "1",
+        "print__analyze_debug": "1",
+        "DEBUG_TRACEBACK": "1"
+    }
 
     try:
         response = await client.post(
@@ -646,7 +653,8 @@ async def main():
         )
 
         test_passed = (
-            not has_empty_errors  # No empty/unknown errors (proper server response)
+            # No empty/unknown errors (proper server response)
+            not has_empty_errors
             and summary["total_requests"] > 0  # Some requests were made
             and (
                 summary["successful_requests"] > 0  # Either some succeeded
@@ -684,8 +692,10 @@ async def main():
             "Error Location": "main() function",
             "Error During": "Test execution",
         }
-        save_exception_traceback(
-            test_file_name="test_concurrency.py", exception=e, test_context=test_context
+        save_traceback_report(
+            report_type="exception",
+            exception=e,
+            test_context=test_context
         )
         return False
 

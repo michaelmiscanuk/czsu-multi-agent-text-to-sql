@@ -5,6 +5,12 @@ Tests the catalog endpoints with real HTTP requests and proper authentication.
 This test uses real functionality from the main scripts without hardcoding values.
 """
 
+# Standard imports first
+from tests.helpers import (
+    extract_detailed_error_info,
+    make_request_with_traceback_capture,
+    save_traceback_report,
+)
 import asyncio
 import os
 import sys
@@ -17,6 +23,7 @@ from typing import Any, Dict, List
 
 import httpx
 import pytest
+from dotenv import load_dotenv
 
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
@@ -26,27 +33,10 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     print("[CATALOG-STARTUP] Event loop policy set successfully")
 
-# Add project root to path
-try:
-    BASE_DIR = Path(__file__).resolve().parents[1]
-except NameError:
-    BASE_DIR = Path(os.getcwd()).parents[0]
-
-sys.path.insert(0, str(BASE_DIR))
-
 # Load environment variables early
-from dotenv import load_dotenv
-
 load_dotenv()
 
-# Import test helpers
-from tests.helpers import (
-    extract_detailed_error_info,
-    make_request_with_traceback_capture,
-    save_exception_traceback,
-    save_server_traceback_report,
-    save_test_failures_traceback,
-)
+# Import local modules (no path manipulation needed with installed package)
 
 # Test configuration
 TEST_EMAIL = "test_user@example.com"
@@ -205,7 +195,8 @@ class CatalogTestResults:
             "response_time": response_time,
             "timestamp": datetime.now().isoformat(),
             "error_obj": error,  # Store the actual error object to access server_tracebacks
-            "response_data": response_data,  # Store server response data (may include traceback)
+            # Store server response data (may include traceback)
+            "response_data": response_data,
         }
         self.errors.append(error_info)
         print(
@@ -234,7 +225,8 @@ class CatalogTestResults:
             total_test_time = (self.end_time - self.start_time).total_seconds()
 
         # Count unique endpoints tested successfully
-        tested_endpoints = set(r["endpoint"] for r in self.results if r["success"])
+        tested_endpoints = set(r["endpoint"]
+                               for r in self.results if r["success"])
         required_endpoints = {"/catalog", "/data-tables", "/data-table"}
 
         return {
@@ -323,9 +315,9 @@ async def setup_debug_environment(client: httpx.AsyncClient):
 
     # Set debug variables specific to this test
     debug_vars = {
-        "print__catalog_debug": "1",
-        "print__data_tables_debug": "1",
-        "DEBUG_TRACEBACK": "1",  # Enable traceback in error responses
+        "print__catalog_debug": "0",
+        "print__data_tables_debug": "0",
+        "DEBUG_TRACEBACK": "1",
     }
 
     try:
@@ -350,7 +342,11 @@ async def cleanup_debug_environment(client: httpx.AsyncClient):
     token = create_test_jwt_token()
     headers = {"Authorization": f"Bearer {token}"}
 
-    debug_vars = {"print__catalog_debug": "1", "print__data_tables_debug": "1"}
+    debug_vars = {
+        "print__catalog_debug": "0",
+        "print__data_tables_debug": "0",
+        "DEBUG_TRACEBACK": "0",
+    }
 
     try:
         response = await client.post(
@@ -409,7 +405,8 @@ async def make_catalog_request(
             error_obj = Exception(error_message)
             error_obj.server_tracebacks = error_info["server_tracebacks"]
 
-            results.add_error(test_id, endpoint, description, error_obj, response_time)
+            results.add_error(test_id, endpoint, description,
+                              error_obj, response_time)
             return
 
         response = result["response"]
@@ -497,7 +494,8 @@ async def make_catalog_request(
                         assert isinstance(
                             data["columns"], list
                         ), "'columns' must be a list"
-                        assert isinstance(data["rows"], list), "'rows' must be a list"
+                        assert isinstance(
+                            data["rows"], list), "'rows' must be a list"
 
                         # Validate column names are strings
                         for col in data["columns"]:
@@ -507,7 +505,8 @@ async def make_catalog_request(
 
                         # Validate row structure
                         for i, row in enumerate(data["rows"]):
-                            assert isinstance(row, list), f"Row {i} must be a list"
+                            assert isinstance(
+                                row, list), f"Row {i} must be a list"
                             if data["columns"]:  # Only check if we have columns
                                 assert len(row) == len(
                                     data["columns"]
@@ -561,7 +560,8 @@ async def make_catalog_request(
                 )
 
                 # Create error object with server traceback info
-                error_obj = Exception(f"Expected success but got: {error_message}")
+                error_obj = Exception(
+                    f"Expected success but got: {error_message}")
                 error_obj.server_tracebacks = error_info["server_tracebacks"]
 
                 # Log server tracebacks if any were captured
@@ -584,7 +584,8 @@ async def make_catalog_request(
                 )
         else:
             if response.status_code == 422:  # Validation error
-                print(f"✅ Test {test_id} - Correctly failed with validation error")
+                print(
+                    f"✅ Test {test_id} - Correctly failed with validation error")
                 data = {"validation_error": True}
                 results.add_result(
                     test_id,
@@ -595,10 +596,12 @@ async def make_catalog_request(
                     response.status_code,
                 )
             elif response.status_code == 200:
-                print(f"❌ Test {test_id} - Expected validation error but got success")
+                print(
+                    f"❌ Test {test_id} - Expected validation error but got success")
 
                 # Create error object with server traceback info
-                error_obj = Exception("Expected validation error but request succeeded")
+                error_obj = Exception(
+                    "Expected validation error but request succeeded")
                 error_obj.server_tracebacks = error_info["server_tracebacks"]
 
                 results.add_error(
@@ -631,11 +634,13 @@ async def make_catalog_request(
 
     except Exception as e:
         response_time = time.time() - start_time
-        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
+        error_message = str(e) if str(e).strip(
+        ) else f"{type(e).__name__}: {repr(e)}"
         if not error_message or error_message.isspace():
             error_message = f"Unknown error of type {type(e).__name__}"
 
-        print(f"❌ Test {test_id} - Error: {error_message}, Time: {response_time:.2f}s")
+        print(
+            f"❌ Test {test_id} - Error: {error_message}, Time: {response_time:.2f}s")
 
         # Create error object (this shouldn't have server tracebacks since it's a client-side exception)
         error_obj = Exception(error_message)
@@ -650,7 +655,7 @@ async def run_catalog_tests() -> CatalogTestResults:
     """Run all catalog endpoint tests."""
     print("\n" + "=" * 80)
     print("🚀 STARTING CATALOG ENDPOINTS TESTS")
-    print(f"📂 BASE_DIR: {BASE_DIR}")
+    print(f"📂 Working Directory: {Path.cwd()}")
     print("=" * 80)
 
     results = CatalogTestResults()
@@ -741,7 +746,8 @@ def analyze_test_results(results: CatalogTestResults):
         f"\n🎯 All Required Endpoints Tested: {'✅ YES' if summary['all_endpoints_tested'] else '❌ NO'}"
     )
     if not summary["all_endpoints_tested"]:
-        print(f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
+        print(
+            f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
 
     # Show individual results
     print("\n📋 Individual Request Results:")
@@ -776,12 +782,14 @@ def analyze_test_results(results: CatalogTestResults):
             print("⚠️  Response times vary significantly - possible performance issues")
     else:
         print("❌ Not all required endpoints were tested successfully")
-        print(f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
+        print(
+            f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
 
     # Collect all server tracebacks from errors
     all_server_tracebacks = []
     for error in results.errors:
-        error_obj = error.get("error_obj")  # This might be the actual Exception object
+        # This might be the actual Exception object
+        error_obj = error.get("error_obj")
         if hasattr(error_obj, "server_tracebacks") and error_obj.server_tracebacks:
             all_server_tracebacks.extend(error_obj.server_tracebacks)
 
@@ -808,17 +816,18 @@ def analyze_test_results(results: CatalogTestResults):
         }
 
         # Save the regular traceback report
-        save_test_failures_traceback(
-            test_file_name="test_phase8_catalog.py",
+        save_traceback_report(
+            report_type="test_failure",
             test_results=results,
             additional_info=additional_info,
         )
 
         # Save the server traceback report if we captured any
         if all_server_tracebacks:
-            print(f"📝 Saving {len(all_server_tracebacks)} server traceback(s)...")
-            save_server_traceback_report(
-                test_file_name="test_phase8_catalog.py",
+            print(
+                f"📝 Saving {len(all_server_tracebacks)} server traceback(s)...")
+            save_traceback_report(
+                report_type="server_traceback",
                 test_results=results,
                 server_tracebacks=all_server_tracebacks,
                 additional_info=additional_info,
@@ -893,7 +902,8 @@ async def main():
             not has_empty_errors  # No empty/unknown errors
             and not has_database_errors  # No database variable errors
             and summary["total_requests"] > 0  # Some requests were made
-            and summary["all_endpoints_tested"]  # All required endpoints tested
+            # All required endpoints tested
+            and summary["all_endpoints_tested"]
             and summary["failed_requests"] == 0  # No failed requests
             and summary["successful_requests"] > 0  # At least some succeeded
         )
@@ -909,7 +919,8 @@ async def main():
         elif not summary["all_endpoints_tested"]:
             print("❌ Test failed: Not all required endpoints were tested successfully")
         elif summary["failed_requests"] > 0:
-            print(f"❌ Test failed: {summary['failed_requests']} requests failed")
+            print(
+                f"❌ Test failed: {summary['failed_requests']} requests failed")
         else:
             print(
                 f"✅ Test criteria met: {summary['successful_requests']}/{summary['total_requests']} "
@@ -935,8 +946,8 @@ async def main():
             "Error During": "Test execution",
         }
 
-        save_exception_traceback(
-            test_file_name="test_phase8_catalog.py",
+        save_traceback_report(
+            report_type="exception",
             exception=e,
             test_context=test_context,
         )
@@ -971,8 +982,8 @@ async def test_catalog_endpoints():
                 "Error During": "Pytest execution",
             }
 
-            save_exception_traceback(
-                test_file_name="test_phase8_catalog.py",
+            save_traceback_report(
+                report_type="exception",
                 exception=e,
                 test_context=test_context,
             )
@@ -1005,8 +1016,8 @@ if __name__ == "__main__":
             "Error During": "Direct script execution",
         }
 
-        save_exception_traceback(
-            test_file_name="test_phase8_catalog.py",
+        save_traceback_report(
+            report_type="exception",
             exception=e,
             test_context=test_context,
         )

@@ -3,19 +3,32 @@
 Test helpers and utilities for the test suite.
 """
 
-import asyncio
-import io
 import logging
-import os
-import sys
 import traceback
-from contextlib import contextmanager, redirect_stderr, redirect_stdout
+import inspect
+import os
+from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, TextIO
-from unittest.mock import patch
+from typing import Any, Dict, List, Optional
 
 import httpx
+from dotenv import load_dotenv
+
+# Load environment variables early
+load_dotenv()
+
+# Configuration
+# CLEANED_TRACEBACK: Controls traceback display in error reports
+#   1 = Show cleaned/simplified traceback (default) - removes middleware noise
+#   0 = Show full original traceback - includes all exception chaining
+# Set via environment variable: set CLEANED_TRACEBACK=0 (Windows) or export CLEANED_TRACEBACK=0 (Linux/Mac)
+# Configuration for traceback cleaning
+# Set CLEANED_TRACEBACK=1 (default) for cleaned traceback, 0 for full traceback
+# Usage:
+#   - Default (cleaned): python -m pytest tests/test_name.py
+#   - Full traceback: set CLEANED_TRACEBACK=0 && python -m pytest tests/test_name.py
+CLEANED_TRACEBACK = int(os.environ.get("CLEANED_TRACEBACK", "1"))
 
 
 class ServerLogCapture:
@@ -23,11 +36,7 @@ class ServerLogCapture:
 
     def __init__(self):
         self.logs: List[Dict[str, Any]] = []
-        self.errors: List[Dict[str, Any]] = []
         self.tracebacks: List[Dict[str, Any]] = []
-        self.original_handlers = {}
-        self.log_buffer = io.StringIO()
-        self.error_buffer = io.StringIO()
 
     def add_log_entry(self, level: str, message: str, exc_info=None):
         """Add a log entry with optional exception info."""
@@ -67,12 +76,7 @@ class ServerLogCapture:
     def clear(self):
         """Clear all captured data."""
         self.logs.clear()
-        self.errors.clear()
         self.tracebacks.clear()
-        self.log_buffer.seek(0)
-        self.log_buffer.truncate(0)
-        self.error_buffer.seek(0)
-        self.error_buffer.truncate(0)
 
 
 class CustomLogHandler(logging.Handler):
@@ -84,19 +88,11 @@ class CustomLogHandler(logging.Handler):
 
     def emit(self, record):
         try:
-            # Format the message
             message = self.format(record)
-
-            # Capture exception info if present
-            exc_info = None
-            if record.exc_info:
-                exc_info = record.exc_info
-
-            # Add to log capture
+            exc_info = record.exc_info if record.exc_info else None
             self.log_capture.add_log_entry(
                 level=record.levelname, message=message, exc_info=exc_info
             )
-
         except Exception:
             # Don't let logging errors break the application
             pass
@@ -107,23 +103,15 @@ def capture_server_logs():
     """Context manager to capture server-side logs and tracebacks."""
     log_capture = ServerLogCapture()
     custom_handler = CustomLogHandler(log_capture)
-
-    # Configure the handler
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    custom_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     )
-    custom_handler.setFormatter(formatter)
 
     # Get all relevant loggers
     loggers_to_capture = [
-        "uvicorn",
-        "uvicorn.error",
-        "uvicorn.access",
-        "fastapi",
-        "starlette",
-        "app",
-        "root",
-        "",  # Root logger
+        "uvicorn", "uvicorn.error", "uvicorn.access", "fastapi",
+        "starlette", "app", "root", ""  # Root logger
     ]
 
     original_handlers = {}
@@ -154,23 +142,17 @@ async def make_request_with_traceback_capture(
     """
     Make an HTTP request and capture any server-side tracebacks.
 
-    Returns a dictionary with:
-    - response: The HTTP response object
-    - server_logs: List of captured server logs
-    - server_tracebacks: List of captured server tracebacks
+    Returns a dictionary with response, server logs, tracebacks, and success status.
     """
-
     with capture_server_logs() as log_capture:
         try:
             response = await client.request(method, url, **kwargs)
-
             return {
                 "response": response,
                 "server_logs": log_capture.get_captured_logs(),
                 "server_tracebacks": log_capture.get_captured_tracebacks(),
                 "success": True,
             }
-
         except Exception as e:
             return {
                 "response": None,
@@ -182,52 +164,29 @@ async def make_request_with_traceback_capture(
 
 
 def extract_detailed_error_info(result: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Extract detailed error information from a request result.
-
-    Args:
-        result: Result from make_request_with_traceback_capture
-
-    Returns:
-        Dictionary with detailed error information
-    """
+    """Extract detailed error information from a request result."""
     error_info = {
-        "has_server_errors": False,
-        "has_client_errors": False,
-        "server_tracebacks": [],
+        "has_server_errors": bool(result["server_tracebacks"]),
+        "has_client_errors": not result["success"] or bool(result.get("client_exception")),
+        "server_tracebacks": result["server_tracebacks"],
         "server_error_messages": [],
-        "client_error": None,
-        "http_status": None,
+        "client_error": str(result.get("client_exception", "")) if result.get("client_exception") else None,
+        "http_status": result["response"].status_code if result["response"] else None,
         "response_body": None,
     }
 
-    # Check for client-side errors
-    if not result["success"] or result.get("client_exception"):
-        error_info["has_client_errors"] = True
-        error_info["client_error"] = str(
-            result.get("client_exception", "Unknown client error")
-        )
+    # Extract error messages from tracebacks
+    for tb in result["server_tracebacks"]:
+        error_info["server_error_messages"].append({
+            "timestamp": tb["timestamp"],
+            "level": tb["level"],
+            "message": tb["message"],
+            "exception_type": tb["exception_type"],
+            "exception_message": tb["exception_message"],
+        })
 
-    # Check for server-side errors
-    if result["server_tracebacks"]:
-        error_info["has_server_errors"] = True
-        error_info["server_tracebacks"] = result["server_tracebacks"]
-
-        # Extract error messages from tracebacks
-        for tb in result["server_tracebacks"]:
-            error_info["server_error_messages"].append(
-                {
-                    "timestamp": tb["timestamp"],
-                    "level": tb["level"],
-                    "message": tb["message"],
-                    "exception_type": tb["exception_type"],
-                    "exception_message": tb["exception_message"],
-                }
-            )
-
-    # Get HTTP response info
+    # Get response body
     if result["response"]:
-        error_info["http_status"] = result["response"].status_code
         try:
             error_info["response_body"] = result["response"].text
         except Exception:
@@ -236,279 +195,370 @@ def extract_detailed_error_info(result: Dict[str, Any]) -> Dict[str, Any]:
     return error_info
 
 
-def save_test_failures_traceback(
-    test_file_name: str,
-    test_results: Any,
+def _create_report_header(report_type: str, test_file_name: str, timestamp: str) -> List[str]:
+    """Create a standardized report header."""
+    return [
+        "=" * 100,
+        f"{report_type.upper()} REPORT",
+        f"Generated: {timestamp}",
+        f"Test File: {test_file_name}",
+        "=" * 100,
+        "",
+    ]
+
+
+def _create_report_footer(report_type: str, test_file_name: str, timestamp: str) -> List[str]:
+    """Create a standardized report footer."""
+    return [
+        "=" * 100,
+        f"End of {report_type.lower()} report for {test_file_name}",
+        f"Generated: {timestamp}",
+        "=" * 100,
+    ]
+
+
+def _clean_traceback(traceback_text: str) -> str:
+    """
+    Clean up verbose traceback by removing redundant exception handling layers
+    and focusing on the core error.
+    """
+    if not traceback_text:
+        return traceback_text
+
+    lines = traceback_text.split('\n')
+    cleaned_lines = []
+
+    # Find the most relevant part of the traceback
+    # Look for the last occurrence of our application code
+    app_code_indices = []
+    for i, line in enumerate(lines):
+        if ('api\\routes\\' in line or
+            'api/routes/' in line or
+            'my_agent/' in line or
+                'czsu-multi-agent-text-to-sql' in line and 'site-packages' not in line):
+            app_code_indices.append(i)
+
+    if app_code_indices:
+        # Start from a few lines before the last app code reference
+        start_idx = max(0, app_code_indices[-1] - 3)
+
+        # Find the actual error line (usually contains the exception name)
+        error_line_idx = None
+        for i in range(start_idx, len(lines)):
+            line = lines[i].strip()
+            if (': name ' in line and 'is not defined' in line) or \
+               ('Error:' in line) or \
+               ('Exception:' in line) or \
+               (line.endswith('Error') and not line.startswith('  ')):
+                error_line_idx = i
+                break
+
+        if error_line_idx:
+            # Include a reasonable amount of context around the error
+            context_start = max(0, error_line_idx - 10)
+            context_end = min(len(lines), error_line_idx + 3)
+            cleaned_lines = lines[context_start:context_end]
+        else:
+            # Fallback: use the last app code section
+            cleaned_lines = lines[start_idx:start_idx + 15]
+    else:
+        # No app code found, look for the core error message
+        for i, line in enumerate(lines):
+            if ('NameError:' in line or
+                'TypeError:' in line or
+                'ValueError:' in line or
+                    'AttributeError:' in line):
+                # Include context around the error
+                context_start = max(0, i - 5)
+                context_end = min(len(lines), i + 3)
+                cleaned_lines = lines[context_start:context_end]
+                break
+
+    # If we still don't have anything meaningful, take the last meaningful part
+    if not cleaned_lines:
+        # Remove the "During handling of the above exception" sections
+        meaningful_lines = []
+        skip_section = False
+
+        for line in lines:
+            if "During handling of the above exception, another exception occurred:" in line:
+                skip_section = True
+                continue
+            elif line.strip() and not line.startswith(' ') and not line.startswith('\t'):
+                skip_section = False
+
+            if not skip_section:
+                meaningful_lines.append(line)
+
+        # Take the last 20 lines of meaningful content
+        cleaned_lines = meaningful_lines[-20:
+                                         ] if meaningful_lines else lines[-20:]
+
+    # Remove empty lines at the beginning and end
+    while cleaned_lines and not cleaned_lines[0].strip():
+        cleaned_lines.pop(0)
+    while cleaned_lines and not cleaned_lines[-1].strip():
+        cleaned_lines.pop()
+
+    return '\n'.join(cleaned_lines)
+
+
+def _write_report_to_file(file_path: Path, content_lines: List[str], report_type: str):
+    """Write report content to file with error handling."""
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(content_lines))
+        print(f"\n📝 {report_type} report saved to: {file_path}")
+        return True
+    except Exception as e:
+        print(f"❌ Failed to save {report_type.lower()} report: {e}")
+        print(f"❌ Attempted to write to: {file_path}")
+        return False
+
+
+def save_traceback_report(
+    report_type: str = "test_failure",
+    test_results: Any = None,
+    exception: Exception = None,
+    server_tracebacks: Optional[List[Dict[str, Any]]] = None,
     additional_info: Optional[Dict[str, Any]] = None,
+    test_context: Optional[Dict[str, Any]] = None,
 ):
     """
-    Save traceback information for failed tests to a file.
+    Unified function to save various types of traceback reports.
+    Automatically detects the calling file name.
+
+    Traceback cleaning can be controlled via the CLEANED_TRACEBACK environment variable.
 
     Args:
-        test_file_name: Name of the test file (e.g., "test_phase8_catalog.py")
-        test_results: Test results object containing errors
-        additional_info: Optional additional information to include
+        report_type: Type of report ("test_failure", "exception", "server_traceback")
+        test_results: Test results object (for test_failure reports)
+        exception: Exception object (for exception reports)
+        server_tracebacks: List of server tracebacks (for server_traceback reports)
+        additional_info: Additional information to include
+        test_context: Test context information
+
+    Environment Variables:
+        CLEANED_TRACEBACK: Controls traceback format
+            - 1 (default): Shows cleaned, readable tracebacks
+            - 0: Shows full original tracebacks for detailed debugging
+
+    Usage:
+        # Default (cleaned tracebacks)
+        python -m pytest tests/test_name.py
+
+        # Full tracebacks for debugging
+        set CLEANED_TRACEBACK=0 && python -m pytest tests/test_name.py
     """
+    # Automatically detect the calling file name
+    frame = inspect.currentframe()
+    try:
+        caller_frame = frame.f_back
+        caller_file_path = caller_frame.f_code.co_filename
+        test_file_name = Path(caller_file_path).name
+    except Exception:
+        test_file_name = "unknown_test_file.py"
+    finally:
+        del frame  # Prevent reference cycles
     # Create traceback_errors directory if it doesn't exist
     traceback_dir = Path("tests/traceback_errors")
     traceback_dir.mkdir(exist_ok=True)
 
-    # Generate filename based on test file name
-    base_name = Path(test_file_name).stem  # Remove .py extension
-    traceback_file = traceback_dir / f"{base_name}_traceback_failures.txt"
+    # Generate filename based on test file name and report type
+    base_name = Path(test_file_name).stem
+    traceback_file = traceback_dir / f"{base_name}_{report_type}_report.txt"
 
     # Get current timestamp
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Prepare content to write
-    content_lines = []
-
-    # Header
-    content_lines.extend(
-        [
-            "=" * 100,
-            f"TEST FAILURE TRACEBACK REPORT",
-            f"Generated: {timestamp}",
-            f"Test File: {test_file_name}",
-            "=" * 100,
-            "",
-        ]
-    )
+    content_lines = _create_report_header(
+        report_type, test_file_name, timestamp)
 
     # Add additional info if provided
     if additional_info:
-        content_lines.extend(
-            [
-                "ADDITIONAL TEST INFORMATION:",
-                "-" * 50,
-            ]
-        )
+        content_lines.extend([
+            "ADDITIONAL INFORMATION:",
+            "-" * 30,
+        ])
         for key, value in additional_info.items():
             content_lines.append(f"{key}: {value}")
         content_lines.extend(["", ""])
 
-    # Check if test_results has errors
-    if hasattr(test_results, "errors") and test_results.errors:
-        content_lines.extend(
-            [f"TOTAL FAILED TESTS: {len(test_results.errors)}", "=" * 100, ""]
-        )
-
-        # Process each error
-        for i, error in enumerate(test_results.errors, 1):
-            content_lines.extend(
-                [
-                    f"FAILED TEST #{i}",
-                    "=" * 60,
-                    f"Test ID: {error.get('test_id', 'Unknown')}",
-                    f"Endpoint: {error.get('endpoint', 'Unknown')}",
-                    f"Description: {error.get('description', 'Unknown')}",
-                    f"Error Type: {error.get('error_type', 'Unknown')}",
-                    f"Timestamp: {error.get('timestamp', 'Unknown')}",
-                    "",
-                ]
-            )
-
-            if error.get("response_time"):
-                content_lines.append(f"Response Time: {error['response_time']:.2f}s")
-                content_lines.append("")
-
-            # Add the actual error message
-            content_lines.extend(
-                [
-                    "ERROR MESSAGE:",
-                    "-" * 30,
-                    str(error.get("error", "No error message available")),
-                    "",
-                ]
-            )
-
-            # Add server traceback from response_data if present
-            traceback_text = None
-            if "response_data" in error and isinstance(error["response_data"], dict):
-                traceback_text = error["response_data"].get("traceback")
-            if traceback_text:
-                content_lines.extend(
-                    ["SERVER TRACEBACK FROM RESPONSE:", "-" * 40, traceback_text, ""]
-                )
-
-            # Check if this error has detailed server traceback info
-            if hasattr(error, "server_tracebacks") or "server_tracebacks" in error:
-                server_tracebacks = error.get("server_tracebacks", [])
-                if server_tracebacks:
-                    content_lines.extend(["SERVER-SIDE TRACEBACKS:", "-" * 40, ""])
-
-                    for j, tb in enumerate(server_tracebacks, 1):
-                        content_lines.extend(
-                            [
-                                f"SERVER TRACEBACK #{j}:",
-                                f"Timestamp: {tb.get('timestamp', 'Unknown')}",
-                                f"Level: {tb.get('level', 'Unknown')}",
-                                f"Exception Type: {tb.get('exception_type', 'Unknown')}",
-                                f"Exception Message: {tb.get('exception_message', 'Unknown')}",
-                                "",
-                                "FULL SERVER TRACEBACK:",
-                                "-" * 25,
-                                tb.get("traceback", "No traceback available"),
-                                "",
-                                "~" * 60,
-                                "",
-                            ]
-                        )
-
-            # Add separator between tests
-            if i < len(test_results.errors):
-                content_lines.extend(["~" * 80, ""])
-
-    # Check if test_results has failed results (different from errors)
-    if hasattr(test_results, "results"):
-        failed_results = [r for r in test_results.results if not r.get("success", True)]
-        if failed_results:
-            content_lines.extend(
-                [
-                    "",
-                    "FAILED RESULT DETAILS:",
-                    "=" * 60,
-                    f"Total Failed Results: {len(failed_results)}",
-                    "",
-                ]
-            )
-
-            for i, result in enumerate(failed_results, 1):
-                content_lines.extend(
-                    [
-                        f"FAILED RESULT #{i}",
-                        "-" * 40,
-                        f"Test ID: {result.get('test_id', 'Unknown')}",
-                        f"Endpoint: {result.get('endpoint', 'Unknown')}",
-                        f"Description: {result.get('description', 'Unknown')}",
-                        f"Status Code: {result.get('status_code', 'Unknown')}",
-                        f"Response Time: {result.get('response_time', 'Unknown')}s",
-                        f"Timestamp: {result.get('timestamp', 'Unknown')}",
-                        "",
-                    ]
-                )
-
-                # Add response data if available
-                if result.get("response_data"):
-                    content_lines.extend(
-                        ["RESPONSE DATA:", "-" * 20, str(result["response_data"]), ""]
-                    )
-
-                # Add separator between results
-                if i < len(failed_results):
-                    content_lines.extend(["~" * 60, ""])
-
-    # Add summary information
-    if hasattr(test_results, "get_summary"):
-        summary = test_results.get_summary()
-        content_lines.extend(
-            [
-                "",
-                "TEST SUMMARY:",
-                "=" * 40,
-                f"Total Requests: {summary.get('total_requests', 'Unknown')}",
-                f"Successful Requests: {summary.get('successful_requests', 'Unknown')}",
-                f"Failed Requests: {summary.get('failed_requests', 'Unknown')}",
-                f"Success Rate: {summary.get('success_rate', 'Unknown')}%",
-                f"Average Response Time: {summary.get('average_response_time', 'Unknown')}s",
-                f"Total Test Time: {summary.get('total_test_time', 'Unknown')}s",
-                "",
-            ]
-        )
-
-        if summary.get("missing_endpoints"):
-            content_lines.extend(
-                [f"Missing Endpoints: {', '.join(summary['missing_endpoints'])}", ""]
-            )
-
-    # Add footer
-    content_lines.extend(
-        [
-            "=" * 100,
-            f"End of traceback report for {test_file_name}",
-            f"Generated: {timestamp}",
-            "=" * 100,
-        ]
-    )
-
-    # Write to file
-    try:
-        with open(traceback_file, "w", encoding="utf-8") as f:
-            f.write("\n".join(content_lines))
-
-        print(f"\n📝 Traceback report saved to: {traceback_file}")
-        print(
-            f"📊 Report contains {len(test_results.errors) if hasattr(test_results, 'errors') else 0} error(s)"
-        )
-
-    except Exception as e:
-        print(f"❌ Failed to save traceback report: {e}")
-        print(f"❌ Attempted to write to: {traceback_file}")
-
-
-def save_exception_traceback(
-    test_file_name: str,
-    exception: Exception,
-    test_context: Optional[Dict[str, Any]] = None,
-):
-    """
-    Save exception traceback information to a file.
-
-    Args:
-        test_file_name: Name of the test file
-        exception: The exception that occurred
-        test_context: Optional context information about the test
-    """
-    # Create traceback_errors directory if it doesn't exist
-    traceback_dir = Path("tests/traceback_errors")
-    traceback_dir.mkdir(exist_ok=True)
-
-    # Generate filename based on test file name
-    base_name = Path(test_file_name).stem
-    traceback_file = traceback_dir / f"{base_name}_exception_traceback.txt"
-
-    # Get current timestamp
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # Prepare content to write
-    content_lines = []
-
-    # Header
-    content_lines.extend(
-        [
-            "=" * 100,
-            f"EXCEPTION TRACEBACK REPORT",
-            f"Generated: {timestamp}",
-            f"Test File: {test_file_name}",
-            "=" * 100,
-            "",
-        ]
-    )
-
     # Add test context if provided
     if test_context:
-        content_lines.extend(
-            [
-                "TEST CONTEXT:",
-                "-" * 30,
-            ]
-        )
+        content_lines.extend([
+            "TEST CONTEXT:",
+            "-" * 30,
+        ])
         for key, value in test_context.items():
             content_lines.append(f"{key}: {value}")
         content_lines.extend(["", ""])
 
-    # Add exception information
-    content_lines.extend(
-        [
-            "EXCEPTION INFORMATION:",
-            "-" * 40,
-            f"Exception Type: {type(exception).__name__}",
-            f"Exception Message: {str(exception)}",
-            "",
-            "FULL TRACEBACK:",
-            "-" * 30,
-        ]
-    )
+    # Handle different report types
+    if report_type == "test_failure" and test_results:
+        _add_test_failure_content(content_lines, test_results)
+    elif report_type == "exception" and exception:
+        _add_exception_content(content_lines, exception)
+    elif report_type == "server_traceback" and server_tracebacks:
+        _add_server_traceback_content(content_lines, server_tracebacks)
+
+    # Add test summary if available
+    if test_results and hasattr(test_results, "get_summary"):
+        _add_test_summary(content_lines, test_results.get_summary())
+
+    # Add footer
+    content_lines.extend(_create_report_footer(
+        report_type, test_file_name, timestamp))
+
+    # Write to file
+    success = _write_report_to_file(traceback_file, content_lines, report_type)
+
+    if success and report_type == "test_failure" and test_results:
+        error_count = len(test_results.errors) if hasattr(
+            test_results, 'errors') else 0
+        print(f"📊 Report contains {error_count} error(s)")
+    elif success and report_type == "server_traceback" and server_tracebacks:
+        print(
+            f"📊 Report contains {len(server_tracebacks)} server traceback(s)")
+
+
+def _add_test_failure_content(content_lines: List[str], test_results: Any):
+    """Add test failure specific content to the report."""
+    if hasattr(test_results, "errors") and test_results.errors:
+        content_lines.extend([
+            f"TOTAL FAILED TESTS: {len(test_results.errors)}",
+            "=" * 100,
+            ""
+        ])
+
+        for i, error in enumerate(test_results.errors, 1):
+            content_lines.extend([
+                f"FAILED TEST #{i}",
+                "=" * 60,
+                f"Test ID: {error.get('test_id', 'Unknown')}",
+                f"Endpoint: {error.get('endpoint', 'Unknown')}",
+                f"Description: {error.get('description', 'Unknown')}",
+                f"Error Type: {error.get('error_type', 'Unknown')}",
+                f"Timestamp: {error.get('timestamp', 'Unknown')}",
+                "",
+            ])
+
+            if error.get("response_time"):
+                content_lines.append(
+                    f"Response Time: {error['response_time']:.2f}s")
+                content_lines.append("")
+
+            # Add error message
+            content_lines.extend([
+                "ERROR MESSAGE:",
+                "-" * 30,
+                str(error.get("error", "No error message available")),
+                "",
+            ])
+
+            # Add server traceback from response_data if present
+            has_response_traceback = False
+            if "response_data" in error and isinstance(error["response_data"], dict):
+                traceback_text = error["response_data"].get("traceback")
+                if traceback_text:
+                    has_response_traceback = True
+
+                    if CLEANED_TRACEBACK == 1:
+                        # Clean up the traceback to make it more readable
+                        cleaned_traceback = _clean_traceback(traceback_text)
+                        content_lines.extend([
+                            "SERVER TRACEBACK (CLEANED):",
+                            "-" * 40,
+                            cleaned_traceback,
+                            "",
+                            "ORIGINAL FULL TRACEBACK:",
+                            "-" * 40,
+                            "(Truncated - the cleaned version above shows the relevant parts)",
+                            "(Set CLEANED_TRACEBACK=0 to see full traceback)",
+                            ""
+                        ])
+                    else:
+                        # Show full original traceback
+                        content_lines.extend([
+                            "SERVER TRACEBACK (FULL ORIGINAL):",
+                            "-" * 40,
+                            traceback_text,
+                            ""
+                        ])
+
+            # Add server tracebacks if available (only if we don't have response traceback to avoid duplication)
+            server_tracebacks = error.get("server_tracebacks", [])
+            if server_tracebacks and not has_response_traceback:
+                content_lines.extend(["SERVER-SIDE TRACEBACKS:", "-" * 40, ""])
+                for j, tb in enumerate(server_tracebacks, 1):
+                    content_lines.extend([
+                        f"SERVER TRACEBACK #{j}:",
+                        f"Timestamp: {tb.get('timestamp', 'Unknown')}",
+                        f"Level: {tb.get('level', 'Unknown')}",
+                        f"Exception Type: {tb.get('exception_type', 'Unknown')}",
+                        f"Exception Message: {tb.get('exception_message', 'Unknown')}",
+                        "",
+                        "FULL SERVER TRACEBACK:",
+                        "-" * 25,
+                        tb.get("traceback", "No traceback available"),
+                        "",
+                        "~" * 60,
+                        "",
+                    ])
+
+            if i < len(test_results.errors):
+                content_lines.extend(["~" * 80, ""])
+
+    # Handle failed results
+    if hasattr(test_results, "results"):
+        failed_results = [
+            r for r in test_results.results if not r.get("success", True)]
+        if failed_results:
+            content_lines.extend([
+                "",
+                "FAILED RESULT DETAILS:",
+                "=" * 60,
+                f"Total Failed Results: {len(failed_results)}",
+                "",
+            ])
+
+            for i, result in enumerate(failed_results, 1):
+                content_lines.extend([
+                    f"FAILED RESULT #{i}",
+                    "-" * 40,
+                    f"Test ID: {result.get('test_id', 'Unknown')}",
+                    f"Endpoint: {result.get('endpoint', 'Unknown')}",
+                    f"Description: {result.get('description', 'Unknown')}",
+                    f"Status Code: {result.get('status_code', 'Unknown')}",
+                    f"Response Time: {result.get('response_time', 'Unknown')}s",
+                    f"Timestamp: {result.get('timestamp', 'Unknown')}",
+                    "",
+                ])
+
+                if result.get("response_data"):
+                    content_lines.extend([
+                        "RESPONSE DATA:",
+                        "-" * 20,
+                        str(result["response_data"]),
+                        ""
+                    ])
+
+                if i < len(failed_results):
+                    content_lines.extend(["~" * 60, ""])
+
+
+def _add_exception_content(content_lines: List[str], exception: Exception):
+    """Add exception specific content to the report."""
+    content_lines.extend([
+        "EXCEPTION INFORMATION:",
+        "-" * 40,
+        f"Exception Type: {type(exception).__name__}",
+        f"Exception Message: {str(exception)}",
+        "",
+        "FULL TRACEBACK:",
+        "-" * 30,
+    ])
 
     # Add full traceback
     tb_lines = traceback.format_exception(
@@ -516,156 +566,63 @@ def save_exception_traceback(
     )
     content_lines.extend(tb_lines)
 
-    # Add footer
-    content_lines.extend(
-        [
-            "",
-            "=" * 100,
-            f"End of exception traceback for {test_file_name}",
-            f"Generated: {timestamp}",
-            "=" * 100,
-        ]
-    )
 
-    # Write to file
-    try:
-        with open(traceback_file, "w", encoding="utf-8") as f:
-            f.write("".join(content_lines))
-
-        print(f"\n📝 Exception traceback saved to: {traceback_file}")
-
-    except Exception as e:
-        print(f"❌ Failed to save exception traceback: {e}")
-        print(f"❌ Attempted to write to: {traceback_file}")
-
-
-def save_server_traceback_report(
-    test_file_name: str,
-    test_results: Any,
-    server_tracebacks: List[Dict[str, Any]],
-    additional_info: Optional[Dict[str, Any]] = None,
-):
-    """
-    Save a comprehensive server traceback report.
-
-    Args:
-        test_file_name: Name of the test file
-        test_results: Test results object
-        server_tracebacks: List of captured server tracebacks
-        additional_info: Optional additional information
-    """
-    # Create traceback_errors directory if it doesn't exist
-    traceback_dir = Path("tests/traceback_errors")
-    traceback_dir.mkdir(exist_ok=True)
-
-    # Generate filename based on test file name
-    base_name = Path(test_file_name).stem
-    traceback_file = traceback_dir / f"{base_name}_server_tracebacks.txt"
-
-    # Get current timestamp
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-    # Prepare content to write
-    content_lines = []
-
-    # Header
-    content_lines.extend(
-        [
-            "=" * 100,
-            f"SERVER TRACEBACK REPORT",
-            f"Generated: {timestamp}",
-            f"Test File: {test_file_name}",
-            "=" * 100,
-            "",
-        ]
-    )
-
-    # Add additional info if provided
-    if additional_info:
-        content_lines.extend(
-            [
-                "ADDITIONAL TEST INFORMATION:",
-                "-" * 50,
-            ]
-        )
-        for key, value in additional_info.items():
-            content_lines.append(f"{key}: {value}")
-        content_lines.extend(["", ""])
-
-    # Add server tracebacks
+def _add_server_traceback_content(content_lines: List[str], server_tracebacks: List[Dict[str, Any]]):
+    """Add server traceback specific content to the report."""
     if server_tracebacks:
-        content_lines.extend(
-            [f"TOTAL SERVER TRACEBACKS: {len(server_tracebacks)}", "=" * 100, ""]
-        )
+        content_lines.extend([
+            f"TOTAL SERVER TRACEBACKS: {len(server_tracebacks)}",
+            "=" * 100,
+            ""
+        ])
 
         for i, tb in enumerate(server_tracebacks, 1):
-            content_lines.extend(
-                [
-                    f"SERVER TRACEBACK #{i}",
-                    "=" * 60,
-                    f"Timestamp: {tb.get('timestamp', 'Unknown')}",
-                    f"Level: {tb.get('level', 'Unknown')}",
-                    f"Message: {tb.get('message', 'Unknown')}",
-                    f"Exception Type: {tb.get('exception_type', 'Unknown')}",
-                    f"Exception Message: {tb.get('exception_message', 'Unknown')}",
-                    "",
-                    "FULL SERVER TRACEBACK:",
-                    "-" * 40,
-                    tb.get("traceback", "No traceback available"),
-                    "",
-                ]
-            )
+            content_lines.extend([
+                f"SERVER TRACEBACK #{i}",
+                "=" * 60,
+                f"Timestamp: {tb.get('timestamp', 'Unknown')}",
+                f"Level: {tb.get('level', 'Unknown')}",
+                f"Message: {tb.get('message', 'Unknown')}",
+                f"Exception Type: {tb.get('exception_type', 'Unknown')}",
+                f"Exception Message: {tb.get('exception_message', 'Unknown')}",
+                "",
+                "FULL SERVER TRACEBACK:",
+                "-" * 40,
+                tb.get("traceback", "No traceback available"),
+                "",
+            ])
 
-            # Add separator between tracebacks
             if i < len(server_tracebacks):
                 content_lines.extend(["~" * 80, ""])
     else:
-        content_lines.extend(
-            [
-                "NO SERVER TRACEBACKS CAPTURED",
-                "=" * 50,
-                "This could mean:",
-                "- No server errors occurred",
-                "- Server logging was not properly captured",
-                "- Errors occurred but were not logged at the expected level",
-                "",
-            ]
-        )
+        content_lines.extend([
+            "NO SERVER TRACEBACKS CAPTURED",
+            "=" * 50,
+            "This could mean:",
+            "- No server errors occurred",
+            "- Server logging was not properly captured",
+            "- Errors occurred but were not logged at the expected level",
+            "",
+        ])
 
-    # Add test summary if available
-    if hasattr(test_results, "get_summary"):
-        summary = test_results.get_summary()
-        content_lines.extend(
-            [
-                "",
-                "TEST SUMMARY:",
-                "=" * 40,
-                f"Total Requests: {summary.get('total_requests', 'Unknown')}",
-                f"Successful Requests: {summary.get('successful_requests', 'Unknown')}",
-                f"Failed Requests: {summary.get('failed_requests', 'Unknown')}",
-                f"Success Rate: {summary.get('success_rate', 'Unknown')}%",
-                "",
-            ]
-        )
 
-    # Add footer
-    content_lines.extend(
-        [
-            "=" * 100,
-            f"End of server traceback report for {test_file_name}",
-            f"Generated: {timestamp}",
-            "=" * 100,
-        ]
-    )
+def _add_test_summary(content_lines: List[str], summary: Dict[str, Any]):
+    """Add test summary to the report."""
+    content_lines.extend([
+        "",
+        "TEST SUMMARY:",
+        "=" * 40,
+        f"Total Requests: {summary.get('total_requests', 'Unknown')}",
+        f"Successful Requests: {summary.get('successful_requests', 'Unknown')}",
+        f"Failed Requests: {summary.get('failed_requests', 'Unknown')}",
+        f"Success Rate: {summary.get('success_rate', 'Unknown')}%",
+        f"Average Response Time: {summary.get('average_response_time', 'Unknown')}s",
+        f"Total Test Time: {summary.get('total_test_time', 'Unknown')}s",
+        "",
+    ])
 
-    # Write to file
-    try:
-        with open(traceback_file, "w", encoding="utf-8") as f:
-            f.write("\n".join(content_lines))
-
-        print(f"\n📝 Server traceback report saved to: {traceback_file}")
-        print(f"📊 Report contains {len(server_tracebacks)} server traceback(s)")
-
-    except Exception as e:
-        print(f"❌ Failed to save server traceback report: {e}")
-        print(f"❌ Attempted to write to: {traceback_file}")
+    if summary.get("missing_endpoints"):
+        content_lines.extend([
+            f"Missing Endpoints: {', '.join(summary['missing_endpoints'])}",
+            ""
+        ])
