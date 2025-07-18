@@ -1,0 +1,40 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-07-18 15:38:16
+Test File: test_concurrency.py
+====================================================================================================
+
+TOTAL FAILED TESTS: 2
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: test_1
+Endpoint: /analyze
+Description: Porovnej narust poctu lidi v Brne a Praze v poslednich letech.
+Error Type: Exception
+Timestamp: 2025-07-18T15:38:14.299370
+
+Response Time: 43.81s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: test_2
+Endpoint: /analyze
+Description: Kontrastuj uroven zivota v Brne a v Praze.
+Error Type: Exception
+Timestamp: 2025-07-18T15:38:15.902165
+
+Response Time: 45.41s
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 2
+Successful Requests: 0
+Failed Requests: 2
+Success Rate: 0.0%
+Average Response Time: 0s
+Total Test Time: 46.34726s

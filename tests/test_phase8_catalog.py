@@ -2,18 +2,17 @@
 Tests the catalog endpoints with real HTTP requests and proper authentication.
 """
 
-from dotenv import load_dotenv
-import pytest
 import httpx
-from typing import Any, Dict, List
-from pathlib import Path
+from typing import Dict
 from datetime import datetime
 import time
 import asyncio
 import sys
-import os
 
 from tests.helpers import (
+    BaseTestResults,
+    handle_error_response,
+    handle_expected_failure,
     extract_detailed_error_info,
     make_request_with_traceback_capture,
     save_traceback_report,
@@ -31,6 +30,7 @@ if sys.platform == "win32":
 SERVER_BASE_URL = "http://localhost:8000"
 REQUEST_TIMEOUT = 30
 TEST_EMAIL = "test_user@example.com"
+REQUIRED_ENDPOINTS = {"/catalog", "/data-tables", "/data-table"}
 TEST_QUERIES = [
     {
         "endpoint": "/catalog",
@@ -93,107 +93,6 @@ TEST_QUERIES = [
         "should_succeed": True,
     },
 ]
-
-
-class CatalogTestResults:
-    """Class to track and analyze catalog test results."""
-
-    def __init__(self):
-        self.results: List[Dict[str, Any]] = []
-        self.start_time = None
-        self.end_time = None
-        self.errors: List[Dict[str, Any]] = []
-
-    def add_result(
-        self,
-        test_id: str,
-        endpoint: str,
-        description: str,
-        response_data: Dict,
-        response_time: float,
-        status_code: int,
-    ):
-        """Add a test result."""
-        result = {
-            "test_id": test_id,
-            "endpoint": endpoint,
-            "description": description,
-            "response_data": response_data,
-            "response_time": response_time,
-            "status_code": status_code,
-            "timestamp": datetime.now().isoformat(),
-            # Both success and validation errors are valid outcomes
-            "success": status_code in [200, 422],
-        }
-        self.results.append(result)
-
-    def add_error(
-        self,
-        test_id: str,
-        endpoint: str,
-        description: str,
-        error: Exception,
-        response_time: float = None,
-        response_data: dict = None,
-    ):
-        """Add an error result."""
-        error_info = {
-            "test_id": test_id,
-            "endpoint": endpoint,
-            "description": description,
-            "error": str(error),
-            "error_type": type(error).__name__,
-            "response_time": response_time,
-            "timestamp": datetime.now().isoformat(),
-            # Store server response data (may include traceback)
-            "error_obj": error,
-            "response_data": response_data,
-        }
-        self.errors.append(error_info)
-        print(f"❌ Test {test_id} failed: {str(error)}")
-
-    def get_summary(self) -> Dict[str, Any]:
-        """Get a summary of test results."""
-        total_requests = len(self.results) + len(self.errors)
-        successful_requests = len([r for r in self.results if r["success"]])
-        failed_requests = len(self.errors) + len(
-            [r for r in self.results if not r["success"]]
-        )
-
-        if self.results:
-            avg_response_time = sum(r["response_time"] for r in self.results) / len(
-                self.results
-            )
-            max_response_time = max(r["response_time"] for r in self.results)
-            min_response_time = min(r["response_time"] for r in self.results)
-        else:
-            avg_response_time = max_response_time = min_response_time = 0
-
-        total_test_time = None
-        if self.start_time and self.end_time:
-            total_test_time = (self.end_time - self.start_time).total_seconds()
-
-        tested_endpoints = set(r["endpoint"] for r in self.results if r["success"])
-        required_endpoints = {"/catalog", "/data-tables", "/data-table"}
-
-        return {
-            "total_requests": total_requests,
-            "successful_requests": successful_requests,
-            "failed_requests": failed_requests,
-            "success_rate": (
-                (successful_requests / total_requests * 100)
-                if total_requests > 0
-                else 0
-            ),
-            "average_response_time": avg_response_time,
-            "max_response_time": max_response_time,
-            "min_response_time": min_response_time,
-            "total_test_time": total_test_time,
-            "errors": self.errors,
-            "all_endpoints_tested": tested_endpoints.issuperset(required_endpoints),
-            "tested_endpoints": tested_endpoints,
-            "missing_endpoints": required_endpoints - tested_endpoints,
-        }
 
 
 def _validate_response_structure(endpoint: str, data: dict):
@@ -262,70 +161,6 @@ def _validate_response_structure(endpoint: str, data: dict):
         print(f"✅ {endpoint} validation passed")
 
 
-def _handle_error_response(
-    test_id: str,
-    endpoint: str,
-    description: str,
-    response,
-    error_info: dict,
-    results: CatalogTestResults,
-    response_time: float,
-):
-    """Handle error responses for expected success cases."""
-    try:
-        error_data = response.json()
-        error_message = error_data.get(
-            "detail", f"HTTP {response.status_code}: {response.text}"
-        )
-    except Exception:
-        error_data = None
-        error_message = f"HTTP {response.status_code}: {response.text}"
-
-    print(f"❌ Test {test_id} - Expected success but got HTTP {response.status_code}")
-    error_obj = Exception(f"Expected success but got: {error_message}")
-    error_obj.server_tracebacks = error_info["server_tracebacks"]
-    results.add_error(
-        test_id,
-        endpoint,
-        description,
-        error_obj,
-        response_time,
-        response_data=error_data,
-    )
-
-
-def _handle_expected_failure(
-    test_id: str,
-    endpoint: str,
-    description: str,
-    response,
-    error_info: dict,
-    results: CatalogTestResults,
-    response_time: float,
-):
-    """Handle responses for expected failure cases."""
-    if response.status_code == 422:  # Validation error
-        print(f"✅ Test {test_id} - Correctly failed with validation error")
-        data = {"validation_error": True}
-        results.add_result(
-            test_id, endpoint, description, data, response_time, response.status_code
-        )
-    elif response.status_code == 200:
-        print(f"❌ Test {test_id} - Expected validation error but got success")
-        error_obj = Exception("Expected validation error but request succeeded")
-        error_obj.server_tracebacks = error_info["server_tracebacks"]
-        results.add_error(test_id, endpoint, description, error_obj, response_time)
-    else:
-        print(
-            f"❌ Test {test_id} - Expected validation error but got HTTP {response.status_code}"
-        )
-        error_obj = Exception(
-            f"Expected validation error but got HTTP {response.status_code}"
-        )
-        error_obj.server_tracebacks = error_info["server_tracebacks"]
-        results.add_error(test_id, endpoint, description, error_obj, response_time)
-
-
 async def make_catalog_request(
     client: httpx.AsyncClient,
     test_id: str,
@@ -333,7 +168,7 @@ async def make_catalog_request(
     params: Dict,
     description: str,
     should_succeed: bool,
-    results: CatalogTestResults,
+    results: BaseTestResults,
 ):
     """Make a request to a catalog endpoint with server traceback capture."""
     token = create_test_jwt_token(TEST_EMAIL)
@@ -385,7 +220,7 @@ async def make_catalog_request(
                         test_id, endpoint, description, error_obj, response_time
                     )
             else:
-                _handle_error_response(
+                handle_error_response(
                     test_id,
                     endpoint,
                     description,
@@ -395,7 +230,7 @@ async def make_catalog_request(
                     response_time,
                 )
         else:
-            _handle_expected_failure(
+            handle_expected_failure(
                 test_id,
                 endpoint,
                 description,
@@ -419,11 +254,11 @@ async def make_catalog_request(
         )
 
 
-async def run_catalog_tests() -> CatalogTestResults:
+async def run_catalog_tests() -> BaseTestResults:
     """Run all catalog endpoint tests."""
     print("🚀 Starting catalog tests...")
 
-    results = CatalogTestResults()
+    results = BaseTestResults(required_endpoints=REQUIRED_ENDPOINTS)
     results.start_time = datetime.now()
 
     async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
@@ -471,7 +306,7 @@ async def run_catalog_tests() -> CatalogTestResults:
     return results
 
 
-def analyze_test_results(results: CatalogTestResults):
+def analyze_test_results(results: BaseTestResults):
     """Analyze and print test results."""
     print("\n📊 Test Results:")
 
@@ -515,7 +350,7 @@ async def main():
         ) as client:
             await setup_debug_environment(
                 client,
-                print__catalog_debug="0",
+                print__catalog_debug="1",
                 print__data_tables_debug="0",
                 DEBUG_TRACEBACK="1",
             )

@@ -1,6 +1,6 @@
 ====================================================================================================
 TEST_FAILURE REPORT
-Generated: 2025-07-18 11:44:56
+Generated: 2025-07-18 15:01:28
 Test File: test_phase8_catalog.py
 ====================================================================================================
 
@@ -13,7 +13,7 @@ Test ID: test_1
 Endpoint: /catalog
 Description: Basic catalog query
 Error Type: Exception
-Timestamp: 2025-07-18T11:44:55.361406
+Timestamp: 2025-07-18T15:01:27.341290
 
 Response Time: 0.00s
 
@@ -32,9 +32,9 @@ Test ID: test_2
 Endpoint: /catalog
 Description: Paginated catalog query
 Error Type: Exception
-Timestamp: 2025-07-18T11:44:55.467828
+Timestamp: 2025-07-18T15:01:27.460288
 
-Response Time: 0.00s
+Response Time: 0.01s
 
 SERVER TRACEBACK (CLEANED):
 ----------------------------------------
@@ -51,9 +51,9 @@ Test ID: test_3
 Endpoint: /catalog
 Description: Catalog search query
 Error Type: Exception
-Timestamp: 2025-07-18T11:44:55.577852
+Timestamp: 2025-07-18T15:01:27.571289
 
-Response Time: 0.00s
+Response Time: 0.01s
 
 SERVER TRACEBACK (CLEANED):
 ----------------------------------------
@@ -69,5 +69,5 @@ Total Requests: 11
 Successful Requests: 8
 Failed Requests: 3
 Success Rate: 72.72727272727273%
-Average Response Time: 0.007997184991836548s
-Total Test Time: 1.9865s
+Average Response Time: 0.006875365972518921s
+Total Test Time: 1.882116s
