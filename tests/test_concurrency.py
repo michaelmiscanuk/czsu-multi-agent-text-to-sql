@@ -19,6 +19,7 @@ import pytest
 
 from tests.helpers import (
     BaseTestResults,
+    handle_error_response,
     extract_detailed_error_info,
     make_request_with_traceback_capture,
     save_traceback_report,
@@ -156,19 +157,15 @@ async def make_analyze_request(
                 error_obj.server_tracebacks = error_info["server_tracebacks"]
                 results.add_error(test_id, "/analyze", prompt, error_obj, response_time)
         else:
-            # Handle error responses
-            error_message = None
-            if error_info.get("server_error_messages"):
-                error_message = "; ".join(
-                    f"{em['exception_type']}: {em['exception_message']}"
-                    for em in error_info["server_error_messages"]
-                )
-            if not error_message:
-                error_message = error_info.get("client_error") or "Unknown error"
-
-            error_obj = Exception(error_message)
-            error_obj.server_tracebacks = error_info.get("server_tracebacks", [])
-            results.add_error(test_id, "/analyze", prompt, error_obj, response_time)
+            handle_error_response(
+                test_id,
+                "/analyze",
+                prompt,
+                response,
+                error_info,
+                results,
+                response_time,
+            )
 
     except Exception as e:
         response_time = time.time() - start_time
@@ -321,7 +318,7 @@ async def main():
         ) as client:
             await setup_debug_environment(
                 client,
-                print__analysis_tracing_debug="1",
+                print__analysis_tracing_debug="0",
                 print__analyze_debug="1",
                 DEBUG_TRACEBACK="1",
             )
