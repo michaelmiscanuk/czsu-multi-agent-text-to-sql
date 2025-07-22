@@ -779,9 +779,9 @@ export default function ChatPage() {
       const responseMessage: ChatMessage = {
         id: loadingMessageId,
         threadId: currentThreadId,
-        user: 'assistant',
-        createdAt: Date.now(),
-        prompt: messageText,
+        user: userEmail, // Use the actual user email
+        createdAt: loadingMessage.createdAt, // Keep original timestamp
+        prompt: undefined, // Assistant messages should NOT have prompt field
         final_answer: data.result,
         queries_and_results: data.queries_and_results || [],
         datasets_used: data.top_selection_codes || [],
