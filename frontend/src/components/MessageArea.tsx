@@ -662,56 +662,56 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
 
                                             {/* Dataset used and SQL button for AI answers */}
                                             {!message.isLoading && (message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
-                                        <div className="mt-3 flex items-center justify-between flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
-                                            <div className="flex items-center space-x-3 flex-wrap">
-                                                {/* Show datasets */}
-                                                {message.datasets_used && message.datasets_used.length > 0 && (
-                                                    <div className="flex items-center space-x-2 flex-wrap">
-                                                        <span className="text-xs text-gray-500 mr-1" style={{ marginLeft: '1rem' }}>Dataset{message.datasets_used.length > 1 ? 's' : ''} used:</span>
-                                                        {message.datasets_used.map((code: string, index: number) => (
-                                                            <Link
-                                                                key={index}
-                                                                href={`/data?table=${encodeURIComponent(code)}`}
-                                                                className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
-                                                                style={{ textDecoration: 'none' }}
-                                                            >
-                                                                {code}
-                                                            </Link>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                        <div className="mt-3 flex items-center flex-wrap gap-3" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
+                                            {/* Show datasets */}
+                                            {message.datasets_used && message.datasets_used.length > 0 && (
+                                                <div className="flex items-center space-x-2 flex-wrap">
+                                                    <span className="text-xs text-gray-500 mr-1" style={{ marginLeft: '1rem' }}>Dataset{message.datasets_used.length > 1 ? 's' : ''} used:</span>
+                                                    {message.datasets_used.map((code: string, index: number) => (
+                                                        <Link
+                                                            key={index}
+                                                            href={`/data?table=${encodeURIComponent(code)}`}
+                                                            className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-mono text-xs font-semibold hover:bg-blue-100 transition-all duration-150 shadow-sm border border-blue-100"
+                                                            style={{ textDecoration: 'none' }}
+                                                        >
+                                                            {code}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            )}
 
-                                                {/* Action Buttons */}
-                                                {message.sql_query && (
-                                                    <button
-                                                        className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
-                                                        onClick={() => onSQLClick(message.id)}
-                                                    >
-                                                        SQL
-                                                    </button>
-                                                )}
-                                                {message.top_chunks && message.top_chunks.length > 0 && (
-                                                    <button
-                                                        className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
-                                                        onClick={() => onPDFClick(message.id)}
-                                                    >
-                                                        PDF
-                                                    </button>
-                                                )}
-                                            </div>
+                                            {/* Action Buttons */}
+                                            {message.sql_query && (
+                                                <button
+                                                    className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
+                                                    onClick={() => onSQLClick(message.id)}
+                                                >
+                                                    SQL
+                                                </button>
+                                            )}
+                                            {message.top_chunks && message.top_chunks.length > 0 && (
+                                                <button
+                                                    className="px-4 py-1 rounded-full light-blue-theme text-xs font-bold transition-all duration-150"
+                                                    onClick={() => onPDFClick(message.id)}
+                                                >
+                                                    PDF
+                                                </button>
+                                            )}
 
-                                            {/* Feedback component */}
+                                            {/* Feedback component - moves to right when wrapping */}
                                             {threadId && (
-                                                <FeedbackComponent
-                                                    messageId={message.id}
-                                                    runId={messageRunIds[message.id]}
-                                                    threadId={threadId}
-                                                    onFeedbackSubmit={handleFeedbackSubmit}
-                                                    onCommentSubmit={handleCommentSubmit}
-                                                    feedbackState={feedbackState}
-                                                    currentSentiment={getSentimentForRunId(messageRunIds[message.id] || '')}
-                                                    onSentimentUpdate={updateSentiment}
-                                                />
+                                                <div className="ml-auto">
+                                                    <FeedbackComponent
+                                                        messageId={message.id}
+                                                        runId={messageRunIds[message.id]}
+                                                        threadId={threadId}
+                                                        onFeedbackSubmit={handleFeedbackSubmit}
+                                                        onCommentSubmit={handleCommentSubmit}
+                                                        feedbackState={feedbackState}
+                                                        currentSentiment={getSentimentForRunId(messageRunIds[message.id] || '')}
+                                                        onSentimentUpdate={updateSentiment}
+                                                    />
+                                                </div>
                                             )}
                                         </div>
                                     )}
