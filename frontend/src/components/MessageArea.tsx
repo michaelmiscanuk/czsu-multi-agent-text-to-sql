@@ -388,8 +388,8 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
             if (cachedRunIds && cachedRunIds.length > 0) {
                 const newMessageRunIds: {[messageId: string]: string} = {};
                 
-                // Get all non-user messages (AI responses) in order
-                const aiMessages = messages.filter(message => !message.isUser);
+                // Get all messages that have final answers (AI responses) in order
+                const aiMessages = messages.filter(message => message.final_answer);
                 
                 // For each AI message, try to find a matching run_id
                 aiMessages.forEach((message, index) => {
@@ -607,44 +607,61 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                     </div>
                 ) : (
                     messages.map((message) => {
-                        // Determine if message is from user based on presence of prompt
-                        const isUser = !!message.prompt;
-                        const content = isUser ? message.prompt : message.final_answer;
-                        
                         return (
-                            <div key={message.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-6`}>
-                                <div className="flex flex-col max-w-2xl w-full">
-                                    {/* Message Content */}
-                                    <div
-                                        className={`transition-all duration-200 rounded-2xl px-6 py-4 w-full select-text shadow-lg group
-                                            ${isUser
-                                                ? 'light-blue-theme font-semibold hover:shadow-xl'
-                                                : message.isError
-                                                    ? 'bg-red-50 border border-red-200 text-red-800 hover:shadow-xl hover:border-red-300'
-                                                    : 'bg-white border border-blue-100 text-gray-800 hover:shadow-xl hover:border-blue-200'}
-                                        `}
-                                        style={{ 
-                                            fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
-                                            fontSize: '0.97rem', 
-                                            lineHeight: 1.6, 
-                                            wordBreak: 'break-word', 
-                                            whiteSpace: 'pre-line' 
-                                        }}
-                                    >
-                                        {message.isLoading && !content ? (
+                            <div key={message.id} className="message-container mb-6">
+                                {/* Render user prompt if it exists */}
+                                {message.prompt && (
+                                    <div className="flex justify-end mb-4">
+                                        <div className="flex flex-col max-w-2xl w-full">
+                                            <div
+                                                className="transition-all duration-200 rounded-2xl px-6 py-4 w-full select-text shadow-lg group light-blue-theme font-semibold hover:shadow-xl"
+                                                style={{ 
+                                                    fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                    fontSize: '0.97rem', 
+                                                    lineHeight: 1.6, 
+                                                    wordBreak: 'break-word', 
+                                                    whiteSpace: 'pre-line' 
+                                                }}
+                                            >
+                                                {message.prompt}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Render assistant response if it exists or is loading */}
+                                {(message.final_answer || message.isLoading) && (
+                                    <div className="flex justify-start">
+                                        <div className="flex flex-col max-w-2xl w-full">
+                                            {/* Message Content */}
+                                            <div
+                                                className={`transition-all duration-200 rounded-2xl px-6 py-4 w-full select-text shadow-lg group
+                                                    ${message.isError
+                                                        ? 'bg-red-50 border border-red-200 text-red-800 hover:shadow-xl hover:border-red-300'
+                                                        : 'bg-white border border-blue-100 text-gray-800 hover:shadow-xl hover:border-blue-200'}
+                                                `}
+                                                style={{ 
+                                                    fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                    fontSize: '0.97rem', 
+                                                    lineHeight: 1.6, 
+                                                    wordBreak: 'break-word', 
+                                                    whiteSpace: 'pre-line' 
+                                                }}
+                                            >
+                                                {message.isLoading && !message.final_answer ? (
                                             <div className="flex items-center space-x-3">
                                                 <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
                                                 <span className="text-gray-600">Analyzing your request...</span>
                                             </div>
-                                        ) : (
-                                            content || (
-                                                <span className="text-gray-400 text-xs italic">Waiting for response...</span>
-                                            )
-                                        )}
-                                    </div>
+                                                ) : (
+                                                    message.final_answer || (
+                                                        <span className="text-gray-400 text-xs italic">Waiting for response...</span>
+                                                    )
+                                                )}
+                                            </div>
 
-                                    {/* Dataset used and SQL button for AI answers */}
-                                    {!isUser && !message.isLoading && (message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
+                                            {/* Dataset used and SQL button for AI answers */}
+                                            {!message.isLoading && (message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
                                         <div className="mt-3 flex items-center justify-between flex-wrap" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
                                             <div className="flex items-center space-x-3 flex-wrap">
                                                 {/* Show datasets */}
@@ -699,8 +716,8 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                         </div>
                                     )}
 
-                                    {/* Show feedback even when no datasets/SQL */}
-                                    {!isUser && !message.isLoading && threadId && !(message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
+                                            {/* Show feedback even when no datasets/SQL */}
+                                            {!message.isLoading && threadId && !(message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
                                         <div className="mt-3 flex justify-end">
                                             <FeedbackComponent
                                                 messageId={message.id}
@@ -791,7 +808,9 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                             </div>
                                         </Modal>
                                     )}
-                                </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         );
                     })

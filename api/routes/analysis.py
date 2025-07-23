@@ -117,26 +117,27 @@ async def get_thread_metadata_from_single_thread_endpoint(
         run_ids = response_data.get("runIds", [])
         sentiments = response_data.get("sentiments", {})
 
-        # Find the latest AI message that has metadata
+        # Find the latest completed message that has final_answer and metadata
         latest_ai_message = None
         for message in reversed(messages):
-            if not message.get("isUser", True) and message.get("meta"):
+            # With unified structure, look for messages that have final_answer
+            if message.get("final_answer") and message.get("datasets_used"):
                 latest_ai_message = message
                 break
 
         metadata = {}
-        if latest_ai_message and latest_ai_message.get("meta"):
-            meta = latest_ai_message["meta"]
+        if latest_ai_message:
+            # Extract metadata directly from the unified message structure
             metadata.update(
                 {
-                    "top_selection_codes": meta.get("datasetsUsed", []),
-                    "datasets_used": meta.get("datasetsUsed", []),
+                    "top_selection_codes": latest_ai_message.get("datasets_used", []),
+                    "datasets_used": latest_ai_message.get("datasets_used", []),
                     "queries_and_results": latest_ai_message.get(
-                        "queriesAndResults", []
+                        "queries_and_results", []
                     ),
-                    "sql": meta.get("sqlQuery"),
-                    "dataset_url": meta.get("datasetUrl"),
-                    "top_chunks": meta.get("topChunks", []),
+                    "sql": latest_ai_message.get("sql_query"),
+                    "dataset_url": None,  # Not used in current structure
+                    "top_chunks": latest_ai_message.get("top_chunks", []),
                 }
             )
             print__analyze_debug(

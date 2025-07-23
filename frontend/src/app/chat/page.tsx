@@ -551,8 +551,8 @@ export default function ChatPage() {
     
     console.log('🔍 print__analysis_tracing_debug: 05 - MESSAGE PREPARED: Message text prepared and input cleared');
     
-    // Capture state for recovery mechanism
-    const messagesBefore = messages.length;
+    // Capture state for recovery mechanism - count messages with final answers
+    const messagesBefore = messages.filter(msg => msg.final_answer && !msg.isLoading).length;
     
     // Set loading state in BOTH local and context to ensure persistence across navigation
     setIsLoading(true);
@@ -610,19 +610,19 @@ export default function ChatPage() {
       }
     }
     
-    // Add user message to cache
+    // Add user message to cache with both prompt and placeholder for final_answer
     const userMessage: ChatMessage = {
       id: uuidv4(),
       threadId: currentThreadId,
       user: userEmail,
       createdAt: Date.now(),
       prompt: messageText,
-      final_answer: messageText,
+      final_answer: undefined, // Will be filled with assistant response
       queries_and_results: [],
       datasets_used: [],
       sql_query: undefined,
       top_chunks: [],
-      isLoading: false,
+      isLoading: true, // Set to loading initially
       isError: false,
       error: undefined
     };
@@ -630,26 +630,8 @@ export default function ChatPage() {
     addMessage(currentThreadId, userMessage);
     console.log('🔍 print__analysis_tracing_debug: 11 - USER MESSAGE ADDED: User message added to cache');
     
-    // Add loading message
-    const loadingMessageId = uuidv4();
-    const loadingMessage: ChatMessage = {
-      id: loadingMessageId,
-      threadId: currentThreadId,
-      user: 'assistant',
-      createdAt: Date.now(),
-      prompt: '',
-      final_answer: '',
-      queries_and_results: [],
-      datasets_used: [],
-      sql_query: undefined,
-      top_chunks: [],
-      isLoading: true,
-      isError: false,
-      error: undefined
-    };
-
-    addMessage(currentThreadId, loadingMessage);
-    console.log('🔍 print__analysis_tracing_debug: 12 - LOADING MESSAGE ADDED: Loading message added to cache');
+    // Store the message ID for later update
+    const messageId = userMessage.id;
     
     try {
       // Get fresh session for authentication
@@ -777,11 +759,11 @@ export default function ChatPage() {
 
       // Update loading message with response
       const responseMessage: ChatMessage = {
-        id: loadingMessageId,
+        id: messageId,
         threadId: currentThreadId,
         user: userEmail, // Use the actual user email
-        createdAt: loadingMessage.createdAt, // Keep original timestamp
-        prompt: undefined, // Assistant messages should NOT have prompt field
+        createdAt: userMessage.createdAt, // Keep original timestamp
+        prompt: messageText, // Keep the original prompt
         final_answer: data.result,
         queries_and_results: data.queries_and_results || [],
         datasets_used: data.top_selection_codes || [],
@@ -801,21 +783,21 @@ export default function ChatPage() {
       // CRITICAL DEBUG: Log datasetsUsed before update
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.datasets_used);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full meta:', JSON.stringify(responseMessage, null, 2));
-      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - loadingMessageId:', loadingMessageId);
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - loadingMessageId:', messageId);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - currentThreadId:', currentThreadId);
 
-      updateMessage(currentThreadId, loadingMessageId, responseMessage);
+      updateMessage(currentThreadId, messageId, responseMessage);
       
       // CRITICAL DEBUG: Add a small delay and check the message state
       setTimeout(() => {
         const currentMessages = messages;
-        const updatedMessage = currentMessages.find(msg => msg.id === loadingMessageId);
+        const updatedMessage = currentMessages.find(msg => msg.id === messageId);
         console.log('[ChatPage-send] 🔍 AFTER updateMessage - found updated message:', !!updatedMessage);
         if (updatedMessage) {
           console.log('[ChatPage-send] 🔍 AFTER updateMessage - datasetsUsed:', updatedMessage.datasets_used);
           console.log('[ChatPage-send] 🔍 AFTER updateMessage - full meta:', JSON.stringify(updatedMessage, null, 2));
         } else {
-          console.log('[ChatPage-send] ⚠️ AFTER updateMessage - message not found with ID:', loadingMessageId);
+          console.log('[ChatPage-send] ⚠️ AFTER updateMessage - message not found with ID:', messageId);
           console.log('[ChatPage-send] ⚠️ AFTER updateMessage - current message IDs:', currentMessages.map(m => m.id));
         }
       }, 100);
@@ -848,10 +830,10 @@ export default function ChatPage() {
       } else {
         // Recovery failed - show error message
         const errorMessage: ChatMessage = {
-          id: loadingMessageId,
+          id: messageId,
           threadId: currentThreadId,
-          user: 'assistant',
-          createdAt: Date.now(),
+          user: userEmail,
+          createdAt: userMessage.createdAt,
           prompt: messageText,
           final_answer: 'I apologize, but I encountered an issue while processing your request. This might be due to high server load. Please try again, or refresh the page to see if your response was saved.',
           queries_and_results: [],
@@ -863,7 +845,7 @@ export default function ChatPage() {
           error: error instanceof Error ? error.message : 'Unknown error'
         };
         
-        updateMessage(currentThreadId, loadingMessageId, errorMessage);
+        updateMessage(currentThreadId, messageId, errorMessage);
         console.log('[ChatPage-Recovery] ❌ Recovery failed - showing error message');
       }
     } finally {
@@ -958,9 +940,43 @@ export default function ChatPage() {
       
       const freshMessages = response.messages || [];
       console.log('[ChatPage-Recovery] 📄 Fresh messages from PostgreSQL:', freshMessages.length);
+      console.log('[ChatPage-Recovery] 🔍 DEBUG - Fresh messages content:', JSON.stringify(freshMessages, null, 2));
+      console.log('[ChatPage-Recovery] 🔍 DEBUG - Current messages:', JSON.stringify(messages, null, 2));
       
-      if (freshMessages.length > beforeMessageCount) {
-        console.log('[ChatPage-Recovery] 🎉 RECOVERY SUCCESS: Found new messages! Updating cache...');
+      // Check if we have new content (final_answer populated) rather than just new message count
+      // Since IDs may not match between frontend (UUID) and backend (sequential), 
+      // let's check for content changes in a more robust way
+      
+      const currentCompletedAnswers = messages.filter(msg => msg.final_answer && !msg.isLoading).length;
+      const freshCompletedAnswers = freshMessages.filter(msg => msg.final_answer).length;
+      
+      const hasNewContent = freshCompletedAnswers > currentCompletedAnswers;
+      
+      console.log('[ChatPage-Recovery] 🔍 Content comparison:', {
+        currentCompletedAnswers,
+        freshCompletedAnswers,
+        hasNewContent,
+        currentMessagesTotal: messages.length,
+        freshMessagesTotal: freshMessages.length
+      });
+      
+      // Also log first few messages for debugging
+      freshMessages.slice(0, 2).forEach((msg, i) => {
+        console.log(`[ChatPage-Recovery] 🔍 Fresh message ${i}:`, {
+          id: msg.id,
+          hasPrompt: !!msg.prompt,
+          promptPreview: msg.prompt ? msg.prompt.substring(0, 50) + '...' : 'none',
+          hasFinalAnswer: !!msg.final_answer,
+          finalAnswerPreview: msg.final_answer ? msg.final_answer.substring(0, 50) + '...' : 'none'
+        });
+      });
+      
+      const hasMoreMessages = freshMessages.length > beforeMessageCount;
+      
+      console.log('[ChatPage-Recovery] 🔍 Recovery check - hasMoreMessages:', hasMoreMessages, 'hasNewContent:', hasNewContent);
+      
+      if (hasMoreMessages || hasNewContent) {
+        console.log('[ChatPage-Recovery] 🎉 RECOVERY SUCCESS: Found new messages or content! Updating cache...');
         
         // Update cache with fresh data
         setMessages(threadId, freshMessages);

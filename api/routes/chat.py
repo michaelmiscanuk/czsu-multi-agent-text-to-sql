@@ -332,71 +332,45 @@ async def get_thread_messages_with_metadata(
                 f"🔍 Processing interaction {i+1}/{len(interactions)}: Step {interaction['step']}"
             )
 
-            # Create separate messages for user prompt and assistant response
-            if interaction.get("prompt"):
-                message_counter += 1
-                user_message = ChatMessage(
-                    id=f"msg_{message_counter}",
-                    threadId=thread_id,
-                    user=user_email,
-                    createdAt=int(
-                        datetime.fromtimestamp(
-                            1700000000 + message_counter * 1000
-                        ).timestamp()
-                        * 1000
-                    ),
-                    prompt=interaction["prompt"],
-                    final_answer=None,
-                    queries_and_results=None,
-                    datasets_used=None,
-                    top_chunks=None,
-                    sql_query=None,
-                    error=None,
-                    isLoading=False,
-                    startedAt=None,
-                    isError=False,
-                )
-                chat_messages.append(user_message)
+            # Create one message per interaction with both prompt and final_answer
+            message_counter += 1
+            chat_message = ChatMessage(
+                id=f"msg_{message_counter}",
+                threadId=thread_id,
+                user=user_email,
+                createdAt=int(
+                    datetime.fromtimestamp(
+                        1700000000 + message_counter * 1000
+                    ).timestamp()
+                    * 1000
+                ),
+                prompt=interaction.get("prompt"),
+                final_answer=interaction.get("final_answer"),
+                queries_and_results=interaction.get("queries_and_results"),
+                datasets_used=interaction.get("datasets_used"),
+                top_chunks=interaction.get("top_chunks"),
+                sql_query=None,
+                error=None,
+                isLoading=False,
+                startedAt=None,
+                isError=False,
+            )
 
-            if interaction.get("final_answer"):
-                message_counter += 1
-                assistant_message = ChatMessage(
-                    id=f"msg_{message_counter}",
-                    threadId=thread_id,
-                    user=user_email,
-                    createdAt=int(
-                        datetime.fromtimestamp(
-                            1700000000 + message_counter * 1000
-                        ).timestamp()
-                        * 1000
-                    ),
-                    prompt=None,
-                    final_answer=interaction["final_answer"],
-                    queries_and_results=interaction.get("queries_and_results"),
-                    datasets_used=interaction.get("datasets_used"),
-                    top_chunks=interaction.get("top_chunks"),
-                    sql_query=None,
-                    error=None,
-                    isLoading=False,
-                    startedAt=None,
-                    isError=False,
-                )
+            # Extract SQL query from queries_and_results if available
+            if (
+                chat_message.queries_and_results
+                and len(chat_message.queries_and_results) > 0
+            ):
+                try:
+                    chat_message.sql_query = (
+                        chat_message.queries_and_results[0][0]
+                        if chat_message.queries_and_results[0]
+                        else None
+                    )
+                except (IndexError, TypeError):
+                    chat_message.sql_query = None
 
-                # Extract SQL query from queries_and_results if available
-                if (
-                    assistant_message.queries_and_results
-                    and len(assistant_message.queries_and_results) > 0
-                ):
-                    try:
-                        assistant_message.sql_query = (
-                            assistant_message.queries_and_results[0][0]
-                            if assistant_message.queries_and_results[0]
-                            else None
-                        )
-                    except (IndexError, TypeError):
-                        assistant_message.sql_query = None
-
-                chat_messages.append(assistant_message)
+            chat_messages.append(chat_message)
             print__chat_all_messages_debug(
                 f"🔍 ADDED MESSAGE: Step {interaction['step']}: prompt={interaction.get('prompt', '')[:50]} final_answer={interaction.get('final_answer', '')[:50]}..."
             )
