@@ -329,9 +329,8 @@ def analyze_test_results(results: BaseTestResults):
         for error in results.errors:
             print(f"  {error['test_id']}: {error['error']}")
 
-    # Save traceback information if there are failures
-    if results.errors or summary["failed_requests"] > 0:
-        save_traceback_report(report_type="test_failure", test_results=results)
+    # Save traceback information (always save - empty file if no errors)
+    save_traceback_report(report_type="test_failure", test_results=results)
 
     return summary
 

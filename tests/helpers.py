@@ -523,28 +523,41 @@ def save_traceback_report(
     server_tracebacks: Optional[List[Dict[str, Any]]] = None,
     test_context: Optional[Dict[str, Any]] = None,
 ):
-    """
-    Unified function to save traceback reports. Auto-detects calling file name.
-    CLEANED_TRACEBACK env var: 1=cleaned (default), 0=full traceback
-    """
-    # Auto-detect calling file name
+    """Save traceback reports. Creates empty file if no errors, detailed report if errors exist."""
+    # Get file path
     frame = inspect.currentframe()
     try:
-        caller_frame = frame.f_back
-        caller_file_path = caller_frame.f_code.co_filename
-        test_file_name = Path(caller_file_path).name
-    except Exception:
+        test_file_name = Path(frame.f_back.f_code.co_filename).name
+    except:
         test_file_name = "unknown_test_file.py"
     finally:
         del frame
 
     traceback_dir = Path("tests/traceback_errors")
     traceback_dir.mkdir(exist_ok=True)
+    traceback_file = (
+        traceback_dir / f"{Path(test_file_name).stem}_{report_type}_report.txt"
+    )
 
-    base_name = Path(test_file_name).stem
-    traceback_file = traceback_dir / f"{base_name}_{report_type}_report.txt"
+    # Check for any errors/failures
+    has_errors = (
+        exception
+        or server_tracebacks
+        or (test_results and getattr(test_results, "errors", None))
+        or (
+            test_results
+            and getattr(test_results, "results", None)
+            and any(not r.get("success", True) for r in test_results.results)
+        )
+    )
+
+    # Empty file if no errors, detailed report if errors
+    if not has_errors:
+        traceback_file.write_text("", encoding="utf-8")
+        return True
+
+    # Build detailed report
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     content_lines = _create_report_header(report_type, test_file_name, timestamp)
 
     if test_context:
@@ -563,12 +576,7 @@ def save_traceback_report(
     if test_results and hasattr(test_results, "get_summary"):
         _add_test_summary(content_lines, test_results.get_summary())
 
-    success = _write_report_to_file(traceback_file, content_lines, report_type)
-
-    if success and report_type == "test_failure" and test_results:
-        error_count = len(test_results.errors) if hasattr(test_results, "errors") else 0
-        if error_count > 0:
-            print(f"� Error report saved with {error_count} error(s)")
+    return _write_report_to_file(traceback_file, content_lines, report_type)
 
 
 def _add_test_failure_content(content_lines: List[str], test_results: Any):

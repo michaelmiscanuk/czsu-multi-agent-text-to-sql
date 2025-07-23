@@ -271,9 +271,8 @@ def analyze_test_results(results: BaseTestResults):
     else:
         print("❌ Concurrent requests failed - potential database connection issues")
 
-    # Save traceback information if there are failures
-    if results.errors or summary["failed_requests"] > 0:
-        save_traceback_report(report_type="test_failure", test_results=results)
+    # Save traceback information (always save - empty file if no errors)
+    save_traceback_report(report_type="test_failure", test_results=results)
 
     return summary
 
