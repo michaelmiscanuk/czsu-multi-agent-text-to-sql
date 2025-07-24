@@ -349,6 +349,16 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     
+    // NEW: Debug messages changes
+    React.useEffect(() => {
+        console.log('[MessageArea] 🔄 Messages changed:', {
+            threadId,
+            messageCount: messages.length,
+            loadingMessages: messages.filter(m => m.isLoading).length,
+            completedMessages: messages.filter(m => m.final_answer && !m.isLoading).length
+        });
+    }, [messages, threadId]);
+    
     // State for feedback functionality
     const [feedbackState, setFeedbackState] = React.useState<{ [runId: string]: { feedback: number | null; comment?: string } }>({});
     const [messageRunIds, setMessageRunIds] = React.useState<{[messageId: string]: string}>({});
@@ -648,16 +658,20 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                     whiteSpace: 'pre-line' 
                                                 }}
                                             >
-                                                {message.isLoading && !message.final_answer ? (
-                                            <div className="flex items-center space-x-3">
-                                                <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-                                                <span className="text-gray-600">Analyzing your request...</span>
-                                            </div>
-                                                ) : (
-                                                    message.final_answer || (
-                                                        <span className="text-gray-400 text-xs italic">Waiting for response...</span>
-                                                    )
-                                                )}
+                                                {(() => {
+                                                    if (message.isLoading && !message.final_answer) {
+                                                        return (
+                                                            <div className="flex items-center space-x-3">
+                                                                <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+                                                                <span className="text-gray-600">Analyzing your request...</span>
+                                                            </div>
+                                                        );
+                                                    } else {
+                                                        return message.final_answer || (
+                                                            <span className="text-gray-400 text-xs italic">Waiting for response...</span>
+                                                        );
+                                                    }
+                                                })()}
                                             </div>
 
                                             {/* Dataset used and SQL button for AI answers */}

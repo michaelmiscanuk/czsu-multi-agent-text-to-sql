@@ -18,7 +18,13 @@ export interface ChatMessage {
   final_answer?: string;
   queries_and_results?: [string, string][];
   datasets_used?: string[];
-  top_chunks?: Array<{ content: string; metadata: Record<string, any> }>;
+  top_chunks?: Array<{ 
+    page_content: string; 
+    content?: string; // fallback for existing usage
+    source_file?: string;
+    page_number?: number;
+    metadata?: Record<string, any>;
+  }>;
   sql_query?: string;
   error?: string;
   isLoading?: boolean;
@@ -37,6 +43,7 @@ export interface AnalyzeResponse {
   queries_and_results: [string, string][];
   thread_id: string;
   top_selection_codes: string[];
+  datasets_used?: string[]; // Add this field as optional since backend might send it
   iteration: number;
   max_iterations: number;
   sql: string | null;
@@ -44,8 +51,11 @@ export interface AnalyzeResponse {
   run_id: string;
   warning?: string;
   top_chunks?: Array<{
-    content: string;
-    metadata: Record<string, any>;
+    page_content: string;
+    content?: string; // fallback for existing usage
+    source_file?: string;
+    page_number?: number;
+    metadata?: Record<string, any>;
   }>;
 }
 

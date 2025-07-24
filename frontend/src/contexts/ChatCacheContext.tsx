@@ -341,27 +341,27 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const updateMessage = useCallback((threadId: string, messageId: string, updatedMessage: ChatMessage) => {
-    console.log('[ChatCache] 📝 Updating message:', messageId, 'in thread:', threadId)
-    console.log('[ChatCache] 🔍 UpdateMessage - updatedMessage meta:', updatedMessage.meta)
-    console.log('[ChatCache] 🔍 UpdateMessage - datasetsUsed:', updatedMessage.meta?.datasetsUsed)
+    console.log('[ChatCache] 📝 Updating message:', messageId, 'in thread:', threadId);
     
     setMessagesState(prev => {
-      const updatedMessages = {
-        ...prev,
-        [threadId]: (prev[threadId] || []).map(msg => 
-          msg.id === messageId ? updatedMessage : msg
-        )
-      };
+      const currentMessages = prev[threadId] || [];
       
-      // Debug: Check the updated message in the new state
-      const newMessage = updatedMessages[threadId]?.find(m => m.id === messageId);
-      console.log('[ChatCache] 🔍 UpdateMessage RESULT - message found:', !!newMessage);
-      if (newMessage) {
-        console.log('[ChatCache] 🔍 UpdateMessage RESULT - meta:', newMessage.meta);
-        console.log('[ChatCache] 🔍 UpdateMessage RESULT - datasetsUsed:', newMessage.meta?.datasetsUsed);
+      const messageIndex = currentMessages.findIndex(msg => msg.id === messageId);
+      
+      if (messageIndex === -1) {
+        console.log('[ChatCache] ⚠️ UpdateMessage - WARNING: Message not found with ID:', messageId);
+        console.log('[ChatCache] 🔍 UpdateMessage - Available message IDs:', currentMessages.map(m => ({ id: m.id, isLoading: m.isLoading })));
+        return prev; // Return unchanged state if message not found
       }
+
+      // Create a completely new array to ensure React detects the change
+      const updatedMessages = [...currentMessages];
+      updatedMessages[messageIndex] = { ...updatedMessage }; // Create a new object reference
       
-      return updatedMessages;
+      return {
+        ...prev,
+        [threadId]: updatedMessages
+      };
     })
   }, [])
 

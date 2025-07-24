@@ -623,6 +623,7 @@ export default function ChatPage() {
       sql_query: undefined,
       top_chunks: [],
       isLoading: true, // Set to loading initially
+      startedAt: Date.now(), // Track when the request started
       isError: false,
       error: undefined
     };
@@ -641,91 +642,7 @@ export default function ChatPage() {
       }
       console.log('🔍 print__analysis_tracing_debug: 13 - AUTHENTICATION: Fresh session obtained');
 
-      // MEMORY PRESSURE HANDLING: Promise.race with timeout monitor for automatic recovery
-      console.log('[ChatPage-send] 🚀 Starting API call with memory pressure monitoring...');
-      console.log('🔍 print__analysis_tracing_debug: 14 - API CALL START: Starting API call with memory pressure monitoring');
-      
-      // Track timeout ID separately to avoid circular reference
-      let timeoutId: NodeJS.Timeout | null = null;
-      
-      // Create timeout monitor for automatic recovery
-      const timeoutMonitor = new Promise<AnalyzeResponse>((resolve, reject) => {
-        timeoutId = setTimeout(async () => {
-          console.log('[ChatPage-TimeoutMonitor] ⏰ 5 minute timeout reached - checking PostgreSQL for completion');
-          console.log('🔍 print__analysis_tracing_debug: 15 - TIMEOUT MONITOR: 5 minute timeout reached, checking PostgreSQL');
-          
-          try {
-            // Check if backend completed and saved to PostgreSQL
-            const recoverySuccessful = await checkForNewMessagesAfterTimeout(currentThreadId, messagesBefore);
-            
-            if (recoverySuccessful) {
-              console.log('[ChatPage-TimeoutMonitor] ✅ Recovery successful from PostgreSQL - backend completed but HTTP response was stuck');
-              console.log('🔍 print__analysis_tracing_debug: 16 - RECOVERY SUCCESS: Recovery successful from PostgreSQL');
-              
-              // Create a synthetic response since we recovered from PostgreSQL
-              resolve({
-                prompt: messageText,
-                result: "Response recovered from database - check messages for actual content",
-                queries_and_results: [],
-                thread_id: currentThreadId,
-                top_selection_codes: [],
-                iteration: 0,
-                max_iterations: 2,
-                sql: null,
-                datasetUrl: null,
-                run_id: "recovered",
-                recovery_mode: true
-              } as AnalyzeResponse);
-            } else {
-              console.log('[ChatPage-TimeoutMonitor] ⏳ Backend still processing - extending timeout and keeping loading state');
-              console.log('🔍 print__analysis_tracing_debug: 17 - TIMEOUT EXTEND: Backend still processing, extending timeout');
-              // Don't reject immediately - extend the timeout and keep trying
-              // This prevents the loading visual from disappearing while backend is working
-              const extendedRecovery = new Promise<AnalyzeResponse>((extendResolve, extendReject) => {
-                setTimeout(async () => {
-                  console.log('[ChatPage-TimeoutMonitor] ⏰ Extended timeout (8 minutes total) - final recovery check');
-                  console.log('🔍 print__analysis_tracing_debug: 18 - FINAL TIMEOUT: Extended timeout (8 minutes total) - final recovery check');
-                  try {
-                    const finalRecovery = await checkForNewMessagesAfterTimeout(currentThreadId, messagesBefore);
-                    if (finalRecovery) {
-                      console.log('[ChatPage-TimeoutMonitor] ✅ Final recovery successful');
-                      console.log('🔍 print__analysis_tracing_debug: 19 - FINAL RECOVERY SUCCESS: Final recovery successful');
-                      extendResolve({
-                        prompt: messageText,
-                        result: "Response recovered from database after extended processing",
-                        queries_and_results: [],
-                        thread_id: currentThreadId,
-                        top_selection_codes: [],
-                        iteration: 0,
-                        max_iterations: 2,
-                        sql: null,
-                        datasetUrl: null,
-                        run_id: "recovered",
-                        recovery_mode: true
-                      } as AnalyzeResponse);
-                    } else {
-                      console.log('🔍 print__analysis_tracing_debug: 20 - FINAL TIMEOUT FAILED: Final timeout - no response after 8 minutes');
-                      extendReject(new Error('Final timeout: No response after 8 minutes'));
-                    }
-                  } catch (error) {
-                    console.log('🔍 print__analysis_tracing_debug: 21 - FINAL RECOVERY ERROR: Error during final recovery check');
-                    extendReject(error);
-                  }
-                }, 180000); // Additional 3 minutes (5 + 3 = 8 minutes total)
-              });
-              
-              const result = await extendedRecovery;
-              resolve(result);
-            }
-          } catch (error) {
-            console.log('[ChatPage-TimeoutMonitor] ❌ Error during recovery check:', error);
-            console.log('🔍 print__analysis_tracing_debug: 22 - RECOVERY ERROR: Error during recovery check');
-            reject(error);
-          }
-        }, 300000); // Increased from 15000 (15 seconds) to 300000 (5 minutes)
-      });
-      
-      // Create API call promise
+      // Create API call promise with proper timeout
       const apiCall = authApiFetch<AnalyzeResponse>('/analyze', freshSession.id_token, {
         method: 'POST',
         body: JSON.stringify({
@@ -734,28 +651,17 @@ export default function ChatPage() {
         }),
       });
       
-      console.log('🔍 print__analysis_tracing_debug: 23 - API CALL CREATED: API call promise created');
-      
-      // CRITICAL: Use Promise.race to handle both API response and timeout recovery
-      console.log('[ChatPage-send] 🏁 Racing API call against timeout monitor...');
-      console.log('🔍 print__analysis_tracing_debug: 24 - PROMISE RACE: Racing API call against timeout monitor');
-      const data = await Promise.race([apiCall, timeoutMonitor]);
-      
-      // Clear timeout if API call succeeded
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        console.log('[ChatPage-send] ✅ API call succeeded, timeout monitor cleared');
-        console.log('🔍 print__analysis_tracing_debug: 25 - API SUCCESS: API call succeeded, timeout monitor cleared');
-      }
+      // Use Promise.race with a simple timeout
+      const data = await Promise.race([
+        apiCall,
+        new Promise<AnalyzeResponse>((_, reject) => {
+          setTimeout(() => {
+            reject(new Error('API call timeout after 8 minutes'));
+          }, 480000); // 8 minutes to match backend timeout
+        })
+      ]);
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
-      console.log('🔍 print__analysis_tracing_debug: 26 - RESPONSE RECEIVED: Response received from API with run_id:', data.run_id);
-
-      // Debug logging for PDF chunks
-      console.log('[ChatPage-send] 🔍 PDF chunks in response:', data.top_chunks?.length || 0);
-      if (data.top_chunks && data.top_chunks.length > 0) {
-        console.log('[ChatPage-send] 📄 First chunk preview:', data.top_chunks[0].content?.substring(0, 100) + '...');
-      }
 
       // Update loading message with response
       const responseMessage: ChatMessage = {
@@ -766,43 +672,84 @@ export default function ChatPage() {
         prompt: messageText, // Keep the original prompt
         final_answer: data.result,
         queries_and_results: data.queries_and_results || [],
-        datasets_used: data.top_selection_codes || [],
+        datasets_used: data.datasets_used || data.top_selection_codes || [], // Fix: use datasets_used first, fallback to top_selection_codes
         sql_query: data.sql || undefined,
         top_chunks: data.top_chunks || [],
-        isLoading: false,
+        isLoading: false, // CRITICAL: Explicitly set to false
         isError: false,
-        error: undefined
+        error: undefined,
+        startedAt: undefined // Clear the started timestamp
       };
-
-      // Debug logging for message meta
-      console.log('[ChatPage-send] 📋 Message meta topChunks:', responseMessage.top_chunks?.length || 0);
-      if (responseMessage.top_chunks && responseMessage.top_chunks.length > 0) {
-        console.log('[ChatPage-send] 📄 Message meta first chunk:', responseMessage.top_chunks[0].content?.substring(0, 100) + '...');
-      }
 
       // CRITICAL DEBUG: Log datasetsUsed before update
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.datasets_used);
-      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full meta:', JSON.stringify(responseMessage, null, 2));
-      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - loadingMessageId:', messageId);
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full responseMessage:', JSON.stringify(responseMessage, null, 2));
+      console.log('[ChatPage-send] 🔍 BEFORE updateMessage - messageId:', messageId);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - currentThreadId:', currentThreadId);
 
-      updateMessage(currentThreadId, messageId, responseMessage);
-      
-      // CRITICAL DEBUG: Add a small delay and check the message state
-      setTimeout(() => {
-        const currentMessages = messages;
-        const updatedMessage = currentMessages.find(msg => msg.id === messageId);
-        console.log('[ChatPage-send] 🔍 AFTER updateMessage - found updated message:', !!updatedMessage);
-        if (updatedMessage) {
-          console.log('[ChatPage-send] 🔍 AFTER updateMessage - datasetsUsed:', updatedMessage.datasets_used);
-          console.log('[ChatPage-send] 🔍 AFTER updateMessage - full meta:', JSON.stringify(updatedMessage, null, 2));
-        } else {
-          console.log('[ChatPage-send] ⚠️ AFTER updateMessage - message not found with ID:', messageId);
-          console.log('[ChatPage-send] ⚠️ AFTER updateMessage - current message IDs:', currentMessages.map(m => m.id));
+      // CRITICAL FIX: Always sync with backend after successful API call
+      // This is the key fix - the backend saves the data correctly, but frontend cache gets out of sync
+      console.log('[ChatPage-send] � CRITICAL FIX: Syncing with backend after successful API response');
+      try {
+        const freshSession = await getSession();
+        if (freshSession?.id_token) {
+          const response = await authApiFetch<{
+            messages: any[];
+            runIds: { run_id: string; prompt: string; timestamp: string }[];
+            sentiments: { [runId: string]: boolean };
+          }>(`/chat/all-messages-for-one-thread/${currentThreadId}`, freshSession.id_token);
+          
+          const freshMessages = response.messages || [];
+          
+          // Replace frontend cache with authoritative backend data
+          setMessages(currentThreadId, freshMessages);
         }
-      }, 100);
+      } catch (syncError) {
+        console.error('[ChatPage-send] ❌ Backend sync failed:', syncError);
+        // Fallback to optimistic update
+        console.log('[ChatPage-send] 🔄 Falling back to optimistic frontend update');
+        
+        // Check if the message exists before updating
+        const existingMessage = messages.find(msg => msg.id === messageId);
+        console.log('[ChatPage-send] 🔍 FALLBACK - existing message found:', !!existingMessage);
+        
+        if (existingMessage) {
+          updateMessage(currentThreadId, messageId, responseMessage);
+        } else {
+          // Message lost - add the complete conversation
+          console.log('[ChatPage-send] �️ FALLBACK - Adding complete conversation');
+          
+          // Add user message if missing
+          const userMessageExists = messages.find(msg => msg.prompt === data.prompt && msg.user === userEmail);
+          if (!userMessageExists) {
+            const userMessageRecovery: ChatMessage = {
+              id: uuidv4(),
+              threadId: currentThreadId,
+              user: userEmail,
+              createdAt: Date.now() - 1000,
+              prompt: data.prompt,
+              final_answer: undefined,
+              queries_and_results: [],
+              datasets_used: [],
+              sql_query: undefined,
+              top_chunks: [],
+              isLoading: false,
+              isError: false,
+              error: undefined
+            };
+            addMessage(currentThreadId, userMessageRecovery);
+          }
+          
+          // Add response message
+          addMessage(currentThreadId, responseMessage);
+        }
+      }
 
+      // Force re-render by updating the loading state
       setIsLoading(false);
+      
+      // CRITICAL FIX: Clear loading state for any user 
+      setUserLoadingState(userEmail, false);
       
       // IMPORTANT: Mark this response as successfully processed to prevent recovery interference
       console.log('[ChatPage-send] ✅ API response processed successfully - recovery mechanisms should not interfere');
@@ -997,129 +944,6 @@ export default function ChatPage() {
     } catch (error) {
       console.error('[ChatPage-Recovery] ❌ Error during message recovery:', error);
       return false;
-    }
-  };
-
-  // NEW: Periodic health check to detect and recover missing responses
-  useEffect(() => {
-    if (!userEmail || !activeThreadId) return;
-    
-    // Only run health check if we have loading messages (indicating potential issues)
-    const hasLoadingMessages = messages.some(msg => msg.isLoading);
-    if (!hasLoadingMessages) return;
-    
-    console.log('[ChatPage-HealthCheck] 🔍 Detected loading messages - starting health check');
-    
-    const healthCheckInterval = setInterval(async () => {
-      try {
-        // Check if any message has been loading for more than 6 minutes (allowing backend to complete normally)
-        const stuckMessages = messages.filter(msg => {
-          if (!msg.isLoading || !msg.startedAt) return false;
-          const timeElapsed = Date.now() - msg.startedAt;
-          return timeElapsed > 360000; // Increased from 120000 (2 minutes) to 360000 (6 minutes)
-        });
-        
-        if (stuckMessages.length > 0) {
-          console.log('[ChatPage-HealthCheck] 🚨 Detected stuck loading messages after 6 minutes:', stuckMessages.length);
-          console.log('[ChatPage-HealthCheck] 🔄 Attempting automatic recovery...');
-          
-          const beforeMessageCount = messages.filter(msg => !msg.isLoading).length;
-          const recoverySuccessful = await checkForNewMessagesAfterTimeout(activeThreadId, beforeMessageCount);
-          
-          if (recoverySuccessful) {
-            console.log('[ChatPage-HealthCheck] 🎉 Automatic recovery successful!');
-          } else {
-            console.log('[ChatPage-HealthCheck] ⚠ Automatic recovery failed - response may still be processing');
-          }
-        }
-      } catch (error) {
-        console.error('[ChatPage-HealthCheck] ❌ Health check error:', error);
-      }
-    }, 60000); // Increased from 30000 (30 seconds) to 60000 (60 seconds) to reduce interference
-    
-    // Cleanup interval after 10 minutes (analysis timeout)
-    const cleanupTimer = setTimeout(() => {
-      clearInterval(healthCheckInterval);
-      console.log('[ChatPage-HealthCheck] ⏰ Health check timeout - stopping automatic recovery');
-    }, 600000); // 10 minutes
-    
-    return () => {
-      clearInterval(healthCheckInterval);
-      clearTimeout(cleanupTimer);
-    };
-  }, [activeThreadId, messages, userEmail, checkForNewMessagesAfterTimeout]);
-
-  // NEW: Aggressive refresh mechanism for active analysis
-  useEffect(() => {
-    if (!userEmail || !activeThreadId) return;
-    
-    // Check if we have loading messages in the current thread
-    const hasLoadingMessages = messages.some(msg => msg.isLoading);
-    if (!hasLoadingMessages) return;
-    
-    console.log('[ChatPage-AggressiveRefresh] 🚀 Starting smart refresh for active analysis');
-    
-    // Start with less aggressive checking, then increase frequency after backend should be done
-    let checkCount = 0;
-    
-    const aggressiveRefreshInterval = setInterval(async () => {
-      try {
-        checkCount++;
-        
-        // For first 4 minutes, check every 30 seconds (less intrusive)
-        // After 4 minutes, check every 10 seconds (backend should be near completion)
-        const shouldSkip = checkCount < 8 && (checkCount % 6 !== 0); // Only check every 6th time for first 8 intervals (4 minutes)
-        
-        if (shouldSkip) {
-          console.log('[ChatPage-AggressiveRefresh] ⏳ Waiting for backend processing time (check', checkCount, '- skipping)');
-          return;
-        }
-        
-        console.log('[ChatPage-AggressiveRefresh] 🔄 Checking for completed analysis (check', checkCount, ')...');
-        
-        const beforeMessageCount = messages.filter(msg => !msg.isLoading).length;
-        const recoverySuccessful = await checkForNewMessagesAfterTimeout(activeThreadId, beforeMessageCount);
-        
-        if (recoverySuccessful) {
-          console.log('[ChatPage-AggressiveRefresh] 🎉 Found completed analysis!');
-          // The recovery function will clear the interval by updating messages
-        } else {
-          console.log('[ChatPage-AggressiveRefresh] ⏳ Analysis still in progress...');
-        }
-      } catch (error) {
-        console.error('[ChatPage-AggressiveRefresh] ❌ Aggressive refresh error:', error);
-      }
-    }, 5000); // Keep 5-second base interval but skip checks intelligently
-    
-    // Cleanup interval after 15 minutes (extended analysis timeout)
-    const cleanupTimer = setTimeout(() => {
-      clearInterval(aggressiveRefreshInterval);
-      console.log('[ChatPage-AggressiveRefresh] ⏰ Aggressive refresh timeout - stopping');
-    }, 900000); // 15 minutes
-    
-    return () => {
-      clearInterval(aggressiveRefreshInterval);
-      clearTimeout(cleanupTimer);
-    };
-  }, [activeThreadId, messages, userEmail, checkForNewMessagesAfterTimeout]);
-
-  // NEW: Manual refresh function for user-triggered refresh
-  const handleManualRefresh = async () => {
-    if (!activeThreadId || !userEmail) return;
-    
-    console.log('[ChatPage-ManualRefresh] 🔄 User triggered manual refresh for thread:', activeThreadId);
-    
-    try {
-      const beforeMessageCount = messages.filter(msg => !msg.isLoading).length;
-      const recoverySuccessful = await checkForNewMessagesAfterTimeout(activeThreadId, beforeMessageCount);
-      
-      if (recoverySuccessful) {
-        console.log('[ChatPage-ManualRefresh] 🎉 Manual refresh found new messages!');
-      } else {
-        console.log('[ChatPage-ManualRefresh] ⚠ No new messages found - analysis may still be in progress');
-      }
-    } catch (error) {
-      console.error('[ChatPage-ManualRefresh] ❌ Manual refresh error:', error);
     }
   };
 
