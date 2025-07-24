@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession, getSession } from "next-auth/react";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Modal from './Modal';
 import Link from 'next/link';
 import { ChatMessage, ChatThreadMeta, AnalyzeResponse, ChatThreadResponse } from '@/types';
@@ -8,6 +10,325 @@ import { useSentiment } from '@/lib/useSentiment';
 import { useChatCache } from '@/contexts/ChatCacheContext';
 
 const PROGRESS_DURATION = 480000; // 8 minutes - matches backend analysis timeout
+
+// Utility function to detect if text contains markdown
+const containsMarkdown = (text: string): boolean => {
+    if (!text) return false;
+    
+    // Check for common markdown patterns
+    const markdownPatterns = [
+        /\*\*[^*]+\*\*/,            // Bold text (**text**)
+        /^\s*[-*+]\s+/m,            // Unordered lists (- * +)
+        /^\s*\d+\.\s+/m,            // Ordered lists (1. 2. 3.)
+        /^\s*\|.*\|.*$/m,           // Tables (|col1|col2|)
+        /^#{1,6}\s+/m,              // Headers (# ## ### etc.)
+        /`[^`]+`/,                  // Inline code (`code`)
+        /```[\s\S]*?```/,           // Code blocks (```code```)
+    ];
+    
+    return markdownPatterns.some(pattern => pattern.test(text));
+};
+
+// Component to render text with markdown support
+interface MarkdownTextProps {
+    content: string;
+    className?: string;
+    style?: React.CSSProperties;
+}
+
+// Simple custom markdown parser for compact rendering
+const parseMarkdown = (content: string): React.ReactElement[] => {
+    const lines = content.split('\n');
+    const elements: React.ReactElement[] = [];
+    let key = 0;
+    
+    // Base text styling that matches the message container
+    const baseTextStyle = {
+        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)',
+        fontSize: '0.97rem',
+        lineHeight: 1.6,
+        color: '#374151' // text-gray-700
+    };
+    
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // Skip empty lines
+        if (!line.trim()) continue;
+        
+        // Handle tables - detect table rows (lines with |)
+        if (/^\s*\|.*\|.*$/.test(line)) {
+            const tableRows = [];
+            let tableIndex = i;
+            
+            // Collect all consecutive table rows
+            while (tableIndex < lines.length && /^\s*\|.*\|.*$/.test(lines[tableIndex])) {
+                const currentLine = lines[tableIndex].trim();
+                // Skip separator rows (like |---|---|)
+                if (!/^\s*\|[\s\-:]*\|[\s\-:]*$/.test(currentLine)) {
+                    tableRows.push(currentLine);
+                }
+                tableIndex++;
+            }
+            
+            if (tableRows.length > 0) {
+                const tableElement = renderTable(tableRows, key++, baseTextStyle);
+                elements.push(tableElement);
+                i = tableIndex - 1; // Skip processed lines
+                continue;
+            }
+        }
+        
+        // Handle headers (# ## ### etc.)
+        if (/^#{1,6}\s+/.test(line)) {
+            const headerLevel = (line.match(/^#+/) || [''])[0].length;
+            const text = line.replace(/^#+\s*/, '');
+            const processedText = processBoldText(text);
+            
+            const headerSize = {
+                1: '1.25rem',   // text-xl
+                2: '1.125rem',  // text-lg  
+                3: '1rem',      // text-base
+                4: '0.97rem',   // same as base
+                5: '0.875rem',  // text-sm
+                6: '0.75rem'    // text-xs
+            }[headerLevel] || '1rem';
+            
+            elements.push(
+                <div key={key++} style={{ 
+                    ...baseTextStyle,
+                    fontSize: headerSize,
+                    fontWeight: 'bold',
+                    marginBottom: '4px',
+                    marginTop: headerLevel <= 2 ? '8px' : '4px'
+                }}>
+                    {processedText}
+                </div>
+            );
+            continue;
+        }
+        
+        // Handle code blocks (```code```)
+        if (/^```/.test(line)) {
+            const codeLines = [line];
+            let codeIndex = i + 1;
+            
+            // Collect all lines until closing ```
+            while (codeIndex < lines.length && !/^```/.test(lines[codeIndex])) {
+                codeLines.push(lines[codeIndex]);
+                codeIndex++;
+            }
+            
+            if (codeIndex < lines.length) {
+                codeLines.push(lines[codeIndex]); // Add closing ```
+            }
+            
+            const codeContent = codeLines
+                .slice(1, -1) // Remove opening and closing ```
+                .join('\n');
+            
+            elements.push(
+                <div key={key++} style={{ 
+                    backgroundColor: '#f3f4f6',
+                    padding: '8px',
+                    borderRadius: '6px',
+                    marginBottom: '4px',
+                    overflow: 'auto'
+                }}>
+                    <pre style={{
+                        fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, monospace',
+                        fontSize: '0.875rem',
+                        margin: 0,
+                        whiteSpace: 'pre-wrap',
+                        color: '#374151'
+                    }}>
+                        {codeContent}
+                    </pre>
+                </div>
+            );
+            
+            i = codeIndex; // Skip processed lines
+            continue;
+        }
+        
+        // Handle numbered lists (1. 2. etc.)
+        if (/^\s*\d+\.\s+/.test(line)) {
+            const text = line.replace(/^\s*\d+\.\s+/, '');
+            const processedText = processBoldText(text);
+            elements.push(
+                <div key={key++} style={{ 
+                    ...baseTextStyle,
+                    marginBottom: '2px', 
+                    paddingLeft: '0px' 
+                }}>
+                    <span style={{ fontWeight: 'bold', marginRight: '4px' }}>
+                        {line.match(/^\s*(\d+)\./)?.[1]}.
+                    </span>
+                    {processedText}
+                </div>
+            );
+            continue;
+        }
+        
+        // Handle bullet points (- or •)
+        if (/^\s*[-•]\s+/.test(line)) {
+            const text = line.replace(/^\s*[-•]\s+/, '');
+            const processedText = processBoldText(text);
+            const indent = (line.match(/^\s*/)?.[0].length || 0) / 2; // 2 spaces = 1 level
+            elements.push(
+                <div key={key++} style={{ 
+                    ...baseTextStyle,
+                    marginBottom: '1px', 
+                    paddingLeft: `${Math.max(0, indent * 8)}px`,
+                    display: 'flex',
+                    alignItems: 'flex-start'
+                }}>
+                    <span style={{ marginRight: '6px', marginTop: '2px' }}>•</span>
+                    <span>{processedText}</span>
+                </div>
+            );
+            continue;
+        }
+        
+        // Handle regular paragraphs
+        const processedText = processBoldText(line);
+        elements.push(
+            <div key={key++} style={{ 
+                ...baseTextStyle,
+                marginBottom: '2px' 
+            }}>
+                {processedText}
+            </div>
+        );
+    }
+    
+    return elements;
+};
+
+// Helper function to render tables
+const renderTable = (rows: string[], key: number, baseTextStyle: any): React.ReactElement => {
+    const tableData = rows.map(row => 
+        row.split('|')
+           .map(cell => cell.trim())
+           .filter(cell => cell.length > 0)
+    );
+    
+    if (tableData.length === 0) return <div key={key}></div>;
+    
+    // First row is header
+    const [headerRow, ...dataRows] = tableData;
+    
+    return (
+        <div key={key} style={{ marginBottom: '8px', overflow: 'auto' }}>
+            <table style={{
+                borderCollapse: 'collapse',
+                width: '100%',
+                border: '1px solid #d1d5db',
+                borderRadius: '6px',
+                fontSize: '0.875rem'
+            }}>
+                <thead style={{ backgroundColor: '#f9fafb' }}>
+                    <tr>
+                        {headerRow.map((cell, cellIndex) => (
+                            <th key={cellIndex} style={{
+                                border: '1px solid #d1d5db',
+                                padding: '8px 12px',
+                                textAlign: 'left',
+                                fontWeight: '600',
+                                color: '#374151'
+                            }}>
+                                {processBoldText(cell)}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {dataRows.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {row.map((cell, cellIndex) => (
+                                <td key={cellIndex} style={{
+                                    border: '1px solid #d1d5db',
+                                    padding: '8px 12px',
+                                    color: '#374151'
+                                }}>
+                                    {processBoldText(cell)}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+// Process bold text (**text**)
+const processBoldText = (text: string): React.ReactElement => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/);
+    
+    return (
+        <span style={{
+            fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)',
+            fontSize: '0.97rem',
+            lineHeight: 1.6,
+            color: '#374151'
+        }}>
+            {parts.map((part, index) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                    const boldText = part.slice(2, -2);
+                    return (
+                        <strong 
+                            key={index} 
+                            style={{
+                                fontWeight: '600', // font-semibold
+                                color: '#111827'  // text-gray-900
+                            }}
+                        >
+                            {boldText}
+                        </strong>
+                    );
+                }
+                return part;
+            })}
+        </span>
+    );
+};
+
+const MarkdownText: React.FC<MarkdownTextProps> = ({ content, className, style }) => {
+    const isMarkdown = containsMarkdown(content);
+    
+    // Unified styling for all message content
+    const unifiedStyle = {
+        ...style,
+        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)',
+        fontSize: '0.97rem',
+        lineHeight: 1.6,
+        wordBreak: 'break-word' as const,
+        color: '#374151' // text-gray-700 equivalent
+    };
+    
+    if (isMarkdown) {
+        const elements = parseMarkdown(content);
+        return (
+            <div className={className} style={unifiedStyle}>
+                {elements}
+            </div>
+        );
+    }
+    
+    // Fall back to regular text rendering with same styling
+    return (
+        <div 
+            className={className} 
+            style={{
+                ...unifiedStyle,
+                whiteSpace: 'pre-line'
+            }}
+        >
+            {content}
+        </div>
+    );
+};
 
 interface SimpleProgressBarProps {
     messageId: number;
@@ -666,8 +987,20 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                                 <span className="text-gray-600">Analyzing your request...</span>
                                                             </div>
                                                         );
+                                                    } else if (message.final_answer) {
+                                                        return (
+                                                            <MarkdownText 
+                                                                content={message.final_answer}
+                                                                style={{ 
+                                                                    fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                                    fontSize: '0.97rem', 
+                                                                    lineHeight: 1.6, 
+                                                                    wordBreak: 'break-word' 
+                                                                }}
+                                                            />
+                                                        );
                                                     } else {
-                                                        return message.final_answer || (
+                                                        return (
                                                             <span className="text-gray-400 text-xs italic">Waiting for response...</span>
                                                         );
                                                     }
