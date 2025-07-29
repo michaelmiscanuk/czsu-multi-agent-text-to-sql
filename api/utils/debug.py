@@ -91,6 +91,34 @@ def print__debug(msg: str) -> None:
         sys.stdout.flush()
 
 
+def print__memory_debug(msg: str) -> None:
+    """Print DEBUG messages when debug mode is enabled.
+
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get("print__memory_debug", "0")
+    if print__memory_debug == "1":
+        print(f"[print__memory_debug] {msg}")
+        import sys
+
+        sys.stdout.flush()
+
+
+def print__main_debug(msg: str) -> None:
+    """Print DEBUG messages when debug mode is enabled.
+
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get("print__main_debug", "0")
+    if print__main_debug == "1":
+        print(f"[print__main_debug] {msg}")
+        import sys
+
+        sys.stdout.flush()
+
+
 def print__analyze_debug(msg: str) -> None:
     """Print print__analyze_debug messages when debug mode is enabled.
 

@@ -172,7 +172,7 @@ app = FastAPI(
 # Monitor all route registrations (including middleware and CORS)
 from api.utils.memory import print__memory_monitoring
 
-print__memory_monitoring("📋 Registering CORS middleware...")
+print__memory_monitoring("[CORS] Registering CORS middleware...")
 # Note: Route registration monitoring happens at runtime to avoid import-time global variable access
 
 # Allow CORS for local frontend dev
@@ -184,7 +184,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-print__memory_monitoring("📋 Registering GZip middleware...")
+print__memory_monitoring("[GZIP] Registering GZip middleware...")
 # Add GZip compression to reduce response sizes and memory usage
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
@@ -335,7 +335,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 
 # ROUTE REGISTRATION
 # Register all route routers
-print__memory_monitoring("📋 Registering route routers...")
+print__memory_monitoring("[ROUTES] Registering route routers...")
 
 app.include_router(health_router, tags=["health"])
 app.include_router(catalog_router, tags=["catalog"])
@@ -347,4 +347,4 @@ app.include_router(bulk_router, tags=["bulk"])
 app.include_router(debug_router, tags=["debug"])
 app.include_router(misc_router, tags=["misc"])
 
-print__memory_monitoring("✅ All route routers registered successfully")
+print__memory_monitoring("[SUCCESS] All route routers registered successfully")

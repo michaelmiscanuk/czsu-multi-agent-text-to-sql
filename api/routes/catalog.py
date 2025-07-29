@@ -34,7 +34,8 @@ def get_catalog(
     user=Depends(get_current_user),
 ):
     print__catalog_debug(
-        f"GET /catalog called - page: {page}, page_size: {page_size}, query: '{q}', user: {user.username if hasattr(user, 'username') else 'unknown'}")
+        f"GET /catalog called - page: {page}, page_size: {page_size}, query: '{q}', user: {user.username if hasattr(user, 'username') else 'unknown'}"
+    )
     try:
         db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
         print__catalog_debug(f"Connecting to catalog database: {db_path}")
@@ -47,8 +48,7 @@ def get_catalog(
             like_q = f"%{q}%"
             params.extend([like_q, like_q])
         else:
-            print__catalog_debug(
-                "No search query provided, fetching all records")
+            print__catalog_debug("No search query provided, fetching all records")
         query = f"""
             SELECT selection_code, extended_description
             FROM selection_descriptions
@@ -59,7 +59,7 @@ def get_catalog(
         params.extend([page_size, offset])
         print__catalog_debug(f"SQL query: {query}")
         print__catalog_debug(f"Query parameters: {params}")
-        count_query = f"SELasdasdasdECT COUNT(*) FROM selection_descriptions {where_clause}"
+        count_query = f"SELECT COUNT(*) FROM selection_descriptions {where_clause}"
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             print__catalog_debug(f"Executing count query: {count_query}")
@@ -68,8 +68,7 @@ def get_catalog(
             print__catalog_debug(f"Total records found: {total}")
             cursor.execute(query, params)
             rows = cursor.fetchall()
-            print__catalog_debug(
-                f"Fetched {len(rows)} records for current page")
+            print__catalog_debug(f"Fetched {len(rows)} records for current page")
         results = [
             {"selection_code": row[0], "extended_description": row[1]} for row in rows
         ]
@@ -79,8 +78,7 @@ def get_catalog(
             "page": page,
             "page_size": page_size,
         }
-        print__catalog_debug(
-            f"Returning catalog response with {len(results)} results")
+        print__catalog_debug(f"Returning catalog response with {len(results)} results")
         return response_data
     except Exception as e:
         print__catalog_debug(f"Error in get_catalog: {str(e)}")
@@ -93,13 +91,13 @@ def get_catalog(
 @router.get("/data-tables")
 def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
     print__data_tables_debug(
-        f"GET /data-tables called - query: '{q}', user: {user.username if hasattr(user, 'username') else 'unknown'}")
+        f"GET /data-tables called - query: '{q}', user: {user.username if hasattr(user, 'username') else 'unknown'}"
+    )
     try:
         db_path = "data/czsu_data.db"
         desc_db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
         print__data_tables_debug(f"Connecting to data database: {db_path}")
-        print__data_tables_debug(
-            f"Connecting to descriptions database: {desc_db_path}")
+        print__data_tables_debug(f"Connecting to descriptions database: {desc_db_path}")
 
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
@@ -116,12 +114,14 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
             original_count = len(tables)
             tables = [t for t in tables if q_lower in t.lower()]
             print__data_tables_debug(
-                f"Filtered from {original_count} to {len(tables)} tables")
+                f"Filtered from {original_count} to {len(tables)} tables"
+            )
 
         # Fetch short_descriptions from the other DB
         desc_map = {}
         print__data_tables_debug(
-            "Fetching short descriptions from descriptions database")
+            "Fetching short descriptions from descriptions database"
+        )
         try:
             with sqlite3.connect(desc_db_path) as desc_conn:
                 desc_cursor = desc_conn.cursor()
@@ -129,8 +129,7 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
                     "SELECT selection_code, short_description FROM selection_descriptions"
                 )
                 descriptions = desc_cursor.fetchall()
-                print__data_tables_debug(
-                    f"Fetched {len(descriptions)} descriptions")
+                print__data_tables_debug(f"Fetched {len(descriptions)} descriptions")
                 for code, short_desc in descriptions:
                     desc_map[code] = short_desc
         except Exception as e:
@@ -154,7 +153,8 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
 @router.get("/data-table")
 def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
     print__data_tables_debug(
-        f"GET /data-table called - table: '{table}', user: {user.username if hasattr(user, 'username') else 'unknown'}")
+        f"GET /data-table called - table: '{table}', user: {user.username if hasattr(user, 'username') else 'unknown'}"
+    )
     try:
         db_path = "data/czsu_data.db"
         print__data_tables_debug(f"Connecting to data database: {db_path}")
@@ -169,24 +169,26 @@ def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
             cursor = conn.cursor()
             try:
                 print__data_tables_debug(
-                    f"Executing SELECT query on table '{table}' with LIMIT 10000")
+                    f"Executing SELECT query on table '{table}' with LIMIT 10000"
+                )
                 cursor.execute(f"SELECT * FROM '{table}' LIMIT 10000")
                 columns = [desc[0] for desc in cursor.description]
                 rows = cursor.fetchall()
                 print__data_tables_debug(
-                    f"Successfully fetched data - Columns: {columns}")
+                    f"Successfully fetched data - Columns: {columns}"
+                )
                 print__data_tables_debug(f"Row count: {len(rows)}")
                 if len(rows) > 0:
                     print__data_tables_debug(f"Sample first row: {rows[0]}")
 
                 response_data = {"columns": columns, "rows": rows}
                 print__data_tables_debug(
-                    f"Returning table data with {len(columns)} columns and {len(rows)} rows")
+                    f"Returning table data with {len(columns)} columns and {len(rows)} rows"
+                )
                 return response_data
 
             except Exception as e:
-                print__data_tables_debug(
-                    f"Error fetching table '{table}': {e}")
+                print__data_tables_debug(f"Error fetching table '{table}': {e}")
                 return {"columns": [], "rows": []}
     except Exception as e:
         print__data_tables_debug(f"Error in get_data_table: {str(e)}")

@@ -51,7 +51,11 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 # Import debug functions from utils
-from api.utils.debug import print__analysis_tracing_debug, print__debug
+from api.utils.debug import (
+    print__analysis_tracing_debug,
+    print__main_debug,
+    print__memory_debug,
+)
 
 # ==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -259,17 +263,14 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # Memory monitoring before analysis
     process = psutil.Process()
     memory_before = process.memory_info().rss / 1024 / 1024
-    print__debug(f"🔍 MEMORY: Starting analysis with {memory_before:.1f}MB RSS")
+    print__memory_debug(f"🔍 MEMORY: Starting analysis with {memory_before:.1f}MB RSS")
     print__analysis_tracing_debug(
         f"38 - MEMORY BASELINE: Memory before analysis: {memory_before:.1f}MB RSS"
     )
 
     # Force garbage collection before starting
     collected = gc.collect()
-    print__debug(f"🧹 MEMORY: Pre-analysis GC collected {collected} objects")
-    print__analysis_tracing_debug(
-        f"39 - GARBAGE COLLECTION: Pre-analysis GC collected {collected} objects"
-    )
+    print__memory_debug(f"🧹 MEMORY: Pre-analysis GC collected {collected} objects")
 
     print__analysis_tracing_debug("40 - CHECKPOINTER SETUP: Setting up checkpointer")
     # Create the LangGraph execution graph with standard AsyncPostgresSaver
@@ -287,7 +288,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             print__analysis_tracing_debug(
                 f"43 - POSTGRES FAILED: Failed to initialize PostgreSQL checkpointer - {str(e)}"
             )
-            print__debug(f"⚠️ Failed to initialize PostgreSQL checkpointer: {e}")
+            print__main_debug(f"⚠️ Failed to initialize PostgreSQL checkpointer: {e}")
             # Fallback to InMemorySaver to ensure application still works
             from langgraph.checkpoint.memory import InMemorySaver
 
@@ -295,7 +296,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             print__analysis_tracing_debug(
                 "44 - INMEMORY FALLBACK: Using InMemorySaver fallback"
             )
-            print__debug("⚠️ Using InMemorySaver fallback")
+            print__main_debug("⚠️ Using InMemorySaver fallback")
     else:
         print__analysis_tracing_debug(
             f"45 - CHECKPOINTER PROVIDED: Using provided checkpointer ({type(checkpointer).__name__})"
@@ -311,7 +312,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
 
     # FIX: Escape curly braces in prompt to prevent f-string parsing errors
     prompt_escaped = prompt.replace("{", "{{").replace("}", "}}")
-    print__debug(
+    print__main_debug(
         f"🚀 Processing prompt: {prompt_escaped} (thread_id={thread_id}, run_id={run_id})"
     )
     print__analysis_tracing_debug(
@@ -336,22 +337,22 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             and existing_state.values.get("messages")
             and len(existing_state.values.get("messages", [])) > 0
         )
-        print__debug(f"🔍 Found existing state: {existing_state is not None}")
+        print__main_debug(f"🔍 Found existing state: {existing_state is not None}")
         print__analysis_tracing_debug(
             f"51 - STATE CHECK RESULT: Found existing state: {existing_state is not None}"
         )
         if existing_state and existing_state.values:
             msg_count = len(existing_state.values.get("messages", []))
-            print__debug(f"📋 Message count: {msg_count}")
+            print__main_debug(f"📋 Message count: {msg_count}")
             print__analysis_tracing_debug(
                 f"52 - MESSAGE COUNT: Message count: {msg_count}"
             )
-        print__debug(f"🔀 Continuing conversation: {is_continuing_conversation}")
+        print__main_debug(f"🔀 Continuing conversation: {is_continuing_conversation}")
         print__analysis_tracing_debug(
             f"53 - CONVERSATION TYPE: Continuing conversation: {is_continuing_conversation}"
         )
     except Exception as e:
-        print__debug(f"❌ Error checking existing state: {e}")
+        print__main_debug(f"❌ Error checking existing state: {e}")
         print__analysis_tracing_debug(
             f"54 - STATE CHECK ERROR: Error checking existing state - {str(e)}"
         )
@@ -411,22 +412,22 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # MEMORY LEAK PREVENTION: Monitor memory after graph execution
     memory_after_graph = process.memory_info().rss / 1024 / 1024
     memory_growth_graph = memory_after_graph - memory_before
-    print__debug(
+    print__memory_debug(
         f"🔍 MEMORY: After graph execution: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)"
     )
-    print__analysis_tracing_debug(
+    print__memory_debug(
         f"60 - MEMORY CHECK: Memory after graph: {memory_after_graph:.1f}MB RSS (growth: {memory_growth_graph:.1f}MB)"
     )
 
     if memory_growth_graph > float(os.environ.get("GC_MEMORY_THRESHOLD", "1900")):
-        print__debug(
+        print__memory_debug(
             f"⚠️ MEMORY: Suspicious growth detected: {memory_growth_graph:.1f}MB during graph execution!"
         )
         print__analysis_tracing_debug(
             f"61 - MEMORY WARNING: Suspicious memory growth detected: {memory_growth_graph:.1f}MB"
         )
 
-        print__debug(
+        print__memory_debug(
             f"🚨 MEMORY EMERGENCY: {memory_growth_graph:.1f}MB growth - implementing emergency cleanup"
         )
         print__analysis_tracing_debug(
@@ -435,7 +436,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
 
         # Emergency garbage collection
         collected = gc.collect()
-        print__debug(f"🧹 MEMORY: Emergency GC collected {collected} objects")
+        print__memory_debug(f"🧹 MEMORY: Emergency GC collected {collected} objects")
         print__analysis_tracing_debug(
             f"63 - EMERGENCY GC: Emergency GC collected {collected} objects"
         )
@@ -443,10 +444,10 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         # Check memory after emergency GC
         memory_after_gc = process.memory_info().rss / 1024 / 1024
         freed_by_gc = memory_after_graph - memory_after_gc
-        print__debug(
+        print__memory_debug(
             f"🧹 MEMORY: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB"
         )
-        print__analysis_tracing_debug(
+        print__memory_debug(
             f"64 - EMERGENCY GC RESULT: Emergency GC freed {freed_by_gc:.1f}MB, current: {memory_after_gc:.1f}MB"
         )
 
@@ -458,15 +459,12 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # Log details about the result to understand memory usage
     try:
         result_size = len(str(result)) / 1024 if result else 0  # Size in KB
-        print__debug(f"🔍 MEMORY: Result object size: {result_size:.1f}KB")
+        print__memory_debug(f"🔍 MEMORY: Result object size: {result_size:.1f}KB")
         print__analysis_tracing_debug(
             f"66 - RESULT SIZE: Result object size: {result_size:.1f}KB"
         )
     except:
-        print__debug(f"🔍 MEMORY: Could not determine result size")
-        print__analysis_tracing_debug(
-            "67 - RESULT SIZE ERROR: Could not determine result size"
-        )
+        print__memory_debug(f"🔍 MEMORY: Could not determine result size")
 
     print__analysis_tracing_debug(
         "68 - FINAL CLEANUP: Starting final cleanup and monitoring"
@@ -475,7 +473,9 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     try:
         # Final garbage collection to clean up any temporary objects from graph execution
         collected = gc.collect()
-        print__debug(f"🧹 MEMORY: Final cleanup GC collected {collected} objects")
+        print__memory_debug(
+            f"🧹 MEMORY: Final cleanup GC collected {collected} objects"
+        )
         print__analysis_tracing_debug(
             f"69 - FINAL GC: Final cleanup GC collected {collected} objects"
         )
@@ -484,7 +484,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         memory_final = process.memory_info().rss / 1024 / 1024
         total_growth = memory_final - memory_before
 
-        print__debug(
+        print__memory_debug(
             f"🔍 MEMORY: Final memory: {memory_final:.1f}MB RSS (total growth: {total_growth:.1f}MB)"
         )
         print__analysis_tracing_debug(
@@ -493,10 +493,10 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
 
         # Warn about high memory retention patterns
         if total_growth > 100:  # More than 100MB total growth
-            print__debug(
+            print__memory_debug(
                 f"⚠️ MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!"
             )
-            print__debug(
+            print__memory_debug(
                 f"💡 MEMORY: Consider investigating LangGraph nodes for memory leaks"
             )
             print__analysis_tracing_debug(
@@ -504,8 +504,10 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             )
 
     except Exception as memory_error:
-        print__debug(f"⚠️ MEMORY: Error during final memory check: {memory_error}")
-        print__analysis_tracing_debug(
+        print__memory_debug(
+            f"⚠️ MEMORY: Error during final memory check: {memory_error}"
+        )
+        print__memory_debug(
             f"72 - MEMORY ERROR: Error during final memory check - {str(memory_error)}"
         )
 
@@ -551,7 +553,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     top_chunks_serialized = []
     if result.get("top_chunks"):
         chunk_count = len(result["top_chunks"])
-        print__debug(f"📦 main.py - Found {chunk_count} top_chunks to serialize")
+        print__main_debug(f"📦 main.py - Found {chunk_count} top_chunks to serialize")
         print__analysis_tracing_debug(
             f"78 - CHUNKS FOUND: Found {chunk_count} top_chunks to serialize"
         )
@@ -565,14 +567,14 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             top_chunks_serialized.append(chunk_data)
             if i == 0:  # Log first chunk for debugging
                 content_preview = chunk_data["content"][:100]
-                print__debug(
+                print__main_debug(
                     f"🔍 main.py - First chunk content preview: {content_preview}..."
                 )
                 print__analysis_tracing_debug(
                     f"79 - FIRST CHUNK: First chunk content preview: {content_preview}..."
                 )
     else:
-        print__debug("⚠️ main.py - No top_chunks found in result")
+        print__main_debug("⚠️ main.py - No top_chunks found in result")
         print__analysis_tracing_debug("80 - NO CHUNKS: No top_chunks found in result")
 
     print__analysis_tracing_debug(
@@ -591,7 +593,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         "top_chunks": top_chunks_serialized,  # Add serialized PDF chunks for frontend
     }
 
-    print__debug(
+    print__main_debug(
         f"📦 main.py - Serializable result includes {len(top_chunks_serialized)} top_chunks"
     )
     print__analysis_tracing_debug(

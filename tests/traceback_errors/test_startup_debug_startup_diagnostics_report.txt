@@ -1,0 +1,25 @@
+====================================================================================================
+STARTUP_DIAGNOSTICS REPORT
+Generated: 2025-07-29 16:07:02
+Test File: test_startup_debug.py
+====================================================================================================
+
+TEST CONTEXT:
+------------------------------
+Test Cases: [{'test_id': 'env_check', 'description': 'Environment Variables Check', 'function': 'test_environment_variables', 'timeout': 5}, {'test_id': 'imports', 'description': 'Critical Imports Check', 'function': 'test_critical_imports', 'timeout': 10}, {'test_id': 'db_connection', 'description': 'Direct Database Connection', 'function': 'test_database_connection', 'timeout': 15}, {'test_id': 'checkpointer_init', 'description': 'PostgreSQL Checkpointer Initialization', 'function': 'test_checkpointer_initialization', 'timeout': 20}, {'test_id': 'uvicorn_startup', 'description': 'Uvicorn Server Startup Process', 'function': 'test_uvicorn_startup', 'timeout': 25}]
+Timeout: 30s
+Working Directory: C:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql
+Total Tests: 5
+Failed Tests: 1
+Success Rate: 8000.0%
+
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 5
+Successful Requests: 4
+Failed Requests: 1
+Success Rate: 80.0%
+Average Response Time: 1.669260323047638s
+Total Test Time: Nones
