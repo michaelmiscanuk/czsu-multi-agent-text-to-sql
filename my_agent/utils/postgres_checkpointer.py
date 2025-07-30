@@ -1063,12 +1063,22 @@ async def create_async_postgres_saver():
 
         # Setup LangGraph tables - use autocommit connection for DDL operations
         print__checkpointers_debug(
-            "254 - SETUP START: Running setup with autocommit connection"
+            "254 - SETUP START: Checking if 'public.checkpoints' table exists before running setup"
         )
-        await setup_checkpointer_with_autocommit()
-        print__checkpointers_debug(
-            "255 - SETUP COMPLETE: AsyncPostgresSaver setup completed with autocommit"
-        )
+        # Use a direct connection from the pool to check for table existence
+        async with await psycopg.AsyncConnection.connect(
+            connection_string, autocommit=True
+        ) as conn:
+            exists = await table_exists(conn, "checkpoints")
+        if exists:
+            print__checkpointers_debug(
+                "SKIP SETUP: Table 'public.checkpoints' already exists, skipping setup_checkpointer_with_autocommit()"
+            )
+        else:
+            await setup_checkpointer_with_autocommit()
+            print__checkpointers_debug(
+                "255 - SETUP COMPLETE: AsyncPostgresSaver setup completed with autocommit"
+            )
 
     except Exception as creation_error:
         print__checkpointers_debug(
@@ -1519,6 +1529,22 @@ async def get_user_chat_threads(
         # Return empty list instead of raising exception to prevent API crashes
         print__checkpointers_debug("Returning empty threads list due to error")
         return []
+
+
+async def table_exists(conn, table_name):
+    async with conn.cursor() as cur:
+        await cur.execute(
+            """
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables
+                WHERE table_schema = 'public'
+                AND table_name = %s
+            );
+            """,
+            (table_name,),
+        )
+        result = await cur.fetchone()
+        return result[0]
 
 
 @retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)

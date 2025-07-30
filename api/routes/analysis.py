@@ -261,7 +261,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 )
                 print__analyze_debug("🔍 About to start analysis_main")
                 print__feedback_flow("🚀 Starting analysis")
-                # 8 minute timeout for platform stability
+                # 4 minute timeout for platform stability
                 result = await asyncio.wait_for(
                     analysis_main(
                         request.prompt,
@@ -269,7 +269,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                         checkpointer=checkpointer,
                         run_id=run_id,
                     ),
-                    timeout=480,  # 8 minutes timeout
+                    timeout=240,  # 4 minutes timeout
                 )
 
                 print__analysis_tracing_debug(
@@ -402,7 +402,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                                 checkpointer=fallback_checkpointer,
                                 run_id=run_id,
                             ),
-                            timeout=480,  # 8 minutes timeout
+                            timeout=240,  # 4 minutes timeout
                         )
 
                         print__analysis_tracing_debug(
