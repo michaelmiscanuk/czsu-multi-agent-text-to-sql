@@ -46,7 +46,7 @@ from api.utils.debug import (
 sys.path.insert(0, str(BASE_DIR))
 from api.helpers import traceback_json_response
 from api.routes.chat import get_thread_messages_with_metadata
-from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer
+from my_agent.utils.postgres_checkpointer import get_global_checkpointer
 
 # Create router for message endpoints
 router = APIRouter()
@@ -68,7 +68,7 @@ async def get_chat_messages(
 
     try:
         # Get healthy checkpointer
-        checkpointer = await get_healthy_checkpointer()
+        checkpointer = await get_global_checkpointer()
 
         if not hasattr(checkpointer, "conn"):
             print__api_postgresql(
@@ -157,7 +157,7 @@ async def get_message_run_ids(thread_id: str, user=Depends(get_current_user)):
     print__feedback_flow(f"🔍 Fetching run_ids for thread {thread_id}")
 
     try:
-        pool = await get_healthy_checkpointer()
+        pool = await get_global_checkpointer()
         pool = pool.conn if hasattr(pool, "conn") else None
 
         if not pool:

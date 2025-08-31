@@ -37,7 +37,7 @@ load_dotenv()
 from my_agent import create_graph
 from my_agent.utils.nodes import MAX_ITERATIONS
 from my_agent.utils.postgres_checkpointer import (
-    get_healthy_checkpointer,
+    get_global_checkpointer,
     retry_on_prepared_statement_error,
 )
 from my_agent.utils.state import DataAnalysisState
@@ -280,7 +280,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             print__analysis_tracing_debug(
                 "41 - POSTGRES CHECKPOINTER: Attempting to get PostgreSQL checkpointer"
             )
-            checkpointer = await get_healthy_checkpointer()
+            checkpointer = await get_global_checkpointer()
             print__analysis_tracing_debug(
                 "42 - POSTGRES SUCCESS: PostgreSQL checkpointer obtained"
             )

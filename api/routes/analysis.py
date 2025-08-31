@@ -57,7 +57,7 @@ from api.helpers import traceback_json_response
 from main import main as analysis_main
 from my_agent.utils.postgres_checkpointer import (
     create_thread_run_entry,
-    get_healthy_checkpointer,
+    get_global_checkpointer,
 )
 
 # Load environment variables
@@ -232,7 +232,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 )
                 print__analyze_debug("🔍 About to get healthy checkpointer")
                 print__feedback_flow("🔄 Getting healthy checkpointer")
-                checkpointer = await get_healthy_checkpointer()
+                checkpointer = await get_global_checkpointer()
                 print__analysis_tracing_debug(
                     f"09 - CHECKPOINTER SUCCESS: Checkpointer obtained ({type(checkpointer).__name__})"
                 )

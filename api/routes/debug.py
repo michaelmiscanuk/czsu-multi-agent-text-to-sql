@@ -49,7 +49,7 @@ from api.utils.memory import print__memory_monitoring
 # Import database connection functions
 sys.path.insert(0, str(BASE_DIR))
 from api.helpers import traceback_json_response
-from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer
+from my_agent.utils.postgres_checkpointer import get_global_checkpointer
 
 # Create router for debug endpoints
 router = APIRouter()
@@ -66,7 +66,7 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
     print__debug(f"🔍 Inspecting checkpoints for thread: {thread_id}")
 
     try:
-        checkpointer = await get_healthy_checkpointer()
+        checkpointer = await get_global_checkpointer()
 
         if not hasattr(checkpointer, "conn"):
             return {"error": "No PostgreSQL checkpointer available"}
@@ -231,7 +231,7 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
 
     # Check if it exists in the database
     try:
-        pool = await get_healthy_checkpointer()
+        pool = await get_global_checkpointer()
         pool = pool.conn if hasattr(pool, "conn") else None
 
         if pool:
@@ -331,7 +331,7 @@ async def clear_prepared_statements_endpoint(user=Depends(get_current_user)):
     print__debug(f"🧹 Clearing prepared statements for user: {user_email}")
 
     try:
-        checkpointer = await get_healthy_checkpointer()
+        checkpointer = await get_global_checkpointer()
 
         if not hasattr(checkpointer, "conn"):
             return {"error": "No PostgreSQL checkpointer available"}

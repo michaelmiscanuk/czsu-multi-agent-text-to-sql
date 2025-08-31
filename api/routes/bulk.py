@@ -51,7 +51,7 @@ from api.utils.memory import log_memory_usage
 # Import database connection functions
 from my_agent.utils.postgres_checkpointer import (
     get_direct_connection,
-    get_healthy_checkpointer,
+    get_global_checkpointer,
 )
 
 # Load environment variables
@@ -154,7 +154,7 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
 
         try:
             print__chat_all_messages_debug("🔍 Getting healthy checkpointer")
-            checkpointer = await get_healthy_checkpointer()
+            checkpointer = await get_global_checkpointer()
             print__chat_all_messages_debug(
                 f"🔍 Checkpointer obtained: {type(checkpointer).__name__}"
             )

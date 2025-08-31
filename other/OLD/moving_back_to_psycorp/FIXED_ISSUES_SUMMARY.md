@@ -62,7 +62,7 @@ The API server was trying to use **psycopg-style connection handling** with the 
 # OLD (Broken):
 @app.get("/chat-threads")
 async def get_chat_threads(...):
-    checkpointer = await get_healthy_checkpointer()
+    checkpointer = await get_global_checkpointer()
     if hasattr(checkpointer, 'conn') and checkpointer.conn and not checkpointer.conn.closed:
         # Complex psycopg-style connection handling
         total_count = await get_user_chat_threads_count(user_email, checkpointer.conn)

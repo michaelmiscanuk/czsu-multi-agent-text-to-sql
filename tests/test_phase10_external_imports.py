@@ -110,11 +110,11 @@ async def test_modular_function_imports():
     try:
         from my_agent.utils.postgres_checkpointer import (
             create_thread_run_entry,
-            get_healthy_checkpointer,
+            get_global_checkpointer,
             initialize_checkpointer,
         )
 
-        assert callable(get_healthy_checkpointer)
+        assert callable(get_global_checkpointer)
         assert callable(create_thread_run_entry)
         assert callable(initialize_checkpointer)
         print("✅ Successfully imported postgres checkpointer functions")

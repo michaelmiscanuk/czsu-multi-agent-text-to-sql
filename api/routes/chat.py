@@ -65,7 +65,7 @@ from api.helpers import traceback_json_response
 from api.utils.debug import print__chat_all_messages_debug
 from my_agent.utils.postgres_checkpointer import (
     get_direct_connection,
-    get_healthy_checkpointer,
+    get_global_checkpointer,
     get_thread_run_sentiments,
     get_user_chat_threads,
     get_user_chat_threads_count,
@@ -586,7 +586,7 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
     try:
         # Get a healthy checkpointer
         print__delete_chat_debug("🔧 DEBUG: Getting healthy checkpointer...")
-        checkpointer = await get_healthy_checkpointer()
+        checkpointer = await get_global_checkpointer()
         print__delete_chat_debug(
             f"🔧 DEBUG: Checkpointer type: {type(checkpointer).__name__}"
         )
@@ -693,7 +693,7 @@ async def get_all_chat_messages_for_one_thread(
     )
 
     try:
-        checkpointer = await get_healthy_checkpointer()
+        checkpointer = await get_global_checkpointer()
 
         # Get all messages and their per-interaction metadata
         chat_messages = await get_thread_messages_with_metadata(

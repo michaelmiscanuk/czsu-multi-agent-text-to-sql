@@ -314,8 +314,8 @@ KEEPALIVES_INTERVAL = 30  # 30 seconds between keepalives
 KEEPALIVES_COUNT = 3  # 3 failed keepalives before disconnect
 
 # Pool configuration constants for cloud database optimization
-DEFAULT_POOL_MIN_SIZE = 1  # Minimum pool size for efficiency
-DEFAULT_POOL_MAX_SIZE = 3  # Maximum pool size to avoid connection limits
+DEFAULT_POOL_MIN_SIZE = 3  # Increased minimum pool size for higher concurrency
+DEFAULT_POOL_MAX_SIZE = 10  # Increased maximum pool size to support more connections
 DEFAULT_POOL_TIMEOUT = 20  # Pool connection timeout
 DEFAULT_MAX_IDLE = 300  # 5 minutes idle timeout
 DEFAULT_MAX_LIFETIME = 1800  # 30 minutes max connection lifetime
@@ -331,16 +331,16 @@ MAX_RECENT_CHECKPOINTS = 10  # Limit checkpoints to recent ones only
 MAX_DEBUG_MESSAGES_DETAILED = 6  # Show first N messages in detail
 DEBUG_CHECKPOINT_LOG_INTERVAL = 5  # Log every Nth checkpoint
 
+
 # ==============================================================================
 # Global State Management
-## Single global checkpointer variable and context for proper cleanup
+# Single global checkpointer variable for proper cleanup
 _GLOBAL_CHECKPOINTER = None
-_GLOBAL_CHECKPOINTER_CONTEXT = None
 
-## Cache the connection string to avoid timestamp conflicts
+# Cache the connection string to avoid timestamp conflicts
 _CONNECTION_STRING_CACHE = None
 
-## Lock for checkpointer initialization to prevent race conditions
+# Lock for checkpointer initialization to prevent race conditions
 _CHECKPOINTER_INIT_LOCK = None
 
 # Type variable for the retry decorator
@@ -892,26 +892,26 @@ async def cleanup_all_pools():
         "CLEANUP ALL POOLS START: Starting comprehensive pool cleanup"
     )
 
-    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
+    global _GLOBAL_CHECKPOINTER
 
-    # Clean up the global checkpointer context if it exists
-    if _GLOBAL_CHECKPOINTER_CONTEXT:
+    # Clean up the global checkpointer if it exists
+    if _GLOBAL_CHECKPOINTER:
         try:
-            print__checkpointers_debug(
-                "CLEANUP: Cleaning up global checkpointer context"
-            )
-
-            # _GLOBAL_CHECKPOINTER_CONTEXT is now a connection pool, so close it directly
-            print__checkpointers_debug("CLEANUP: Found connection pool - closing it")
-            await _GLOBAL_CHECKPOINTER_CONTEXT.close()
-            print__checkpointers_debug("CLEANUP: Connection pool closed successfully")
-
+            print__checkpointers_debug("CLEANUP: Cleaning up global checkpointer")
+            # If it's an AsyncPostgresSaver, close its pool
+            if hasattr(_GLOBAL_CHECKPOINTER, "pool"):
+                print__checkpointers_debug(
+                    "CLEANUP: Found connection pool - closing it"
+                )
+                await _GLOBAL_CHECKPOINTER.pool.close()
+                print__checkpointers_debug(
+                    "CLEANUP: Connection pool closed successfully"
+                )
         except Exception as e:
             print__checkpointers_debug(
                 f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}"
             )
         finally:
-            _GLOBAL_CHECKPOINTER_CONTEXT = None
             _GLOBAL_CHECKPOINTER = None
 
     # Force garbage collection to ensure resources are freed
@@ -986,25 +986,26 @@ async def force_close_modern_pools():
 @retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
 async def create_async_postgres_saver():
     """Create and configure AsyncPostgresSaver with connection string approach."""
+    print("AAA, create_async_postgres_saver() called")
     print__checkpointers_debug(
         "233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with connection string"
     )
-    global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
+
+    global _GLOBAL_CHECKPOINTER
 
     # Clear any existing state first to avoid conflicts
-    if _GLOBAL_CHECKPOINTER_CONTEXT or _GLOBAL_CHECKPOINTER:
+    if _GLOBAL_CHECKPOINTER:
         print__checkpointers_debug(
             "234 - EXISTING STATE CLEANUP: Clearing existing checkpointer state to avoid conflicts"
         )
         try:
-            if _GLOBAL_CHECKPOINTER_CONTEXT:
-                await _GLOBAL_CHECKPOINTER_CONTEXT.close()
+            if hasattr(_GLOBAL_CHECKPOINTER, "pool"):
+                await _GLOBAL_CHECKPOINTER.pool.close()
         except Exception as e:
             print__checkpointers_debug(
                 f"236 - CLEANUP ERROR: Error during state cleanup: {e}"
             )
         finally:
-            _GLOBAL_CHECKPOINTER_CONTEXT = None
             _GLOBAL_CHECKPOINTER = None
             print__checkpointers_debug(
                 "237 - STATE CLEARED: Global checkpointer state cleared"
@@ -1055,7 +1056,6 @@ async def create_async_postgres_saver():
 
         # Create checkpointer with the pool
         _GLOBAL_CHECKPOINTER = AsyncPostgresSaver(pool, serde=None)
-        _GLOBAL_CHECKPOINTER_CONTEXT = pool  # Store pool for cleanup
 
         print__checkpointers_debug(
             "249 - SAVER CREATED: AsyncPostgresSaver created with connection pool"
@@ -1085,12 +1085,12 @@ async def create_async_postgres_saver():
             f"251 - CREATION ERROR: Failed to create AsyncPostgresSaver: {creation_error}"
         )
         # Clean up on failure
-        if _GLOBAL_CHECKPOINTER_CONTEXT:
+        if _GLOBAL_CHECKPOINTER:
             try:
-                await _GLOBAL_CHECKPOINTER_CONTEXT.close()
-            except:
+                if hasattr(_GLOBAL_CHECKPOINTER, "pool"):
+                    await _GLOBAL_CHECKPOINTER.pool.close()
+            except Exception:
                 pass
-            _GLOBAL_CHECKPOINTER_CONTEXT = None
             _GLOBAL_CHECKPOINTER = None
         raise
 
@@ -1130,72 +1130,73 @@ async def setup_checkpointer_with_autocommit():
         3. Uses the AsyncPostgresSaver.setup() method for official table creation
         4. Provides comprehensive error handling with detailed logging
 
-    Connection Configuration:
-        - autocommit=True: Prevents transaction block conflicts for DDL operations
-        - Same connection string as main checkpointer for consistency
-        - Temporary connection that is closed after setup completion
-        - Uses official AsyncPostgresSaver context manager patterns
-
-    Error Recovery:
-        - Provides detailed error logging for troubleshooting
-        - Raises exceptions to prevent proceeding with broken setup
-        - Ensures database is properly configured before checkpointer use
-
-    Note:
-        - Critical for proper LangGraph checkpoint table creation
-        - Prevents common DDL operation failures in transaction contexts
-        - Used during checkpointer initialization phase
-        - Must be called before using any AsyncPostgresSaver instances
-    """
-    print__checkpointers_debug(
-        "SETUP AUTOCOMMIT START: Setting up checkpointer tables with autocommit=True connection"
-    )
 
     try:
-        # Get connection kwargs with autocommit=True specifically for setup
-        setup_connection_kwargs = get_connection_kwargs().copy()
-        setup_connection_kwargs["autocommit"] = True  # Override to True for setup only
-
+        # Use connection pool approach to ensure proper connection configuration
         connection_string = get_connection_string()
+        connection_kwargs = get_connection_kwargs()
 
         print__checkpointers_debug(
-            "SETUP AUTOCOMMIT: Creating temporary connection with autocommit=True for setup"
+            "242 - CONNECTION POOL: Creating connection pool with proper kwargs"
         )
 
-        # Create a temporary AsyncPostgresSaver with autocommit=True for setup only
-        setup_checkpointer_context = AsyncPostgresSaver.from_conn_string(
-            conn_string=connection_string, serde=None
+        # Create connection pool with our connection kwargs
+        pool = AsyncConnectionPool(
+            conninfo=connection_string,
+            min_size=DEFAULT_POOL_MIN_SIZE,
+            max_size=DEFAULT_POOL_MAX_SIZE,
+            timeout=DEFAULT_POOL_TIMEOUT,
+            max_idle=DEFAULT_MAX_IDLE,
+            max_lifetime=DEFAULT_MAX_LIFETIME,
+            kwargs=connection_kwargs,
+            open=False,
         )
 
-        async with setup_checkpointer_context as setup_checkpointer:
+        # Open the pool
+        await pool.open()
+        print__checkpointers_debug(
+            "247 - POOL OPENED: Connection pool opened successfully"
+        )
+
+        # Create checkpointer with the pool
+        _GLOBAL_CHECKPOINTER = AsyncPostgresSaver(pool, serde=None)
+
+        print__checkpointers_debug(
+            "249 - SAVER CREATED: AsyncPostgresSaver created with connection pool"
+        )
+
+        # Setup LangGraph tables - use autocommit connection for DDL operations
+        print__checkpointers_debug(
+            "254 - SETUP START: Checking if 'public.checkpoints' table exists before running setup"
+        )
+        # Use a direct connection from the pool to check for table existence
+        async with await psycopg.AsyncConnection.connect(
+            connection_string, autocommit=True
+        ) as conn:
+            exists = await table_exists(conn, "checkpoints")
+        if exists:
             print__checkpointers_debug(
-                "SETUP AUTOCOMMIT: Running setup with autocommit=True connection"
+                "SKIP SETUP: Table 'public.checkpoints' already exists, skipping setup_checkpointer_with_autocommit()"
             )
-            await setup_checkpointer.setup()
+        else:
+            await setup_checkpointer_with_autocommit()
             print__checkpointers_debug(
-                "SETUP AUTOCOMMIT SUCCESS: Setup completed successfully with autocommit=True"
+                "255 - SETUP COMPLETE: AsyncPostgresSaver setup completed with autocommit"
             )
 
-    except Exception as e:
-        print__checkpointers_debug(f"SETUP AUTOCOMMIT ERROR: Setup failed: {e}")
+    except Exception as creation_error:
+        print__checkpointers_debug(
+            f"251 - CREATION ERROR: Failed to create AsyncPostgresSaver: {creation_error}"
+        )
+        # Clean up on failure
+        if _GLOBAL_CHECKPOINTER:
+            try:
+                if hasattr(_GLOBAL_CHECKPOINTER, "pool"):
+                    await _GLOBAL_CHECKPOINTER.pool.close()
+            except Exception:
+                pass
+            _GLOBAL_CHECKPOINTER = None
         raise
-
-
-# ==============================================================================
-# CHECKPOINTER LIFECYCLE MANAGEMENT
-# ==============================================================================
-async def close_async_postgres_saver():
-    """Close the AsyncPostgresSaver properly using the existing cleanup_all_pools() function.
-
-    This function provides proper cleanup and resource deallocation for the global
-    AsyncPostgresSaver instance by utilizing the existing comprehensive cleanup_all_pools()
-    function instead of duplicating cleanup logic.
-
-    Cleanup Process:
-        - Uses cleanup_all_pools() for comprehensive resource cleanup
-        - Handles all connection pools, global state, and resource deallocation
-        - Provides proper error handling and logging
-        - Ensures clean shutdown for application termination
 
     Note:
         - Now uses the existing cleanup_all_pools() function to avoid code duplication
@@ -1217,63 +1218,34 @@ async def close_async_postgres_saver():
 
 @retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def get_global_checkpointer():
-    """Get the global checkpointer instance with automatic creation and retry logic.
-
-    This function provides a centralized access point for the global AsyncPostgresSaver
-    instance. It implements lazy initialization and automatic retry logic for prepared
-    statement errors, ensuring reliable access to the checkpointer.
-
-    Initialization Strategy:
-        - Lazy initialization: Creates checkpointer only when first requested
-        - Singleton pattern: Returns same instance for subsequent calls
-        - Automatic retry: Handles prepared statement conflicts transparently
-        - Error recovery: Recreates checkpointer on persistent failures
-
-    Retry Logic:
-        - Decorated with retry_on_prepared_statement_error for automatic recovery
-        - Handles prepared statement conflicts with cleanup and recreation
-        - Provides detailed logging for troubleshooting retry attempts
-        - Maintains service availability during transient database issues
-
-    Global State Management:
-        - Manages _GLOBAL_CHECKPOINTER singleton instance
-        - Thread-safe access through Python's GIL
-        - Consistent instance across multiple API requests
-        - Proper lifecycle management with application startup/shutdown
-
-    Performance Considerations:
-        - Avoids creating multiple checkpointer instances
-        - Reuses connections and resources efficiently
-        - Minimizes initialization overhead for subsequent calls
-        - Optimizes memory usage through singleton pattern
-
-    Returns:
-        AsyncPostgresSaver: The global checkpointer instance, created if necessary
-
-    Note:
-        - Primary access point for checkpointer functionality
-        - Used by all API endpoints requiring checkpoint operations
-        - Ensures consistent checkpointer configuration across the application
-        - Handles initialization failures gracefully with comprehensive error reporting
+    """
+    Unified access point for the global checkpointer instance.
+    Handles lazy initialization, health check, and retry logic.
     """
     print__checkpointers_debug(
         "264 - GET GLOBAL START: Getting global checkpointer instance"
     )
-    global _GLOBAL_CHECKPOINTER
+    global _GLOBAL_CHECKPOINTER, _CHECKPOINTER_INIT_LOCK
 
+    # Initialize lock lazily to avoid event loop issues
+    if _CHECKPOINTER_INIT_LOCK is None:
+        _CHECKPOINTER_INIT_LOCK = asyncio.Lock()
+
+    # Use double-checked locking pattern to prevent race conditions
     if _GLOBAL_CHECKPOINTER is None:
-        print__checkpointers_debug(
-            "265 - CREATE NEW: No existing checkpointer, creating new one"
-        )
-        _GLOBAL_CHECKPOINTER = await create_async_postgres_saver()
-        print__checkpointers_debug(
-            "266 - CREATE SUCCESS: New checkpointer created successfully"
-        )
+        async with _CHECKPOINTER_INIT_LOCK:
+            if _GLOBAL_CHECKPOINTER is None:
+                _GLOBAL_CHECKPOINTER = await create_async_postgres_saver()
+                print__checkpointers_debug(
+                    "266 - CREATE SUCCESS: New checkpointer created successfully"
+                )
     else:
         print__checkpointers_debug(
             "267 - EXISTING FOUND: Using existing global checkpointer"
         )
 
+    # Add frequent health check before returning checkpointer
+    await check_pool_health_and_recreate()
     return _GLOBAL_CHECKPOINTER
 
 
@@ -1685,6 +1657,34 @@ async def delete_user_thread_entries(email: str, thread_id: str) -> Dict[str, An
 
 
 # CHECKPOINTER MANAGEMENT
+async def check_pool_health_and_recreate():
+    """Check the health of the global connection pool and recreate if unhealthy."""
+    global _GLOBAL_CHECKPOINTER
+    try:
+        pool = getattr(_GLOBAL_CHECKPOINTER, "pool", None)
+        if pool is not None:
+            # Try to acquire a connection and run a simple query
+            async with pool.connection() as conn:
+                async with conn.cursor() as cur:
+                    await cur.execute("SELECT 1;")
+                    result = await cur.fetchone()
+                    if result is None or result[0] != 1:
+                        raise Exception("Pool health check failed: bad result")
+            # If no exception, pool is healthy
+            return True
+        else:
+            return False
+    except Exception as e:
+        # Pool is unhealthy, recreate it
+        from api.utils.debug import print__checkpointers_debug
+
+        print__checkpointers_debug(f"POOL HEALTH CHECK FAILED: {e}, recreating pool...")
+    await force_close_modern_pools()
+    await get_global_checkpointer()
+    print__checkpointers_debug("POOL RECREATED after health check failure.")
+    return False
+
+
 # ==============================================================================
 
 
@@ -1768,23 +1768,7 @@ async def cleanup_checkpointer():
             "ℹ️ CHECKPOINTER CLEANUP: No checkpointer to clean up"
         )
 
-
-async def get_healthy_checkpointer():
-    """Get a healthy checkpointer instance, initializing if needed with thread-safe initialization."""
-    global _GLOBAL_CHECKPOINTER, _CHECKPOINTER_INIT_LOCK
-
-    # Initialize lock lazily to avoid event loop issues
-    if _CHECKPOINTER_INIT_LOCK is None:
-        _CHECKPOINTER_INIT_LOCK = asyncio.Lock()
-
-    # Use double-checked locking pattern to prevent race conditions
-    if _GLOBAL_CHECKPOINTER is None:
-        async with _CHECKPOINTER_INIT_LOCK:
-            # Check again after acquiring lock to avoid duplicate initialization
-            if _GLOBAL_CHECKPOINTER is None:
-                await initialize_checkpointer()
-
-    return _GLOBAL_CHECKPOINTER
+    # ...existing code...
 
 
 # ==============================================================================

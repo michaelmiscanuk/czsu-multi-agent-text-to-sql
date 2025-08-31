@@ -366,11 +366,11 @@ def test_debug_dependencies():
         print_test_status("✅ Configuration globals imported")
 
         # Test that database functions are imported
-        from my_agent.utils.postgres_checkpointer import get_healthy_checkpointer
+        from my_agent.utils.postgres_checkpointer import get_global_checkpointer
 
         assert callable(
-            get_healthy_checkpointer
-        ), "get_healthy_checkpointer should be callable"
+            get_global_checkpointer
+        ), "get_global_checkpointer should be callable"
         print_test_status("✅ Database utilities imported")
 
         print_test_status("✅ Debug dependencies test PASSED")
