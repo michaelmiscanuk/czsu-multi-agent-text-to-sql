@@ -33,7 +33,7 @@ try:
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     check_postgres_env_vars,
     cleanup_checkpointer,
     close_async_postgres_saver,

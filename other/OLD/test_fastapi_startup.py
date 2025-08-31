@@ -34,7 +34,7 @@ async def test_fastapi_startup():
     try:
         # Simulate the FastAPI lifespan startup
         print("🔄 Running initialize_checkpointer()...")
-        from my_agent.utils.postgres_checkpointer import initialize_checkpointer
+        from checkpointer.postgres_checkpointer import initialize_checkpointer
 
         await initialize_checkpointer()
 
@@ -71,7 +71,7 @@ async def test_fastapi_startup():
     # Test 4: Test get_global_checkpointer
     print("\n4. Testing get_global_checkpointer...")
     try:
-        from my_agent.utils.postgres_checkpointer import get_global_checkpointer
+        from checkpointer.postgres_checkpointer import get_global_checkpointer
 
         healthy_checkpointer = await get_global_checkpointer()
         print(f"✅ Healthy checkpointer: {type(healthy_checkpointer).__name__}")

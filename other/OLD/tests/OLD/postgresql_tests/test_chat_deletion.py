@@ -7,7 +7,7 @@ import requests
 from dotenv import load_dotenv
 
 from my_agent import create_graph
-from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer
+from checkpointer.postgres_checkpointer import get_postgres_checkpointer
 
 # Load environment variables
 load_dotenv()
@@ -258,7 +258,7 @@ async def main():
 
     # Cleanup: Close any remaining connections
     try:
-        from my_agent.utils.postgres_checkpointer import GLOBAL_CHECKPOINTER
+        from checkpointer.postgres_checkpointer import GLOBAL_CHECKPOINTER
 
         if (
             hasattr(locals(), "checkpointer")

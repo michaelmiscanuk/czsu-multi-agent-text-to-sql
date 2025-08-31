@@ -8,7 +8,7 @@ import sys
 
 # Updated imports to use new modular structure
 from api.routes.messages import get_chat_messages
-from my_agent.utils.postgres_checkpointer import get_global_checkpointer
+from checkpointer.postgres_checkpointer import get_global_checkpointer
 from unittest.mock import MagicMock
 
 

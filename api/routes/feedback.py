@@ -48,7 +48,7 @@ from api.utils.debug import (
 sys.path.insert(0, str(BASE_DIR))
 # Import helpers
 from api.helpers import traceback_json_response
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     get_direct_connection,
     update_thread_run_sentiment,
 )

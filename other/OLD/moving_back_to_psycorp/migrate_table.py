@@ -19,30 +19,35 @@ if sys.platform == "win32":
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from my_agent.utils.postgres_checkpointer import setup_users_threads_runs_table
+from checkpointer.postgres_checkpointer import setup_users_threads_runs_table
+
 
 async def main():
     """Run the migration to fix VARCHAR(50) constraint issue."""
     print("🔧 Running database migration to fix VARCHAR(50) constraint...")
-    
+
     try:
         # This will check for the old schema and migrate if needed
         await setup_users_threads_runs_table()
         print("✅ Migration completed successfully!")
         print("✅ Your application should now work correctly.")
-        
+
     except Exception as e:
         print(f"❌ Migration failed: {e}")
         import traceback
+
         print(f"Full traceback: {traceback.format_exc()}")
         return False
-    
+
     return True
+
 
 if __name__ == "__main__":
     success = asyncio.run(main())
     if success:
         print("\n🎉 You can now try your question again in the application!")
     else:
-        print("\n💡 If migration failed, check your database connection settings in .env")
-        sys.exit(1) 
+        print(
+            "\n💡 If migration failed, check your database connection settings in .env"
+        )
+        sys.exit(1)

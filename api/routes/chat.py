@@ -63,7 +63,7 @@ from api.config.settings import (
 )
 from api.helpers import traceback_json_response
 from api.utils.debug import print__chat_all_messages_debug
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     get_direct_connection,
     get_global_checkpointer,
     get_thread_run_sentiments,

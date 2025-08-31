@@ -1,7 +1,7 @@
 import asyncio
 
 from my_agent import create_graph
-from my_agent.utils.postgres_checkpointer import get_postgres_checkpointer
+from checkpointer.postgres_checkpointer import get_postgres_checkpointer
 
 
 async def test_state():

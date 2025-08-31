@@ -36,7 +36,7 @@ load_dotenv()
 
 from my_agent import create_graph
 from my_agent.utils.nodes import MAX_ITERATIONS
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     get_global_checkpointer,
     retry_on_prepared_statement_error,
 )

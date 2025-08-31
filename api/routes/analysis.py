@@ -55,7 +55,7 @@ import httpx
 
 from api.helpers import traceback_json_response
 from main import main as analysis_main
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     create_thread_run_entry,
     get_global_checkpointer,
 )

@@ -6,7 +6,7 @@ Test script to validate the complete chat functionality including PostgreSQL che
 import asyncio
 import sys
 import uuid
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     get_global_checkpointer,
     create_thread_run_entry,
 )

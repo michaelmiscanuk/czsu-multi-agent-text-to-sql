@@ -49,7 +49,7 @@ from api.utils.debug import print__chat_all_messages_debug
 from api.utils.memory import log_memory_usage
 
 # Import database connection functions
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     get_direct_connection,
     get_global_checkpointer,
 )

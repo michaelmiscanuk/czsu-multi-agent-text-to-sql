@@ -108,7 +108,7 @@ async def test_modular_function_imports():
     # Test postgres checkpointer functions
     total_tests += 1
     try:
-        from my_agent.utils.postgres_checkpointer import (
+        from checkpointer.postgres_checkpointer import (
             create_thread_run_entry,
             get_global_checkpointer,
             initialize_checkpointer,

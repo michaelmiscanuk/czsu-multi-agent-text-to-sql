@@ -277,7 +277,7 @@ async def rate_limit_health_check():
 async def prepared_statements_health_check():
     """Health check for prepared statements and database connection status."""
     try:
-        from my_agent.utils.postgres_checkpointer import (
+        from checkpointer.postgres_checkpointer import (
             clear_prepared_statements,
             get_global_checkpointer,
         )
@@ -293,7 +293,7 @@ async def prepared_statements_health_check():
         try:
             import psycopg
 
-            from my_agent.utils.postgres_checkpointer import (
+            from checkpointer.postgres_checkpointer import (
                 get_connection_kwargs,
                 get_db_config,
             )

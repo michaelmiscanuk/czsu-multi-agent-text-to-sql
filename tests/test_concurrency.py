@@ -28,7 +28,7 @@ from tests.helpers import (
     setup_debug_environment,
     cleanup_debug_environment,
 )
-from my_agent.utils.postgres_checkpointer import (
+from checkpointer.postgres_checkpointer import (
     check_postgres_env_vars,
     cleanup_checkpointer,
     close_async_postgres_saver,

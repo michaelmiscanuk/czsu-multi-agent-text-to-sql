@@ -236,7 +236,7 @@ async def test_critical_imports(results: StartupTestResults) -> bool:
         from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
         print("🔄 Importing checkpointer utilities...")
-        from my_agent.utils.postgres_checkpointer import (
+        from checkpointer.postgres_checkpointer import (
             initialize_checkpointer,
             create_async_postgres_saver,
             get_db_config,
@@ -269,7 +269,7 @@ async def test_database_connection(results: StartupTestResults) -> bool:
     start_time = time.time()
 
     try:
-        from my_agent.utils.postgres_checkpointer import get_connection_string
+        from checkpointer.postgres_checkpointer import get_connection_string
         import psycopg
 
         conn_str = get_connection_string()
@@ -321,7 +321,7 @@ async def test_checkpointer_initialization(results: StartupTestResults) -> bool:
     start_time = time.time()
 
     try:
-        from my_agent.utils.postgres_checkpointer import initialize_checkpointer
+        from checkpointer.postgres_checkpointer import initialize_checkpointer
 
         print("🔄 Running initialize_checkpointer()...")
         await asyncio.wait_for(initialize_checkpointer(), timeout=20.0)
