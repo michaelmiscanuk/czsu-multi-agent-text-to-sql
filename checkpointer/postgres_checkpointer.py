@@ -290,6 +290,9 @@ from langgraph.checkpoint.memory import MemorySaver
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from psycopg_pool import AsyncConnectionPool
 
+# Import debug functions from utils
+from api.utils.debug import print__checkpointers_debug
+
 # Windows event loop fix for PostgreSQL compatibility
 if sys.platform == "win32":
     print(
@@ -346,15 +349,13 @@ _CHECKPOINTER_INIT_LOCK = None
 # Type variable for the retry decorator
 T = TypeVar("T")
 
+
+
 # Get base directory
 try:
-    BASE_DIR = Path(__file__).resolve().parents[2]
+    BASE_DIR = Path(__file__).resolve().parents[1]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
-
-
-# Import debug functions from utils
-from api.utils.debug import print__checkpointers_debug
 
 
 # ==============================================================================
