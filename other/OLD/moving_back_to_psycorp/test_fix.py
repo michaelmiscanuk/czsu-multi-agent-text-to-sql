@@ -22,12 +22,12 @@ async def test_simplified_postgres():
         # Import the simplified postgres module
         from checkpointer.postgres_checkpointer import (
             test_connection_health,
-            get_user_chat_threads,
-            get_user_chat_threads_count,
-            create_thread_run_entry,
             get_postgres_checkpointer,
             get_conversation_messages_from_checkpoints,
         )
+        from checkpointer.user_management.thread_operations import get_user_chat_threads_count
+        from checkpointer.user_management.thread_operations import get_user_chat_threads
+        from checkpointer.user_management.thread_operations import create_thread_run_entry
 
         print("✅ Successfully imported postgres checkpointer functions")
 
@@ -126,10 +126,8 @@ async def test_api_compatibility():
     print("\n=== Testing API Compatibility ===")
 
     try:
-        from checkpointer.postgres_checkpointer import (
-            get_user_chat_threads,
-            get_user_chat_threads_count,
-        )
+        from checkpointer.user_management.thread_operations import get_user_chat_threads_count
+        from checkpointer.user_management.thread_operations import get_user_chat_threads
 
         # Simulate the API endpoint logic
         test_email = "test@example.com"

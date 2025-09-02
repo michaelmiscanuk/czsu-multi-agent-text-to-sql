@@ -29,12 +29,10 @@ from tests.helpers import (
     cleanup_debug_environment,
 )
 from checkpointer.postgres_checkpointer import (
-    check_postgres_env_vars,
-    cleanup_checkpointer,
     close_async_postgres_saver,
-    create_async_postgres_saver,
-    get_db_config,
 )
+from checkpointer.config import get_db_config, check_postgres_env_vars
+from checkpointer.checkpointer.factory import create_async_postgres_saver, cleanup_checkpointer
 
 # Set Windows event loop policy FIRST
 if sys.platform == "win32":

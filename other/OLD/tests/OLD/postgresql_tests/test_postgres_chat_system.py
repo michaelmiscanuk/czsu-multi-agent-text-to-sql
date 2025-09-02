@@ -20,12 +20,11 @@ if sys.platform == "win32":
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from checkpointer.postgres_checkpointer import (
-    setup_users_threads_runs_table,
-    create_thread_run_entry,
-    get_user_chat_threads,
-    delete_user_thread_entries,
     get_postgres_checkpointer,
 )
+from checkpointer.user_management.thread_operations import create_thread_run_entry, get_user_chat_threads, \
+    delete_user_thread_entries
+from checkpointer.database.table_setup import setup_users_threads_runs_table
 
 # Test configuration
 TEST_EMAIL_1 = "test1@example.com"

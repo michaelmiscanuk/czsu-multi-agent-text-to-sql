@@ -14,6 +14,7 @@ build/
 dist/
 wheels/
 .venv
+.idea
 # *.pdf
 
 data/czsu_data.db

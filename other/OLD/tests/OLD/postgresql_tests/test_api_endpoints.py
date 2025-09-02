@@ -6,9 +6,9 @@ Test script to verify the /chat-threads API endpoint is working correctly.
 import asyncio
 import sys
 from checkpointer.postgres_checkpointer import (
-    get_user_chat_threads,
     get_postgres_checkpointer,
 )
+from checkpointer.user_management.thread_operations import get_user_chat_threads
 
 
 async def test_chat_threads_backend():

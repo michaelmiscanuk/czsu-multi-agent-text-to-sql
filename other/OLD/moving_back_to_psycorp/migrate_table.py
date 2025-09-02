@@ -19,7 +19,7 @@ if sys.platform == "win32":
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from checkpointer.postgres_checkpointer import setup_users_threads_runs_table
+from checkpointer.database.table_setup import setup_users_threads_runs_table
 
 
 async def main():

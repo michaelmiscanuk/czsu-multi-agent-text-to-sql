@@ -36,10 +36,8 @@ load_dotenv()
 
 from my_agent import create_graph
 from my_agent.utils.nodes import MAX_ITERATIONS
-from checkpointer.postgres_checkpointer import (
-    get_global_checkpointer,
-    retry_on_prepared_statement_error,
-)
+from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error
+from checkpointer.checkpointer.factory import get_global_checkpointer
 from my_agent.utils.state import DataAnalysisState
 
 # Robust BASE_DIR logic for project root

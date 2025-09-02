@@ -21,13 +21,13 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
 from checkpointer.postgres_checkpointer import (
     get_healthy_pool,
-    setup_users_threads_runs_table,
-    create_thread_run_entry,
     get_postgres_checkpointer,
     force_close_all_connections,
-    get_user_chat_threads,
-    update_thread_run_sentiment,
 )
+from checkpointer.user_management.thread_operations import create_thread_run_entry, get_user_chat_threads, \
+    delete_user_thread_entries
+from checkpointer.user_management.sentiment_tracking import update_thread_run_sentiment
+from checkpointer.database.table_setup import setup_users_threads_runs_table
 
 
 class StressTestColors:
@@ -506,9 +506,6 @@ class PostgreSQLStressTest:
                     for thread in threads:
                         thread_id = thread["thread_id"]
                         # Delete thread entries (this function exists in our module)
-                        from checkpointer.postgres_checkpointer import (
-                            delete_user_thread_entries,
-                        )
 
                         result = await delete_user_thread_entries(email, thread_id)
                         cleanup_count += result.get("deleted_count", 0)

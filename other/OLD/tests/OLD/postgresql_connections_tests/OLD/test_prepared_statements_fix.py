@@ -32,10 +32,8 @@ async def test_prepared_statements_fix():
     try:
         # Test 1: Check connection string doesn't have invalid parameters
         print("\n1️⃣ Testing connection string parameters...")
-        from checkpointer.postgres_checkpointer import (
-            get_connection_string,
-            get_connection_kwargs,
-        )
+        from checkpointer.database.connection import get_connection_kwargs
+        from checkpointer.database.connection import get_connection_string
 
         connection_string = get_connection_string()
         connection_kwargs = get_connection_kwargs()

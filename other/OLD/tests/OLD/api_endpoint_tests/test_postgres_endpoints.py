@@ -46,11 +46,11 @@ async def test_postgres_operations():
     try:
         from checkpointer.postgres_checkpointer import (
             get_healthy_pool,
-            create_thread_run_entry,
-            get_user_chat_threads,
-            update_thread_run_sentiment,
-            get_thread_run_sentiments,
         )
+        from checkpointer.user_management.thread_operations import get_user_chat_threads
+        from checkpointer.user_management.thread_operations import create_thread_run_entry
+        from checkpointer.user_management.sentiment_tracking import get_thread_run_sentiments
+        from checkpointer.user_management.sentiment_tracking import update_thread_run_sentiment
 
         # Test 1: Get healthy pool
         print("\n1. Testing get_healthy_pool...")

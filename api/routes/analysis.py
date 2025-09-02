@@ -55,10 +55,8 @@ import httpx
 
 from api.helpers import traceback_json_response
 from main import main as analysis_main
-from checkpointer.postgres_checkpointer import (
-    create_thread_run_entry,
-    get_global_checkpointer,
-)
+from checkpointer.user_management.thread_operations import create_thread_run_entry
+from checkpointer.checkpointer.factory import get_global_checkpointer
 
 # Load environment variables
 load_dotenv()

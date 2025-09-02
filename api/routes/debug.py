@@ -49,7 +49,7 @@ from api.utils.memory import print__memory_monitoring
 # Import database connection functions
 sys.path.insert(0, str(BASE_DIR))
 from api.helpers import traceback_json_response
-from checkpointer.postgres_checkpointer import get_global_checkpointer
+from checkpointer.checkpointer.factory import get_global_checkpointer
 
 # Create router for debug endpoints
 router = APIRouter()

@@ -46,7 +46,7 @@ from api.utils.debug import (
 sys.path.insert(0, str(BASE_DIR))
 from api.helpers import traceback_json_response
 from api.routes.chat import get_thread_messages_with_metadata
-from checkpointer.postgres_checkpointer import get_global_checkpointer
+from checkpointer.checkpointer.factory import get_global_checkpointer
 
 # Create router for message endpoints
 router = APIRouter()

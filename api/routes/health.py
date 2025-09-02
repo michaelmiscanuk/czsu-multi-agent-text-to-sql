@@ -277,10 +277,8 @@ async def rate_limit_health_check():
 async def prepared_statements_health_check():
     """Health check for prepared statements and database connection status."""
     try:
-        from checkpointer.postgres_checkpointer import (
-            clear_prepared_statements,
-            get_global_checkpointer,
-        )
+        from checkpointer.error_handling.prepared_statements import clear_prepared_statements
+        from checkpointer.checkpointer.factory import get_global_checkpointer
 
         # Check if we can get a checkpointer
         try:
@@ -293,10 +291,8 @@ async def prepared_statements_health_check():
         try:
             import psycopg
 
-            from checkpointer.postgres_checkpointer import (
-                get_connection_kwargs,
-                get_db_config,
-            )
+            from checkpointer.config import get_db_config
+            from checkpointer.database.connection import get_connection_kwargs
 
             config = get_db_config()
             # Create connection string without prepared statement parameters

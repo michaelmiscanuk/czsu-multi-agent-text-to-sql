@@ -6,10 +6,8 @@ Test script to validate the complete chat functionality including PostgreSQL che
 import asyncio
 import sys
 import uuid
-from checkpointer.postgres_checkpointer import (
-    get_global_checkpointer,
-    create_thread_run_entry,
-)
+from checkpointer.user_management.thread_operations import create_thread_run_entry
+from checkpointer.checkpointer.factory import get_global_checkpointer
 from api.routes.messages import get_chat_messages
 from main import main as analysis_main
 from unittest.mock import MagicMock

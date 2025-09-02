@@ -20,13 +20,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 # Import our PostgreSQL module
 from checkpointer.postgres_checkpointer import (
     get_healthy_pool,
-    setup_users_threads_runs_table,
-    create_thread_run_entry,
-    update_thread_run_sentiment,
-    get_thread_run_sentiments,
-    get_user_chat_threads,
-    get_user_chat_threads_count,
-    delete_user_thread_entries,
     get_postgres_checkpointer,
     get_postgres_checkpointer_with_context,
     get_conversation_messages_from_checkpoints,
@@ -34,10 +27,14 @@ from checkpointer.postgres_checkpointer import (
     test_connection_health,
     test_basic_postgres_connection,
     test_pool_connection,
-    check_postgres_env_vars,
     force_close_all_connections,
-    get_connection_string,
 )
+from checkpointer.config import check_postgres_env_vars
+from checkpointer.user_management.thread_operations import create_thread_run_entry, get_user_chat_threads, \
+    get_user_chat_threads_count, delete_user_thread_entries
+from checkpointer.user_management.sentiment_tracking import update_thread_run_sentiment, get_thread_run_sentiments
+from checkpointer.database.table_setup import setup_users_threads_runs_table
+from checkpointer.database.connection import get_connection_string
 
 
 class TestColors:

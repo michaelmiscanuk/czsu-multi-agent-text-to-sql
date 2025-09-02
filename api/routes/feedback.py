@@ -48,10 +48,8 @@ from api.utils.debug import (
 sys.path.insert(0, str(BASE_DIR))
 # Import helpers
 from api.helpers import traceback_json_response
-from checkpointer.postgres_checkpointer import (
-    get_direct_connection,
-    update_thread_run_sentiment,
-)
+from checkpointer.user_management.sentiment_tracking import update_thread_run_sentiment
+from checkpointer.database.connection import get_direct_connection
 
 # Create router for feedback endpoints
 router = APIRouter()

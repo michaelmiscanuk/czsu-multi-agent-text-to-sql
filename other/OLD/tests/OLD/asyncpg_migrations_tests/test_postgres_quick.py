@@ -13,17 +13,16 @@ from datetime import datetime
 
 # Import our PostgreSQL module
 from checkpointer.postgres_checkpointer import (
-    check_postgres_env_vars,
     test_basic_postgres_connection,
     test_connection_health,
     get_healthy_pool,
     get_postgres_checkpointer,
-    setup_users_threads_runs_table,
-    create_thread_run_entry,
-    get_user_chat_threads,
-    delete_user_thread_entries,
     force_close_all_connections,
 )
+from checkpointer.config import check_postgres_env_vars
+from checkpointer.user_management.thread_operations import create_thread_run_entry, get_user_chat_threads, \
+    delete_user_thread_entries
+from checkpointer.database.table_setup import setup_users_threads_runs_table
 
 
 class QuickTest:

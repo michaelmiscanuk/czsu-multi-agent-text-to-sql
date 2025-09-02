@@ -32,7 +32,7 @@ async def test_server_startup():
     # Test 2: Test checkpointer initialization directly
     print("\n2. Testing checkpointer initialization...")
     try:
-        from checkpointer.postgres_checkpointer import initialize_checkpointer
+        from checkpointer.checkpointer.factory import initialize_checkpointer
 
         await initialize_checkpointer()
         print(f"✅ Checkpointer initialized: {type(GLOBAL_CHECKPOINTER).__name__}")

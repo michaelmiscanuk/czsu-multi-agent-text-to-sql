@@ -80,10 +80,7 @@ from api.routes.feedback import router as feedback_router
 from api.routes.health import router as health_router
 from api.routes.messages import router as messages_router
 from api.routes.misc import router as misc_router
-from checkpointer.postgres_checkpointer import (
-    cleanup_checkpointer,
-    initialize_checkpointer,
-)
+from checkpointer.checkpointer.factory import initialize_checkpointer, cleanup_checkpointer
 
 
 # Lifespan management function

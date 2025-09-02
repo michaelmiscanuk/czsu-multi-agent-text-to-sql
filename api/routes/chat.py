@@ -63,13 +63,10 @@ from api.config.settings import (
 )
 from api.helpers import traceback_json_response
 from api.utils.debug import print__chat_all_messages_debug
-from checkpointer.postgres_checkpointer import (
-    get_direct_connection,
-    get_global_checkpointer,
-    get_thread_run_sentiments,
-    get_user_chat_threads,
-    get_user_chat_threads_count,
-)
+from checkpointer.user_management.thread_operations import get_user_chat_threads, get_user_chat_threads_count
+from checkpointer.user_management.sentiment_tracking import get_thread_run_sentiments
+from checkpointer.database.connection import get_direct_connection
+from checkpointer.checkpointer.factory import get_global_checkpointer
 
 # Load environment variables
 load_dotenv()

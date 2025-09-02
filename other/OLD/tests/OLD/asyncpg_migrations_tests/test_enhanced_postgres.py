@@ -47,11 +47,11 @@ async def run_enhanced_postgres_tests():
             test_pool_connection,
             debug_pool_status,
             get_postgres_checkpointer,
-            create_thread_run_entry,
-            update_thread_run_sentiment,
-            get_thread_run_sentiments,
             monitor_connection_health,
         )
+        from checkpointer.user_management.thread_operations import create_thread_run_entry
+        from checkpointer.user_management.sentiment_tracking import get_thread_run_sentiments
+        from checkpointer.user_management.sentiment_tracking import update_thread_run_sentiment
 
         print("✅ Enhanced PostgreSQL utilities imported successfully")
 

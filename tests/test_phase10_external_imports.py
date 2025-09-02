@@ -108,11 +108,9 @@ async def test_modular_function_imports():
     # Test postgres checkpointer functions
     total_tests += 1
     try:
-        from checkpointer.postgres_checkpointer import (
-            create_thread_run_entry,
-            get_global_checkpointer,
-            initialize_checkpointer,
-        )
+        from checkpointer.user_management.thread_operations import create_thread_run_entry
+        from checkpointer.checkpointer.factory import initialize_checkpointer
+        from checkpointer.checkpointer.factory import get_global_checkpointer
 
         assert callable(get_global_checkpointer)
         assert callable(create_thread_run_entry)

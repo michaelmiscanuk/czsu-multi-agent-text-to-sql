@@ -11,7 +11,7 @@ import warnings
 # Add the project root to the path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from checkpointer.postgres_checkpointer import modern_psycopg_pool, cleanup_all_pools
+from checkpointer.database.pool_manager import cleanup_all_pools, modern_psycopg_pool
 
 
 async def test_modern_pool():

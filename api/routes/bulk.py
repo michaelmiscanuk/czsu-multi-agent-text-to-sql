@@ -49,10 +49,8 @@ from api.utils.debug import print__chat_all_messages_debug
 from api.utils.memory import log_memory_usage
 
 # Import database connection functions
-from checkpointer.postgres_checkpointer import (
-    get_direct_connection,
-    get_global_checkpointer,
-)
+from checkpointer.database.connection import get_direct_connection
+from checkpointer.checkpointer.factory import get_global_checkpointer
 
 # Load environment variables
 load_dotenv()
