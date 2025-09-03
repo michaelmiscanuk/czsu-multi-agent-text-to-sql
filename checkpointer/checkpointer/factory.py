@@ -3,6 +3,7 @@
 This module handles checkpointer creation, initialization, and lifecycle
 management for the PostgreSQL checkpointer system.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -13,14 +14,30 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from psycopg_pool import AsyncConnectionPool
 
 from api.utils.debug import print__checkpointers_debug
-from checkpointer.config import DEFAULT_MAX_RETRIES, CHECKPOINTER_CREATION_MAX_RETRIES, DEFAULT_POOL_MIN_SIZE, \
-    DEFAULT_POOL_MAX_SIZE, DEFAULT_POOL_TIMEOUT, DEFAULT_MAX_IDLE, DEFAULT_MAX_LIFETIME, check_postgres_env_vars
-from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error
-from checkpointer.database.table_setup import setup_checkpointer_with_autocommit, setup_users_threads_runs_table, \
-    table_exists
+from checkpointer.config import (
+    DEFAULT_MAX_RETRIES,
+    CHECKPOINTER_CREATION_MAX_RETRIES,
+    DEFAULT_POOL_MIN_SIZE,
+    DEFAULT_POOL_MAX_SIZE,
+    DEFAULT_POOL_TIMEOUT,
+    DEFAULT_MAX_IDLE,
+    DEFAULT_MAX_LIFETIME,
+    check_postgres_env_vars,
+)
+from checkpointer.error_handling.retry_decorators import (
+    retry_on_prepared_statement_error,
+)
+from checkpointer.database.table_setup import (
+    setup_checkpointer_with_autocommit,
+    setup_users_threads_runs_table,
+    table_exists,
+)
 from checkpointer.database.pool_manager import force_close_modern_pools
-from checkpointer.database.connection import get_connection_string, get_connection_kwargs
-from checkpointer.checkpointer.health import check_pool_health_and_recreate
+from checkpointer.database.connection import (
+    get_connection_string,
+    get_connection_kwargs,
+)
+from checkpointer.globals import _GLOBAL_CHECKPOINTER, _CHECKPOINTER_INIT_LOCK
 
 
 # This file will contain:
@@ -29,6 +46,37 @@ from checkpointer.checkpointer.health import check_pool_health_and_recreate
 # - get_global_checkpointer() function
 # - initialize_checkpointer() function
 # - cleanup_checkpointer() function
+# - check_pool_health_and_recreate() function
+
+
+async def check_pool_health_and_recreate():
+    """Check the health of the global connection pool and recreate if unhealthy."""
+    global _GLOBAL_CHECKPOINTER
+    try:
+        pool = getattr(_GLOBAL_CHECKPOINTER, "pool", None)
+        if pool is not None:
+            # Try to acquire a connection and run a simple query
+            async with pool.connection() as conn:
+                async with conn.cursor() as cur:
+                    await cur.execute("SELECT 1;")
+                    result = await cur.fetchone()
+                    if result is None or result[0] != 1:
+                        raise Exception("Pool health check failed: bad result")
+            # If no exception, pool is healthy
+            return True
+        else:
+            return False
+    except Exception as e:
+        # Pool is unhealthy, recreate it
+        from api.utils.debug import print__checkpointers_debug
+
+        print__checkpointers_debug(f"POOL HEALTH CHECK FAILED: {e}, recreating pool...")
+        await force_close_modern_pools()
+        # Recreate the global checkpointer
+        _GLOBAL_CHECKPOINTER = await create_async_postgres_saver()
+        print__checkpointers_debug("POOL RECREATED after health check failure.")
+        return False
+
 
 @retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
 async def create_async_postgres_saver():
@@ -159,6 +207,33 @@ async def create_async_postgres_saver():
         "259 - CREATE SAVER SUCCESS: AsyncPostgresSaver creation completed successfully"
     )
     return _GLOBAL_CHECKPOINTER
+
+
+async def close_async_postgres_saver():
+    """Close and clean up the current AsyncPostgresSaver instance."""
+    global _GLOBAL_CHECKPOINTER
+
+    print__checkpointers_debug("262 - CLOSE SAVER START: Closing AsyncPostgresSaver")
+
+    if _GLOBAL_CHECKPOINTER:
+        try:
+            # Close the connection pool if it exists
+            if hasattr(_GLOBAL_CHECKPOINTER, "pool") and _GLOBAL_CHECKPOINTER.pool:
+                await _GLOBAL_CHECKPOINTER.pool.close()
+                print__checkpointers_debug(
+                    "263 - POOL CLOSED: AsyncPostgresSaver pool closed"
+                )
+        except Exception as e:
+            print__checkpointers_debug(
+                f"264 - CLOSE ERROR: Error closing AsyncPostgresSaver pool: {e}"
+            )
+        finally:
+            _GLOBAL_CHECKPOINTER = None
+            print__checkpointers_debug(
+                "265 - SAVER CLEARED: AsyncPostgresSaver instance cleared"
+            )
+    else:
+        print__checkpointers_debug("266 - NO SAVER: No AsyncPostgresSaver to close")
 
 
 @retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)

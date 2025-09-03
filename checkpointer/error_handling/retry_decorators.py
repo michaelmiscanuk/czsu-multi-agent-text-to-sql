@@ -3,6 +3,7 @@
 This module provides retry decorators and error recovery mechanisms
 for robust error handling in the checkpointer system.
 """
+
 from __future__ import annotations
 
 import functools
@@ -10,9 +11,12 @@ import traceback
 from typing import Callable, Awaitable
 
 from api.utils.debug import print__checkpointers_debug
-from checkpointer.checkpointer.factory import create_async_postgres_saver
-from checkpointer.error_handling.prepared_statements import is_prepared_statement_error, clear_prepared_statements
+from checkpointer.error_handling.prepared_statements import (
+    is_prepared_statement_error,
+    clear_prepared_statements,
+)
 from checkpointer.config import DEFAULT_MAX_RETRIES, T
+from checkpointer.globals import _GLOBAL_CHECKPOINTER
 
 
 # This file will contain:
@@ -92,29 +96,44 @@ def retry_on_prepared_statement_error(max_retries: int = DEFAULT_MAX_RETRIES):
                             )
                             try:
                                 await clear_prepared_statements()
-                                # Recreate the checkpointer if it's a global operation
-                                global _GLOBAL_CHECKPOINTER_CONTEXT, _GLOBAL_CHECKPOINTER
-                                if _GLOBAL_CHECKPOINTER_CONTEXT or _GLOBAL_CHECKPOINTER:
+                                # Clear the global checkpointer to force recreation on next access
+                                global _GLOBAL_CHECKPOINTER
+                                if _GLOBAL_CHECKPOINTER:
                                     print__checkpointers_debug(
-                                        "208 - CHECKPOINTER RECREATION: Recreating checkpointer due to prepared statement error"
+                                        "208 - CHECKPOINTER RECREATION: Clearing checkpointer due to prepared statement error"
                                     )
-                                    await close_async_postgres_saver()
-                                    await create_async_postgres_saver()
+                                    # Close the existing checkpointer
+                                    try:
+                                        if (
+                                            hasattr(_GLOBAL_CHECKPOINTER, "pool")
+                                            and _GLOBAL_CHECKPOINTER.pool
+                                        ):
+                                            await _GLOBAL_CHECKPOINTER.pool.close()
+                                    except Exception as close_error:
+                                        print__checkpointers_debug(
+                                            f"209 - CLOSE ERROR: Error closing checkpointer pool: {close_error}"
+                                        )
+
+                                    # Clear the global reference to force recreation
+                                    _GLOBAL_CHECKPOINTER = None
+                                    print__checkpointers_debug(
+                                        "210 - CHECKPOINTER CLEARED: Global checkpointer cleared for recreation"
+                                    )
                             except Exception as cleanup_error:
                                 print__checkpointers_debug(
-                                    f"209 - CLEANUP ERROR: Error during cleanup: {cleanup_error}"
+                                    f"211 - CLEANUP ERROR: Error during cleanup: {cleanup_error}"
                                 )
                             continue
 
                     # If it's not a prepared statement error, or we've exhausted retries, re-raise
                     print__checkpointers_debug(
-                        f"210 - RETRY EXHAUSTED: No more retries for {func.__name__}, re-raising error"
+                        f"212 - RETRY EXHAUSTED: No more retries for {func.__name__}, re-raising error"
                     )
                     raise
 
             # This should never be reached, but just in case
             print__checkpointers_debug(
-                f"211 - RETRY FALLBACK: Fallback error re-raise for {func.__name__}"
+                f"213 - RETRY FALLBACK: Fallback error re-raise for {func.__name__}"
             )
             raise last_error
 

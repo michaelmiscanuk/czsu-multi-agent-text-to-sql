@@ -3,13 +3,25 @@
 This module handles database table creation, schema setup, and table
 utilities for both LangGraph and custom application tables.
 """
+
 from __future__ import annotations
 
 import psycopg
 
 from api.utils.debug import print__checkpointers_debug
-from checkpointer.database.connection import get_connection_string, get_connection_kwargs
+from checkpointer.database.connection import (
+    get_connection_string,
+    get_connection_kwargs,
+)
 from checkpointer.database.pool_manager import cleanup_all_pools
+from checkpointer.globals import _GLOBAL_CHECKPOINTER
+from checkpointer.config import (
+    DEFAULT_POOL_MIN_SIZE,
+    DEFAULT_POOL_MAX_SIZE,
+    DEFAULT_POOL_TIMEOUT,
+    DEFAULT_MAX_IDLE,
+    DEFAULT_MAX_LIFETIME,
+)
 
 
 # This file will contain:

@@ -3,6 +3,7 @@
 This module manages PostgreSQL connection pools, including creation,
 cleanup, and lifecycle management for the checkpointer system.
 """
+
 from __future__ import annotations
 
 import gc
@@ -11,9 +12,19 @@ from contextlib import asynccontextmanager
 from psycopg_pool import AsyncConnectionPool
 
 from api.utils.debug import print__checkpointers_debug
-from checkpointer.database.connection import get_connection_string, get_connection_kwargs
-from checkpointer.config import CONNECT_TIMEOUT, DEFAULT_POOL_MIN_SIZE, DEFAULT_POOL_MAX_SIZE, DEFAULT_POOL_TIMEOUT, \
-    DEFAULT_MAX_IDLE, DEFAULT_MAX_LIFETIME
+from checkpointer.database.connection import (
+    get_connection_string,
+    get_connection_kwargs,
+)
+from checkpointer.config import (
+    CONNECT_TIMEOUT,
+    DEFAULT_POOL_MIN_SIZE,
+    DEFAULT_POOL_MAX_SIZE,
+    DEFAULT_POOL_TIMEOUT,
+    DEFAULT_MAX_IDLE,
+    DEFAULT_MAX_LIFETIME,
+)
+from checkpointer.globals import _GLOBAL_CHECKPOINTER, _CONNECTION_STRING_CACHE
 
 
 # This file will contain:

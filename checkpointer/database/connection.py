@@ -3,6 +3,7 @@
 This module handles PostgreSQL connection string generation and basic
 connection operations for the checkpointer system.
 """
+
 from __future__ import annotations
 
 import os
@@ -14,8 +15,15 @@ from contextlib import asynccontextmanager
 import psycopg
 
 from api.utils.debug import print__checkpointers_debug
-from checkpointer.config import CONNECT_TIMEOUT, TCP_USER_TIMEOUT, KEEPALIVES_IDLE, KEEPALIVES_INTERVAL, \
-    KEEPALIVES_COUNT, get_db_config
+from checkpointer.config import (
+    CONNECT_TIMEOUT,
+    TCP_USER_TIMEOUT,
+    KEEPALIVES_IDLE,
+    KEEPALIVES_INTERVAL,
+    KEEPALIVES_COUNT,
+    get_db_config,
+)
+from checkpointer.globals import _CONNECTION_STRING_CACHE
 
 
 # This file will contain:
@@ -65,13 +73,13 @@ def get_connection_string():
     print__checkpointers_debug(
         "214 - CONNECTION STRING START: Generating PostgreSQL connection string"
     )
-    global _CONNECTION_STRING_CACHE
+    import checkpointer.globals as globals_module
 
-    if _CONNECTION_STRING_CACHE is not None:
+    if globals_module._CONNECTION_STRING_CACHE is not None:
         print__checkpointers_debug(
             "215 - CONNECTION STRING CACHED: Using cached connection string"
         )
-        return _CONNECTION_STRING_CACHE
+        return globals_module._CONNECTION_STRING_CACHE
 
     config = get_db_config()
 
@@ -87,7 +95,7 @@ def get_connection_string():
     )
 
     # Connection string with timeout and keepalive settings for cloud databases
-    _CONNECTION_STRING_CACHE = (
+    globals_module._CONNECTION_STRING_CACHE = (
         f"postgresql://{config['user']}:{config['password']}@"
         f"{config['host']}:{config['port']}/{config['dbname']}?"
         f"sslmode=require"
@@ -103,7 +111,7 @@ def get_connection_string():
         "217 - CONNECTION STRING COMPLETE: PostgreSQL connection string generated"
     )
 
-    return _CONNECTION_STRING_CACHE
+    return globals_module._CONNECTION_STRING_CACHE
 
 
 def get_connection_kwargs():

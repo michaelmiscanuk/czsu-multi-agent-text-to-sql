@@ -3,6 +3,7 @@
 This module manages global state variables and provides type definitions
 used throughout the checkpointer system.
 """
+
 from __future__ import annotations
 
 # This file will contain:
@@ -11,6 +12,12 @@ from __future__ import annotations
 # - _CHECKPOINTER_INIT_LOCK global variable
 # - TypeVar definitions
 # - BASE_DIR calculation
+
+# Global checkpointer instance (AsyncPostgresSaver or None)
 _GLOBAL_CHECKPOINTER = None
+
+# Connection string cache to avoid recalculating
 _CONNECTION_STRING_CACHE = None
+
+# Async lock for checkpointer initialization
 _CHECKPOINTER_INIT_LOCK = None
