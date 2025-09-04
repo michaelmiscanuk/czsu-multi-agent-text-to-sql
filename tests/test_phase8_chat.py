@@ -34,11 +34,12 @@ try:
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-from checkpointer.postgres_checkpointer import (
-    close_async_postgres_saver,
-)
 from checkpointer.config import get_db_config, check_postgres_env_vars
-from checkpointer.checkpointer.factory import create_async_postgres_saver, cleanup_checkpointer
+from checkpointer.checkpointer.factory import (
+    create_async_postgres_saver,
+    close_async_postgres_saver,
+    cleanup_checkpointer,
+)
 
 # Test configuration
 TEST_EMAIL = "test_user@example.com"

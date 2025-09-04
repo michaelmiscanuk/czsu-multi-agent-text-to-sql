@@ -14,6 +14,18 @@ import uuid
 from datetime import datetime
 from typing import Any, Dict, List
 
+# Add the project root directory to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+# try:
+#     from pathlib import Path
+
+#     BASE_DIR = Path(__file__).resolve().parents[1]
+# except NameError:
+#     BASE_DIR = Path(os.getcwd()).parents[0]
+
 import httpx
 import pytest
 
@@ -28,11 +40,13 @@ from tests.helpers import (
     setup_debug_environment,
     cleanup_debug_environment,
 )
-from checkpointer.postgres_checkpointer import (
-    close_async_postgres_saver,
-)
+
 from checkpointer.config import get_db_config, check_postgres_env_vars
-from checkpointer.checkpointer.factory import create_async_postgres_saver, cleanup_checkpointer
+from checkpointer.checkpointer.factory import (
+    create_async_postgres_saver,
+    close_async_postgres_saver,
+    cleanup_checkpointer,
+)
 
 # Set Windows event loop policy FIRST
 if sys.platform == "win32":
