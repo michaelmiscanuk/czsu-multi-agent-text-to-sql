@@ -1,5 +1,6 @@
 # Python/data ignores
 .env
+.env_w
 DOCS/
 __pycache__/
 *.py[cod]

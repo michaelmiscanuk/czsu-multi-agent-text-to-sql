@@ -1,292 +1,373 @@
 #!/usr/bin/env python3
 """
-Test for Phase 2: Extract Configuration and Constants
-Based on test_concurrency.py pattern - imports functionality from main scripts
+Phase 2: Configuration & Settings Validation Tests
+
+Upgraded to use the comprehensive testing pattern from Phase 8 (catalog tests):
+- Uses helpers.BaseTestResults for structured result tracking
+- Real HTTP calls to running server
+- JWT auth headers
+- Dynamic debug env variable setup & cleanup
+- Server traceback capture
+- Validation of key configuration behavior (health endpoint, rate limiting structure, concurrency semaphore limits)
+
+Prerequisites: server must be running (start via start_backend). These tests DO NOT start the server themselves.
 """
 
 import os
-
-# CRITICAL: Set Windows event loop policy FIRST, before other imports
 import sys
-
-if sys.platform == "win32":
-    import asyncio
-
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-# Load environment variables early
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Constants
-try:
-    from pathlib import Path
-
-    BASE_DIR = Path(__file__).resolve().parents[1]
-except NameError:
-    BASE_DIR = Path(os.getcwd()).parents[0]
-
-# Standard imports
 import asyncio
 import time
-from datetime import datetime, timedelta
-from pathlib import Path
+from datetime import datetime
+from typing import Dict, Any, List
 
 import httpx
 
-# Add project root to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+from tests.helpers import (
+    BaseTestResults,
+    create_test_jwt_token,
+    check_server_connectivity,
+    make_request_with_traceback_capture,
+    extract_detailed_error_info,
+    save_traceback_report,
+    setup_debug_environment,
+    cleanup_debug_environment,
+    handle_error_response,
+)
 
-from api.utils.debug import print__memory_monitoring, print__startup_debug
+# Windows event loop policy FIRST
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
-REQUEST_TIMEOUT = 30.0
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_BASE_URL", "http://localhost:8000")
+REQUEST_TIMEOUT = float(os.environ.get("TEST_REQUEST_TIMEOUT", "30"))
+TEST_EMAIL = os.environ.get("TEST_USER_EMAIL", "test_user@example.com")
+REQUIRED_ENDPOINTS = {"/health", "/debug/set-env", "/debug/reset-env"}
 
-
-async def test_phase2_config_imports():
-    """Test Phase 2 configuration imports by importing from api.config.settings."""
-    print("🔍 Testing Phase 2 configuration imports...")
-
-    try:
-        # Import the configuration module
-        from api.config import settings
-
-        print("✅ Successfully imported api.config.settings")
-
-        # Test that the module exists and has expected attributes
-        assert hasattr(settings, "start_time"), "settings.start_time not found"
-        assert hasattr(
-            settings, "GC_MEMORY_THRESHOLD"
-        ), "settings.GC_MEMORY_THRESHOLD not found"
-        assert hasattr(
-            settings, "GLOBAL_CHECKPOINTER"
-        ), "settings.GLOBAL_CHECKPOINTER not found"
-        assert hasattr(
-            settings, "MAX_CONCURRENT_ANALYSES"
-        ), "settings.MAX_CONCURRENT_ANALYSES not found"
-        assert hasattr(
-            settings, "analysis_semaphore"
-        ), "settings.analysis_semaphore not found"
-
-        print("✅ All required configuration attributes found")
-        return True
-
-    except ImportError as e:
-        print(f"❌ Failed to import api.config.settings: {e}")
-        return False
-    except AttributeError as e:
-        print(f"❌ Missing configuration attribute: {e}")
-        return False
-    except Exception as e:
-        print(f"❌ Unexpected error importing configuration: {e}")
-        return False
+# Configuration expectations (align with api.config.settings)
+EXPECTED_MIN_CONCURRENT = 1
+EXPECTED_MAX_CONCURRENT = 32  # sanity upper bound
+EXPECTED_RATE_LIMIT_WINDOW = 60
+EXPECTED_RATE_LIMIT_MIN_REQUESTS = 10
 
 
-async def test_phase2_config_values():
-    """Test Phase 2 configuration values by validating configuration constants."""
-    print("🔍 Testing Phase 2 configuration values...")
-
-    try:
-        from api.config.settings import (
-            BASE_DIR,
-            BULK_CACHE_TIMEOUT,
-            GC_MEMORY_THRESHOLD,
-            GLOBAL_CHECKPOINTER,
-            GOOGLE_JWK_URL,
-            INMEMORY_FALLBACK_ENABLED,
-            MAX_CONCURRENT_ANALYSES,
-            RATE_LIMIT_BURST,
-            RATE_LIMIT_MAX_WAIT,
-            RATE_LIMIT_REQUESTS,
-            RATE_LIMIT_WINDOW,
-            _app_startup_time,
-            _bulk_loading_cache,
-            _bulk_loading_locks,
-            _jwt_kid_missing_count,
-            _memory_baseline,
-            _request_count,
-            analysis_semaphore,
-            rate_limit_storage,
-            start_time,
-            throttle_semaphores,
-        )
-
-        # Validate critical constants exist and have expected types
-        print(f"✅ start_time: {start_time} (type: {type(start_time).__name__})")
-        assert isinstance(
-            start_time, float
-        ), f"start_time should be float, got {type(start_time)}"
-
-        print(
-            f"✅ GC_MEMORY_THRESHOLD: {GC_MEMORY_THRESHOLD}MB (type: {type(GC_MEMORY_THRESHOLD).__name__})"
-        )
-        assert isinstance(
-            GC_MEMORY_THRESHOLD, int
-        ), f"GC_MEMORY_THRESHOLD should be int, got {type(GC_MEMORY_THRESHOLD)}"
-        assert (
-            GC_MEMORY_THRESHOLD > 0
-        ), f"GC_MEMORY_THRESHOLD should be positive, got {GC_MEMORY_THRESHOLD}"
-
-        print(
-            f"✅ MAX_CONCURRENT_ANALYSES: {MAX_CONCURRENT_ANALYSES} (type: {type(MAX_CONCURRENT_ANALYSES).__name__})"
-        )
-        assert isinstance(
-            MAX_CONCURRENT_ANALYSES, int
-        ), f"MAX_CONCURRENT_ANALYSES should be int, got {type(MAX_CONCURRENT_ANALYSES)}"
-        assert (
-            MAX_CONCURRENT_ANALYSES > 0
-        ), f"MAX_CONCURRENT_ANALYSES should be positive, got {MAX_CONCURRENT_ANALYSES}"
-
-        print(
-            f"✅ analysis_semaphore: {analysis_semaphore} (type: {type(analysis_semaphore).__name__})"
-        )
-        assert hasattr(
-            analysis_semaphore, "_value"
-        ), f"analysis_semaphore should be asyncio.Semaphore"
-
-        print(
-            f"✅ RATE_LIMIT_REQUESTS: {RATE_LIMIT_REQUESTS} (type: {type(RATE_LIMIT_REQUESTS).__name__})"
-        )
-        assert isinstance(
-            RATE_LIMIT_REQUESTS, int
-        ), f"RATE_LIMIT_REQUESTS should be int, got {type(RATE_LIMIT_REQUESTS)}"
-
-        print(
-            f"✅ RATE_LIMIT_WINDOW: {RATE_LIMIT_WINDOW}s (type: {type(RATE_LIMIT_WINDOW).__name__})"
-        )
-        assert isinstance(
-            RATE_LIMIT_WINDOW, int
-        ), f"RATE_LIMIT_WINDOW should be int, got {type(RATE_LIMIT_WINDOW)}"
-
-        print(
-            f"✅ BULK_CACHE_TIMEOUT: {BULK_CACHE_TIMEOUT}s (type: {type(BULK_CACHE_TIMEOUT).__name__})"
-        )
-        assert isinstance(
-            BULK_CACHE_TIMEOUT, int
-        ), f"BULK_CACHE_TIMEOUT should be int, got {type(BULK_CACHE_TIMEOUT)}"
-
-        print(
-            f"✅ GOOGLE_JWK_URL: {GOOGLE_JWK_URL} (type: {type(GOOGLE_JWK_URL).__name__})"
-        )
-        assert isinstance(
-            GOOGLE_JWK_URL, str
-        ), f"GOOGLE_JWK_URL should be str, got {type(GOOGLE_JWK_URL)}"
-        assert GOOGLE_JWK_URL.startswith(
-            "https://"
-        ), f"GOOGLE_JWK_URL should be HTTPS URL, got {GOOGLE_JWK_URL}"
-
-        print(
-            f"✅ INMEMORY_FALLBACK_ENABLED: {INMEMORY_FALLBACK_ENABLED} (type: {type(INMEMORY_FALLBACK_ENABLED).__name__})"
-        )
-        assert isinstance(
-            INMEMORY_FALLBACK_ENABLED, bool
-        ), f"INMEMORY_FALLBACK_ENABLED should be bool, got {type(INMEMORY_FALLBACK_ENABLED)}"
-
-        print(f"✅ BASE_DIR: {BASE_DIR} (type: {type(BASE_DIR).__name__})")
-        assert hasattr(
-            BASE_DIR, "exists"
-        ), f"BASE_DIR should be Path object, got {type(BASE_DIR)}"
-
-        print("✅ All configuration values validated successfully")
-        return True
-
-    except ImportError as e:
-        print(f"❌ Failed to import configuration constants: {e}")
-        return False
-    except AssertionError as e:
-        print(f"❌ Configuration validation failed: {e}")
-        return False
-    except Exception as e:
-        print(f"❌ Unexpected error validating configuration: {e}")
-        return False
+async def _auth_headers() -> Dict[str, str]:
+    token = create_test_jwt_token(TEST_EMAIL)
+    return {"Authorization": f"Bearer {token}"}
 
 
-async def test_phase2_debug_functions():
-    """Test Phase 2 debug functions by importing and testing print functions."""
-    print("🔍 Testing Phase 2 debug functions...")
-
-    try:
-
-        # Test the debug functions exist and are callable
-        assert callable(print__startup_debug), "print__startup_debug should be callable"
-        assert callable(
-            print__memory_monitoring
-        ), "print__memory_monitoring should be callable"
-
-        # Test calling the functions (they should not raise errors)
-        print__startup_debug("🧪 Testing startup debug function from Phase 2")
-        print__memory_monitoring("🧪 Testing memory monitoring function from Phase 2")
-
-        print("✅ Debug functions imported and tested successfully")
-        return True
-
-    except ImportError as e:
-        print(f"❌ Failed to import debug functions: {e}")
-        return False
-    except Exception as e:
-        print(f"❌ Unexpected error testing debug functions: {e}")
-        return False
+async def _validate_health_structure(data: Dict[str, Any]):
+    assert isinstance(data, dict), "Health response must be JSON object"
+    # Flexible keys: allow presence of typical health items
+    required_any = ["status", "uptime", "timestamp"]
+    missing = [k for k in required_any if k not in data]
+    assert not missing, f"Health response missing keys: {missing}"
+    assert data.get("status") in {"ok", "healthy", "pass"}, "Unexpected health status"
+    assert (
+        isinstance(data.get("uptime"), (int, float)) and data["uptime"] >= 0
+    ), "Invalid uptime"
 
 
-async def test_phase2_functionality():
-    """Test Phase 2 functionality by running all configuration validation tests."""
-    print("🔍 Testing Phase 2 configuration functionality...")
+async def test_health_endpoint(client: httpx.AsyncClient, results: BaseTestResults):
+    test_id = "health_1"
+    endpoint = "/health"
+    start = time.time()
+    result = await make_request_with_traceback_capture(
+        client,
+        "GET",
+        f"{SERVER_BASE_URL}{endpoint}",
+        headers=await _auth_headers(),
+        timeout=REQUEST_TIMEOUT,
+    )
+    rt = time.time() - start
+    error_info = extract_detailed_error_info(result)
+    response = result["response"]
 
-    # Run all Phase 2 tests
-    tests = [
-        ("Configuration Imports", test_phase2_config_imports),
-        ("Configuration Values", test_phase2_config_values),
-        ("Debug Functions", test_phase2_debug_functions),
-    ]
+    if not response:
+        err = Exception(error_info.get("client_error") or "No response")
+        err.server_tracebacks = error_info["server_tracebacks"]
+        results.add_error(test_id, endpoint, "Health endpoint unreachable", err, rt)
+        return
 
-    results = []
-    for test_name, test_func in tests:
-        print(f"\n📋 Running {test_name} test...")
+    if response.status_code == 200:
         try:
-            result = await test_func()
-            results.append((test_name, result))
-            if result:
-                print(f"✅ {test_name} test passed")
-            else:
-                print(f"❌ {test_name} test failed")
+            data = response.json()
+            await _validate_health_structure(data)
+            results.add_result(
+                test_id, endpoint, "Health endpoint basic structure", data, rt, 200
+            )
         except Exception as e:
-            print(f"❌ {test_name} test error: {e}")
-            results.append((test_name, False))
+            err = Exception(f"Validation failed: {e}")
+            err.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(
+                test_id, endpoint, "Health structure validation failure", err, rt
+            )
+    else:
+        handle_error_response(
+            test_id,
+            endpoint,
+            "Health endpoint non-200",
+            response,
+            error_info,
+            results,
+            rt,
+        )
 
-    # Summary
-    passed = sum(1 for _, result in results if result)
-    total = len(results)
 
-    print(f"\n📊 Phase 2 Test Summary:")
-    print(f"   Tests passed: {passed}/{total}")
+async def test_debug_env_set_and_reset(
+    client: httpx.AsyncClient, results: BaseTestResults
+):
+    # Validate we can toggle DEBUG env flags via existing endpoints
+    for action, endpoint in [("set", "/debug/set-env"), ("reset", "/debug/reset-env")]:
+        test_id = f"debug_env_{action}"
+        start = time.time()
+        body = {"DEBUG": "1"} if action == "set" else {"DEBUG": "0"}
+        result = await make_request_with_traceback_capture(
+            client,
+            "POST",
+            f"{SERVER_BASE_URL}{endpoint}",
+            headers=await _auth_headers(),
+            json=body,
+            timeout=REQUEST_TIMEOUT,
+        )
+        rt = time.time() - start
+        error_info = extract_detailed_error_info(result)
+        response = result["response"]
 
-    for test_name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
-        print(f"   {test_name}: {status}")
+        if not response:
+            err = Exception(error_info.get("client_error") or "No response")
+            err.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(test_id, endpoint, f"Env {action} unreachable", err, rt)
+            continue
 
-    return passed == total
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                results.add_result(
+                    test_id,
+                    endpoint,
+                    f"Debug env {action} endpoint",
+                    data,
+                    rt,
+                    200,
+                )
+            except Exception as e:
+                err = Exception(f"JSON parse failed: {e}")
+                err.server_tracebacks = error_info["server_tracebacks"]
+                results.add_error(
+                    test_id, endpoint, f"Env {action} parse fail", err, rt
+                )
+        else:
+            handle_error_response(
+                test_id,
+                endpoint,
+                f"Debug env {action} non-200",
+                response,
+                error_info,
+                results,
+                rt,
+            )
+
+
+async def test_configuration_module_values(results: BaseTestResults):
+    # Direct import validation of api.config.settings (no HTTP)
+    test_id = "config_module_values"
+    endpoint = "internal:settings_import"
+    start = time.time()
+    try:
+        from api.config import settings as s  # type: ignore
+
+        # Core invariants
+        assert isinstance(s.start_time, (int, float)), "start_time must be numeric"
+        assert (
+            EXPECTED_MIN_CONCURRENT
+            <= s.MAX_CONCURRENT_ANALYSES
+            <= EXPECTED_MAX_CONCURRENT
+        ), f"MAX_CONCURRENT_ANALYSES out of expected bounds: {s.MAX_CONCURRENT_ANALYSES}"
+        assert isinstance(
+            s.analysis_semaphore, asyncio.Semaphore
+        ), "analysis_semaphore must be Semaphore"
+        assert (
+            s.RATE_LIMIT_WINDOW == EXPECTED_RATE_LIMIT_WINDOW
+        ), "RATE_LIMIT_WINDOW mismatch"
+        assert (
+            s.RATE_LIMIT_REQUESTS >= EXPECTED_RATE_LIMIT_MIN_REQUESTS
+        ), "RATE_LIMIT_REQUESTS too low"
+        assert isinstance(
+            s.rate_limit_storage, dict
+        ), "rate_limit_storage must be dict-like"
+        assert isinstance(
+            s._bulk_loading_cache, dict
+        ), "_bulk_loading_cache must be dict"
+
+        data = {
+            "start_time": s.start_time,
+            "MAX_CONCURRENT_ANALYSES": s.MAX_CONCURRENT_ANALYSES,
+            "RATE_LIMIT_WINDOW": s.RATE_LIMIT_WINDOW,
+            "RATE_LIMIT_REQUESTS": s.RATE_LIMIT_REQUESTS,
+            "semaphore_value": getattr(s.analysis_semaphore, "_value", None),
+            "bulk_cache_size": len(s._bulk_loading_cache),
+        }
+        results.add_result(
+            test_id,
+            endpoint,
+            "Configuration module invariant checks",
+            data,
+            time.time() - start,
+            200,
+        )
+    except Exception as e:
+        results.add_error(
+            test_id,
+            endpoint,
+            "Configuration module validation failed",
+            e,
+            time.time() - start,
+        )
+
+
+async def test_semaphore_concurrency_simulation(results: BaseTestResults):
+    # Simulate acquiring the analysis semaphore up to its limit
+    test_id = "semaphore_concurrency"
+    endpoint = "internal:semaphore"
+    start = time.time()
+    try:
+        from api.config import settings as s
+
+        permits = s.MAX_CONCURRENT_ANALYSES
+        acquired = 0
+        acquired_list: List[asyncio.Task] = []
+
+        async def acquire_and_hold():
+            async with s.analysis_semaphore:
+                await asyncio.sleep(0.05)
+
+        # Launch tasks = permits
+        for _ in range(permits):
+            t = asyncio.create_task(acquire_and_hold())
+            acquired_list.append(t)
+
+        await asyncio.sleep(0)  # allow scheduling
+        current_value = getattr(s.analysis_semaphore, "_value", None)
+        # After scheduling but before completion, semaphore internal value should be 0 or near 0
+        assert (
+            current_value in (0, None) or current_value <= 1
+        ), f"Semaphore did not decrement as expected (value={current_value})"
+
+        await asyncio.gather(*acquired_list)
+
+        # After completion, value should be restored to permits
+        end_value = getattr(s.analysis_semaphore, "_value", None)
+        assert (
+            end_value == permits
+        ), f"Semaphore value not restored (expected {permits}, got {end_value})"
+
+        results.add_result(
+            test_id,
+            endpoint,
+            "Semaphore concurrency acquisition & release",
+            {"permits": permits, "end_value": end_value},
+            time.time() - start,
+            200,
+        )
+    except Exception as e:
+        results.add_error(
+            test_id,
+            endpoint,
+            "Semaphore concurrency simulation failed",
+            e,
+            time.time() - start,
+        )
+
+
+async def run_phase2_tests() -> BaseTestResults:
+    print("🚀 Starting Phase 2 configuration tests...")
+    results = BaseTestResults(required_endpoints=REQUIRED_ENDPOINTS)
+    results.start_time = datetime.now()
+
+    async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
+        # Setup debug (turn on minimal debug for visibility)
+        await setup_debug_environment(
+            client,
+            DEBUG="1",
+            DEBUG_TRACEBACK="1",
+        )
+
+        # HTTP endpoint tests
+        await test_health_endpoint(client, results)
+        await test_debug_env_set_and_reset(client, results)
+
+        # Internal module + behavior tests
+        await test_configuration_module_values(results)
+        await test_semaphore_concurrency_simulation(results)
+
+        # Cleanup
+        await cleanup_debug_environment(client, DEBUG="0", DEBUG_TRACEBACK="0")
+
+    results.end_time = datetime.now()
+    return results
+
+
+def analyze_results(results: BaseTestResults) -> Dict[str, Any]:
+    print("\n📊 Phase 2 Configuration Test Results:")
+    summary = results.get_summary()
+    print(
+        f"Total: {summary['total_requests']}  Success: {summary['successful_requests']}  Failed: {summary['failed_requests']}  SuccessRate: {summary['success_rate']:.1f}%"
+    )
+
+    if summary["successful_requests"] > 0:
+        print(
+            f"Avg Response: {summary['average_response_time']:.3f}s  Min: {summary['min_response_time']:.3f}s  Max: {summary['max_response_time']:.3f}s"
+        )
+
+    if not summary["all_endpoints_tested"]:
+        print(f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
+
+    if results.errors:
+        print(f"\n❌ Errors ({len(results.errors)}):")
+        for e in results.errors:
+            print(f"  {e['test_id']} -> {e['error']}")
+
+    save_traceback_report(report_type="test_failure", test_results=results)
+    return summary
 
 
 async def main():
-    """Main test runner for Phase 2."""
-    print("🚀 Starting Phase 2 tests...")
-    print(f"   Base directory: {BASE_DIR}")
-    print(f"   Test timestamp: {datetime.now().isoformat()}")
+    print("🚀 Phase 2 Configuration & Settings Tests Starting...")
+    if not await check_server_connectivity(SERVER_BASE_URL):
+        print("❌ Server connectivity check failed")
+        return False
 
-    # Run Phase 2 tests
-    success = await test_phase2_functionality()
-
-    if success:
-        print("\n✅ Phase 2 tests completed successfully")
-        print("🎉 API server configuration and constants extraction is working!")
-        return True
-    else:
-        print("\n❌ Phase 2 tests failed")
-        print("🔧 Please check the configuration extraction and settings module")
+    try:
+        results = await run_phase2_tests()
+        summary = analyze_results(results)
+        passed = (
+            summary["failed_requests"] == 0
+            and summary["successful_requests"] > 0
+            and summary["all_endpoints_tested"]
+        )
+        print(f"\n🏁 OVERALL RESULT: {'✅ PASSED' if passed else '❌ FAILED'}")
+        return passed
+    except Exception as e:
+        print(f"💥 Fatal execution error: {e}")
+        save_traceback_report(
+            report_type="exception",
+            exception=e,
+            test_context={
+                "Phase": "2",
+                "Component": "Configuration",
+                "Server URL": SERVER_BASE_URL,
+            },
+        )
         return False
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        ok = asyncio.run(main())
+        sys.exit(0 if ok else 1)
+    except KeyboardInterrupt:
+        print("\n⛔ Interrupted")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n💥 Fatal error in runner: {e}")
+        sys.exit(1)

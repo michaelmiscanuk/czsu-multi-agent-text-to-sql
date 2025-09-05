@@ -137,12 +137,10 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
             # Get a healthy pool to check ownership
             print__feedback_debug(f"🔍 Importing get_direct_connection")
 
-            print__feedback_debug(f"🔍 Getting healthy pool")
-            pool = await get_direct_connection()
-            print__feedback_debug(f"🔍 Pool obtained: {type(pool).__name__}")
-
-            print__feedback_debug(f"🔍 Getting connection from pool")
-            async with pool.connection() as conn:
+            # FIX: get_direct_connection is an async context manager returning a direct connection,
+            # not a pool. Use it directly with 'async with' instead of awaiting and then calling pool.connection().
+            print__feedback_debug(f"🔍 Acquiring direct DB connection")
+            async with get_direct_connection() as conn:
                 print__feedback_debug(f"🔍 Connection obtained: {type(conn).__name__}")
                 async with conn.cursor() as cur:
                     print__feedback_debug(f"🔍 Executing ownership query")

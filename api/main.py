@@ -32,6 +32,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse, ORJSONResponse
+from fastapi.encoders import jsonable_encoder
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Import configuration and globals
@@ -80,7 +81,10 @@ from api.routes.feedback import router as feedback_router
 from api.routes.health import router as health_router
 from api.routes.messages import router as messages_router
 from api.routes.misc import router as misc_router
-from checkpointer.checkpointer.factory import initialize_checkpointer, cleanup_checkpointer
+from checkpointer.checkpointer.factory import (
+    initialize_checkpointer,
+    cleanup_checkpointer,
+)
 
 
 # Lifespan management function
@@ -258,11 +262,32 @@ async def simplified_memory_monitoring_middleware(request: Request, call_next):
 # Global exception handlers for proper error handling
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    """Handle Pydantic validation errors with proper 422 status code."""
+    """Handle Pydantic validation errors with proper 422 status code.
+
+    Uses jsonable_encoder to avoid JSON serialization errors (observed 500 during dumps).
+    Falls back to minimal structure if encoding fails.
+    """
     print__debug(f"Validation error: {exc.errors()}")
-    return JSONResponse(
-        status_code=422, content={"detail": "Validation error", "errors": exc.errors()}
-    )
+    try:
+        payload = {"detail": "Validation error", "errors": exc.errors()}
+        return JSONResponse(status_code=422, content=jsonable_encoder(payload))
+    except Exception as encoding_error:  # Fallback in case of non-serializable content
+        print__debug(
+            f"🚨 Validation encoding failure: {type(encoding_error).__name__}: {encoding_error}"  # noqa: E501
+        )
+        # Provide simplified error list of messages only
+        simple_errors = [
+            {"msg": e.get("msg"), "loc": e.get("loc"), "type": e.get("type")}
+            for e in (exc.errors() if hasattr(exc, "errors") else [])
+        ]
+        return JSONResponse(
+            status_code=422,
+            content={
+                "detail": "Validation error",
+                "errors": simple_errors,
+                "note": "Simplified due to serialization issue",
+            },
+        )
 
 
 @app.exception_handler(StarletteHTTPException)
