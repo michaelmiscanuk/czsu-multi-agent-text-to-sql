@@ -41,7 +41,7 @@ def print__feedback_flow(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get("DEBUG", "0")
+    debug_mode = os.environ.get("print__feedback_flow", "0")
     if debug_mode == "1":
         print(f"[FEEDBACK-FLOW] {msg}")
         import sys
@@ -69,7 +69,7 @@ def print__sentiment_flow(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get("DEBUG", "0")
+    debug_mode = os.environ.get("print__sentiment_flow", "0")
     if debug_mode == "1":
         print(f"[SENTIMENT-FLOW] {msg}")
         import sys
@@ -83,7 +83,7 @@ def print__debug(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get("DEBUG", "0")
+    debug_mode = os.environ.get("print__debug", "0")
     if debug_mode == "1":
         print(f"[DEBUG] {msg}")
         import sys
@@ -373,9 +373,9 @@ def print__analysis_tracing_debug(msg: str) -> None:
 
 def print__startup_debug(msg: str) -> None:
     """Print startup debug messages when debug mode is enabled."""
-    debug_mode = os.environ.get("DEBUG", "0")
+    debug_mode = os.environ.get("print__startup_debug", "0")
     if debug_mode == "1":
-        print(f"[STARTUP-DEBUG] {msg}")
+        print(f"[print__startup_debug] {msg}")
         sys.stdout.flush()
 
 
@@ -385,9 +385,9 @@ def print__memory_monitoring(msg: str) -> None:
     Args:
         msg: The message to print
     """
-    debug_mode = os.environ.get("DEBUG", "0")
+    debug_mode = os.environ.get("print__memory_monitoring", "0")
     if debug_mode == "1":
-        print(f"[MEMORY-MONITORING] {msg}")
+        print(f"[print__memory_monitoring] {msg}")
         sys.stdout.flush()
 
 

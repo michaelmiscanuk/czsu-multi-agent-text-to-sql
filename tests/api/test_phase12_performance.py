@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 12: Performance Testing
 Based on test_concurrency.py pattern - tests application startup time and performance

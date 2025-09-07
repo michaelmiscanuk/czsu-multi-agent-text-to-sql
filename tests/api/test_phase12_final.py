@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 12: Final Validation
 End-to-end testing of the complete modular system

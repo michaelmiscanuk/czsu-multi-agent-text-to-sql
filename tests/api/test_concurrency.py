@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Concurrency test for the /analyze endpoint.
 Tests concurrent requests to ensure proper database connection handling

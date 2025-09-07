@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Test helpers and utilities for the test suite."""
 
 import logging

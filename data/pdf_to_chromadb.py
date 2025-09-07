@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """PDF to ChromaDB Document Processing and Search
 
 This module provides functionality to process large PDF documents (including those with tables),

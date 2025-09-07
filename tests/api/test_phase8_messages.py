@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 8.6: Extract Message Routes
 Based on test_concurrency.py pattern - imports functionality from main scripts

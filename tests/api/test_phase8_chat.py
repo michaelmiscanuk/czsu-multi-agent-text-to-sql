@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 8.5: Chat Routes with Real HTTP Testing
 Based on test_concurrency.py pattern - makes real HTTP requests to running server

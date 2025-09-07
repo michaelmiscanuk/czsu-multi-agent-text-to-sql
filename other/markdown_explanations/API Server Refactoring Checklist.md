@@ -420,7 +420,6 @@ __all__ = ['app', 'get_current_user', 'AnalyzeRequest', 'FeedbackRequest', 'Sent
 All test files should follow this pattern:
 
 ```python
-#!/usr/bin/env python3
 """
 Test for Phase X: [Description]
 Based on test_concurrency.py pattern - imports functionality from main scripts

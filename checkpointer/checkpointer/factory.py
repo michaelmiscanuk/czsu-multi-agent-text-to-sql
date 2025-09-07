@@ -81,7 +81,7 @@ async def check_pool_health_and_recreate():
 @retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
 async def create_async_postgres_saver():
     """Create and configure AsyncPostgresSaver with connection string approach."""
-    print("AAA, create_async_postgres_saver() called")
+
     print__checkpointers_debug(
         "233 - CREATE SAVER START: Starting AsyncPostgresSaver creation with connection string"
     )

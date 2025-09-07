@@ -18,8 +18,38 @@ import asyncio
 import time
 from datetime import datetime
 from typing import Dict, Any, List
+from pathlib import Path
 
 import httpx
+
+# --- Path Setup (Fix for import errors: 'No module named api.config') ---
+PROJECT_ROOT_CANDIDATES = [
+    Path(__file__).resolve().parents[1],  # repo root when test in tests/
+    Path(__file__).resolve().parents[2],  # fallback if nested
+]
+for candidate in PROJECT_ROOT_CANDIDATES:
+    if (candidate / "api" / "config" / "settings.py").exists():
+        candidate_str = str(candidate)
+        if candidate_str not in sys.path:
+            sys.path.insert(0, candidate_str)
+        break
+
+# Helper to safely import settings with retry after path adjustment
+_settings_module_cache = None
+
+
+def load_settings_module():
+    global _settings_module_cache
+    if _settings_module_cache is not None:
+        return _settings_module_cache
+    try:
+        from api.config import settings as s  # type: ignore
+
+        _settings_module_cache = s
+        return s
+    except ModuleNotFoundError as e:
+        raise e
+
 
 from tests.helpers import (
     BaseTestResults,
@@ -53,6 +83,14 @@ EXPECTED_MIN_CONCURRENT = 1
 EXPECTED_MAX_CONCURRENT = 32  # sanity upper bound
 EXPECTED_RATE_LIMIT_WINDOW = 60
 EXPECTED_RATE_LIMIT_MIN_REQUESTS = 10
+
+ADDITIONAL_INTERNAL_VALIDATIONS = [
+    "gc_threshold",
+    "rate_limit_mutation",
+    "bulk_cache_ttl",
+    "throttle_semaphore",
+    "api_import_warning",
+]
 
 
 async def _auth_headers() -> Dict[str, str]:
@@ -296,13 +334,11 @@ async def test_debug_env_set_and_reset(
 
 
 async def test_configuration_module_values(results: BaseTestResults):
-    # Direct import validation of api.config.settings (no HTTP)
     test_id = "config_module_values"
     endpoint = "internal:settings_import"
     start = time.time()
     try:
-        from api.config import settings as s  # type: ignore
-
+        s = load_settings_module()
         # Core invariants
         assert isinstance(s.start_time, (int, float)), "start_time must be numeric"
         assert (
@@ -325,7 +361,6 @@ async def test_configuration_module_values(results: BaseTestResults):
         assert isinstance(
             s._bulk_loading_cache, dict
         ), "_bulk_loading_cache must be dict"
-
         data = {
             "start_time": s.start_time,
             "MAX_CONCURRENT_ANALYSES": s.MAX_CONCURRENT_ANALYSES,
@@ -353,41 +388,30 @@ async def test_configuration_module_values(results: BaseTestResults):
 
 
 async def test_semaphore_concurrency_simulation(results: BaseTestResults):
-    # Simulate acquiring the analysis semaphore up to its limit
     test_id = "semaphore_concurrency"
     endpoint = "internal:semaphore"
     start = time.time()
     try:
-        from api.config import settings as s
-
+        s = load_settings_module()
         permits = s.MAX_CONCURRENT_ANALYSES
-        acquired = 0
         acquired_list: List[asyncio.Task] = []
 
         async def acquire_and_hold():
             async with s.analysis_semaphore:
                 await asyncio.sleep(0.05)
 
-        # Launch tasks = permits
         for _ in range(permits):
-            t = asyncio.create_task(acquire_and_hold())
-            acquired_list.append(t)
-
-        await asyncio.sleep(0)  # allow scheduling
+            acquired_list.append(asyncio.create_task(acquire_and_hold()))
+        await asyncio.sleep(0)
         current_value = getattr(s.analysis_semaphore, "_value", None)
-        # After scheduling but before completion, semaphore internal value should be 0 or near 0
         assert (
             current_value in (0, None) or current_value <= 1
         ), f"Semaphore did not decrement as expected (value={current_value})"
-
         await asyncio.gather(*acquired_list)
-
-        # After completion, value should be restored to permits
         end_value = getattr(s.analysis_semaphore, "_value", None)
         assert (
             end_value == permits
         ), f"Semaphore value not restored (expected {permits}, got {end_value})"
-
         results.add_result(
             test_id,
             endpoint,
@@ -406,31 +430,171 @@ async def test_semaphore_concurrency_simulation(results: BaseTestResults):
         )
 
 
+async def test_api_import_warning(results: BaseTestResults):
+    test_id = "api_import_warning"
+    endpoint = "internal:api_import"
+    start = time.time()
+    try:
+        # Capture stdout during import
+        import io
+        import contextlib
+
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            import importlib
+
+            importlib.invalidate_caches()
+            import api  # noqa: F401
+        output = buf.getvalue()
+        # If warning is present, fail
+        assert "Warning: Some API imports failed" not in output, output.strip()
+        results.add_result(
+            test_id,
+            endpoint,
+            "API package imports without warnings",
+            {"output": output.strip()[:200]},
+            time.time() - start,
+            200,
+        )
+    except Exception as e:
+        results.add_error(
+            test_id,
+            endpoint,
+            "API import produced warning/errors",
+            e,
+            time.time() - start,
+        )
+
+
+async def test_gc_threshold(results: BaseTestResults):
+    test_id = "gc_threshold"
+    endpoint = "internal:gc_threshold"
+    start = time.time()
+    try:
+        s = load_settings_module()
+        assert (
+            isinstance(s.GC_MEMORY_THRESHOLD, int) and s.GC_MEMORY_THRESHOLD > 100
+        ), "GC_MEMORY_THRESHOLD too low"
+        assert s.GC_MEMORY_THRESHOLD < 100000, "GC_MEMORY_THRESHOLD unrealistic"
+        results.add_result(
+            test_id,
+            endpoint,
+            "GC memory threshold sanity",
+            {"GC_MEMORY_THRESHOLD": s.GC_MEMORY_THRESHOLD},
+            time.time() - start,
+            200,
+        )
+    except Exception as e:
+        results.add_error(
+            test_id, endpoint, "GC threshold validation failed", e, time.time() - start
+        )
+
+
+async def test_rate_limit_mutation(results: BaseTestResults):
+    test_id = "rate_limit_mutation"
+    endpoint = "internal:rate_limit"
+    start = time.time()
+    try:
+        s = load_settings_module()
+        before = len(s.rate_limit_storage)
+        ip = "127.0.0.1"
+        s.rate_limit_storage[ip].append(time.time())
+        after = len(s.rate_limit_storage)
+        assert after >= before, "Rate limit storage did not record entry"
+        results.add_result(
+            test_id,
+            endpoint,
+            "Rate limit storage mutation",
+            {"before_keys": before, "after_keys": after},
+            time.time() - start,
+            200,
+        )
+    except Exception as e:
+        results.add_error(
+            test_id, endpoint, "Rate limit mutation failed", e, time.time() - start
+        )
+
+
+async def test_bulk_cache_ttl(results: BaseTestResults):
+    test_id = "bulk_cache_ttl"
+    endpoint = "internal:bulk_cache"
+    start = time.time()
+    try:
+        s = load_settings_module()
+        from api.utils.memory import cleanup_bulk_cache
+
+        key = "test_cache_key"
+        # Insert tuple (data, timestamp) per cleanup_bulk_cache iteration expectation
+        expired_timestamp = time.time() - (s.BULK_CACHE_TIMEOUT + 5)
+        s._bulk_loading_cache[key] = ({"payload": 123}, expired_timestamp)
+        cleaned = cleanup_bulk_cache()
+        still_present = key in s._bulk_loading_cache
+        assert cleaned >= 1 and not still_present, "Expired cache entry was not cleaned"
+        results.add_result(
+            test_id,
+            endpoint,
+            "Bulk cache TTL cleanup",
+            {"cleaned": cleaned, "still_present": still_present},
+            time.time() - start,
+            200,
+        )
+    except Exception as e:
+        results.add_error(
+            test_id, endpoint, "Bulk cache TTL test failed", e, time.time() - start
+        )
+
+
+async def test_throttle_semaphore(results: BaseTestResults):
+    test_id = "throttle_semaphore"
+    endpoint = "internal:throttle_semaphore"
+    start = time.time()
+    try:
+        s = load_settings_module()
+        sem = s.throttle_semaphores["127.0.0.1"]
+        assert isinstance(sem, asyncio.Semaphore)
+        initial_value = getattr(sem, "_value", None)
+        async with sem:
+            during_value = getattr(sem, "_value", None)
+            assert (during_value == initial_value - 1) or (
+                initial_value is None
+            ), "Semaphore did not decrement"
+        final_value = getattr(sem, "_value", None)
+        assert final_value == initial_value, "Semaphore did not restore"
+        results.add_result(
+            test_id,
+            endpoint,
+            "Throttle semaphore acquire/release",
+            {"initial": initial_value, "final": final_value},
+            time.time() - start,
+            200,
+        )
+    except Exception as e:
+        results.add_error(
+            test_id, endpoint, "Throttle semaphore test failed", e, time.time() - start
+        )
+
+
 async def run_phase2_tests() -> BaseTestResults:
     print("🚀 Starting Phase 2 configuration tests...")
     results = BaseTestResults(required_endpoints=REQUIRED_ENDPOINTS)
     results.start_time = datetime.now()
     async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
-        # Setup debug (turn on minimal debug for visibility)
-        await setup_debug_environment(
-            client,
-            DEBUG="1",
-            DEBUG_TRACEBACK="1",
-        )
-
+        await setup_debug_environment(client, DEBUG="1", DEBUG_TRACEBACK="1")
         # HTTP endpoint tests (expanded)
         await test_health_endpoint(client, results)
         await test_memory_health_endpoint(client, results)
         await test_rate_limit_health_endpoint(client, results)
         await test_debug_env_set_and_reset(client, results)
-
-        # Internal module + behavior tests
+        # Internal tests (existing)
         await test_configuration_module_values(results)
         await test_semaphore_concurrency_simulation(results)
-
-        # Cleanup
+        # New deeper internal validations
+        await test_gc_threshold(results)
+        await test_rate_limit_mutation(results)
+        await test_bulk_cache_ttl(results)
+        await test_throttle_semaphore(results)
+        await test_api_import_warning(results)
         await cleanup_debug_environment(client, DEBUG="0", DEBUG_TRACEBACK="0")
-
     results.end_time = datetime.now()
     return results
 
@@ -438,24 +602,78 @@ async def run_phase2_tests() -> BaseTestResults:
 def analyze_results(results: BaseTestResults) -> Dict[str, Any]:
     print("\n📊 Phase 2 Configuration Test Results:")
     summary = results.get_summary()
-    print(
-        f"Total: {summary['total_requests']}  Success: {summary['successful_requests']}  Failed: {summary['failed_requests']}  SuccessRate: {summary['success_rate']:.1f}%"
-    )
 
+    # Per-test detailed listing
+    print("\n🧪 Individual Test Outcomes:")
+    if results.results:
+        for r in results.results:
+            status = "PASS" if r.get("success") else "FAIL"
+            print(
+                f"  - {r['test_id']:<24} {status:<4} | {r['endpoint']:<28} | {r['response_time']:.3f}s | {r['description']}"
+            )
+    if results.errors:
+        for e in results.errors:
+            print(
+                f"  - {e['test_id']:<24} FAIL | {e['endpoint']:<28} | {e.get('response_time', 0) or 0:.3f}s | {e['description']}"
+            )
+
+    print(
+        f"\n📈 Aggregate: Total={summary['total_requests']}  Success={summary['successful_requests']}  Failed={summary['failed_requests']}  SuccessRate={summary['success_rate']:.1f}%"
+    )
     if summary["successful_requests"] > 0:
         print(
-            f"Avg Response: {summary['average_response_time']:.3f}s  Min: {summary['min_response_time']:.3f}s  Max: {summary['max_response_time']:.3f}s"
+            f"⏱️  Timing: Avg={summary['average_response_time']:.3f}s  Min={summary['min_response_time']:.3f}s  Max={summary['max_response_time']:.3f}s"
         )
 
-    if not summary["all_endpoints_tested"]:
-        print(f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
+    # Endpoint coverage
+    print("\n🔌 Required Endpoint Coverage:")
+    if summary["all_endpoints_tested"]:
+        print("  ✅ All required HTTP endpoints exercised")
+    else:
+        print(
+            f"  ❌ Missing: {', '.join(summary['missing_endpoints']) if summary['missing_endpoints'] else 'Unknown'}"
+        )
+    print(
+        f"  Tested HTTP endpoints: {', '.join(sorted(e for e in summary['tested_endpoints'] if e.startswith('/')))}"
+    )
 
+    # Diagnostics / heuristics similar to phase8 style
+    has_import_warning = any(
+        e["test_id"] == "api_import_warning" for e in results.errors
+    )
+    has_empty_errors = any(
+        (not e.get("error", "").strip()) or "Unknown error" in e.get("error", "")
+        for e in results.errors
+    )
+    has_config_anomalies = any(
+        "threshold" in e.get("description", "").lower() for e in results.errors
+    )
+
+    if has_import_warning:
+        print("⚠️  Import warning detected (api_import_warning)")
+    if has_empty_errors:
+        print("⚠️  One or more errors had empty messages")
+    if has_config_anomalies:
+        print("⚠️  Configuration anomaly errors present")
+
+    # Error section
     if results.errors:
-        print(f"\n❌ Errors ({len(results.errors)}):")
-        for e in results.errors:
-            print(f"  {e['test_id']} -> {e['error']}")
+        print(f"\n❌ {len(results.errors)} Error(s):")
+        for err in results.errors:
+            print(
+                f"  • {err['test_id']} | {err['endpoint']} | {err['error_type']}: {err['error'][:180]}"
+            )
 
+    # Save traceback report
     save_traceback_report(report_type="test_failure", test_results=results)
+
+    # Compose enriched summary diagnostics
+    summary["diagnostics"] = {
+        "has_import_warning": has_import_warning,
+        "has_empty_errors": has_empty_errors,
+        "has_config_anomalies": has_config_anomalies,
+    }
+
     return summary
 
 

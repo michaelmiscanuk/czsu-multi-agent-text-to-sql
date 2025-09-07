@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 10: Update External File Imports
 Based on test_concurrency.py pattern - validates external file imports work with new modular structure
@@ -108,7 +107,9 @@ async def test_modular_function_imports():
     # Test postgres checkpointer functions
     total_tests += 1
     try:
-        from checkpointer.user_management.thread_operations import create_thread_run_entry
+        from checkpointer.user_management.thread_operations import (
+            create_thread_run_entry,
+        )
         from checkpointer.checkpointer.factory import initialize_checkpointer
         from checkpointer.checkpointer.factory import get_global_checkpointer
 

@@ -1,0 +1,32 @@
+====================================================================================================
+EXCEPTION REPORT
+Generated: 2025-09-07 07:49:14
+Test File: test_phase3_utilities.py
+====================================================================================================
+
+TEST CONTEXT:
+------------------------------
+Test Type: Phase 3 Utilities
+Test Categories: ['debug', 'memory', 'rate_limiting', 'edge_cases', 'performance']
+Error Location: main() function
+Error During: Test execution
+
+
+EXCEPTION INFORMATION:
+----------------------------------------
+Exception Type: KeyError
+Exception Message: 'avg_response_time'
+
+FULL TRACEBACK:
+------------------------------
+Traceback (most recent call last):
+
+  File "e:\OneDrive\Knowledge Base\0207_GenAI\Code\czsu_home\czsu-multi-agent-text-to-sql\tests\api\test_phase3_utilities.py", line 1181, in main
+    summary = analyze_test_results(results)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "e:\OneDrive\Knowledge Base\0207_GenAI\Code\czsu_home\czsu-multi-agent-text-to-sql\tests\api\test_phase3_utilities.py", line 1131, in analyze_test_results
+    print(f"Avg Response Time: {summary['avg_response_time']:.3f}s")
+                                ~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+
+KeyError: 'avg_response_time'

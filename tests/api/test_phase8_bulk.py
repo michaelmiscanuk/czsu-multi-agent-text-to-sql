@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 8.7: Bulk Operations Routes with Real HTTP Testing
 Based on test_phase8_chat.py pattern - makes real HTTP requests to running server

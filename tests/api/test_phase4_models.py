@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 4: Extract Models (Request and Response Models)
 Based on test_concurrency.py pattern - imports functionality from main scripts

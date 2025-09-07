@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test for Phase 12: Comprehensive Testing
 Tests all endpoints work through the new modular structure

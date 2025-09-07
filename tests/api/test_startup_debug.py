@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Startup Debug Test Suite
 Enhanced startup diagnostics with comprehensive error reporting and phase monitoring.
