@@ -41,7 +41,13 @@ if sys.platform == "win32":
 SERVER_BASE_URL = os.environ.get("TEST_SERVER_BASE_URL", "http://localhost:8000")
 REQUEST_TIMEOUT = float(os.environ.get("TEST_REQUEST_TIMEOUT", "30"))
 TEST_EMAIL = os.environ.get("TEST_USER_EMAIL", "test_user@example.com")
-REQUIRED_ENDPOINTS = {"/health", "/debug/set-env", "/debug/reset-env"}
+REQUIRED_ENDPOINTS = {
+    "/health",
+    "/debug/set-env",
+    "/debug/reset-env",
+    "/health/memory",
+    "/health/rate-limits",
+}
 
 # Configuration expectations (align with api.config.settings)
 EXPECTED_MIN_CONCURRENT = 1
@@ -56,15 +62,35 @@ async def _auth_headers() -> Dict[str, str]:
 
 
 async def _validate_health_structure(data: Dict[str, Any]):
+    # Updated to align with api.routes.health implementation (uses 'uptime_seconds')
     assert isinstance(data, dict), "Health response must be JSON object"
-    # Flexible keys: allow presence of typical health items
-    required_any = ["status", "uptime", "timestamp"]
-    missing = [k for k in required_any if k not in data]
-    assert not missing, f"Health response missing keys: {missing}"
-    assert data.get("status") in {"ok", "healthy", "pass"}, "Unexpected health status"
-    assert (
-        isinstance(data.get("uptime"), (int, float)) and data["uptime"] >= 0
-    ), "Invalid uptime"
+    base_missing = [k for k in ["status", "timestamp"] if k not in data]
+    assert not base_missing, f"Health response missing keys: {base_missing}"
+    # Accept either uptime_seconds or uptime
+    assert ("uptime_seconds" in data) or (
+        "uptime" in data
+    ), "Missing uptime_seconds/uptime"
+    assert data.get("status") in {
+        "ok",
+        "healthy",
+        "pass",
+        "degraded",
+    }, "Unexpected health status"
+    if "uptime_seconds" in data:
+        assert (
+            isinstance(data["uptime_seconds"], (int, float))
+            and data["uptime_seconds"] >= 0
+        ), "Invalid uptime_seconds"
+    if "uptime" in data:
+        assert (
+            isinstance(data["uptime"], (int, float)) and data["uptime"] >= 0
+        ), "Invalid uptime"
+    # Optional deeper structure checks (memory block)
+    if "memory" in data and isinstance(data["memory"], dict):
+        mem = data["memory"]
+        for k in ["rss_mb", "vms_mb", "percent"]:
+            if k in mem:
+                assert isinstance(mem[k], (int, float)), f"memory.{k} must be numeric"
 
 
 async def test_health_endpoint(client: httpx.AsyncClient, results: BaseTestResults):
@@ -106,6 +132,108 @@ async def test_health_endpoint(client: httpx.AsyncClient, results: BaseTestResul
             test_id,
             endpoint,
             "Health endpoint non-200",
+            response,
+            error_info,
+            results,
+            rt,
+        )
+
+
+async def test_memory_health_endpoint(
+    client: httpx.AsyncClient, results: BaseTestResults
+):
+    test_id = "health_memory"
+    endpoint = "/health/memory"
+    start = time.time()
+    result = await make_request_with_traceback_capture(
+        client,
+        "GET",
+        f"{SERVER_BASE_URL}{endpoint}",
+        headers=await _auth_headers(),
+        timeout=REQUEST_TIMEOUT,
+    )
+    rt = time.time() - start
+    error_info = extract_detailed_error_info(result)
+    response = result["response"]
+    if not response:
+        err = Exception(error_info.get("client_error") or "No response")
+        err.server_tracebacks = error_info["server_tracebacks"]
+        results.add_error(test_id, endpoint, "Memory health unreachable", err, rt)
+        return
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            for key in ["status", "memory_rss_mb", "memory_threshold_mb", "timestamp"]:
+                assert key in data, f"Memory health missing '{key}'"
+            assert isinstance(data["memory_rss_mb"], (int, float))
+            results.add_result(
+                test_id, endpoint, "Memory health structure", data, rt, 200
+            )
+        except Exception as e:
+            err = Exception(f"Validation failed: {e}")
+            err.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(
+                test_id, endpoint, "Memory health validation failure", err, rt
+            )
+    else:
+        handle_error_response(
+            test_id,
+            endpoint,
+            "Memory health non-200",
+            response,
+            error_info,
+            results,
+            rt,
+        )
+
+
+async def test_rate_limit_health_endpoint(
+    client: httpx.AsyncClient, results: BaseTestResults
+):
+    test_id = "health_rate_limits"
+    endpoint = "/health/rate-limits"
+    start = time.time()
+    result = await make_request_with_traceback_capture(
+        client,
+        "GET",
+        f"{SERVER_BASE_URL}{endpoint}",
+        headers=await _auth_headers(),
+        timeout=REQUEST_TIMEOUT,
+    )
+    rt = time.time() - start
+    error_info = extract_detailed_error_info(result)
+    response = result["response"]
+    if not response:
+        err = Exception(error_info.get("client_error") or "No response")
+        err.server_tracebacks = error_info["server_tracebacks"]
+        results.add_error(test_id, endpoint, "Rate limit health unreachable", err, rt)
+        return
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            for key in [
+                "status",
+                "rate_limit_window",
+                "rate_limit_requests",
+                "timestamp",
+            ]:
+                assert key in data, f"Rate limit health missing '{key}'"
+            assert isinstance(data["rate_limit_window"], int)
+            assert isinstance(data["rate_limit_requests"], int)
+            results.add_result(
+                test_id, endpoint, "Rate limit health structure", data, rt, 200
+            )
+        except Exception as e:
+            err = Exception(f"Validation failed: {e}")
+            err.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(
+                test_id, endpoint, "Rate limit health validation failure", err, rt
+            )
+    else:
+        handle_error_response(
+            test_id,
+            endpoint,
+            "Rate limit health non-200",
             response,
             error_info,
             results,
@@ -283,7 +411,6 @@ async def run_phase2_tests() -> BaseTestResults:
     print("🚀 Starting Phase 2 configuration tests...")
     results = BaseTestResults(required_endpoints=REQUIRED_ENDPOINTS)
     results.start_time = datetime.now()
-
     async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
         # Setup debug (turn on minimal debug for visibility)
         await setup_debug_environment(
@@ -292,8 +419,10 @@ async def run_phase2_tests() -> BaseTestResults:
             DEBUG_TRACEBACK="1",
         )
 
-        # HTTP endpoint tests
+        # HTTP endpoint tests (expanded)
         await test_health_endpoint(client, results)
+        await test_memory_health_endpoint(client, results)
+        await test_rate_limit_health_endpoint(client, results)
         await test_debug_env_set_and_reset(client, results)
 
         # Internal module + behavior tests

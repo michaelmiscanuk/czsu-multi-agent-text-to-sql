@@ -1,6 +1,6 @@
 ====================================================================================================
 TEST_FAILURE REPORT
-Generated: 2025-09-05 20:51:29
+Generated: 2025-09-05 21:35:00
 Test File: test_phase2_config.py
 ====================================================================================================
 
@@ -13,9 +13,9 @@ Test ID: health_1
 Endpoint: /health
 Description: Health structure validation failure
 Error Type: Exception
-Timestamp: 2025-09-05T20:51:29.245320
+Timestamp: 2025-09-05T21:35:00.005972
 
-Response Time: 0.25s
+Response Time: 0.27s
 
 
 TEST SUMMARY:
@@ -24,7 +24,7 @@ Total Requests: 5
 Successful Requests: 4
 Failed Requests: 1
 Success Rate: 80.0%
-Average Response Time: 0.08151090145111084s
-Total Test Time: 0.746689s
+Average Response Time: 0.11121946573257446s
+Total Test Time: 0.898491s
 
 Missing Endpoints: /health
