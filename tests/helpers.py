@@ -162,28 +162,67 @@ def handle_expected_failure(
     error_info: dict,
     results,  # Can be BaseTestResults or any compatible results object
     response_time: float,
+    expected_status: int = None,
 ):
     """Handle responses for expected failure cases."""
-    if response.status_code == 422:  # Validation error
-        print(f"✅ Test {test_id} - Correctly failed with validation error")
-        data = {"validation_error": True}
-        results.add_result(
-            test_id, endpoint, description, data, response_time, response.status_code
-        )
-    elif response.status_code == 200:
-        print(f"❌ Test {test_id} - Expected validation error but got success")
-        error_obj = Exception("Expected validation error but request succeeded")
-        error_obj.server_tracebacks = error_info["server_tracebacks"]
-        results.add_error(test_id, endpoint, description, error_obj, response_time)
+    if expected_status:
+        # Use specific expected status code
+        if response.status_code == expected_status:
+            print(f"✅ Test {test_id} - Correctly failed with HTTP {expected_status}")
+            data = {"expected_failure": True, "status_code": expected_status}
+            results.add_result(
+                test_id,
+                endpoint,
+                description,
+                data,
+                response_time,
+                response.status_code,
+            )
+        elif response.status_code == 200:
+            print(
+                f"❌ Test {test_id} - Expected HTTP {expected_status} but got success"
+            )
+            error_obj = Exception(
+                f"Expected HTTP {expected_status} but request succeeded"
+            )
+            error_obj.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(test_id, endpoint, description, error_obj, response_time)
+        else:
+            print(
+                f"❌ Test {test_id} - Expected HTTP {expected_status} but got HTTP {response.status_code}"
+            )
+            error_obj = Exception(
+                f"Expected HTTP {expected_status} but got HTTP {response.status_code}"
+            )
+            error_obj.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(test_id, endpoint, description, error_obj, response_time)
     else:
-        print(
-            f"❌ Test {test_id} - Expected validation error but got HTTP {response.status_code}"
-        )
-        error_obj = Exception(
-            f"Expected validation error but got HTTP {response.status_code}"
-        )
-        error_obj.server_tracebacks = error_info["server_tracebacks"]
-        results.add_error(test_id, endpoint, description, error_obj, response_time)
+        # Default behavior - expect validation error (422)
+        if response.status_code == 422:  # Validation error
+            print(f"✅ Test {test_id} - Correctly failed with validation error")
+            data = {"validation_error": True}
+            results.add_result(
+                test_id,
+                endpoint,
+                description,
+                data,
+                response_time,
+                response.status_code,
+            )
+        elif response.status_code == 200:
+            print(f"❌ Test {test_id} - Expected validation error but got success")
+            error_obj = Exception("Expected validation error but request succeeded")
+            error_obj.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(test_id, endpoint, description, error_obj, response_time)
+        else:
+            print(
+                f"❌ Test {test_id} - Expected validation error but got HTTP {response.status_code}"
+            )
+            error_obj = Exception(
+                f"Expected validation error but got HTTP {response.status_code}"
+            )
+            error_obj.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(test_id, endpoint, description, error_obj, response_time)
 
 
 async def check_server_connectivity(
