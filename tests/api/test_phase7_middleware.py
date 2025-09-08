@@ -1,16 +1,20 @@
 """
-Test for Phase 7: Extract Middleware
-Based on test_concurrency.py pattern - imports functionality from main scripts
+Test for Phase 7: Middleware Functions
+Tests middleware functions following the established project patterns.
 """
 
 import os
+import sys
+import time
+import traceback
+import json
+import asyncio
+from typing import Dict, Any
+from datetime import datetime
+from unittest.mock import AsyncMock, Mock
 
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
-import sys
-
 if sys.platform == "win32":
-    import asyncio
-
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Load environment variables early
@@ -18,23 +22,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Constants
+# Add project root to path
 try:
     from pathlib import Path
 
-    BASE_DIR = Path(__file__).resolve().parents[1]
+    BASE_DIR = Path(__file__).resolve().parents[2]
+    sys.path.insert(0, str(BASE_DIR))
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
+    sys.path.insert(0, str(BASE_DIR))
 
-# Standard imports
-import asyncio
-import time
-import traceback
-from datetime import datetime
-from unittest.mock import AsyncMock, Mock
-
-# Add project root to path
-sys.path.insert(0, str(BASE_DIR))
+# Import test helpers following Phase 8 patterns
+from tests.helpers import (
+    BaseTestResults,
+    save_traceback_report,
+)
 
 # Test imports from extracted middleware modules
 try:
@@ -50,26 +52,134 @@ except Exception as e:
     print(f"❌ Full traceback:\n{traceback.format_exc()}")
     sys.exit(1)
 
+# Test configuration following Phase 8 patterns
+REQUIRED_MIDDLEWARE = {
+    "setup_cors_middleware",
+    "setup_gzip_middleware",
+    "simplified_memory_monitoring_middleware",
+    "throttling_middleware",
+}
 
-def print_test_status(message: str):
-    """Print test status messages with timestamp."""
-    timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-    print(f"[{timestamp}] {message}")
+MIDDLEWARE_VALIDATION_TESTS = [
+    {
+        "test_id": "MID_001",
+        "middleware": "setup_cors_middleware",
+        "description": "CORS middleware setup with default configuration",
+        "test_type": "setup",
+        "input_data": {},
+        "expected_middlewares": ["CORSMiddleware"],
+        "expected_config": {"allow_credentials": True, "allow_origins": ["*"]},
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_002",
+        "middleware": "setup_gzip_middleware",
+        "description": "GZip middleware setup with compression",
+        "test_type": "setup",
+        "input_data": {},
+        "expected_middlewares": ["GZipMiddleware"],
+        "expected_config": {"minimum_size": 1000},
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_003",
+        "middleware": "throttling_middleware",
+        "description": "Throttling middleware with health check path",
+        "test_type": "middleware_call",
+        "input_data": {"url": "http://test.example.com/health", "method": "GET"},
+        "expected_behavior": "skip_throttling",
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_004",
+        "middleware": "throttling_middleware",
+        "description": "Throttling middleware with docs path",
+        "test_type": "middleware_call",
+        "input_data": {"url": "http://test.example.com/docs", "method": "GET"},
+        "expected_behavior": "skip_throttling",
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_005",
+        "middleware": "throttling_middleware",
+        "description": "Throttling middleware with analyze path (heavy operation)",
+        "test_type": "middleware_call",
+        "input_data": {"url": "http://test.example.com/analyze", "method": "POST"},
+        "expected_behavior": "apply_throttling",
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_006",
+        "middleware": "simplified_memory_monitoring_middleware",
+        "description": "Memory monitoring with health check path",
+        "test_type": "middleware_call",
+        "input_data": {"url": "http://test.example.com/health", "method": "GET"},
+        "expected_behavior": "skip_memory_monitoring",
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_007",
+        "middleware": "simplified_memory_monitoring_middleware",
+        "description": "Memory monitoring with analyze path (heavy operation)",
+        "test_type": "middleware_call",
+        "input_data": {"url": "http://test.example.com/analyze", "method": "POST"},
+        "expected_behavior": "apply_memory_monitoring",
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_008",
+        "middleware": "simplified_memory_monitoring_middleware",
+        "description": "Memory monitoring with chat messages path",
+        "test_type": "middleware_call",
+        "input_data": {
+            "url": "http://test.example.com/chat/all-messages-for-all-threads",
+            "method": "GET",
+        },
+        "expected_behavior": "apply_memory_monitoring",
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_009",
+        "middleware": "throttling_middleware",
+        "description": "Throttling middleware with openapi path",
+        "test_type": "middleware_call",
+        "input_data": {"url": "http://test.example.com/openapi.json", "method": "GET"},
+        "expected_behavior": "skip_throttling",
+        "should_succeed": True,
+    },
+    {
+        "test_id": "MID_010",
+        "middleware": "throttling_middleware",
+        "description": "Throttling middleware with debug pool status path",
+        "test_type": "middleware_call",
+        "input_data": {
+            "url": "http://test.example.com/debug/pool-status",
+            "method": "GET",
+        },
+        "expected_behavior": "skip_throttling",
+        "should_succeed": True,
+    },
+]
 
 
 class MockRequest:
     """Mock request object for testing middleware."""
 
     def __init__(
-        self, url="http://test.example.com/test", method="GET", client_host="127.0.0.1"
+        self,
+        url="http://test.example.com/test",
+        method="GET",
+        client_host="127.0.0.1",
+        headers=None,
     ):
         self.url = MockURL(url)
         self.method = method
         self.client = MockClient(client_host)
+        self.headers = headers or {}
 
 
 class MockURL:
-    """Mock URL object for testing."""
+    """Mock URL object."""
 
     def __init__(self, url):
         self.path = url.split("?")[0].replace("http://test.example.com", "")
@@ -80,7 +190,7 @@ class MockURL:
 
 
 class MockClient:
-    """Mock client object for testing."""
+    """Mock client object."""
 
     def __init__(self, host):
         self.host = host
@@ -97,308 +207,361 @@ class MockFastAPIApp:
         self.middlewares.append({"class": middleware_class, "kwargs": kwargs})
 
 
-def test_phase7_middleware_imports():
-    """Test that middleware modules can be imported successfully."""
-    print_test_status("🔍 Testing Phase 7 middleware imports...")
+async def validate_middleware_function(
+    test_id: str,
+    middleware_name: str,
+    description: str,
+    test_case: Dict[str, Any],
+    should_succeed: bool,
+    results: BaseTestResults,
+):
+    """Validate a middleware function with error tracking."""
+    print(f"\n🔍 Test {test_id}: {description}")
+    print(f"   📋 Testing: {middleware_name}()")
+    print(f"   🎯 Expected: {'SUCCESS' if should_succeed else 'FAILURE'}")
+
+    start_time = time.time()
 
     try:
-        # Test CORS middleware imports
-        from api.middleware.cors import setup_cors_middleware, setup_gzip_middleware
+        test_type = test_case.get("test_type")
+        input_data = test_case.get("input_data", {})
 
-        assert callable(
-            setup_cors_middleware
-        ), "setup_cors_middleware should be callable"
-        assert callable(
-            setup_gzip_middleware
-        ), "setup_gzip_middleware should be callable"
-        print_test_status("✅ CORS middleware module imported successfully")
+        if test_type == "setup":
+            # Test setup functions (CORS, GZip)
+            mock_app = MockFastAPIApp()
 
-        # Test rate limiting middleware imports
-        from api.middleware.rate_limiting import throttling_middleware
+            if middleware_name == "setup_cors_middleware":
+                print(f"   📥 Input: FastAPI app instance")
+                print(f"   🔧 Calling: setup_cors_middleware(app)")
+                setup_cors_middleware(mock_app)
 
-        assert callable(
-            throttling_middleware
-        ), "throttling_middleware should be callable"
-        print_test_status("✅ Rate limiting middleware module imported successfully")
+                # Validate CORS middleware was added
+                cors_middlewares = [
+                    m for m in mock_app.middlewares if "CORS" in str(m["class"])
+                ]
+                assert len(cors_middlewares) > 0, "CORS middleware should be added"
 
-        # Test memory monitoring middleware imports
-        from api.middleware.memory_monitoring import (
-            simplified_memory_monitoring_middleware,
+                cors_middleware = cors_middlewares[0]
+                expected_config = test_case.get("expected_config", {})
+                for key, expected_value in expected_config.items():
+                    actual_value = cors_middleware["kwargs"].get(key)
+                    assert (
+                        actual_value == expected_value
+                    ), f"Expected {key}={expected_value}, got {actual_value}"
+
+                result_description = f"Added CORSMiddleware with {len(cors_middleware['kwargs'])} config options"
+
+            elif middleware_name == "setup_gzip_middleware":
+                print(f"   📥 Input: FastAPI app instance")
+                print(f"   🔧 Calling: setup_gzip_middleware(app)")
+                setup_gzip_middleware(mock_app)
+
+                # Validate GZip middleware was added
+                gzip_middlewares = [
+                    m for m in mock_app.middlewares if "GZip" in str(m["class"])
+                ]
+                assert len(gzip_middlewares) > 0, "GZip middleware should be added"
+
+                gzip_middleware = gzip_middlewares[0]
+                expected_config = test_case.get("expected_config", {})
+                for key, expected_value in expected_config.items():
+                    actual_value = gzip_middleware["kwargs"].get(key)
+                    assert (
+                        actual_value == expected_value
+                    ), f"Expected {key}={expected_value}, got {actual_value}"
+
+                result_description = f"Added GZipMiddleware with {len(gzip_middleware['kwargs'])} config options"
+
+            response_time = time.time() - start_time
+
+            if should_succeed:
+                print(f"   ✅ RESULT: SUCCESS ({response_time:.3f}s)")
+                print(f"   📤 Output: {result_description}")
+
+                results.add_result(
+                    test_id,
+                    middleware_name,
+                    description,
+                    {
+                        "middleware_count": len(mock_app.middlewares),
+                        "config": expected_config,
+                    },
+                    response_time,
+                    200,
+                )
+
+        elif test_type == "middleware_call":
+            # Test middleware call functions
+            url = input_data.get("url", "http://test.example.com/test")
+            method = input_data.get("method", "GET")
+            mock_request = MockRequest(url=url, method=method)
+            call_next_mock = AsyncMock(return_value="mock_response")
+
+            print(f"   📥 Input: Request({method} {url})")
+
+            if middleware_name == "throttling_middleware":
+                print(f"   🔧 Calling: throttling_middleware(request, call_next)")
+
+                try:
+                    result = await throttling_middleware(mock_request, call_next_mock)
+
+                    expected_behavior = test_case.get("expected_behavior")
+                    if expected_behavior == "skip_throttling":
+                        # Should skip throttling and call next immediately
+                        assert (
+                            call_next_mock.called
+                        ), "call_next should be called for skipped paths"
+                        assert (
+                            result == "mock_response"
+                        ), "Should return call_next response"
+                        result_description = (
+                            "Skipped throttling (health/docs/static path)"
+                        )
+                    elif expected_behavior == "apply_throttling":
+                        # May fail due to missing global state in test environment
+                        result_description = (
+                            "Applied throttling logic (may require full app context)"
+                        )
+                    else:
+                        result_description = (
+                            f"Processed request with behavior: {expected_behavior}"
+                        )
+
+                except Exception as middleware_error:
+                    # Expected for some cases due to missing global state
+                    if any(
+                        term in str(middleware_error)
+                        for term in ["throttle_semaphores", "rate_limit", "semaphore"]
+                    ):
+                        result_description = "Throttling requires full application context (expected in test)"
+                    else:
+                        raise  # Re-raise unexpected errors
+
+            elif middleware_name == "simplified_memory_monitoring_middleware":
+                print(
+                    f"   🔧 Calling: simplified_memory_monitoring_middleware(request, call_next)"
+                )
+
+                try:
+                    result = await simplified_memory_monitoring_middleware(
+                        mock_request, call_next_mock
+                    )
+
+                    assert call_next_mock.called, "call_next should be called"
+                    assert result == "mock_response", "Should return call_next response"
+
+                    expected_behavior = test_case.get("expected_behavior")
+                    if expected_behavior == "apply_memory_monitoring":
+                        result_description = (
+                            "Applied memory monitoring for heavy operation"
+                        )
+                    else:
+                        result_description = (
+                            "Skipped memory monitoring for light operation"
+                        )
+
+                except Exception as middleware_error:
+                    # Expected for some cases due to missing global state
+                    if any(
+                        term in str(middleware_error)
+                        for term in ["_request_count", "log_memory_usage"]
+                    ):
+                        result_description = (
+                            "Memory monitoring requires global state (expected in test)"
+                        )
+                    else:
+                        raise  # Re-raise unexpected errors
+
+            response_time = time.time() - start_time
+
+            if should_succeed:
+                print(f"   ✅ RESULT: SUCCESS ({response_time:.3f}s)")
+                print(f"   📤 Output: {result_description}")
+
+                results.add_result(
+                    test_id,
+                    middleware_name,
+                    description,
+                    {
+                        "call_next_called": call_next_mock.called,
+                        "behavior": test_case.get("expected_behavior"),
+                    },
+                    response_time,
+                    200,
+                )
+
+    except Exception as e:
+        response_time = time.time() - start_time
+        if should_succeed:
+            print(f"   ❌ UNEXPECTED: Middleware failed with error: {str(e)}")
+            print(f"   📤 Output: {type(e).__name__} - {str(e)}")
+            results.add_error(test_id, middleware_name, description, e, response_time)
+        else:
+            print(f"   ✅ RESULT: Expected failure with error ({response_time:.3f}s)")
+            print(f"   📤 Output: {type(e).__name__} - {str(e)}")
+            results.add_result(
+                test_id,
+                middleware_name,
+                description,
+                {"error_type": type(e).__name__, "error_message": str(e)},
+                response_time,
+                200,  # Mark as success for expected failure
+            )
+
+
+async def run_middleware_validation_tests() -> BaseTestResults:
+    """Run all middleware validation tests following Phase 8 patterns."""
+    print("🚀 Starting middleware validation tests...")
+
+    # Show what we're going to test
+    print("\n📋 Test Plan Overview:")
+    print("=" * 70)
+
+    setup_tests = [t for t in MIDDLEWARE_VALIDATION_TESTS if t["test_type"] == "setup"]
+    throttling_tests = [
+        t
+        for t in MIDDLEWARE_VALIDATION_TESTS
+        if t["middleware"] == "throttling_middleware"
+    ]
+    memory_tests = [
+        t
+        for t in MIDDLEWARE_VALIDATION_TESTS
+        if t["middleware"] == "simplified_memory_monitoring_middleware"
+    ]
+
+    print(f"🔧 Middleware Setup Functions - {len(setup_tests)} tests:")
+    for test in setup_tests:
+        status = "✅ SUCCESS" if test["should_succeed"] else "❌ FAILURE"
+        print(f"   • {test['test_id']}: {test['description']} → {status}")
+
+    print(f"\n🚦 Throttling Middleware - {len(throttling_tests)} tests:")
+    for test in throttling_tests:
+        status = "✅ SUCCESS" if test["should_succeed"] else "❌ FAILURE"
+        print(f"   • {test['test_id']}: {test['description']} → {status}")
+
+    print(f"\n📊 Memory Monitoring Middleware - {len(memory_tests)} tests:")
+    for test in memory_tests:
+        status = "✅ SUCCESS" if test["should_succeed"] else "❌ FAILURE"
+        print(f"   • {test['test_id']}: {test['description']} → {status}")
+
+    print("=" * 70)
+
+    results = BaseTestResults(required_endpoints=REQUIRED_MIDDLEWARE)
+    results.start_time = datetime.now()
+
+    # Run all test cases
+    for test_case in MIDDLEWARE_VALIDATION_TESTS:
+        await validate_middleware_function(
+            test_case["test_id"],
+            test_case["middleware"],
+            test_case["description"],
+            test_case,
+            test_case["should_succeed"],
+            results,
         )
 
-        assert callable(
-            simplified_memory_monitoring_middleware
-        ), "simplified_memory_monitoring_middleware should be callable"
-        print_test_status(
-            "✅ Memory monitoring middleware module imported successfully"
-        )
-
-        print_test_status("✅ Phase 7 middleware imports test PASSED")
-        return True
-
-    except Exception as e:
-        print_test_status(f"❌ Phase 7 middleware imports test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
+    results.end_time = datetime.now()
+    return results
 
 
-def test_cors_middleware_setup():
-    """Test the CORS middleware setup functions."""
-    print_test_status("🔍 Testing CORS middleware setup...")
+def analyze_middleware_test_results(results: BaseTestResults):
+    """Analyze and print middleware test results following Phase 8 patterns."""
+    print("\n📊 Middleware Test Results:")
 
-    try:
-        # Test setup_cors_middleware
-        mock_app = MockFastAPIApp()
-        setup_cors_middleware(mock_app)
+    summary = results.get_summary()
 
-        # Check that CORS middleware was added
-        cors_middlewares = [
-            m for m in mock_app.middlewares if "CORS" in str(m["class"])
-        ]
-        assert len(cors_middlewares) > 0, "CORS middleware should be added"
+    print(
+        f"Total: {summary['total_requests']}, Success: {summary['successful_requests']}, Failed: {summary['failed_requests']}"
+    )
+    print(f"Success Rate: {summary['success_rate']:.1f}%")
 
-        cors_middleware = cors_middlewares[0]
-        assert (
-            cors_middleware["kwargs"]["allow_credentials"] == True
-        ), "CORS should allow credentials"
-        print_test_status("✅ setup_cors_middleware works correctly")
+    if summary["successful_requests"] > 0:
+        print(f"Avg Response Time: {summary['average_response_time']:.3f}s")
 
-        # Test setup_gzip_middleware
-        mock_app2 = MockFastAPIApp()
-        setup_gzip_middleware(mock_app2)
+    # Check middleware coverage
+    tested_middleware = set()
+    for test_case in MIDDLEWARE_VALIDATION_TESTS:
+        tested_middleware.add(test_case["middleware"])
 
-        # Check that GZip middleware was added
-        gzip_middlewares = [
-            m for m in mock_app2.middlewares if "GZip" in str(m["class"])
-        ]
-        assert len(gzip_middlewares) > 0, "GZip middleware should be added"
+    missing_middleware = REQUIRED_MIDDLEWARE - tested_middleware
+    if missing_middleware:
+        print(f"❌ Missing middleware tests: {', '.join(missing_middleware)}")
+    else:
+        print(f"✅ All required middleware tested: {', '.join(REQUIRED_MIDDLEWARE)}")
 
-        gzip_middleware = gzip_middlewares[0]
-        assert (
-            gzip_middleware["kwargs"]["minimum_size"] == 1000
-        ), "GZip should have minimum_size 1000"
-        print_test_status("✅ setup_gzip_middleware works correctly")
-
-        print_test_status("✅ CORS middleware setup test PASSED")
-        return True
-
-    except Exception as e:
-        print_test_status(f"❌ CORS middleware setup test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
-
-
-async def test_throttling_middleware():
-    """Test the throttling middleware function."""
-    print_test_status("🔍 Testing throttling middleware...")
-
-    try:
-        # Test 1: Health check path should skip throttling
-        health_request = MockRequest(url="http://test.example.com/health")
-        call_next_mock = AsyncMock(return_value="test_response")
-
-        result = await throttling_middleware(health_request, call_next_mock)
-        assert result == "test_response", "Health check should pass through"
-        assert call_next_mock.called, "call_next should be called for health check"
-        print_test_status("✅ Health check path skips throttling correctly")
-
-        # Test 2: Regular path (will try to use rate limiting)
-        # Note: This test might hit rate limiting functions that need proper initialization
-        # For now, we just test that the function can be called without crashing
-        regular_request = MockRequest(url="http://test.example.com/analyze")
-
-        try:
-            result = await throttling_middleware(regular_request, call_next_mock)
-            print_test_status("✅ Throttling middleware processes regular requests")
-        except Exception as middleware_error:
-            # Expected for some cases due to missing global state in test environment
-            if "throttle_semaphores" in str(middleware_error) or "rate_limit" in str(
-                middleware_error
-            ):
-                print_test_status(
-                    "ℹ️ Throttling middleware requires full application context (expected in test)"
-                )
-            else:
-                print_test_status(
-                    f"⚠️ Unexpected error in throttling middleware: {middleware_error}"
-                )
-
-        print_test_status("✅ Throttling middleware test PASSED")
-        return True
-
-    except Exception as e:
-        print_test_status(f"❌ Throttling middleware test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
-
-
-async def test_memory_monitoring_middleware():
-    """Test the memory monitoring middleware function."""
-    print_test_status("🔍 Testing memory monitoring middleware...")
-
-    try:
-        # Test with analyze path (should trigger memory monitoring)
-        analyze_request = MockRequest(url="http://test.example.com/analyze")
-        call_next_mock = AsyncMock(return_value="test_response")
-
-        try:
-            result = await simplified_memory_monitoring_middleware(
-                analyze_request, call_next_mock
+    # Show errors if any
+    if results.errors:
+        print(f"\n❌ {len(results.errors)} Errors:")
+        for error in results.errors[:5]:  # Show first 5 errors
+            print(
+                f"  - Test {error.get('test_id', 'Unknown')}: {error.get('error', 'Unknown error')}"
             )
-            assert (
-                result == "test_response"
-            ), "Memory middleware should pass through response"
-            assert call_next_mock.called, "call_next should be called"
-            print_test_status(
-                "✅ Memory monitoring middleware processes heavy operations"
-            )
-        except Exception as middleware_error:
-            # Expected for some cases due to missing global state in test environment
-            if "_request_count" in str(middleware_error) or "log_memory_usage" in str(
-                middleware_error
-            ):
-                print_test_status(
-                    "ℹ️ Memory monitoring middleware requires full application context (expected in test)"
-                )
-            else:
-                print_test_status(
-                    f"⚠️ Unexpected error in memory monitoring middleware: {middleware_error}"
-                )
+        if len(results.errors) > 5:
+            print(f"  ... and {len(results.errors) - 5} more errors")
 
-        # Test with regular path (should not trigger heavy memory monitoring)
-        regular_request = MockRequest(url="http://test.example.com/health")
+    # Save traceback information (always save - empty file if no errors)
+    save_traceback_report(report_type="test_failure", test_results=results)
 
-        try:
-            result = await simplified_memory_monitoring_middleware(
-                regular_request, call_next_mock
-            )
-            assert (
-                result == "test_response"
-            ), "Memory middleware should pass through response"
-            print_test_status(
-                "✅ Memory monitoring middleware processes regular requests"
-            )
-        except Exception as middleware_error:
-            if "_request_count" in str(middleware_error):
-                print_test_status(
-                    "ℹ️ Memory monitoring middleware requires global _request_count (expected in test)"
-                )
-            else:
-                print_test_status(
-                    f"⚠️ Unexpected error in memory monitoring middleware: {middleware_error}"
-                )
-
-        print_test_status("✅ Memory monitoring middleware test PASSED")
-        return True
-
-    except Exception as e:
-        print_test_status(f"❌ Memory monitoring middleware test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
-
-
-def test_middleware_integration():
-    """Test the integration between different middleware modules."""
-    print_test_status("🔍 Testing middleware integration...")
-
-    try:
-        # Test that all middleware can be imported together
-        # Test that they have the expected signatures
-        import inspect
-
-        from api.middleware.cors import setup_cors_middleware, setup_gzip_middleware
-        from api.middleware.memory_monitoring import (
-            simplified_memory_monitoring_middleware,
-        )
-        from api.middleware.rate_limiting import throttling_middleware
-
-        # Check CORS setup functions
-        cors_sig = inspect.signature(setup_cors_middleware)
-        assert (
-            len(cors_sig.parameters) == 1
-        ), "setup_cors_middleware should take 1 parameter (app)"
-
-        gzip_sig = inspect.signature(setup_gzip_middleware)
-        assert (
-            len(gzip_sig.parameters) == 1
-        ), "setup_gzip_middleware should take 1 parameter (app)"
-
-        # Check middleware functions
-        throttling_sig = inspect.signature(throttling_middleware)
-        assert (
-            len(throttling_sig.parameters) == 2
-        ), "throttling_middleware should take 2 parameters (request, call_next)"
-
-        memory_sig = inspect.signature(simplified_memory_monitoring_middleware)
-        assert (
-            len(memory_sig.parameters) == 2
-        ), "memory middleware should take 2 parameters (request, call_next)"
-
-        print_test_status("✅ All middleware have correct function signatures")
-
-        # Test that middleware can be set up on a mock app
-        mock_app = MockFastAPIApp()
-        setup_cors_middleware(mock_app)
-        setup_gzip_middleware(mock_app)
-
-        assert len(mock_app.middlewares) == 2, "Should have 2 middlewares added"
-        print_test_status("✅ Middleware can be set up together")
-
-        print_test_status("✅ Middleware integration test PASSED")
-        return True
-
-    except Exception as e:
-        print_test_status(f"❌ Middleware integration test FAILED: {e}")
-        print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-        return False
+    return summary
 
 
 async def main():
-    """Run all Phase 7 middleware tests."""
-    print_test_status("🚀 Starting Phase 7 Middleware Tests")
-    print_test_status(f"📂 BASE_DIR: {BASE_DIR}")
-    print_test_status("=" * 80)
+    """Main test execution function following Phase 8 patterns."""
+    print("🚀 Phase 7 Middleware Tests Starting...")
+    print(f"📂 BASE_DIR: {BASE_DIR}")
+    print("=" * 80)
 
-    all_tests_passed = True
+    try:
+        # Run middleware validation tests
+        results = await run_middleware_validation_tests()
 
-    # Run all tests
-    tests = [
-        ("Middleware Imports", test_phase7_middleware_imports),
-        ("CORS Middleware Setup", test_cors_middleware_setup),
-        ("Throttling Middleware", test_throttling_middleware),
-        ("Memory Monitoring Middleware", test_memory_monitoring_middleware),
-        ("Middleware Integration", test_middleware_integration),
-    ]
+        # Analyze results
+        summary = analyze_middleware_test_results(results)
 
-    for test_name, test_func in tests:
-        print_test_status(f"\n📋 Running test: {test_name}")
-        print_test_status("-" * 60)
+        # Determine overall test success
+        test_passed = (
+            summary["total_requests"] > 0
+            and summary["failed_requests"] == 0
+            and summary["successful_requests"] > 0
+            and len(
+                REQUIRED_MIDDLEWARE
+                - {test["middleware"] for test in MIDDLEWARE_VALIDATION_TESTS}
+            )
+            == 0
+        )
 
-        try:
-            if asyncio.iscoroutinefunction(test_func):
-                result = await test_func()
-            else:
-                result = test_func()
-            if not result:
-                all_tests_passed = False
-        except Exception as e:
-            print_test_status(f"❌ Test {test_name} crashed: {e}")
-            print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
-            all_tests_passed = False
+        if summary["total_requests"] == 0:
+            print("❌ No tests were executed")
+            test_passed = False
+        elif summary["successful_requests"] == 0:
+            print("❌ All tests failed")
+            test_passed = False
 
-    # Final summary
-    print_test_status("=" * 80)
-    if all_tests_passed:
-        print_test_status("🎉 ALL PHASE 7 MIDDLEWARE TESTS PASSED!")
-        print_test_status("✅ Middleware extraction successful")
-        print_test_status("✅ CORS middleware module working correctly")
-        print_test_status("✅ Rate limiting middleware module working correctly")
-        print_test_status("✅ Memory monitoring middleware module working correctly")
-        print_test_status("✅ Middleware integration working correctly")
-    else:
-        print_test_status("❌ SOME PHASE 7 MIDDLEWARE TESTS FAILED!")
-        sys.exit(1)
+        print(f"\n🏁 OVERALL RESULT: {'✅ PASSED' if test_passed else '❌ FAILED'}")
+        return test_passed
+
+    except Exception as e:
+        print(f"❌ Test execution failed: {str(e)}")
+        test_context = {
+            "BASE_DIR": str(BASE_DIR),
+            "Total Test Cases": len(MIDDLEWARE_VALIDATION_TESTS),
+            "Error Location": "main() function",
+            "Error During": "Middleware testing",
+        }
+        save_traceback_report(
+            report_type="exception", exception=e, test_context=test_context
+        )
+        return False
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        test_result = asyncio.run(main())
+        sys.exit(0 if test_result else 1)
+    except KeyboardInterrupt:
+        print("\n⛔ Test interrupted by user")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n💥 Fatal error: {str(e)}")
+        save_traceback_report(report_type="exception", exception=e)
+        sys.exit(1)

@@ -1,0 +1,138 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-09-08 21:10:06
+Test File: test_phase5_auth_refactored.py
+====================================================================================================
+
+
+FAILED RESULT DETAILS:
+============================================================
+Total Failed Results: 8
+
+FAILED RESULT #1
+----------------------------------------
+Test ID: AUTH_001
+Endpoint: verify_google_jwt
+Description: Invalid token format - no dots
+Status Code: 401
+Response Time: 0.0s
+Timestamp: 2025-09-08T21:10:06.942845
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': 'Invalid JWT token format'}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #2
+----------------------------------------
+Test ID: AUTH_002
+Endpoint: verify_google_jwt
+Description: Invalid token format - two dots only
+Status Code: 401
+Response Time: 0.0s
+Timestamp: 2025-09-08T21:10:06.942845
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': 'Invalid JWT token format'}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #3
+----------------------------------------
+Test ID: AUTH_003
+Endpoint: verify_google_jwt
+Description: Invalid token format - empty parts
+Status Code: 401
+Response Time: 0.0s
+Timestamp: 2025-09-08T21:10:06.942845
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': 'Invalid JWT token format'}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #4
+----------------------------------------
+Test ID: AUTH_005
+Endpoint: verify_google_jwt
+Description: Expired test token
+Status Code: 401
+Response Time: 0.0s
+Timestamp: 2025-09-08T21:10:06.942845
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': 'Test token has expired'}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #5
+----------------------------------------
+Test ID: AUTH_006
+Endpoint: get_current_user
+Description: Missing authorization header
+Status Code: 401
+Response Time: 0.0019979476928710938s
+Timestamp: 2025-09-08T21:10:06.945852
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': 'Missing Authorization header'}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #6
+----------------------------------------
+Test ID: AUTH_007
+Endpoint: get_current_user
+Description: Invalid authorization header format
+Status Code: 401
+Response Time: 0.0s
+Timestamp: 2025-09-08T21:10:06.945852
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': "Invalid Authorization header format. Expected 'Bearer <token>'"}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #7
+----------------------------------------
+Test ID: AUTH_009
+Endpoint: verify_google_jwt
+Description: Wrong audience in test token
+Status Code: 401
+Response Time: 0.0s
+Timestamp: 2025-09-08T21:10:06.946858
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': 'Invalid test token audience'}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #8
+----------------------------------------
+Test ID: AUTH_010
+Endpoint: get_current_user
+Description: Bearer token with expired test token
+Status Code: 401
+Response Time: 0.001992464065551758s
+Timestamp: 2025-09-08T21:10:06.948850
+
+RESPONSE DATA:
+--------------------
+{'status_code': 401, 'detail': 'Test token has expired'}
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 10
+Successful Requests: 2
+Failed Requests: 8
+Success Rate: 20.0%
+Average Response Time: 0.00039904117584228517s
+Total Test Time: 0.006005s
