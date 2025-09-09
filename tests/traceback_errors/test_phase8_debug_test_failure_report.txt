@@ -1,0 +1,75 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-09-09 20:16:15
+Test File: test_phase8_debug.py
+====================================================================================================
+
+TOTAL FAILED TESTS: 2
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: DEBUG_04
+Endpoint: /debug/run-id/3ce0fe62-0d49-4494-ae31-d90b1bdf92c2
+Description: Check valid UUID format run_id
+Error Type: Exception
+Timestamp: 2025-09-09T20:16:15.530691
+
+Response Time: 0.14s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: DEBUG_05
+Endpoint: /debug/run-id/invalid-uuid-format
+Description: Check invalid UUID format run_id
+Error Type: Exception
+Timestamp: 2025-09-09T20:16:15.656000
+
+Response Time: 0.13s
+
+
+FAILED RESULT DETAILS:
+============================================================
+Total Failed Results: 2
+
+FAILED RESULT #1
+----------------------------------------
+Test ID: DEBUG_10
+Endpoint: /debug/chat/test-thread/checkpoints
+Description: Checkpoint access without auth
+Status Code: 401
+Response Time: 0.009655952453613281s
+Timestamp: 2025-09-09T20:16:15.700235
+
+RESPONSE DATA:
+--------------------
+{'expected_failure': True, 'status_code': 401}
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED RESULT #2
+----------------------------------------
+Test ID: DEBUG_11
+Endpoint: /admin/clear-cache
+Description: Cache clear without auth
+Status Code: 401
+Response Time: 0.031211376190185547s
+Timestamp: 2025-09-09T20:16:15.732456
+
+RESPONSE DATA:
+--------------------
+{'expected_failure': True, 'status_code': 401}
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 11
+Successful Requests: 7
+Failed Requests: 4
+Success Rate: 63.63636363636363%
+Average Response Time: 0.05743145942687988s
+Total Test Time: 0.840317s
+
+Missing Endpoints: /debug/run-id/{run_id}, /debug/chat/{thread_id}/checkpoints

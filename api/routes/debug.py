@@ -205,83 +205,100 @@ async def debug_pool_status():
 async def debug_run_id(run_id: str, user=Depends(get_current_user)):
     """Debug endpoint to check if a run_id exists in the database."""
 
-    user_email = user.get("email")
-    if not user_email:
-        raise HTTPException(status_code=401, detail="User email not found in token")
-
-    print__debug(f"🔍 Checking run_id: '{run_id}' for user: {user_email}")
-
-    result = {
-        "run_id": run_id,
-        "run_id_type": type(run_id).__name__,
-        "run_id_length": len(run_id) if run_id else 0,
-        "is_valid_uuid_format": False,
-        "exists_in_database": False,
-        "user_owns_run_id": False,
-        "database_details": None,
-    }
-
-    # Check if it's a valid UUID format
     try:
-        uuid_obj = uuid.UUID(run_id)
-        result["is_valid_uuid_format"] = True
-        result["uuid_parsed"] = str(uuid_obj)
-    except ValueError as e:
-        result["uuid_error"] = str(e)
+        user_email = user.get("email")
+        if not user_email:
+            raise HTTPException(status_code=401, detail="User email not found in token")
 
-    # Check if it exists in the database
-    try:
-        pool = await get_global_checkpointer()
-        pool = pool.conn if hasattr(pool, "conn") else None
+        print__debug(f"🔍 Checking run_id: '{run_id}' for user: {user_email}")
 
-        if pool:
-            async with pool.connection() as conn:
-                # 🔒 SECURITY: Check in users_threads_runs table with user ownership verification
-                async with conn.cursor() as cur:
-                    await cur.execute(
-                        """
-                        SELECT email, thread_id, prompt, timestamp
-                        FROM users_threads_runs 
-                        WHERE run_id = %s AND email = %s
-                    """,
-                        (run_id, user_email),
-                    )
+        result = {
+            "run_id": run_id,
+            "run_id_type": type(run_id).__name__,
+            "run_id_length": len(run_id) if run_id else 0,
+            "is_valid_uuid_format": False,
+            "exists_in_database": False,
+            "user_owns_run_id": False,
+            "database_details": None,
+        }
 
-                    row = await cur.fetchone()
-                    if row:
-                        result["exists_in_database"] = True
-                        result["user_owns_run_id"] = True
-                        result["database_details"] = {
-                            "email": row[0],
-                            "thread_id": row[1],
-                            "prompt": row[2],
-                            "timestamp": row[3].isoformat() if row[3] else None,
-                        }
-                        print__debug(f"✅ User {user_email} owns run_id {run_id}")
-                    else:
-                        # Check if run_id exists but belongs to different user
+        # Check if it's a valid UUID format
+        try:
+            uuid_obj = uuid.UUID(run_id)
+            result["is_valid_uuid_format"] = True
+            result["uuid_parsed"] = str(uuid_obj)
+        except ValueError as e:
+            result["uuid_error"] = str(e)
+
+        # Check if it exists in the database
+        try:
+            pool = await get_global_checkpointer()
+            pool = pool.conn if hasattr(pool, "conn") else None
+
+            if pool:
+                async with pool.connection() as conn:
+                    # 🔒 SECURITY: Check in users_threads_runs table with user ownership verification
+                    async with conn.cursor() as cur:
                         await cur.execute(
                             """
-                            SELECT COUNT(*) FROM users_threads_runs WHERE run_id = %s
+                            SELECT email, thread_id, prompt, timestamp
+                            FROM users_threads_runs 
+                            WHERE run_id = %s AND email = %s
                         """,
-                            (run_id,),
+                            (run_id, user_email),
                         )
 
-                        any_row = await cur.fetchone()
-                        if any_row and any_row[0] > 0:
+                        row = await cur.fetchone()
+                        if row:
                             result["exists_in_database"] = True
-                            result["user_owns_run_id"] = False
-                            print__debug(
-                                f"🚫 Run_id {run_id} exists but user {user_email} does not own it"
-                            )
+                            result["user_owns_run_id"] = True
+                            result["database_details"] = {
+                                "email": row[0],
+                                "thread_id": row[1],
+                                "prompt": row[2],
+                                "timestamp": row[3].isoformat() if row[3] else None,
+                            }
+                            print__debug(f"✅ User {user_email} owns run_id {run_id}")
                         else:
-                            print__debug(f"❌ Run_id {run_id} not found in database")
-    except Exception as e:
-        result["database_error"] = str(e)
-        resp = traceback_json_response(e)
-        if resp:
-            return resp
+                            # Check if run_id exists but belongs to different user
+                            await cur.execute(
+                                """
+                                SELECT COUNT(*) FROM users_threads_runs WHERE run_id = %s
+                            """,
+                                (run_id,),
+                            )
+
+                            any_row = await cur.fetchone()
+                            if any_row and any_row[0] > 0:
+                                result["exists_in_database"] = True
+                                result["user_owns_run_id"] = False
+                                print__debug(
+                                    f"🚫 Run_id {run_id} exists but user {user_email} does not own it"
+                                )
+                            else:
+                                print__debug(
+                                    f"❌ Run_id {run_id} not found in database"
+                                )
+        except Exception as e:
+            result["database_error"] = str(e)
+            # Don't use traceback_json_response here, just add error to result
+            print__debug(f"❌ Database error in debug_run_id: {e}")
+
+        # Always return the result
+        print__debug(f"🔍 Returning result: {result}")
         return result
+
+    except Exception as e:
+        # Fallback error handling to ensure we never return None
+        print__debug(f"❌ Critical error in debug_run_id: {e}")
+        return {
+            "run_id": run_id if "run_id" in locals() else "unknown",
+            "error": f"Critical error: {str(e)}",
+            "is_valid_uuid_format": False,
+            "exists_in_database": False,
+            "user_owns_run_id": False,
+            "database_details": None,
+        }
 
 
 @router.post("/admin/clear-cache")

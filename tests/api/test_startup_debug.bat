@@ -5,8 +5,8 @@ echo Running Startup Debug Test...
 echo ================================
 
 REM Use virtual environment Python directly
-.venv\Scripts\python.exe tests\test_startup_debug.py
+.venv\Scripts\python.exe tests\api\test_startup_debug.py
 
 echo.
-echo Test completed. Check tests\traceback_errors\ for detailed reports.
+echo Test completed. Check tests\api\traceback_errors\ for detailed reports.
 pause
