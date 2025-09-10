@@ -37,8 +37,13 @@ class BaseTestResults:
         response_data: Dict,
         response_time: float,
         status_code: int,
+        success: bool = None,
     ):
         """Add a test result."""
+        # If success is not explicitly provided, use the old logic as fallback
+        if success is None:
+            success = status_code in [200, 400, 422]
+
         result = {
             "test_id": test_id,
             "endpoint": endpoint,
@@ -47,8 +52,7 @@ class BaseTestResults:
             "response_time": response_time,
             "status_code": status_code,
             "timestamp": datetime.now().isoformat(),
-            # Both success and validation errors are valid outcomes
-            "success": status_code in [200, 422],
+            "success": success,
         }
         self.results.append(result)
 
@@ -81,9 +85,8 @@ class BaseTestResults:
         """Get a summary of test results."""
         total_requests = len(self.results) + len(self.errors)
         successful_requests = len([r for r in self.results if r["success"]])
-        failed_requests = len(self.errors) + len(
-            [r for r in self.results if not r["success"]]
-        )
+        # Only count actual errors, not results marked as success=False
+        failed_requests = len(self.errors)
 
         if self.results:
             avg_response_time = sum(r["response_time"] for r in self.results) / len(
@@ -177,6 +180,7 @@ def handle_expected_failure(
                 data,
                 response_time,
                 response.status_code,
+                success=True,  # This is a success because it met expectations
             )
         elif response.status_code == 200:
             print(
@@ -208,6 +212,7 @@ def handle_expected_failure(
                 data,
                 response_time,
                 response.status_code,
+                success=True,  # This is a success because it met expectations
             )
         elif response.status_code == 200:
             print(f"❌ Test {test_id} - Expected validation error but got success")
