@@ -7,7 +7,7 @@ import sys
 import time
 import traceback
 import uuid
-from typing import Dict
+from typing import Dict, Any
 from datetime import datetime
 
 # Add project root to Python path for imports
@@ -28,6 +28,96 @@ from tests.helpers import (
     cleanup_debug_environment,
 )
 
+
+class DebugTestResults(BaseTestResults):
+    """Extended test results class that handles endpoint pattern matching."""
+
+    def __init__(self, required_endpoint_patterns: set = None):
+        super().__init__(required_endpoints=set())  # Initialize parent with empty set
+        self.required_endpoint_patterns = required_endpoint_patterns or set()
+        self.setup_failures = []  # Track setup/cleanup failures separately
+
+    def add_setup_failure(self, operation: str, error: str):
+        """Add a setup/cleanup failure (not counted as test failure)."""
+        self.setup_failures.append(
+            {
+                "operation": operation,
+                "error": error,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
+
+    def add_expected_failure_result(
+        self,
+        test_id: str,
+        endpoint: str,
+        description: str,
+        response_data: Dict,
+        response_time: float,
+        status_code: int,
+    ):
+        """Add a test result for an expected failure (counts as success)."""
+        result = {
+            "test_id": test_id,
+            "endpoint": endpoint,
+            "description": description,
+            "response_data": response_data,
+            "response_time": response_time,
+            "status_code": status_code,
+            "timestamp": datetime.now().isoformat(),
+            "success": True,  # Expected failures count as successes
+            "expected_failure": True,
+        }
+        self.results.append(result)
+
+    def get_summary(self) -> Dict[str, Any]:
+        """Get a summary of test results with proper endpoint pattern matching."""
+        # Get base summary
+        summary = super().get_summary()
+
+        # Recalculate based on actual tests only (exclude setup failures)
+        actual_test_requests = len(self.results) + len(self.errors)
+        actual_successful_requests = len([r for r in self.results if r["success"]])
+        actual_failed_requests = len(self.errors) + len(
+            [r for r in self.results if not r["success"]]
+        )
+
+        # Check endpoint coverage using pattern matching
+        tested_endpoints = set(r["endpoint"] for r in self.results if r["success"])
+        covered_patterns = set()
+        missing_patterns = set()
+
+        for pattern in self.required_endpoint_patterns:
+            pattern_covered = any(
+                endpoint_matches_pattern(endpoint, pattern)
+                for endpoint in tested_endpoints
+            )
+            if pattern_covered:
+                covered_patterns.add(pattern)
+            else:
+                missing_patterns.add(pattern)
+
+        # Update summary with corrected values
+        summary.update(
+            {
+                "total_requests": actual_test_requests,
+                "successful_requests": actual_successful_requests,
+                "failed_requests": actual_failed_requests,
+                "success_rate": (
+                    (actual_successful_requests / actual_test_requests * 100)
+                    if actual_test_requests > 0
+                    else 0
+                ),
+                "all_endpoints_tested": len(missing_patterns) == 0,
+                "covered_patterns": covered_patterns,
+                "missing_patterns": missing_patterns,
+                "setup_failures": self.setup_failures,
+            }
+        )
+
+        return summary
+
+
 # Set Windows event loop policy FIRST
 if sys.platform == "win32":
     import asyncio
@@ -38,7 +128,21 @@ if sys.platform == "win32":
 SERVER_BASE_URL = "http://localhost:8000"
 REQUEST_TIMEOUT = 30
 TEST_EMAIL = "test_user@example.com"
-REQUIRED_ENDPOINTS = {
+
+
+# Function to check if an endpoint matches a pattern
+def endpoint_matches_pattern(endpoint: str, pattern: str) -> bool:
+    """Check if an endpoint matches a pattern with placeholders like {thread_id}."""
+    import re
+
+    # Convert pattern to regex by replacing {param} with a wildcard
+    regex_pattern = re.sub(r"\{[^}]+\}", r"[^/]+", pattern)
+    regex_pattern = f"^{regex_pattern}$"
+    return bool(re.match(regex_pattern, endpoint))
+
+
+# Required endpoint patterns (will be matched against actual endpoints)
+REQUIRED_ENDPOINT_PATTERNS = {
     "/debug/pool-status",
     "/debug/chat/{thread_id}/checkpoints",
     "/debug/run-id/{run_id}",
@@ -268,18 +372,7 @@ def _validate_response_structure(endpoint: str, data: dict, method: str):
 
         print(f"✅ Prepared statements clear validation passed")
 
-    elif "set-env" in endpoint and method == "POST":
-        print(f"🔍 Testing set environment variables response structure...")
-        assert "message" in data, "Missing 'message' field"
-        assert "variables" in data, "Missing 'variables' field"
-        assert "timestamp" in data, "Missing 'timestamp' field"
-
-        assert isinstance(data["variables"], dict), "'variables' must be dict"
-
-        print(
-            f"✅ Set environment validation passed - Set {len(data['variables'])} variables"
-        )
-
+    # Check reset-env before set-env to avoid substring matching ("set-env" in "reset-env")
     elif "reset-env" in endpoint and method == "POST":
         print(f"🔍 Testing reset environment variables response structure...")
         assert "message" in data, "Missing 'message' field"
@@ -290,6 +383,18 @@ def _validate_response_structure(endpoint: str, data: dict, method: str):
 
         print(
             f"✅ Reset environment validation passed - Reset {len(data['variables'])} variables"
+        )
+
+    elif "set-env" in endpoint and method == "POST":
+        print(f"🔍 Testing set environment variables response structure...")
+        assert "message" in data, "Missing 'message' field"
+        assert "variables" in data, "Missing 'variables' field"
+        assert "timestamp" in data, "Missing 'timestamp' field"
+
+        assert isinstance(data["variables"], dict), "'variables' must be dict"
+
+        print(
+            f"✅ Set environment validation passed - Set {len(data['variables'])} variables"
         )
 
 
@@ -414,16 +519,36 @@ async def make_debug_request(
                 )
         else:
             # Expected failure case
-            handle_expected_failure(
-                test_id,
-                endpoint,
-                description,
-                response,
-                error_info,
-                results,
-                response_time,
-                expected_status=expected_status,
-            )
+            # Check if results object has the special method for expected failures
+            if (
+                hasattr(results, "add_expected_failure_result")
+                and expected_status
+                and response.status_code == expected_status
+            ):
+                print(
+                    f"✅ Test {test_id} - Correctly failed with HTTP {expected_status}"
+                )
+                data = {"expected_failure": True, "status_code": expected_status}
+                results.add_expected_failure_result(
+                    test_id,
+                    endpoint,
+                    description,
+                    data,
+                    response_time,
+                    response.status_code,
+                )
+            else:
+                # Use original handle_expected_failure for other cases
+                handle_expected_failure(
+                    test_id,
+                    endpoint,
+                    description,
+                    response,
+                    error_info,
+                    results,
+                    response_time,
+                    expected_status=expected_status,
+                )
 
     except Exception as e:
         response_time = time.time() - start_time
@@ -439,11 +564,11 @@ async def make_debug_request(
         )
 
 
-async def run_debug_tests() -> BaseTestResults:
+async def run_debug_tests() -> DebugTestResults:
     """Run all debug endpoint tests."""
     print("🚀 Starting debug tests...")
 
-    results = BaseTestResults(required_endpoints=REQUIRED_ENDPOINTS)
+    results = DebugTestResults(required_endpoint_patterns=REQUIRED_ENDPOINT_PATTERNS)
     results.start_time = datetime.now()
 
     async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
@@ -456,6 +581,9 @@ async def run_debug_tests() -> BaseTestResults:
             print("✅ Debug environment setup successful")
         else:
             print("⚠️ Debug environment setup failed, continuing anyway...")
+            results.add_setup_failure(
+                "debug_environment_setup", "Failed to set debug environment variables"
+            )
 
         # Run all test cases
         for i, test_case in enumerate(TEST_QUERIES, 1):
@@ -498,12 +626,16 @@ async def run_debug_tests() -> BaseTestResults:
             print("✅ Debug environment cleanup successful")
         else:
             print("⚠️ Debug environment cleanup failed")
+            results.add_setup_failure(
+                "debug_environment_cleanup",
+                "Failed to reset debug environment variables",
+            )
 
     results.end_time = datetime.now()
     return results
 
 
-def analyze_test_results(results: BaseTestResults):
+def analyze_test_results(results: DebugTestResults):
     """Analyze and print test results."""
     print("\n📊 Test Results:")
 
@@ -517,16 +649,73 @@ def analyze_test_results(results: BaseTestResults):
     if summary["successful_requests"] > 0:
         print(f"Avg Response Time: {summary['average_response_time']:.2f}s")
 
-    if not summary["all_endpoints_tested"]:
-        print(f"❌ Missing endpoints: {', '.join(summary['missing_endpoints'])}")
+    # Show setup/cleanup failures separately
+    if summary["setup_failures"]:
+        print(f"\n⚠️ Setup/Cleanup Issues ({len(summary['setup_failures'])}):")
+        for failure in summary["setup_failures"]:
+            print(f"   - {failure['operation']}: {failure['error']}")
 
-    # Show errors if any
+    # Show endpoint coverage
+    if not summary["all_endpoints_tested"]:
+        print(
+            f"\n❌ Missing endpoint patterns: {', '.join(summary['missing_patterns'])}"
+        )
+    else:
+        print(
+            f"\n✅ All required endpoint patterns covered ({len(summary['covered_patterns'])})"
+        )
+
+    # Show actual test errors with details
     if results.errors:
-        print(f"\n❌ {len(results.errors)} Errors:")
-        for error in results.errors:
-            print(
-                f"   - {error['test_id']}: {error['description']} -> {error['error']}"
-            )
+        print(f"\n❌ {len(results.errors)} Test Errors:")
+        for i, error in enumerate(results.errors, 1):
+            print(f"\n   {i}. Test {error['test_id']}: {error['description']}")
+            print(f"      Endpoint: {error['endpoint']}")
+            print(f"      Error: {error['error']}")
+            print(f"      Type: {error['error_type']}")
+
+            # Show server traceback if available
+            if hasattr(error.get("error_obj"), "server_tracebacks"):
+                tracebacks = error["error_obj"].server_tracebacks
+                if tracebacks:
+                    print(f"      Server Tracebacks: {len(tracebacks)} found")
+                    for j, tb in enumerate(
+                        tracebacks[:2], 1
+                    ):  # Show first 2 tracebacks
+                        print(
+                            f"        TB{j}: {tb.get('exception_type', 'Unknown')} - {tb.get('exception_message', 'Unknown')}"
+                        )
+
+            # Show response data if available and contains error info
+            if error.get("response_data") and isinstance(error["response_data"], dict):
+                if "detail" in error["response_data"]:
+                    print(f"      Server Detail: {error['response_data']['detail']}")
+                if "traceback" in error["response_data"]:
+                    print(f"      Server Traceback: Available in response")
+
+    # Show failed results (different from errors, exclude expected failures)
+    failed_results = [
+        r
+        for r in results.results
+        if not r.get("success", True) and not r.get("expected_failure", False)
+    ]
+    if failed_results:
+        print(f"\n❌ {len(failed_results)} Failed Results:")
+        for i, result in enumerate(failed_results, 1):
+            print(f"   {i}. Test {result['test_id']}: {result['description']}")
+            print(f"      Endpoint: {result['endpoint']}")
+            print(f"      Status: {result['status_code']}")
+            if result.get("response_data"):
+                print(f"      Response: {result['response_data']}")
+
+    # Show expected failures separately as informational
+    expected_failures = [r for r in results.results if r.get("expected_failure", False)]
+    if expected_failures:
+        print(f"\n✅ {len(expected_failures)} Expected Failures (Successful):")
+        for i, result in enumerate(expected_failures, 1):
+            print(f"   {i}. Test {result['test_id']}: {result['description']}")
+            print(f"      Endpoint: {result['endpoint']}")
+            print(f"      Expected Status: {result['status_code']}")
 
     # Save traceback information (always save - empty file if no errors)
     save_traceback_report(report_type="test_failure", test_results=results)
@@ -551,35 +740,63 @@ async def main():
         summary = analyze_test_results(results)
 
         # Determine overall test success
+        has_actual_test_errors = len(results.errors) > 0
+        # Exclude expected failures from failed results count
+        has_failed_results = (
+            len(
+                [
+                    r
+                    for r in results.results
+                    if not r.get("success", True)
+                    and not r.get("expected_failure", False)
+                ]
+            )
+            > 0
+        )
         has_empty_errors = any(
             error.get("error", "").strip() == ""
             or "Unknown error" in error.get("error", "")
-            for error in summary["errors"]
+            for error in results.errors
         )
         has_database_errors = any(
             "no such variable" in error.get("error", "").lower()
             or "nameError" in error.get("error", "")
             or "undefined" in error.get("error", "").lower()
-            for error in summary["errors"]
+            for error in results.errors
         )
 
         test_passed = (
             not has_empty_errors
             and not has_database_errors
+            and not has_actual_test_errors
+            and not has_failed_results
             and summary["total_requests"] > 0
             and summary["successful_requests"] > 0
-            and summary["failed_requests"]
-            <= len(
-                [t for t in TEST_QUERIES if not t["should_succeed"]]
-            )  # Allow expected failures
+            and summary["all_endpoints_tested"]
         )
 
         if has_empty_errors:
             print("❌ Test failed due to empty/unknown errors")
         elif has_database_errors:
             print("❌ Test failed due to database configuration errors")
+        elif has_actual_test_errors:
+            print(f"❌ Test failed due to {len(results.errors)} test errors")
+        elif has_failed_results:
+            failed_count = len(
+                [
+                    r
+                    for r in results.results
+                    if not r.get("success", True)
+                    and not r.get("expected_failure", False)
+                ]
+            )
+            print(f"❌ Test failed due to {failed_count} unexpected failed results")
         elif summary["successful_requests"] == 0:
             print("❌ Test failed - no successful requests")
+        elif not summary["all_endpoints_tested"]:
+            print(
+                f"❌ Test failed - missing endpoint coverage: {', '.join(summary['missing_patterns'])}"
+            )
 
         print(f"\n🏁 OVERALL RESULT: {'✅ PASSED' if test_passed else '❌ FAILED'}")
         return test_passed
