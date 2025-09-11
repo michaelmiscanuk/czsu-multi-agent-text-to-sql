@@ -1,0 +1,28 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-09-11 22:44:34
+Test File: test_phase10_external_imports.py
+====================================================================================================
+
+TOTAL FAILED TESTS: 1
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: endpoint_4
+Endpoint: /analyze
+Description: Analysis endpoint through modular structure
+Error Type: Exception
+Timestamp: 2025-09-11T22:44:25.500131
+
+Response Time: 15.00s
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 32
+Successful Requests: 31
+Failed Requests: 1
+Success Rate: 96.875%
+Average Response Time: 0.3805199284707346s
+Total Test Time: Nones

@@ -42,7 +42,7 @@ from tests.helpers import (
 
 # Test configuration
 SERVER_BASE_URL = "http://localhost:8000"
-REQUEST_TIMEOUT = 30
+REQUEST_TIMEOUT = 15  # Reduced from 30 to get quicker feedback on timeout issues
 TEST_EMAIL = "test_user@example.com"
 
 # Required import paths to validate
@@ -100,7 +100,10 @@ ENDPOINT_TESTS = [
         "description": "Analysis endpoint through modular structure",
         "requires_auth": True,
         "should_succeed": True,
-        "json_data": {"prompt": "test query", "thread_id": str(uuid.uuid4())},
+        "json_data": {
+            "prompt": "SELECT 1",
+            "thread_id": "test-" + str(uuid.uuid4())[:8],
+        },
         "expected_keys": ["result", "thread_id"],
     },
     {
@@ -109,7 +112,7 @@ ENDPOINT_TESTS = [
         "description": "Bulk messages endpoint through modular structure",
         "requires_auth": True,
         "should_succeed": True,
-        "expected_keys": ["data", "summary"],
+        "expected_keys": ["messages", "runIds", "sentiments"],
     },
     {
         "endpoint": "/debug/pool-status",
@@ -117,7 +120,7 @@ ENDPOINT_TESTS = [
         "description": "Debug endpoint through modular structure",
         "requires_auth": False,
         "should_succeed": True,
-        "expected_keys": ["pool_status"],
+        "expected_keys": ["timestamp", "global_checkpointer_exists"],
     },
 ]
 
@@ -266,24 +269,50 @@ async def make_modular_endpoint_request(
     expected_keys: list = None,
 ):
     """Make a request to test modular endpoint functionality."""
+    print(f"🔍 {test_id}: Starting request to {method} {endpoint}")
+    print(
+        f"🔍 {test_id}: Auth required: {requires_auth}, JSON data: {json_data is not None}"
+    )
+    if json_data:
+        print(f"🔍 {test_id}: JSON payload: {json_data}")
+
     start_time = time.time()
 
     try:
         headers = {}
         if requires_auth:
+            print(f"🔍 {test_id}: Creating JWT token for {TEST_EMAIL}")
             token = create_test_jwt_token(TEST_EMAIL)
             headers["Authorization"] = f"Bearer {token}"
+            print(f"🔍 {test_id}: JWT token created, length: {len(token)}")
+
+        print(f"🔍 {test_id}: Making {method} request to {SERVER_BASE_URL}{endpoint}")
+        print(f"🔍 {test_id}: Headers: {list(headers.keys())}")
 
         if method.upper() == "GET":
+            print(f"🔍 {test_id}: Executing GET request...")
             response = await client.get(f"{SERVER_BASE_URL}{endpoint}", headers=headers)
         elif method.upper() == "POST":
+            print(f"🔍 {test_id}: Executing POST request with JSON data...")
             response = await client.post(
                 f"{SERVER_BASE_URL}{endpoint}", headers=headers, json=json_data or {}
             )
         else:
             raise ValueError(f"Unsupported method: {method}")
 
+        print(f"🔍 {test_id}: Request completed, status: {response.status_code}")
+
         response_time = time.time() - start_time
+        print(f"🔍 {test_id}: Response received in {response_time:.3f}s")
+        print(f"🔍 {test_id}: Response status: {response.status_code}")
+        print(f"🔍 {test_id}: Response headers: {dict(response.headers)}")
+
+        # Try to peek at response content
+        try:
+            response_text_preview = response.text[:200] if response.text else "<empty>"
+            print(f"🔍 {test_id}: Response preview: {response_text_preview}...")
+        except Exception as preview_error:
+            print(f"🔍 {test_id}: Could not preview response: {preview_error}")
 
         # Handle response based on expectation
         if should_succeed:
@@ -328,7 +357,7 @@ async def make_modular_endpoint_request(
                     endpoint,
                     description,
                     response,
-                    {"status_code": response.status_code},
+                    {"status_code": response.status_code, "server_tracebacks": []},
                     results,
                     response_time,
                 )
@@ -353,8 +382,37 @@ async def make_modular_endpoint_request(
 
     except Exception as e:
         response_time = time.time() - start_time
-        error_message = str(e)
+        error_class = e.__class__.__name__
+        error_message = str(e) if str(e).strip() else f"{error_class}: {repr(e)}"
+
+        print(f"🔍 {test_id}: Exception occurred after {response_time:.3f}s")
+        print(f"🔍 {test_id}: Exception type: {error_class}")
+        print(f"🔍 {test_id}: Exception module: {e.__class__.__module__}")
+
+        # Check for specific error types
+        if "timeout" in error_message.lower() or "ReadTimeout" in error_class:
+            print(
+                f"🔍 {test_id}: TIMEOUT DETECTED - Request took {response_time:.1f}s (limit: {REQUEST_TIMEOUT}s)"
+            )
+            error_message = (
+                f"Request timeout after {response_time:.1f}s - {error_message}"
+            )
+        elif "ConnectionError" in error_class:
+            print(f"🔍 {test_id}: CONNECTION ERROR - Server may be unreachable")
+        elif not error_message.strip():
+            error_message = f"Empty {error_class} exception occurred"
+
         print(f"❌ Test {test_id} - Error: {error_message}")
+
+        # For analyze endpoint specifically, add more context
+        if "endpoint_4" in test_id or "/analyze" in endpoint:
+            print(f"🔍 {test_id}: ANALYZE ENDPOINT DIAGNOSTICS:")
+            print(f"    - Endpoint: {endpoint}")
+            print(f"    - Method: {method}")
+            print(f"    - Auth required: {requires_auth}")
+            print(f"    - JSON data: {json_data}")
+            print(f"    - Timeout setting: {REQUEST_TIMEOUT}s")
+            print(f"    - Actual time taken: {response_time:.3f}s")
 
         # Handle server traceback if available
         error_obj = Exception(error_message)
@@ -474,7 +532,8 @@ def analyze_test_results(results: BaseTestResults):
     print(f"   • Failed: {summary['failed_requests']}")
     print(f"   • Success Rate: {summary['success_rate']:.1f}%")
     print(f"   • Average Response Time: {summary['average_response_time']:.3f}s")
-    print(f"   • Total Test Time: {summary.get('total_test_time', 0):.2f}s")
+    total_test_time = summary.get("total_test_time", 0) or 0
+    print(f"   • Total Test Time: {total_test_time:.2f}s")
 
     if summary["errors"]:
         print(f"\n❌ ERRORS ({len(summary['errors'])}):")
@@ -574,9 +633,10 @@ async def main():
 
         # Determine overall test success
         has_empty_errors = any(
-            error.get("error", "").strip() == ""
-            or "Unknown error" in error.get("error", "")
-            for error in summary["errors"]
+            error.get("error", "").strip() == "" for error in summary["errors"]
+        )
+        has_timeout_errors = any(
+            "timeout" in error.get("error", "").lower() for error in summary["errors"]
         )
         has_import_errors = any(
             "import" in error.get("error", "").lower()
@@ -597,23 +657,29 @@ async def main():
 
         test_passed = (
             not has_empty_errors
+            and not has_timeout_errors  # No timeout errors allowed - we need to fix them
             and summary["total_requests"] > 0
             and summary["successful_requests"] > 0
             and len(critical_import_tests) >= 3  # At least 3 critical imports working
-            and summary["success_rate"] >= 70.0  # At least 70% success rate
+            and summary["success_rate"]
+            >= 95.0  # Require higher success rate now that we're debugging
         )
 
         if has_empty_errors:
             print("\n❌ Test failed: Empty error messages detected")
+        elif has_timeout_errors:
+            print(
+                f"\n❌ Test failed: Timeout errors detected - need to investigate analyze endpoint ({summary['success_rate']:.1f}% success rate)"
+            )
         elif has_import_errors and summary["success_rate"] < 50.0:
             print("\n❌ Test failed: Too many import errors")
         elif summary["successful_requests"] == 0:
             print("\n❌ Test failed: No successful tests")
         elif len(critical_import_tests) < 3:
             print("\n❌ Test failed: Critical imports not working")
-        elif summary["success_rate"] < 70.0:
+        elif summary["success_rate"] < 95.0:
             print(
-                f"\n❌ Test failed: Success rate too low ({summary['success_rate']:.1f}% < 70%)"
+                f"\n❌ Test failed: Success rate too low ({summary['success_rate']:.1f}% < 95%)"
             )
         else:
             print(

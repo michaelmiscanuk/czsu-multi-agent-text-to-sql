@@ -144,6 +144,11 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
 @router.get("/debug/pool-status")
 async def debug_pool_status():
     """Debug endpoint to check pool status - updated for official AsyncPostgresSaver."""
+    return await get_pool_status()
+
+
+async def get_pool_status():
+    """Get pool status information - separated function for easier testing and imports."""
     try:
         global GLOBAL_CHECKPOINTER
 
