@@ -1,0 +1,33 @@
+====================================================================================================
+EXCEPTION REPORT
+Generated: 2025-09-11 20:25:22
+Test File: test_phase10_external_imports.py
+====================================================================================================
+
+TEST CONTEXT:
+------------------------------
+Server URL: http://localhost:8000
+Request Timeout: 30s
+Total Required Imports: 16
+Error Location: main() function
+Error During: Phase 10 testing
+
+
+EXCEPTION INFORMATION:
+----------------------------------------
+Exception Type: TypeError
+Exception Message: unsupported format string passed to NoneType.__format__
+
+FULL TRACEBACK:
+------------------------------
+Traceback (most recent call last):
+
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\tests\api\test_phase10_external_imports.py", line 573, in main
+    summary = analyze_test_results(all_results)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  File "c:\Users\mmiscanuk\OneDrive\Knowledge Base\0207_GenAI\Code\czsu-multi-agent-text-to-sql\tests\api\test_phase10_external_imports.py", line 477, in analyze_test_results
+    print(f"   • Total Test Time: {summary.get('total_test_time', 0):.2f}s")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TypeError: unsupported format string passed to NoneType.__format__
