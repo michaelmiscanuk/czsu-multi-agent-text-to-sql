@@ -1,0 +1,89 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-09-12 23:20:47
+Test File: test_checkpointer_checkpointer.py
+====================================================================================================
+
+TOTAL FAILED TESTS: 3
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: test_012
+Endpoint: create_async_postgres_saver
+Description: Create saver with invalid connection
+Error Type: Exception
+Timestamp: 2025-09-12T23:20:47.183809
+
+Response Time: 1.42s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: test_014
+Endpoint: checkpointer_put_operation
+Description: Test checkpointer put operation
+Error Type: TypeError
+Timestamp: 2025-09-12T23:20:47.506844
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "e:\OneDrive\Knowledge Base\0207_GenAI\Code\czsu_home\czsu-multi-agent-text-to-sql\tests\database\test_checkpointer_checkpointer.py", line 474, in run_checkpointer_test
+    result = await run_custom_test(component, test_case)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\OneDrive\Knowledge Base\0207_GenAI\Code\czsu_home\czsu-multi-agent-text-to-sql\tests\database\test_checkpointer_checkpointer.py", line 625, in run_custom_test
+    result = await checkpointer.aput(TEST_CONFIG, checkpoint_data, {})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: AsyncPostgresSaver.aput() missing 1 required positional argument: 'new_versions'
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #3
+============================================================
+Test ID: integration_001
+Endpoint: checkpointer_integration
+Description: Complete checkpointer workflow integration test
+Error Type: TypeError
+Timestamp: 2025-09-12T23:20:47.946919
+
+Response Time: 0.11s
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "e:\OneDrive\Knowledge Base\0207_GenAI\Code\czsu_home\czsu-multi-agent-text-to-sql\tests\database\test_checkpointer_checkpointer.py", line 683, in test_checkpointer_integration
+    put_result = await checkpointer.aput(test_config, checkpoint_data, {})
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: AsyncPostgresSaver.aput() missing 1 required positional argument: 'new_versions'
+
+
+
+FAILED RESULT DETAILS:
+============================================================
+Total Failed Results: 1
+
+FAILED RESULT #1
+----------------------------------------
+Test ID: test_011
+Endpoint: check_postgres_env_vars
+Description: Check env vars with missing variables
+Status Code: 500
+Response Time: 0.0s
+Timestamp: 2025-09-12T23:20:45.657961
+
+RESPONSE DATA:
+--------------------
+{'result': 'False', 'type': 'bool'}
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 17
+Successful Requests: 13
+Failed Requests: 3
+Success Rate: 76.47058823529412%
+Average Response Time: 0.08968382222311837s
+Total Test Time: 4.37017s
