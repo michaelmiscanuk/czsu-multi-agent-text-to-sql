@@ -29,6 +29,7 @@ import jwt
 import requests
 from fastapi import HTTPException
 from jwt.algorithms import RSAAlgorithm
+from jwt.exceptions import ImmatureSignatureError
 
 # Import constants from api.config.settings
 from api.config.settings import GOOGLE_JWK_URL, _jwt_kid_missing_count
@@ -44,6 +45,25 @@ def verify_google_jwt(token: str):
     global _jwt_kid_missing_count
 
     try:
+        # SYSTEM TIME CHECK: Warn if system time appears to be incorrect
+        current_time = time.time()
+        current_date = time.ctime(current_time)
+        print__token_debug(
+            f"🕐 SYSTEM TIME CHECK: Current system time is {current_date}"
+        )
+
+        # Check if we're in a reasonable time range (2024-2026)
+        import datetime
+
+        current_year = datetime.datetime.now().year
+        if current_year < 2024 or current_year > 2026:
+            print__token_debug(
+                f"⚠️  WARNING: System year {current_year} seems incorrect for token validation"
+            )
+            print__token_debug(
+                "This may cause JWT validation issues due to timestamp mismatches"
+            )
+
         # EARLY VALIDATION: Check if token has basic JWT structure before processing
         # JWT tokens must have exactly 3 parts separated by dots (header.payload.signature)
         token_parts = token.split(".")
@@ -61,7 +81,10 @@ def verify_google_jwt(token: str):
         # Get unverified header and payload first - this should now work since we pre-validated the format
         try:
             unverified_header = jwt.get_unverified_header(token)
-            unverified_payload = jwt.decode(token, options={"verify_signature": False})
+            # Add leeway for unverified payload decode as well to handle clock sync issues
+            unverified_payload = jwt.decode(
+                token, options={"verify_signature": False}, leeway=300
+            )
         except jwt.DecodeError as e:
             # This should be rare now due to pre-validation, but keep for edge cases
             print__token_debug(f"JWT decode error after pre-validation: {e}")
@@ -74,6 +97,39 @@ def verify_google_jwt(token: str):
         print__token_debug(f"Token aud: {unverified_payload.get('aud')}")
         print__token_debug(f"Backend GOOGLE_CLIENT_ID: {os.getenv('GOOGLE_CLIENT_ID')}")
         print__token_debug(f"Token iss: {unverified_payload.get('iss')}")
+
+        # Debug: Print token timing information to help diagnose clock sync issues
+        token_iat = unverified_payload.get("iat")
+        token_exp = unverified_payload.get("exp")
+        current_time = time.time()
+        if token_iat:
+            print__token_debug(
+                f"Token iat (issued at): {token_iat} ({time.ctime(token_iat)})"
+            )
+        if token_exp:
+            print__token_debug(
+                f"Token exp (expires): {token_exp} ({time.ctime(token_exp)})"
+            )
+        print__token_debug(
+            f"Current server time: {current_time} ({time.ctime(current_time)})"
+        )
+        if token_iat:
+            time_diff = current_time - token_iat
+            print__token_debug(
+                f"Time difference (server - token_iat): {time_diff:.2f} seconds"
+            )
+            if time_diff < 0:
+                print__token_debug(
+                    f"⚠️  WARNING: Token issued {abs(time_diff):.2f} seconds in the future!"
+                )
+                print__token_debug(
+                    "This indicates a clock synchronization issue - adding 5-minute leeway should resolve this"
+                )
+                # If time difference is more than 5 minutes, log it as severe
+                if abs(time_diff) > 300:
+                    print__token_debug(
+                        f"🚨 SEVERE CLOCK SYNC ISSUE: Token is {abs(time_diff):.2f} seconds in the future (>{300}s leeway)"
+                    )
 
         # TEST MODE: Handle test tokens with test issuer (for development/testing only)
 
@@ -204,11 +260,15 @@ def verify_google_jwt(token: str):
             if key["kid"] == unverified_header["kid"]:
                 public_key = RSAAlgorithm.from_jwk(key)
                 try:
+                    # Add leeway to handle clock synchronization issues
+                    # This allows tokens to be valid even if there's a small time difference
+                    # between Google's servers and our local machine (up to 300 seconds / 5 minutes)
                     payload = jwt.decode(
                         token,
                         public_key,
                         algorithms=["RS256"],
                         audience=os.getenv("GOOGLE_CLIENT_ID"),
+                        leeway=300,  # Allow 300 seconds (5 minutes) leeway for clock synchronization
                     )
                     print__token_debug(
                         "Standard Google JWT token verification successful"
@@ -217,6 +277,70 @@ def verify_google_jwt(token: str):
                 except jwt.ExpiredSignatureError:
                     print__token_debug("JWT token has expired")
                     raise HTTPException(status_code=401, detail="Token has expired")
+                except jwt.ImmatureSignatureError as e:
+                    print__token_debug(
+                        f"JWT token not yet valid (clock sync issue): {e}"
+                    )
+                    print__token_debug(
+                        "This usually indicates a clock synchronization problem between your system and Google's servers"
+                    )
+                    print__token_debug(
+                        "Even with 5-minute leeway, token is still considered immature"
+                    )
+                    # Log more detailed timing information
+                    if token_iat:
+                        time_diff = current_time - token_iat
+                        print__token_debug(
+                            f"Detailed timing: Server time - Token iat = {time_diff:.2f} seconds"
+                        )
+                        if time_diff < -300:
+                            print__token_debug(
+                                f"Token is issued {abs(time_diff):.2f} seconds in the future, beyond 5-minute leeway"
+                            )
+
+                    # Try to continue with NextAuth.js flow as fallback
+                    print__token_debug(
+                        "Attempting fallback to NextAuth.js id_token verification"
+                    )
+                    try:
+                        tokeninfo_url = (
+                            f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
+                        )
+                        response = requests.get(tokeninfo_url, timeout=10)
+
+                        if response.status_code == 200:
+                            tokeninfo = response.json()
+                            print__token_debug(
+                                f"Google tokeninfo fallback successful: {tokeninfo.get('email', 'unknown')}"
+                            )
+
+                            # Verify the audience matches our client ID
+                            expected_aud = os.getenv("GOOGLE_CLIENT_ID")
+                            if tokeninfo.get("aud") != expected_aud:
+                                print__token_debug(
+                                    f"Tokeninfo audience mismatch. Expected: {expected_aud}, Got: {tokeninfo.get('aud')}"
+                                )
+                                raise HTTPException(
+                                    status_code=401, detail="Invalid token audience"
+                                )
+
+                            # Return the tokeninfo as the payload
+                            print__token_debug(
+                                "Clock sync issue resolved via Google tokeninfo fallback"
+                            )
+                            return tokeninfo
+                        else:
+                            print__token_debug(
+                                f"Google tokeninfo fallback failed: {response.status_code}"
+                            )
+                    except Exception as fallback_e:
+                        print__token_debug(f"Tokeninfo fallback failed: {fallback_e}")
+
+                    # If fallback fails, raise the original error
+                    raise HTTPException(
+                        status_code=401,
+                        detail="Token not yet valid - severe clock synchronization issue detected",
+                    )
                 except jwt.InvalidAudienceError:
                     print__token_debug("JWT token has invalid audience")
                     raise HTTPException(
