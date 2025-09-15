@@ -85,6 +85,7 @@ from checkpointer.checkpointer.factory import (
     initialize_checkpointer,
     cleanup_checkpointer,
 )
+from api.routes.root import router as root_router
 
 
 # Lifespan management function
@@ -359,6 +360,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 # Register all route routers
 print__memory_monitoring("[ROUTES] Registering route routers...")
 
+app.include_router(root_router, tags=["root"])
 app.include_router(health_router, tags=["health"])
 app.include_router(catalog_router, tags=["catalog"])
 app.include_router(analysis_router, tags=["analysis"])
