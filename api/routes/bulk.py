@@ -1,10 +1,10 @@
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
+import asyncio
 import os
 import sys
 import time
 import traceback
-import uuid
 from pathlib import Path
 from typing import Dict
 
@@ -13,8 +13,6 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 if sys.platform == "win32":
-    import asyncio
-
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Constants
@@ -37,7 +35,6 @@ from api.dependencies.auth import get_current_user
 from api.helpers import traceback_json_response
 
 # Import models
-from api.models.responses import ChatMessage
 
 # Import the reusable function from chat.py
 from api.routes.chat import get_thread_messages_with_metadata
