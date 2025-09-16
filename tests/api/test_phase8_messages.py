@@ -50,7 +50,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 30
 TEST_EMAIL = "test_user@example.com"
 REQUIRED_ENDPOINTS = {"/chat/messages", "/chat/run-ids"}  # Simplified for tracking

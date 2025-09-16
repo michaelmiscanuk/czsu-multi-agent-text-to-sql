@@ -49,7 +49,7 @@ from tests.helpers import (
 )
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 60.0
 TEST_EMAIL = "test_performance_user@example.com"
 

@@ -57,8 +57,7 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
-# SERVER_BASE_URL = "https://czsu-multi-agent-text-to-sql.vercel.app/"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 180
 TEST_EMAIL = "test_user@example.com"
 TEST_PROMPTS = [

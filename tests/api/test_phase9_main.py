@@ -56,7 +56,7 @@ except ImportError:
     DATABASE_AVAILABLE = False
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 30
 TEST_EMAIL = "test_main_user@example.com"
 REQUIRED_ENDPOINTS = {

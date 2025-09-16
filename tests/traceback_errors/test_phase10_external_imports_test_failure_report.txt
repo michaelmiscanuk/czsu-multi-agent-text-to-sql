@@ -1,10 +1,10 @@
 ====================================================================================================
 TEST_FAILURE REPORT
-Generated: 2025-09-11 22:44:34
+Generated: 2025-09-16 23:29:20
 Test File: test_phase10_external_imports.py
 ====================================================================================================
 
-TOTAL FAILED TESTS: 1
+TOTAL FAILED TESTS: 2
 ====================================================================================================
 
 FAILED TEST #1
@@ -13,16 +13,28 @@ Test ID: endpoint_4
 Endpoint: /analyze
 Description: Analysis endpoint through modular structure
 Error Type: Exception
-Timestamp: 2025-09-11T22:44:25.500131
+Timestamp: 2025-09-16T23:29:04.546558
 
 Response Time: 15.00s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: endpoint_5
+Endpoint: /chat/all-messages-for-all-threads
+Description: Bulk messages endpoint through modular structure
+Error Type: Exception
+Timestamp: 2025-09-16T23:29:19.720533
+
+Response Time: 15.07s
 
 
 TEST SUMMARY:
 ========================================
 Total Requests: 32
-Successful Requests: 31
-Failed Requests: 1
-Success Rate: 96.875%
-Average Response Time: 0.3805199284707346s
+Successful Requests: 30
+Failed Requests: 2
+Success Rate: 93.75%
+Average Response Time: 0.18147520224253336s
 Total Test Time: Nones

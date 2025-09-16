@@ -43,7 +43,7 @@ from checkpointer.checkpointer.factory import (
 TEST_EMAIL = "test_user@example.com"
 
 # Server configuration for real HTTP requests
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = (
     60  # seconds for bulk endpoints (more time needed for bulk operations)
 )

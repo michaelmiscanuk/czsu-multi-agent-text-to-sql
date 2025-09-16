@@ -9,6 +9,7 @@ import time
 import asyncio
 import sys
 import uuid
+import os
 
 from tests.helpers import (
     BaseTestResults,
@@ -41,7 +42,7 @@ except NameError:  # Fallback if __file__ not defined
 sys.path.insert(0, str(BASE_DIR))
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 180  # 3 minutes for analysis requests (they can take longer)
 TEST_EMAIL = "test_user@example.com"
 REQUIRED_ENDPOINTS = {"/analyze"}

@@ -59,11 +59,11 @@ try:
     sys.path.insert(0, str(BASE_DIR / "api" / "routes"))
 
     # Import the misc module directly
-    import misc
-    from misc import get_placeholder_image
+    import api.routes.misc
+    from api.routes.misc import get_placeholder_image
 
     # Also try to import the router
-    from misc import router as misc_router
+    from api.routes.misc import router as misc_router
 
     print("✅ Successfully imported miscellaneous route functions")
 except Exception as e:

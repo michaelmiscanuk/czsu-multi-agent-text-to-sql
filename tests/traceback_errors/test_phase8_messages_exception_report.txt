@@ -1,0 +1,31 @@
+====================================================================================================
+EXCEPTION REPORT
+Generated: 2025-09-16 23:28:41
+Test File: test_phase8_messages.py
+====================================================================================================
+
+TEST CONTEXT:
+------------------------------
+Server URL: https://czsu-multi-agent-text-to-sql.vercel.app/api
+Request Timeout: 30s
+Total Test Queries: 14
+Error Location: main() function
+Error During: Test execution
+
+
+EXCEPTION INFORMATION:
+----------------------------------------
+Exception Type: AssertionError
+Exception Message: Concurrent request 0 failed with 429
+
+FULL TRACEBACK:
+------------------------------
+Traceback (most recent call last):
+
+  File "e:\OneDrive\Knowledge Base\0207_GenAI\Code\czsu_home2\czsu-multi-agent-text-to-sql\tests\api\test_phase8_messages.py", line 816, in main
+    await test_concurrent_requests()
+
+  File "e:\OneDrive\Knowledge Base\0207_GenAI\Code\czsu_home2\czsu-multi-agent-text-to-sql\tests\api\test_phase8_messages.py", line 642, in test_concurrent_requests
+    response.status_code == 200
+
+AssertionError: Concurrent request 0 failed with 429

@@ -456,7 +456,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from other.tests.test_concurrency import create_test_jwt_token, check_server_connectivity
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 30.0
 
 async def test_phase_x_functionality():

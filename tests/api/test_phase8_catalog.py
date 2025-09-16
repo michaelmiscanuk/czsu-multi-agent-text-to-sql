@@ -41,7 +41,7 @@ from tests.helpers import (
 )
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 30
 TEST_EMAIL = "test_user@example.com"
 REQUIRED_ENDPOINTS = {"/catalog", "/data-tables", "/data-table"}
@@ -352,9 +352,29 @@ def analyze_test_results(results: BaseTestResults):
 async def main():
     """Main test execution function."""
     print("🚀 Catalog Endpoints Test Starting...")
+    print(f"🌐 Testing server at: {SERVER_BASE_URL}")
+
+    # Provide helpful information about the server URL
+    if "vercel.app/api" in SERVER_BASE_URL:
+        print("📝 Using Vercel frontend proxy (routes to Render backend)")
+    elif "vercel.app" in SERVER_BASE_URL:
+        print("⚠️  WARNING: Direct Vercel access - consider using /api proxy")
+    elif "onrender.com" in SERVER_BASE_URL:
+        print("📝 Direct backend server access")
+    elif "localhost" in SERVER_BASE_URL:
+        print("📝 Local development server")
 
     if not await check_server_connectivity(SERVER_BASE_URL):
         print("❌ Server connectivity check failed!")
+        print(f"💡 Tips for fixing connectivity issues:")
+        print(
+            f"   • For Vercel proxy: Use 'https://czsu-multi-agent-text-to-sql.vercel.app/api'"
+        )
+        print(
+            f"   • For direct backend: Use 'https://czsu-multi-agent-text-to-sql.onrender.com'"
+        )
+        print(f"   • For local dev: Use 'http://localhost:8000'")
+        print(f"   • Set environment variable: TEST_SERVER_URL=<your-url>")
         return False
 
     try:

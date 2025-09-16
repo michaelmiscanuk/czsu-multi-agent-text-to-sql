@@ -46,7 +46,7 @@ from tests.helpers import (
 )
 
 # Test configuration
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 15  # Reduced from 30 to get quicker feedback on timeout issues
 TEST_EMAIL = "test_user@example.com"
 

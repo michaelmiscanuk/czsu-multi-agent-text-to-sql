@@ -46,7 +46,7 @@ TEST_THREAD_ID = f"test_thread_{uuid.uuid4().hex[:8]}"
 TEST_THREAD_ID_2 = f"test_thread_{uuid.uuid4().hex[:8]}"
 
 # Server configuration for real HTTP requests
-SERVER_BASE_URL = "http://localhost:8000"
+SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 30  # seconds for chat endpoints (less intensive than analyze)
 
 

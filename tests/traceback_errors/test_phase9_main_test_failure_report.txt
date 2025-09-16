@@ -1,0 +1,28 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-09-16 23:29:26
+Test File: test_phase9_main.py
+====================================================================================================
+
+TOTAL FAILED TESTS: 1
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: test_6
+Endpoint: /analyze
+Description: Analysis endpoint with proper query
+Error Type: Exception
+Timestamp: 2025-09-16T23:29:15.895533
+
+Response Time: 30.00s
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 16
+Successful Requests: 15
+Failed Requests: 1
+Success Rate: 93.75%
+Average Response Time: 0.6586818695068359s
+Total Test Time: 47.720589s
