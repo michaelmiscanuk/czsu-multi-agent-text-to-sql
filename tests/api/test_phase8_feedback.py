@@ -6,14 +6,21 @@ import os
 import sys
 from pathlib import Path
 
-# Set Windows event loop policy FIRST
+from pathlib import Path
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
     import asyncio
 
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Add project root to path for imports
-BASE_DIR = Path(__file__).resolve().parents[2]
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
 sys.path.insert(0, str(BASE_DIR))
 
 import httpx

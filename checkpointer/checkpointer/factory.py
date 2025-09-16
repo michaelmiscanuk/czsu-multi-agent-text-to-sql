@@ -26,6 +26,7 @@ from checkpointer.config import (
 )
 from checkpointer.error_handling.retry_decorators import (
     retry_on_prepared_statement_error,
+    retry_on_ssl_connection_error,
 )
 from checkpointer.database.table_setup import (
     setup_checkpointer_with_autocommit,
@@ -50,20 +51,40 @@ from checkpointer.globals import _GLOBAL_CHECKPOINTER, _CHECKPOINTER_INIT_LOCK
 
 
 async def check_pool_health_and_recreate():
-    """Check the health of the global connection pool and recreate if unhealthy."""
+    """Check the health of the global connection pool and recreate if unhealthy.
+
+    Enhanced version with better error detection for SSL connection issues.
+    """
     global _GLOBAL_CHECKPOINTER
     try:
         pool = getattr(_GLOBAL_CHECKPOINTER, "pool", None)
         if pool is not None:
-            # Try to acquire a connection and run a simple query
-            async with pool.connection() as conn:
-                async with conn.cursor() as cur:
-                    await cur.execute("SELECT 1;")
-                    result = await cur.fetchone()
-                    if result is None or result[0] != 1:
-                        raise Exception("Pool health check failed: bad result")
-            # If no exception, pool is healthy
-            return True
+            # Try to acquire a connection with timeout and run a simple query
+            try:
+                async with asyncio.wait_for(pool.connection(), timeout=10.0) as conn:
+                    async with conn.cursor() as cur:
+                        await cur.execute("SELECT 1")
+                        result = await cur.fetchone()
+                        if result is None or result[0] != 1:
+                            raise Exception("Pool health check failed: bad result")
+                # If no exception, pool is healthy
+                return True
+            except (asyncio.TimeoutError, Exception) as health_error:
+                # More specific error handling for SSL and connection issues
+                error_str = str(health_error).lower()
+                if any(
+                    keyword in error_str
+                    for keyword in ["ssl", "connection", "timeout", "closed"]
+                ):
+                    print__checkpointers_debug(
+                        f"POOL HEALTH CHECK FAILED (SSL/Connection issue): {health_error}"
+                    )
+                    raise health_error
+                else:
+                    print__checkpointers_debug(
+                        f"POOL HEALTH CHECK FAILED (Other issue): {health_error}"
+                    )
+                    raise health_error
         else:
             return False
     except Exception as e:
@@ -72,12 +93,15 @@ async def check_pool_health_and_recreate():
 
         print__checkpointers_debug(f"POOL HEALTH CHECK FAILED: {e}, recreating pool...")
         await force_close_modern_pools()
+        # Clear the global state before recreation
+        _GLOBAL_CHECKPOINTER = None
         # Recreate the global checkpointer
         _GLOBAL_CHECKPOINTER = await create_async_postgres_saver()
         print__checkpointers_debug("POOL RECREATED after health check failure.")
         return False
 
 
+@retry_on_ssl_connection_error(max_retries=3)
 @retry_on_prepared_statement_error(max_retries=CHECKPOINTER_CREATION_MAX_RETRIES)
 async def create_async_postgres_saver():
     """Create and configure AsyncPostgresSaver with connection string approach."""
@@ -128,10 +152,13 @@ async def create_async_postgres_saver():
         connection_kwargs = get_connection_kwargs()
 
         print__checkpointers_debug(
-            "242 - CONNECTION POOL: Creating connection pool with proper kwargs"
+            "242 - CONNECTION POOL: Creating connection pool with proper kwargs and health checking"
         )
 
-        # Create connection pool with our connection kwargs
+        # Import the health check function
+        from checkpointer.database.connection import check_connection_health
+
+        # Create connection pool with our connection kwargs and health checking
         pool = AsyncConnectionPool(
             conninfo=connection_string,
             min_size=DEFAULT_POOL_MIN_SIZE,
@@ -140,6 +167,7 @@ async def create_async_postgres_saver():
             max_idle=DEFAULT_MAX_IDLE,
             max_lifetime=DEFAULT_MAX_LIFETIME,
             kwargs=connection_kwargs,
+            check=check_connection_health,  # Enable connection health checking
             open=False,
         )
 
@@ -236,6 +264,7 @@ async def close_async_postgres_saver():
         print__checkpointers_debug("266 - NO SAVER: No AsyncPostgresSaver to close")
 
 
+@retry_on_ssl_connection_error(max_retries=2)
 @retry_on_prepared_statement_error(max_retries=DEFAULT_MAX_RETRIES)
 async def get_global_checkpointer():
     """

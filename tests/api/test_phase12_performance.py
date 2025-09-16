@@ -7,19 +7,21 @@ import os
 import sys
 from pathlib import Path
 
+from pathlib import Path
+
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
     import asyncio
 
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Load environment variables early
-from dotenv import load_dotenv
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
 
-load_dotenv()
-
-# Add project root to path for imports
-BASE_DIR = Path(__file__).resolve().parents[2]
+# Make project root importable
 sys.path.insert(0, str(BASE_DIR))
 
 # Standard imports
@@ -801,9 +803,7 @@ async def test_concurrent_request_handling(test_data: Dict[str, Any]):
 async def test_concurrent_analysis_performance(test_data: Dict[str, Any]):
     """Test multi-user concurrent performance simulation for analysis endpoints."""
     print("� Testing MULTI-USER CONCURRENT analysis endpoint performance...")
-    print(
-        "   🏢 Simulating realistic multi-user environment with diverse workloads"
-    )
+    print("   🏢 Simulating realistic multi-user environment with diverse workloads")
 
     try:
         # Create multiple user tokens to simulate different users
@@ -813,18 +813,20 @@ async def test_concurrent_analysis_performance(test_data: Dict[str, Any]):
             user_tokens.append({"Authorization": f"Bearer {token}"})
 
         async def simulate_user_session(
-            client: httpx.AsyncClient, 
-            user_id: int, 
-            headers: Dict, 
-            session_duration: int = 30
+            client: httpx.AsyncClient,
+            user_id: int,
+            headers: Dict,
+            session_duration: int = 30,
         ):
             """Simulate a complete user session with multiple requests."""
-            print(f"   👤 User {user_id}: Starting session (targeting {session_duration}s)")
-            
+            print(
+                f"   👤 User {user_id}: Starting session (targeting {session_duration}s)"
+            )
+
             session_start = time.time()
             session_requests = []
             request_count = 0
-            
+
             # Different user behavior patterns (country statistics theme)
             user_patterns = {
                 1: {  # Data Analyst - Complex country-statistics queries
@@ -834,18 +836,18 @@ async def test_concurrent_analysis_performance(test_data: Dict[str, Any]):
                         "Show GDP per capita and rank countries by income group",
                         "Analyze life expectancy trends by region and income group",
                         "Compare unemployment rates across countries and identify outliers",
-                        "Generate a report of median age and urbanization rate by country"
-                    ]
+                        "Generate a report of median age and urbanization rate by country",
+                    ],
                 },
-                2: {  # Business User - Simple country-statistics queries  
+                2: {  # Business User - Simple country-statistics queries
                     "requests_per_minute": 8,
                     "queries": [
                         "How many countries have a population over 50 million?",
                         "List the top 10 countries by GDP per capita",
                         "Show countries with life expectancy above 80 years",
                         "What countries had negative GDP growth last year?",
-                        "Display countries with CO2 emissions per capita above 10 tonnes"
-                    ]
+                        "Display countries with CO2 emissions per capita above 10 tonnes",
+                    ],
                 },
                 3: {  # Power User - Mixed complexity country-statistics queries
                     "requests_per_minute": 6,
@@ -854,26 +856,26 @@ async def test_concurrent_analysis_performance(test_data: Dict[str, Any]):
                         "Show demographic breakdown (age groups) for selected countries",
                         "Analyze correlation between education index and GDP per capita",
                         "Generate trade balance summary (exports - imports) for selected countries",
-                        "Compare healthcare spending vs life expectancy across countries"
-                    ]
-                }
+                        "Compare healthcare spending vs life expectancy across countries",
+                    ],
+                },
             }
-            
+
             pattern = user_patterns[user_id]
             queries = pattern["queries"]
             requests_per_minute = pattern["requests_per_minute"]
-            
+
             # Calculate request interval
             request_interval = 60 / requests_per_minute
-            
+
             while time.time() - session_start < session_duration:
                 request_count += 1
                 query = random.choice(queries)
                 thread_id = test_data.get("thread_ids", [str(uuid.uuid4())])[0]
-                
+
                 request_start = time.time()
                 start_memory = get_memory_usage()
-                
+
                 try:
                     response = await client.post(
                         "/analyze",
@@ -882,140 +884,181 @@ async def test_concurrent_analysis_performance(test_data: Dict[str, Any]):
                             "thread_id": f"{thread_id}_user{user_id}_{request_count}",
                         },
                         headers=headers,
-                        timeout=60.0
+                        timeout=60.0,
                     )
-                    
+
                     request_time = time.time() - request_start
                     end_memory = get_memory_usage()
-                    
-                    session_requests.append({
-                        "user_id": user_id,
-                        "request_id": request_count,
-                        "query": query[:60] + "..." if len(query) > 60 else query,
-                        "response_time": request_time,
-                        "status_code": response.status_code,
-                        "success": response.status_code in [200, 201],
-                        "memory_delta": (end_memory - start_memory) if both_exist(start_memory, end_memory) else 0,
-                        "response_size": len(response.content) if hasattr(response, "content") else 0,
-                        "timestamp": time.time() - session_start
-                    })
-                    
+
+                    session_requests.append(
+                        {
+                            "user_id": user_id,
+                            "request_id": request_count,
+                            "query": query[:60] + "..." if len(query) > 60 else query,
+                            "response_time": request_time,
+                            "status_code": response.status_code,
+                            "success": response.status_code in [200, 201],
+                            "memory_delta": (
+                                (end_memory - start_memory)
+                                if both_exist(start_memory, end_memory)
+                                else 0
+                            ),
+                            "response_size": (
+                                len(response.content)
+                                if hasattr(response, "content")
+                                else 0
+                            ),
+                            "timestamp": time.time() - session_start,
+                        }
+                    )
+
                     status_emoji = "✅" if response.status_code in [200, 201] else "❌"
-                    print(f"      {status_emoji} User {user_id} Request {request_count}: {request_time:.1f}s ({response.status_code})")
-                    
+                    print(
+                        f"      {status_emoji} User {user_id} Request {request_count}: {request_time:.1f}s ({response.status_code})"
+                    )
+
                 except Exception as e:
                     request_time = time.time() - request_start
-                    session_requests.append({
-                        "user_id": user_id,
-                        "request_id": request_count,
-                        "query": query[:60] + "..." if len(query) > 60 else query,
-                        "response_time": request_time,
-                        "status_code": 0,
-                        "success": False,
-                        "memory_delta": 0,
-                        "response_size": 0,
-                        "error": str(e)[:100],
-                        "timestamp": time.time() - session_start
-                    })
-                    print(f"      ❌ User {user_id} Request {request_count}: Failed ({str(e)[:50]})")
-                
+                    session_requests.append(
+                        {
+                            "user_id": user_id,
+                            "request_id": request_count,
+                            "query": query[:60] + "..." if len(query) > 60 else query,
+                            "response_time": request_time,
+                            "status_code": 0,
+                            "success": False,
+                            "memory_delta": 0,
+                            "response_size": 0,
+                            "error": str(e)[:100],
+                            "timestamp": time.time() - session_start,
+                        }
+                    )
+                    print(
+                        f"      ❌ User {user_id} Request {request_count}: Failed ({str(e)[:50]})"
+                    )
+
                 # Wait between requests (simulate realistic user behavior)
                 remaining_time = session_duration - (time.time() - session_start)
                 if remaining_time > request_interval:
                     await asyncio.sleep(min(request_interval, remaining_time))
                 else:
                     break
-            
+
             session_time = time.time() - session_start
             successful_requests = len([r for r in session_requests if r["success"]])
-            print(f"   👤 User {user_id}: Session completed - {successful_requests}/{len(session_requests)} successful in {session_time:.1f}s")
-            
+            print(
+                f"   👤 User {user_id}: Session completed - {successful_requests}/{len(session_requests)} successful in {session_time:.1f}s"
+            )
+
             return session_requests
 
         async with httpx.AsyncClient(
-            base_url=SERVER_BASE_URL,
-            timeout=httpx.Timeout(120.0)
+            base_url=SERVER_BASE_URL, timeout=httpx.Timeout(120.0)
         ) as client:
-            
+
             print("   � Starting concurrent multi-user simulation...")
             print("   📊 User Profiles:")
             print("      👤 User 1: Data Analyst (4 req/min, complex queries)")
-            print("      👤 User 2: Business User (8 req/min, simple queries)") 
+            print("      👤 User 2: Business User (8 req/min, simple queries)")
             print("      👤 User 3: Power User (6 req/min, mixed complexity)")
-            
+
             simulation_start = time.time()
-            
+
             # Start all user sessions concurrently
             user_tasks = []
             for i, headers in enumerate(user_tokens):
                 task = simulate_user_session(
-                    client, 
-                    user_id=i+1, 
+                    client,
+                    user_id=i + 1,
                     headers=headers,
-                    session_duration=30  # 30 second sessions
+                    session_duration=30,  # 30 second sessions
                 )
                 user_tasks.append(task)
-            
+
             # Run all user sessions simultaneously
             print("   ⏳ Executing multi-user concurrent sessions...")
-            user_session_results = await asyncio.gather(*user_tasks, return_exceptions=True)
-            
+            user_session_results = await asyncio.gather(
+                *user_tasks, return_exceptions=True
+            )
+
             total_simulation_time = time.time() - simulation_start
             print(f"   ⏱️ Total simulation time: {total_simulation_time:.2f}s")
-            
+
             # Aggregate results from all users
             all_requests = []
             user_stats = {}
-            
+
             for i, session_requests in enumerate(user_session_results):
                 if isinstance(session_requests, list):
                     all_requests.extend(session_requests)
-                    
+
                     # Calculate per-user statistics
                     user_id = i + 1
                     successful = len([r for r in session_requests if r["success"]])
                     total_reqs = len(session_requests)
-                    avg_time = sum(r["response_time"] for r in session_requests) / total_reqs if total_reqs > 0 else 0
-                    
+                    avg_time = (
+                        sum(r["response_time"] for r in session_requests) / total_reqs
+                        if total_reqs > 0
+                        else 0
+                    )
+
                     user_stats[f"user_{user_id}"] = {
                         "total_requests": total_reqs,
                         "successful_requests": successful,
-                        "success_rate": (successful / total_reqs * 100) if total_reqs > 0 else 0,
+                        "success_rate": (
+                            (successful / total_reqs * 100) if total_reqs > 0 else 0
+                        ),
                         "avg_response_time": avg_time,
-                        "throughput": total_reqs / total_simulation_time if total_simulation_time > 0 else 0
+                        "throughput": (
+                            total_reqs / total_simulation_time
+                            if total_simulation_time > 0
+                            else 0
+                        ),
                     }
-            
+
             if all_requests:
                 # Overall statistics
                 total_requests = len(all_requests)
                 successful_requests = len([r for r in all_requests if r["success"]])
                 failed_requests = total_requests - successful_requests
-                
+
                 response_times = [r["response_time"] for r in all_requests]
                 avg_response_time = sum(response_times) / len(response_times)
                 max_response_time = max(response_times)
                 min_response_time = min(response_times)
-                
+
                 # Calculate percentiles
                 sorted_times = sorted(response_times)
-                p50_time = sorted_times[len(sorted_times)//2]
-                p95_time = sorted_times[int(len(sorted_times)*0.95)]
-                p99_time = sorted_times[int(len(sorted_times)*0.99)]
-                
+                p50_time = sorted_times[len(sorted_times) // 2]
+                p95_time = sorted_times[int(len(sorted_times) * 0.95)]
+                p99_time = sorted_times[int(len(sorted_times) * 0.99)]
+
                 success_rate = (successful_requests / total_requests) * 100
-                overall_throughput = total_requests / total_simulation_time if total_simulation_time > 0 else 0
-                
+                overall_throughput = (
+                    total_requests / total_simulation_time
+                    if total_simulation_time > 0
+                    else 0
+                )
+
                 # Memory analysis
-                memory_deltas = [r.get("memory_delta", 0) for r in all_requests if r.get("memory_delta")]
-                avg_memory_delta = sum(memory_deltas) / len(memory_deltas) if memory_deltas else 0
-                
+                memory_deltas = [
+                    r.get("memory_delta", 0)
+                    for r in all_requests
+                    if r.get("memory_delta")
+                ]
+                avg_memory_delta = (
+                    sum(memory_deltas) / len(memory_deltas) if memory_deltas else 0
+                )
+
                 print(f"\n   📊 MULTI-USER SIMULATION RESULTS:")
                 print(f"      🎯 Overall Performance:")
                 print(f"         Total Requests: {total_requests}")
-                print(f"         Successful: {successful_requests} ({success_rate:.1f}%)")
+                print(
+                    f"         Successful: {successful_requests} ({success_rate:.1f}%)"
+                )
                 print(f"         Failed: {failed_requests}")
                 print(f"         Overall Throughput: {overall_throughput:.2f} req/s")
-                
+
                 print(f"      ⚡ Response Times:")
                 print(f"         Average: {avg_response_time:.2f}s")
                 print(f"         P50 (Median): {p50_time:.2f}s")
@@ -1023,27 +1066,43 @@ async def test_concurrent_analysis_performance(test_data: Dict[str, Any]):
                 print(f"         P99: {p99_time:.2f}s")
                 print(f"         Min: {min_response_time:.2f}s")
                 print(f"         Max: {max_response_time:.2f}s")
-                
-                print(f"      💾 Memory Impact: {avg_memory_delta:+.1f}MB avg per request")
-                
+
+                print(
+                    f"      💾 Memory Impact: {avg_memory_delta:+.1f}MB avg per request"
+                )
+
                 print(f"      👥 Per-User Performance:")
                 for user_key, stats in user_stats.items():
-                    user_num = user_key.split('_')[1]
-                    print(f"         User {user_num}: {stats['successful_requests']}/{stats['total_requests']} "
-                          f"({stats['success_rate']:.1f}%) - {stats['avg_response_time']:.2f}s avg - "
-                          f"{stats['throughput']:.1f} req/s")
-                
+                    user_num = user_key.split("_")[1]
+                    print(
+                        f"         User {user_num}: {stats['successful_requests']}/{stats['total_requests']} "
+                        f"({stats['success_rate']:.1f}%) - {stats['avg_response_time']:.2f}s avg - "
+                        f"{stats['throughput']:.1f} req/s"
+                    )
+
                 # Multi-user performance assessment
-                if success_rate >= 85 and avg_response_time < 25.0 and overall_throughput >= 0.3:
-                    print("      🎉 EXCELLENT multi-user performance under concurrent load")
+                if (
+                    success_rate >= 85
+                    and avg_response_time < 25.0
+                    and overall_throughput >= 0.3
+                ):
+                    print(
+                        "      🎉 EXCELLENT multi-user performance under concurrent load"
+                    )
                     performance_rating = "excellent"
-                elif success_rate >= 70 and avg_response_time < 45.0 and overall_throughput >= 0.15:
-                    print("      🟡 ACCEPTABLE multi-user performance under concurrent load")
+                elif (
+                    success_rate >= 70
+                    and avg_response_time < 45.0
+                    and overall_throughput >= 0.15
+                ):
+                    print(
+                        "      🟡 ACCEPTABLE multi-user performance under concurrent load"
+                    )
                     performance_rating = "acceptable"
                 else:
                     print("      ❌ POOR multi-user performance under concurrent load")
                     performance_rating = "poor"
-                
+
                 # Return comprehensive multi-user results
                 return {
                     "test_name": "Multi-User Concurrent Analysis Performance",
@@ -1066,7 +1125,7 @@ async def test_concurrent_analysis_performance(test_data: Dict[str, Any]):
                     "concurrent_users": len(user_tokens),
                     "session_duration": 30,
                 }
-            
+
             else:
                 print("   ❌ No valid results from multi-user concurrent test")
                 return {
@@ -1146,10 +1205,16 @@ async def test_endpoint_response_times(
                 {"page": 2, "page_size": 5},
                 "Catalog listing - custom pagination",
             ),
-            ("/catalog", "GET", headers, {"q": "population"}, "Catalog search with query"),
+            (
+                "/catalog",
+                "GET",
+                headers,
+                {"q": "population"},
+                "Catalog search with query",
+            ),
             ("/data-tables", "GET", headers, None, "Data tables listing"),
             ("/data-tables", "GET", headers, {"q": "test"}, "Data tables search"),
-                (
+            (
                 "/data-table",
                 "GET",
                 headers,
@@ -1936,7 +2001,7 @@ def analyze_performance_results(results: PerformanceResults) -> Dict[str, Any]:
         and concurrent_analysis_data.get("performance_rating") != "failed"
     ):
         print(f"\n� MULTI-USER CONCURRENT ANALYSIS PERFORMANCE")
-        
+
         simulation_type = concurrent_analysis_data.get("simulation_type", "unknown")
         total_requests = concurrent_analysis_data.get("total_requests", 0)
         success_rate = concurrent_analysis_data.get("success_rate", 0)
@@ -1944,7 +2009,9 @@ def analyze_performance_results(results: PerformanceResults) -> Dict[str, Any]:
         overall_throughput = concurrent_analysis_data.get("overall_throughput", 0)
         concurrent_users = concurrent_analysis_data.get("concurrent_users", 0)
         session_duration = concurrent_analysis_data.get("session_duration", 0)
-        performance_rating = concurrent_analysis_data.get("performance_rating", "unknown")
+        performance_rating = concurrent_analysis_data.get(
+            "performance_rating", "unknown"
+        )
         user_stats = concurrent_analysis_data.get("user_stats", {})
 
         if performance_rating == "excellent":
@@ -1966,21 +2033,25 @@ def analyze_performance_results(results: PerformanceResults) -> Dict[str, Any]:
         print(f"   Success Rate: {success_rate:.1f}%")
         print(f"   Average Response Time: {avg_response_time:.2f}s")
         print(f"   Overall Throughput: {overall_throughput:.2f} req/s")
-        
+
         # Show per-user performance if available
         if user_stats:
             print(f"   Per-User Performance:")
             for user_key, stats in user_stats.items():
-                user_num = user_key.split('_')[1]
-                print(f"      User {user_num}: {stats['success_rate']:.1f}% success, {stats['avg_response_time']:.1f}s avg")
-        
+                user_num = user_key.split("_")[1]
+                print(
+                    f"      User {user_num}: {stats['success_rate']:.1f}% success, {stats['avg_response_time']:.1f}s avg"
+                )
+
         print(f"   Performance Rating: {analysis_status}")
 
         # Add percentile information if available
         p95_time = concurrent_analysis_data.get("p95_response_time")
         p99_time = concurrent_analysis_data.get("p99_response_time")
         if p95_time and p99_time:
-            print(f"   Response Time Distribution: P95={p95_time:.2f}s, P99={p99_time:.2f}s")
+            print(
+                f"   Response Time Distribution: P95={p95_time:.2f}s, P99={p99_time:.2f}s"
+            )
 
     # Overall Assessment
     print(f"\n🏁 OVERALL ASSESSMENT")

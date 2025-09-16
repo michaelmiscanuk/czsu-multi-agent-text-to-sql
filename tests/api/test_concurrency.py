@@ -12,21 +12,26 @@ import traceback
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List
-
-# Add the project root directory to Python path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-
-# try:
-#     from pathlib import Path
-
-#     BASE_DIR = Path(__file__).resolve().parents[1]
-# except NameError:
-#     BASE_DIR = Path(os.getcwd()).parents[0]
-
+from pathlib import Path
 import httpx
 import pytest
+
+from pathlib import Path
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
+if sys.platform == "win32":
+    import asyncio
+
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
+sys.path.insert(0, str(BASE_DIR))
 
 from tests.helpers import (
     BaseTestResults,
@@ -53,6 +58,7 @@ if sys.platform == "win32":
 
 # Test configuration
 SERVER_BASE_URL = "http://localhost:8000"
+# SERVER_BASE_URL = "https://czsu-multi-agent-text-to-sql.vercel.app/"
 REQUEST_TIMEOUT = 180
 TEST_EMAIL = "test_user@example.com"
 TEST_PROMPTS = [

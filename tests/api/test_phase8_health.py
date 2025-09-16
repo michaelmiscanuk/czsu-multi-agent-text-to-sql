@@ -8,6 +8,24 @@ from datetime import datetime
 import time
 import asyncio
 import sys
+import os
+
+from pathlib import Path
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
+if sys.platform == "win32":
+    import asyncio
+
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
+sys.path.insert(0, str(BASE_DIR))
 
 from tests.helpers import (
     BaseTestResults,
@@ -22,9 +40,6 @@ from tests.helpers import (
     cleanup_debug_environment,
 )
 
-# Set Windows event loop policy FIRST
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Test configuration
 SERVER_BASE_URL = "http://localhost:8000"
@@ -95,7 +110,9 @@ TEST_QUERIES = [
 
 def _validate_response_structure(endpoint: str, data: dict, test_focus: str = None):
     """Validate response structure based on endpoint."""
-    print(f"🔍 Testing: {test_focus or f'Response structure validation for {endpoint}'}")
+    print(
+        f"🔍 Testing: {test_focus or f'Response structure validation for {endpoint}'}"
+    )
 
     if endpoint == "/health":
         # Main health check response validation
@@ -319,7 +336,7 @@ def _get_test_explanation(
     params: dict = None,
 ) -> str:
     """Generate a detailed explanation of what the test is validating."""
-    
+
     if should_succeed:
         # Success cases - explain what functionality we're testing
         if endpoint == "/health":
@@ -340,7 +357,7 @@ def _get_test_explanation(
             return f"Error handling: invalid endpoint '{endpoint}' should return 404 Not Found"
         elif expected_status == 422:
             return "Validation error: malformed request should be rejected with proper error response"
-    
+
     return f"Testing {test_focus} - verifying proper health endpoint behavior"
 
 
@@ -395,7 +412,7 @@ async def make_health_request(
 
         response = result["response"]
         print(f"   📊 Response: {response.status_code} in {response_time:.2f}s")
-        
+
         # Print response details for detailed output
         try:
             response_data = response.json()
@@ -409,7 +426,9 @@ async def make_health_request(
                 try:
                     data = response.json()
                     _validate_response_structure(endpoint, data, test_focus)
-                    print(f"   ✅ [OK] Test passed - Health status: {data.get('status', 'unknown')}")
+                    print(
+                        f"   ✅ [OK] Test passed - Health status: {data.get('status', 'unknown')}"
+                    )
                     results.add_result(
                         test_id,
                         endpoint,
@@ -463,7 +482,9 @@ async def make_health_request(
         else:
             # Handle expected failure cases
             if expected_status and response.status_code == expected_status:
-                print(f"✅ Test {test_id} - Correctly failed with HTTP {expected_status}")
+                print(
+                    f"✅ Test {test_id} - Correctly failed with HTTP {expected_status}"
+                )
                 data = {"expected_failure": True, "status_code": expected_status}
                 results.add_result(
                     test_id,

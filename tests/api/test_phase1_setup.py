@@ -13,8 +13,12 @@ import os
 import sys
 import time
 from datetime import datetime
-from pathlib import Path
 from typing import Callable, Dict, Any, List, Optional, Union
+import asyncio
+import httpx
+from dotenv import load_dotenv
+
+from pathlib import Path
 
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
@@ -22,21 +26,16 @@ if sys.platform == "win32":
 
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 # Resolve base directory (project root)
 try:
-    BASE_DIR = Path(__file__).resolve().parents[1]
+    BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:  # Fallback if __file__ not defined
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-import asyncio
-import httpx
-
 # Make project root importable
 sys.path.insert(0, str(BASE_DIR))
+
+load_dotenv()
 
 # ---------------------------------------------------------------------------
 # Imported testing utilities (pattern reused from phase8)

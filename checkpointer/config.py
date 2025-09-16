@@ -3,6 +3,7 @@
 This module centralizes all configuration constants and environment variable handling
 for the PostgreSQL checkpointer system.
 """
+
 from __future__ import annotations
 
 import os
@@ -22,15 +23,23 @@ from api.utils.debug import print__checkpointers_debug
 DEFAULT_MAX_RETRIES = 2  # Standard retry attempts for most operations
 CHECKPOINTER_CREATION_MAX_RETRIES = 2  # Retry attempts for checkpointer creation
 CONNECT_TIMEOUT = 20  # Initial connection timeout for cloud databases
-TCP_USER_TIMEOUT = 30000  # TCP-level timeout (30 seconds in milliseconds)
-KEEPALIVES_IDLE = 600  # 10 minutes before first keepalive
+TCP_USER_TIMEOUT = 60000  # TCP-level timeout (60 seconds in milliseconds) - increased for long operations
+KEEPALIVES_IDLE = (
+    300  # 5 minutes before first keepalive - reduced for better connection health
+)
 KEEPALIVES_INTERVAL = 30  # 30 seconds between keepalives
 KEEPALIVES_COUNT = 3  # 3 failed keepalives before disconnect
 DEFAULT_POOL_MIN_SIZE = 3  # Increased minimum pool size for higher concurrency
 DEFAULT_POOL_MAX_SIZE = 10  # Increased maximum pool size to support more connections
-DEFAULT_POOL_TIMEOUT = 20  # Pool connection timeout
-DEFAULT_MAX_IDLE = 300  # 5 minutes idle timeout
-DEFAULT_MAX_LIFETIME = 1800  # 30 minutes max connection lifetime
+DEFAULT_POOL_TIMEOUT = (
+    30  # Pool connection timeout - increased for concurrent operations
+)
+DEFAULT_MAX_IDLE = (
+    600  # 10 minutes idle timeout - increased for long-running operations
+)
+DEFAULT_MAX_LIFETIME = (
+    3600  # 60 minutes max connection lifetime - increased for stability
+)
 USER_MESSAGE_PREVIEW_LENGTH = 50  # Length for user message previews in logs
 AI_MESSAGE_PREVIEW_LENGTH = 100  # Length for AI message previews in logs
 THREAD_TITLE_MAX_LENGTH = 47  # Maximum length for thread titles

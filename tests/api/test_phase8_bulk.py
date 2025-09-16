@@ -15,22 +15,22 @@ from typing import Any, Dict, List
 import httpx
 import pytest
 
+from pathlib import Path
+
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
-    print(
-        "[POSTGRES-STARTUP] Windows detected - setting SelectorEventLoop for PostgreSQL compatibility..."
-    )
+    import asyncio
+
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-    print("[POSTGRES-STARTUP] Event loop policy set successfully")
 
-# Add the root directory to Python path to import from main scripts
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-# Constants
+# Resolve base directory (project root)
 try:
-    BASE_DIR = Path(__file__).resolve().parents[1]
-except NameError:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
     BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
+sys.path.insert(0, str(BASE_DIR))
 
 from checkpointer.config import get_db_config, check_postgres_env_vars
 from checkpointer.checkpointer.factory import (

@@ -9,11 +9,25 @@ import traceback
 import uuid
 from typing import Dict, Any
 from datetime import datetime
-
-# Add project root to Python path for imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
 import httpx
+
+from pathlib import Path
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
+if sys.platform == "win32":
+    import asyncio
+
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
+sys.path.insert(0, str(BASE_DIR))
+
 
 from tests.helpers import (
     BaseTestResults,

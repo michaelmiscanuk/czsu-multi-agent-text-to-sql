@@ -16,11 +16,22 @@ from datetime import datetime
 from typing import Dict, Any
 from dotenv import load_dotenv
 
-# Add the parent directory to the path for imports
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-if parent_dir not in sys.path:
-    sys.path.insert(0, parent_dir)
+from pathlib import Path
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
+if sys.platform == "win32":
+    import asyncio
+
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
+sys.path.insert(0, str(BASE_DIR))
 
 from tests.helpers import (
     BaseTestResults,

@@ -12,25 +12,23 @@ from typing import Dict, Any, List
 from unittest.mock import patch, MagicMock
 import tempfile
 import threading
+from dotenv import load_dotenv
+
+from pathlib import Path
 
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
+    import asyncio
+
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Load environment variables early
-from dotenv import load_dotenv
-
-load_dotenv()
-
-# Constants
+# Resolve base directory (project root)
 try:
-    from pathlib import Path
-
     BASE_DIR = Path(__file__).resolve().parents[2]
-except NameError:
+except NameError:  # Fallback if __file__ not defined
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-# Add project root to path
+# Make project root importable
 sys.path.insert(0, str(BASE_DIR))
 
 from tests.helpers import (
@@ -77,6 +75,8 @@ except ImportError as e:
     print(f"❌ Failed to import utilities: {e}")
     print("This may be due to missing dependencies. Please run: pip install psutil")
     sys.exit(1)
+
+load_dotenv()
 
 # Test configuration
 TEST_UTILITIES = {

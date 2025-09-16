@@ -36,7 +36,10 @@ load_dotenv()
 
 from my_agent import create_graph
 from my_agent.utils.nodes import MAX_ITERATIONS
-from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error
+from checkpointer.error_handling.retry_decorators import (
+    retry_on_prepared_statement_error,
+    retry_on_ssl_connection_error,
+)
 from checkpointer.checkpointer.factory import get_global_checkpointer
 from my_agent.utils.state import DataAnalysisState
 
@@ -169,6 +172,7 @@ def get_used_selection_codes(
 # ==============================================================================
 # MAIN FUNCTION
 # ==============================================================================
+@retry_on_ssl_connection_error(max_retries=3)
 @retry_on_prepared_statement_error(max_retries=3)
 async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     """Main entry point for the application.

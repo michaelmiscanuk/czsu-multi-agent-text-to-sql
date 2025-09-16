@@ -22,17 +22,22 @@ from pathlib import Path
 
 import httpx
 
-# --- Path Setup (Fix for import errors: 'No module named api.config') ---
-PROJECT_ROOT_CANDIDATES = [
-    Path(__file__).resolve().parents[1],  # repo root when test in tests/
-    Path(__file__).resolve().parents[2],  # fallback if nested
-]
-for candidate in PROJECT_ROOT_CANDIDATES:
-    if (candidate / "api" / "config" / "settings.py").exists():
-        candidate_str = str(candidate)
-        if candidate_str not in sys.path:
-            sys.path.insert(0, candidate_str)
-        break
+from pathlib import Path
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
+if sys.platform == "win32":
+    import asyncio
+
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
+sys.path.insert(0, str(BASE_DIR))
 
 # Helper to safely import settings with retry after path adjustment
 _settings_module_cache = None

@@ -132,7 +132,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["api*", "tests*", "my_agent*", "data*", "metadata*"]
+include = ["api*", "tests*", "my_agent*", "data*", "metadata*", "checkpointer*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.py", "*.txt", "*.md", "*.json", "*.yaml", "*.yml", "*.toml", "*.cfg", "*.ini"]

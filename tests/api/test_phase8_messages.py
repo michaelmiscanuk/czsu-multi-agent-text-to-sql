@@ -8,8 +8,21 @@ import sys
 import json
 from pathlib import Path
 
-# Add project root to path
-BASE_DIR = Path(__file__).resolve().parents[2]
+from pathlib import Path
+
+# CRITICAL: Set Windows event loop policy FIRST, before other imports
+if sys.platform == "win32":
+    import asyncio
+
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
 sys.path.insert(0, str(BASE_DIR))
 
 import httpx
@@ -180,7 +193,7 @@ def _get_test_explanation(
     expect_empty: bool = False,
 ) -> str:
     """Generate a detailed explanation of what the test is validating."""
-    
+
     if should_succeed:
         # Success cases - explain what functionality we're testing
         if "/messages" in endpoint:
@@ -201,11 +214,13 @@ def _get_test_explanation(
             return f"Parameter validation: malformed thread_id '{thread_id}' should be rejected by request validation"
         elif expected_status == 400:
             return f"Business logic validation: invalid thread_id format '{thread_id}' should be caught by application logic"
-    
+
     return f"Testing {test_focus} - verifying proper API behavior for thread_id: '{thread_id}'"
 
 
-def _get_auth_test_explanation(endpoint: str, has_token: bool, token_valid: bool) -> str:
+def _get_auth_test_explanation(
+    endpoint: str, has_token: bool, token_valid: bool
+) -> str:
     """Generate explanation for authentication test cases."""
     if not has_token:
         return f"FastAPI should reject request to {endpoint} when Authorization header is completely missing (401 Unauthorized)"
@@ -301,11 +316,11 @@ async def test_authentication_required():
             "test_focus": "JWT token requirement validation",
         },
         {
-            "endpoint": "/chat/test-thread/run-ids", 
+            "endpoint": "/chat/test-thread/run-ids",
             "endpoint_type": "Run IDs",
             "description": "No authorization header",
             "test_focus": "JWT token requirement validation",
-        }
+        },
     ]
 
     async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
@@ -315,29 +330,37 @@ async def test_authentication_required():
             print(f"   📍 Endpoint: GET {endpoint}")
             print(f"   � Headers: None (testing missing Authorization)")
             print(f"   ✅ Expected Result: 401 Unauthorized")
-            print(f"   🎯 What we're testing: {_get_auth_test_explanation(endpoint, False, False)}")
+            print(
+                f"   🎯 What we're testing: {_get_auth_test_explanation(endpoint, False, False)}"
+            )
 
             # Test without token
             response = await client.get(f"{SERVER_BASE_URL}{endpoint}")
             assert (
                 response.status_code == 401
             ), f"Expected 401 for {endpoint} without auth"
-            print(f"✅ {test_case['endpoint_type']}: correctly requires authentication (401)")
+            print(
+                f"✅ {test_case['endpoint_type']}: correctly requires authentication (401)"
+            )
 
             # Test with invalid token
             print(f"\n🔍 AUTH TEST {i}b: Invalid token format")
             print(f"   📍 Endpoint: GET {endpoint}")
             print(f"   🔑 Headers: Authorization: Bearer invalid_token")
             print(f"   ✅ Expected Result: 401/403 Unauthorized")
-            print(f"   🎯 What we're testing: {_get_auth_test_explanation(endpoint, True, False)}")
-            
+            print(
+                f"   🎯 What we're testing: {_get_auth_test_explanation(endpoint, True, False)}"
+            )
+
             headers = {"Authorization": "Bearer invalid_token"}
             response = await client.get(f"{SERVER_BASE_URL}{endpoint}", headers=headers)
             assert response.status_code in [
                 401,
                 403,
             ], f"Expected 401/403 for {endpoint} with invalid auth"
-            print(f"✅ {test_case['endpoint_type']}: correctly rejects invalid token ({response.status_code})")
+            print(
+                f"✅ {test_case['endpoint_type']}: correctly rejects invalid token ({response.status_code})"
+            )
 
 
 async def make_message_request(
@@ -483,16 +506,18 @@ async def test_chat_messages_response_structure():
         for i, test_case in enumerate(test_cases, 1):
             endpoint = test_case["endpoint"]
             thread_id = test_case["thread_id"]
-            
+
             print(f"\n🔍 STRUCTURE TEST {i}: {test_case['test_focus']}")
             print(f"   📍 Endpoint: GET {endpoint}")
             print(f"   🔑 Headers: Authorization Bearer token (valid)")
             print(f"   🎯 Thread ID: '{thread_id}'")
             print(f"   ✅ Expected Result: Valid JSON response with messages array")
-            print(f"   🎯 What we're testing: {_get_test_explanation(test_case['test_focus'], True, 200, thread_id, endpoint, True)}")
+            print(
+                f"   🎯 What we're testing: {_get_test_explanation(test_case['test_focus'], True, 200, thread_id, endpoint, True)}"
+            )
 
             response = await client.get(f"{SERVER_BASE_URL}{endpoint}", headers=headers)
-            
+
             # Should return valid response (might be empty for new thread)
             assert response.status_code in [
                 200

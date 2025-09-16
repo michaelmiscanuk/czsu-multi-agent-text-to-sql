@@ -95,6 +95,7 @@ def get_connection_string():
     )
 
     # Connection string with timeout and keepalive settings for cloud databases
+    # Optimized for SSL connection stability and long-running operations
     globals_module._CONNECTION_STRING_CACHE = (
         f"postgresql://{config['user']}:{config['password']}@"
         f"{config['host']}:{config['port']}/{config['dbname']}?"
@@ -149,6 +150,36 @@ def get_connection_kwargs():
         "autocommit": False,  # Better compatibility with cloud databases under load
         "prepare_threshold": None,  # Disable prepared statements completely
     }
+
+
+async def check_connection_health(connection):
+    """Check if a database connection is healthy and working.
+
+    This function performs a simple SELECT 1 query to verify that the connection
+    is still alive and can execute commands. Used by the connection pool to
+    validate connections before giving them to clients.
+
+    Args:
+        connection: psycopg connection object to check
+
+    Returns:
+        bool: True if connection is healthy, False otherwise
+
+    Note:
+        - Catches all exceptions to avoid breaking pool operations
+        - Used as a callback for psycopg connection pools
+        - Helps prevent "SSL connection has been closed unexpectedly" errors
+        - Essential for long-running applications with concurrent database access
+    """
+    try:
+        # Simple health check query
+        async with connection.cursor() as cur:
+            await cur.execute("SELECT 1")
+            result = await cur.fetchone()
+            return result is not None and result[0] == 1
+    except Exception as e:
+        print__checkpointers_debug(f"Connection health check failed: {e}")
+        return False
 
 
 @asynccontextmanager
