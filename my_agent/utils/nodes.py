@@ -376,6 +376,7 @@ IMPORTANT notes about SQL query generation:
 - Always examine the ALL Schema to see how the data are laid out - column names and its concrete dimensional values. 
 - If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name.
 - Be careful about how you ALIAS (AS Clause) the Column names to make sense of the data - base it on what you use in where or group by clase.
+- ALWAYS INCLUDE COLUMN "metric or ukazatel" if present - WHEN DOING GROUP BY - it will provide additional information about meaning of 'value' column in the result.
 
 === OUTPUT - MOST IMPORTANT AND CRITICAL RULE FOR IT TO WORK!!!!!!!! ===
 - Return ONLY the final SQLITE SQL QUERY that should be executed, with nothing else around it. 

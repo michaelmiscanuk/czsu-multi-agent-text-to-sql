@@ -71,7 +71,7 @@ throttle_semaphores = defaultdict(
 # Global cache for bulk loading to prevent repeated calls
 _bulk_loading_cache = {}
 _bulk_loading_locks = defaultdict(asyncio.Lock)
-BULK_CACHE_TIMEOUT = 30  # Cache timeout in seconds
+BULK_CACHE_TIMEOUT = 120  # Cache timeout in seconds
 
 GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
 

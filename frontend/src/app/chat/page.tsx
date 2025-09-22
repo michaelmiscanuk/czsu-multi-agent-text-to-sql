@@ -109,6 +109,9 @@ export default function ChatPage() {
   // This ensures loading state persists across navigation AND across browser tabs for the same user
   const isAnyLoading = isLoading || cacheLoading || isUserLoading;
   
+  // UI blocking loading state: excludes cacheLoading to allow NEW CHAT and input during background refresh
+  const isUIBlocking = isLoading || isUserLoading;
+  
   // Track previous chatId and message count for scroll logic
   const prevChatIdRef = React.useRef<string | null>(null);
   const prevMsgCountRef = React.useRef<number>(1);
@@ -530,7 +533,7 @@ export default function ChatPage() {
     
     console.log('🔍 print__analysis_tracing_debug: 01 - FORM SUBMIT: Form submission triggered');
     
-    if (!currentMessage.trim() || isAnyLoading || !userEmail) return;
+    if (!currentMessage.trim() || isUIBlocking || !userEmail) return;
     
     console.log('🔍 print__analysis_tracing_debug: 02 - VALIDATION PASSED: Message validation passed');
     
@@ -809,7 +812,7 @@ export default function ChatPage() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       // Only submit if there's content and not loading
-      if (currentMessage.trim() && !isAnyLoading) {
+      if (currentMessage.trim() && !isUIBlocking) {
         const syntheticEvent = new Event('submit') as any;
         syntheticEvent.preventDefault = () => {};
         handleSend(syntheticEvent);
@@ -959,7 +962,7 @@ export default function ChatPage() {
             className="px-3 py-1.5 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleNewChat}
             title="New chat"
-            disabled={isAnyLoading || !userEmail}
+            disabled={isUIBlocking || !userEmail}
           >
             + New Chat
           </button>
@@ -979,7 +982,7 @@ export default function ChatPage() {
             </div>
           ) : (
             <>
-              {threads.map(s => (
+              {threads.filter((thread, index, arr) => arr.findIndex(t => t.thread_id === thread.thread_id) === index).map(s => (
                 <div key={s.thread_id} className="group">
                   {editingTitleId === s.thread_id ? (
                     <input
@@ -1019,8 +1022,16 @@ export default function ChatPage() {
                 </div>
               ))}
               
-              {/* Infinite Scroll Loading Indicator */}
-              {threadsHasMore && (
+              {/* Unified Loading Indicator - prevents duplicates */}
+              {threadsLoading && threads.length > 0 ? (
+                // Show loading indicator for additional pages when already loading
+                <LoadingSpinner 
+                  size="sm" 
+                  text="Loading more chats..." 
+                  className="py-4"
+                />
+              ) : threadsHasMore ? (
+                // Show infinite scroll observer when not loading but has more
                 <div ref={threadsObserverRef} className="w-full">
                   <LoadingSpinner 
                     size="sm" 
@@ -1028,16 +1039,7 @@ export default function ChatPage() {
                     className="py-4"
                   />
                 </div>
-              )}
-              
-              {/* Loading indicator for additional pages */}
-              {threadsLoading && threads.length > 0 && (
-                <LoadingSpinner 
-                  size="sm" 
-                  text="Loading more chats..." 
-                  className="py-2"
-                />
-              )}
+              ) : null}
               
               {/* End of list indicator */}
               {!threadsHasMore && threads.length > 10 && (
@@ -1067,7 +1069,7 @@ export default function ChatPage() {
             onClosePDFModal={handleClosePDFModal}
             onNewChat={handleNewChat}
             isLoading={isAnyLoading}
-            isAnyLoading={isAnyLoading}
+            isAnyLoading={isUIBlocking}
             threads={threads}
             activeThreadId={activeThreadId}
           />
@@ -1083,7 +1085,7 @@ export default function ChatPage() {
               onChange={e => setCurrentMessageWithPersistence(e.target.value)}
               onKeyDown={handleKeyDown}
               className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200 resize-none min-h-[48px] max-h-[200px]"
-              disabled={isAnyLoading}
+              disabled={isUIBlocking}
               rows={1}
               style={{
                 height: 'auto',
