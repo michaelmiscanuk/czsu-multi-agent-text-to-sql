@@ -88,7 +88,7 @@ const ChatCacheContext = createContext<ChatCacheContextType | undefined>(undefin
 // Cache configuration
 const CACHE_KEY = 'czsu-chat-cache'
 const ACTIVE_THREAD_KEY = 'czsu-last-active-chat'
-const CACHE_DURATION = 60 * 60 * 1000 // 60 minutes in milliseconds (increased from 5 minutes)
+const CACHE_DURATION = 60 * 60 * 1000 * 48 // 48 hours in milliseconds
 const PAGE_REFRESH_FLAG_KEY = 'czsu-page-refresh-flag'
 const USER_LOADING_STATE_KEY = 'czsu-user-loading-state' // NEW: Cross-tab loading state
 const F5_REFRESH_THROTTLE_KEY = 'czsu-f5-refresh-throttle' // NEW: F5 refresh throttling
