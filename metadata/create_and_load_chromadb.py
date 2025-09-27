@@ -227,19 +227,6 @@ def get_langchain_azure_embedding_model(model_name="text-embedding-3-large__test
     )
 
 
-def get_langchain_azure_embedding_model(
-    model_name: str = "text-embedding-3-large__test1",
-):
-    """Get LangChain Azure OpenAI embeddings model."""
-    return AzureOpenAIEmbeddings(
-        model=model_name,
-        api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
-        api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-12-01-preview"),
-        azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT"),
-        deployment=model_name,
-    )
-
-
 # ==============================================================================
 # CONSTANTS & CONFIGURATION
 # ==============================================================================
