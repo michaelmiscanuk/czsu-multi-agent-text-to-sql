@@ -146,6 +146,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Set, Tuple
 from uuid import uuid4
+import math
 
 # Third-party imports
 import chromadb
@@ -459,7 +460,7 @@ def split_text_by_tokens(text: str, max_tokens: int = MAX_TOKENS) -> List[str]:
     if total_tokens <= max_tokens:
         return [text]
 
-    num_chunks = (total_tokens + max_tokens - 1) // max_tokens  # ceil division
+    num_chunks = math.ceil(float(total_tokens) / max_tokens)
     chunks = []
     for i in range(num_chunks):
         start = i * max_tokens

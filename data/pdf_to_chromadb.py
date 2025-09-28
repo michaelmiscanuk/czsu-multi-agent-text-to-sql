@@ -119,10 +119,10 @@ except ImportError:
 # MAIN CONFIGURATION - MODIFY THESE SETTINGS
 # =====================================================================
 # Processing Mode - Three independent operations
-PARSE_WITH_LLAMAPARSE = 0  # Set to 1 to parse PDF with LlamaParse and save to txt file
+PARSE_WITH_LLAMAPARSE = 1  # Set to 1 to parse PDF with LlamaParse and save to txt file
 # Set to 0 to skip parsing (use existing txt file)
 
-CHUNK_AND_STORE = 0  # Set to 1 to chunk text and create/update ChromaDB
+CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
 # Set to 0 to skip chunking (use existing ChromaDB)
 
 DO_TESTING = 1  # Set to 1 to test search on existing ChromaDB
@@ -187,6 +187,8 @@ LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env 
 CONTENT_SEPARATORS = {
     "table_start": "[T]",
     "table_end": "[/T]",
+    "column_start": "[C]",
+    "column_end": "[/C]",
     "image_start": "[I]",
     "image_end": "[/I]",
     "text_start": "[X]",
@@ -287,6 +289,7 @@ NUMBER FORMATTING:
 CONTENT SEPARATION (MANDATORY):
 You MUST clearly separate different content types using these EXACT separators:
 - Tables: {CONTENT_SEPARATORS['table_start']} ... content ... {CONTENT_SEPARATORS['table_end']}
+- Column: {CONTENT_SEPARATORS['column_start']} ... content ... {CONTENT_SEPARATORS['column_end']}
 - Images/Graphs: {CONTENT_SEPARATORS['image_start']} ... content ... {CONTENT_SEPARATORS['image_end']}
 - Regular Text: {CONTENT_SEPARATORS['text_start']} ... content ... {CONTENT_SEPARATORS['text_end']}
 - Page Breaks: {CONTENT_SEPARATORS['page_separator']}
@@ -297,12 +300,13 @@ NEVER use these separator strings within actual content - they are ONLY for mark
 
 CONTEXT-RICH TABLE CONVERSION:
 - Do NOT create traditional markdown tables that lose context when chunked
-- Convert each table row into SELF-CONTAINED DESCRIPTIVE SENTENCES
-- Each data point must include: table title, row label, column header, value, and units
-- Repeat all contextual information for every single value
-- Preserve hierarchical relationships through descriptive language
+- MOST IMPORTANT - WRITE A SELF-CONTAINED DESCRIPTIVE SENTENCE FOR EACH VALUE IN THE CELL, INCLUDING TABLE TITLE, ROW LABEL, COLUMN HEADER, VALUE, AND UNITS AND OTHER CONTEXT ATTACHED TO A TABLE.
+- Repeat for all values in the table, dont miss anything.
+- PROCESS COLUMN BY COLUMN, NOT ROW BY ROW! Take first column - describe all values in sentences, then second column, etc.
+- If there is nested hierarchy, describe it in a sentence.
+- It will generate a lot of text, but it is ok.
 
-MANDATORY INFORMATION FOR EACH VALUE:
+MANDATORY INFORMATION FOR EACH CELLVALUE:
 - Table title or section name
 - Row identifier (location, entity, category)
 - Column identifier (year, month, measurement type)
@@ -314,7 +318,7 @@ HIERARCHY PRESERVATION:
 - Always specify parent categories (e.g., "under agricultural land category")
 - Include table title context in every sentence
 - Preserve units with every value
-- Maintain nested structure through descriptive language
+- If there is nested hierarchy, describe it in a sentence.
 
 SPECIAL HANDLING FOR DATA PRESERVATION:
 - Preserve all location names and identifiers exactly as written
@@ -328,18 +332,20 @@ TABLE PROCESSING EXAMPLE:
 When you see a hierarchical table like "Land Use Balance for Prague (Bilance půdy v hl. m. Praze)" with main categories and subcategories:
 
 {CONTENT_SEPARATORS['table_start']}
+{CONTENT_SEPARATORS['column_start']}
 In the land use balance table for Prague (Bilance půdy v hl. m. Praze) as of December 31st, the total area recorded 49621 hectares in 2022.
 In the land use balance table for Prague (Bilance půdy v hl. m. Praze) as of December 31st, the total area recorded 49621 hectares in 2023.
+{CONTENT_SEPARATORS['column_end']}
+
+{CONTENT_SEPARATORS['column_start']}
 In the land use balance table for Prague, agricultural land (Zemědělská půda) totaled 19473 hectares in 2022.
 In the land use balance table for Prague, agricultural land (Zemědělská půda) totaled 19410 hectares in 2023.
+{CONTENT_SEPARATORS['column_end']}
+
+{CONTENT_SEPARATORS['column_start']}
 In the land use balance table under agricultural land category, arable land (orná půda) measured 13708 hectares in 2022.
 In the land use balance table under agricultural land category, arable land (orná půda) measured 13585 hectares in 2023.
-In the land use balance table under agricultural land category, gardens (zahrady) measured 4001 hectares in 2022.
-In the land use balance table under agricultural land category, gardens (zahrady) measured 4051 hectares in 2023.
-In the land use balance table under agricultural land category, orchards (ovocné sady) measured 580 hectares in 2022.
-In the land use balance table under agricultural land category, orchards (ovocné sady) measured 569 hectares in 2023.
-In the land use balance table for Prague, non-agricultural land totaled 30148 hectares in 2022.
-In the land use balance table for Prague, non-agricultural land totaled 30211 hectares in 2023.
+{CONTENT_SEPARATORS['column_end']}
 {CONTENT_SEPARATORS['table_end']}
 
 === GRAPH AND IMAGE PROCESSING ===
