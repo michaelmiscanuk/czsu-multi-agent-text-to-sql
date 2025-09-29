@@ -1,61 +1,285 @@
-"""PDF to ChromaDB Document Processing and Search
+module_description = r"""PDF to ChromaDB Document Processing and Search System
 
-This module provides functionality to process large PDF documents (including those with tables),
-chunk them appropriately, generate embeddings, store in ChromaDB, and perform hybrid search
-with Cohere reranking.
+This module provides a comprehensive pipeline for processing complex PDF documents (especially 
+government/statistical reports with tables), extracting structured content using LlamaParse, 
+applying separator-based intelligent chunking, generating embeddings, storing in ChromaDB, 
+and performing advanced hybrid search with multilingual support and Cohere reranking.
+
+Designed for Czech government statistical reports with complex table structures, but adaptable 
+to any PDF document processing workflow requiring high-quality semantic search capabilities.
+
+Architecture Overview:
+=====================
+Three independent, configurable operations:
+1. PDF Parsing & Content Extraction (LlamaParse integration)
+2. Intelligent Chunking & ChromaDB Storage (Separator-based strategy) 
+3. Hybrid Search & Testing (Semantic + BM25 + Cohere reranking)
 
 Key Features:
--------------
-1. PDF Processing:
-   - LlamaParse for superior table and complex layout handling
-   - Smart semantic-aware text chunking with token awareness
-   - Preserves document structure information
-   - Content type separation (tables, images, text)
-   - Page-based metadata tracking
+============
+1. Advanced PDF Processing & Parsing:
+   - LlamaParse integration with custom parsing instructions
+   - Specialized table processing (column-by-column extraction)
+   - Complex layout handling (hierarchical tables, charts, mixed content)
+   - Progress monitoring with job status tracking
+   - Parallel processing support for multiple PDFs
+   - Automatic retry logic and timeout handling
+   - Content type separation using custom markers
 
-2. Document Management:
-   - ChromaDB vector storage
-   - Document deduplication using MD5 hashing
+2. Intelligent Separator-Based Chunking:
+   - Primary strategy: Extract content between separator pairs ([C]...[/C], [T]...[/T])
+   - Secondary strategy: Sentence-boundary chunking with ceiling division for oversized content
+   - NEVER splits mid-word or mid-sentence - only at complete sentence boundaries
+   - Uses ceiling division to calculate optimal chunk count, then distributes sentences evenly
+   - Token-aware processing (8190 token limit compliance)
+   - Content type preservation and intelligent merging
+   - Quality validation with numerical data preservation checks
+   - Configurable chunk sizes (MIN: 100, MAX: 5000 chars, 0 overlap)
+   - Smart handling of ungrouped content with sentence preservation
+
+3. Robust ChromaDB Document Management:
+   - Persistent vector storage with cosine similarity indexing
+   - Document deduplication using MD5 content hashing
+   - Comprehensive metadata preservation (pages, chunks, source files, tokens)
+   - Collection management with optional clearing/recreation
+   - Batch processing with tqdm progress tracking
+   - Error recovery with detailed failed record tracking
    - UUID-based document identification
-   - Metadata preservation (page numbers, chunks)
-   - Automatic document splitting for long texts
 
-3. Embedding Generation:
-   - Azure OpenAI embedding model integration
-   - Batch embedding generation
-   - Token limit handling (8190 tokens max)
-   - Semantic-aware chunking for optimal embeddings
+4. Azure OpenAI Embedding Generation:
+   - text-embedding-3-large model integration (1536-dimensional vectors)
+   - Batch embedding generation for processing efficiency
+   - Token limit validation and automatic text splitting
+   - Configurable deployment selection via AZURE_EMBEDDING_DEPLOYMENT
+   - Comprehensive error handling with retry logic
+   - Progress tracking with visual indicators
 
-4. Hybrid Search:
-   - Combines semantic search (Azure embeddings) with BM25
-   - Semantic-focused weighting (85% semantic, 15% BM25)
-   - Cohere reranking for final results
-   - Configurable result count and thresholds
+5. Advanced Hybrid Search System:
+   - Multi-modal search: Semantic (Azure OpenAI) + Keyword (BM25)
+   - Configurable weighting (default: 85% semantic, 15% BM25)
+   - Czech text normalization (diacritics handling) for better matching
+   - Score normalization and combination algorithms
+   - Cohere multilingual reranking (rerank-multilingual-v3.0)
+   - Configurable result thresholds and filtering
 
-5. Error Handling:
-   - Comprehensive error handling
-   - Progress tracking with tqdm
-   - Debug logging support
-   - Quality validation for chunks
+6. Content Type Intelligence & Preservation:
+   - Table content extraction with context preservation
+   - Column-based data organization and processing  
+   - Image/chart content description handling with trend analysis
+   - Regular text section management with language preservation
+   - Mixed content type processing and intelligent categorization
+   - Context-rich chunk generation for optimal semantic search
 
-Usage Example:
--------------
-# Three-step workflow:
-# 1. Parse PDF with LlamaParse
-# 2. Chunk and store in ChromaDB
-# 3. Test search functionality
+7. Multilingual & Localization Support:
+   - Czech language processing with diacritics normalization
+   - Preservation of original Czech text content
+   - English descriptions for tables and charts
+   - Bilingual search term expansion for better matching
+   - Cultural context preservation (Czech place names, terms)
 
-# Configure operations in the script:
+Content Separator System:
+=========================
+Custom marker system for precise content organization:
+- [T]...[/T]: Table content with detailed cell descriptions
+- [C]...[/C]: Column content within tables (primary chunking unit)
+- [X]...[/X]: Regular text content (preserved in original language)
+- [I]...[/I]: Image and chart descriptions with trend analysis
+- [P]: Page separators between document sections
+- [.P]: Page break markers for layout preservation
+
+Advanced Processing Flow:
+========================
+1. Configuration & Environment Setup:
+   - Validates API keys (LlamaParse, Azure OpenAI, Cohere)
+   - Configures three independent operations via flags
+   - Sets up comprehensive debug logging system
+   - Initializes persistent ChromaDB storage
+   - Establishes Azure OpenAI embedding client connection
+
+2. PDF Parsing & Content Extraction (Operation 1):
+   - Processes multiple PDFs in parallel using ThreadPoolExecutor
+   - Applies comprehensive LlamaParse instructions for table preservation
+   - Monitors parsing progress with real-time status updates
+   - Implements timeout handling and error recovery
+   - Saves parsed text with separator markers to .txt files
+   - Validates content structure and separator usage
+   - Provides detailed parsing statistics and quality metrics
+
+3. Intelligent Content Chunking:
+   - Applies separator-based primary chunking strategy
+   - Extracts content between separator pairs using regex patterns
+   - Handles oversized content with sentence-boundary chunking using ceiling division
+   - Calculates optimal number of chunks needed and distributes sentences evenly
+   - NEVER cuts mid-word or mid-sentence - preserves complete sentence integrity
+   - Removes separator artifacts from final chunks
+   - Validates chunk quality with comprehensive metrics
+   - Tracks numerical data preservation for statistical content
+
+4. ChromaDB Storage & Management (Operation 2):
+   - Optionally clears existing collection based on configuration
+   - Processes chunks and generates embeddings in batches
+   - Implements document deduplication using content hashes
+   - Stores documents with comprehensive metadata structure
+   - Tracks processing statistics and failure recovery
+   - Provides detailed storage metrics and success rates
+
+5. Hybrid Search & Testing (Operation 3):
+   - Executes configurable test queries (Czech language support)
+   - Performs hybrid search combining multiple approaches
+   - Applies Cohere reranking for result optimization
+   - Returns ranked results with detailed scoring metrics
+   - Provides comprehensive debug information and analytics
+   - Supports configurable result counts and score thresholds
+
+6. Quality Assurance & Validation:
+   - Validates chunk quality using multiple metrics
+   - Checks numerical data preservation for statistical content
+   - Monitors token limits and character count distributions
+   - Tracks content type distribution across chunks
+   - Provides comprehensive debug reporting and analytics
+   - Implements automated quality scoring algorithms
+
+Configuration System:
+=====================
+Tunable hyperparameters for optimal performance:
+
+Core Processing:
+- MAX_TOKENS: 8190 (Azure OpenAI embedding model limit)
+- MIN_CHUNK_SIZE: 100 (minimum viable chunk size)
+- MAX_CHUNK_SIZE: 5000 (optimal for semantic coherence)
+- CHUNK_OVERLAP: 0 (disabled for separator-based chunking)
+
+Search Configuration:
+- HYBRID_SEARCH_RESULTS: 20 (initial result pool size)
+- SEMANTIC_WEIGHT: 0.85 (semantic search importance)
+- BM25_WEIGHT: 0.15 (keyword search importance)
+- FINAL_RESULTS_COUNT: 2 (final filtered results)
+
+API Integration:
+- AZURE_EMBEDDING_DEPLOYMENT: "text-embedding-3-large__test1"
+- LlamaParse: Premium parsing with table optimization
+- Cohere: rerank-multilingual-v3.0 for final ranking
+
+Usage Examples:
+==============
+
+Full Pipeline Execution:
+-------------------------
+# Configure all three operations
+PARSE_WITH_LLAMAPARSE = 1       # Parse PDFs with advanced table handling
+CHUNK_AND_STORE = 1             # Apply intelligent chunking and store
+CLEAR_EXISTING_CHROMADB = 1     # Start fresh (recommended for testing)
+DO_TESTING = 1                  # Test search with sample queries
+
+# Define document set
+PDF_FILENAMES = ["report_2023.pdf", "statistics_2024.pdf"]
+
+# Execute complete pipeline
+python pdf_to_chromadb.py
+
+Incremental Processing:
+-----------------------
+# Parse new documents only
 PARSE_WITH_LLAMAPARSE = 1
+CHUNK_AND_STORE = 0
+DO_TESTING = 0
+
+# Add to existing collection
 CHUNK_AND_STORE = 1
+CLEAR_EXISTING_CHROMADB = 0
+
+# Test with new queries
 DO_TESTING = 1
+TEST_QUERY = "kolik učitelů pracovalo v roce 2023?"
+
+Required Environment:
+====================
+Dependencies:
+- Python 3.8+
+- chromadb (vector storage)
+- tiktoken (token counting)
+- tqdm (progress tracking)
+- requests (API communication)
+- numpy (numerical operations)
+- rank-bm25 (keyword search)
+- cohere (reranking)
+- langchain-core (document handling)
+
+API Requirements:
+- LlamaParse API key (LLAMAPARSE_API_KEY)
+- Azure OpenAI API access (embedding model)
+- Cohere API key (COHERE_API_KEY, optional)
+- Azure embedding deployment configured
+
+File System:
+- Write permissions for ChromaDB directory
+- PDF files in script directory
+- Sufficient storage for parsed text files
+
+Expected Output:
+===============
+File Structure:
+- {pdf_name}_llamaparse_parsed.txt (parsed content with separators)
+- pdf_chromadb_llamaparse/ (ChromaDB collection directory)
+  ├── chroma.sqlite3 (metadata database)
+  └── collection_data/ (vector storage)
+
+Processing Results:
+- Document embeddings (1536-dimensional vectors)
+- Comprehensive chunk metadata (pages, indices, tokens, hashes)
+- Content type classification and statistics
+- Processing metrics and quality scores
+- Search results with hybrid scoring and reranking
+
+Search Output Format:
+- Ranked results with Cohere reranking scores
+- Source file and page number attribution
+- Character count and content preview
+- Score analysis and threshold filtering
+- Detailed debug information for optimization
+
+Error Handling & Recovery:
+==========================
+Comprehensive error management:
+- PDF parsing failures with detailed diagnostics and retry logic
+- Embedding generation errors with automatic recovery
+- ChromaDB connection and storage error handling
+- Token limit violations with automatic text splitting
+- Content validation and quality check failures
+- API timeout and rate limiting management
+- Progress tracking with graceful interruption handling
+
+Performance Optimization:
+========================
+- Parallel PDF processing using ThreadPoolExecutor
+- Batch embedding generation for API efficiency
+- Efficient document deduplication using MD5 hashing
+- Persistent ChromaDB storage with optimized indexing
+- Memory-efficient text processing with streaming
+- Smart caching of parsed content and embeddings
+- Configurable batch sizes and processing limits
+
+Quality Metrics & Analytics:
+===========================
+Built-in quality assurance:
+- Chunk quality scoring (empty, size, context, numerical data)
+- Content type distribution analysis
+- Token count validation and statistics
+- Processing success rates and failure tracking
+- Search relevance scoring and threshold analysis
+- Numerical data preservation verification
+- Debug logging and comprehensive error reporting
 
 # Run the script:
-python pdf_to_chromadb.py
+# python pdf_to_chromadb.py
 """
 
 import hashlib
 import logging
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # ==============================================================================
 # IMPORTS
@@ -103,12 +327,22 @@ except NameError:
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-# Local Imports - adjust path as needed for your project structure
+# Local Imports - Azure OpenAI client setup
 try:
-    from my_agent.utils.models import get_azure_embedding_model
+    from openai import AzureOpenAI
+    import os
+
+    def get_azure_embedding_model():
+        """Create and return Azure OpenAI client for embeddings"""
+        return AzureOpenAI(
+            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+            api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-01"),
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        )
+
 except ImportError:
     print(
-        "Warning: Could not import get_azure_embedding_model. You'll need to adjust the import path."
+        "Warning: Could not import AzureOpenAI. You'll need to install openai package."
     )
     get_azure_embedding_model = None
 
@@ -124,6 +358,10 @@ PARSE_WITH_LLAMAPARSE = 1  # Set to 1 to parse PDF with LlamaParse and save to t
 
 CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
 # Set to 0 to skip chunking (use existing ChromaDB)
+
+# ChromaDB Management Options
+CLEAR_EXISTING_CHROMADB = 1  # Set to 1 to delete existing collection before re-chunking
+# Set to 0 to append to existing collection (not recommended for testing new chunking)
 
 DO_TESTING = 1  # Set to 1 to test search on existing ChromaDB
 # Set to 0 to skip testing
@@ -145,15 +383,17 @@ LLAMAPARSE_ENHANCED_MONITORING = (
 
 # Multiple PDF Files Configuration - Add your PDF filenames here
 PDF_FILENAMES = [
-    "1_PDFsam_32019824.pdf",
-    "101_PDFsam_32019824.pdf",
-    "201_PDFsam_32019824.pdf",
-    "301_PDFsam_32019824.pdf",
-    "401_PDFsam_32019824.pdf",
-    "501_PDFsam_32019824.pdf",
-    "601_PDFsam_32019824.pdf",
-    "701_PDFsam_32019824.pdf",
-    "801_PDFsam_32019824.pdf",
+    # "684_PDFsam_32019824.pdf",
+    # "PDFsam_merge__673_684.pdf",
+    # "101_PDFsam_32019824.pdf",
+    # "201_PDFsam_32019824.pdf",
+    # "301_PDFsam_32019824.pdf",
+    # "401_PDFsam_32019824.pdf",
+    # "501_PDFsam_32019824.pdf",
+    # "601_PDFsam_32019824.pdf",
+    # "701_PDFsam_32019824.pdf",
+    # "801_PDFsam_32019824.pdf",
+    "32019824.pdf"
 ]
 
 COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
@@ -196,20 +436,20 @@ CONTENT_SEPARATORS = {
     "page_separator": "[P]",
 }
 
+# =====================================================================
+# TUNING HYPERPARAMETERS
+# =====================================================================
 # Token and Chunking Settings
 MAX_TOKENS = 8190  # Token limit for Azure OpenAI
-MIN_CHUNK_SIZE = 400  # Optimized for statistical content
-MAX_CHUNK_SIZE = 800  # Optimized for text-embedding-3-large
-CHUNK_OVERLAP = 100  # Reduced for better semantic boundaries
+MIN_CHUNK_SIZE = 100  # Minimum chunk size to avoid very small chunks
+MAX_CHUNK_SIZE = 5000  # Optimized chunk size for better semantic boundaries
+CHUNK_OVERLAP = 0  # Overlap for better context preservation
 
 # Search Settings
 HYBRID_SEARCH_RESULTS = 20  # Number of results from hybrid search
 SEMANTIC_WEIGHT = 0.85  # Weight for semantic search (0.0-1.0)
 BM25_WEIGHT = 0.15  # Weight for BM25 search (0.0-1.0)
 FINAL_RESULTS_COUNT = 2  # Number of final results to return
-
-# Debug and Processing Settings
-PDF_ID = 40  # Unique identifier for debug messages
 
 # =====================================================================
 # PATH CONFIGURATION - AUTOMATICALLY SET
@@ -219,10 +459,6 @@ PDF_ID = 40  # Unique identifier for debug messages
 
 # ChromaDB storage location
 CHROMA_DB_PATH = SCRIPT_DIR / "pdf_chromadb_llamaparse"
-
-# ==============================================================================
-# CONSTANTS & DERIVED SETTINGS
-# ==============================================================================
 
 
 # ==============================================================================
@@ -502,199 +738,277 @@ def smart_text_chunking(
     text: str, max_chunk_size: int = MAX_CHUNK_SIZE, overlap: int = CHUNK_OVERLAP
 ) -> List[str]:
     """
-    Robust text chunking optimized for LlamaParse formatted content.
-    Preserves complete sentences and numerical data integrity.
+    Separator-based text chunking optimized for LlamaParse formatted content.
+    PRIMARY STRATEGY: Extract content between separator pairs as chunks.
+    SECONDARY STRATEGY: Split large chunks using sentence boundaries and ceiling division.
+    NEVER splits mid-word or mid-sentence - only at complete sentence boundaries.
 
     Args:
         text: Text to chunk (LlamaParse formatted content)
-        max_chunk_size: Maximum characters per chunk (default: 800)
-        overlap: Character overlap between chunks (default: 100)
+        max_chunk_size: Maximum characters per chunk
+        overlap: Character overlap between chunks (used for sentence-based overlap)
 
     Returns:
-        List of text chunks that preserve content integrity
+        List of text chunks based on separator boundaries and sentence completion
     """
-    if len(text) <= max_chunk_size:
-        return [text]
-
-    chunks = []
-
-    # First, try to split by LlamaParse content type markers
-    # These represent natural content boundaries
-    content_boundaries = ["\n[TABLE]\n", "\n[/TABLE]\n", "\n[IMAGE]\n", "\n[/IMAGE]\n"]
-
-    # If we have clear content boundaries, split there first
-    sections = [text]  # Start with whole text
-    for boundary in content_boundaries:
-        new_sections = []
-        for section in sections:
-            if boundary in section:
-                new_sections.extend(section.split(boundary))
-            else:
-                new_sections.append(section)
-        sections = new_sections
-
-    # Process each section
-    for section in sections:
-        section = section.strip()
-        if not section:
-            continue
-
-        if len(section) <= max_chunk_size:
-            # Section fits in one chunk
-            if len(section) >= MIN_CHUNK_SIZE:
-                chunks.append(section)
-        else:
-            # Section needs to be split further
-            section_chunks = _split_large_section(section, max_chunk_size, overlap)
-            chunks.extend(section_chunks)
-
-    # Filter out chunks that are too small
-    final_chunks = [chunk for chunk in chunks if len(chunk.strip()) >= MIN_CHUNK_SIZE]
-
-    return final_chunks
-
-
-def _split_large_section(text: str, max_size: int, overlap: int) -> List[str]:
-    """
-    Split a large section of text while preserving LlamaParse sentence integrity.
-    This version is much more conservative and preserves numerical data.
-    """
-    if len(text) <= max_size:
-        return [text]
-
-    chunks = []
-
-    # First try: Split by double newlines (paragraph boundaries)
-    paragraphs = text.split("\n\n")
-    if len(paragraphs) > 1:
-        current_chunk = ""
-
-        for paragraph in paragraphs:
-            paragraph = paragraph.strip()
-            if not paragraph:
-                continue
-
-            # Check if adding this paragraph would exceed size limit
-            test_chunk = current_chunk + ("\n\n" if current_chunk else "") + paragraph
-
-            if len(test_chunk) <= max_size:
-                current_chunk = test_chunk
-            else:
-                # Save current chunk if substantial
-                if len(current_chunk.strip()) >= MIN_CHUNK_SIZE:
-                    chunks.append(current_chunk.strip())
-
-                # Start new chunk with current paragraph
-                if len(paragraph) <= max_size:
-                    current_chunk = paragraph
-                else:
-                    # Paragraph itself is too long, split it conservatively
-                    para_chunks = _split_paragraph_conservatively(paragraph, max_size)
-                    chunks.extend(para_chunks[:-1])  # Add all but last
-                    current_chunk = para_chunks[-1] if para_chunks else ""
-
-        # Add final chunk
-        if len(current_chunk.strip()) >= MIN_CHUNK_SIZE:
-            chunks.append(current_chunk.strip())
-
-        if chunks:
-            return chunks
-
-    # Fallback: Conservative sentence splitting that preserves numerical context
-    return _split_paragraph_conservatively(text, max_size)
-
-
-def _split_paragraph_conservatively(text: str, max_size: int) -> List[str]:
-    """
-    Very conservative splitting that preserves LlamaParse formatted sentences.
-    Prioritizes keeping numerical data with its full context.
-    """
-    if len(text) <= max_size:
-        return [text]
-
-    # Split only at sentence boundaries that are clearly safe
-    # Look for patterns like ". In the" which indicate new sentence starts in LlamaParse
     import re
 
-    # Find sentence boundaries in LlamaParse format
-    # Pattern: period + space + capital letter (but not in middle of numbers)
-    sentence_pattern = (
-        r"\. (?=[A-Z][a-z])"  # Period followed by space and capital+lowercase
+    chunks = []
+
+    # PRIMARY STRATEGY: Extract content between separator pairs
+    # Define separator pairs using ONLY original separators
+    separator_pairs = [
+        # Table content
+        (CONTENT_SEPARATORS["table_start"], CONTENT_SEPARATORS["table_end"]),
+        # Column content
+        (CONTENT_SEPARATORS["column_start"], CONTENT_SEPARATORS["column_end"]),
+        # Image content
+        (CONTENT_SEPARATORS["image_start"], CONTENT_SEPARATORS["image_end"]),
+        # Text content
+        (CONTENT_SEPARATORS["text_start"], CONTENT_SEPARATORS["text_end"]),
+    ]
+
+    debug_print(f"📝 Starting separator-based chunking on {len(text)} characters")
+
+    # Extract all content between separator pairs
+    for start_sep, end_sep in separator_pairs:
+        # Create regex pattern to find content between separators
+        # Use re.DOTALL to match newlines
+        pattern = re.escape(start_sep) + r"(.*?)" + re.escape(end_sep)
+        matches = re.findall(pattern, text, re.DOTALL)
+
+        debug_print(
+            f"🔍 Looking for {start_sep} ... {end_sep} pairs: found {len(matches)} matches"
+        )
+
+        for i, match in enumerate(matches):
+            content = match.strip()
+            if content and len(content) >= MIN_CHUNK_SIZE:
+                debug_print(
+                    f"📦 Found {start_sep[1:-1]} content #{i+1}: {len(content)} chars"
+                )
+
+                # Content fits within chunk size limit
+                if len(content) <= max_chunk_size:
+                    chunks.append(content)
+                    debug_print(
+                        f"✅ Added chunk: {content[:100]}..."
+                        if len(content) > 100
+                        else f"✅ Added chunk: {content}"
+                    )
+                else:
+                    # Content exceeds size limit - split using sentence boundaries
+                    debug_print(
+                        f"🔄 Content too large ({len(content)} > {max_chunk_size}), splitting at sentence boundaries"
+                    )
+                    large_chunks = _split_large_separator_content(
+                        content, max_chunk_size, overlap
+                    )
+                    chunks.extend(large_chunks)
+                    debug_print(
+                        f"➕ Added {len(large_chunks)} sentence-boundary chunks"
+                    )
+            else:
+                debug_print(
+                    f"⚠️ Skipping {start_sep[1:-1]} content #{i+1}: too small ({len(content)} < {MIN_CHUNK_SIZE})"
+                )
+
+    # Handle any remaining content not captured by separators (fallback)
+    remaining_text = text
+    for start_sep, end_sep in separator_pairs:
+        pattern = re.escape(start_sep) + r".*?" + re.escape(end_sep)
+        remaining_text = re.sub(pattern, "", remaining_text, flags=re.DOTALL)
+
+    # Clean up remaining text and check if there's anything significant
+    remaining_text = remaining_text.strip()
+    # Remove page separators and other noise
+    remaining_text = remaining_text.replace(CONTENT_SEPARATORS["page_separator"], "")
+    remaining_text = re.sub(r"\n+", "\n", remaining_text).strip()
+
+    if remaining_text and len(remaining_text) >= MIN_CHUNK_SIZE:
+        debug_print(f"📄 Found ungrouped content: {len(remaining_text)} chars")
+        if len(remaining_text) <= max_chunk_size:
+            chunks.append(remaining_text)
+        else:
+            fallback_chunks = _split_large_separator_content(
+                remaining_text, max_chunk_size, overlap
+            )
+            chunks.extend(fallback_chunks)
+
+    debug_print(f"✅ Separator-based chunking created {len(chunks)} chunks")
+    return chunks
+
+
+def _split_large_separator_content(
+    content: str, max_size: int, overlap: int
+) -> List[str]:
+    """
+    Split large content by calculating optimal number of chunks and finding sentence boundaries.
+    Uses ceiling division to determine chunk count, then distributes sentences evenly.
+    NEVER splits mid-word or mid-sentence - only at complete sentence boundaries.
+    """
+    if len(content) <= max_size:
+        return [content]
+
+    # Calculate how many chunks we need using ceiling division
+    import math
+
+    num_chunks_needed = math.ceil(len(content) / max_size)
+
+    debug_print(
+        f"📏 Content {len(content)} chars needs {num_chunks_needed} chunks (max {max_size})"
     )
 
-    sentences = re.split(sentence_pattern, text)
+    # Split into sentences first
+    sentences = _extract_sentences(content)
 
     if len(sentences) <= 1:
-        # No clear sentence boundaries found, split by character limit as last resort
-        return _split_by_character_limit(text, max_size)
+        # If we can't find sentence boundaries, return as single chunk
+        # This prevents mid-word splitting
+        debug_print(f"⚠️ No sentence boundaries found, keeping as single chunk")
+        return [content]
+
+    # Distribute sentences across chunks
+    chunks = _distribute_sentences_across_chunks(
+        sentences, num_chunks_needed, max_size, overlap
+    )
+
+    debug_print(f"✅ Split into {len(chunks)} chunks using sentence boundaries")
+    return chunks
+
+
+def _extract_sentences(text: str) -> List[str]:
+    """
+    Extract sentences from text using LlamaParse-specific patterns.
+    Returns list of complete sentences.
+    """
+    # Multiple sentence boundary patterns for LlamaParse format
+    sentence_patterns = [
+        r"(?<=\.)\s+(?=[A-Z][a-z])",  # Period + space + capital+lowercase
+        r"(?<=\!)\s+(?=[A-Z][a-z])",  # Exclamation + space + capital+lowercase
+        r"(?<=\?)\s+(?=[A-Z][a-z])",  # Question + space + capital+lowercase
+    ]
+
+    # Try each pattern to find sentence boundaries
+    sentences = [text]  # Start with whole text
+    for pattern in sentence_patterns:
+        new_sentences = []
+        for sentence in sentences:
+            new_sentences.extend(re.split(pattern, sentence))
+        sentences = new_sentences
+
+    # Clean up sentences and remove empty ones
+    sentences = [s.strip() for s in sentences if s.strip()]
+
+    debug_print(f"📝 Extracted {len(sentences)} sentences from {len(text)} chars")
+    return sentences
+
+
+def _distribute_sentences_across_chunks(
+    sentences: List[str], num_chunks: int, max_size: int, overlap: int
+) -> List[str]:
+    """
+    Distribute sentences across the calculated number of chunks.
+    Ensures complete sentences and handles overlap properly.
+    """
+    if len(sentences) <= num_chunks:
+        # If we have fewer sentences than chunks needed, each sentence becomes a chunk
+        return [s for s in sentences if len(s.strip()) >= MIN_CHUNK_SIZE]
 
     chunks = []
-    current_chunk = ""
+    sentences_per_chunk = len(sentences) // num_chunks
+    remainder = len(sentences) % num_chunks
 
-    for i, sentence in enumerate(sentences):
-        sentence = sentence.strip()
-        if not sentence:
-            continue
+    start_idx = 0
 
-        # Add period back except for last sentence
-        if i < len(sentences) - 1 and not sentence.endswith("."):
-            sentence = sentence + "."
+    for chunk_idx in range(num_chunks):
+        # Calculate how many sentences for this chunk
+        chunk_sentence_count = sentences_per_chunk + (1 if chunk_idx < remainder else 0)
+        end_idx = start_idx + chunk_sentence_count
 
-        # Check if adding this sentence would exceed limit
-        test_chunk = current_chunk + (" " if current_chunk else "") + sentence
+        # Get sentences for this chunk
+        chunk_sentences = sentences[start_idx:end_idx]
+        chunk_text = " ".join(chunk_sentences)
 
-        if len(test_chunk) <= max_size:
-            current_chunk = test_chunk
-        else:
-            # Save current chunk if substantial
-            if len(current_chunk.strip()) >= MIN_CHUNK_SIZE:
-                chunks.append(current_chunk.strip())
+        # If chunk is too large, try to reduce by moving last sentence to next chunk
+        while len(chunk_text) > max_size and len(chunk_sentences) > 1:
+            chunk_sentences = chunk_sentences[:-1]
+            chunk_text = " ".join(chunk_sentences)
+            end_idx -= 1
 
-            # Start new chunk with current sentence
-            if len(sentence) <= max_size:
-                current_chunk = sentence
-            else:
-                # Single sentence too long - split by character limit
-                sentence_chunks = _split_by_character_limit(sentence, max_size)
-                chunks.extend(sentence_chunks[:-1])
-                current_chunk = sentence_chunks[-1] if sentence_chunks else ""
+        # Add overlap from previous chunk if needed
+        if overlap > 0 and chunks and chunk_text:
+            overlap_text = _get_sentence_overlap(chunks[-1], overlap)
+            if overlap_text:
+                chunk_text = overlap_text + " " + chunk_text
 
-    # Add final chunk
-    if len(current_chunk.strip()) >= MIN_CHUNK_SIZE:
-        chunks.append(current_chunk.strip())
+        if chunk_text and len(chunk_text.strip()) >= MIN_CHUNK_SIZE:
+            chunks.append(chunk_text.strip())
+            debug_print(
+                f"📄 Chunk {chunk_idx + 1}: {len(chunk_text)} chars, {len(chunk_sentences)} sentences"
+            )
 
-    return chunks if chunks else [text]
-
-
-def _split_by_character_limit(text: str, max_size: int) -> List[str]:
-    """
-    Last resort: split by character limit while trying to break at word boundaries.
-    """
-    if len(text) <= max_size:
-        return [text]
-
-    chunks = []
-    start = 0
-
-    while start < len(text):
-        end = start + max_size
-
-        if end >= len(text):
-            chunks.append(text[start:].strip())
-            break
-
-        # Try to break at a word boundary near the end
-        break_pos = text.rfind(" ", start, end)
-        if break_pos > start:
-            end = break_pos
-
-        chunk = text[start:end].strip()
-        if chunk:
-            chunks.append(chunk)
-
-        start = end
+        start_idx = end_idx
 
     return chunks
+
+
+def _get_sentence_overlap(previous_chunk: str, overlap_chars: int) -> str:
+    """
+    Extract overlap from previous chunk, ensuring it ends at sentence boundary.
+    """
+    if len(previous_chunk) <= overlap_chars:
+        return previous_chunk
+
+    # Get the last overlap_chars characters
+    overlap_text = previous_chunk[-overlap_chars:]
+
+    # Find the last complete sentence in the overlap
+    sentences = _extract_sentences(overlap_text)
+
+    if sentences:
+        # Return complete sentences that fit in overlap
+        return " ".join(sentences)
+    else:
+        # If no complete sentences found, try to find sentence ending
+        # Look for the first sentence boundary in the overlap
+        for i in range(len(overlap_text)):
+            if overlap_text[i] in ".!?" and i < len(overlap_text) - 1:
+                if overlap_text[i + 1] == " " and len(overlap_text) > i + 2:
+                    if overlap_text[i + 2].isupper():
+                        return overlap_text[i + 2 :].strip()
+
+        # No sentence boundary found, return empty to avoid partial sentences
+        return ""
+
+
+def _get_sentence_overlap(previous_chunk: str, overlap_chars: int) -> str:
+    """
+    Extract overlap from previous chunk, ensuring it ends at sentence boundary.
+    """
+    if len(previous_chunk) <= overlap_chars:
+        return previous_chunk
+
+    # Get the last overlap_chars characters
+    overlap_text = previous_chunk[-overlap_chars:]
+
+    # Find the last complete sentence in the overlap
+    sentences = _extract_sentences(overlap_text)
+
+    if sentences:
+        # Return complete sentences that fit in overlap
+        return " ".join(sentences)
+    else:
+        # If no complete sentences found, try to find sentence ending
+        # Look for the first sentence boundary in the overlap
+        for i in range(len(overlap_text)):
+            if overlap_text[i] in ".!?" and i < len(overlap_text) - 1:
+                if overlap_text[i + 1] == " " and len(overlap_text) > i + 2:
+                    if overlap_text[i + 2].isupper():
+                        return overlap_text[i + 2 :].strip()
+
+        # No sentence boundary found, return empty to avoid partial sentences
+        return ""
 
 
 def normalize_czech_text(text: str) -> str:
@@ -1020,7 +1334,7 @@ def create_documents_from_text(
     # Analyze content structure before splitting
     content_analysis = extract_content_by_type(text)
     debug_print(
-        f"📊 Content analysis: {len(content_analysis['tables'])} tables, {len(content_analysis['images'])} images, {len(content_analysis['text'])} text sections"
+        f"📊 Content analysis: {len(content_analysis['tables'])} tables, {len(content_analysis['columns'])} columns, {len(content_analysis['images'])} images, {len(content_analysis['text'])} text sections"
     )
 
     pages = []
@@ -1045,12 +1359,13 @@ def create_documents_from_text(
 
     for page_num, page_text in enumerate(page_texts, 1):
         if page_text.strip():  # Only add non-empty pages
-            # Clean the page text of separator artifacts that might interfere with chunking
-            cleaned_text = clean_separator_artifacts(page_text.strip())
+            # Keep original text with separators intact for chunking process
+            cleaned_text = page_text.strip()
 
-            # Analyze this section's content
-            section_has_tables = "[TABLE CONTENT BEGINS]" in cleaned_text
-            section_has_images = "[IMAGE/CHART CONTENT BEGINS]" in cleaned_text
+            # Analyze this section's content using original separators
+            section_has_tables = CONTENT_SEPARATORS["table_start"] in cleaned_text
+            section_has_columns = CONTENT_SEPARATORS["column_start"] in cleaned_text
+            section_has_images = CONTENT_SEPARATORS["image_start"] in cleaned_text
 
             page_data = {
                 "text": cleaned_text,
@@ -1060,12 +1375,13 @@ def create_documents_from_text(
                 "source_file": source_file,
                 "parsing_method": parsing_method,
                 "has_tables": section_has_tables,
+                "has_columns": section_has_columns,
                 "has_images": section_has_images,
             }
             pages.append(page_data)
 
             debug_print(
-                f"📄 Section {page_num}: {len(cleaned_text)} chars, tables: {section_has_tables}, images: {section_has_images}"
+                f"📄 Section {page_num}: {len(cleaned_text)} chars, tables: {section_has_tables}, columns: {section_has_columns}, images: {section_has_images}"
             )
 
     debug_print(f"✅ Created {len(pages)} document sections from parsed text")
@@ -1073,52 +1389,60 @@ def create_documents_from_text(
     # Summary statistics
     total_chars = sum(p["char_count"] for p in pages)
     sections_with_tables = sum(1 for p in pages if p["has_tables"])
+    sections_with_columns = sum(1 for p in pages if p["has_columns"])
     sections_with_images = sum(1 for p in pages if p["has_images"])
 
     debug_print(f"📊 Document summary:")
     debug_print(f"📊   - Total characters: {total_chars}")
     debug_print(f"📊   - Sections with tables: {sections_with_tables}/{len(pages)}")
+    debug_print(f"📊   - Sections with columns: {sections_with_columns}/{len(pages)}")
     debug_print(f"📊   - Sections with images: {sections_with_images}/{len(pages)}")
     debug_print(f"📊   - Average section size: {total_chars/len(pages):.0f} characters")
 
     return pages
 
 
-def clean_separator_artifacts(text: str) -> str:
+def clean_separator_artifacts(text: str, remove_completely: bool = True) -> str:
     """
     Intelligently clean text of separator artifacts while preserving content structure.
-    Maintains content type boundaries for better chunking.
 
     Args:
         text: Text that may contain content separators
+        remove_completely: If True, completely removes separators. If False, replaces with content type markers.
 
     Returns:
-        Cleaned text with separators replaced by content type markers
+        Cleaned text with separators removed or replaced
     """
     cleaned_text = text
 
-    # Replace separator markers with minimal content type indicators
-    separator_replacements = {
-        CONTENT_SEPARATORS["table_start"]: "\n[TABLE]\n",
-        CONTENT_SEPARATORS["table_end"]: "\n[/TABLE]\n",
-        CONTENT_SEPARATORS["image_start"]: "\n[IMAGE]\n",
-        CONTENT_SEPARATORS["image_end"]: "\n[/IMAGE]\n",
-        CONTENT_SEPARATORS[
-            "text_start"
-        ]: "\n",  # Replace with newline to preserve content
-        CONTENT_SEPARATORS[
-            "text_end"
-        ]: "\n",  # Replace with newline to preserve content
-    }
+    if remove_completely:
+        # Completely remove separator markers for final chunks
+        separators_to_remove = [
+            # Original separators only
+            CONTENT_SEPARATORS["table_start"],
+            CONTENT_SEPARATORS["table_end"],
+            CONTENT_SEPARATORS["column_start"],
+            CONTENT_SEPARATORS["column_end"],
+            CONTENT_SEPARATORS["image_start"],
+            CONTENT_SEPARATORS["image_end"],
+            CONTENT_SEPARATORS["text_start"],
+            CONTENT_SEPARATORS["text_end"],
+            CONTENT_SEPARATORS["page_separator"],
+            # Also remove the page break marker
+            "[.P]",
+        ]
 
-    for separator, replacement in separator_replacements.items():
-        cleaned_text = cleaned_text.replace(separator, replacement)
+        for separator in separators_to_remove:
+            cleaned_text = cleaned_text.replace(separator, " ")
+    # When remove_completely=False, don't modify the text at all
+    # Keep original separators for chunking process
 
     # Clean up excessive whitespace while preserving paragraph breaks
     import re
 
     cleaned_text = re.sub(r"\n\n\n+", "\n\n", cleaned_text)
     cleaned_text = re.sub(r"^\s+", "", cleaned_text, flags=re.MULTILINE)
+    cleaned_text = re.sub(r"\s+", " ", cleaned_text)  # Normalize multiple spaces
 
     return cleaned_text.strip()
 
@@ -1134,16 +1458,23 @@ def extract_content_by_type(text: str) -> Dict[str, List[str]]:
     Returns:
         Dictionary with content types as keys and content lists as values
     """
-    content_types = {"tables": [], "images": [], "text": []}
+    content_types = {"tables": [], "columns": [], "images": [], "text": []}
 
     # Extract tables
     table_pattern = (
         f"{CONTENT_SEPARATORS['table_start']}(.*?){CONTENT_SEPARATORS['table_end']}"
     )
-    import re
+    # Note: re is already imported at the top of the file
 
     tables = re.findall(table_pattern, text, re.DOTALL)
     content_types["tables"] = [table.strip() for table in tables]
+
+    # Extract columns
+    column_pattern = (
+        f"{CONTENT_SEPARATORS['column_start']}(.*?){CONTENT_SEPARATORS['column_end']}"
+    )
+    columns = re.findall(column_pattern, text, re.DOTALL)
+    content_types["columns"] = [column.strip() for column in columns]
 
     # Extract images
     image_pattern = (
@@ -1160,7 +1491,7 @@ def extract_content_by_type(text: str) -> Dict[str, List[str]]:
     content_types["text"] = [text_content.strip() for text_content in texts]
 
     debug_print(
-        f"📊 Extracted content: {len(content_types['tables'])} tables, {len(content_types['images'])} images, {len(content_types['text'])} text sections"
+        f"📊 Extracted content: {len(content_types['tables'])} tables, {len(content_types['columns'])} columns, {len(content_types['images'])} images, {len(content_types['text'])} text sections"
     )
 
     return content_types
@@ -1573,7 +1904,8 @@ def extract_text_with_llamaparse_async_monitoring(
 
         for page_num, page_text in enumerate(page_texts, 1):
             if page_text.strip():
-                cleaned_text = clean_separator_artifacts(page_text.strip())
+                # Keep original text with separators intact
+                cleaned_text = page_text.strip()
 
                 page_info = {
                     "text": cleaned_text,
@@ -1595,7 +1927,10 @@ def extract_text_with_llamaparse_async_monitoring(
             combined_text = CONTENT_SEPARATORS["page_separator"].join(
                 combined_text_parts
             )
-            save_parsed_text_to_file(combined_text, str(PARSED_TEXT_PATH))
+            # Generate parsed text filename dynamically
+            parsed_text_filename = f"{os.path.basename(pdf_path)}_llamaparse_parsed.txt"
+            parsed_text_path = SCRIPT_DIR / parsed_text_filename
+            save_parsed_text_to_file(combined_text, str(parsed_text_path))
 
         # Final summary
         total_chars = sum(p["char_count"] for p in pages_data)
@@ -1654,24 +1989,29 @@ def process_parsed_text_to_chunks(
         debug_print(f"Section {page_num} split into {len(page_chunks)} chunks")
 
         for chunk_idx, chunk_text in enumerate(page_chunks):
+            # Clean separator artifacts from chunk text (completely remove them)
+            cleaned_chunk_text = clean_separator_artifacts(
+                chunk_text, remove_completely=True
+            )
+
             # Check token count and split only if absolutely necessary
-            token_count = num_tokens_from_string(chunk_text)
+            token_count = num_tokens_from_string(cleaned_chunk_text)
 
             if token_count <= MAX_TOKENS:
                 # Chunk is within token limits, use as-is
                 chunk_data = {
                     "id": chunk_id,
-                    "text": chunk_text,
+                    "text": cleaned_chunk_text,
                     "page_number": page_num,
                     "chunk_index": chunk_idx,
                     "token_chunk_index": 0,
                     "total_page_chunks": len(page_chunks),
                     "total_token_chunks": 1,
-                    "char_count": len(chunk_text),
+                    "char_count": len(cleaned_chunk_text),
                     "token_count": token_count,
                     "source_file": page_data["source_file"],
                     "parsing_method": parsing_method,
-                    "doc_hash": get_document_hash(chunk_text),
+                    "doc_hash": get_document_hash(cleaned_chunk_text),
                 }
 
                 all_chunks.append(chunk_data)
@@ -1681,24 +2021,28 @@ def process_parsed_text_to_chunks(
                 debug_print(
                     f"Chunk {chunk_id} exceeds token limit ({token_count} > {MAX_TOKENS}), splitting..."
                 )
-                token_chunks = split_text_by_tokens(chunk_text)
+                token_chunks = split_text_by_tokens(cleaned_chunk_text)
 
                 for token_chunk_idx, token_chunk in enumerate(token_chunks):
-                    token_count = num_tokens_from_string(token_chunk)
+                    # Clean each token chunk as well (completely remove separators)
+                    cleaned_token_chunk = clean_separator_artifacts(
+                        token_chunk, remove_completely=True
+                    )
+                    token_count = num_tokens_from_string(cleaned_token_chunk)
 
                     chunk_data = {
                         "id": chunk_id,
-                        "text": token_chunk,
+                        "text": cleaned_token_chunk,
                         "page_number": page_num,
                         "chunk_index": chunk_idx,
                         "token_chunk_index": token_chunk_idx,
                         "total_page_chunks": len(page_chunks),
                         "total_token_chunks": len(token_chunks),
-                        "char_count": len(token_chunk),
+                        "char_count": len(cleaned_token_chunk),
                         "token_count": token_count,
                         "source_file": page_data["source_file"],
                         "parsing_method": parsing_method,
-                        "doc_hash": get_document_hash(token_chunk),
+                        "doc_hash": get_document_hash(cleaned_token_chunk),
                     }
 
                     all_chunks.append(chunk_data)
@@ -2393,14 +2737,25 @@ def main():
 
             # Initialize ChromaDB
             client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+
+            # Handle existing collection based on CLEAR_EXISTING_CHROMADB setting
+            if CLEAR_EXISTING_CHROMADB:
+                try:
+                    client.delete_collection(name=COLLECTION_NAME)
+                    debug_print(
+                        f"🗑️ Deleted existing ChromaDB collection: {COLLECTION_NAME}"
+                    )
+                except Exception:
+                    debug_print(f"No existing collection to delete: {COLLECTION_NAME}")
+
             try:
                 collection = client.create_collection(
                     name=COLLECTION_NAME, metadata={"hnsw:space": "cosine"}
                 )
-                debug_print(f"Created new ChromaDB collection: {COLLECTION_NAME}")
+                debug_print(f"✅ Created new ChromaDB collection: {COLLECTION_NAME}")
             except Exception:
                 collection = client.get_collection(name=COLLECTION_NAME)
-                debug_print(f"Using existing ChromaDB collection: {COLLECTION_NAME}")
+                debug_print(f"📂 Using existing ChromaDB collection: {COLLECTION_NAME}")
 
             # Check for existing documents
             existing = collection.get(include=["metadatas"], limit=10000)
@@ -2596,13 +2951,13 @@ def main():
                 print("-" * 40)
 
                 # Show top 2 results in compact format (original behavior)
-                print(f"\n🎯 TOP 2 RESULTS (FINAL SELECTION):")
+                print(f"\n🎯 TOP 4 RESULTS (FINAL SELECTION):")
                 print("=" * 80)
-                top_2_results = search_pdf_documents(
-                    collection=collection, query=TEST_QUERY, top_k=2
+                top_n_results = search_pdf_documents(
+                    collection=collection, query=TEST_QUERY, top_k=4
                 )
 
-                for result in top_2_results:
+                for result in top_n_results:
                     print(
                         f"\n🏆 Rank {result['rank']} (Cohere Score: {result['cohere_score']:.4f})"
                     )
