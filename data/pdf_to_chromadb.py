@@ -384,7 +384,7 @@ LLAMAPARSE_ENHANCED_MONITORING = (
 # Multiple PDF Files Configuration - Add your PDF filenames here
 PDF_FILENAMES = [
     # "684_PDFsam_32019824.pdf",
-    "PDFsam_merge__673_684.pdf",
+    # "PDFsam_merge__673_684.pdf",
     # "101_PDFsam_32019824.pdf",
     # "201_PDFsam_32019824.pdf",
     # "301_PDFsam_32019824.pdf",
@@ -393,7 +393,8 @@ PDF_FILENAMES = [
     # "601_PDFsam_32019824.pdf",
     # "701_PDFsam_32019824.pdf",
     # "801_PDFsam_32019824.pdf",
-    # "32019824.pdf"
+    # "666_PDFsam_66632019824.pdf",
+    "32019824.pdf"
 ]
 
 COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
@@ -410,10 +411,11 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 # TEST_QUERY = "Kolik je ve meste Most soukromych podnikatelu?"
 # TEST_QUERY = "Kolik je centralnich bank je v Ceske republice jako ekonomickych subjektu?"
 # TEST_QUERY = "Jake metody se pouzili pro ziskavani dat v zemedelstvi?"
-TEST_QUERY = "jak se zmenili zasoby v milionech korun v oboru cinnosti - vzdelani? Porovnej posleni roky"
+# TEST_QUERY = "jak se zmenili zasoby v milionech korun v oboru cinnosti - vzdelani? Porovnej posleni roky"
 # TEST_QUERY = "Kolik hektarů zahrad (gardens) se nachází v Praze?"
 # TEST_QUERY = "Kolik je osobnich automobilu ve Varsave?"
 # TEST_QUERY = "How many passenger cars there in Warsaw (total, not per 1000 inhabitants)?"
+TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
 
 # Azure OpenAI Settings
 AZURE_EMBEDDING_DEPLOYMENT = (
@@ -421,7 +423,8 @@ AZURE_EMBEDDING_DEPLOYMENT = (
 )
 
 # LlamaParse Settings (only needed if using llamaparse method)
-LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
+# LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
+# LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY2", "")  # Read from .env file
 
 # Content Separators - unique strings unlikely to appear in normal text
 CONTENT_SEPARATORS = {
@@ -510,387 +513,79 @@ def get_llamaparse_instructions() -> str:
         Comprehensive instruction string for LlamaParse processing
     """
     return f"""
-CRITICAL REQUIREMENTS FOR DOCUMENT PROCESSING:
+🚨🚨🚨 SUPER CRITICAL: EXTRACT EVERY SINGLE CELL VALUE FROM EVERY TABLE! 🚨🚨🚨
+DO NOT MISS ANY DATA! PROCESS ALL COLUMNS! EXTRACT ALL VALUES!
 
-LANGUAGE PROCESSING:
-- Describe tables, graphs, and maps in English
-- Preserve all Czech names, locations, and technical terms in parentheses for reference
-- Use original language as-is for regular text content
-- Maintain proper nouns and technical terms exactly as written
+BASIC REQUIREMENTS:
+- Describe tables/charts in English, preserve Czech text as-is
+- Format numbers without separators: "49621" not "49,621"
+- Use EXACT separators: Tables {CONTENT_SEPARATORS['table_start']}...{CONTENT_SEPARATORS['table_end']}, 
+  Columns {CONTENT_SEPARATORS['column_start']}...{CONTENT_SEPARATORS['column_end']}, 
+  Images {CONTENT_SEPARATORS['image_start']}...{CONTENT_SEPARATORS['image_end']}, 
+  Text {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
 
-NUMBER FORMATTING:
-- Format all numbers as plain integers or decimals without thousand separators
-- Example: write "49621" not "49,621" or "49 621"
+=== 🚨 TABLE PROCESSING (EXTRACT ALL VALUES!) 🚨 ===
 
-CONTENT SEPARATION (MANDATORY):
-You MUST clearly separate different content types using these EXACT separators:
-- Tables: {CONTENT_SEPARATORS['table_start']} ... content ... {CONTENT_SEPARATORS['table_end']}
-- Columns (CRITICAL): {CONTENT_SEPARATORS['column_start']} ... content ... {CONTENT_SEPARATORS['column_end']}
-- Images/Graphs: {CONTENT_SEPARATORS['image_start']} ... content ... {CONTENT_SEPARATORS['image_end']}
-- Regular Text: {CONTENT_SEPARATORS['text_start']} ... content ... {CONTENT_SEPARATORS['text_end']}
-- Page Breaks: {CONTENT_SEPARATORS['page_separator']}
+COLUMN PROCESSING RULES:
+- PHYSICAL COLUMN = visual column position (1,2,3,4...) - count left to right
+- Skip Column 1 (row labels), process ALL data columns (2,3,4,5,6,7,8,9...)
+- Each physical column gets ONE {CONTENT_SEPARATORS['column_start']}...{CONTENT_SEPARATORS['column_end']} pair
+- Write descriptive sentence for EACH cell: table title + row + column + value + units + unit in words in parenthesis + footnotes
 
-NEVER use these separator strings within actual content - they are ONLY for marking boundaries.
+MANDATORY WORKFLOW:
+1. {CONTENT_SEPARATORS['table_start']}
+2. For EACH physical column (2,3,4,5,6,7,8,9...):
+   a. {CONTENT_SEPARATORS['column_start']}
+   b. Write sentences for ALL values in that column, go each value one by one and Each value one on its own line
+   c. {CONTENT_SEPARATORS['column_end']}
+3. {CONTENT_SEPARATORS['table_end']}
 
-CRITICAL UNDERSTANDING: PHYSICAL vs LOGICAL COLUMNS
-- PHYSICAL COLUMN = actual visual column in the table grid (count left to right: 1,2,3,4...)
-- LOGICAL GROUPING = conceptual categories like "nursery schools" (can span multiple physical columns)
-- ALWAYS process by PHYSICAL COLUMNS, never by logical groupings
-- Example: A table may have "Nursery schools" header spanning columns 4&5, but you must process column 4 separately from column 5
+FOOTNOTE INTEGRATION:
+- Find footnote markers (1), 2), a), *, etc. in headers
+- Include complete footnote text in EVERY affected cell description
+- Pattern: "In table '[NAME]', [measurement] in [entity] ([footnote text]) for [time] was [value] [units]"
 
-=== COLUMN PROCESSING (ABSOLUTELY MANDATORY) ===
-
-CRITICAL COLUMN SEPARATION REQUIREMENTS:
-- A "COLUMN" means ONE PHYSICAL TABLE COLUMN as it appears visually in the table
-- Count columns from left to right: Column 1, Column 2, Column 3, etc.
-- Column 1 typically contains row labels (years, regions, categories) - SKIP this column
-- YOU MUST PROCESS ALL DATA COLUMNS - do not stop after the first few columns
-- Start with Column 2 (first data column) and process each physical column separately
-- DO NOT group by logical categories - process by actual visual column position
-- Each physical column gets exactly ONE {CONTENT_SEPARATORS['column_start']} and ONE {CONTENT_SEPARATORS['column_end']} pair
-- NEVER wrap individual cell values - wrap ALL values from the same physical column together
-- NEVER mix data from different physical columns in the same column separator
-- Column processing is MORE IMPORTANT than table processing for our chunking system
-
-MANDATORY COLUMN WORKFLOW:
-1. Start with {CONTENT_SEPARATORS['table_start']}
-2. Count ALL physical columns in the table (count them left to right)
-3. Skip Column 1 if it contains row labels (years, categories, etc.)
-4. For EACH remaining physical column (Column 2, Column 3, Column 4, Column 5, Column 6, Column 7, Column 8, etc.):
-   a. Start with {CONTENT_SEPARATORS['column_start']}
-   b. Write ALL sentences describing ALL values in that specific physical column across all years/rows
-   c. End with {CONTENT_SEPARATORS['column_end']}
-   d. Move to the next physical column to the right
-5. Continue until you have processed ALL physical columns in the table
-6. End with {CONTENT_SEPARATORS['table_end']}
-
-CRITICAL: Process by physical column position, NOT by logical groupings or categories!
-CRITICAL: Do NOT stop after processing only a few columns - process ALL columns in the table!
-
-=== FOOTNOTE AND ANNOTATION PROCESSING (CRITICAL) ===
-
-FOOTNOTE IDENTIFICATION AND INTEGRATION:
-- Look for footnotes marked with numbers (1), 2), 3), letters a), b), c), or symbols *, †, ‡, §
-- Footnotes appear below tables, in margins, at bottom of pages, or as superscript text
-- Column headers may have superscript markers indicating footnotes apply to that entire column
-- EVERY cell value in a column with footnotes MUST include the complete footnote text in its description
-- Footnotes contain critical methodological information, exclusions, inclusions, and data definitions
-
-MANDATORY FOOTNOTE INTEGRATION PROCESS:
-1. Scan table headers for footnote markers (superscript numbers, letters, symbols)
-2. Locate corresponding footnote text (usually below table or at page bottom)
-3. For EVERY cell in columns with footnotes, include the footnote information in parentheses
-4. Use the exact footnote text - do not paraphrase or summarize
-5. Place footnote information after the data type but before the value
-
-FOOTNOTE EXAMPLES:
-- Header: "Basic schools¹⁾" with footnote "1) without teaching assistants working in preparatory classes"
-- Header: "Secondary schools²⁾" with footnote "2) the data do not include education in conservatoires"
-- Header: "Total*" with footnote "* includes only full-time equivalent persons"
-
-INTEGRATION PATTERN:
-"In the table titled '[TABLE_NAME]', the [MEASUREMENT_TYPE] in [ENTITY] ([FOOTNOTE_TEXT]) for [TIME_PERIOD] was [VALUE] [UNITS]."
-
-EXAMPLE SENTENCES WITH FOOTNOTES:
-✅ CORRECT: "In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in basic schools (without teaching assistants working in preparatory classes of basic schools and at the preparatory stage of special basic schools) for the school year 2016/17 was recorded as 6496 FTE."
-
-❌ WRONG: "In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in basic schools for the school year 2016/17 was recorded as 6496 FTE."
-
-=== TABLE PROCESSING ===
-
-CONTEXT-RICH TABLE CONVERSION:
-- Do NOT create traditional markdown tables that lose context when chunked
-- MOST IMPORTANT - WRITE A SELF-CONTAINED DESCRIPTIVE SENTENCE FOR EACH VALUE IN THE CELL, INCLUDING TABLE TITLE, ROW LABEL, COLUMN HEADER, VALUE, UNITS, AND ALL FOOTNOTES/ANNOTATIONS/CONTEXTUAL INFORMATION
-- Include ALL footnotes, annotations, and explanatory text that appears below or around the table
-- Repeat for all values in the table, dont miss anything.
-- PROCESS ALL PHYSICAL COLUMNS - do not stop after processing only the first few columns
-- PROCESS BY PHYSICAL COLUMN POSITION, NOT BY LOGICAL GROUPINGS! Count columns left to right (1,2,3,4...) and process each physical column separately
-- Each physical column position gets its own {CONTENT_SEPARATORS['column_start']} ... {CONTENT_SEPARATORS['column_end']} pair
-- DO NOT group by subject matter (like "all nursery school data") - group by physical column position
-- IGNORE logical headers and sub-headers - focus only on actual column positions in the table grid
-- GROUP ALL VALUES from the same physical column together within ONE column separator pair
-- If there is nested hierarchy, describe it in a sentence.
-- It will generate a lot of text, but it is ok.
-
-SYSTEMATIC COLUMN PROCESSING REQUIREMENT:
-- Start with the leftmost data column (usually Column 2)
-- Process EVERY physical column from left to right
-- Do NOT skip any columns
-- Do NOT stop early
-- Continue until you reach the rightmost column
-- Each table typically has 6-10 data columns that must ALL be processed
-
-MANDATORY INFORMATION FOR EACH CELLVALUE:
-- Table title or section name
-- Row identifier (location, entity, category)
-- Column identifier (year, month, measurement type)
-- Actual numerical value with units
-- Parent category context for hierarchical tables
-- Time periods and measurement context
-- ALL footnotes, annotations, and explanatory text (marked with numbers, letters, symbols like ¹⁾ ²⁾ ᵃ⁾ ᵇ⁾ * etc.)
-- Exclusions, inclusions, and methodological notes (e.g., "without teaching assistants working in preparatory classes")
-- Data collection methods, definitions, and scope limitations
-
-CRITICAL FOOTNOTE AND ANNOTATION PROCESSING:
-- Look for footnotes marked with numbers (1), 2), letters a), b), or symbols *, †, ‡
-- These footnotes appear below tables, in margins, or as superscript text
-- EVERY cell value affected by a footnote MUST include the footnote text in its descriptive sentence
-- Example: If column has footnote "1) without teaching assistants in preparatory classes", then EVERY value in that column must include this information
-- Do NOT create separate footnote sections - integrate footnote content into each cell description
-
-HIERARCHY PRESERVATION:
-- Always specify parent categories (e.g., "under agricultural land category")
-- Include table title context in every sentence
-- Preserve units with every value
-- If there is nested hierarchy, describe it in a sentence.
-
-SPECIAL HANDLING FOR DATA PRESERVATION:
-- Preserve all location names and identifiers exactly as written
-- Include codes, abbreviations, or reference numbers when present
-- Maintain all units of measurement exactly as shown
-- Convert abbreviations to full terms when context allows, but include abbreviations in parentheses
-- Include measurement periods and time ranges
-- Preserve hierarchical relationships and categorizations
-- CRITICAL: Identify and include ALL footnotes, annotations, and explanatory text that apply to each column
-- Look for footnote markers in column headers (superscript numbers, letters, symbols)
-- Find the corresponding footnote text (usually below the table)
-- Include footnote content in EVERY cell description for affected columns
-
-FOOTNOTE INTEGRATION EXAMPLES:
-If a column header shows "Basic schools¹⁾" and footnote reads "1) without teaching assistants working in preparatory classes", then:
-
-CORRECT: "In the table titled 'Teaching assistants in regional education', the number of teaching assistants in basic schools (without teaching assistants working in preparatory classes) for the school year 2016/17 was 6496 FTE."
-
-WRONG: "In the table titled 'Teaching assistants in regional education', the number of teaching assistants in basic schools for the school year 2016/17 was 6496 FTE."
-
-TABLE PROCESSING EXAMPLE WITH MANDATORY PHYSICAL COLUMN SEPARATION:
-When you see a table like "Teachers in regional education by school level" with 8 physical columns:
-
+TABLE EXAMPLE:
 {CONTENT_SEPARATORS['table_start']}
-PHYSICAL COLUMN 2 (Total) - ONE column separator pair for ALL years:
 {CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the total number of teachers (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2010/11 was 132330 FTE.
-In the table titled "Teachers in regional education by school level", the total number of teachers (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2011/12 was 131668 FTE.
-In the table titled "Teachers in regional education by school level", the total number of teachers (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2012/13 was 130523 FTE.
-[Continue for all years through 2023/24]
+In the table titled "Teachers in regional education", the total number of teachers (includes preparatory stage) for 2010/11 was 132330 FTE.
+In the table titled "Teachers in regional education", the total number of teachers (includes preparatory stage) for 2011/12 was 131668 FTE.
+[Continue for all years]
 {CONTENT_SEPARATORS['column_end']}
-
-PHYSICAL COLUMN 3 (Nursery schools) - ONE column separator pair for ALL years:
 {CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the number of teachers in nursery schools for the school year 2010/11 was 25737 FTE.
-In the table titled "Teachers in regional education by school level", the number of teachers in nursery schools for the school year 2011/12 was 26781 FTE.
-In the table titled "Teachers in regional education by school level", the number of teachers in nursery schools for the school year 2012/13 was 27739 FTE.
-[Continue for all years through 2023/24]
-{CONTENT_SEPARATORS['column_end']}
-
-PHYSICAL COLUMN 4 (Early childhood education) - ONE column separator pair for ALL years:
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the number of teachers in early childhood education for the school year 2010/11 was 280 FTE.
-In the table titled "Teachers in regional education by school level", the number of teachers in early childhood education for the school year 2011/12 was 294 FTE.
-In the table titled "Teachers in regional education by school level", the number of teachers in early childhood education for the school year 2012/13 was 323 FTE.
-[Continue for all years through 2023/24]
-{CONTENT_SEPARATORS['column_end']}
-
-PHYSICAL COLUMN 5 (Basic schools ISCED 1) - ONE column separator pair for ALL years:
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the number of teachers in basic schools ISCED 1 level for the school year 2010/11 was 27796 FTE.
-In the table titled "Teachers in regional education by school level", the number of teachers in basic schools ISCED 1 level for the school year 2011/12 was 28115 FTE.
-[Continue for all years through 2023/24]
-{CONTENT_SEPARATORS['column_end']}
-
-PHYSICAL COLUMN 6 (Basic schools ISCED 2) - ONE column separator pair for ALL years:
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the number of teachers in basic schools ISCED 2 level for the school year 2010/11 was 30227 FTE.
-[Continue for all years through 2023/24]
-{CONTENT_SEPARATORS['column_end']}
-
-PHYSICAL COLUMN 7 (Secondary schools) - ONE column separator pair for ALL years:
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the number of teachers in secondary schools for the school year 2010/11 was 45385 FTE.
-[Continue for all years through 2023/24]
-{CONTENT_SEPARATORS['column_end']}
-
-PHYSICAL COLUMN 8 (Conservatoires) - ONE column separator pair for ALL years:
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the number of teachers in conservatoires for the school year 2010/11 was 1030 FTE.
-[Continue for all years through 2023/24]
-{CONTENT_SEPARATORS['column_end']}
-
-PHYSICAL COLUMN 9 (Higher professional schools) - ONE column separator pair for ALL years:
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education by school level", the number of teachers in higher professional schools for the school year 2010/11 was 1876 FTE.
-[Continue for all years through 2023/24]
+In the table titled "Teachers in regional education", the number of teachers in nursery schools for 2010/11 was 25737 FTE.
+[Continue for all years and ALL remaining columns]
 {CONTENT_SEPARATORS['column_end']}
 {CONTENT_SEPARATORS['table_end']}
 
-CRITICAL: Process ALL physical columns (2 through 9) - never stop after just a few columns! Each physical column position gets ONE column separator pair containing ALL values for that column!
+=== 🚨 CHART PROCESSING (NO LISTS!) 🚨 ===
 
-=== GRAPH AND IMAGE PROCESSING ===
+CHART RULES:
+- NO bullet points, NO lists, NO markdown - ONLY complete sentences
+- Write ONE sentence per data point (bar, pie slice, line point, point). Dont skip any values
+- Include  in each sentence: chart title + category + value + units + unit in words in parenthesis + footnotes
+- Always include overall trend analysis sentence at end for each chart
 
-COMPREHENSIVE VISUAL DESCRIPTIONS:
-- Extract ALL visible numerical values from charts and graphs
-- Provide specific values for each data category/series shown
-- Describe trends, patterns, and comparisons between data series
-- Include complete axis labels, units, scales, and legend information
+CHART WORKFLOW:
+1. {CONTENT_SEPARATORS['image_start']}
+2. Write sentence for each data point with full context
+3. Always add trend analysis sentence
+4. {CONTENT_SEPARATORS['image_end']}
 
-CRITICAL REQUIREMENTS FOR CHARTS AND GRAPHS:
-- DO NOT provide generic descriptions like "varying precipitation levels"
-- DO extract specific numerical values visible on the chart (even if approximate)
-- DO describe trends like "increasing", "decreasing", "peak in month X", "lowest in month Y"
-- DO compare different data series when multiple are shown
-- DO include seasonal patterns, peaks, valleys, and notable differences
-
-TREND ANALYSIS REQUIREMENTS:
-- Identify trends: increasing, decreasing, stable, cyclical
-- Point out seasonal patterns and peaks
-- Compare multiple data series when present
-- Describe value ranges (minimum to maximum)
-- Include station details, elevations, or other contextual information
-
-GRAPH PROCESSING EXAMPLE:
-For bar charts like "Monthly Precipitation for Prague Territory 2023":
-
+CHART EXAMPLE:
 {CONTENT_SEPARATORS['image_start']}
-The monthly precipitation chart for Prague territory (Úhrn srážek na území hl. m. Prahy) shows 2023 data in millimeters for two measurement stations.
-Praha Karlov station (261m elevation) recorded January 15mm, March 35mm, June 80mm, August 105mm (annual peak), December 65mm.
-Praha Ruzyně station (364m elevation) recorded January 10mm, March 25mm, June 75mm, August 85mm (annual peak), December 70mm.
-August had highest precipitation for both stations, with Praha Karlov reaching 105mm and Praha Ruzyně 85mm.
-Praha Karlov consistently recorded higher precipitation than Praha Ruzyně throughout most months.
-Both stations show clear seasonal patterns with summer peaks (June-August) and winter lows (January-February).
-The chart includes long-term average reference lines from 1991-2020 for comparison.
+In the chart titled "R&D Expenditure Total", the total R&D expenditure in Czech Republic for 2015 was 88.7 billion CZK.
+[DO SAME FOR EACH VALUE in the chart]
+Overall trend analysis: R&D expenditure showed consistent growth from 2015 to 2023.
 {CONTENT_SEPARATORS['image_end']}
 
 === TEXT PROCESSING ===
 
-REGULAR TEXT PRESERVATION:
-- Preserve original text content exactly as written
-- Maintain original language (Czech text stays in Czech)
-- Keep paragraph structure and formatting
-- Preserve headings, subheadings, and document structure
-- Do NOT translate regular text content to English
-- Only use English for describing tables and graphs
+TEXT RULES:
+- Preserve original Czech text exactly as written
+- Wrap with Each paragraph in {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
 
-TEXT ORGANIZATION:
-- Wrap all regular text content with {CONTENT_SEPARATORS['text_start']} and {CONTENT_SEPARATORS['text_end']}
-- Maintain paragraph breaks within text blocks
-- Preserve bullet points, numbered lists, and formatting
-- Keep contextual information for all statements
-- Maintain document hierarchy and section organization
-
-SECTION IDENTIFICATION:
-- Clearly identify different sections and subsections
-- Use descriptive headers that will be preserved in chunks
-- Group related information logically
-- Use {CONTENT_SEPARATORS['page_separator']} between pages
-
-TEXT PROCESSING EXAMPLE:
-For regular document text content:
-
-{CONTENT_SEPARATORS['text_start']}
-Praha je hlavní město České republiky a největší město v zemi. Leží na řece Vltavě ve středních Čechách.
-
-Město má rozlohu 496 km² a počet obyvatel přesahuje 1,3 milionu. Praha je významným kulturním, politickým a ekonomickým centrem střední Evropy.
-
-Historické centrum Prahy je zapsáno na seznamu světového dědictví UNESCO.
-{CONTENT_SEPARATORS['text_end']}
-
-=== CONTENT ORGANIZATION ===
-
-CHUNKING-FRIENDLY STRUCTURE:
-- Write in complete sentences that can stand alone
-- Avoid references like "the table above" or "as shown in the graph"
-- Include all necessary context within each paragraph
-- Ensure every data point is traceable to its source and meaning
-
-MEASUREMENT PRESERVATION:
-- Always include full measurement context
-- Specify what is being measured (quantities, percentages, rates)
-- Include time periods (daily, monthly, annual)
-- Preserve statistical terms (average, maximum, minimum, per capita, total)
-
-ENTITY AND GEOGRAPHIC CONTEXT:
-- Always specify the entity, region, or organization being discussed
-- Include both full names and codes/abbreviations
-- Maintain hierarchical relationships (parent → child entities)
-- Preserve organizational or geographic classifications
-
-VERBOSE DESCRIPTIONS:
-- Err on the side of being overly descriptive rather than concise
-- Each sentence should be understandable without additional context
-- Include redundant information to ensure context preservation
-
-CRITICAL SUCCESS CRITERIA:
-- Any 500-character chunk should contain enough context to be meaningful
-- No orphaned numbers without their measurement context
-- Every data point traceable to its source table/graph and meaning
-- All entity and temporal context preserved throughout
-- Content types clearly separated with specified markers
-- COLUMN SEPARATORS ARE ABSOLUTELY MANDATORY FOR ALL TABLE COLUMNS
-- Without proper column separation using {CONTENT_SEPARATORS['column_start']} and {CONTENT_SEPARATORS['column_end']}, the parsing is considered FAILED
-- Each table column must be individually wrapped in column separators
-- Column separation is MORE CRITICAL than any other formatting requirement
-- ALL FOOTNOTES AND ANNOTATIONS MUST BE INCLUDED IN EVERY AFFECTED CELL DESCRIPTION
-- Without footnote integration, the parsing loses critical methodological context and is considered INCOMPLETE
-- Every cell description must be self-contained with all relevant footnote information
-
-FOOTNOTE SUCCESS VALIDATION:
-- If a column has footnote marker (1), 2), a), *, etc.) in header, EVERY cell in that column must include footnote text
-- Footnote text appears in parentheses within each cell description
-- No cell descriptions should be missing footnote information when the column header indicates footnotes apply
-- Check that footnote content is preserved exactly as written in the source document
-
-FINAL COLUMN PROCESSING REMINDER:
-IF YOU SEE A TABLE, YOU MUST:
-1. Wrap the entire table with {CONTENT_SEPARATORS['table_start']} and {CONTENT_SEPARATORS['table_end']}
-2. Count ALL physical columns from left to right (ignore logical groupings)
-3. Skip Column 1 if it contains row labels (years, regions, categories)
-4. For EACH physical column position (Column 2, Column 3, Column 4, Column 5, Column 6, Column 7, Column 8, etc.), wrap ALL content from that specific column position with ONE {CONTENT_SEPARATORS['column_start']} and ONE {CONTENT_SEPARATORS['column_end']}
-5. NEVER wrap individual cell values - wrap entire columns
-6. NEVER stop after processing just a few columns - process ALL columns in the table
-7. NEVER mix data from different physical columns in the same column separator
-8. Process by strict column position, not by subject matter or logical groupings
-9. Each physical column position gets exactly one column separator pair
-
-CRITICAL MISTAKES TO AVOID:
-❌ WRONG - Wrapping individual cells:
-[C]Single cell value from 2010/11[/C]
-[C]Single cell value from 2011/12[/C]
-
-❌ WRONG - Stopping after first few columns:
-Only processing columns 2 and 3, ignoring columns 4, 5, 6, 7, 8, 9
-
-❌ WRONG - Mixing different physical columns:
-[C]
-Data from Column 2 (Total)
-Data from Column 4 (Nursery total) 
-Data from Column 5 (Nursery female)
-[/C]
-
-✅ CORRECT - Separate physical columns with ALL values:
-[C]ALL values from Column 2 across all years[/C]
-[C]ALL values from Column 3 across all years[/C]
-[C]ALL values from Column 4 across all years[/C]
-[C]ALL values from Column 5 across all years[/C]
-[C]ALL values from Column 6 across all years[/C]
-[C]ALL values from Column 7 across all years[/C]
-[C]ALL values from Column 8 across all years[/C]
-[C]ALL values from Column 9 across all years[/C]
-
-COLUMN COUNTING VERIFICATION:
-Look at the table and count EVERY physical column:
-- Column 1: Row labels → SKIP
-- Column 2: First data column → One [C]...[/C] pair with ALL values
-- Column 3: Second data column → One [C]...[/C] pair with ALL values
-- Column 4: Third data column → One [C]...[/C] pair with ALL values
-- Continue for ALL remaining columns...
-
-COMPLETENESS CHECK:
-Before finishing a table, verify you have processed:
-- ALL physical columns visible in the table
-- ALL values within each column across all rows
-- Each column wrapped in exactly ONE column separator pair
-
-Process this document with extreme attention to context preservation for optimal performance in chunked semantic search scenarios.
+Process with extreme attention to extracting ALL data for optimal semantic search performance.
 """
 
 
@@ -1762,10 +1457,12 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
             parser = LlamaParse(
                 api_key=api_key,
                 result_type="markdown",
-                system_prompt="You are an expert document parser specializing in converting complex tabular data into chunking-friendly formats for semantic search systems and you are also an expert in describing graphs and charts in details. But also You are able to parse back normal text as is.",
+                system_prompt="You are an expert document parser specializing in converting complex tabular and chart data into chunking-friendly formats for semantic search systems and you are also an expert in describing graphs and charts in details. But also You are able to parse back normal text as is.",
                 user_prompt=comprehensive_instructions,
                 page_separator=CONTENT_SEPARATORS["page_separator"],
                 verbose=True,
+                parse_mode="parse_page_with_lvm",
+                vendor_multimodal_model_name="anthropic-sonnet-4.0",
             )
             debug_print(
                 "🔧 Using newer LlamaParse parameter system (system_prompt + user_prompt)"
@@ -1782,6 +1479,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
                 parsing_instruction=comprehensive_instructions,
                 page_separator=CONTENT_SEPARATORS["page_separator"],
                 verbose=True,
+                parse_mode="parse_page_with_layout_agent",
             )
 
         # Add progress tracking with visual indicators
