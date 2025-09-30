@@ -1,0 +1,66 @@
+[X] Vzdělávání [X]
+[X] Education [X]
+
+[X] Methodological notes [X]
+
+[X] Tables 24-1 to 24-24 were obtained from sources of a workplace of the State Statistical Service at the Ministry of Education, Youth, and Sports. The Ministry of Education, Youth, and Sports receives data on state universities (the Police Academy of the Czech Republic in Prague and the University of Defence) from the Ministry of the Interior and the Ministry of Defence, respectively, which are founders of the universities. Data in the Table 24-25 are taken from the Labour Force Sample Survey (LFSS), which is carried out in the Czech Republic by the CZSO, namely with quarterly periodicity. The survey is carried out in all Member States of the European Union. More detailed information on the LFSS can be found in the Chapter 10B Labour Market. [X]
+
+[X] Notes on Tables [X]
+
+[X] Data on early childhood education up to short-cycle tertiary education are given for school years, except for separate tables with the numbers of teachers and their average gross monthly wages, which show data for calendar years. Data for school years are reported with the status as at 30 September, data for calendar years take into account the whole year period. Data on universities are taken from the SIMS database (i.e. Union Information from Students’ Registers), to which the universities, both public and private, transmit data on students, students enrolled for the first time, and graduates. As for the number of students, the published data are as at 31 December of a given year; the data for students enrolled for the first time and for graduates are for the calendar year. The source SIMS database is continually completed and updated including retrospective corrections; the data presented in this Statistical Yearbook refer to the database status as at 20 January 2024. [X]
+
+[X] The numbers of teachers (i.e. including headmasters, their deputies, and guidance counsellors) or in the case of universities professors, readers, and other teaching staff are converted to full-time equivalent persons. [X]
+
+[X] Children/pupils/students in nursery schools up to higher professional schools and students in state universities are reported as numbers of studies (i.e., for example, when a pupil/student is enrolled in multiple study programmes or in multiple schools, he or she is counted multiple times in the relevant piece of data). The only exception is breakdown by citizenship, in which the units kept are natural persons (headcount). On the contrary, students in public and private universities are reported as headcount (i.e. one student is only counted once in each piece of data regardless how many schools or how many programmes he or she is studying in). The total numbers of students, graduates, and the enrolled for the first time in studies at public and private universities thus may differ from the sums for individual universities or individual types of education (studies) and types of study programmes. [X]
+
+[X] Students enrolled for the first time are students enrolled for the first time in studies at a university that falls under the education system of the Czech Republic or in a partial study programme of such a school. It means that, for example, a student enrolled for the first time in a follow-up master study programme is concurrently enrolled for the first time at a university of the Czech education system only provided that he or she graduated from a bachelor study programme, which it follows, at a university abroad. [X]
+
+[X] Children or pupils and students with disabilities are children/pupils/students with a mental handicap or disability, with hearing impairment, with severe speech impediments, with physical disability, with multiple handicaps/disabilities, with severe developmental learning disabilities and developmental behaviour disorders, and with autistic spectrum disorders. They can be individually integrated within common classes, included in special classes in regular schools, or attend schools focusing primarily on education of pupils with special education needs. [X]
+
+[X] Those children, pupils, and students are deemed to be foreigners whose state citizenship is other than Czech. Only a single citizenship is recorded for children, pupils, and students of nursery schools up to higher professional schools; it is the one, which was stated during their enrolment in school or its most recently updated version. For students of public and private universities, more than one citizenship can be recorded. [X]
+
+[X] Founders of schools (except for universities) are public or non-public. Public founders are, for example, the Ministry of Education, Youth, and Sports, a municipality or a union of municipalities, a Region, or another institution of the state administration. Non-public founders of schools are a church or the private sector. Universities by founder are: public, private, and state ones. [X]
+
+[.P]
+
+[X] Tables 24-1 and 24-2 Early childhood education [X]
+[X] Early childhood education prepares children for their entry into compulsory school education. For children who have reached five years of age by the end of August, the early childhood education is compulsory from 1 September of the given year, namely until they enter the first grade of a basic school. Besides nursery schools, early childhood education is provided by preparatory classes of basic schools and a preparatory stage of special basic schools, both founded at basic schools. Preparatory classes mainly enable children with postponed compulsory school education due to whatever reason to catch up their development with others. A preparatory stage of special basic schools enables to perform necessary preparations for primary education to children suffering from moderate and severe mental retardation, multiple handicaps, or autism. [X]
+
+[.P]
+
+[X] 2 Statistická ročenka České republiky 2024 / Statistical Yearbook of the Czech Republic, 2024 673 [X][P][X] Vzdělávání [X]
+[X] Education [X]
+[.P]
+[T]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2010/11 was 132330 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2011/12 was 131668 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2012/13 was 130523 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2013/14 was 130324 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2014/15 was 130625 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2015/16 was 131236 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2016/17 was 132293 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2017/18 was 134231 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2018/19 was 135850 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2019/20 was 141265 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2020/21 was 145539 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2021/22 was 149260 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2022/23 was 153776 FTE. [/C]
+[C] In the table titled 'Teachers in regional education by school level', the total number of teachers in basic schools (includes preparatory stage of special basic schools and preparatory classes of basic schools) for the school year 2023/24 was 157027 FTE. [/C]
+[/T]
+[.P]
+[T]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2010/11 was 3619 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2011/12 was 3934 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2012/13 was 4277 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2013/14 was 4770 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2014/15 was 5745 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2015/16 was 6709 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2016/17 was 8831 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2017/18 was 12407 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2018/19 was 14847 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2019/20 was 17164 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2020/21 was 18864 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2021/22 was 20764 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2022/23 was 23268 FTE. [/C]
+[C] In the table titled 'Teaching assistants in regional education', the total number of teaching assistants in nursery schools for the school year 2023/24 was 25198 FTE. [/C]
+[/T]
