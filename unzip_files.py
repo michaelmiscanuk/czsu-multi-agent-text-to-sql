@@ -2,61 +2,74 @@ import os
 import shutil
 import sys
 import zipfile
+import requests
+import gdown
 from pathlib import Path
 
-# Get the base directory (same as in the other script)
+# Get the base directory
 try:
     BASE_DIR = Path(__file__).resolve().parents[0]
 except NameError:
     BASE_DIR = Path(os.getcwd())
 
-# Configuration of paths to unzip (relative to BASE_DIR)
+# Configuration of paths to unzip
 PATHS_TO_UNZIP = [
     BASE_DIR / "metadata" / "czsu_chromadb.zip",
     BASE_DIR / "data" / "czsu_data.zip",
     BASE_DIR / "data" / "CSVs.zip",
     BASE_DIR / "metadata" / "schemas.zip",
     BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip",
-    # Add more paths here as needed
 ]
 
 
-def get_compression_info(zip_path: Path):
-    """Get compression information from a zip file."""
+def download_from_gdrive(gdrive_url: str, destination_path: Path) -> bool:
+    """Simple Google Drive download using gdown."""
+    print(f"Downloading to: {destination_path}")
+
+    # Extract file ID
+    file_id = gdrive_url.split("/file/d/")[-1].split("/")[0]
+    print(f"File ID: {file_id}")
+
+    # Make sure directory exists
+    destination_path.parent.mkdir(parents=True, exist_ok=True)
+
     try:
-        with zipfile.ZipFile(zip_path, "r") as zipf:
-            total_compressed = 0
-            total_uncompressed = 0
-            compression_methods = set()
+        # Download the file
+        gdown.download(
+            f"https://drive.google.com/uc?id={file_id}",
+            str(destination_path),
+            quiet=False,
+        )
 
-            for info in zipf.infolist():
-                total_compressed += info.compress_size
-                total_uncompressed += info.file_size
-                if info.compress_type == zipfile.ZIP_STORED:
-                    compression_methods.add("STORED")
-                elif info.compress_type == zipfile.ZIP_DEFLATED:
-                    compression_methods.add("DEFLATED")
-                elif info.compress_type == zipfile.ZIP_BZIP2:
-                    compression_methods.add("BZIP2")
-                elif info.compress_type == zipfile.ZIP_LZMA:
-                    compression_methods.add("LZMA")
-                else:
-                    compression_methods.add("UNKNOWN")
+        if destination_path.exists():
+            print("✅ Downloaded successfully")
+            return True
+        else:
+            print("❌ Download failed")
+            return False
 
-            compression_ratio = 0
-            if total_uncompressed > 0:
-                compression_ratio = (
-                    (total_uncompressed - total_compressed) / total_uncompressed
-                ) * 100
+    except Exception as e:
+        print(f"❌ Download failed: {e}")
+        return False
 
-            return {
-                "methods": list(compression_methods),
-                "ratio": compression_ratio,
-                "compressed_size": total_compressed,
-                "uncompressed_size": total_uncompressed,
-            }
-    except Exception:
-        return None
+
+def safe_remove_directory(target_path: Path):
+    """Safely remove directory, handling Windows permissions."""
+    if not target_path.exists():
+        return
+
+    print(f"Removing existing: {target_path}")
+    try:
+        if target_path.is_dir():
+            shutil.rmtree(target_path)
+        else:
+            target_path.unlink()
+    except PermissionError:
+        # Force remove on Windows
+        if os.name == "nt":
+            os.system(f'rmdir /s /q "{target_path}"')
+        else:
+            raise
 
 
 def format_size(size_bytes):
@@ -72,76 +85,45 @@ def format_size(size_bytes):
 
 
 def unzip_path(path_to_unzip: Path):
-    """Unzip a file at the specified path with improved handling."""
-    abs_path = path_to_unzip
-    if not abs_path.exists():
-        print(f"Warning: Zip file does not exist: {abs_path}")
+    """Unzip a file at the specified path."""
+    if not path_to_unzip.exists():
+        print(f"Warning: Zip file does not exist: {path_to_unzip}")
         return
-    if not abs_path.suffix == ".zip":
-        print(f"Warning: Not a zip file: {abs_path}")
+    if not path_to_unzip.suffix == ".zip":
+        print(f"Warning: Not a zip file: {path_to_unzip}")
         return
 
-    # Get compression info
-    comp_info = get_compression_info(abs_path)
-    if comp_info:
-        print(f"Compression methods: {', '.join(comp_info['methods'])}")
-        print(f"Compressed size: {format_size(comp_info['compressed_size'])}")
-        print(f"Uncompressed size: {format_size(comp_info['uncompressed_size'])}")
-        print(f"Compression ratio: {comp_info['ratio']:.1f}%")
-
-    target_path = abs_path.with_suffix("")
-    print(f"Unzipping: {abs_path}")
+    target_path = path_to_unzip.with_suffix("")
+    print(f"Unzipping: {path_to_unzip}")
     print(f"Output: {target_path}")
 
-    # Always overwrite existing target
-    if target_path.exists():
-        print(f"Removing existing target: {target_path}")
-        if target_path.is_dir():
-            shutil.rmtree(target_path)
-        else:
-            target_path.unlink()
+    # Remove existing target
+    safe_remove_directory(target_path)
 
     try:
-        # Use zipfile module directly for better control and error handling
-        with zipfile.ZipFile(abs_path, "r") as zipf:
+        # Extract zip file
+        with zipfile.ZipFile(path_to_unzip, "r") as zipf:
             zipf.extractall(target_path.parent)
-
-        # Handle potential naming mismatches
-        if not target_path.exists():
-            # Look for extracted content that might have a different name
-            extracted_items = [
-                item
-                for item in target_path.parent.iterdir()
-                if item.name != abs_path.name
-                and item.stat().st_mtime > abs_path.stat().st_mtime - 1
-            ]
-
-            if len(extracted_items) == 1 and extracted_items[0] != target_path:
-                print(
-                    f"Renaming extracted content: {extracted_items[0]} -> {target_path}"
-                )
-                extracted_items[0].rename(target_path)
-
-    except zipfile.BadZipFile:
-        print(f"Error: {abs_path} is not a valid zip file or is corrupted")
-        return
+        print(f"Successfully unzipped: {path_to_unzip}")
     except Exception as e:
-        print(f"Error extracting {abs_path}: {e}")
-        # Fallback to shutil if zipfile fails
-        try:
-            print("Attempting fallback extraction with shutil...")
-            shutil.unpack_archive(abs_path, target_path.parent, "zip")
-        except Exception as fallback_error:
-            print(f"Fallback extraction also failed: {fallback_error}")
-            return
-
-    print(f"Successfully unzipped: {abs_path}")
+        print(f"Error extracting {path_to_unzip}: {e}")
 
 
 def main():
     print(f"Base directory: {BASE_DIR}")
-    print("Starting unzip process with improved handling...")
 
+    # Step 1: Download from Google Drive
+    print("Step 1: Downloading files from Google Drive...")
+    gdrive_url = "https://drive.google.com/file/d/1HcxVPRQy4FSEC6Z7h1O-FfpYljeRiMsO/view?usp=sharing"
+    destination_path = BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip"
+
+    success = download_from_gdrive(gdrive_url, destination_path)
+    if not success:
+        print("❌ Download failed. Cannot proceed with unzipping.")
+        return
+
+    # Step 2: Unzip all files
+    print("\nStep 2: Starting unzip process...")
     for path in PATHS_TO_UNZIP:
         print(f"\n{'='*60}")
         unzip_path(path)

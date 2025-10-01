@@ -353,7 +353,7 @@ except ImportError:
 # MAIN CONFIGURATION - MODIFY THESE SETTINGS
 # =====================================================================
 # Processing Mode - Three independent operations
-PARSE_WITH_LLAMAPARSE = 1  # Set to 1 to parse PDF with LlamaParse and save to txt file
+PARSE_WITH_LLAMAPARSE = 0  # Set to 1 to parse PDF with LlamaParse and save to txt file
 # Set to 0 to skip parsing (use existing txt file)
 
 CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
@@ -394,7 +394,9 @@ PDF_FILENAMES = [
     # "701_PDFsam_32019824.pdf",
     # "801_PDFsam_32019824.pdf",
     # "666_PDFsam_66632019824.pdf",
-    "32019824.pdf"
+    # "32019824.pdf",
+    "1_PDFsam_32019824.pdf",
+    "501_PDFsam_32019824.pdf",
 ]
 
 COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
@@ -424,7 +426,7 @@ AZURE_EMBEDDING_DEPLOYMENT = (
 
 # LlamaParse Settings (only needed if using llamaparse method)
 # LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
-# LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY2", "")  # Read from .env file
+LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY2", "")  # Read from .env file
 
 # Content Separators - unique strings unlikely to appear in normal text
 CONTENT_SEPARATORS = {
@@ -445,8 +447,8 @@ CONTENT_SEPARATORS = {
 # Token and Chunking Settings
 MAX_TOKENS = 8190  # Token limit for Azure OpenAI
 MIN_CHUNK_SIZE = 100  # Minimum chunk size to avoid very small chunks
-MAX_CHUNK_SIZE = 5000  # Optimized chunk size for better semantic boundaries
-CHUNK_OVERLAP = 0  # Overlap for better context preservation
+MAX_CHUNK_SIZE = 1000  # Optimized chunk size for better semantic boundaries
+CHUNK_OVERLAP = 100  # Overlap for better context preservation
 
 # Search Settings
 HYBRID_SEARCH_RESULTS = 20  # Number of results from hybrid search

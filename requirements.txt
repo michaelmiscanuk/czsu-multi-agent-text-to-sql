@@ -4,6 +4,9 @@ uvicorn[standard]>=0.24.0
 starlette==0.45.3
 python-multipart>=0.0.6
 
+# Google Drive download
+gdown>=5.0.0
+
 # Pydantic for data validation
 pydantic>=2.5.0
 pydantic-settings==2.9.1

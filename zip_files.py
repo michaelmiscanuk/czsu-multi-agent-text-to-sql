@@ -2,6 +2,9 @@ import os
 import sys
 import zipfile
 from pathlib import Path
+import requests
+import json
+from typing import Optional
 
 # Get the base directory
 try:
@@ -103,6 +106,131 @@ def format_size(size_bytes):
     return f"{size_bytes:.1f} {size_names[i]}"
 
 
+def upload_to_gdrive(file_path: Path, gdrive_folder_link: str) -> bool:
+    """
+    Prepare file for Google Drive upload and provide easy access.
+    Since Google Drive API requires authentication, this function will:
+    1. Copy the file to an easily accessible location
+    2. Open the Google Drive folder in browser
+    3. Provide clear instructions for manual upload
+
+    Args:
+        file_path: Path to the file to upload
+        gdrive_folder_link: Google Drive shared folder link
+
+    Returns:
+        bool: True if file preparation successful, False otherwise
+    """
+    if not file_path.exists():
+        print(f"Error: File does not exist: {file_path}")
+        return False
+
+    try:
+        # Create a convenient upload folder on desktop
+        desktop_path = Path.home() / "Desktop"
+        upload_folder = desktop_path / "GDRIVE_UPLOAD"
+        upload_folder.mkdir(exist_ok=True)
+
+        # Copy file to desktop upload folder
+        destination_file = upload_folder / file_path.name
+
+        print(f"Preparing file for Google Drive upload...")
+        print(f"File: {file_path.name}")
+        print(f"Size: {format_size(file_path.stat().st_size)}")
+
+        # Show progress bar while copying
+        print("Copying file to desktop folder...")
+        print_progress_bar(0, 100, prefix="Progress:", suffix="Complete", length=50)
+
+        import shutil
+
+        shutil.copy2(file_path, destination_file)
+
+        print_progress_bar(100, 100, prefix="Progress:", suffix="Complete", length=50)
+
+        print(f"\n✓ File copied to: {destination_file}")
+        print(f"\n{'='*60}")
+        print("MANUAL UPLOAD INSTRUCTIONS")
+        print(f"{'='*60}")
+        print(f"1. File location: {destination_file}")
+        print(f"2. Google Drive folder: {gdrive_folder_link}")
+        print(f"3. Open the Google Drive folder in your browser")
+        print(f"4. Drag and drop the file from your desktop folder")
+        print(f"{'='*60}")
+
+        # Try to open the Google Drive folder in browser
+        try:
+            import webbrowser
+
+            print(f"Opening Google Drive folder in browser...")
+            webbrowser.open(gdrive_folder_link)
+        except Exception as e:
+            print(f"Could not open browser automatically: {e}")
+            print(f"Please manually open: {gdrive_folder_link}")
+
+        # Try to open the desktop folder
+        try:
+            import subprocess
+
+            print(f"Opening desktop upload folder...")
+            subprocess.run(["explorer", str(upload_folder)], check=False)
+        except Exception as e:
+            print(f"Could not open folder automatically: {e}")
+            print(f"Please manually navigate to: {upload_folder}")
+
+        return True
+
+    except Exception as e:
+        print(f"\n✗ Error preparing file: {e}")
+        print(f"Manual upload required:")
+        print(f"File: {file_path}")
+        print(f"Google Drive folder: {gdrive_folder_link}")
+        return False
+
+
+def print_progress_bar(
+    iteration,
+    total,
+    prefix="",
+    suffix="",
+    decimals=1,
+    length=100,
+    fill="█",
+    print_end="\r",
+):
+    """
+    Call in a loop to create terminal progress bar
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filled_length = int(length * iteration // total)
+    bar = fill * filled_length + "-" * (length - filled_length)
+    print(f"\r{prefix} |{bar}| {percent}% {suffix}", end=print_end)
+    # Print New Line on Complete
+    if iteration == total:
+        print()
+
+
+def upload_pdf_chromadb_to_gdrive():
+    """Prepare the pdf_chromadb_llamaparse.zip file for Google Drive upload."""
+    pdf_chromadb_zip = BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip"
+    gdrive_folder_link = "https://drive.google.com/drive/folders/1TZWxURgYoYHgKMji4OV333ftEDCyJRgD?usp=sharing"
+
+    print(f"\n{'='*50}")
+    print("PREPARING FOR GOOGLE DRIVE UPLOAD")
+    print(f"{'='*50}")
+
+    if pdf_chromadb_zip.exists():
+        success = upload_to_gdrive(pdf_chromadb_zip, gdrive_folder_link)
+        if success:
+            print("✓ File preparation completed successfully!")
+            print("Please follow the instructions above to complete the upload.")
+        else:
+            print("✗ File preparation failed.")
+    else:
+        print(f"Warning: File not found: {pdf_chromadb_zip}")
+        print("Make sure the pdf_chromadb_llamaparse folder was zipped successfully.")
+
+
 def main():
     print(f"Base directory: {BASE_DIR}")
     print("Starting zip process with improved compression...")
@@ -111,6 +239,9 @@ def main():
         zip_path(path)
 
     print("\nZip process completed!")
+
+    # Prepare the pdf_chromadb_llamaparse.zip for Google Drive upload
+    upload_pdf_chromadb_to_gdrive()
 
 
 if __name__ == "__main__":

@@ -17,6 +17,7 @@ wheels/
 .venv
 .idea
 # *.pdf
+pdf_chromadb_llamaparse.zip
 
 data/czsu_data.db
 data/CSVs

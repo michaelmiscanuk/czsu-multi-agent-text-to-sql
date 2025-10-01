@@ -67,6 +67,9 @@ dependencies = [
     "requests>=2.31.0",
     "tqdm==4.67.1",
     
+    # Google Drive download
+    "gdown>=5.0.0",
+    
     # Data processing
     "pandas>=2.1.3",
     "numpy>=1.25.2",
