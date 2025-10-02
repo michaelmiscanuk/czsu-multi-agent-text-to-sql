@@ -114,7 +114,7 @@ def main():
 
     # Step 1: Download from Google Drive
     print("Step 1: Downloading files from Google Drive...")
-    gdrive_url = "https://drive.google.com/file/d/1HcxVPRQy4FSEC6Z7h1O-FfpYljeRiMsO/view?usp=sharing"
+    gdrive_url = "https://drive.google.com/file/d/11FvtkeMFIwhLf0RBB4nk7zq9ltXreQ0Y/view?usp=sharing"
     destination_path = BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip"
 
     success = download_from_gdrive(gdrive_url, destination_path)
