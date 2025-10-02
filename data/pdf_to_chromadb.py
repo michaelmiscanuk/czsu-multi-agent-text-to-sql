@@ -168,7 +168,6 @@ Full Pipeline Execution:
 # Configure all three operations
 PARSE_WITH_LLAMAPARSE = 1       # Parse PDFs with advanced table handling
 CHUNK_AND_STORE = 1             # Apply intelligent chunking and store
-CLEAR_EXISTING_CHROMADB = 1     # Start fresh (recommended for testing)
 DO_TESTING = 1                  # Test search with sample queries
 
 # Define document set
@@ -186,7 +185,6 @@ DO_TESTING = 0
 
 # Add to existing collection
 CHUNK_AND_STORE = 1
-CLEAR_EXISTING_CHROMADB = 0
 
 # Test with new queries
 DO_TESTING = 1
@@ -359,10 +357,6 @@ PARSE_WITH_LLAMAPARSE = 0  # Set to 1 to parse PDF with LlamaParse and save to t
 CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
 # Set to 0 to skip chunking (use existing ChromaDB)
 
-# ChromaDB Management Options
-CLEAR_EXISTING_CHROMADB = 1  # Set to 1 to delete existing collection before re-chunking
-# Set to 0 to append to existing collection (not recommended for testing new chunking)
-
 DO_TESTING = 1  # Set to 1 to test search on existing ChromaDB
 # Set to 0 to skip testing
 
@@ -397,6 +391,7 @@ PDF_FILENAMES = [
     # "32019824.pdf",
     "1_PDFsam_32019824.pdf",
     "501_PDFsam_32019824.pdf",
+    # "661_PDFsam_32019824.pdf"
 ]
 
 COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
@@ -420,13 +415,11 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
 
 # Azure OpenAI Settings
-AZURE_EMBEDDING_DEPLOYMENT = (
-    "text-embedding-3-large__test1"  # Your Azure deployment name
-)
+AZURE_EMBEDDING_DEPLOYMENT = "text-embedding-ada-002"  # Your Azure deployment name
 
 # LlamaParse Settings (only needed if using llamaparse method)
-# LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
-LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY2", "")  # Read from .env file
+LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
+# LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY2", "")  # Read from .env file
 
 # Content Separators - unique strings unlikely to appear in normal text
 CONTENT_SEPARATORS = {
@@ -2642,16 +2635,6 @@ def main():
 
             # Initialize ChromaDB
             client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
-
-            # Handle existing collection based on CLEAR_EXISTING_CHROMADB setting
-            if CLEAR_EXISTING_CHROMADB:
-                try:
-                    client.delete_collection(name=COLLECTION_NAME)
-                    debug_print(
-                        f"🗑️ Deleted existing ChromaDB collection: {COLLECTION_NAME}"
-                    )
-                except Exception:
-                    debug_print(f"No existing collection to delete: {COLLECTION_NAME}")
 
             try:
                 collection = client.create_collection(

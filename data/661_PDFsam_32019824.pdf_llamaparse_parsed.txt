@@ -1,0 +1,324 @@
+
+
+Věda, výzkum a inovace
+Science, research, and innovation
+
+# 23-28 Zahraniční obchod s technologickými službami
+# 23-28 Technology balance of payments
+
+[T]
+[C]
+In the table titled "Technology balance of payments", the total exports for 2015 was 90073 CZK million.
+In the table titled "Technology balance of payments", the total exports for 2019 was 131845 CZK million.
+In the table titled "Technology balance of payments", the total exports for 2020 was 139080 CZK million.
+In the table titled "Technology balance of payments", the total exports for 2021 was 157567 CZK million.
+In the table titled "Technology balance of payments", the total exports for 2022 was 177140 CZK million.
+In the table titled "Technology balance of payments", the total exports for 2023 (asterisk footnote) was 181868 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the computer services and software exports for 2015 was 56164 CZK million.
+In the table titled "Technology balance of payments", the computer services and software exports for 2019 was 91000 CZK million.
+In the table titled "Technology balance of payments", the computer services and software exports for 2020 was 101013 CZK million.
+In the table titled "Technology balance of payments", the computer services and software exports for 2021 was 109483 CZK million.
+In the table titled "Technology balance of payments", the computer services and software exports for 2022 was 126481 CZK million.
+In the table titled "Technology balance of payments", the computer services and software exports for 2023 (asterisk footnote) was 122695 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services exports for 2015 was 16709 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services exports for 2019 was 17495 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services exports for 2020 was 16944 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services exports for 2021 was 19769 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services exports for 2022 was 20696 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services exports for 2023 (asterisk footnote) was 24282 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the research and development exports for 2015 was 13747 CZK million.
+In the table titled "Technology balance of payments", the research and development exports for 2019 was 18005 CZK million.
+In the table titled "Technology balance of payments", the research and development exports for 2020 was 15732 CZK million.
+In the table titled "Technology balance of payments", the research and development exports for 2021 was 21852 CZK million.
+In the table titled "Technology balance of payments", the research and development exports for 2022 was 24485 CZK million.
+In the table titled "Technology balance of payments", the research and development exports for 2023 (asterisk footnote) was 30074 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the royalties and licence fees exports for 2015 was 3452 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees exports for 2019 was 5344 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees exports for 2020 was 5391 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees exports for 2021 was 6463 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees exports for 2022 was 5478 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees exports for 2023 (asterisk footnote) was 4817 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the EU27 exports for 2015 was 48633 CZK million.
+In the table titled "Technology balance of payments", the EU27 exports for 2019 was 69130 CZK million.
+In the table titled "Technology balance of payments", the EU27 exports for 2020 was 73775 CZK million.
+In the table titled "Technology balance of payments", the EU27 exports for 2021 was 81989 CZK million.
+In the table titled "Technology balance of payments", the EU27 exports for 2022 was 94670 CZK million.
+In the table titled "Technology balance of payments", the EU27 exports for 2023 (asterisk footnote) was 97022 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Germany exports for 2015 was 15761 CZK million.
+In the table titled "Technology balance of payments", the Germany exports for 2019 was 25525 CZK million.
+In the table titled "Technology balance of payments", the Germany exports for 2020 was 27194 CZK million.
+In the table titled "Technology balance of payments", the Germany exports for 2021 was 31769 CZK million.
+In the table titled "Technology balance of payments", the Germany exports for 2022 was 39704 CZK million.
+In the table titled "Technology balance of payments", the Germany exports for 2023 (asterisk footnote) was 43185 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the France exports for 2015 was 2889 CZK million.
+In the table titled "Technology balance of payments", the France exports for 2019 was 3488 CZK million.
+In the table titled "Technology balance of payments", the France exports for 2020 was 3247 CZK million.
+In the table titled "Technology balance of payments", the France exports for 2021 was 4057 CZK million.
+In the table titled "Technology balance of payments", the France exports for 2022 was 4927 CZK million.
+In the table titled "Technology balance of payments", the France exports for 2023 (asterisk footnote) was 9600 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Netherlands exports for 2015 was 2655 CZK million.
+In the table titled "Technology balance of payments", the Netherlands exports for 2019 was 4416 CZK million.
+In the table titled "Technology balance of payments", the Netherlands exports for 2020 was 4685 CZK million.
+In the table titled "Technology balance of payments", the Netherlands exports for 2021 was 5994 CZK million.
+In the table titled "Technology balance of payments", the Netherlands exports for 2022 was 6797 CZK million.
+In the table titled "Technology balance of payments", the Netherlands exports for 2023 (asterisk footnote) was 7712 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Slovakia exports for 2015 was 5185 CZK million.
+In the table titled "Technology balance of payments", the Slovakia exports for 2019 was 3940 CZK million.
+In the table titled "Technology balance of payments", the Slovakia exports for 2020 was 3694 CZK million.
+In the table titled "Technology balance of payments", the Slovakia exports for 2021 was 4088 CZK million.
+In the table titled "Technology balance of payments", the Slovakia exports for 2022 was 4793 CZK million.
+In the table titled "Technology balance of payments", the Slovakia exports for 2023 (asterisk footnote) was 5369 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Ireland exports for 2015 was 8986 CZK million.
+In the table titled "Technology balance of payments", the Ireland exports for 2019 was 15901 CZK million.
+In the table titled "Technology balance of payments", the Ireland exports for 2020 was 17913 CZK million.
+In the table titled "Technology balance of payments", the Ireland exports for 2021 was 16757 CZK million.
+In the table titled "Technology balance of payments", the Ireland exports for 2022 was 13913 CZK million.
+In the table titled "Technology balance of payments", the Ireland exports for 2023 (asterisk footnote) was 4846 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Finland exports for 2015 was 1850 CZK million.
+In the table titled "Technology balance of payments", the Finland exports for 2019 was 2881 CZK million.
+In the table titled "Technology balance of payments", the Finland exports for 2020 was 2839 CZK million.
+In the table titled "Technology balance of payments", the Finland exports for 2021 was 2951 CZK million.
+In the table titled "Technology balance of payments", the Finland exports for 2022 was 3170 CZK million.
+In the table titled "Technology balance of payments", the Finland exports for 2023 (asterisk footnote) was 3047 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the other EU countries exports for 2015 was 11306 CZK million.
+In the table titled "Technology balance of payments", the other EU countries exports for 2019 was 12980 CZK million.
+In the table titled "Technology balance of payments", the other EU countries exports for 2020 was 14204 CZK million.
+In the table titled "Technology balance of payments", the other EU countries exports for 2021 was 16373 CZK million.
+In the table titled "Technology balance of payments", the other EU countries exports for 2022 was 21365 CZK million.
+In the table titled "Technology balance of payments", the other EU countries exports for 2023 (asterisk footnote) was 23263 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the United States exports for 2015 was 16321 CZK million.
+In the table titled "Technology balance of payments", the United States exports for 2019 was 25762 CZK million.
+In the table titled "Technology balance of payments", the United States exports for 2020 was 30143 CZK million.
+In the table titled "Technology balance of payments", the United States exports for 2021 was 34998 CZK million.
+In the table titled "Technology balance of payments", the United States exports for 2022 was 42171 CZK million.
+In the table titled "Technology balance of payments", the United States exports for 2023 (asterisk footnote) was 39944 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Switzerland exports for 2015 was 3048 CZK million.
+In the table titled "Technology balance of payments", the Switzerland exports for 2019 was 5962 CZK million.
+In the table titled "Technology balance of payments", the Switzerland exports for 2020 was 7544 CZK million.
+In the table titled "Technology balance of payments", the Switzerland exports for 2021 was 9614 CZK million.
+In the table titled "Technology balance of payments", the Switzerland exports for 2022 was 10636 CZK million.
+In the table titled "Technology balance of payments", the Switzerland exports for 2023 (asterisk footnote) was 12052 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the United Kingdom exports for 2015 was 6881 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom exports for 2019 was 7881 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom exports for 2020 was 8639 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom exports for 2021 was 8948 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom exports for 2022 was 9862 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom exports for 2023 (asterisk footnote) was 10534 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the China exports for 2015 was 3448 CZK million.
+In the table titled "Technology balance of payments", the China exports for 2019 was 7813 CZK million.
+In the table titled "Technology balance of payments", the China exports for 2020 was 5062 CZK million.
+In the table titled "Technology balance of payments", the China exports for 2021 was 7505 CZK million.
+In the table titled "Technology balance of payments", the China exports for 2022 was 5216 CZK million.
+In the table titled "Technology balance of payments", the China exports for 2023 (asterisk footnote) was 5622 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Singapore exports for 2015 was 804 CZK million.
+In the table titled "Technology balance of payments", the Singapore exports for 2019 was 839 CZK million.
+In the table titled "Technology balance of payments", the Singapore exports for 2020 was 932 CZK million.
+In the table titled "Technology balance of payments", the Singapore exports for 2021 was 701 CZK million.
+In the table titled "Technology balance of payments", the Singapore exports for 2022 was 977 CZK million.
+In the table titled "Technology balance of payments", the Singapore exports for 2023 (asterisk footnote) was 1219 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the other countries exports for 2015 was 10938 CZK million.
+In the table titled "Technology balance of payments", the other countries exports for 2019 was 14457 CZK million.
+In the table titled "Technology balance of payments", the other countries exports for 2020 was 12986 CZK million.
+In the table titled "Technology balance of payments", the other countries exports for 2021 was 13812 CZK million.
+In the table titled "Technology balance of payments", the other countries exports for 2022 was 13609 CZK million.
+In the table titled "Technology balance of payments", the other countries exports for 2023 (asterisk footnote) was 15475 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the total imports for 2015 was 64331 CZK million.
+In the table titled "Technology balance of payments", the total imports for 2019 was 105602 CZK million.
+In the table titled "Technology balance of payments", the total imports for 2020 was 90346 CZK million.
+In the table titled "Technology balance of payments", the total imports for 2021 was 92110 CZK million.
+In the table titled "Technology balance of payments", the total imports for 2022 was 123060 CZK million.
+In the table titled "Technology balance of payments", the total imports for 2023 (asterisk footnote) was 129313 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the computer services and software imports for 2015 was 27615 CZK million.
+In the table titled "Technology balance of payments", the computer services and software imports for 2019 was 41504 CZK million.
+In the table titled "Technology balance of payments", the computer services and software imports for 2020 was 46796 CZK million.
+In the table titled "Technology balance of payments", the computer services and software imports for 2021 was 49976 CZK million.
+In the table titled "Technology balance of payments", the computer services and software imports for 2022 was 62405 CZK million.
+In the table titled "Technology balance of payments", the computer services and software imports for 2023 (asterisk footnote) was 67380 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services imports for 2015 was 9535 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services imports for 2019 was 10786 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services imports for 2020 was 10267 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services imports for 2021 was 12486 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services imports for 2022 was 14651 CZK million.
+In the table titled "Technology balance of payments", the architectural, engineering, scientific, and other technical services imports for 2023 (asterisk footnote) was 15101 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the research and development imports for 2015 was 12671 CZK million.
+In the table titled "Technology balance of payments", the research and development imports for 2019 was 38292 CZK million.
+In the table titled "Technology balance of payments", the research and development imports for 2020 was 19929 CZK million.
+In the table titled "Technology balance of payments", the research and development imports for 2021 was 13784 CZK million.
+In the table titled "Technology balance of payments", the research and development imports for 2022 was 28865 CZK million.
+In the table titled "Technology balance of payments", the research and development imports for 2023 (asterisk footnote) was 24143 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the royalties and licence fees imports for 2015 was 14510 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees imports for 2019 was 15020 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees imports for 2020 was 13354 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees imports for 2021 was 15864 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees imports for 2022 was 17139 CZK million.
+In the table titled "Technology balance of payments", the royalties and licence fees imports for 2023 (asterisk footnote) was 22689 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the EU27 imports for 2015 was 44420 CZK million.
+In the table titled "Technology balance of payments", the EU27 imports for 2019 was 79688 CZK million.
+In the table titled "Technology balance of payments", the EU27 imports for 2020 was 63321 CZK million.
+In the table titled "Technology balance of payments", the EU27 imports for 2021 was 66595 CZK million.
+In the table titled "Technology balance of payments", the EU27 imports for 2022 was 93486 CZK million.
+In the table titled "Technology balance of payments", the EU27 imports for 2023 (asterisk footnote) was 97923 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Germany imports for 2015 was 19919 CZK million.
+In the table titled "Technology balance of payments", the Germany imports for 2019 was 49696 CZK million.
+In the table titled "Technology balance of payments", the Germany imports for 2020 was 32072 CZK million.
+In the table titled "Technology balance of payments", the Germany imports for 2021 was 30423 CZK million.
+In the table titled "Technology balance of payments", the Germany imports for 2022 was 47522 CZK million.
+In the table titled "Technology balance of payments", the Germany imports for 2023 (asterisk footnote) was 44186 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Netherlands imports for 2015 was 6083 CZK million.
+In the table titled "Technology balance of payments", the Netherlands imports for 2019 was 8829 CZK million.
+In the table titled "Technology balance of payments", the Netherlands imports for 2020 was 8743 CZK million.
+In the table titled "Technology balance of payments", the Netherlands imports for 2021 was 11545 CZK million.
+In the table titled "Technology balance of payments", the Netherlands imports for 2022 was 12430 CZK million.
+In the table titled "Technology balance of payments", the Netherlands imports for 2023 (asterisk footnote) was 17822 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Ireland imports for 2015 was 2030 CZK million.
+In the table titled "Technology balance of payments", the Ireland imports for 2019 was 3577 CZK million.
+In the table titled "Technology balance of payments", the Ireland imports for 2020 was 5617 CZK million.
+In the table titled "Technology balance of payments", the Ireland imports for 2021 was 7217 CZK million.
+In the table titled "Technology balance of payments", the Ireland imports for 2022 was 10888 CZK million.
+In the table titled "Technology balance of payments", the Ireland imports for 2023 (asterisk footnote) was 11501 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the France imports for 2015 was 3720 CZK million.
+In the table titled "Technology balance of payments", the France imports for 2019 was 3849 CZK million.
+In the table titled "Technology balance of payments", the France imports for 2020 was 4001 CZK million.
+In the table titled "Technology balance of payments", the France imports for 2021 was 3786 CZK million.
+In the table titled "Technology balance of payments", the France imports for 2022 was 3551 CZK million.
+In the table titled "Technology balance of payments", the France imports for 2023 (asterisk footnote) was 4347 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Slovakia imports for 2015 was 3283 CZK million.
+In the table titled "Technology balance of payments", the Slovakia imports for 2019 was 3036 CZK million.
+In the table titled "Technology balance of payments", the Slovakia imports for 2020 was 2862 CZK million.
+In the table titled "Technology balance of payments", the Slovakia imports for 2021 was 2915 CZK million.
+In the table titled "Technology balance of payments", the Slovakia imports for 2022 was 4574 CZK million.
+In the table titled "Technology balance of payments", the Slovakia imports for 2023 (asterisk footnote) was 4031 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Poland imports for 2015 was 929 CZK million.
+In the table titled "Technology balance of payments", the Poland imports for 2019 was 1215 CZK million.
+In the table titled "Technology balance of payments", the Poland imports for 2020 was 1070 CZK million.
+In the table titled "Technology balance of payments", the Poland imports for 2021 was 1154 CZK million.
+In the table titled "Technology balance of payments", the Poland imports for 2022 was 1798 CZK million.
+In the table titled "Technology balance of payments", the Poland imports for 2023 (asterisk footnote) was 2243 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the other EU countries imports for 2015 was 8456 CZK million.
+In the table titled "Technology balance of payments", the other EU countries imports for 2019 was 9486 CZK million.
+In the table titled "Technology balance of payments", the other EU countries imports for 2020 was 8956 CZK million.
+In the table titled "Technology balance of payments", the other EU countries imports for 2021 was 9555 CZK million.
+In the table titled "Technology balance of payments", the other EU countries imports for 2022 was 12724 CZK million.
+In the table titled "Technology balance of payments", the other EU countries imports for 2023 (asterisk footnote) was 13794 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the United States imports for 2015 was 4649 CZK million.
+In the table titled "Technology balance of payments", the United States imports for 2019 was 3976 CZK million.
+In the table titled "Technology balance of payments", the United States imports for 2020 was 3555 CZK million.
+In the table titled "Technology balance of payments", the United States imports for 2021 was 3254 CZK million.
+In the table titled "Technology balance of payments", the United States imports for 2022 was 4366 CZK million.
+In the table titled "Technology balance of payments", the United States imports for 2023 (asterisk footnote) was 6014 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the United Kingdom imports for 2015 was 3241 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom imports for 2019 was 4792 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom imports for 2020 was 5301 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom imports for 2021 was 4626 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom imports for 2022 was 5603 CZK million.
+In the table titled "Technology balance of payments", the United Kingdom imports for 2023 (asterisk footnote) was 5911 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Japan imports for 2015 was 4781 CZK million.
+In the table titled "Technology balance of payments", the Japan imports for 2019 was 3184 CZK million.
+In the table titled "Technology balance of payments", the Japan imports for 2020 was 2262 CZK million.
+In the table titled "Technology balance of payments", the Japan imports for 2021 was 2114 CZK million.
+In the table titled "Technology balance of payments", the Japan imports for 2022 was 3365 CZK million.
+In the table titled "Technology balance of payments", the Japan imports for 2023 (asterisk footnote) was 3359 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the India imports for 2015 was 231 CZK million.
+In the table titled "Technology balance of payments", the India imports for 2019 was 824 CZK million.
+In the table titled "Technology balance of payments", the India imports for 2020 was 2333 CZK million.
+In the table titled "Technology balance of payments", the India imports for 2021 was 2402 CZK million.
+In the table titled "Technology balance of payments", the India imports for 2022 was 2437 CZK million.
+In the table titled "Technology balance of payments", the India imports for 2023 (asterisk footnote) was 2648 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Switzerland imports for 2015 was 2078 CZK million.
+In the table titled "Technology balance of payments", the Switzerland imports for 2019 was 2724 CZK million.
+In the table titled "Technology balance of payments", the Switzerland imports for 2020 was 3133 CZK million.
+In the table titled "Technology balance of payments", the Switzerland imports for 2021 was 3293 CZK million.
+In the table titled "Technology balance of payments", the Switzerland imports for 2022 was 3640 CZK million.
+In the table titled "Technology balance of payments", the Switzerland imports for 2023 (asterisk footnote) was 2011 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the Korea, Republic of imports for 2015 was 1091 CZK million.
+In the table titled "Technology balance of payments", the Korea, Republic of imports for 2019 was 1527 CZK million.
+In the table titled "Technology balance of payments", the Korea, Republic of imports for 2020 was 1115 CZK million.
+In the table titled "Technology balance of payments", the Korea, Republic of imports for 2021 was 1129 CZK million.
+In the table titled "Technology balance of payments", the Korea, Republic of imports for 2022 was 1335 CZK million.
+In the table titled "Technology balance of payments", the Korea, Republic of imports for 2023 (asterisk footnote) was 1681 CZK million.
+[/C]
+[C]
+In the table titled "Technology balance of payments", the other countries imports for 2015 was 3838 CZK million.
+In the table titled "Technology balance of payments", the other countries imports for 2019 was 8888 CZK million.
+In the table titled "Technology balance of payments", the other countries imports for 2020 was 9317 CZK million.
+In the table titled "Technology balance of payments", the other countries imports for 2021 was 8695 CZK million.
+In the table titled "Technology balance of payments", the other countries imports for 2022 was 8829 CZK million.
+In the table titled "Technology balance of payments", the other countries imports for 2023 (asterisk footnote) was 9766 CZK million.
+[/C]
+[/T]
+
+ČSÚ    Statistická ročenka České republiky 2024 / Statistical Yearbook of the Czech Republic, 2024    661
