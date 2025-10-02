@@ -21,6 +21,10 @@ try:
 except NameError:
     BASE_DIR = Path(os.getcwd())
 
+# Add the root directory to Python path for imports to work
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
 # Standard imports
 import traceback
 from contextlib import asynccontextmanager
