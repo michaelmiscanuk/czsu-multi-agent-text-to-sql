@@ -22,18 +22,18 @@ from api.utils.debug import print__checkpointers_debug
 # - check_postgres_env_vars() function
 DEFAULT_MAX_RETRIES = 2  # Standard retry attempts for most operations
 CHECKPOINTER_CREATION_MAX_RETRIES = 2  # Retry attempts for checkpointer creation
-CONNECT_TIMEOUT = 20  # Initial connection timeout for cloud databases
-TCP_USER_TIMEOUT = 60000  # TCP-level timeout (60 seconds in milliseconds) - increased for long operations
+CONNECT_TIMEOUT = 90  # Initial connection timeout for cloud databases - increased for concurrent operations
+TCP_USER_TIMEOUT = 240000  # TCP-level timeout (240 seconds in milliseconds) - increased for concurrent operations
 KEEPALIVES_IDLE = (
     300  # 5 minutes before first keepalive - reduced for better connection health
 )
 KEEPALIVES_INTERVAL = 30  # 30 seconds between keepalives
 KEEPALIVES_COUNT = 3  # 3 failed keepalives before disconnect
-DEFAULT_POOL_MIN_SIZE = 3  # Increased minimum pool size for higher concurrency
-DEFAULT_POOL_MAX_SIZE = 10  # Increased maximum pool size to support more connections
-DEFAULT_POOL_TIMEOUT = (
-    30  # Pool connection timeout - increased for concurrent operations
+DEFAULT_POOL_MIN_SIZE = 5  # Increased minimum pool size for higher concurrency
+DEFAULT_POOL_MAX_SIZE = (
+    25  # Increased maximum pool size to support more concurrent connections
 )
+DEFAULT_POOL_TIMEOUT = 180  # Pool connection timeout - significantly increased for concurrent testing (2 minutes)
 DEFAULT_MAX_IDLE = (
     600  # 10 minutes idle timeout - increased for long-running operations
 )

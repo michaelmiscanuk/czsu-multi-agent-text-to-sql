@@ -1,0 +1,552 @@
+====================================================================================================
+TEST_FAILURE REPORT
+Generated: 2025-10-02 22:43:35
+Test File: test_concurrency.py
+====================================================================================================
+
+TOTAL FAILED TESTS: 21
+====================================================================================================
+
+FAILED TEST #1
+============================================================
+Test ID: test_5
+Endpoint: /analyze
+Description: Jaka byla prumerna mesicni mzda v obchode v roce 2022?
+Error Type: Exception
+Timestamp: 2025-10-02T22:41:50.064703
+
+Response Time: 100.40s
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "/opt/render/project/src/api/routes/analysis.py", line 263, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/asyncio/tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/main.py", line 409, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2596, in astream
+    async with AsyncPregelLoop(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1393, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 745, in __aexit__
+    raise exc_details[1]
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 728, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/executor.py", line 209, in __aexit__
+    raise exc
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1260, in _checkpointer_put_after_previous
+    await prev
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1260, in _checkpointer_put_after_previous
+    await prev
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1260, in _checkpointer_put_after_previous
+    await prev
+  [Previous line repeated 14 more times]
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1262, in _checkpointer_put_after_previous
+    await cast(BaseCheckpointSaver, self.checkpointer).aput(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 260, in aput
+    async with self._cursor(pipeline=True) as cur:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 351, in _cursor
+    async with _ainternal.get_connection(self.conn) as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/_ainternal.py", line 21, in get_connection
+    async with conn.connection() as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 195, in connection
+    conn = await self.getconn(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 230, in getconn
+    raise PoolTimeout(
+psycopg_pool.PoolTimeout: couldn't get a connection after 30.00 sec
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #2
+============================================================
+Test ID: test_16
+Endpoint: /analyze
+Description: Jaky byl pocet zen hrajicich golf ve veku 19+ v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:41:51.293461
+
+Response Time: 101.63s
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "/opt/render/project/src/api/routes/analysis.py", line 263, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/asyncio/tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/main.py", line 409, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2596, in astream
+    async with AsyncPregelLoop(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1393, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 745, in __aexit__
+    raise exc_details[1]
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 728, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/executor.py", line 209, in __aexit__
+    raise exc
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 314, in aput_writes
+    async with self._cursor(pipeline=True) as cur:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 351, in _cursor
+    async with _ainternal.get_connection(self.conn) as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/_ainternal.py", line 21, in get_connection
+    async with conn.connection() as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 195, in connection
+    conn = await self.getconn(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 230, in getconn
+    raise PoolTimeout(
+psycopg_pool.PoolTimeout: couldn't get a connection after 30.00 sec
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #3
+============================================================
+Test ID: test_12
+Endpoint: /analyze
+Description: Jaky byl pocet zen ve veku 80+ s vydaji zdravotnich pojistoven v roce 2022?
+Error Type: Exception
+Timestamp: 2025-10-02T22:41:51.969719
+
+Response Time: 102.30s
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "/opt/render/project/src/api/routes/analysis.py", line 263, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/asyncio/tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/main.py", line 409, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2596, in astream
+    async with AsyncPregelLoop(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1393, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 745, in __aexit__
+    raise exc_details[1]
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 728, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/executor.py", line 209, in __aexit__
+    raise exc
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 314, in aput_writes
+    async with self._cursor(pipeline=True) as cur:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 351, in _cursor
+    async with _ainternal.get_connection(self.conn) as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/_ainternal.py", line 21, in get_connection
+    async with conn.connection() as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 195, in connection
+    conn = await self.getconn(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 230, in getconn
+    raise PoolTimeout(
+psycopg_pool.PoolTimeout: couldn't get a connection after 30.00 sec
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #4
+============================================================
+Test ID: test_15
+Endpoint: /analyze
+Description: Kolik muzskych clenu ve veku 19+ hral fotbal ve sportovnich svazeich v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:41:52.279293
+
+Response Time: 102.61s
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "/opt/render/project/src/api/routes/analysis.py", line 263, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/asyncio/tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/main.py", line 409, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2596, in astream
+    async with AsyncPregelLoop(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1393, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 745, in __aexit__
+    raise exc_details[1]
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 728, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/executor.py", line 209, in __aexit__
+    raise exc
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 314, in aput_writes
+    async with self._cursor(pipeline=True) as cur:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 351, in _cursor
+    async with _ainternal.get_connection(self.conn) as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/_ainternal.py", line 21, in get_connection
+    async with conn.connection() as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 195, in connection
+    conn = await self.getconn(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 230, in getconn
+    raise PoolTimeout(
+psycopg_pool.PoolTimeout: couldn't get a connection after 30.00 sec
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #5
+============================================================
+Test ID: test_4
+Endpoint: /analyze
+Description: Kolik bylo aktivnich podniku v obchode v roce 2022 oproti roku 2015?
+Error Type: Exception
+Timestamp: 2025-10-02T22:41:52.676396
+
+Response Time: 103.01s
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "/opt/render/project/src/api/routes/analysis.py", line 263, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/asyncio/tasks.py", line 489, in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/main.py", line 409, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/__init__.py", line 2596, in astream
+    async with AsyncPregelLoop(
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/loop.py", line 1393, in __aexit__
+    return await exit_task
+           ^^^^^^^^^^^^^^^
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 745, in __aexit__
+    raise exc_details[1]
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 728, in __aexit__
+    cb_suppress = await cb(*exc_details)
+                  ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/pregel/executor.py", line 209, in __aexit__
+    raise exc
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 314, in aput_writes
+    async with self._cursor(pipeline=True) as cur:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/aio.py", line 351, in _cursor
+    async with _ainternal.get_connection(self.conn) as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/langgraph/checkpoint/postgres/_ainternal.py", line 21, in get_connection
+    async with conn.connection() as conn:
+  File "/opt/render/project/python/Python-3.11.9/lib/python3.11/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 195, in connection
+    conn = await self.getconn(timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/render/project/src/.venv/lib/python3.11/site-packages/psycopg_pool/pool_async.py", line 230, in getconn
+    raise PoolTimeout(
+psycopg_pool.PoolTimeout: couldn't get a connection after 30.00 sec
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #6
+============================================================
+Test ID: test_1
+Endpoint: /analyze
+Description: Porovnej narust poctu lidi v Brne a Praze v poslednich letech.
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.025454
+
+Response Time: 120.36s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #7
+============================================================
+Test ID: test_10
+Endpoint: /analyze
+Description: Jaka byla celkova marze v obchode v roce 2022 v milionech korun?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.147818
+
+Response Time: 120.48s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #8
+============================================================
+Test ID: test_3
+Endpoint: /analyze
+Description: Jak se vyvijel export motorovych benzinu z Ceske republiky mezi lety 2015 a 2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.170748
+
+Response Time: 120.51s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #9
+============================================================
+Test ID: test_2
+Endpoint: /analyze
+Description: Kontrastuj uroven zivota v Brne a v Praze.
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.173274
+
+Response Time: 120.51s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #10
+============================================================
+Test ID: test_8
+Endpoint: /analyze
+Description: Jaky byl trend vyvozu dieseloveho oleje z CR v obdobi 2020-2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.174274
+
+Response Time: 120.51s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #11
+============================================================
+Test ID: test_13
+Endpoint: /analyze
+Description: Kolik celkem deti a mladeze delalo sport v svazeich a asociacich v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.176274
+
+Response Time: 120.51s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #12
+============================================================
+Test ID: test_17
+Endpoint: /analyze
+Description: Jak se lisi vydaje domacnosti na zdravotni peci na osobu mezi 2017 a 2022?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.177273
+
+Response Time: 120.51s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #13
+============================================================
+Test ID: test_6
+Endpoint: /analyze
+Description: Jak se zmenil pocet uzivatelu internetoveho bankovnictvi ve vekove skupine 65+ mezi 2010 a 2024?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.179267
+
+Response Time: 120.51s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #14
+============================================================
+Test ID: test_7
+Endpoint: /analyze
+Description: Kolik procent lidi ve veku 16-34 let pouzivalo internet v mobilnim telefonu v roce 2024?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.181387
+
+Response Time: 120.51s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #15
+============================================================
+Test ID: test_14
+Endpoint: /analyze
+Description: Jaky byl pocet holek ve veku 13 let v sportovnich klubech v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.183950
+
+Response Time: 120.52s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #16
+============================================================
+Test ID: test_22
+Endpoint: /analyze
+Description: Jak se zmenil pocet zamestnancu v obchode (FTE) mezi 2015 a 2022?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.184949
+
+Response Time: 120.52s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #17
+============================================================
+Test ID: test_9
+Endpoint: /analyze
+Description: Kolik obchodnych podniku zamestnavalo lidi v roce 2021?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.186949
+
+Response Time: 120.52s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #18
+============================================================
+Test ID: test_18
+Endpoint: /analyze
+Description: Kolik bylo celkove vydaju na zdravotni peci v miliardach korun v roce 2022?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.188950
+
+Response Time: 120.52s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #19
+============================================================
+Test ID: test_21
+Endpoint: /analyze
+Description: Jaky byl pocet importu kerosinu do Ceske republiky v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.190461
+
+Response Time: 120.52s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #20
+============================================================
+Test ID: test_20
+Endpoint: /analyze
+Description: Kolik procent zen pouzivalo mobilni telefony bez OS v roce 2018?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.196627
+
+Response Time: 120.53s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #21
+============================================================
+Test ID: test_11
+Endpoint: /analyze
+Description: Kolik muzskych studentu zdravotnich oboru studovalo na vysokych skolach v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-02T22:42:10.197627
+
+Response Time: 120.53s
+
+
+TEST SUMMARY:
+========================================
+Total Requests: 22
+Successful Requests: 1
+Failed Requests: 21
+Success Rate: 4.545454545454546%
+Average Response Time: 112.85632872581482s
+Total Test Time: 120.7862s

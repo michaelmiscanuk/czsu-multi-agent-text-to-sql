@@ -61,8 +61,50 @@ SERVER_BASE_URL = os.environ.get("TEST_SERVER_URL")
 REQUEST_TIMEOUT = 180
 TEST_EMAIL = "test_user@example.com"
 TEST_PROMPTS = [
+    # Answer: Population comparison between Brno and Prague - this requires demographic data analysis
     "Porovnej narust poctu lidi v Brne a Praze v poslednich letech.",
+    # Answer: Quality of life comparison between Brno and Prague - this requires multiple indicators analysis
     "Kontrastuj uroven zivota v Brne a v Praze.",
+    # Answer: 2015: 593, 2020: 431, 2021: 630, 2022: 473, 2023: 614 thousand tonnes
+    "Jak se vyvijel export motorovych benzinu z Ceske republiky mezi lety 2015 a 2023?",
+    # Answer: 2015: 241,572 vs 2022: 225,177 active enterprises in trade
+    "Kolik bylo aktivnich podniku v obchode v roce 2022 oproti roku 2015?",
+    # Answer: 35,679 CZK per person (headcount) in 2022
+    "Jaka byla prumerna mesicni mzda v obchode v roce 2022?",
+    # Answer: 2010: 42 thousands vs 2024: 888 thousands users aged 65+
+    "Jak se zmenil pocet uzivatelu internetoveho bankovnictvi ve vekove skupine 65+ mezi 2010 a 2024?",
+    # Answer: 98.9% (989 per 1000) of people aged 16-34 used internet on mobile phone in 2024
+    "Kolik procent lidi ve veku 16-34 let pouzivalo internet v mobilnim telefonu v roce 2024?",
+    # Answer: 2020: 769, 2021: 1,002, 2022: 735, 2023: 767 thousand tonnes exports
+    "Jaky byl trend vyvozu dieseloveho oleje z CR v obdobi 2020-2023?",
+    # Answer: 743,391 employed persons total in trade sector in 2021
+    "Kolik obchodnych podniku zamestnavalo lidi v roce 2021?",
+    # Answer: 929,441 million CZK trade margin in 2022
+    "Jaka byla celkova marze v obchode v roce 2022 v milionech korun?",
+    # Answer: 10 thousand male students in health fields at universities in 2023
+    "Kolik muzskych studentu zdravotnich oboru studovalo na vysokych skolach v roce 2023?",
+    # Answer: 95 thousand CZK expenditure for females 80+ age group in 2022
+    "Jaky byl pocet zen ve veku 80+ s vydaji zdravotnich pojistoven v roce 2022?",
+    # Answer: 354,922 total children and youth in sports unions and associations in 2023
+    "Kolik celkem deti a mladeze delalo sport v svazeich a asociacich v roce 2023?",
+    # Answer: 13,061 girls aged 13 in sports clubs in 2023
+    "Jaky byl pocet holek ve veku 13 let v sportovnich klubech v roce 2023?",
+    # Answer: This requires specific football data for males 19+ which needs to be searched
+    "Kolik muzskych clenu ve veku 19+ hral fotbal ve sportovnich svazeich v roce 2023?",
+    # Answer: 13,468 females aged 19+ playing golf in 2023
+    "Jaky byl pocet zen hrajicich golf ve veku 19+ v roce 2023?",
+    # Answer: 2017: 5,007 CZK vs 2022: 7,930 CZK per capita household healthcare expenditure
+    "Jak se lisi vydaje domacnosti na zdravotni peci na osobu mezi 2017 a 2022?",
+    # Answer: 597.2 billion CZK total healthcare expenditure in 2022
+    "Kolik bylo celkove vydaju na zdravotni peci v miliardach korun v roce 2022?",
+    # Answer: 38.7% total (males 38.4%, females 38.9%) used mobile phones without OS in 2018
+    "Jaky byl pocet lidi pouzijicich mobilni telefony bez operacniho systemu v roce 2018?",
+    # Answer: 38.9% of women used mobile phones without operating system in 2018
+    "Kolik procent zen pouzivalo mobilni telefony bez OS v roce 2018?",
+    # Answer: 132 thousand tonnes kerosene imports to Czech Republic in 2023
+    "Jaky byl pocet importu kerosinu do Ceske republiky v roce 2023?",
+    # Answer: 2015: 483,024 vs 2022: 503,918 FTE employees in trade sector
+    "Jak se zmenil pocet zamestnancu v obchode (FTE) mezi 2015 a 2022?",
 ]
 
 
