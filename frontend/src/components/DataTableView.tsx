@@ -3,7 +3,7 @@ import { removeDiacritics } from './utils';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://czsu-multi-agent-text-to-sql.onrender.com';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://czsu-multi-agent-backend-production.up.railway.app';
 
 type DataTableViewProps = {
   search: string;

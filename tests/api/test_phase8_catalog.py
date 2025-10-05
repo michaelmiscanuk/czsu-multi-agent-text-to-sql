@@ -359,7 +359,7 @@ async def main():
         print("📝 Using Vercel frontend proxy (routes to Render backend)")
     elif "vercel.app" in SERVER_BASE_URL:
         print("⚠️  WARNING: Direct Vercel access - consider using /api proxy")
-    elif "onrender.com" in SERVER_BASE_URL:
+    elif "railway.com" in SERVER_BASE_URL:
         print("📝 Direct backend server access")
     elif "localhost" in SERVER_BASE_URL:
         print("📝 Local development server")
@@ -371,7 +371,7 @@ async def main():
             f"   • For Vercel proxy: Use 'https://czsu-multi-agent-text-to-sql.vercel.app/api'"
         )
         print(
-            f"   • For direct backend: Use 'https://czsu-multi-agent-text-to-sql.onrender.com'"
+            f"   • For direct backend: Use 'https://czsu-multi-agent-backend-production.up.railway.app'"
         )
         print(f"   • For local dev: Use 'http://localhost:8000'")
         print(f"   • Set environment variable: TEST_SERVER_URL=<your-url>")

@@ -2,71 +2,71 @@
   "rewrites": [
     {
       "source": "/api/analyze",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/analyze"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/analyze"
     },
     {
       "source": "/api/chat-threads",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/chat-threads"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/chat-threads"
     },
     {
       "source": "/api/chat/:path*",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/chat/:path*"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/chat/:path*"
     },
     {
       "source": "/api/feedback",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/feedback"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/feedback"
     },
     {
       "source": "/api/sentiment",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/sentiment"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/sentiment"
     },
     {
       "source": "/api/catalog",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/catalog"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/catalog"
     },
     {
       "source": "/api/data-tables",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/data-tables"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/data-tables"
     },
     {
       "source": "/api/data-table",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/data-table"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/data-table"
     },
     {
       "source": "/api/query",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/query"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/query"
     },
     {
       "source": "/api/execute",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/execute"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/execute"
     },
     {
       "source": "/api/schema",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/schema"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/schema"
     },
     {
       "source": "/api/validate",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/validate"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/validate"
     },
     {
       "source": "/api/history",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/history"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/history"
     },
     {
       "source": "/api/health",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/health"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/health"
     },
     {
       "source": "/api/agents/:path*",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/agents/:path*"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/agents/:path*"
     },
     {
       "source": "/api/debug/:path*",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/debug/:path*"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/debug/:path*"
     },
     {
       "source": "/api/((?!auth).*)",
-      "destination": "https://czsu-multi-agent-text-to-sql.onrender.com/$1"
+      "destination": "https://czsu-multi-agent-backend-production.up.railway.app/$1"
     }
   ]
 }

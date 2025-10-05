@@ -1184,7 +1184,7 @@ async def retrieve_similar_chunks_hybrid_search_node(
         print__nodes_debug(
             f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Detailed PDF hybrid search results:"
         )
-        for i, doc in enumerate(hybrid_docs[:5], 1):  # Show first 5
+        for i, doc in enumerate(hybrid_docs[:3], 1):  # Show first 3
             source = doc.metadata.get("source") if doc.metadata else "N/A"
             content_preview = (
                 doc.page_content[:100].replace("\n", " ")
@@ -1220,7 +1220,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_chunks", [])
-    n_results = state.get("n_results", 5)
+    n_results = state.get("n_results", 3)
 
     print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Query: {query}")
     print__nodes_debug(
@@ -1239,7 +1239,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     print__nodes_debug(
         f"🔄 {RERANK_CHUNKS_NODE_ID}: Input PDF hybrid results for reranking:"
     )
-    for i, doc in enumerate(hybrid_results[:5], 1):  # Show first 5
+    for i, doc in enumerate(hybrid_results[:3], 1):  # Show first 3
         source = doc.metadata.get("source") if doc.metadata else "N/A"
         content_preview = (
             doc.page_content[:100].replace("\n", " ")
@@ -1264,7 +1264,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
             score = res.relevance_score
             most_similar.append((doc, score))
             # Debug: Show detailed rerank results
-            if i <= 5:  # Show top 5 results
+            if i <= 3:  # Show top 3 results
                 source = doc.metadata.get("source") if doc.metadata else "unknown"
                 print__nodes_debug(
                     f"🎯🎯🎯 🎯 {RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}"
@@ -1303,7 +1303,7 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     )
 
     # Debug: Show what passed
-    for i, chunk in enumerate(top_chunks[:5], 1):
+    for i, chunk in enumerate(top_chunks[:3], 1):
         source = chunk.metadata.get("source") if chunk.metadata else "unknown"
         content_preview = (
             chunk.page_content[:100].replace("\n", " ")

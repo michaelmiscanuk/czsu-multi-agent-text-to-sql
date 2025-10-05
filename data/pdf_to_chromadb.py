@@ -415,9 +415,8 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
 
 # Azure OpenAI Settings
-AZURE_EMBEDDING_DEPLOYMENT = (
-    "text-embedding-3-large__test1"  # Your Azure deployment name
-)
+AZURE_EMBEDDING_DEPLOYMENT = "text-embedding-ada-002"  # Azure deployment name
+
 
 # LlamaParse Settings (only needed if using llamaparse method)
 LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
