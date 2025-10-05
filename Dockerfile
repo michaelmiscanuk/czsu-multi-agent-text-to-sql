@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
     git \
     && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir --upgrade pip setuptools wheel uv
+    && pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Install Rust via rustup (for cryptography and other Rust-based packages)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
@@ -37,17 +37,13 @@ ENV VIRTUAL_ENV=/opt/venv
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Copy pyproject.toml and uv.lock for dependency management
-COPY pyproject.toml uv.lock* ./
+# Copy requirements.txt for dependency management
+COPY requirements.txt ./
 
-# Install dependencies with uv (faster and more reliable than pip)
-# Use unsafe-best-match to find packages across all indexes
-RUN uv pip install \
-    --system \
-    --index-url https://pypi.org/simple \
-    --extra-index-url https://download.pytorch.org/whl/cpu \
-    --index-strategy unsafe-best-match \
-    .
+# Install dependencies with pip from main PyPI index
+RUN pip install --no-cache-dir \
+    --prefer-binary \
+    -r requirements.txt
 
 # Clean up build dependencies to reduce layer size
 RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
