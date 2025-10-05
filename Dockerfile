@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Rust via rustup (for cryptography and other Rust-based packages)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-    && source ~/.cargo/env \
+    && . ~/.cargo/env \
     && rustup default stable
 
 # Add Rust to PATH
