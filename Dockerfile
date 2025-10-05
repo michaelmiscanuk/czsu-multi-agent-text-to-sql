@@ -49,8 +49,6 @@ COPY pyproject.toml uv.lock* ./
 RUN uv pip install \
     --system \
     --find-links https://download.pytorch.org/whl/cpu \
-    --timeout=600 \
-    --retries=3 \
     .
 
 # Clean up build dependencies to reduce layer size
