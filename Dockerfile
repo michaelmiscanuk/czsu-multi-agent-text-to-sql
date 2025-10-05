@@ -20,31 +20,38 @@ RUN apk add --no-cache --virtual .build-deps \
     openssl-dev \
     postgresql-dev \
     sqlite-dev \
-    rust \
-    cargo \
+    curl \
     pkgconfig \
     cmake \
     make \
     gfortran \
     openblas-dev \
     lapack-dev \
-    && pip install --no-cache-dir --upgrade pip setuptools wheel
+    && pip install --no-cache-dir --upgrade pip setuptools wheel uv
+
+# Install Rust via rustup (newer version than Alpine package)
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+    && source ~/.cargo/env \
+    && rustup default stable
+
+# Add Rust to PATH
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Create and activate virtual environment
 ENV VIRTUAL_ENV=/opt/venv
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Copy requirements and install dependencies
-COPY requirements.txt /tmp/requirements.txt
+# Copy pyproject.toml and uv.lock for dependency management
+COPY pyproject.toml uv.lock* ./
 
-# Install dependencies with optimizations for Alpine and memory
-RUN pip install --no-cache-dir \
+# Install dependencies with uv (faster and more reliable than pip)
+RUN uv pip install \
+    --system \
     --find-links https://download.pytorch.org/whl/cpu \
-    --prefer-binary \
-    --timeout=300 \
+    --timeout=600 \
     --retries=3 \
-    -r /tmp/requirements.txt
+    .
 
 # Clean up build dependencies to reduce layer size
 RUN apk del .build-deps
