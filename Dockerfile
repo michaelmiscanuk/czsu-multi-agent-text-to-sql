@@ -119,12 +119,17 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 EXPOSE $PORT
 
 # Optimized startup command for Railway
-# Uses Railway's $PORT environment variable, single worker, reduced logging
-CMD python -m uvicorn api.main:app \
-    --host $HOST \
-    --port $PORT \
-    --workers 1 \
-    --log-level info \
-    --no-access-log \
-    --loop uvloop \
-    --http httptools
+# Uses Python uvicorn.run() like local development but optimized for production
+CMD python -c "\
+import os; \
+import uvicorn; \
+uvicorn.run( \
+    'api.main:app', \
+    host=os.getenv('HOST', '0.0.0.0'), \
+    port=int(os.getenv('PORT', 8000)), \
+    workers=1, \
+    log_level='info', \
+    access_log=False, \
+    use_colors=False, \
+    reload=False \
+)"
