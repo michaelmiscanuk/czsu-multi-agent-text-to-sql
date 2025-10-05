@@ -2,8 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { removeDiacritics } from './utils';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
-
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://czsu-multi-agent-backend-production.up.railway.app';
+import { authApiFetch } from '@/lib/api';
 
 type DataTableViewProps = {
   search: string;
@@ -71,12 +70,11 @@ const DataTableView: React.FC<DataTableViewProps> = ({
 
   // Fetch all tables on mount (for combo box)
   React.useEffect(() => {
-    const getFetchOptions = () =>
-      session?.id_token
-        ? { headers: { Authorization: `Bearer ${session.id_token}` } }
-        : undefined;
-    fetch(`${API_BASE}/data-tables`, getFetchOptions())
-      .then(res => res.ok ? res.json() : Promise.reject(res))
+    if (!session?.id_token) {
+      setAllTables([]);
+      return;
+    }
+    authApiFetch<{tables: {selection_code: string, short_description: string}[]}>('/data-tables', session.id_token)
       .then(data => setAllTables(data.tables || []))
       .catch(() => setAllTables([]));
   }, [session?.id_token]);
@@ -119,16 +117,14 @@ const DataTableView: React.FC<DataTableViewProps> = ({
       setColumnFilters({});
       return;
     }
+    if (!session?.id_token) {
+      setTableLoading(false);
+      return;
+    }
     setTableLoading(true);
-    const getFetchOptions = () =>
-      session?.id_token
-        ? { headers: { Authorization: `Bearer ${session.id_token}` } }
-        : undefined;
-    const url = `${API_BASE}/data-table?table=${encodeURIComponent(selectedTable)}`;
-    const fetchOptions = getFetchOptions();
-    console.log('[DataTableView] Fetching table:', selectedTable, url, JSON.stringify(fetchOptions, null, 2));
-    fetch(url, fetchOptions)
-      .then(res => res.ok ? res.json() : Promise.reject(res))
+    const url = `/data-table?table=${encodeURIComponent(selectedTable)}`;
+    console.log('[DataTableView] Fetching table:', selectedTable, url);
+    authApiFetch<{columns: string[], rows: any[][]}>(url, session.id_token)
       .then(data => {
         console.log('[DataTableView] Received data:', JSON.stringify(data, null, 2));
         setColumns(data.columns || []);

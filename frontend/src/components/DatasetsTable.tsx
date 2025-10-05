@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { removeDiacritics } from './utils';
 import { useSession } from "next-auth/react";
-
-// To support both local dev and production, set NEXT_PUBLIC_API_BASE in .env.local to your backend URL (e.g., http://localhost:8000) for local dev.
-// In production, leave it unset to use relative paths.
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'https://czsu-multi-agent-backend-production.up.railway.app';
-
+import { authApiFetch } from '@/lib/api';
 interface CatalogRow {
   selection_code: string;
   extended_description: string;
@@ -65,17 +61,13 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
       setTotal(0);
       setLoading(false);
     };
-    // Helper to build fetch options
-    const getFetchOptions = () =>
-      session?.id_token
-        ? { headers: { Authorization: `Bearer ${session.id_token}` } }
-        : undefined;
-    const fetchOptions = getFetchOptions();
-    console.log('[DatasetsTable] Fetch options:', JSON.stringify(fetchOptions, null, 2));
     // If there is a filter, fetch all catalog and filter client-side
     if (filter) {
-      fetch(`${API_BASE}/catalog?page=1&page_size=10000`, fetchOptions)
-        .then(res => res.ok ? res.json() : Promise.reject(res))
+      if (!session?.id_token) {
+        handleError(new Error('No authentication token'));
+        return;
+      }
+      authApiFetch<CatalogResponse>('/catalog?page=1&page_size=10000', session.id_token)
         .then((res: CatalogResponse) => {
           const normWords = removeDiacritics(filter.toLowerCase()).split(/\s+/).filter(Boolean);
           const filteredResults = res.results.filter(row => {
@@ -89,9 +81,12 @@ const CatalogTable: React.FC<CatalogTableProps> = ({ onRowClick }) => {
         .catch(handleError);
     } else {
       // No filter: use backend pagination
+      if (!session?.id_token) {
+        handleError(new Error('No authentication token'));
+        return;
+      }
       const params = new URLSearchParams({ page: page.toString() });
-      fetch(`${API_BASE}/catalog?${params.toString()}`, fetchOptions)
-        .then(res => res.ok ? res.json() : Promise.reject(res))
+      authApiFetch<CatalogResponse>(`/catalog?${params.toString()}`, session.id_token)
         .then((res: CatalogResponse) => {
           setData(res.results);
           setTotal(res.total);
