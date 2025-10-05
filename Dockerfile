@@ -41,8 +41,11 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY pyproject.toml uv.lock* ./
 
 # Install dependencies with uv (faster and more reliable than pip)
+# Use multiple package indexes for faster downloads
 RUN uv pip install \
     --system \
+    --index-url https://pypi.org/simple \
+    --extra-index-url https://download.pytorch.org/whl/cpu \
     --find-links https://download.pytorch.org/whl/cpu \
     .
 
