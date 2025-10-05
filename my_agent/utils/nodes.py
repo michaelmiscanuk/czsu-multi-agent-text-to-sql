@@ -77,6 +77,15 @@ CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
 CHROMA_COLLECTION_NAME = "czsu_selections_chromadb"
 EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
 
+# PDF Chunk Processing Configuration
+PDF_HYBRID_SEARCH_DEFAULT_RESULTS = (
+    15  # Number of chunks to retrieve from PDF hybrid search
+)
+PDF_N_TOP_CHUNKS = (
+    5  # Number of top chunks to keep in top_chunks state and show in debug
+)
+PDF_RELEVANCE_THRESHOLD = 0.01  # Minimum relevance score for PDF chunks
+
 
 # ==============================================================================
 # HELPER FUNCTIONS
@@ -1143,7 +1152,7 @@ async def retrieve_similar_chunks_hybrid_search_node(
         return {"hybrid_search_chunks": []}
 
     query = state.get("rewritten_prompt") or state["prompt"]
-    n_results = state.get("n_results", 10)
+    n_results = state.get("n_results", PDF_HYBRID_SEARCH_DEFAULT_RESULTS)
 
     print__nodes_debug(f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Query: {query}")
     print__nodes_debug(
@@ -1184,7 +1193,9 @@ async def retrieve_similar_chunks_hybrid_search_node(
         print__nodes_debug(
             f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Detailed PDF hybrid search results:"
         )
-        for i, doc in enumerate(hybrid_docs[:3], 1):  # Show first 3
+        for i, doc in enumerate(
+            hybrid_docs[:PDF_N_TOP_CHUNKS], 1
+        ):  # Show first few results
             source = doc.metadata.get("source") if doc.metadata else "N/A"
             content_preview = (
                 doc.page_content[:100].replace("\n", " ")
@@ -1220,7 +1231,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_chunks", [])
-    n_results = state.get("n_results", 3)
+    n_results = state.get("n_results", PDF_N_TOP_CHUNKS)
 
     print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Query: {query}")
     print__nodes_debug(
@@ -1239,7 +1250,9 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     print__nodes_debug(
         f"🔄 {RERANK_CHUNKS_NODE_ID}: Input PDF hybrid results for reranking:"
     )
-    for i, doc in enumerate(hybrid_results[:3], 1):  # Show first 3
+    for i, doc in enumerate(
+        hybrid_results[:PDF_N_TOP_CHUNKS], 1
+    ):  # Show first few results
         source = doc.metadata.get("source") if doc.metadata else "N/A"
         content_preview = (
             doc.page_content[:100].replace("\n", " ")
@@ -1264,7 +1277,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
             score = res.relevance_score
             most_similar.append((doc, score))
             # Debug: Show detailed rerank results
-            if i <= 3:  # Show top 3 results
+            if i <= PDF_N_TOP_CHUNKS:  # Show top few results
                 source = doc.metadata.get("source") if doc.metadata else "unknown"
                 print__nodes_debug(
                     f"🎯🎯🎯 🎯 {RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}"
@@ -1288,7 +1301,7 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Select PDF chunks that exceed the relevance threshold (0.01)."""
     print__nodes_debug(f"🎯 {RELEVANT_CHUNKS_NODE_ID}: Enter relevant_chunks_node")
-    SIMILARITY_THRESHOLD = 0.01  # Higher threshold for PDF chunks as requested
+    SIMILARITY_THRESHOLD = PDF_RELEVANCE_THRESHOLD  # Threshold for PDF chunk relevance
 
     most_similar = state.get("most_similar_chunks", [])
 
@@ -1303,7 +1316,7 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     )
 
     # Debug: Show what passed
-    for i, chunk in enumerate(top_chunks[:3], 1):
+    for i, chunk in enumerate(top_chunks[:PDF_N_TOP_CHUNKS], 1):
         source = chunk.metadata.get("source") if chunk.metadata else "unknown"
         content_preview = (
             chunk.page_content[:100].replace("\n", " ")
