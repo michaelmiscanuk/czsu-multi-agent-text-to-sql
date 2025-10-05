@@ -1,35 +1,30 @@
 # ==============================================================================
-# Production-Ready Alpine Dockerfile for CZSU Multi-Agent Text-to-SQL API
-# Optimized for Railway deployment with minimal memory footprint
+# Production-Ready Dockerfile for CZSU Multi-Agent Text-to-SQL API
+# Uses Debian for build (glibc compatibility) and Alpine for runtime (minimal size)
 # ==============================================================================
 
-# Stage 1: Build stage with all build dependencies
-FROM python:3.11-alpine3.19 AS builder
+# Stage 1: Build stage with Debian for glibc compatibility (onnxruntime, chromadb)
+FROM python:3.11-slim-bookworm AS builder
 
 # Set build arguments
 ARG PYTHONDONTWRITEBYTECODE=1
 ARG PYTHONUNBUFFERED=1
 
-# Install comprehensive build dependencies for heavy ML/AI packages
-RUN apk add --no-cache --virtual .build-deps \
-    gcc \
-    g++ \
-    musl-dev \
-    linux-headers \
+# Install comprehensive build dependencies for heavy ML/AI packages (Debian)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     libffi-dev \
-    openssl-dev \
-    postgresql-dev \
-    sqlite-dev \
+    libssl-dev \
+    libpq-dev \
+    libsqlite3-dev \
     curl \
-    pkgconfig \
+    pkg-config \
     cmake \
-    make \
-    gfortran \
-    openblas-dev \
-    lapack-dev \
+    git \
+    && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir --upgrade pip setuptools wheel uv
 
-# Install Rust via rustup (newer version than Alpine package)
+# Install Rust via rustup (for cryptography and other Rust-based packages)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && source ~/.cargo/env \
     && rustup default stable
@@ -52,7 +47,7 @@ RUN uv pip install \
     .
 
 # Clean up build dependencies to reduce layer size
-RUN apk del .build-deps
+RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ==============================================================================
 # Stage 2: Production runtime with minimal Alpine
