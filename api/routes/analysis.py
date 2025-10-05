@@ -1,6 +1,7 @@
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import asyncio
+import gc
 import os
 import sys
 import traceback
@@ -518,6 +519,14 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             )
             print__analyze_debug(f"🔍 Response data prepared successfully")
             print__analyze_debug(f"🔍 Response data keys: {list(response_data.keys())}")
+
+            # Force garbage collection to free memory after analysis
+            print__analyze_debug("🧹 Running garbage collection to free memory")
+            log_memory_usage("before_gc")
+            gc.collect()
+            log_memory_usage("after_gc")
+            print__analyze_debug("🧹 Garbage collection completed")
+
             print__analyze_debug(f"🔍 ANALYZE ENDPOINT - SUCCESSFUL EXIT")
             return response_data
 
