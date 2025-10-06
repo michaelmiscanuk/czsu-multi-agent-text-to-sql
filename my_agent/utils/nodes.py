@@ -37,9 +37,13 @@ RELEVANT_CHUNKS_NODE_ID = 26
 # Constants
 try:
     BASE_DIR = Path(__file__).resolve().parents[2]
+    print(f"🔍 BASE_DIR calculated from __file__: {BASE_DIR}")
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
+    print(f"🔍 BASE_DIR calculated from cwd: {BASE_DIR}")
 
+print(f"🔍 Current working directory: {Path.cwd()}")
+print(f"🔍 Looking for ChromaDB at: {BASE_DIR / 'metadata' / 'czsu_chromadb'}")
 
 # Import debug functions from utils
 from api.utils.debug import print__nodes_debug
@@ -913,6 +917,16 @@ async def retrieve_similar_selections_hybrid_search_node(
 
     # Check if ChromaDB directory exists
     chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
+    print__nodes_debug(
+        f"🔍 {HYBRID_SEARCH_NODE_ID}: Checking ChromaDB at: {chroma_db_dir}"
+    )
+    print__nodes_debug(
+        f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB exists: {chroma_db_dir.exists()}"
+    )
+    print__nodes_debug(
+        f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB is_dir: {chroma_db_dir.is_dir() if chroma_db_dir.exists() else 'N/A'}"
+    )
+
     if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
         print__nodes_debug(
             f"📄 {HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}"

@@ -354,7 +354,7 @@ except ImportError:
 PARSE_WITH_LLAMAPARSE = 0  # Set to 1 to parse PDF with LlamaParse and save to txt file
 # Set to 0 to skip parsing (use existing txt file)
 
-CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
+CHUNK_AND_STORE = 0  # Set to 1 to chunk text and create/update ChromaDB
 # Set to 0 to skip chunking (use existing ChromaDB)
 
 DO_TESTING = 1  # Set to 1 to test search on existing ChromaDB
