@@ -156,7 +156,6 @@ import openpyxl
 import tiktoken
 import tqdm as tqdm_module
 from langchain.retrievers import EnsembleRetriever
-from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 from openpyxl import Workbook
@@ -1002,19 +1001,15 @@ def upsert_documents_to_chromadb(
         raise
 
 
-def get_langchain_chroma_vectorstore(
+def get_chromadb_collection(
     collection_name: str,
     chroma_db_path: str,
     embedding_model_name: str = "text-embedding-3-large__test1",
 ):
-    """Return a LangChain Chroma vectorstore instance for the given collection, using AzureOpenAIEmbeddings."""
-    embeddings = get_langchain_azure_embedding_model(model_name=embedding_model_name)
-    chroma = Chroma(
-        client=chromadb.PersistentClient(path=chroma_db_path),
-        collection_name=collection_name,
-        embedding_function=embeddings,
-    )
-    return chroma
+    """Return a direct ChromaDB collection instance for the given collection."""
+    client = chromadb.PersistentClient(path=chroma_db_path)
+    collection = client.get_collection(name=collection_name)
+    return collection
 
 
 def similarity_search_chromadb(

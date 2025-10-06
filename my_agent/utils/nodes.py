@@ -51,7 +51,7 @@ from data.pdf_to_chromadb import cohere_rerank as pdf_cohere_rerank
 from data.pdf_to_chromadb import hybrid_search as pdf_hybrid_search
 from metadata.create_and_load_chromadb import (
     cohere_rerank,
-    get_langchain_chroma_vectorstore,
+    get_chromadb_collection,
     hybrid_search,
 )
 from my_agent.utils.models import (
