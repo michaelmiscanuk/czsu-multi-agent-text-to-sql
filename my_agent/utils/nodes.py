@@ -941,16 +941,8 @@ async def retrieve_similar_selections_hybrid_search_node(
     try:
         # Use the same method as the test script to get ChromaDB collection directly
         import chromadb
-        from chromadb.config import Settings
 
-        # Force local mode with explicit settings override
-        settings = Settings(
-            chroma_db_impl="duckdb+parquet",
-            persist_directory=str(CHROMA_DB_PATH.parent),
-            anonymized_telemetry=False,
-        )
-
-        client = chromadb.Client(settings)
+        client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
         collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
         print__nodes_debug(
             f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized directly"
@@ -1196,16 +1188,8 @@ async def retrieve_similar_chunks_hybrid_search_node(
     try:
         # Use the PDF ChromaDB collection directly
         import chromadb
-        from chromadb.config import Settings
 
-        # Force local mode with explicit settings override
-        settings = Settings(
-            chroma_db_impl="duckdb+parquet",
-            persist_directory=str(PDF_CHROMA_DB_PATH.parent),
-            anonymized_telemetry=False,
-        )
-
-        client = chromadb.Client(settings)
+        client = chromadb.PersistentClient(path=str(PDF_CHROMA_DB_PATH))
         collection = client.get_collection(name=PDF_COLLECTION_NAME)
         print__nodes_debug(
             f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized directly"

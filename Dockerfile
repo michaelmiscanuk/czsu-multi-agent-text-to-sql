@@ -1,107 +1,65 @@
 # ==============================================================================
 # Production-Ready Dockerfile for CZSU Multi-Agent Text-to-SQL API
-# Uses Alpine Linux with proper musl/glibc compatibility for ML/AI packages
+# Uses Debian Slim for better compatibility with ChromaDB and ML/AI packages
 # ==============================================================================
 
-# Stage 1: Build stage with Alpine for minimal size + full build tools
-FROM python:3.11-alpine3.19 AS builder
+# Stage 1: Build stage with Debian Slim for full ChromaDB compatibility
+FROM python:3.11-slim-bookworm AS builder
 
 # Set build arguments for optimization
 ARG PYTHONDONTWRITEBYTECODE=1
 ARG PYTHONUNBUFFERED=1
 
-# Install comprehensive build dependencies for Alpine + ML/AI packages
-# Key packages for psutil: gcc, musl-dev, linux-headers, python3-dev
-# Key packages for chromadb/onnxruntime: build-base, cmake, git, libffi-dev
-RUN apk add --no-cache --virtual .build-deps \
+# Install essential build dependencies for Debian + ML/AI packages
+# Required for chromadb, psutil, and other ML dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
-    musl-dev \
-    linux-headers \
-    python3-dev \
-    build-base \
-    libffi-dev \
-    openssl-dev \
-    postgresql-dev \
-    sqlite-dev \
+    libc6-dev \
+    libpq-dev \
+    libsqlite3-dev \
+    build-essential \
+    pkg-config \
     curl \
-    pkgconfig \
-    cmake \
     git \
-    make \
-    autoconf \
-    automake \
-    libtool \
-    && pip install --no-cache-dir --upgrade pip setuptools wheel
-
-# Install Rust via rustup (for cryptography and other Rust-based packages)
-# Required for many Python packages that have Rust components
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-    && . ~/.cargo/env \
-    && rustup default stable
-
-# Add Rust to PATH
-ENV PATH="/root/.cargo/bin:${PATH}"
+    && pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create and activate virtual environment
 ENV VIRTUAL_ENV=/opt/venv
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Set environment variables for Alpine/musl compilation
-ENV CFLAGS="-Os -w" \
-    CXXFLAGS="-Os -w" \
-    LDFLAGS="-Wl,--strip-all" \
-    CC="gcc" \
-    CXX="g++" \
-    PYTHONHASHSEED=random \
-    MAKEFLAGS="-j$(nproc)"
-
 # Copy requirements.txt for dependency management
 COPY requirements.txt ./
 
-# Install dependencies with Alpine-optimized strategy
-# 1. Install psutil first from source (Alpine compatibility)  
-# 2. Install all other dependencies from requirements.txt
+# Install dependencies with Debian optimized strategy
+# The full chromadb package works much better on Debian than Alpine
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install psutil specifically with source compilation for Alpine
-RUN pip install --no-cache-dir \
-    --no-binary psutil \
-    --compile \
-    psutil>=5.9.0
-
-# Install all other dependencies
-RUN pip install --no-cache-dir \
-    --prefer-binary \
-    -r requirements.txt
-
-# Clean up build dependencies and caches to reduce image size
-RUN apk del .build-deps \
-    && rm -rf /root/.cargo \
-    && rm -rf /tmp/* \
-    && rm -rf /var/cache/apk/* \
+# Clean up build dependencies to reduce image size
+RUN apt-get remove --purge -y gcc g++ build-essential \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
     && pip cache purge
 
 # ==============================================================================
-# Stage 2: Production runtime with Alpine (matching build stage)
+# Stage 2: Production runtime with Debian Slim (matching build stage)
 # ==============================================================================
-FROM python:3.11-alpine3.19 AS production
+FROM python:3.11-slim-bookworm AS production
 
-# Install only essential runtime dependencies for Alpine
-RUN apk add --no-cache \
-    libpq \
-    libffi \
-    openssl \
-    sqlite \
-    libgcc \
-    libstdc++ \
-    musl \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/*
+# Install only essential runtime dependencies for Debian
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    libsqlite3-0 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user for security (Alpine)
-RUN addgroup -g 1000 -S appgroup && \
-    adduser -u 1000 -S appuser -G appgroup -h /app -s /bin/sh
+# Create non-root user for security (Debian)
+RUN groupadd -g 1000 appgroup && \
+    useradd -u 1000 -g appgroup -m -s /bin/bash appuser
 
 # Copy virtual environment from builder stage
 COPY --from=builder /opt/venv /opt/venv
