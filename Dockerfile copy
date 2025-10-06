@@ -1,41 +1,30 @@
 # ==============================================================================
 # Production-Ready Dockerfile for CZSU Multi-Agent Text-to-SQL API
-# Uses Alpine Linux with proper musl/glibc compatibility for ML/AI packages
+# Uses Debian for both build and runtime to ensure glibc compatibility
 # ==============================================================================
 
-# Stage 1: Build stage with Alpine for minimal size + full build tools
-FROM python:3.11-alpine3.19 AS builder
+# Stage 1: Build stage with Debian for glibc compatibility (onnxruntime, chromadb, psutil)
+FROM python:3.11-slim-bookworm AS builder
 
-# Set build arguments for optimization
+# Set build arguments
 ARG PYTHONDONTWRITEBYTECODE=1
 ARG PYTHONUNBUFFERED=1
 
-# Install comprehensive build dependencies for Alpine + ML/AI packages
-# Key packages for psutil: gcc, musl-dev, linux-headers, python3-dev
-# Key packages for chromadb/onnxruntime: build-base, cmake, git, libffi-dev
-RUN apk add --no-cache --virtual .build-deps \
-    gcc \
-    g++ \
-    musl-dev \
-    linux-headers \
-    python3-dev \
-    build-base \
+# Install comprehensive build dependencies for heavy ML/AI packages (Debian)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
     libffi-dev \
-    openssl-dev \
-    postgresql-dev \
-    sqlite-dev \
+    libssl-dev \
+    libpq-dev \
+    libsqlite3-dev \
     curl \
-    pkgconfig \
+    pkg-config \
     cmake \
     git \
-    make \
-    autoconf \
-    automake \
-    libtool \
+    && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Install Rust via rustup (for cryptography and other Rust-based packages)
-# Required for many Python packages that have Rust components
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
     && . ~/.cargo/env \
     && rustup default stable
@@ -48,73 +37,35 @@ ENV VIRTUAL_ENV=/opt/venv
 RUN python -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Set environment variables for Alpine/musl compilation
-ENV CFLAGS="-Os -w" \
-    CXXFLAGS="-Os -w" \
-    LDFLAGS="-Wl,--strip-all" \
-    CC="gcc" \
-    CXX="g++" \
-    PYTHONHASHSEED=random \
-    MAKEFLAGS="-j$(nproc)"
-
 # Copy requirements.txt for dependency management
 COPY requirements.txt ./
 
-# Install dependencies with Alpine-optimized strategy
-# 1. Try binary wheels first for speed
-# 2. Install critical packages separately to handle Alpine-specific issues
-# 3. Build problematic packages from source with proper flags
-
-# Install most dependencies first (these usually have wheels or compile easily)
-RUN pip install --no-cache-dir \
-    --prefer-binary \
-    -r requirements.txt \
-    || true
-
-# Install psutil specifically with source compilation for Alpine
-RUN pip install --no-cache-dir \
-    --no-binary psutil \
-    --compile \
-    psutil>=5.9.0
-
-# Install chromadb and related packages that may need special handling
-RUN pip install --no-cache-dir \
-    --prefer-binary \
-    chromadb>=0.4.18 \
-    || pip install --no-cache-dir --no-binary chromadb chromadb>=0.4.18
-
-# Final pass: ensure all requirements are satisfied
+# Install dependencies with pip from main PyPI index
 RUN pip install --no-cache-dir \
     --prefer-binary \
     -r requirements.txt
 
-# Clean up build dependencies and caches to reduce image size
-RUN apk del .build-deps \
-    && rm -rf /root/.cargo \
-    && rm -rf /tmp/* \
-    && rm -rf /var/cache/apk/* \
-    && pip cache purge
+# Clean up build dependencies to reduce layer size
+RUN apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ==============================================================================
-# Stage 2: Production runtime with Alpine (matching build stage)
+# Stage 2: Production runtime with Debian (glibc compatible)
 # ==============================================================================
-FROM python:3.11-alpine3.19 AS production
+FROM python:3.11-slim-bookworm AS production
 
-# Install only essential runtime dependencies for Alpine
-RUN apk add --no-cache \
-    libpq \
-    libffi \
-    openssl \
-    sqlite \
-    libgcc \
-    libstdc++ \
-    musl \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/*
+# Install only essential runtime dependencies (Debian)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    libffi8 \
+    libssl3 \
+    libsqlite3-0 \
+    libblas3 \
+    liblapack3 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user for security (Alpine)
-RUN addgroup -g 1000 -S appgroup && \
-    adduser -u 1000 -S appuser -G appgroup -h /app -s /bin/sh
+# Create non-root user for security (Debian)
+RUN groupadd -g 1000 appgroup && \
+    useradd -u 1000 -g appgroup -d /app -s /bin/bash appuser
 
 # Copy virtual environment from builder stage
 COPY --from=builder /opt/venv /opt/venv
@@ -149,6 +100,15 @@ USER appuser
 
 # Copy application code with proper ownership
 COPY --chown=appuser:appgroup . .
+
+# Create necessary data directories that the app expects
+RUN mkdir -p data metadata logs && \
+    # Ensure required data files exist (create empty if missing)
+    touch data/czsu_data.db && \
+    touch metadata/selection_descriptions.csv && \
+    # Create chromadb directory structure
+    mkdir -p metadata/czsu_chromadb && \
+    mkdir -p metadata/schemas
 
 # Health check optimized for Railway
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

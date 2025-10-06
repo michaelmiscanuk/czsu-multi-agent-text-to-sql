@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: czsu-multi-agent-backend
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python -m uvicorn api.main:app --host 0.0.0.0 --port $PORT --log-level info
-    plan: free  # or starter/standard depending on your plan
-    healthCheckPath: /health
