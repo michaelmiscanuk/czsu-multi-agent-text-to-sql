@@ -45,6 +45,18 @@ except NameError:
 print(f"🔍 Current working directory: {Path.cwd()}")
 print(f"🔍 Looking for ChromaDB at: {BASE_DIR / 'metadata' / 'czsu_chromadb'}")
 
+# ChromaDB configuration - define once and reuse
+from chromadb.config import Settings
+
+CHROMA_SETTINGS = Settings(
+    chroma_api_impl="chromadb.api.segment.SegmentAPI",
+    chroma_sysdb_impl="chromadb.db.impl.sqlite.SqliteDB",
+    chroma_producer_impl="chromadb.db.impl.sqlite.SqliteDB",
+    chroma_consumer_impl="chromadb.db.impl.sqlite.SqliteDB",
+    anonymized_telemetry=False,
+    allow_reset=False,
+)
+
 # Import debug functions from utils
 from api.utils.debug import print__nodes_debug
 
@@ -942,7 +954,10 @@ async def retrieve_similar_selections_hybrid_search_node(
         # Use the same method as the test script to get ChromaDB collection directly
         import chromadb
 
-        client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+        # Use shared ChromaDB settings
+        client = chromadb.PersistentClient(
+            path=str(CHROMA_DB_PATH), settings=CHROMA_SETTINGS
+        )
         collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
         print__nodes_debug(
             f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized directly"
@@ -1189,7 +1204,10 @@ async def retrieve_similar_chunks_hybrid_search_node(
         # Use the PDF ChromaDB collection directly
         import chromadb
 
-        client = chromadb.PersistentClient(path=str(PDF_CHROMA_DB_PATH))
+        # Use shared ChromaDB settings
+        client = chromadb.PersistentClient(
+            path=str(PDF_CHROMA_DB_PATH), settings=CHROMA_SETTINGS
+        )
         collection = client.get_collection(name=PDF_COLLECTION_NAME)
         print__nodes_debug(
             f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized directly"
