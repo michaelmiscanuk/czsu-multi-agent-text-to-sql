@@ -980,7 +980,7 @@ async def retrieve_similar_selections_hybrid_search_node(
             f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}"
         )
 
-        return {"hybrid_search_results": hybrid_docs, "chromadb_missing": False}
+        return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
         print__nodes_debug(f"❌ {HYBRID_SEARCH_NODE_ID}: Error in hybrid search: {e}")
         import traceback
@@ -988,7 +988,7 @@ async def retrieve_similar_selections_hybrid_search_node(
         print__nodes_debug(
             f"📄 {HYBRID_SEARCH_NODE_ID}: Traceback: {traceback.format_exc()}"
         )
-        return {"hybrid_search_results": [], "chromadb_missing": False}
+        return {"hybrid_search_results": []}
 
 
 async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
