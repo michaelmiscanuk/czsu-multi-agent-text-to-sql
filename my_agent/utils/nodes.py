@@ -934,7 +934,9 @@ async def retrieve_similar_selections_hybrid_search_node(
         return {"hybrid_search_results": [], "chromadb_missing": True}
 
     # Reset chromadb_missing flag if ChromaDB is now available
-    print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB found! Resetting chromadb_missing flag")
+    print__nodes_debug(
+        f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB found! Resetting chromadb_missing flag"
+    )
 
     try:
         # Use the same method as the test script to get ChromaDB collection directly
