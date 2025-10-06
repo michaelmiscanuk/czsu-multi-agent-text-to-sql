@@ -61,15 +61,8 @@ ENV CFLAGS="-Os -w" \
 COPY requirements.txt ./
 
 # Install dependencies with Alpine-optimized strategy
-# 1. Try binary wheels first for speed
-# 2. Install critical packages separately to handle Alpine-specific issues
-# 3. Build problematic packages from source with proper flags
-
-# Install most dependencies first (these usually have wheels or compile easily)
-RUN pip install --no-cache-dir \
-    --prefer-binary \
-    -r requirements.txt \
-    || true
+# 1. Install psutil first from source (Alpine compatibility)
+# 2. Install all other dependencies from requirements.txt
 
 # Install psutil specifically with source compilation for Alpine
 RUN pip install --no-cache-dir \
@@ -77,13 +70,7 @@ RUN pip install --no-cache-dir \
     --compile \
     psutil>=5.9.0
 
-# Install chromadb and related packages that may need special handling
-RUN pip install --no-cache-dir \
-    --prefer-binary \
-    chromadb>=0.4.18 \
-    || pip install --no-cache-dir --no-binary chromadb chromadb>=0.4.18
-
-# Final pass: ensure all requirements are satisfied
+# Install all other dependencies
 RUN pip install --no-cache-dir \
     --prefer-binary \
     -r requirements.txt

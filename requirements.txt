@@ -29,7 +29,8 @@ langchain-anthropic>=0.1.0
 openai==1.82.1
 
 # ChromaDB for vector search
-chromadb>=0.4.18
+chromadb==1.1.1
+onnxruntime>=1.14.1
 
 # Cohere for reranking
 cohere==5.15.0
