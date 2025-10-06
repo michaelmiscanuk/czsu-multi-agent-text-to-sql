@@ -933,6 +933,9 @@ async def retrieve_similar_selections_hybrid_search_node(
         )
         return {"hybrid_search_results": [], "chromadb_missing": True}
 
+    # Reset chromadb_missing flag if ChromaDB is now available
+    print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB found! Resetting chromadb_missing flag")
+
     try:
         # Use the same method as the test script to get ChromaDB collection directly
         import chromadb
@@ -975,7 +978,7 @@ async def retrieve_similar_selections_hybrid_search_node(
             f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}"
         )
 
-        return {"hybrid_search_results": hybrid_docs}
+        return {"hybrid_search_results": hybrid_docs, "chromadb_missing": False}
     except Exception as e:
         print__nodes_debug(f"❌ {HYBRID_SEARCH_NODE_ID}: Error in hybrid search: {e}")
         import traceback
@@ -983,7 +986,7 @@ async def retrieve_similar_selections_hybrid_search_node(
         print__nodes_debug(
             f"📄 {HYBRID_SEARCH_NODE_ID}: Traceback: {traceback.format_exc()}"
         )
-        return {"hybrid_search_results": []}
+        return {"hybrid_search_results": [], "chromadb_missing": False}
 
 
 async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
