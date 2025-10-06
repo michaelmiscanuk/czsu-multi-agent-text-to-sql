@@ -28,8 +28,8 @@ langchain-anthropic>=0.1.0
 # OpenAI and Azure OpenAI
 openai==1.82.1
 
-# ChromaDB for vector search
-chromadb==1.1.1
+# ChromaDB for vector search (client-only, no onnxruntime dependency)
+chromadb-client==1.1.1
 
 # Cohere for reranking
 cohere==5.15.0
