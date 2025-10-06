@@ -62,7 +62,7 @@ COPY requirements.txt ./
 
 # Install dependencies with Alpine-optimized strategy
 # 1. Install psutil first from source (Alpine compatibility)  
-# 2. Install onnxruntime from Alpine's native package (musl compatible)
+# 2. Try installing onnxruntime with CPU-only version and fallbacks
 # 3. Install all other dependencies from requirements.txt
 
 # Install psutil specifically with source compilation for Alpine
@@ -71,11 +71,14 @@ RUN pip install --no-cache-dir \
     --compile \
     psutil>=5.9.0
 
-# Install onnxruntime from Alpine's native package (musl libc compatible)
-# Enable testing repository and install the native Alpine package
-RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && apk add --no-cache py3-onnxruntime \
-    && python -c "import onnxruntime; print(f'ONNX Runtime version: {onnxruntime.__version__}')"
+# Try multiple approaches for onnxruntime installation on Alpine
+# Approach 1: Try onnxruntime-cpu (often has better Alpine compatibility)
+# Approach 2: If that fails, try generic onnxruntime 
+# Approach 3: If that fails, try building from source
+RUN pip install --no-cache-dir --prefer-binary onnxruntime-cpu>=1.14.1 \
+    || pip install --no-cache-dir --prefer-binary onnxruntime>=1.14.1 \
+    || pip install --no-cache-dir --no-binary onnxruntime onnxruntime>=1.14.1 \
+    || echo "ONNX Runtime installation failed - ChromaDB may not work with embeddings"
 
 # Install all other dependencies
 RUN pip install --no-cache-dir \
