@@ -61,14 +61,21 @@ ENV CFLAGS="-Os -w" \
 COPY requirements.txt ./
 
 # Install dependencies with Alpine-optimized strategy
-# 1. Install psutil first from source (Alpine compatibility)
-# 2. Install all other dependencies from requirements.txt
+# 1. Install psutil first from source (Alpine compatibility)  
+# 2. Install onnxruntime from Alpine's native package (musl compatible)
+# 3. Install all other dependencies from requirements.txt
 
 # Install psutil specifically with source compilation for Alpine
 RUN pip install --no-cache-dir \
     --no-binary psutil \
     --compile \
     psutil>=5.9.0
+
+# Install onnxruntime from Alpine's native package (musl libc compatible)
+# Enable testing repository and install the native Alpine package
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+    && apk add --no-cache py3-onnxruntime \
+    && python -c "import onnxruntime; print(f'ONNX Runtime version: {onnxruntime.__version__}')"
 
 # Install all other dependencies
 RUN pip install --no-cache-dir \
