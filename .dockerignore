@@ -70,10 +70,8 @@ other/
 
 # Local data and logs (keep structure but exclude large files)
 data/*.pdf
-data/*.zip
 data/CSVs/
 metadata/schemas/
-metadata/*.zip
 metadata/*.xlsx
 logs/
 *.log

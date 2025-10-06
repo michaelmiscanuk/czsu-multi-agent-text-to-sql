@@ -137,6 +137,9 @@ USER appuser
 # Copy application code with proper ownership
 COPY --chown=appuser:appgroup . .
 
+# Run unzip process and cleanup zip files (matching your build command)
+RUN python unzip_files.py && rm -f data/*.zip metadata/*.zip
+
 # Health check optimized for Railway
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:${PORT:-8000}/health', timeout=5)" || exit 1
