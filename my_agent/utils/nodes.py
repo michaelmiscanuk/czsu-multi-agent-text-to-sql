@@ -42,6 +42,8 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
     print(f"🔍 BASE_DIR calculated from cwd: {BASE_DIR}")
 
+SAVE_TO_FILE_TXT_JSONL = 0
+
 print(f"🔍 Current working directory: {Path.cwd()}")
 print(f"🔍 Looking for ChromaDB at: {BASE_DIR / 'metadata' / 'czsu_chromadb'}")
 
@@ -843,32 +845,37 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         ],
     }
 
-    # Stream write to text file (no memory issues)
-    with result_path.open("a", encoding="utf-8") as f:
-        f.write(f"Prompt: {prompt}\n")
-        f.write(f"Result: {final_answer}\n")
-        f.write("Queries and Results:\n")
-        for query, result in queries_and_results:
-            f.write(f"  Query: {query}\n")
-            f.write(f"  Result: {result}\n")
-        f.write(
-            "----------------------------------------------------------------------------\n"
-        )
+    if SAVE_TO_FILE_TXT_JSONL:
+        # Stream write to text file (no memory issues)
+        with result_path.open("a", encoding="utf-8") as f:
+            f.write(f"Prompt: {prompt}\n")
+            f.write(f"Result: {final_answer}\n")
+            f.write("Queries and Results:\n")
+            for query, result in queries_and_results:
+                f.write(f"  Query: {query}\n")
+                f.write(f"  Result: {result}\n")
+            f.write(
+                "----------------------------------------------------------------------------\n"
+            )
 
-    # Append to a JSONL (JSON Lines) file for memory efficiency
-    json_result_path = BASE_DIR / "analysis_results.jsonl"
+        # Append to a JSONL (JSON Lines) file for memory efficiency
+        json_result_path = BASE_DIR / "analysis_results.jsonl"
 
-    try:
-        # Simply append one JSON object per line (no loading existing file)
-        with json_result_path.open("a", encoding="utf-8") as f:
-            import json
+        try:
+            # Simply append one JSON object per line (no loading existing file)
+            with json_result_path.open("a", encoding="utf-8") as f:
+                import json
 
-            f.write(json.dumps(result_obj, ensure_ascii=False) + "\n")
+                f.write(json.dumps(result_obj, ensure_ascii=False) + "\n")
+            print__nodes_debug(
+                f"✅ {SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}"
+            )
+        except Exception as e:
+            print__nodes_debug(f"❌ {SAVE_RESULT_ID}: ⚠️ Error saving JSON: {e}")
+    else:
         print__nodes_debug(
-            f"✅ {SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}"
+            f"💾 {SAVE_RESULT_ID}: File saving disabled (SAVE_TO_FILE_TXT_JSONL = {SAVE_TO_FILE_TXT_JSONL})"
         )
-    except Exception as e:
-        print__nodes_debug(f"❌ {SAVE_RESULT_ID}: ⚠️ Error saving JSON: {e}")
 
     # MINIMAL CHECKPOINT STATE: Return only essential fields for checkpointing
     # This dramatically reduces database storage from full state to just these 5 fields

@@ -63,7 +63,10 @@ from api.config.settings import (
 )
 from api.helpers import traceback_json_response
 from api.utils.debug import print__chat_all_messages_debug
-from checkpointer.user_management.thread_operations import get_user_chat_threads, get_user_chat_threads_count
+from checkpointer.user_management.thread_operations import (
+    get_user_chat_threads,
+    get_user_chat_threads_count,
+)
 from checkpointer.user_management.sentiment_tracking import get_thread_run_sentiments
 from checkpointer.database.connection import get_direct_connection
 from checkpointer.checkpointer.factory import get_global_checkpointer
@@ -491,7 +494,7 @@ async def get_chat_threads(
         try:
             chat_thread_responses = []
             for thread in threads:
-                print("[GENERIC-DEBUG] Processing thread dict:", thread)
+                print__chat_threads_debug(f"Processing thread dict: {thread}")
                 chat_thread_response = ChatThreadResponse(
                     thread_id=thread["thread_id"],
                     latest_timestamp=thread["latest_timestamp"],
@@ -501,8 +504,8 @@ async def get_chat_threads(
                 )
                 chat_thread_responses.append(chat_thread_response)
         except Exception as e:
-            print("[GENERIC-ERROR] Exception in /chat-threads for-loop:", e)
-            print(traceback.format_exc())
+            print__chat_threads_debug(f"Exception in /chat-threads for-loop: {e}")
+            print__chat_threads_debug(f"Traceback: {traceback.format_exc()}")
             # Return empty result on error
             return PaginatedChatThreadsResponse(
                 threads=[], total_count=0, page=page, limit=limit, has_more=False
