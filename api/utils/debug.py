@@ -431,3 +431,17 @@ def print__checkpointers_debug(msg: str) -> None:
         import sys
 
         sys.stdout.flush()
+
+
+def print__chromadb_debug(msg: str) -> None:
+    """Print print__chromadb_debug messages when tools debug mode is enabled.
+
+    Args:
+        msg: The message to print
+    """
+    debug_mode = os.environ.get("print__chromadb_debug", "0")
+    if debug_mode == "1":
+        print(f"[print__chromadb_debug] {msg}")
+        import sys
+
+        sys.stdout.flush()

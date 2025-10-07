@@ -326,6 +326,8 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 # Local Imports - Azure OpenAI client setup
+from api.utils.debug import print__chromadb_debug
+
 try:
     from openai import AzureOpenAI
     import os
@@ -415,7 +417,9 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
 
 # Azure OpenAI Settings
-AZURE_EMBEDDING_DEPLOYMENT = "text-embedding-ada-002"  # Azure deployment name
+AZURE_EMBEDDING_DEPLOYMENT = (
+    "text-embedding-3-large__test1"  # Azure deployment name (3072 dimensions)
+)
 
 
 # LlamaParse Settings (only needed if using llamaparse method)
@@ -585,20 +589,6 @@ Process with extreme attention to extracting ALL data for optimal semantic searc
 """
 
 
-def debug_print(msg: str) -> None:
-    """Print debug messages when debug mode is enabled.
-
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get("DEBUG", "0")
-    if debug_mode == "1":
-        print(f"[PDF-CHROMADB-DEBUG] {msg}")
-        import sys
-
-        sys.stdout.flush()
-
-
 def get_document_hash(text: str) -> str:
     """Generate MD5 hash for a document text."""
     return hashlib.md5(text.encode("utf-8")).hexdigest()
@@ -664,7 +654,9 @@ def smart_text_chunking(
         (CONTENT_SEPARATORS["text_start"], CONTENT_SEPARATORS["text_end"]),
     ]
 
-    debug_print(f"📝 Starting separator-based chunking on {len(text)} characters")
+    print__chromadb_debug(
+        f"📝 Starting separator-based chunking on {len(text)} characters"
+    )
 
     # Extract all content between separator pairs
     for start_sep, end_sep in separator_pairs:
@@ -673,39 +665,39 @@ def smart_text_chunking(
         pattern = re.escape(start_sep) + r"(.*?)" + re.escape(end_sep)
         matches = re.findall(pattern, text, re.DOTALL)
 
-        debug_print(
+        print__chromadb_debug(
             f"🔍 Looking for {start_sep} ... {end_sep} pairs: found {len(matches)} matches"
         )
 
         for i, match in enumerate(matches):
             content = match.strip()
             if content and len(content) >= MIN_CHUNK_SIZE:
-                debug_print(
+                print__chromadb_debug(
                     f"📦 Found {start_sep[1:-1]} content #{i+1}: {len(content)} chars"
                 )
 
                 # Content fits within chunk size limit
                 if len(content) <= max_chunk_size:
                     chunks.append(content)
-                    debug_print(
+                    print__chromadb_debug(
                         f"✅ Added chunk: {content[:100]}..."
                         if len(content) > 100
                         else f"✅ Added chunk: {content}"
                     )
                 else:
                     # Content exceeds size limit - split using sentence boundaries
-                    debug_print(
+                    print__chromadb_debug(
                         f"🔄 Content too large ({len(content)} > {max_chunk_size}), splitting at sentence boundaries"
                     )
                     large_chunks = _split_large_separator_content(
                         content, max_chunk_size, overlap
                     )
                     chunks.extend(large_chunks)
-                    debug_print(
+                    print__chromadb_debug(
                         f"➕ Added {len(large_chunks)} sentence-boundary chunks"
                     )
             else:
-                debug_print(
+                print__chromadb_debug(
                     f"⚠️ Skipping {start_sep[1:-1]} content #{i+1}: too small ({len(content)} < {MIN_CHUNK_SIZE})"
                 )
 
@@ -722,7 +714,9 @@ def smart_text_chunking(
     remaining_text = re.sub(r"\n+", "\n", remaining_text).strip()
 
     if remaining_text and len(remaining_text) >= MIN_CHUNK_SIZE:
-        debug_print(f"📄 Found ungrouped content: {len(remaining_text)} chars")
+        print__chromadb_debug(
+            f"📄 Found ungrouped content: {len(remaining_text)} chars"
+        )
         if len(remaining_text) <= max_chunk_size:
             chunks.append(remaining_text)
         else:
@@ -731,7 +725,7 @@ def smart_text_chunking(
             )
             chunks.extend(fallback_chunks)
 
-    debug_print(f"✅ Separator-based chunking created {len(chunks)} chunks")
+    print__chromadb_debug(f"✅ Separator-based chunking created {len(chunks)} chunks")
     return chunks
 
 
@@ -751,7 +745,7 @@ def _split_large_separator_content(
 
     num_chunks_needed = math.ceil(len(content) / max_size)
 
-    debug_print(
+    print__chromadb_debug(
         f"📏 Content {len(content)} chars needs {num_chunks_needed} chunks (max {max_size})"
     )
 
@@ -761,7 +755,9 @@ def _split_large_separator_content(
     if len(sentences) <= 1:
         # If we can't find sentence boundaries, return as single chunk
         # This prevents mid-word splitting
-        debug_print(f"⚠️ No sentence boundaries found, keeping as single chunk")
+        print__chromadb_debug(
+            f"⚠️ No sentence boundaries found, keeping as single chunk"
+        )
         return [content]
 
     # Distribute sentences across chunks
@@ -769,7 +765,9 @@ def _split_large_separator_content(
         sentences, num_chunks_needed, max_size, overlap
     )
 
-    debug_print(f"✅ Split into {len(chunks)} chunks using sentence boundaries")
+    print__chromadb_debug(
+        f"✅ Split into {len(chunks)} chunks using sentence boundaries"
+    )
     return chunks
 
 
@@ -796,7 +794,9 @@ def _extract_sentences(text: str) -> List[str]:
     # Clean up sentences and remove empty ones
     sentences = [s.strip() for s in sentences if s.strip()]
 
-    debug_print(f"📝 Extracted {len(sentences)} sentences from {len(text)} chars")
+    print__chromadb_debug(
+        f"📝 Extracted {len(sentences)} sentences from {len(text)} chars"
+    )
     return sentences
 
 
@@ -840,7 +840,7 @@ def _distribute_sentences_across_chunks(
 
         if chunk_text and len(chunk_text.strip()) >= MIN_CHUNK_SIZE:
             chunks.append(chunk_text.strip())
-            debug_print(
+            print__chromadb_debug(
                 f"📄 Chunk {chunk_idx + 1}: {len(chunk_text)} chars, {len(chunk_sentences)} sentences"
             )
 
@@ -1162,7 +1162,7 @@ def save_parsed_text_to_file(text: str, file_path: str) -> None:
         # Analyze content structure
         content_types = extract_content_by_type(text)
 
-        debug_print(f"💾 Successfully saved parsed text to: {file_path}")
+        print__chromadb_debug(f"💾 Successfully saved parsed text to: {file_path}")
         print(f"✅ Parsed text saved to: {file_path}")
         print(f"📊 Content analysis:")
         print(f"   📋 Tables: {len(content_types['tables'])}")
@@ -1179,7 +1179,7 @@ def save_parsed_text_to_file(text: str, file_path: str) -> None:
             print(f"⚠️  No content separators found - check LlamaParse instructions")
 
     except Exception as e:
-        debug_print(f"❌ Error saving parsed text: {str(e)}")
+        print__chromadb_debug(f"❌ Error saving parsed text: {str(e)}")
         raise
 
 
@@ -1196,14 +1196,14 @@ def load_parsed_text_from_file(file_path: str) -> str:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             text = f.read()
-        debug_print(f"💾 Successfully loaded parsed text from: {file_path}")
+        print__chromadb_debug(f"💾 Successfully loaded parsed text from: {file_path}")
         print(f"✅ Loaded parsed text from: {file_path}")
         return text
     except FileNotFoundError:
-        debug_print(f"❌ Parsed text file not found: {file_path}")
+        print__chromadb_debug(f"❌ Parsed text file not found: {file_path}")
         return None
     except Exception as e:
-        debug_print(f"❌ Error loading parsed text: {str(e)}")
+        print__chromadb_debug(f"❌ Error loading parsed text: {str(e)}")
         raise
 
 
@@ -1222,14 +1222,14 @@ def create_documents_from_text(
     Returns:
         List of document-like dictionaries representing sections/pages
     """
-    debug_print(
+    print__chromadb_debug(
         f"🏗️ Creating document structure from parsed text ({len(text)} characters)"
     )
-    debug_print(f"📄 Source: {source_file}, Method: {parsing_method}")
+    print__chromadb_debug(f"📄 Source: {source_file}, Method: {parsing_method}")
 
     # Analyze content structure before splitting
     content_analysis = extract_content_by_type(text)
-    debug_print(
+    print__chromadb_debug(
         f"📊 Content analysis: {len(content_analysis['tables'])} tables, {len(content_analysis['columns'])} columns, {len(content_analysis['images'])} images, {len(content_analysis['text'])} text sections"
     )
 
@@ -1237,21 +1237,23 @@ def create_documents_from_text(
 
     # Split by our custom page separator first (LlamaParse)
     if CONTENT_SEPARATORS["page_separator"] in text:
-        debug_print(f"📄 Found LlamaParse page separators")
+        print__chromadb_debug(f"📄 Found LlamaParse page separators")
         page_texts = text.split(CONTENT_SEPARATORS["page_separator"])
     # Fallback separators for other methods
     elif "\n---\n" in text:
-        debug_print(f"📄 Found standard page separators (---)")
+        print__chromadb_debug(f"📄 Found standard page separators (---)")
         page_texts = text.split("\n---\n")
     elif "\n=================\n" in text:
-        debug_print(f"📄 Found extended page separators (=================)")
+        print__chromadb_debug(f"📄 Found extended page separators (=================)")
         page_texts = text.split("\n=================\n")
     else:
         # If no clear separators, treat as one large document
-        debug_print(f"📄 No page separators found, treating as single document")
+        print__chromadb_debug(
+            f"📄 No page separators found, treating as single document"
+        )
         page_texts = [text]
 
-    debug_print(f"✂️ Split text into {len(page_texts)} sections")
+    print__chromadb_debug(f"✂️ Split text into {len(page_texts)} sections")
 
     for page_num, page_text in enumerate(page_texts, 1):
         if page_text.strip():  # Only add non-empty pages
@@ -1276,11 +1278,11 @@ def create_documents_from_text(
             }
             pages.append(page_data)
 
-            debug_print(
+            print__chromadb_debug(
                 f"📄 Section {page_num}: {len(cleaned_text)} chars, tables: {section_has_tables}, columns: {section_has_columns}, images: {section_has_images}"
             )
 
-    debug_print(f"✅ Created {len(pages)} document sections from parsed text")
+    print__chromadb_debug(f"✅ Created {len(pages)} document sections from parsed text")
 
     # Summary statistics
     total_chars = sum(p["char_count"] for p in pages)
@@ -1288,12 +1290,20 @@ def create_documents_from_text(
     sections_with_columns = sum(1 for p in pages if p["has_columns"])
     sections_with_images = sum(1 for p in pages if p["has_images"])
 
-    debug_print(f"📊 Document summary:")
-    debug_print(f"📊   - Total characters: {total_chars}")
-    debug_print(f"📊   - Sections with tables: {sections_with_tables}/{len(pages)}")
-    debug_print(f"📊   - Sections with columns: {sections_with_columns}/{len(pages)}")
-    debug_print(f"📊   - Sections with images: {sections_with_images}/{len(pages)}")
-    debug_print(f"📊   - Average section size: {total_chars/len(pages):.0f} characters")
+    print__chromadb_debug(f"📊 Document summary:")
+    print__chromadb_debug(f"📊   - Total characters: {total_chars}")
+    print__chromadb_debug(
+        f"📊   - Sections with tables: {sections_with_tables}/{len(pages)}"
+    )
+    print__chromadb_debug(
+        f"📊   - Sections with columns: {sections_with_columns}/{len(pages)}"
+    )
+    print__chromadb_debug(
+        f"📊   - Sections with images: {sections_with_images}/{len(pages)}"
+    )
+    print__chromadb_debug(
+        f"📊   - Average section size: {total_chars/len(pages):.0f} characters"
+    )
 
     return pages
 
@@ -1386,7 +1396,7 @@ def extract_content_by_type(text: str) -> Dict[str, List[str]]:
     texts = re.findall(text_pattern, text, re.DOTALL)
     content_types["text"] = [text_content.strip() for text_content in texts]
 
-    debug_print(
+    print__chromadb_debug(
         f"📊 Extracted content: {len(content_types['tables'])} tables, {len(content_types['columns'])} columns, {len(content_types['images'])} images, {len(content_types['text'])} text sections"
     )
 
@@ -1407,7 +1417,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
     Returns:
         List of dictionaries containing text and metadata for each page
     """
-    debug_print(f"📄 Opening PDF with LlamaParse: {pdf_path}")
+    print__chromadb_debug(f"📄 Opening PDF with LlamaParse: {pdf_path}")
 
     try:
         # Try to import llama_parse
@@ -1460,12 +1470,12 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
                 parse_mode="parse_page_with_lvm",
                 vendor_multimodal_model_name="anthropic-sonnet-4.0",
             )
-            debug_print(
+            print__chromadb_debug(
                 "🔧 Using newer LlamaParse parameter system (system_prompt + user_prompt)"
             )
 
         except TypeError as e:
-            debug_print(
+            print__chromadb_debug(
                 f"⚠️ Newer parameters not available ({e}), falling back to parsing_instruction"
             )
             # Fallback to the older parameter if new ones aren't available
@@ -1567,7 +1577,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
             text = document.text if hasattr(document, "text") else str(document)
 
             if not text.strip():
-                debug_print(f"⚠️ Document {doc_idx + 1} contains no text")
+                print__chromadb_debug(f"⚠️ Document {doc_idx + 1} contains no text")
                 continue
 
             # Get page metadata
@@ -1585,7 +1595,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
             print(
                 f"   ✅ Section {doc_idx + 1}: {len(text):,} characters, {len(text.split()):,} words"
             )
-            debug_print(
+            print__chromadb_debug(
                 f"📄 Document {doc_idx + 1}: {len(text)} characters, {len(text.split())} words (LlamaParse)"
             )
 
@@ -1600,16 +1610,16 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
         print(f"   ⏱️  Total time: {elapsed_time:.1f} seconds")
         print(f"   📊 Processing speed: {total_chars/elapsed_time:.0f} chars/sec")
 
-        debug_print(
+        print__chromadb_debug(
             f"🏗️ Successfully extracted text from {len(pages_data)} documents using LlamaParse"
         )
-        debug_print(
+        print__chromadb_debug(
             f"Successfully extracted text from {len(pages_data)} documents using LlamaParse"
         )
         return pages_data
 
     except Exception as e:
-        debug_print(f"Error extracting text with LlamaParse: {str(e)}")
+        print__chromadb_debug(f"Error extracting text with LlamaParse: {str(e)}")
         print(f"\n❌ LlamaParse failed completely. Error: {str(e)}")
         # No fallback - just raise the error
         raise
@@ -1632,7 +1642,7 @@ def extract_text_with_llamaparse_async_monitoring(
 
     import requests
 
-    debug_print(f"Opening PDF with LlamaParse (async monitoring): {pdf_path}")
+    print__chromadb_debug(f"Opening PDF with LlamaParse (async monitoring): {pdf_path}")
 
     try:
         # Get API key
@@ -1844,13 +1854,13 @@ def extract_text_with_llamaparse_async_monitoring(
         print(f"   📊 Processing speed: {total_chars/final_elapsed:.0f} chars/sec")
         print(f"   🆔 Job ID: {job_id}")
 
-        debug_print(
+        print__chromadb_debug(
             f"Successfully extracted text from {len(pages_data)} pages using LlamaParse async"
         )
         return pages_data
 
     except Exception as e:
-        debug_print(f"Error with LlamaParse async monitoring: {str(e)}")
+        print__chromadb_debug(f"Error with LlamaParse async monitoring: {str(e)}")
         print(f"\n❌ LlamaParse async monitoring failed. Error: {str(e)}")
         # No fallback - just raise the error
         raise
@@ -1873,19 +1883,21 @@ def process_parsed_text_to_chunks(
     all_chunks = []
     chunk_id = 0
 
-    debug_print(f"Processing {len(pages_data)} sections/pages for chunking")
+    print__chromadb_debug(f"Processing {len(pages_data)} sections/pages for chunking")
 
     for page_data in pages_data:
         text = page_data["text"]
         page_num = page_data.get("page_number", 1)
         parsing_method = page_data.get("parsing_method", "unknown")
 
-        debug_print(f"Processing section {page_num}: {len(text)} characters")
+        print__chromadb_debug(f"Processing section {page_num}: {len(text)} characters")
 
         # Use semantic-aware chunking that respects LlamaParse structure
         page_chunks = smart_text_chunking(text)
 
-        debug_print(f"Section {page_num} split into {len(page_chunks)} chunks")
+        print__chromadb_debug(
+            f"Section {page_num} split into {len(page_chunks)} chunks"
+        )
 
         for chunk_idx, chunk_text in enumerate(page_chunks):
             # Clean separator artifacts from chunk text (completely remove them)
@@ -1917,7 +1929,7 @@ def process_parsed_text_to_chunks(
                 chunk_id += 1
             else:
                 # Only split by tokens if chunk exceeds token limit
-                debug_print(
+                print__chromadb_debug(
                     f"Chunk {chunk_id} exceeds token limit ({token_count} > {MAX_TOKENS}), splitting..."
                 )
                 token_chunks = split_text_by_tokens(cleaned_chunk_text)
@@ -1947,29 +1959,41 @@ def process_parsed_text_to_chunks(
                     all_chunks.append(chunk_data)
                     chunk_id += 1
 
-    debug_print(f"Created {len(all_chunks)} chunks from {len(pages_data)} sections")
+    print__chromadb_debug(
+        f"Created {len(all_chunks)} chunks from {len(pages_data)} sections"
+    )
 
     # Log chunking statistics
     if all_chunks:
         token_counts = [chunk["token_count"] for chunk in all_chunks]
         char_counts = [chunk["char_count"] for chunk in all_chunks]
 
-        debug_print(f"Chunk statistics:")
-        debug_print(f"  - Average tokens: {sum(token_counts)/len(token_counts):.1f}")
-        debug_print(f"  - Average characters: {sum(char_counts)/len(char_counts):.1f}")
-        debug_print(f"  - Token range: {min(token_counts)} - {max(token_counts)}")
-        debug_print(f"  - Character range: {min(char_counts)} - {max(char_counts)}")
+        print__chromadb_debug(f"Chunk statistics:")
+        print__chromadb_debug(
+            f"  - Average tokens: {sum(token_counts)/len(token_counts):.1f}"
+        )
+        print__chromadb_debug(
+            f"  - Average characters: {sum(char_counts)/len(char_counts):.1f}"
+        )
+        print__chromadb_debug(
+            f"  - Token range: {min(token_counts)} - {max(token_counts)}"
+        )
+        print__chromadb_debug(
+            f"  - Character range: {min(char_counts)} - {max(char_counts)}"
+        )
 
         # Validate chunk quality
         chunk_texts = [chunk["text"] for chunk in all_chunks]
         quality_metrics = validate_chunk_quality(chunk_texts)
 
-        debug_print(f"Chunk quality metrics:")
-        debug_print(f"  - Quality score: {quality_metrics.get('quality_score', 0)}/100")
-        debug_print(
+        print__chromadb_debug(f"Chunk quality metrics:")
+        print__chromadb_debug(
+            f"  - Quality score: {quality_metrics.get('quality_score', 0)}/100"
+        )
+        print__chromadb_debug(
             f"  - Chunks with context: {quality_metrics.get('chunks_with_context', 0)}/{len(all_chunks)}"
         )
-        debug_print(
+        print__chromadb_debug(
             f"  - Chunks with numbers: {quality_metrics.get('chunks_with_numbers', 0)}/{len(all_chunks)}"
         )
 
@@ -1978,13 +2002,13 @@ def process_parsed_text_to_chunks(
         print_numerical_debug_report(chunk_texts)
 
         if quality_metrics.get("potential_issues"):
-            debug_print(
+            print__chromadb_debug(
                 f"  - Potential issues found: {len(quality_metrics['potential_issues'])}"
             )
             for issue in quality_metrics["potential_issues"][:5]:  # Show first 5 issues
-                debug_print(f"    * {issue}")
+                print__chromadb_debug(f"    * {issue}")
             if len(quality_metrics["potential_issues"]) > 5:
-                debug_print(
+                print__chromadb_debug(
                     f"    * ... and {len(quality_metrics['potential_issues']) - 5} more issues"
                 )
 
@@ -1999,7 +2023,7 @@ def process_pdf_pages_to_chunks(
     DEPRECATED: Use process_parsed_text_to_chunks() instead.
     This function is kept for backward compatibility.
     """
-    debug_print(
+    print__chromadb_debug(
         "Warning: process_pdf_pages_to_chunks() is deprecated. Use process_parsed_text_to_chunks() instead."
     )
     return process_parsed_text_to_chunks(pages_data)
@@ -2034,8 +2058,8 @@ def process_pdf_to_chromadb(
 
     try:
         # Extract text from PDF using selected method
-        debug_print(f"Processing PDF: {pdf_path}")
-        debug_print(f"Using parsing method: {PDF_PARSING_METHOD}")
+        print__chromadb_debug(f"Processing PDF: {pdf_path}")
+        print__chromadb_debug(f"Using parsing method: {PDF_PARSING_METHOD}")
 
         if PDF_PARSING_METHOD == "llamaparse":
             if LLAMAPARSE_ENHANCED_MONITORING:
@@ -2054,18 +2078,24 @@ def process_pdf_to_chromadb(
 
         # Process pages into chunks
         chunks_data = process_parsed_text_to_chunks(pages_data)
-        debug_print(f"Created {len(chunks_data)} chunks for processing")
+        print__chromadb_debug(f"Created {len(chunks_data)} chunks for processing")
 
-        # Initialize ChromaDB
-        client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+        # Initialize ChromaDB with cloud/local support
+        from metadata.chromadb_client_factory import get_chromadb_client
+
+        client = get_chromadb_client(
+            local_path=CHROMA_DB_PATH, collection_name=collection_name
+        )
         try:
             collection = client.create_collection(
                 name=collection_name, metadata={"hnsw:space": "cosine"}
             )
-            debug_print(f"Created new ChromaDB collection: {collection_name}")
+            print__chromadb_debug(f"Created new ChromaDB collection: {collection_name}")
         except Exception:
             collection = client.get_collection(name=collection_name)
-            debug_print(f"Using existing ChromaDB collection: {collection_name}")
+            print__chromadb_debug(
+                f"Using existing ChromaDB collection: {collection_name}"
+            )
 
         # Check for existing documents
         existing = collection.get(include=["metadatas"], limit=10000)
@@ -2077,16 +2107,18 @@ def process_pdf_to_chromadb(
                     if doc_hash:
                         existing_hashes.add(doc_hash)
 
-        debug_print(f"Found {len(existing_hashes)} existing documents in ChromaDB")
+        print__chromadb_debug(
+            f"Found {len(existing_hashes)} existing documents in ChromaDB"
+        )
 
         # Filter out existing chunks
         new_chunks = [
             chunk for chunk in chunks_data if chunk["doc_hash"] not in existing_hashes
         ]
-        debug_print(f"Processing {len(new_chunks)} new chunks")
+        print__chromadb_debug(f"Processing {len(new_chunks)} new chunks")
 
         if not new_chunks:
-            debug_print("No new chunks to process")
+            print__chromadb_debug("No new chunks to process")
             return collection
 
         # Initialize embedding client
@@ -2129,7 +2161,9 @@ def process_pdf_to_chromadb(
                     pbar.update(1)
 
                 except Exception as e:
-                    debug_print(f"Error processing chunk {chunk_data['id']}: {str(e)}")
+                    print__chromadb_debug(
+                        f"Error processing chunk {chunk_data['id']}: {str(e)}"
+                    )
                     metrics.failed_chunks += 1
                     metrics.failed_records.append((chunk_data["id"], str(e)))
                     pbar.update(1)
@@ -2137,18 +2171,22 @@ def process_pdf_to_chromadb(
 
         # Print final statistics
         metrics.update_processing_time()
-        debug_print(f"\nProcessing completed:")
-        debug_print(f"- Total pages: {metrics.total_pages}")
-        debug_print(f"- Total chunks: {len(chunks_data)}")
-        debug_print(f"- Successfully processed: {metrics.processed_chunks}")
-        debug_print(f"- Failed: {metrics.failed_chunks}")
-        debug_print(f"- Processing time: {metrics.total_processing_time:.2f} seconds")
-        debug_print(f"- Success rate: {metrics.to_dict()['success_rate']:.1f}%")
+        print__chromadb_debug(f"\nProcessing completed:")
+        print__chromadb_debug(f"- Total pages: {metrics.total_pages}")
+        print__chromadb_debug(f"- Total chunks: {len(chunks_data)}")
+        print__chromadb_debug(f"- Successfully processed: {metrics.processed_chunks}")
+        print__chromadb_debug(f"- Failed: {metrics.failed_chunks}")
+        print__chromadb_debug(
+            f"- Processing time: {metrics.total_processing_time:.2f} seconds"
+        )
+        print__chromadb_debug(
+            f"- Success rate: {metrics.to_dict()['success_rate']:.1f}%"
+        )
 
         return collection
 
     except Exception as e:
-        debug_print(f"Error in process_pdf_to_chromadb: {str(e)}")
+        print__chromadb_debug(f"Error in process_pdf_to_chromadb: {str(e)}")
         raise
 
 
@@ -2168,6 +2206,9 @@ def similarity_search_chromadb(
         .data[0]
         .embedding
     )
+    print__chromadb_debug(
+        f"Generated query embedding with {len(query_embedding)} dimensions for model {embedding_model_name}"
+    )
 
     results = collection.query(
         query_embeddings=[query_embedding],
@@ -2183,7 +2224,7 @@ def hybrid_search(
     """
     Hybrid search combining semantic and BM25 approaches.
     """
-    debug_print(f"Hybrid search for query: '{query_text}'")
+    print__chromadb_debug(f"Hybrid search for query: '{query_text}'")
 
     try:
         # Normalize query
@@ -2219,7 +2260,7 @@ def hybrid_search(
                 )
 
         except Exception as e:
-            debug_print(f"Semantic search failed: {e}")
+            print__chromadb_debug(f"Semantic search failed: {e}")
             semantic_results = []
 
         # BM25 search
@@ -2257,7 +2298,7 @@ def hybrid_search(
                             )
 
         except Exception as e:
-            debug_print(f"BM25 search failed: {e}")
+            print__chromadb_debug(f"BM25 search failed: {e}")
             bm25_results = []
 
         # Combine results with semantic focus
@@ -2318,7 +2359,7 @@ def hybrid_search(
         return final_results[:n_results]
 
     except Exception as e:
-        debug_print(f"Hybrid search failed: {e}")
+        print__chromadb_debug(f"Hybrid search failed: {e}")
         return []
 
 
@@ -2326,7 +2367,7 @@ def cohere_rerank(query, docs, top_n):
     """Rerank documents using Cohere's rerank model."""
     cohere_api_key = os.environ.get("COHERE_API_KEY", "")
     if not cohere_api_key:
-        debug_print("Warning: COHERE_API_KEY not found. Skipping reranking.")
+        print__chromadb_debug("Warning: COHERE_API_KEY not found. Skipping reranking.")
         return [
             (doc, type("obj", (object,), {"relevance_score": 0.5, "index": i})())
             for i, doc in enumerate(docs)
@@ -2351,7 +2392,7 @@ def cohere_rerank(query, docs, top_n):
         return reranked
 
     except Exception as e:
-        debug_print(f"Cohere reranking failed: {e}")
+        print__chromadb_debug(f"Cohere reranking failed: {e}")
         # Return original docs with dummy scores
         return [
             (doc, type("obj", (object,), {"relevance_score": 0.5, "index": i})())
@@ -2373,7 +2414,7 @@ def search_pdf_documents(
     Returns:
         List of search results with metadata
     """
-    debug_print(f"Searching for: '{query}' (returning top {top_k} results)")
+    print__chromadb_debug(f"Searching for: '{query}' (returning top {top_k} results)")
 
     try:
         # Step 1: Hybrid search
@@ -2382,7 +2423,7 @@ def search_pdf_documents(
         )
 
         if not hybrid_results:
-            debug_print("No results from hybrid search")
+            print__chromadb_debug("No results from hybrid search")
             return []
 
         # Step 2: Convert to Document objects for reranking
@@ -2410,11 +2451,11 @@ def search_pdf_documents(
             }
             final_results.append(result)
 
-        debug_print(f"Returning {len(final_results)} final results")
+        print__chromadb_debug(f"Returning {len(final_results)} final results")
         return final_results
 
     except Exception as e:
-        debug_print(f"Error in search_pdf_documents: {str(e)}")
+        print__chromadb_debug(f"Error in search_pdf_documents: {str(e)}")
         return []
 
 
@@ -2632,19 +2673,27 @@ def main():
 
             # Process pages into chunks
             chunks_data = process_parsed_text_to_chunks(all_pages_data)
-            debug_print(f"Created {len(chunks_data)} chunks for processing")
+            print__chromadb_debug(f"Created {len(chunks_data)} chunks for processing")
 
-            # Initialize ChromaDB
-            client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+            # Initialize ChromaDB with cloud/local support
+            from metadata.chromadb_client_factory import get_chromadb_client
+
+            client = get_chromadb_client(
+                local_path=CHROMA_DB_PATH, collection_name=COLLECTION_NAME
+            )
 
             try:
                 collection = client.create_collection(
                     name=COLLECTION_NAME, metadata={"hnsw:space": "cosine"}
                 )
-                debug_print(f"✅ Created new ChromaDB collection: {COLLECTION_NAME}")
+                print__chromadb_debug(
+                    f"✅ Created new ChromaDB collection: {COLLECTION_NAME}"
+                )
             except Exception:
                 collection = client.get_collection(name=COLLECTION_NAME)
-                debug_print(f"📂 Using existing ChromaDB collection: {COLLECTION_NAME}")
+                print__chromadb_debug(
+                    f"📂 Using existing ChromaDB collection: {COLLECTION_NAME}"
+                )
 
             # Check for existing documents
             existing = collection.get(include=["metadatas"], limit=10000)
@@ -2656,7 +2705,9 @@ def main():
                         if doc_hash:
                             existing_hashes.add(doc_hash)
 
-            debug_print(f"Found {len(existing_hashes)} existing documents in ChromaDB")
+            print__chromadb_debug(
+                f"Found {len(existing_hashes)} existing documents in ChromaDB"
+            )
 
             # Filter out existing chunks
             new_chunks = [
@@ -2664,7 +2715,7 @@ def main():
                 for chunk in chunks_data
                 if chunk["doc_hash"] not in existing_hashes
             ]
-            debug_print(f"Processing {len(new_chunks)} new chunks")
+            print__chromadb_debug(f"Processing {len(new_chunks)} new chunks")
 
             if new_chunks:
                 # Initialize embedding client
@@ -2719,7 +2770,7 @@ def main():
                             pbar.update(1)
 
                         except Exception as e:
-                            debug_print(
+                            print__chromadb_debug(
                                 f"Error processing chunk {chunk_data['id']}: {str(e)}"
                             )
                             failed_chunks += 1
@@ -2755,8 +2806,12 @@ def main():
         print(f"\n🔍 OPERATION 3: Testing search functionality")
 
         try:
-            # Load ChromaDB collection
-            client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+            # Load ChromaDB collection with cloud/local support
+            from metadata.chromadb_client_factory import get_chromadb_client
+
+            client = get_chromadb_client(
+                local_path=CHROMA_DB_PATH, collection_name=COLLECTION_NAME
+            )
             collection = client.get_collection(name=COLLECTION_NAME)
             print(f"✅ Successfully loaded collection: {COLLECTION_NAME}")
 

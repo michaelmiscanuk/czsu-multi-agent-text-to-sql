@@ -184,7 +184,8 @@ def get_azure_embedding_model_test():
     embedding_client = get_azure_embedding_model()
     deployment = "text-embedding-3-large__test1"
     response = embedding_client.embeddings.create(
-        input=["first phrase", "second phrase", "third phrase"], model=deployment
+        input=["first phrase", "second phrase", "third phrase"],
+        model=deployment,
     )
     for item in response.data:
         length = len(item.embedding)

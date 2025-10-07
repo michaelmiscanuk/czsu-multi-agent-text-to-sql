@@ -189,6 +189,7 @@ if str(BASE_DIR) not in sys.path:
 # Direct implementation of model functions to avoid circular imports completely
 from openai import AzureOpenAI
 from langchain_openai import AzureOpenAIEmbeddings
+from api.utils.debug import print__chromadb_debug
 
 
 # ===============================================================================
@@ -317,7 +318,7 @@ def handle_processing_error(
         metrics (Metrics): The metrics object to update.
     """
     error_msg = f"Error processing selection code {selection_code}: {str(error)}"
-    debug_print(f"\n{error_msg}")
+    print__chromadb_debug(f"\n{error_msg}")
     metrics.failed_docs += 1
     metrics.failed_records.append((selection_code, str(error)))
 
@@ -325,20 +326,6 @@ def handle_processing_error(
 # ==============================================================================
 # HELPER FUNCTIONS
 # ==============================================================================
-def debug_print(msg: str) -> None:
-    """Print debug messages when debug mode is enabled.
-
-    Args:
-        msg: The message to print
-    """
-    debug_mode = os.environ.get("DEBUG", "0")
-    if debug_mode == "1":
-        print(f"[CHROMADB-DEBUG] {msg}")
-        import sys
-
-        sys.stdout.flush()
-
-
 def get_document_hash(text: str) -> str:
     """Generate MD5 hash for a document text.
 
@@ -386,7 +373,7 @@ def get_documents_from_sqlite() -> tuple[list[str], list[str], list[str]]:
         """
         )
         if not cursor.fetchone():
-            debug_print(
+            print__chromadb_debug(
                 f"⚠️ {CREATE_CHROMADB_ID}: Table 'selection_descriptions' does not exist in SQLite database."
             )
             return [], [], []
@@ -403,7 +390,7 @@ def get_documents_from_sqlite() -> tuple[list[str], list[str], list[str]]:
         results = cursor.fetchall()
 
         if not results:
-            debug_print(
+            print__chromadb_debug(
                 f"⚠️ {CREATE_CHROMADB_ID}: No documents found in SQLite database."
             )
             return [], [], []
@@ -412,17 +399,19 @@ def get_documents_from_sqlite() -> tuple[list[str], list[str], list[str]]:
         hashes = [get_document_hash(text) for text in texts]
 
         # Print some debug info about the documents
-        debug_print(
+        print__chromadb_debug(
             f"📊 {CREATE_CHROMADB_ID}: Found {len(texts)} documents in SQLite database."
         )
-        debug_print(f"📊 {CREATE_CHROMADB_ID}: Sample document lengths:")
+        print__chromadb_debug(f"📊 {CREATE_CHROMADB_ID}: Sample document lengths:")
         for sel, text in list(zip(selections, texts))[:5]:
-            debug_print(f"📊 {CREATE_CHROMADB_ID}: - {sel}: {len(text)} characters")
+            print__chromadb_debug(
+                f"📊 {CREATE_CHROMADB_ID}: - {sel}: {len(text)} characters"
+            )
 
         return list(texts), list(selections), list(hashes)
 
     except sqlite3.Error as e:
-        debug_print(f"❌ {CREATE_CHROMADB_ID}: Database error: {str(e)}")
+        print__chromadb_debug(f"❌ {CREATE_CHROMADB_ID}: Database error: {str(e)}")
         raise
     finally:
         if "conn" in locals():
@@ -811,7 +800,7 @@ def upsert_documents_to_chromadb(
         # Get documents from SQLite
         texts, selections, hashes = get_documents_from_sqlite()
         if not texts:
-            debug_print(
+            print__chromadb_debug(
                 f"⚠️ {CREATE_CHROMADB_ID}: No documents found in SQLite database."
             )
             return None
@@ -819,8 +808,12 @@ def upsert_documents_to_chromadb(
         # Initialize Azure embedding client
         embedding_client = get_azure_embedding_model()
 
-        # Initialize ChromaDB client and get/create collection
-        client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+        # Initialize ChromaDB client and get/create collection with cloud/local support
+        from metadata.chromadb_client_factory import get_chromadb_client
+
+        client = get_chromadb_client(
+            local_path=CHROMA_DB_PATH, collection_name=collection_name
+        )
         try:
             # Try to create the collection with cosine similarity if it doesn't exist
             collection = client.create_collection(
@@ -839,7 +832,7 @@ def upsert_documents_to_chromadb(
                     doc_hash = metadata.get("doc_hash")
                     if doc_hash:
                         existing_hashes.add(doc_hash)
-        debug_print(
+        print__chromadb_debug(
             f"📊 {CREATE_CHROMADB_ID}: Found {len(existing_hashes)} existing documents in ChromaDB."
         )
 
@@ -852,10 +845,10 @@ def upsert_documents_to_chromadb(
         new_hashes = [hashes[i] for i in new_indices]
 
         if not new_texts:
-            debug_print(f"⚠️ {CREATE_CHROMADB_ID}: No new documents to add.")
+            print__chromadb_debug(f"⚠️ {CREATE_CHROMADB_ID}: No new documents to add.")
             return collection
 
-        debug_print(
+        print__chromadb_debug(
             f"🔄 {CREATE_CHROMADB_ID}: Processing {len(new_texts)} new documents."
         )
 
@@ -882,7 +875,7 @@ def upsert_documents_to_chromadb(
 
                 try:
                     # Print batch info for debugging
-                    debug_print(
+                    print__chromadb_debug(
                         f"📦 \n{CREATE_CHROMADB_ID}: Processing batch {batch_idx + 1}/{total_batches}"
                     )
 
@@ -892,7 +885,7 @@ def upsert_documents_to_chromadb(
                     ):
                         # Count tokens and split if necessary
                         token_count = num_tokens_from_string(text)
-                        debug_print(
+                        print__chromadb_debug(
                             f"📊 {CREATE_CHROMADB_ID}: - {selection_code}: {len(text)} characters, {token_count} tokens"
                         )
 
@@ -900,7 +893,7 @@ def upsert_documents_to_chromadb(
                         text_chunks = split_text_by_tokens(text)
 
                         if len(text_chunks) > 1:
-                            debug_print(
+                            print__chromadb_debug(
                                 f"✂️ {CREATE_CHROMADB_ID}: - Split {selection_code} into {len(text_chunks)} chunks"
                             )
 
@@ -952,31 +945,33 @@ def upsert_documents_to_chromadb(
         # Calculate and display final processing statistics
         metrics.update_processing_time()
 
-        debug_print(
+        print__chromadb_debug(
             f"\nProcessing completed in {metrics.total_processing_time:.2f} seconds:"
         )
-        debug_print(f"- Total documents: {len(new_texts)}")
-        debug_print(f"- Successfully processed: {metrics.processed_docs}")
-        debug_print(f"- Failed: {metrics.failed_docs}")
-        debug_print(
+        print__chromadb_debug(f"- Total documents: {len(new_texts)}")
+        print__chromadb_debug(f"- Successfully processed: {metrics.processed_docs}")
+        print__chromadb_debug(f"- Failed: {metrics.failed_docs}")
+        print__chromadb_debug(
             f"- Average time per document: {metrics.total_processing_time/max(1,metrics.processed_docs):.2f} seconds"
         )
-        debug_print(f"- Success rate: {metrics.to_dict()['success_rate']:.1f}%")
+        print__chromadb_debug(
+            f"- Success rate: {metrics.to_dict()['success_rate']:.1f}%"
+        )
 
         # Display failed records if any
         if metrics.failed_docs > 0:
-            debug_print("\nFailed Records:")
-            debug_print("=" * 50)
+            print__chromadb_debug("\nFailed Records:")
+            print__chromadb_debug("=" * 50)
             for selection_code, error in metrics.failed_records:
-                debug_print(f"- {selection_code}: {error}")
-            debug_print("=" * 50)
-            debug_print(f"Total failed records: {metrics.failed_docs}")
+                print__chromadb_debug(f"- {selection_code}: {error}")
+            print__chromadb_debug("=" * 50)
+            print__chromadb_debug(f"Total failed records: {metrics.failed_docs}")
 
             # Display failed selection codes and their description lengths
-            debug_print(
+            print__chromadb_debug(
                 "\nFailed Selection Codes and Description Lengths (sorted by length):"
             )
-            debug_print("=" * 50)
+            print__chromadb_debug("=" * 50)
             # Get failed selection codes and their description lengths
             failed_selection_lengths = []
             for failed_code, _ in metrics.failed_records:
@@ -989,13 +984,13 @@ def upsert_documents_to_chromadb(
             failed_selection_lengths.sort(key=lambda x: x[1], reverse=True)
             # Display the results
             for selection_code, length in failed_selection_lengths:
-                debug_print(f"- {selection_code}: {length} characters")
-            debug_print("=" * 50)
+                print__chromadb_debug(f"- {selection_code}: {length} characters")
+            print__chromadb_debug("=" * 50)
 
         return collection
 
     except Exception as e:
-        debug_print(
+        print__chromadb_debug(
             f"❌ {CREATE_CHROMADB_ID}: Error in upsert_documents_to_chromadb: {str(e)}"
         )
         raise
@@ -1006,8 +1001,15 @@ def get_chromadb_collection(
     chroma_db_path: str,
     embedding_model_name: str = "text-embedding-3-large__test1",
 ):
-    """Return a direct ChromaDB collection instance for the given collection."""
-    client = chromadb.PersistentClient(path=chroma_db_path)
+    """Return a direct ChromaDB collection instance for the given collection.
+
+    This function supports both cloud and local ChromaDB based on CHROMA_USE_CLOUD env var.
+    """
+    from metadata.chromadb_client_factory import get_chromadb_client
+
+    client = get_chromadb_client(
+        local_path=chroma_db_path, collection_name=collection_name
+    )
     collection = client.get_collection(name=collection_name)
     return collection
 
@@ -1024,6 +1026,9 @@ def similarity_search_chromadb(
         embedding_client.embeddings.create(input=[query], model=embedding_model_name)
         .data[0]
         .embedding
+    )
+    print__chromadb_debug(
+        f"Generated query embedding with {len(query_embedding)} dimensions for model {embedding_model_name}"
     )
     results = collection.query(
         query_embeddings=[query_embedding],
@@ -1281,8 +1286,8 @@ if __name__ == "__main__":
         print(f"📈 Workflow: Semantic → Hybrid → Cohere → Top 3 selections")
 
     except KeyboardInterrupt:
-        debug_print(f"{CREATE_CHROMADB_ID}: Process interrupted by user")
+        print__chromadb_debug(f"{CREATE_CHROMADB_ID}: Process interrupted by user")
         sys.exit(1)
     except Exception as e:
-        debug_print(f"❌ {CREATE_CHROMADB_ID}: Unexpected error: {str(e)}")
+        print__chromadb_debug(f"❌ {CREATE_CHROMADB_ID}: Unexpected error: {str(e)}")
         sys.exit(1)

@@ -18,9 +18,9 @@ PATHS_TO_ZIP = [
     # BASE_DIR / "data" / "czsu_data.db",
     # BASE_DIR / "data" / "CSVs",
     # BASE_DIR / "metadata" / "schemas",
-    BASE_DIR
-    / "data"
-    / "pdf_chromadb_llamaparse",
+    # BASE_DIR
+    # / "data"
+    # / "pdf_chromadb_llamaparse",
 ]
 
 

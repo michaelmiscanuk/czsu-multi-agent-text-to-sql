@@ -45,10 +45,9 @@ except NameError:
 SAVE_TO_FILE_TXT_JSONL = 0
 
 print(f"🔍 Current working directory: {Path.cwd()}")
-print(f"🔍 Looking for ChromaDB at: {BASE_DIR / 'metadata' / 'czsu_chromadb'}")
 
 # Import debug functions from utils
-from api.utils.debug import print__nodes_debug
+from api.utils.debug import print__nodes_debug, print__chromadb_debug
 
 # PDF chunk functionality imports
 from data.pdf_to_chromadb import CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
@@ -57,8 +56,11 @@ from data.pdf_to_chromadb import cohere_rerank as pdf_cohere_rerank
 from data.pdf_to_chromadb import hybrid_search as pdf_hybrid_search
 from metadata.create_and_load_chromadb import (
     cohere_rerank,
-    get_chromadb_collection,
     hybrid_search,
+)
+from metadata.chromadb_client_factory import (
+    get_chromadb_client,
+    get_chromadb_collection,
 )
 from my_agent.utils.models import (
     get_azure_llm_gpt_4o,
@@ -922,38 +924,48 @@ async def retrieve_similar_selections_hybrid_search_node(
     print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Query: {query}")
     print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
 
-    # Check if ChromaDB directory exists
-    chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
-    print__nodes_debug(
-        f"🔍 {HYBRID_SEARCH_NODE_ID}: Checking ChromaDB at: {chroma_db_dir}"
-    )
-    print__nodes_debug(
-        f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB exists: {chroma_db_dir.exists()}"
-    )
-    print__nodes_debug(
-        f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB is_dir: {chroma_db_dir.is_dir() if chroma_db_dir.exists() else 'N/A'}"
-    )
+    # Check if ChromaDB directory exists (only when using local ChromaDB)
+    from metadata.chromadb_client_factory import should_use_cloud
 
-    if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
+    use_cloud = should_use_cloud()
+
+    if not use_cloud:
+        # Only check for local directory when not using cloud
+        chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
         print__nodes_debug(
-            f"📄 {HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}"
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: Checking local ChromaDB at: {chroma_db_dir}"
         )
-        return {"hybrid_search_results": [], "chromadb_missing": True}
+        print__nodes_debug(
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB exists: {chroma_db_dir.exists()}"
+        )
+        print__nodes_debug(
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB is_dir: {chroma_db_dir.is_dir() if chroma_db_dir.exists() else 'N/A'}"
+        )
 
-    # Reset chromadb_missing flag if ChromaDB is now available
-    print__nodes_debug(
-        f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB found! Resetting chromadb_missing flag"
-    )
+        if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
+            print__nodes_debug(
+                f"📄 {HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}"
+            )
+            return {"hybrid_search_results": [], "chromadb_missing": True}
+
+        print__nodes_debug(
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: Local ChromaDB found! Resetting chromadb_missing flag"
+        )
+    else:
+        print__nodes_debug(
+            f"🌐 {HYBRID_SEARCH_NODE_ID}: Using Chroma Cloud (skipping local directory check)"
+        )
 
     try:
         # Use the same method as the test script to get ChromaDB collection directly
-        import chromadb
         import gc
 
-        client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+        client = get_chromadb_client(
+            local_path=CHROMA_DB_PATH, collection_name=CHROMA_COLLECTION_NAME
+        )
         collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
         print__nodes_debug(
-            f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized directly"
+            f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized"
         )
 
         hybrid_results = hybrid_search(collection, query, n_results=n_results)
@@ -1195,22 +1207,36 @@ async def retrieve_similar_chunks_hybrid_search_node(
         f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Requested n_results: {n_results}"
     )
 
-    # Check if PDF ChromaDB directory exists
-    if not PDF_CHROMA_DB_PATH.exists() or not PDF_CHROMA_DB_PATH.is_dir():
+    # Check if PDF ChromaDB directory exists (only when using local ChromaDB)
+    from metadata.chromadb_client_factory import should_use_cloud
+
+    use_cloud = should_use_cloud()
+
+    if not use_cloud:
+        # Only check for local directory when not using cloud
+        if not PDF_CHROMA_DB_PATH.exists() or not PDF_CHROMA_DB_PATH.is_dir():
+            print__nodes_debug(
+                f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB directory not found at {PDF_CHROMA_DB_PATH}"
+            )
+            return {"hybrid_search_chunks": []}
         print__nodes_debug(
-            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB directory not found at {PDF_CHROMA_DB_PATH}"
+            f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Local PDF ChromaDB found at {PDF_CHROMA_DB_PATH}"
         )
-        return {"hybrid_search_chunks": []}
+    else:
+        print__nodes_debug(
+            f"🌐 {RETRIEVE_CHUNKS_NODE_ID}: Using Chroma Cloud for PDF chunks"
+        )
 
     try:
-        # Use the PDF ChromaDB collection directly
-        import chromadb
+        # Use the PDF ChromaDB collection directly with cloud/local support
         import gc
 
-        client = chromadb.PersistentClient(path=str(PDF_CHROMA_DB_PATH))
+        client = get_chromadb_client(
+            local_path=PDF_CHROMA_DB_PATH, collection_name=PDF_COLLECTION_NAME
+        )
         collection = client.get_collection(name=PDF_COLLECTION_NAME)
         print__nodes_debug(
-            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized directly"
+            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized"
         )
 
         hybrid_results = pdf_hybrid_search(collection, query, n_results=n_results)
