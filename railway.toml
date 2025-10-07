@@ -21,10 +21,6 @@ restartPolicyType = "ON_FAILURE"
 # Maximum number of retries for restart policy
 restartPolicyMaxRetries = 5
 
-# Healthcheck configuration (optional)
-healthcheckPath = "/health"
-healthcheckTimeout = 300
-
 # Deployment lifecycle settings
 # overlapSeconds = 60  # Time new and old deploys overlap
 # drainingSeconds = 10  # Time between SIGTERM and SIGKILL
