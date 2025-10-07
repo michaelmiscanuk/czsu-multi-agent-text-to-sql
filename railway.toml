@@ -1,0 +1,30 @@
+# Railway Configuration File
+# Reference: https://docs.railway.com/reference/config-as-code
+
+[build]
+# Builder to use (RAILPACK, DOCKERFILE, or NIXPACKS)
+builder = "RAILPACK"
+
+# Build command to run
+buildCommand = "python -m pip install -r requirements.txt && python unzip_files.py && rm -f data/*.zip"
+
+# Watch patterns for conditional deploys (optional)
+# watchPatterns = ["**"]
+
+[deploy]
+# Start command to run the application with uvicorn
+startCommand = "uvicorn api.main:app --host 0.0.0.0 --port 8000"
+
+# Restart policy when deployment crashes
+restartPolicyType = "ON_FAILURE"
+
+# Maximum number of retries for restart policy
+restartPolicyMaxRetries = 5
+
+# Healthcheck configuration (optional)
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+
+# Deployment lifecycle settings
+# overlapSeconds = 60  # Time new and old deploys overlap
+# drainingSeconds = 10  # Time between SIGTERM and SIGKILL
