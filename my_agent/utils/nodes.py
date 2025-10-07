@@ -948,6 +948,7 @@ async def retrieve_similar_selections_hybrid_search_node(
     try:
         # Use the same method as the test script to get ChromaDB collection directly
         import chromadb
+        import gc
 
         client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
         collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
@@ -986,6 +987,15 @@ async def retrieve_similar_selections_hybrid_search_node(
         print__nodes_debug(
             f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}"
         )
+
+        # MEMORY CLEANUP: Explicitly close ChromaDB resources
+        print__nodes_debug(
+            f"🧹 {HYBRID_SEARCH_NODE_ID}: Cleaning up ChromaDB client resources"
+        )
+        collection = None  # Clear collection reference
+        del client  # Explicitly delete client
+        gc.collect()  # Force garbage collection to release memory
+        print__nodes_debug(f"✅ {HYBRID_SEARCH_NODE_ID}: ChromaDB resources released")
 
         return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
@@ -1195,6 +1205,7 @@ async def retrieve_similar_chunks_hybrid_search_node(
     try:
         # Use the PDF ChromaDB collection directly
         import chromadb
+        import gc
 
         client = chromadb.PersistentClient(path=str(PDF_CHROMA_DB_PATH))
         collection = client.get_collection(name=PDF_COLLECTION_NAME)
@@ -1231,6 +1242,17 @@ async def retrieve_similar_chunks_hybrid_search_node(
             print__nodes_debug(
                 f"📄 {RETRIEVE_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}..."
             )
+
+        # MEMORY CLEANUP: Explicitly close ChromaDB resources
+        print__nodes_debug(
+            f"🧹 {RETRIEVE_CHUNKS_NODE_ID}: Cleaning up PDF ChromaDB client resources"
+        )
+        collection = None  # Clear collection reference
+        del client  # Explicitly delete client
+        gc.collect()  # Force garbage collection to release memory
+        print__nodes_debug(
+            f"✅ {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB resources released"
+        )
 
         return {"hybrid_search_chunks": hybrid_docs}
     except Exception as e:
@@ -1358,3 +1380,44 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
         "hybrid_search_chunks": [],
         "most_similar_chunks": [],
     }
+
+
+async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Final cleanup to ensure all ChromaDB resources and large objects are released from memory.
+
+    This node runs at the very end of the graph to force garbage collection
+    and release memory from ChromaDB clients, embeddings, and intermediate results.
+    """
+    import gc
+
+    CLEANUP_NODE_ID = 99
+    print__nodes_debug(f"🧹 {CLEANUP_NODE_ID}: Enter cleanup_resources_node")
+
+    # Clear large intermediate data structures that are no longer needed
+    state_copy = {
+        "prompt": state.get("prompt", ""),
+        "final_answer": state.get("final_answer", ""),
+        "queries_and_results": state.get("queries_and_results", []),
+        "messages": state.get("messages", []),
+        "top_chunks": state.get("top_chunks", []),
+        "top_selection_codes": state.get("top_selection_codes", []),
+    }
+
+    # Force garbage collection multiple times to ensure cleanup
+    print__nodes_debug(f"🧹 {CLEANUP_NODE_ID}: Running aggressive garbage collection")
+    collected = gc.collect()
+    print__nodes_debug(
+        f"✅ {CLEANUP_NODE_ID}: First GC pass collected {collected} objects"
+    )
+
+    # Run GC again to catch circular references
+    collected = gc.collect()
+    print__nodes_debug(
+        f"✅ {CLEANUP_NODE_ID}: Second GC pass collected {collected} objects"
+    )
+
+    print__nodes_debug(
+        f"✅ {CLEANUP_NODE_ID}: Cleanup complete, memory should be released"
+    )
+
+    return state_copy

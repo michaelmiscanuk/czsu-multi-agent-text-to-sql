@@ -23,6 +23,7 @@ from langgraph.graph import END, START, StateGraph
 
 from .utils.nodes import (
     MAX_ITERATIONS,
+    cleanup_resources_node,
     format_answer_node,
     get_schema_node,
     query_node,
@@ -114,12 +115,13 @@ def create_graph(checkpointer=None):
     graph.add_node("format_answer", format_answer_node)
     graph.add_node("submit_final_answer", submit_final_answer_node)
     graph.add_node("save", save_node)
+    graph.add_node("cleanup_resources", cleanup_resources_node)
     graph.add_node("summarize_messages_rewrite", summarize_messages_node)
     graph.add_node("summarize_messages_query", summarize_messages_node)
     graph.add_node("summarize_messages_reflect", summarize_messages_node)
     graph.add_node("summarize_messages_format", summarize_messages_node)
     print__analysis_tracing_debug(
-        "87 - NODES ADDED: All 17 graph nodes added successfully"
+        "87 - NODES ADDED: All 18 graph nodes added successfully (including cleanup)"
     )
 
     # --------------------------------------------------------------------------
@@ -275,8 +277,11 @@ def create_graph(checkpointer=None):
     graph.add_edge("format_answer", "summarize_messages_format")
     graph.add_edge("summarize_messages_format", "submit_final_answer")
     graph.add_edge("submit_final_answer", "save")
-    graph.add_edge("save", END)
-    print__analysis_tracing_debug("106 - FINAL EDGES: Added final edges to completion")
+    graph.add_edge("save", "cleanup_resources")
+    graph.add_edge("cleanup_resources", END)
+    print__analysis_tracing_debug(
+        "106 - FINAL EDGES: Added final edges to completion with cleanup"
+    )
 
     print__analysis_tracing_debug(
         "107 - GRAPH COMPILATION: Starting graph compilation with checkpointer"
