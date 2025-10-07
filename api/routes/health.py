@@ -22,6 +22,7 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
 # Standard imports
+import gc
 import time
 from datetime import datetime
 
@@ -103,6 +104,13 @@ async def health_check():
                 "error": database_error,
             },
             "version": "1.0.0",
+        }
+
+        # Run garbage collection
+        collected = gc.collect()
+        health_data["garbage_collector"] = {
+            "objects_collected": collected,
+            "gc_run": True,
         }
 
         if not database_healthy:
@@ -277,7 +285,9 @@ async def rate_limit_health_check():
 async def prepared_statements_health_check():
     """Health check for prepared statements and database connection status."""
     try:
-        from checkpointer.error_handling.prepared_statements import clear_prepared_statements
+        from checkpointer.error_handling.prepared_statements import (
+            clear_prepared_statements,
+        )
         from checkpointer.checkpointer.factory import get_global_checkpointer
 
         # Check if we can get a checkpointer
