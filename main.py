@@ -609,5 +609,13 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
 # ==============================================================================
 # SCRIPT ENTRY POINT
 # ==============================================================================
-if __name__ == "__main__":
-    asyncio.run(main())
+# Note: This block is commented out to prevent Railway from auto-executing this file.
+# Railway's RAILPACK builder was detecting main.py as an entry point and running it
+# instead of executing the startCommand (uvicorn).
+#
+# To run the analysis CLI manually, use:
+#   python -m asyncio -c "from main import main; import asyncio; asyncio.run(main())"
+# Or create a separate CLI script that imports and calls main()
+#
+# if __name__ == "__main__":
+#     asyncio.run(main())
