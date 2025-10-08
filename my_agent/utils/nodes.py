@@ -9,10 +9,16 @@ including schema loading, query generation, execution, and result formatting.
 # ==============================================================================
 import os
 import sqlite3
+import requests
+import uuid
+import json
+import asyncio
 from pathlib import Path
 
 from langchain_core.messages import AIMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
+
+from dotenv import load_dotenv
 
 # ==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -135,6 +141,35 @@ async def load_schema(state=None):
         return "\n**************\n".join(schemas)
     # fallback
     return "No selection_code provided in state."
+
+
+async def translate_to_english(text):
+    """Translate text to English using Azure Translator API."""
+    load_dotenv()
+    subscription_key = os.environ["TRANSLATOR_TEXT_SUBSCRIPTION_KEY"]
+    region = os.environ["TRANSLATOR_TEXT_REGION"]
+    endpoint = os.environ["TRANSLATOR_TEXT_ENDPOINT"]
+
+    path = "/translate?api-version=3.0"
+    params = "&to=en"
+    constructed_url = endpoint + path + params
+
+    headers = {
+        "Ocp-Apim-Subscription-Key": subscription_key,
+        "Ocp-Apim-Subscription-Region": region,
+        "Content-type": "application/json",
+        "X-ClientTraceId": str(uuid.uuid4()),
+    }
+
+    body = [{"text": text}]
+
+    # Run the synchronous request in a thread
+    loop = asyncio.get_event_loop()
+    response = await loop.run_in_executor(
+        None, lambda: requests.post(constructed_url, headers=headers, json=body)
+    )
+    result = response.json()
+    return result[0]["translations"][0]["text"]
 
 
 # ==============================================================================
@@ -1199,7 +1234,15 @@ async def retrieve_similar_chunks_hybrid_search_node(
         )
         return {"hybrid_search_chunks": []}
 
-    query = state.get("rewritten_prompt") or state["prompt"]
+    query_original_language = state.get("rewritten_prompt") or state["prompt"]
+
+    # Translate query to English using Azure Translator
+    query = await translate_to_english(query_original_language)
+
+    print__nodes_debug(
+        f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Original query: '{query_original_language}' -> Translated query: '{query}'"
+    )
+
     n_results = state.get("n_results", PDF_HYBRID_SEARCH_DEFAULT_RESULTS)
 
     print__nodes_debug(f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Query: {query}")
