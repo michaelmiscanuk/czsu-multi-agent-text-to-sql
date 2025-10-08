@@ -28,6 +28,24 @@ restartPolicyType = "ON_FAILURE"
 # Maximum number of retries for restart policy
 restartPolicyMaxRetries = 5
 
+# Runtime version
+runtime = "V2"
+
+# Number of replicas
+numReplicas = 1
+
+# Memory limit override
+limitOverride = {"containers":{"memoryBytes":4000000000}}
+
+# Sleep application when inactive
+sleepApplication = true
+
+# Use legacy stacker
+useLegacyStacker = false
+
+# Multi-region configuration
+multiRegionConfig = {"europe-west4-drams3a":{"numReplicas":1}}
+
 # Deployment lifecycle settings
 # overlapSeconds = 60  # Time new and old deploys overlap
 # drainingSeconds = 10  # Time between SIGTERM and SIGKILL
