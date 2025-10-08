@@ -246,7 +246,9 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         )
         print__feedback_flow(f"🚨 LangSmith feedback submission error: {str(e)}")
         print__feedback_flow(f"🔍 Error type: {type(e).__name__}")
-        resp = traceback_json_response(e, run_id=run_uuid if 'run_uuid' in locals() else None)
+        resp = traceback_json_response(
+            e, run_id=run_uuid if "run_uuid" in locals() else None
+        )
         if resp:
             return resp
         raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {e}")
@@ -327,7 +329,9 @@ async def update_sentiment(request: SentimentRequest, user=Depends(get_current_u
         )
         print__sentiment_flow(f"🚨 Sentiment update error: {str(e)}")
         print__sentiment_flow(f"🔍 Error type: {type(e).__name__}")
-        resp = traceback_json_response(e, run_id=run_uuid if 'run_uuid' in locals() else None)
+        resp = traceback_json_response(
+            e, run_id=run_uuid if "run_uuid" in locals() else None
+        )
         if resp:
             return resp
         raise HTTPException(status_code=500, detail=f"Failed to update sentiment: {e}")
