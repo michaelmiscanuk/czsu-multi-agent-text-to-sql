@@ -402,7 +402,7 @@ Important Schema Details for one dataset:
 - "dimensions" key contains several other keys, which are columns in the table
 - Each of those columns under "dimensions" key contain "values" key with list of distinct values in that column
 - If there is a column of type "metric / ukazatel", it means that it is a column that contains names of metrics, not values - it can be used in WHERE clause for filtering
-- Column "value" is always the column that contains the numeric values for the metrics, it can be used in aggregations, like sum, etc.
+- Column "value" is always the column that contains the numeric values for the metrics, it can be used in aggregations, like sum, etc. - but dont aggregate without thinking if it makes sense, always read full record, often ot is not necessary to aggregate when record contans 'celkem' or 'total' in one of the columns.
 
 HERE IS THE MOST IMPORTANT PART:
 - Always read carefully all distinct values of dimensions, and do some thinking to choose the best ones to fit our question
