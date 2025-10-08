@@ -665,6 +665,13 @@ export default function ChatPage() {
       ]);
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
+      console.log('[ChatPage-send] 🔍 CRITICAL - Response data structure:', {
+        hasRunId: !!data.run_id,
+        runIdValue: data.run_id,
+        runIdType: typeof data.run_id,
+        runIdLength: data.run_id ? data.run_id.length : 0,
+        allResponseKeys: Object.keys(data)
+      });
 
       // Update loading message with response
       const responseMessage: ChatMessage = {
@@ -689,6 +696,12 @@ export default function ChatPage() {
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.datasets_used);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full responseMessage:', JSON.stringify(responseMessage, null, 2));
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - messageId:', messageId);
+      console.log('[ChatPage-send] 🔍 CRITICAL - STORING run_id in message:', {
+        messageId: messageId,
+        runId: responseMessage.run_id,
+        hasRunId: !!responseMessage.run_id,
+        runIdType: typeof responseMessage.run_id
+      });
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - currentThreadId:', currentThreadId);
 
       // CRITICAL FIX: Always sync with backend after successful API call

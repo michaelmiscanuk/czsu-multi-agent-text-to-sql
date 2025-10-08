@@ -863,6 +863,9 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                     </div>
                 ) : (
                     messages.map((message) => {
+                        // CRITICAL DEBUG: Log run_id for each message render
+                        console.log(`[MessageArea] 🔍 RENDER MESSAGE: id=${message.id}, run_id=${message.run_id}, hasRunId=${!!message.run_id}, isLoading=${message.isLoading}`);
+                        
                         return (
                             <div key={message.id} className="message-container mb-6">
                                 {/* Render user prompt if it exists */}
@@ -980,7 +983,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                         onFeedbackSubmit={handleFeedbackSubmit}
                                                         onCommentSubmit={handleCommentSubmit}
                                                         feedbackState={feedbackState}
-                                                        currentSentiment={getSentimentForRunId(message.run_id || messageRunIds[message.id] || '')}
+                                                        currentSentiment={(message.run_id || messageRunIds[message.id]) ? getSentimentForRunId(message.run_id || messageRunIds[message.id]) : null}
                                                         onSentimentUpdate={updateSentiment}
                                                     />
                                                 </div>
@@ -998,7 +1001,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 onFeedbackSubmit={handleFeedbackSubmit}
                                                 onCommentSubmit={handleCommentSubmit}
                                                 feedbackState={feedbackState}
-                                                currentSentiment={getSentimentForRunId(message.run_id || messageRunIds[message.id] || '')}
+                                                currentSentiment={(message.run_id || messageRunIds[message.id]) ? getSentimentForRunId(message.run_id || messageRunIds[message.id]) : null}
                                                 onSentimentUpdate={updateSentiment}
                                             />
                                         </div>

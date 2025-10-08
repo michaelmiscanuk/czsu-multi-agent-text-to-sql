@@ -130,6 +130,12 @@ export function useSentiment(): UseSentimentReturn {
 
   // Get sentiment for a specific run_id
   const getSentimentForRunId = useCallback((runId: string): boolean | null => {
+    // Return null for invalid/empty run IDs to prevent false sentiment lookups
+    if (!runId || runId.trim() === '') {
+      console.log('[SENTIMENT-HOOK] getSentimentForRunId: Invalid runId, returning null:', { runId });
+      return null;
+    }
+    
     const sentiment = sentiments[runId] ?? null;
     console.log('[SENTIMENT-HOOK] getSentimentForRunId:', { runId, sentiment });
     return sentiment;

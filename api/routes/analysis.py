@@ -15,6 +15,8 @@ if sys.platform == "win32":
 
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
+load_dotenv()
+
 # Constants
 try:
     from pathlib import Path
@@ -162,7 +164,7 @@ async def get_thread_metadata_from_single_thread_endpoint(
         print__analyze_debug(f"🚨 Error calling single-thread endpoint: {e}")
         print__analysis_tracing_debug(f"METADATA EXTRACTION ERROR: {e}")
 
-        resp = traceback_json_response(e)
+        resp = traceback_json_response(e, run_id=None)  # run_id not yet generated
         if resp:
             return resp
 
@@ -311,7 +313,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                         f"🔧 Prepared statement error detected - this should be handled by retry logic: {analysis_error}"
                     )
 
-                    resp = traceback_json_response(analysis_error)
+                    resp = traceback_json_response(analysis_error, run_id=run_id)
                     if resp:
                         return resp
 
@@ -352,7 +354,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                         print__feedback_flow(
                             f"🚫 InMemorySaver fallback disabled - propagating database error: {analysis_error}"
                         )
-                        resp = traceback_json_response(analysis_error)
+                        resp = traceback_json_response(analysis_error, run_id=run_id)
                         if resp:
                             return resp
 
@@ -442,7 +444,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                     )
                     print__feedback_flow(f"🚨 Non-database error: {analysis_error}")
 
-                    resp = traceback_json_response(analysis_error)
+                    resp = traceback_json_response(analysis_error, run_id=run_id)
                     if resp:
                         return resp
 
@@ -513,6 +515,15 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             print__analyze_debug(
                 f"🔍 DEBUG RESPONSE: datasetUrl: {response_data['datasetUrl']}"
             )
+            print__analyze_debug(
+                f"🔍 CRITICAL - RESPONSE run_id: {response_data.get('run_id', 'MISSING')}"
+            )
+            print__analyze_debug(
+                f"🔍 CRITICAL - run_id type: {type(response_data.get('run_id')).__name__}"
+            )
+            print__analyze_debug(
+                f"🔍 CRITICAL - run_id length: {len(response_data.get('run_id', '')) if response_data.get('run_id') else 0}"
+            )
 
             print__analysis_tracing_debug(
                 f"25 - RESPONSE SUCCESS: Response data prepared with {len(response_data.keys())} keys"
@@ -538,7 +549,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         print__analyze_debug(f"🚨 TIMEOUT ERROR: {error_msg}")
         print__feedback_flow(f"🚨 {error_msg}")
 
-        resp = traceback_json_response(asyncio.TimeoutError)
+        resp = traceback_json_response(asyncio.TimeoutError(), run_id=run_id)
         if resp:
             return resp
 
@@ -551,7 +562,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         print__analyze_debug(
             f"🚨 HTTP EXCEPTION: {http_exc.status_code} - {http_exc.detail}"
         )
-        resp = traceback_json_response(http_exc)
+        resp = traceback_json_response(http_exc, run_id=run_id)
         if resp:
             return resp
 
@@ -565,7 +576,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         print__analyze_debug(f"🚨 UNEXPECTED EXCEPTION: {type(e).__name__}: {str(e)}")
         print__analyze_debug(f"🚨 Exception traceback: {traceback.format_exc()}")
         print__feedback_flow(f"🚨 {error_msg}")
-        resp = traceback_json_response(e)
+        resp = traceback_json_response(e, run_id=run_id)
         if resp:
             return resp
 
