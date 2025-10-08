@@ -113,14 +113,14 @@ def main():
     print(f"Base directory: {BASE_DIR}")
 
     # Step 1: Download from Google Drive
-    print("Step 1: Downloading files from Google Drive...")
-    gdrive_url = "https://drive.google.com/file/d/1zjS6tsTmUaYy63E4Cq8NqvXgJpS2TQl1/view?usp=sharing"
-    destination_path = BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip"
+    # print("Step 1: Downloading files from Google Drive...")
+    # gdrive_url = "https://drive.google.com/file/d/1zjS6tsTmUaYy63E4Cq8NqvXgJpS2TQl1/view?usp=sharing"
+    # destination_path = BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip"
 
-    success = download_from_gdrive(gdrive_url, destination_path)
-    if not success:
-        print("❌ Download failed. Cannot proceed with unzipping.")
-        return
+    # success = download_from_gdrive(gdrive_url, destination_path)
+    # if not success:
+    #     print("❌ Download failed. Cannot proceed with unzipping.")
+    #     return
 
     # Step 2: Unzip all files
     print("\nStep 2: Starting unzip process...")
