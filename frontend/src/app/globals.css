@@ -95,6 +95,29 @@ p, li, span, div, td, th, label, input, button {
   background: rgba(59, 130, 246, 0.7);
 }
 
+/* Custom scrollbar styles for textarea input - prevents overlap with rounded borders */
+textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+  margin: 4px; /* Margin to prevent overlap with rounded corners */
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5); /* gray-400 with opacity */
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7); /* gray-500 with opacity */
+  background-clip: content-box;
+}
+
 /* Dataset code badge styling - matches chat interface dataset codes exactly */
 .dataset-code-badge {
   display: inline-block;

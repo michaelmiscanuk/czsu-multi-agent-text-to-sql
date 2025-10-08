@@ -1090,15 +1090,15 @@ export default function ChatPage() {
         </div>
         
         {/* Stationary Input Field */}
-        <div className="bg-white border-t border-gray-200 shadow-lg">
-          <form onSubmit={handleSend} className="p-4 flex items-start gap-3 max-w-4xl mx-auto">
+        <div className="bg-white border-t border-gray-200 shadow-lg relative z-10">
+          <form onSubmit={handleSend} className="p-4 flex items-start gap-3 max-w-4xl mx-auto relative">
             <textarea
               ref={inputRef}
               placeholder="Type your message here... (SHIFT+ENTER for new line)"
               value={currentMessage}
               onChange={e => setCurrentMessageWithPersistence(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200 resize-none min-h-[48px] max-h-[200px]"
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200 resize-none min-h-[48px] max-h-[200px] relative z-0"
               disabled={isUIBlocking}
               rows={1}
               style={{
