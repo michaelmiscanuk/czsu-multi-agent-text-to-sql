@@ -409,34 +409,42 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCom
     };
 
     const handleFeedback = (feedback: number) => {
-        // Use runId if available, otherwise fallback to messageId
+        // Only proceed if we have a valid runId (don't fall back to messageId)
+        if (!runId) {
+            console.log('[FEEDBACK-DEBUG] FeedbackComponent.handleFeedback - no valid runId, skipping feedback submission');
+            return;
+        }
+        
         console.log('[FEEDBACK-DEBUG] FeedbackComponent.handleFeedback - using runId:', runId, 'messageId:', messageId);
         
         // Save to separate localStorage for persistence
-        saveFeedbackToLocalStorage(runId || messageId, feedback);
+        saveFeedbackToLocalStorage(runId, feedback);
         
         // Update sentiment if we have a runId (new sentiment system)
-        if (runId) {
-            const sentiment = feedback === 1 ? true : false;
-            onSentimentUpdate(runId, sentiment);
-        }
+        const sentiment = feedback === 1 ? true : false;
+        onSentimentUpdate(runId, sentiment);
         
         // Call the original onFeedbackSubmit function (existing LangSmith feedback)
-        onFeedbackSubmit(runId || messageId, feedback);
+        onFeedbackSubmit(runId, feedback);
         setShowCommentBox(false);
         setComment('');
     };
 
     const handleCommentSubmit = () => {
-        // Use runId if available, otherwise fallback to messageId
+        // Only proceed if we have a valid runId (don't fall back to messageId)
+        if (!runId) {
+            console.log('[FEEDBACK-DEBUG] FeedbackComponent.handleCommentSubmit - no valid runId, skipping comment submission');
+            return;
+        }
+        
         console.log('[FEEDBACK-DEBUG] FeedbackComponent.handleCommentSubmit - using runId:', runId, 'messageId:', messageId);
         const feedbackValue = messageFeedback.feedback !== null ? messageFeedback.feedback : 1;
         
         // Save to localStorage along with comment
-        saveFeedbackToLocalStorage(runId || messageId, feedbackValue);
+        saveFeedbackToLocalStorage(runId, feedbackValue);
         
         // Call the comment submit function from MessageArea
-        if (runId && comment.trim()) {
+        if (comment.trim()) {
             onCommentSubmit(runId, comment.trim());
         }
         
@@ -471,8 +479,13 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCom
                     <span>selected:</span>
                     <span>{currentSentiment === true ? '👍' : '👎'}</span>
                 </div>
+            ) : !runId ? (
+                // Show disabled message when no valid runId is available
+                <div className="flex items-center space-x-1 px-2 py-1 rounded bg-gray-50 text-gray-400 text-sm">
+                    <span>feedback unavailable</span>
+                </div>
             ) : (
-                // Show clickable thumbs if no sentiment is selected
+                // Show clickable thumbs if no sentiment is selected and runId is available
                 <>
                     {/* Thumbs up */}
                     <button
@@ -498,15 +511,18 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCom
             <div className="relative">
                 <button
                     ref={commentButtonRef}
-                    onClick={() => setShowCommentBox(!showCommentBox)}
+                    onClick={() => runId && setShowCommentBox(!showCommentBox)}
+                    disabled={!runId}
                     className={`p-1 rounded transition-colors ${
-                        showCommentBox 
+                        !runId
+                            ? 'text-gray-300 cursor-not-allowed'
+                            : showCommentBox 
                             ? 'text-blue-600 bg-blue-50' 
                             : hasProvidedComment
                             ? 'text-green-600 hover:text-green-700 hover:bg-green-50'
                             : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                     }`}
-                    title={hasProvidedComment ? "Comment provided - click to edit" : "Add comment"}
+                    title={!runId ? "Feedback unavailable" : hasProvidedComment ? "Comment provided - click to edit" : "Add comment"}
                 >
                     <CommentIcon />
                 </button>
@@ -959,12 +975,12 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                 <div className="ml-auto">
                                                     <FeedbackComponent
                                                         messageId={message.id}
-                                                        runId={messageRunIds[message.id]}
+                                                        runId={message.run_id || messageRunIds[message.id]}
                                                         threadId={threadId}
                                                         onFeedbackSubmit={handleFeedbackSubmit}
                                                         onCommentSubmit={handleCommentSubmit}
                                                         feedbackState={feedbackState}
-                                                        currentSentiment={getSentimentForRunId(messageRunIds[message.id] || '')}
+                                                        currentSentiment={getSentimentForRunId(message.run_id || messageRunIds[message.id] || '')}
                                                         onSentimentUpdate={updateSentiment}
                                                     />
                                                 </div>
@@ -977,12 +993,12 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                         <div className="mt-3 flex justify-end">
                                             <FeedbackComponent
                                                 messageId={message.id}
-                                                runId={messageRunIds[message.id]}
+                                                runId={message.run_id || messageRunIds[message.id]}
                                                 threadId={threadId}
                                                 onFeedbackSubmit={handleFeedbackSubmit}
                                                 onCommentSubmit={handleCommentSubmit}
                                                 feedbackState={feedbackState}
-                                                currentSentiment={getSentimentForRunId(messageRunIds[message.id] || '')}
+                                                currentSentiment={getSentimentForRunId(message.run_id || messageRunIds[message.id] || '')}
                                                 onSentimentUpdate={updateSentiment}
                                             />
                                         </div>

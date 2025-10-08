@@ -30,6 +30,7 @@ export interface ChatMessage {
   isLoading?: boolean;
   startedAt?: number;
   isError?: boolean;
+  run_id?: string; // Add run_id to store the LangSmith run identifier
 }
 
 export interface AnalyzeRequest {

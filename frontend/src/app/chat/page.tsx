@@ -681,7 +681,8 @@ export default function ChatPage() {
         isLoading: false, // CRITICAL: Explicitly set to false
         isError: false,
         error: undefined,
-        startedAt: undefined // Clear the started timestamp
+        startedAt: undefined, // Clear the started timestamp
+        run_id: data.run_id // Store the run_id for feedback functionality
       };
 
       // CRITICAL DEBUG: Log datasetsUsed before update
