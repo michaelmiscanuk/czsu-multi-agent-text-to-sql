@@ -665,13 +665,6 @@ export default function ChatPage() {
       ]);
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
-      console.log('[ChatPage-send] 🔍 CRITICAL - Response data structure:', {
-        hasRunId: !!data.run_id,
-        runIdValue: data.run_id,
-        runIdType: typeof data.run_id,
-        runIdLength: data.run_id ? data.run_id.length : 0,
-        allResponseKeys: Object.keys(data)
-      });
 
       // Update loading message with response
       const responseMessage: ChatMessage = {
@@ -696,12 +689,6 @@ export default function ChatPage() {
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.datasets_used);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full responseMessage:', JSON.stringify(responseMessage, null, 2));
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - messageId:', messageId);
-      console.log('[ChatPage-send] 🔍 CRITICAL - STORING run_id in message:', {
-        messageId: messageId,
-        runId: responseMessage.run_id,
-        hasRunId: !!responseMessage.run_id,
-        runIdType: typeof responseMessage.run_id
-      });
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - currentThreadId:', currentThreadId);
 
       // CRITICAL FIX: Always sync with backend after successful API call
@@ -1090,15 +1077,15 @@ export default function ChatPage() {
         </div>
         
         {/* Stationary Input Field */}
-        <div className="bg-white border-t border-gray-200 shadow-lg relative z-10">
-          <form onSubmit={handleSend} className="p-4 flex items-start gap-3 max-w-4xl mx-auto relative">
+        <div className="bg-white border-t border-gray-200 shadow-lg">
+          <form onSubmit={handleSend} className="p-4 flex items-start gap-3 max-w-4xl mx-auto">
             <textarea
               ref={inputRef}
               placeholder="Type your message here... (SHIFT+ENTER for new line)"
               value={currentMessage}
               onChange={e => setCurrentMessageWithPersistence(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200 resize-none min-h-[48px] max-h-[200px] relative z-0"
+              className="flex-1 px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 bg-gray-50 transition-all duration-200 resize-none min-h-[48px] max-h-[200px]"
               disabled={isUIBlocking}
               rows={1}
               style={{
