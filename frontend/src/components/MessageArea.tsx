@@ -479,19 +479,19 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCom
                     <span>selected:</span>
                     <span>{currentSentiment === true ? '👍' : '👎'}</span>
                 </div>
-            ) : !runId ? (
-                // Show disabled message when no valid runId is available
-                <div className="flex items-center space-x-1 px-2 py-1 rounded bg-gray-50 text-gray-400 text-sm">
-                    <span>feedback unavailable</span>
-                </div>
             ) : (
-                // Show clickable thumbs if no sentiment is selected and runId is available
+                // ALWAYS show clickable thumbs - never hide them
+                // If runId is missing, clicking will be handled gracefully
                 <>
                     {/* Thumbs up */}
                     <button
                         onClick={() => handleFeedback(1)}
-                        className="p-1 rounded transition-colors text-gray-400 hover:text-blue-600 hover:bg-blue-50"
-                        title="Good response"
+                        className={`p-1 rounded transition-colors ${
+                            !runId 
+                                ? 'text-gray-300 cursor-not-allowed' 
+                                : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                        }`}
+                        title={!runId ? "Loading..." : "Good response"}
                     >
                         👍
                     </button>
@@ -499,8 +499,12 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCom
                     {/* Thumbs down */}
                     <button
                         onClick={() => handleFeedback(0)}
-                        className="p-1 rounded transition-colors text-gray-400 hover:text-blue-600 hover:bg-blue-50"
-                        title="Poor response"
+                        className={`p-1 rounded transition-colors ${
+                            !runId 
+                                ? 'text-gray-300 cursor-not-allowed' 
+                                : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
+                        }`}
+                        title={!runId ? "Loading..." : "Poor response"}
                     >
                         👎
                     </button>
@@ -522,7 +526,7 @@ const FeedbackComponent = ({ messageId, runId, threadId, onFeedbackSubmit, onCom
                             ? 'text-green-600 hover:text-green-700 hover:bg-green-50'
                             : 'text-gray-400 hover:text-blue-600 hover:bg-blue-50'
                     }`}
-                    title={!runId ? "Feedback unavailable" : hasProvidedComment ? "Comment provided - click to edit" : "Add comment"}
+                    title={!runId ? "Loading..." : hasProvidedComment ? "Comment provided - click to edit" : "Add comment"}
                 >
                     <CommentIcon />
                 </button>
