@@ -16,97 +16,89 @@ interface UseSentimentReturn {
 }
 
 export function useSentiment(): UseSentimentReturn {
+  // CRITICAL CHANGE: Remove localStorage completely - always use database
   const [sentiments, setSentiments] = useState<SentimentState>({});
   
-  // Use ChatCacheContext for cached sentiment data
+  // Use ChatCacheContext ONLY for database-loaded sentiment data
   const { getSentimentsForThread, updateCachedSentiment } = useChatCache();
 
-  // Load sentiments from localStorage on component mount
+  // CRITICAL: Clear any old localStorage sentiment data on mount
   useEffect(() => {
-    loadSentimentsFromStorage();
-  }, []);
-
-  const saveSentimentsToStorage = useCallback((sentimentData: SentimentState) => {
-    try {
-      if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-        localStorage.setItem('czsu-sentiments', JSON.stringify(sentimentData));
-        console.log('[SENTIMENT-HOOK] Saved sentiments to localStorage:', Object.keys(sentimentData).length);
-      }
-    } catch (error) {
-      console.error('[SENTIMENT-HOOK] Error saving sentiments to localStorage:', error);
-    }
-  }, []);
-
-  const loadSentimentsFromStorage = useCallback(() => {
     try {
       if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
         const stored = localStorage.getItem('czsu-sentiments');
         if (stored) {
-          const sentimentData = JSON.parse(stored);
-          setSentiments(sentimentData);
-          console.log('[SENTIMENT-HOOK] Loaded sentiments from localStorage:', Object.keys(sentimentData).length);
+          localStorage.removeItem('czsu-sentiments');
+          console.log('[SENTIMENT-HOOK] CLEARED old localStorage sentiment data - now using DATABASE ONLY');
         }
       }
     } catch (error) {
-      console.error('[SENTIMENT-HOOK] Error loading sentiments from localStorage:', error);
+      console.error('[SENTIMENT-HOOK] Error clearing old localStorage data:', error);
     }
   }, []);
 
-  // OPTIMIZED: Load sentiments from cache instead of making API calls
+  // CRITICAL: Load sentiments ONLY from database via bulk loading
   const loadSentiments = useCallback(async (threadId: string) => {
-    console.log('[SENTIMENT-HOOK] Loading sentiments for thread:', threadId, '(using cached data only)');
+    console.log('[SENTIMENT-HOOK] Loading sentiments for thread:', threadId, '(DATABASE ONLY - no localStorage)');
     
     try {
-      // Get cached sentiments for this thread
-      const cachedSentiments = getSentimentsForThread(threadId);
-      console.log('[SENTIMENT-HOOK] Found cached sentiments:', Object.keys(cachedSentiments).length);
+      // Get database-loaded sentiments for this thread from bulk loading
+      const databaseSentiments = getSentimentsForThread(threadId);
+      console.log('[SENTIMENT-HOOK] Found database sentiments:', Object.keys(databaseSentiments).length);
       
-      if (cachedSentiments && Object.keys(cachedSentiments).length > 0) {
-        // Convert thread-specific sentiments to global sentiment state
-        const updatedSentiments = { ...sentiments };
-        
-        // Add/update sentiments from cache
-        Object.entries(cachedSentiments).forEach(([runId, sentiment]) => {
-          updatedSentiments[runId] = sentiment;
+      if (databaseSentiments && Object.keys(databaseSentiments).length > 0) {
+        // Update local state with database sentiments only
+        setSentiments(prev => {
+          const updated = { ...prev };
+          
+          // Clear any previous sentiments for this thread to prevent contamination
+          // Only keep sentiments from database
+          Object.keys(prev).forEach(runId => {
+            if (!Object.keys(databaseSentiments).includes(runId)) {
+              delete updated[runId];
+            }
+          });
+          
+          // Add database sentiments
+          Object.entries(databaseSentiments).forEach(([runId, sentiment]) => {
+            updated[runId] = sentiment;
+          });
+          
+          return updated;
         });
         
-        setSentiments(updatedSentiments);
-        saveSentimentsToStorage(updatedSentiments);
-        console.log('[SENTIMENT-HOOK] Updated sentiments with cached data:', Object.keys(cachedSentiments).length, 'entries');
+        console.log('[SENTIMENT-HOOK] Updated sentiments with DATABASE data only:', Object.keys(databaseSentiments).length, 'entries');
       } else {
-        console.log('[SENTIMENT-HOOK] No cached sentiments found for thread:', threadId);
-        console.log('[SENTIMENT-HOOK] Bulk loading should have loaded all sentiments - no fallback API call needed');
+        console.log('[SENTIMENT-HOOK] No database sentiments found for thread:', threadId);
         
-        // REMOVED: No more fallback API calls - bulk loading handles everything
-        // The bulk loading via /chat/all-messages-for-all-threads should have loaded all sentiments
-        // If there are no cached sentiments, it means this thread has no sentiments
+        // Clear any cached sentiments since database has none
+        setSentiments(prev => {
+          const updated = { ...prev };
+          // Remove all sentiments - if not in database, shouldn't be shown
+          return {};
+        });
       }
     } catch (error) {
-      console.error('[SENTIMENT-HOOK] Error loading sentiments:', error);
+      console.error('[SENTIMENT-HOOK] Error loading sentiments from database:', error);
     }
-  }, [getSentimentsForThread, sentiments, saveSentimentsToStorage]);
+  }, [getSentimentsForThread]);
 
-  // OPTIMIZED: Update sentiment using cache and API
+  // CRITICAL: Update sentiment with optimistic UI - show visual immediately, update database in background
   const updateSentiment = useCallback(async (runId: string, sentiment: boolean | null) => {
-    console.log('[SENTIMENT-HOOK] Updating sentiment:', { runId, sentiment });
+    console.log('[SENTIMENT-HOOK] Updating sentiment (OPTIMISTIC UI + DATABASE):', { runId, sentiment });
 
-    // Update local state immediately for responsive UI
+    // 🚀 STEP 1: Update UI IMMEDIATELY for responsive user experience
     setSentiments(prev => {
       const updated = { ...prev, [runId]: sentiment };
-      saveSentimentsToStorage(updated);
+      console.log('[SENTIMENT-HOOK] ✅ UI updated IMMEDIATELY for responsive UX');
       return updated;
     });
 
-    // Update cache context
-    // Note: We need to find which thread this runId belongs to
-    // For now, we'll update the cache when we know the threadId from MessageArea
-    // updateCachedSentiment(threadId, runId, sentiment);
-
-    // Send to server
+    // 🔄 STEP 2: Update database in BACKGROUND (don't block UI)
     try {
       const session = await getSession();
       if (!session?.id_token) {
-        console.log('[SENTIMENT-HOOK] No session available for sentiment update');
+        console.log('[SENTIMENT-HOOK] ⚠️ No session available - keeping optimistic UI update');
         return;
       }
 
@@ -115,23 +107,41 @@ export function useSentiment(): UseSentimentReturn {
         sentiment
       };
 
+      // Database update happens in background
       await authApiFetch('/sentiment', session.id_token, {
         method: 'POST',
         body: JSON.stringify(request)
       });
 
-      console.log('[SENTIMENT-HOOK] Sentiment successfully sent to server');
+      console.log('[SENTIMENT-HOOK] ✅ Database successfully updated in background');
+      
     } catch (error) {
-      console.error('[SENTIMENT-HOOK] Error sending sentiment to server:', error);
-      // Note: We keep the local state even if server update fails
-      // This provides offline functionality and responsive UI
+      console.error('[SENTIMENT-HOOK] ❌ Database update failed - reverting UI state:', error);
+      
+      // 🔄 ROLLBACK: If database fails, revert the optimistic UI update
+      setSentiments(prev => {
+        const reverted = { ...prev };
+        delete reverted[runId]; // Remove the failed update
+        console.log('[SENTIMENT-HOOK] 🔄 UI state reverted due to database error');
+        return reverted;
+      });
+      
+      // Optionally show user notification about the failure
+      console.warn('[SENTIMENT-HOOK] 🔔 User should be notified that sentiment update failed');
     }
-  }, [saveSentimentsToStorage]);
+  }, []);
 
-  // Get sentiment for a specific run_id
+  // CRITICAL: Get sentiment - only show if it exists in database
   const getSentimentForRunId = useCallback((runId: string): boolean | null => {
+    if (!runId) {
+      console.log('[SENTIMENT-HOOK] getSentimentForRunId: No runId provided, returning null');
+      return null;
+    }
+    
     const sentiment = sentiments[runId] ?? null;
-    console.log('[SENTIMENT-HOOK] getSentimentForRunId:', { runId, sentiment });
+    console.log('[SENTIMENT-HOOK] getSentimentForRunId (DATABASE ONLY):', { runId, sentiment, hasRunId: !!runId });
+    
+    // Only return sentiment if run_id exists and sentiment is from database
     return sentiment;
   }, [sentiments]);
 
