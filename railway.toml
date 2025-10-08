@@ -12,6 +12,12 @@ buildCommand = "python -m pip install -r requirements.txt && python unzip_files.
 # watchPatterns = ["**"]
 
 [deploy]
+# Environment variables for Railpack to install system packages
+# https://railpack.com/guides/installing-packages
+[deploy.environmentVariables]
+# Install SQLite3 library at runtime (needed by Python's sqlite3 module)
+RAILPACK_DEPLOY_APT_PACKAGES = "libsqlite3-0"
+
 # Start command to run the application with uvicorn
 # Railway provides $PORT environment variable dynamically
 # Using python -m to run uvicorn from RAILPACK's venv
