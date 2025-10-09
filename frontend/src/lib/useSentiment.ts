@@ -83,15 +83,9 @@ export function useSentiment(): UseSentimentReturn {
     }
   }, [getSentimentsForThread]);
 
-  // CRITICAL: Update sentiment with optimistic UI + retry logic - always responsive, graceful failure
+  // CRITICAL: Update sentiment with optimistic UI - show visual immediately, update database in background
   const updateSentiment = useCallback(async (runId: string, sentiment: boolean | null) => {
-    console.log('[SENTIMENT-HOOK] Updating sentiment (OPTIMISTIC UI + RETRY):', { runId, sentiment });
-
-    // Validate runId before proceeding
-    if (!runId) {
-      console.log('[SENTIMENT-HOOK] ⚠️ No runId provided - skipping update');
-      return;
-    }
+    console.log('[SENTIMENT-HOOK] Updating sentiment (OPTIMISTIC UI + DATABASE):', { runId, sentiment });
 
     // 🚀 STEP 1: Update UI IMMEDIATELY for responsive user experience
     setSentiments(prev => {
@@ -100,60 +94,40 @@ export function useSentiment(): UseSentimentReturn {
       return updated;
     });
 
-    // 🔄 STEP 2: Update database in BACKGROUND with retry logic
-    const maxRetries = 3;
-    const retryDelay = 1000; // 1 second between retries
-    
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const session = await getSession();
-        if (!session?.id_token) {
-          console.log(`[SENTIMENT-HOOK] ⚠️ No session available (attempt ${attempt}/${maxRetries})`);
-          if (attempt < maxRetries) {
-            await new Promise(resolve => setTimeout(resolve, retryDelay));
-            continue;
-          }
-          // If no session after all retries, silently revert
-          console.log('[SENTIMENT-HOOK] 🔄 No session after retries - silently reverting UI');
-          setSentiments(prev => {
-            const reverted = { ...prev };
-            delete reverted[runId];
-            return reverted;
-          });
-          return;
-        }
-
-        const request: SentimentRequest = {
-          run_id: runId,
-          sentiment
-        };
-
-        // Database update happens in background
-        await authApiFetch('/sentiment', session.id_token, {
-          method: 'POST',
-          body: JSON.stringify(request)
-        });
-
-        console.log(`[SENTIMENT-HOOK] ✅ Database successfully updated (attempt ${attempt}/${maxRetries})`);
-        return; // Success! Exit retry loop
-        
-      } catch (error) {
-        console.error(`[SENTIMENT-HOOK] ❌ Database update failed (attempt ${attempt}/${maxRetries}):`, error);
-        
-        if (attempt < maxRetries) {
-          // Wait before retrying
-          console.log(`[SENTIMENT-HOOK] 🔄 Retrying in ${retryDelay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
-        } else {
-          // All retries failed - silently revert UI state
-          console.log('[SENTIMENT-HOOK] 🔄 All retries failed - silently reverting UI state');
-          setSentiments(prev => {
-            const reverted = { ...prev };
-            delete reverted[runId]; // Remove the failed update
-            return reverted;
-          });
-        }
+    // 🔄 STEP 2: Update database in BACKGROUND (don't block UI)
+    try {
+      const session = await getSession();
+      if (!session?.id_token) {
+        console.log('[SENTIMENT-HOOK] ⚠️ No session available - keeping optimistic UI update');
+        return;
       }
+
+      const request: SentimentRequest = {
+        run_id: runId,
+        sentiment
+      };
+
+      // Database update happens in background
+      await authApiFetch('/sentiment', session.id_token, {
+        method: 'POST',
+        body: JSON.stringify(request)
+      });
+
+      console.log('[SENTIMENT-HOOK] ✅ Database successfully updated in background');
+      
+    } catch (error) {
+      console.error('[SENTIMENT-HOOK] ❌ Database update failed - reverting UI state:', error);
+      
+      // 🔄 ROLLBACK: If database fails, revert the optimistic UI update
+      setSentiments(prev => {
+        const reverted = { ...prev };
+        delete reverted[runId]; // Remove the failed update
+        console.log('[SENTIMENT-HOOK] 🔄 UI state reverted due to database error');
+        return reverted;
+      });
+      
+      // Optionally show user notification about the failure
+      console.warn('[SENTIMENT-HOOK] 🔔 User should be notified that sentiment update failed');
     }
   }, []);
 
