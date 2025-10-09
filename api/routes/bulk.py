@@ -373,6 +373,50 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 f"✅ BULK LOADING COMPLETE: {len(all_messages)} threads, {total_messages} total messages"
             )
 
+            # Match run_ids to messages for each thread
+            print__chat_all_messages_debug(
+                "🔍 MATCHING RUN_IDS: Starting run_id matching for all threads"
+            )
+            for thread_id, thread_messages in all_messages.items():
+                thread_run_id_list = all_run_ids.get(thread_id, [])
+
+                print__chat_all_messages_debug(
+                    f"🔍 Thread {thread_id}: {len(thread_messages)} messages, {len(thread_run_id_list)} run_ids"
+                )
+
+                # Match run_ids to messages by index (messages with final_answer)
+                ai_message_index = 0
+                for idx, msg in enumerate(thread_messages):
+                    has_final_answer = (
+                        msg.final_answer
+                        if hasattr(msg, "final_answer")
+                        else msg.get("final_answer")
+                    )
+
+                    if has_final_answer and ai_message_index < len(thread_run_id_list):
+                        run_id = thread_run_id_list[ai_message_index]["run_id"]
+
+                        # Set run_id on the message object
+                        if hasattr(msg, "run_id"):
+                            msg.run_id = run_id
+                        else:
+                            # If it's already a dict, add run_id to it
+                            if isinstance(msg, dict):
+                                msg["run_id"] = run_id
+
+                        print__chat_all_messages_debug(
+                            f"🔍 MATCHED: Thread {thread_id}, Message {idx} -> run_id {run_id}"
+                        )
+                        ai_message_index += 1
+
+                print__chat_all_messages_debug(
+                    f"🔍 Thread {thread_id}: Matched {ai_message_index}/{len(thread_run_id_list)} run_ids"
+                )
+
+            print__chat_all_messages_debug(
+                "🔍 MATCHING RUN_IDS: Completed for all threads"
+            )
+
             # Simple memory check after completion
             print__chat_all_messages_debug("🔍 Starting post-completion memory check")
             log_memory_usage("bulk_complete")

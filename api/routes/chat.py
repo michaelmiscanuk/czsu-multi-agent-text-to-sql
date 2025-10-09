@@ -729,11 +729,31 @@ async def get_all_chat_messages_for_one_thread(
                     thread_sentiments[run_id] = sentiment
 
         # Match run_ids to messages by index (AI messages with final_answer)
+        print__chat_all_messages_one_thread_debug(
+            f"🔍 MATCHING RUN_IDS: Found {len(thread_run_ids)} run_ids and {len(chat_messages)} messages"
+        )
+        
         ai_message_index = 0
-        for msg in chat_messages:
+        for idx, msg in enumerate(chat_messages):
+            print__chat_all_messages_one_thread_debug(
+                f"🔍 Message {idx}: has_prompt={bool(msg.prompt)}, has_final_answer={bool(msg.final_answer)}"
+            )
+            
             if msg.final_answer and ai_message_index < len(thread_run_ids):
                 msg.run_id = thread_run_ids[ai_message_index]["run_id"]
+                print__chat_all_messages_one_thread_debug(
+                    f"🔍 MATCHED: Message {idx} -> run_id {msg.run_id}"
+                )
                 ai_message_index += 1
+            else:
+                if msg.final_answer:
+                    print__chat_all_messages_one_thread_debug(
+                        f"⚠️ WARNING: Message {idx} has final_answer but no run_id available (ai_message_index={ai_message_index}, run_ids_count={len(thread_run_ids)})"
+                    )
+        
+        print__chat_all_messages_one_thread_debug(
+            f"🔍 MATCHING COMPLETE: Matched {ai_message_index} messages to run_ids"
+        )
 
         # Serialize ChatMessage objects to dictionaries for the final JSON response
         chat_messages_serialized = [
