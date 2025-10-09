@@ -728,6 +728,13 @@ async def get_all_chat_messages_for_one_thread(
                 if sentiment is not None:
                     thread_sentiments[run_id] = sentiment
 
+        # Match run_ids to messages by index (AI messages with final_answer)
+        ai_message_index = 0
+        for msg in chat_messages:
+            if msg.final_answer and ai_message_index < len(thread_run_ids):
+                msg.run_id = thread_run_ids[ai_message_index]["run_id"]
+                ai_message_index += 1
+
         # Serialize ChatMessage objects to dictionaries for the final JSON response
         chat_messages_serialized = [
             msg.model_dump(exclude_none=True) for msg in chat_messages

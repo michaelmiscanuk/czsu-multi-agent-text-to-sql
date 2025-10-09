@@ -63,3 +63,4 @@ class ChatMessage(BaseModel):
     isLoading: Optional[bool] = None
     startedAt: Optional[int] = None
     isError: Optional[bool] = None
+    run_id: Optional[str] = None
