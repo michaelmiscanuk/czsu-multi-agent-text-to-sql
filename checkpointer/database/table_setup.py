@@ -7,20 +7,18 @@ utilities for both LangGraph and custom application tables.
 from __future__ import annotations
 
 import psycopg
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from psycopg_pool import AsyncConnectionPool
 
 from api.utils.debug import print__checkpointers_debug
 from checkpointer.database.connection import (
     get_connection_string,
     get_connection_kwargs,
 )
-from checkpointer.database.pool_manager import cleanup_all_pools
-from checkpointer.globals import _GLOBAL_CHECKPOINTER
 from checkpointer.config import (
     DEFAULT_POOL_MIN_SIZE,
     DEFAULT_POOL_MAX_SIZE,
     DEFAULT_POOL_TIMEOUT,
-    DEFAULT_MAX_IDLE,
-    DEFAULT_MAX_LIFETIME,
 )
 
 
@@ -41,90 +39,70 @@ async def setup_checkpointer_with_autocommit():
         3. Uses the AsyncPostgresSaver.setup() method for official table creation
         4. Provides comprehensive error handling with detailed logging
 
+    Note:
+        - Uses autocommit connection to avoid transaction block conflicts
+        - Creates all LangGraph checkpoint tables and indexes
+        - Safe to call multiple times (idempotent)
+        - Used during application initialization
+    """
+    print__checkpointers_debug(
+        "SETUP CHECKPOINTER START: Creating LangGraph checkpoint tables with autocommit"
+    )
 
     try:
-        # Use connection pool approach to ensure proper connection configuration
+        # Get connection configuration
         connection_string = get_connection_string()
         connection_kwargs = get_connection_kwargs()
 
         print__checkpointers_debug(
-            "242 - CONNECTION POOL: Creating connection pool with proper kwargs"
+            "SETUP CHECKPOINTER: Creating temporary connection pool for table setup"
         )
 
-        # Create connection pool with our connection kwargs
+        # Create a temporary connection pool for setup using config values
+        # CRITICAL: Must set autocommit=True to allow CREATE INDEX CONCURRENTLY
+        # See: https://github.com/langchain-ai/langgraph/issues/5327
+        setup_kwargs = {**connection_kwargs, "autocommit": True}
+
         pool = AsyncConnectionPool(
             conninfo=connection_string,
             min_size=DEFAULT_POOL_MIN_SIZE,
             max_size=DEFAULT_POOL_MAX_SIZE,
             timeout=DEFAULT_POOL_TIMEOUT,
-            max_idle=DEFAULT_MAX_IDLE,
-            max_lifetime=DEFAULT_MAX_LIFETIME,
-            kwargs=connection_kwargs,
+            kwargs=setup_kwargs,
             open=False,
         )
 
         # Open the pool
         await pool.open()
         print__checkpointers_debug(
-            "247 - POOL OPENED: Connection pool opened successfully"
+            "SETUP CHECKPOINTER: Temporary connection pool opened successfully"
         )
 
-        # Create checkpointer with the pool
-        _GLOBAL_CHECKPOINTER = AsyncPostgresSaver(pool, serde=None)
+        # Create a temporary checkpointer instance just for setup
+        temp_checkpointer = AsyncPostgresSaver(pool, serde=None)
 
         print__checkpointers_debug(
-            "249 - SAVER CREATED: AsyncPostgresSaver created with connection pool"
+            "SETUP CHECKPOINTER: Running AsyncPostgresSaver.setup() to create tables"
         )
 
-        # Setup LangGraph tables - use autocommit connection for DDL operations
-        print__checkpointers_debug(
-            "254 - SETUP START: Checking if 'public.checkpoints' table exists before running setup"
-        )
-        # Use a direct connection from the pool to check for table existence
-        async with await psycopg.AsyncConnection.connect(
-            connection_string, autocommit=True
-        ) as conn:
-            exists = await table_exists(conn, "checkpoints")
-        if exists:
-            print__checkpointers_debug(
-                "SKIP SETUP: Table 'public.checkpoints' already exists, skipping setup_checkpointer_with_autocommit()"
-            )
-        else:
-            await setup_checkpointer_with_autocommit()
-            print__checkpointers_debug(
-                "255 - SETUP COMPLETE: AsyncPostgresSaver setup completed with autocommit"
-            )
+        # Use the official setup method - it manages its own connection
+        await temp_checkpointer.setup()
 
-    except Exception as creation_error:
         print__checkpointers_debug(
-            f"251 - CREATION ERROR: Failed to create AsyncPostgresSaver: {creation_error}"
+            "SETUP CHECKPOINTER SUCCESS: LangGraph checkpoint tables created successfully"
         )
-        # Clean up on failure
-        if _GLOBAL_CHECKPOINTER:
-            try:
-                if hasattr(_GLOBAL_CHECKPOINTER, "pool"):
-                    await _GLOBAL_CHECKPOINTER.pool.close()
-            except Exception:
-                pass
-            _GLOBAL_CHECKPOINTER = None
+
+        # Clean up the temporary pool
+        await pool.close()
+        print__checkpointers_debug(
+            "SETUP CHECKPOINTER: Temporary connection pool closed"
+        )
+
+    except Exception as setup_error:
+        print__checkpointers_debug(
+            f"SETUP CHECKPOINTER ERROR: Failed to setup checkpoint tables: {setup_error}"
+        )
         raise
-
-    Note:
-        - Now uses the existing cleanup_all_pools() function to avoid code duplication
-        - Maintains all the same cleanup capabilities with better code organization
-        - Safe to call multiple times without side effects
-        - Used during application shutdown and error recovery
-    """
-    print__checkpointers_debug(
-        "CLOSE SAVER: Closing AsyncPostgresSaver using cleanup_all_pools()"
-    )
-
-    # Use the existing comprehensive cleanup function instead of duplicating logic
-    await cleanup_all_pools()
-
-    print__checkpointers_debug(
-        "CLOSE SAVER: AsyncPostgresSaver closed successfully using cleanup_all_pools()"
-    )
 
 
 async def setup_users_threads_runs_table():
