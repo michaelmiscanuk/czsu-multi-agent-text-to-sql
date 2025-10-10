@@ -286,7 +286,9 @@ def _log_tracemalloc_snapshot(
 
     if mem_full is not None:
         try:
-            maps = sorted(process.memory_maps(grouped=True), key=lambda m: m.rss, reverse=True)
+            maps = sorted(
+                process.memory_maps(grouped=True), key=lambda m: m.rss, reverse=True
+            )
             top_maps = maps[:top_stats]
             for idx, m in enumerate(top_maps, start=1):
                 rss = m.rss / (1024 * 1024)
