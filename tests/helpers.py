@@ -85,8 +85,8 @@ class BaseTestResults:
         """Get a summary of test results."""
         total_requests = len(self.results) + len(self.errors)
         successful_requests = len([r for r in self.results if r["success"]])
-        # Only count actual errors, not results marked as success=False
-        failed_requests = len(self.errors)
+        failed_result_details = [r for r in self.results if not r["success"]]
+        failed_requests = len(self.errors) + len(failed_result_details)
 
         if self.results:
             avg_response_time = sum(r["response_time"] for r in self.results) / len(
@@ -112,6 +112,7 @@ class BaseTestResults:
                 if total_requests > 0
                 else 0
             ),
+            "failed_result_details": failed_result_details,
             "average_response_time": avg_response_time,
             "max_response_time": max_response_time,
             "min_response_time": min_response_time,
@@ -401,6 +402,29 @@ async def make_request_with_traceback_capture(
     with capture_server_logs() as log_capture:
         try:
             response = await client.request(method, url, **kwargs)
+            return {
+                "response": response,
+                "server_logs": log_capture.get_captured_logs(),
+                "server_tracebacks": log_capture.get_captured_tracebacks(),
+                "success": True,
+            }
+        except Exception as e:
+            return {
+                "response": None,
+                "server_logs": log_capture.get_captured_logs(),
+                "server_tracebacks": log_capture.get_captured_tracebacks(),
+                "client_exception": e,
+                "success": False,
+            }
+
+
+def make_request_with_traceback_capture_sync(
+    client: httpx.Client, method: str, url: str, **kwargs
+) -> Dict[str, Any]:
+    """Make a synchronous HTTP request and capture any server-side tracebacks."""
+    with capture_server_logs() as log_capture:
+        try:
+            response = client.request(method, url, **kwargs)
             return {
                 "response": response,
                 "server_logs": log_capture.get_captured_logs(),

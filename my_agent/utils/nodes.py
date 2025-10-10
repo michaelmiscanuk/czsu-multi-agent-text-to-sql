@@ -182,6 +182,7 @@ async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
     print__nodes_debug("🧠 REWRITE: Enter rewrite_query_node (simplified)")
 
     prompt_text = state["prompt"]
+    print(f"🧠 REWRITE: Original prompt: {prompt_text}")
     messages = state.get("messages", [])
     summary = (
         messages[0]

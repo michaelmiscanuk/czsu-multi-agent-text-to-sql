@@ -26,11 +26,14 @@ import asyncio
 # Standard imports
 import gc
 import json
+import logging
 import signal
 import time
+import tracemalloc
 import traceback
 from collections import defaultdict
 from datetime import datetime
+from typing import Optional
 
 import psutil
 from fastapi import Request
@@ -39,6 +42,9 @@ from fastapi import Request
 from api.config.settings import (
     BULK_CACHE_TIMEOUT,
     GC_MEMORY_THRESHOLD,
+    MEMORY_PROFILER_ENABLED,
+    MEMORY_PROFILER_INTERVAL,
+    MEMORY_PROFILER_TOP_STATS,
     _bulk_loading_cache,
 )
 
@@ -138,6 +144,184 @@ def log_memory_usage(context: str = ""):
 
     except Exception as e:
         print__memory_monitoring(f"❌ Could not check memory usage: {e}")
+
+
+# ============================================================
+# PERIODIC TRACEMALLOC MONITORING
+# ============================================================
+_memory_profiler_task: Optional[asyncio.Task] = None
+_previous_snapshot: Optional[tracemalloc.Snapshot] = None
+
+
+def _get_uvicorn_logger() -> logging.Logger:
+    return logging.getLogger("uvicorn.error")
+
+
+def _shorten_path(filepath: str, max_len: int = 60) -> str:
+    """Shorten long file paths for better table formatting."""
+    if len(filepath) <= max_len:
+        return filepath
+    # Try to keep filename and some parent context
+    parts = filepath.replace("\\", "/").split("/")
+    filename = parts[-1]
+    if len(filename) > max_len - 10:
+        return f"...{filename[-(max_len-3):]}"
+    # Build path from end until we hit max_len
+    result = filename
+    for part in reversed(parts[:-1]):
+        candidate = f"{part}/{result}"
+        if len(candidate) > max_len - 3:
+            return f".../{result}"
+        result = candidate
+    return result
+
+
+def _log_tracemalloc_snapshot(
+    snapshot: tracemalloc.Snapshot,
+    previous_snapshot: Optional[tracemalloc.Snapshot],
+    top_stats: int,
+) -> None:
+    logger = _get_uvicorn_logger()
+    is_diff = previous_snapshot is not None
+    if is_diff:
+        stats = snapshot.compare_to(previous_snapshot, "lineno")
+    else:
+        stats = snapshot.statistics("lineno")
+
+    total_current, peak = tracemalloc.get_traced_memory()
+
+    if not stats:
+        msg = "[memory-profiler] No allocation stats collected yet"
+        logger.info(msg)
+        print__memory_monitoring(msg)
+        return
+
+    # Build table
+    table_lines = []
+    table_lines.append("")
+    table_lines.append("=" * 120)
+    table_lines.append(
+        f"MEMORY PROFILER - Top {top_stats} Allocations | "
+        f"Current: {total_current / (1024 * 1024):.1f} MiB | Peak: {peak / (1024 * 1024):.1f} MiB"
+    )
+    table_lines.append("=" * 120)
+    table_lines.append(f"{'#':<3} {'Change':>12} {'Blocks':>10} {'Location':<90}")
+    table_lines.append("-" * 120)
+
+    for idx, stat in enumerate(stats[:top_stats], start=1):
+        size = getattr(stat, "size_diff", stat.size if hasattr(stat, "size") else 0)
+        count = getattr(stat, "count_diff", stat.count if hasattr(stat, "count") else 0)
+        sign = "+" if size >= 0 else ""
+        size_kb = size / 1024
+
+        primary_frame = stat.traceback[0] if stat.traceback else None
+        if primary_frame:
+            location = (
+                f"{_shorten_path(primary_frame.filename, 75)}:{primary_frame.lineno}"
+            )
+        else:
+            location = "<unknown>"
+
+        table_lines.append(
+            f"{idx:<3} {sign}{size_kb:>11.1f} KiB {count:>10} {location:<90}"
+        )
+
+    # Add summary of other entries
+    other = stats[top_stats:]
+    if other:
+        size_other = sum(
+            getattr(s, "size_diff", s.size if hasattr(s, "size") else 0) for s in other
+        )
+        count_other = sum(
+            getattr(s, "count_diff", s.count if hasattr(s, "count") else 0)
+            for s in other
+        )
+        table_lines.append("-" * 120)
+        table_lines.append(
+            f"{'':3} {len(other)} other: {sign if size_other >= 0 else ''}{size_other / 1024:>7.1f} KiB {count_other:>10} blocks"
+        )
+
+    table_lines.append("=" * 120)
+    table_lines.append("")
+
+    # Log as single message
+    table_output = "\n".join(table_lines)
+    logger.info(table_output)
+    print__memory_monitoring(table_output)
+
+
+async def _memory_profiler_loop(interval: int, top_stats: int) -> None:
+    global _previous_snapshot
+    logger = _get_uvicorn_logger()
+
+    if not tracemalloc.is_tracing():
+        tracemalloc.start()
+        logger.info("[memory-profiler] tracemalloc tracing started")
+        print__memory_monitoring("[memory-profiler] tracemalloc tracing started")
+
+    _previous_snapshot = tracemalloc.take_snapshot()
+    logger.info(
+        "[memory-profiler] Background task running every %ss (top %s stats)",
+        interval,
+        top_stats,
+    )
+    print__memory_monitoring(
+        f"[memory-profiler] Background task running every {interval}s (top {top_stats} stats)"
+    )
+
+    try:
+        while True:
+            await asyncio.sleep(interval)
+            snapshot = tracemalloc.take_snapshot()
+            _log_tracemalloc_snapshot(snapshot, _previous_snapshot, top_stats)
+            _previous_snapshot = snapshot
+    except asyncio.CancelledError:
+        logger.info("[memory-profiler] Background task cancelled")
+        print__memory_monitoring("[memory-profiler] Background task cancelled")
+        raise
+    finally:
+        # Optionally keep tracemalloc running to allow other consumers
+        _previous_snapshot = None
+
+
+def start_memory_profiler(
+    interval: Optional[int] = None, top_stats: Optional[int] = None
+) -> Optional[asyncio.Task]:
+    """Start the periodic tracemalloc profiler if enabled."""
+
+    if not MEMORY_PROFILER_ENABLED:
+        return None
+
+    global _memory_profiler_task
+    if _memory_profiler_task and not _memory_profiler_task.done():
+        return _memory_profiler_task
+
+    loop = asyncio.get_running_loop()
+    interval = interval or MEMORY_PROFILER_INTERVAL
+    top_stats = top_stats or MEMORY_PROFILER_TOP_STATS
+    _memory_profiler_task = loop.create_task(_memory_profiler_loop(interval, top_stats))
+    return _memory_profiler_task
+
+
+async def stop_memory_profiler() -> None:
+    """Stop the periodic tracemalloc profiler if it is running."""
+
+    global _memory_profiler_task
+    if not _memory_profiler_task:
+        return
+
+    _memory_profiler_task.cancel()
+    try:
+        await _memory_profiler_task
+    except asyncio.CancelledError:
+        pass
+    finally:
+        _memory_profiler_task = None
+        if tracemalloc.is_tracing():
+            tracemalloc.stop()
+            logger = _get_uvicorn_logger()
+            logger.info("[memory-profiler] tracemalloc tracing stopped")
+            print__memory_monitoring("[memory-profiler] tracemalloc tracing stopped")
 
 
 def log_comprehensive_error(context: str, error: Exception, request: Request = None):

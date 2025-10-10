@@ -8,15 +8,15 @@ import asyncio
 import os
 import sys
 import time
-import traceback
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
-from typing import Any, Dict, List
 from pathlib import Path
+from typing import Any, Dict, List
+
 import httpx
 import pytest
-
-from pathlib import Path
+from tqdm import tqdm
 
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
@@ -37,7 +37,7 @@ from tests.helpers import (
     BaseTestResults,
     handle_error_response,
     extract_detailed_error_info,
-    make_request_with_traceback_capture,
+    make_request_with_traceback_capture_sync,
     save_traceback_report,
     create_test_jwt_token,
     check_server_connectivity,
@@ -157,84 +157,110 @@ async def test_database_connectivity():
         return False
 
 
-async def make_analyze_request(
-    client: httpx.AsyncClient,
-    test_id: str,
-    prompt: str,
-    results: BaseTestResults,
-):
-    """Make a single analyze request and record the result."""
+def _execute_analyze_request_sync(test_id: str, prompt: str) -> Dict[str, Any]:
+    """Execute a single analyze request synchronously within a worker thread."""
+    if not SERVER_BASE_URL:
+        raise RuntimeError(
+            "TEST_SERVER_URL environment variable is not configured for concurrency test"
+        )
+
     thread_id = f"test_thread_{uuid.uuid4().hex[:8]}"
     token = create_test_jwt_token(TEST_EMAIL)
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
     }
+    request_data = {"prompt": prompt, "thread_id": thread_id}
 
     start_time = time.time()
-    try:
-        request_data = {"prompt": prompt, "thread_id": thread_id}
-
-        result = await make_request_with_traceback_capture(
+    timeout = httpx.Timeout(REQUEST_TIMEOUT)
+    with httpx.Client(timeout=timeout) as client:
+        result = make_request_with_traceback_capture_sync(
             client,
             "POST",
             f"{SERVER_BASE_URL}/analyze",
             json=request_data,
             headers=headers,
-            timeout=REQUEST_TIMEOUT,
         )
 
-        response_time = time.time() - start_time
-        error_info = extract_detailed_error_info(result)
+    response_time = time.time() - start_time
+    return {
+        "test_id": test_id,
+        "prompt": prompt,
+        "thread_id": thread_id,
+        "response_time": response_time,
+        "result": result,
+    }
 
-        if result["response"] is None:
-            error_message = error_info["client_error"] or "Unknown client error"
-            print(f"❌ Test {test_id} - Client Error: {error_message}")
-            error_obj = Exception(error_message)
-            error_obj.server_tracebacks = error_info["server_tracebacks"]
-            results.add_error(test_id, "/analyze", prompt, error_obj, response_time)
-            return
 
-        response = result["response"]
-        print(f"Test {test_id}: {response.status_code} ({response_time:.2f}s)")
+async def make_analyze_request(
+    test_id: str,
+    prompt: str,
+    results: BaseTestResults,
+    executor: ThreadPoolExecutor,
+):
+    """Make a single analyze request and record the result."""
+    loop = asyncio.get_running_loop()
 
-        if response.status_code == 200:
-            try:
-                data = response.json()
-                results.add_result(
-                    test_id,
-                    "/analyze",
-                    prompt,
-                    data,
-                    response_time,
-                    response.status_code,
-                )
-            except Exception as e:
-                print(f"❌ Response parsing failed: {e}")
-                error_obj = Exception(f"Response parsing failed: {e}")
-                error_obj.server_tracebacks = error_info["server_tracebacks"]
-                results.add_error(test_id, "/analyze", prompt, error_obj, response_time)
-        else:
-            handle_error_response(
-                test_id,
-                "/analyze",
-                prompt,
-                response,
-                error_info,
-                results,
-                response_time,
-            )
-
+    try:
+        payload = await loop.run_in_executor(
+            executor,
+            _execute_analyze_request_sync,
+            test_id,
+            prompt,
+        )
     except Exception as e:
-        response_time = time.time() - start_time
-        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
+        error_message = str(e) if str(e).strip() else repr(e)
         if not error_message or error_message.isspace():
             error_message = f"Unknown error of type {type(e).__name__}"
 
-        print(f"❌ Test {test_id} - Error: {error_message}")
+        tqdm.write(f"❌ Test {test_id} - Error: {error_message}")
         error_obj = Exception(error_message)
         error_obj.server_tracebacks = []
+        results.add_error(test_id, "/analyze", prompt, error_obj)
+        return
+
+    result = payload["result"]
+    response_time = payload["response_time"]
+    error_info = extract_detailed_error_info(result)
+
+    if result["response"] is None:
+        error_message = error_info["client_error"] or "Unknown client error"
+        tqdm.write(f"❌ Test {test_id} - Client Error: {error_message}")
+        error_obj = Exception(error_message)
+        error_obj.server_tracebacks = error_info["server_tracebacks"]
         results.add_error(test_id, "/analyze", prompt, error_obj, response_time)
+        return
+
+    response = result["response"]
+    tqdm.write(f"Test {test_id}: {response.status_code} ({response_time:.2f}s)")
+
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            results.add_result(
+                test_id,
+                "/analyze",
+                prompt,
+                data,
+                response_time,
+                response.status_code,
+            )
+        except Exception as e:
+            tqdm.write(f"❌ Response parsing failed: {e}")
+            error_obj = Exception(f"Response parsing failed: {e}")
+            error_obj.server_tracebacks = error_info["server_tracebacks"]
+            results.add_error(test_id, "/analyze", prompt, error_obj, response_time)
+    else:
+        handle_error_response(
+            test_id,
+            "/analyze",
+            prompt,
+            response,
+            error_info,
+            results,
+            response_time,
+        )
 
 
 async def run_concurrency_tests() -> BaseTestResults:
@@ -244,30 +270,47 @@ async def run_concurrency_tests() -> BaseTestResults:
     results = BaseTestResults()
     results.start_time = datetime.now()
 
-    async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
-        print(f"📋 Test prompts: {TEST_PROMPTS}")
-        print(f"🌐 Server URL: {SERVER_BASE_URL}")
-        print(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
+    print(f"📋 Test prompts: {TEST_PROMPTS}")
+    print(f"🌐 Server URL: {SERVER_BASE_URL}")
+    print(f"⏱️ Request timeout: {REQUEST_TIMEOUT}s")
 
-        # Create concurrent tasks for each prompt
+    total_requests = len(TEST_PROMPTS)
+    if total_requests == 0:
+        print("⚠️ No test prompts configured - skipping concurrency run")
+        results.end_time = datetime.now()
+        return results
+
+    max_workers = total_requests
+
+    print("⚡ Executing concurrent requests using thread pool...")
+    print("💡 Note: Analysis requests can take 30-60+ seconds, please wait...")
+
+    with ThreadPoolExecutor(
+        max_workers=max_workers, thread_name_prefix="analyze-test"
+    ) as executor:
         tasks = []
         for i, prompt in enumerate(TEST_PROMPTS):
             test_id = f"test_{i+1}"
-            print(f"🔍 STARTING CONCURRENT REQUEST {i+1}")
-            tasks.append(make_analyze_request(client, test_id, prompt, results))
+            tqdm.write(f"🔍 STARTING CONCURRENT REQUEST {i+1}")
+            tasks.append(
+                asyncio.create_task(
+                    make_analyze_request(test_id, prompt, results, executor)
+                )
+            )
 
-        print("⚡ Executing concurrent requests...")
-        print("💡 Note: Analysis requests can take 30-60+ seconds, please wait...")
-
-        # Execute all tasks and handle any exceptions
-        task_results = await asyncio.gather(*tasks, return_exceptions=True)
-
-        # Check if any tasks returned exceptions
-        for i, result in enumerate(task_results):
-            if isinstance(result, Exception):
-                print(f"⚠️ Task {i+1} failed with exception: {result}")
-
-        await asyncio.sleep(0.1)  # Small delay to ensure all results are recorded
+        with tqdm(
+            total=len(tasks),
+            desc="Processing /analyze prompts",
+            unit="req",
+            leave=True,
+        ) as progress_bar:
+            for task in asyncio.as_completed(tasks):
+                try:
+                    await task
+                except Exception as exc:
+                    tqdm.write(f"⚠️ Task raised exception: {exc}")
+                finally:
+                    progress_bar.update(1)
 
     results.end_time = datetime.now()
     return results
@@ -293,7 +336,9 @@ def analyze_test_results(results: BaseTestResults):
         print(f"🏆 Best Response Time: {summary['min_response_time']:.2f}s")
         print(f"🐌 Worst Response Time: {summary['max_response_time']:.2f}s")
 
-    concurrent_requests_completed = summary["successful_requests"] >= 2
+    concurrent_requests_completed = (
+        summary["successful_requests"] >= 2 and summary["failed_requests"] == 0
+    )
     print(
         f"🎯 Concurrent Requests Completed: {'✅ YES' if concurrent_requests_completed else '❌ NO'}"
     )
@@ -313,6 +358,14 @@ def analyze_test_results(results: BaseTestResults):
         print(f"\n❌ {len(results.errors)} Errors:")
         for error in results.errors:
             print(f"  {error['test_id']}: {error['error']}")
+
+    failed_result_details = summary.get("failed_result_details", [])
+    if failed_result_details:
+        print(f"\n⚠️ {len(failed_result_details)} Non-error failures recorded:")
+        for result in failed_result_details:
+            print(
+                f"  {result['test_id']}: Status {result['status_code']} | Time: {result['response_time']:.2f}s"
+            )
 
     # Concurrency analysis
     print("\n🔍 CONCURRENCY ANALYSIS:")
@@ -396,26 +449,29 @@ async def main():
             for error in summary["errors"]
         )
 
+        has_failures = summary["failed_requests"] > 0
+        no_requests_made = summary["total_requests"] == 0
+
         test_passed = (
-            not has_empty_errors
-            and summary["total_requests"] > 0
-            and (
-                summary["successful_requests"] > 0
-                or all(
-                    error.get("error", "").strip() != "" for error in summary["errors"]
-                )
-            )
+            not no_requests_made
+            and not has_failures
+            and not has_empty_errors
+            and summary["successful_requests"] == summary["total_requests"]
         )
 
-        if has_empty_errors:
+        if no_requests_made:
+            print("❌ Test failed: No requests were executed")
+        elif has_empty_errors:
             print(
                 "❌ Test failed: Server returned empty error messages (potential crash/hang)"
             )
-        elif summary["successful_requests"] == 0:
-            print("❌ Test failed: No requests succeeded (server may be down)")
+        elif has_failures:
+            print(
+                f"❌ Test failed: {summary['failed_requests']} of {summary['total_requests']} requests did not succeed"
+            )
         else:
             print(
-                f"✅ Test criteria met: {summary['successful_requests']}/{summary['total_requests']} requests successful"
+                f"✅ All {summary['total_requests']} requests succeeded without errors"
             )
 
         print(f"\n🏁 OVERALL RESULT: {'✅ PASSED' if test_passed else '❌ FAILED'}")

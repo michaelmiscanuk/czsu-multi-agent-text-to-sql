@@ -46,6 +46,11 @@ _app_startup_time = None
 _memory_baseline = None  # RSS memory at startup
 _request_count = 0  # Track total requests processed
 
+# Tracemalloc-based memory profiler configuration
+MEMORY_PROFILER_ENABLED = os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
+MEMORY_PROFILER_INTERVAL = int(os.environ.get("MEMORY_PROFILER_INTERVAL", "30"))
+MEMORY_PROFILER_TOP_STATS = int(os.environ.get("MEMORY_PROFILER_TOP_STATS", "10"))
+
 # Global shared checkpointer for conversation memory across API requests
 # This ensures that conversation state is preserved between frontend requests using PostgreSQL
 GLOBAL_CHECKPOINTER = None

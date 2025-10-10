@@ -368,7 +368,7 @@ async def main():
         print("❌ Server connectivity check failed!")
         print(f"💡 Tips for fixing connectivity issues:")
         print(
-            f"   • For Vercel proxy: Use 'https://czsu-multi-agent-text-to-sql.vercel.app/api'"
+            f"   • For Vercel proxy: Use 'https://www.multiagent-texttosql-prototype.online/api'"
         )
         print(
             f"   • For direct backend: Use 'https://czsu-multi-agent-backend-production.up.railway.app'"

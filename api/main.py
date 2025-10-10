@@ -42,6 +42,9 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 # Import configuration and globals
 from api.config.settings import (
     GC_MEMORY_THRESHOLD,
+    MEMORY_PROFILER_ENABLED,
+    MEMORY_PROFILER_INTERVAL,
+    MEMORY_PROFILER_TOP_STATS,
     _app_startup_time,
     _memory_baseline,
     _request_count,
@@ -64,6 +67,8 @@ from api.utils.memory import (
     log_comprehensive_error,
     log_memory_usage,
     setup_graceful_shutdown,
+    start_memory_profiler,
+    stop_memory_profiler,
 )
 
 # Import rate limiting utilities
@@ -129,6 +134,17 @@ async def lifespan(app: FastAPI):
         except:
             pass
 
+    if MEMORY_PROFILER_ENABLED:
+        try:
+            start_memory_profiler(
+                interval=MEMORY_PROFILER_INTERVAL,
+                top_stats=MEMORY_PROFILER_TOP_STATS,
+            )
+        except Exception as profiler_error:
+            print__memory_monitoring(
+                f"⚠️ Failed to start memory profiler: {profiler_error}"
+            )
+
     log_memory_usage("app_ready")
     print__startup_debug("✅ FastAPI application ready to serve requests")
 
@@ -139,6 +155,14 @@ async def lifespan(app: FastAPI):
     print__memory_monitoring(
         f"Application ran for {datetime.now() - _app_startup_time}"
     )
+
+    if MEMORY_PROFILER_ENABLED:
+        try:
+            await stop_memory_profiler()
+        except Exception as profiler_error:
+            print__memory_monitoring(
+                f"⚠️ Failed to stop memory profiler: {profiler_error}"
+            )
 
     # Log final memory statistics
     if _memory_baseline:
