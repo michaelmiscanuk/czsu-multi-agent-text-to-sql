@@ -1,57 +1,133 @@
 ====================================================================================================
 TEST_FAILURE REPORT
-Generated: 2025-10-10 15:26:01
+Generated: 2025-10-10 15:51:41
 Test File: test_concurrency.py
 ====================================================================================================
 
-TOTAL FAILED TESTS: 17
+TOTAL FAILED TESTS: 19
 ====================================================================================================
 
 FAILED TEST #1
 ============================================================
-Test ID: test_1
+Test ID: test_14
 Endpoint: /analyze
-Description: Porovnej narust poctu lidi v Brne a Praze v poslednich letech.
+Description: Jaky byl pocet holek ve veku 13 let v sportovnich klubech v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:00.848095
+Timestamp: 2025-10-10T15:51:21.671489
 
-Response Time: 122.25s
+Response Time: 102.41s
+
+SERVER TRACEBACK (FULL ORIGINAL):
+----------------------------------------
+Traceback (most recent call last):
+  File "/app/api/routes/analysis.py", line 266, in analyze
+    result = await asyncio.wait_for(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+    )
+    ^
+  File "/mise/installs/python/3.13.8/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/app/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/main.py", line 409, in main
+    result = await graph.ainvoke(input_state, config=config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
+    async for chunk in self.astream(
+    ...<19 lines>...
+            chunks.append(chunk)
+  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2655, in astream
+    async for _ in runner.atick(
+    ...<7 lines>...
+            yield o
+  File "/app/my_agent/utils/nodes.py", line 285, in rewrite_query_node
+    result = await llm.ainvoke(
+             ^^^^^^^^^^^^^^^^^^
+        prompt.format_messages(summary_content=summary.content, prompt_text=prompt_text)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 394, in ainvoke
+    llm_result = await self.agenerate_prompt(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    )
+    ^
+  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 968, in agenerate_prompt
+    return await self.agenerate(
+           ^^^^^^^^^^^^^^^^^^^^^
+        prompt_messages, stop=stop, callbacks=callbacks, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 926, in agenerate
+    raise exceptions[0]
+  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1094, in _agenerate_with_cache
+    result = await self._agenerate(
+             ^^^^^^^^^^^^^^^^^^^^^^
+        messages, stop=stop, run_manager=run_manager, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/app/.venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1177, in _agenerate
+    response = await self.async_client.create(**payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.13/site-packages/openai/resources/chat/completions/completions.py", line 2028, in create
+    return await self._post(
+           ^^^^^^^^^^^^^^^^^
+    ...<45 lines>...
+    )
+    ^
+  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1742, in post
+    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1549, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.BadRequestError: Error code: 400 - {'error': {'message': "The response was filtered due to the prompt triggering Azure OpenAI's content management policy. Please modify your prompt and retry. To learn more about our content filtering policies please read our documentation: https://go.microsoft.com/fwlink/?linkid=2198766", 'type': None, 'param': 'prompt', 'code': 'content_filter', 'status': 400, 'innererror': {'code': 'ResponsibleAIPolicyViolation', 'content_filter_result': {'hate': {'filtered': False, 'severity': 'safe'}, 'jailbreak': {'filtered': False, 'detected': False}, 'self_harm': {'filtered': False, 'severity': 'safe'}, 'sexual': {'filtered': True, 'severity': 'high'}, 'violence': {'filtered': False, 'severity': 'safe'}}}}}
+During task with name 'rewrite_query' and id '76765635-02da-8792-adc8-623265e5c83d'
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #2
 ============================================================
-Test ID: test_8
+Test ID: test_17
 Endpoint: /analyze
-Description: Jaky byl trend vyvozu dieseloveho oleje z CR v obdobi 2020-2023?
+Description: Jak se lisi vydaje domacnosti na zdravotni peci na osobu mezi 2017 a 2022?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:00.883095
+Timestamp: 2025-10-10T15:51:41.307745
 
-Response Time: 122.28s
+Response Time: 122.04s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #3
 ============================================================
-Test ID: test_16
+Test ID: test_8
 Endpoint: /analyze
-Description: Jaky byl pocet zen hrajicich golf ve veku 19+ v roce 2023?
+Description: Jaky byl trend vyvozu dieseloveho oleje z CR v obdobi 2020-2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:00.895094
+Timestamp: 2025-10-10T15:51:41.432253
 
-Response Time: 122.27s
+Response Time: 122.17s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #4
 ============================================================
-Test ID: test_3
+Test ID: test_16
 Endpoint: /analyze
-Description: Jak se vyvijel export motorovych benzinu z Ceske republiky mezi lety 2015 a 2023?
+Description: Jaky byl pocet zen hrajicich golf ve veku 19+ v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.110114
+Timestamp: 2025-10-10T15:51:41.458253
 
-Response Time: 122.51s
+Response Time: 122.19s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -61,160 +137,184 @@ Test ID: test_11
 Endpoint: /analyze
 Description: Kolik muzskych studentu zdravotnich oboru studovalo na vysokych skolach v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.158624
+Timestamp: 2025-10-10T15:51:41.598271
 
-Response Time: 122.56s
+Response Time: 122.34s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #6
 ============================================================
-Test ID: test_2
+Test ID: test_15
 Endpoint: /analyze
-Description: Kontrastuj uroven zivota v Brne a v Praze.
+Description: Kolik muzskych clenu ve veku 19+ hral fotbal ve sportovnich svazeich v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.164623
+Timestamp: 2025-10-10T15:51:41.600271
 
-Response Time: 122.57s
+Response Time: 122.34s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #7
 ============================================================
-Test ID: test_5
+Test ID: test_2
 Endpoint: /analyze
-Description: Jaka byla prumerna mesicni mzda v obchode v roce 2022?
+Description: Kontrastuj uroven zivota v Brne a v Praze.
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.187623
+Timestamp: 2025-10-10T15:51:41.604271
 
-Response Time: 122.59s
+Response Time: 122.35s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #8
 ============================================================
-Test ID: test_4
+Test ID: test_19
 Endpoint: /analyze
-Description: Kolik bylo aktivnich podniku v obchode v roce 2022 oproti roku 2015?
+Description: Jaky byl pocet lidi pouzijicich mobilni telefony bez operacniho systemu v roce 2018?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.258133
+Timestamp: 2025-10-10T15:51:41.609271
 
-Response Time: 122.66s
+Response Time: 122.29s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #9
 ============================================================
-Test ID: test_15
+Test ID: test_10
 Endpoint: /analyze
-Description: Kolik muzskych clenu ve veku 19+ hral fotbal ve sportovnich svazeich v roce 2023?
+Description: Jaka byla celkova marze v obchode v roce 2022 v milionech korun?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.305134
+Timestamp: 2025-10-10T15:51:41.649271
 
-Response Time: 122.70s
+Response Time: 122.39s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #10
 ============================================================
-Test ID: test_12
+Test ID: test_3
 Endpoint: /analyze
-Description: Jaky byl pocet zen ve veku 80+ s vydaji zdravotnich pojistoven v roce 2022?
+Description: Jak se vyvijel export motorovych benzinu z Ceske republiky mezi lety 2015 a 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.306134
+Timestamp: 2025-10-10T15:51:41.668271
 
-Response Time: 122.70s
+Response Time: 122.41s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #11
 ============================================================
-Test ID: test_13
+Test ID: test_18
 Endpoint: /analyze
-Description: Kolik celkem deti a mladeze delalo sport v svazeich a asociacich v roce 2023?
+Description: Kolik bylo celkove vydaju na zdravotni peci v miliardach korun v roce 2022?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.306134
+Timestamp: 2025-10-10T15:51:41.683275
 
-Response Time: 122.70s
+Response Time: 122.39s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #12
 ============================================================
-Test ID: test_14
+Test ID: test_12
 Endpoint: /analyze
-Description: Jaky byl pocet holek ve veku 13 let v sportovnich klubech v roce 2023?
+Description: Jaky byl pocet zen ve veku 80+ s vydaji zdravotnich pojistoven v roce 2022?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.320134
+Timestamp: 2025-10-10T15:51:41.705780
 
-Response Time: 122.72s
+Response Time: 122.45s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #13
 ============================================================
-Test ID: test_21
+Test ID: test_6
 Endpoint: /analyze
-Description: Jaky byl pocet importu kerosinu do Ceske republiky v roce 2023?
+Description: Jak se zmenil pocet uzivatelu internetoveho bankovnictvi ve vekove skupine 65+ mezi 2010 a 2024?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.331134
+Timestamp: 2025-10-10T15:51:41.720781
 
-Response Time: 122.64s
+Response Time: 122.46s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #14
 ============================================================
-Test ID: test_22
+Test ID: test_5
 Endpoint: /analyze
-Description: Jak se zmenil pocet zamestnancu v obchode (FTE) mezi 2015 a 2022?
+Description: Jaka byla prumerna mesicni mzda v obchode v roce 2022?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.352643
+Timestamp: 2025-10-10T15:51:41.720781
 
-Response Time: 122.63s
+Response Time: 122.46s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #15
 ============================================================
-Test ID: test_20
+Test ID: test_21
 Endpoint: /analyze
-Description: Kolik procent zen pouzivalo mobilni telefony bez OS v roce 2018?
+Description: Jaky byl pocet importu kerosinu do Ceske republiky v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.354644
+Timestamp: 2025-10-10T15:51:41.721782
 
-Response Time: 122.71s
+Response Time: 122.32s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #16
 ============================================================
-Test ID: test_6
+Test ID: test_13
 Endpoint: /analyze
-Description: Jak se zmenil pocet uzivatelu internetoveho bankovnictvi ve vekove skupine 65+ mezi 2010 a 2024?
+Description: Kolik celkem deti a mladeze delalo sport v svazeich a asociacich v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.355645
+Timestamp: 2025-10-10T15:51:41.737780
 
-Response Time: 122.76s
+Response Time: 122.48s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #17
 ============================================================
-Test ID: test_7
+Test ID: test_20
 Endpoint: /analyze
-Description: Kolik procent lidi ve veku 16-34 let pouzivalo internet v mobilnim telefonu v roce 2024?
+Description: Kolik procent zen pouzivalo mobilni telefony bez OS v roce 2018?
 Error Type: Exception
-Timestamp: 2025-10-10T15:26:01.364645
+Timestamp: 2025-10-10T15:51:41.749782
 
-Response Time: 122.77s
+Response Time: 122.40s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #18
+============================================================
+Test ID: test_22
+Endpoint: /analyze
+Description: Jak se zmenil pocet zamestnancu v obchode (FTE) mezi 2015 a 2022?
+Error Type: Exception
+Timestamp: 2025-10-10T15:51:41.765781
+
+Response Time: 122.33s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #19
+============================================================
+Test ID: test_4
+Endpoint: /analyze
+Description: Kolik bylo aktivnich podniku v obchode v roce 2022 oproti roku 2015?
+Error Type: Exception
+Timestamp: 2025-10-10T15:51:41.773780
+
+Response Time: 122.52s
 
 
 TEST SUMMARY:
 ========================================
 Total Requests: 22
-Successful Requests: 5
-Failed Requests: 17
-Success Rate: 22.727272727272727%
-Average Response Time: 78.969881772995s
-Total Test Time: 122.808712s
+Successful Requests: 3
+Failed Requests: 19
+Success Rate: 13.636363636363635%
+Average Response Time: 91.99626898765564s
+Total Test Time: 122.554565s

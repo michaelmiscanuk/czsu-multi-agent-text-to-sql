@@ -190,6 +190,16 @@ def _log_tracemalloc_snapshot(
             key = tuple((frame.filename, frame.lineno) for frame in diff.traceback)
             diff_map[key] = diff
 
+    process = psutil.Process()
+    try:
+        mem_full = process.memory_full_info()
+        rss_mb = mem_full.rss / (1024 * 1024)
+        uss_mb = getattr(mem_full, "uss", 0) / (1024 * 1024)
+        swap_mb = getattr(mem_full, "swap", 0) / (1024 * 1024)
+    except Exception:
+        mem_full = None
+        rss_mb = uss_mb = swap_mb = 0
+
     total_current, peak = tracemalloc.get_traced_memory()
 
     if not stats:
@@ -203,8 +213,12 @@ def _log_tracemalloc_snapshot(
     table_lines.append("=" * 130)
     table_lines.append(
         f"MEMORY PROFILER - Top {top_stats} Allocations | "
-        f"Current: {total_current / (1024 * 1024):.1f} MiB | Peak: {peak / (1024 * 1024):.1f} MiB"
+        f"Tracemalloc current: {total_current / (1024 * 1024):.1f} MiB | Tracemalloc peak: {peak / (1024 * 1024):.1f} MiB"
     )
+    if mem_full is not None:
+        table_lines.append(
+            f"Process RSS: {rss_mb:.1f} MiB | USS: {uss_mb:.1f} MiB | Swap: {swap_mb:.1f} MiB"
+        )
     table_lines.append("=" * 130)
     table_lines.append(
         f"{'#':<3} {'Size (KiB)':>12} {'ΔSize (KiB)':>13} {'Blocks':>10} {'ΔBlocks':>10} {'Location':<75}"
@@ -256,6 +270,47 @@ def _log_tracemalloc_snapshot(
         )
 
     table_lines.append("=" * 130)
+
+    # Append memory map summary to correlate with RSS growth
+    memory_map_lines: list[str] = []
+    if mem_full is not None:
+        try:
+            maps = sorted(
+                process.memory_maps(grouped=True), key=lambda m: m.rss, reverse=True
+            )
+            top_maps = maps[:top_stats]
+            memory_map_lines.append("")
+            memory_map_lines.append("MEMORY MAPS - Top RSS Segments")
+            memory_map_lines.append("=" * 130)
+            memory_map_lines.append(
+                f"{'#':<3} {'RSS (MiB)':>12} {'Private (MiB)':>15} {'Path':<95}"
+            )
+            memory_map_lines.append("-" * 130)
+            for idx, m in enumerate(top_maps, start=1):
+                rss = m.rss / (1024 * 1024)
+                private_bytes = sum(
+                    getattr(m, attr, 0) or 0
+                    for attr in ("private", "private_clean", "private_dirty")
+                )
+                private = private_bytes / (1024 * 1024)
+                path = _shorten_path(m.path or "[anonymous]", 95)
+                memory_map_lines.append(
+                    f"{idx:<3} {rss:>12,.2f} {private:>15,.2f} {path:<95}"
+                )
+            if len(maps) > top_stats:
+                remaining_rss = sum(m.rss for m in maps[top_stats:]) / (1024 * 1024)
+                memory_map_lines.append("-" * 130)
+                memory_map_lines.append(
+                    f"    {len(maps) - top_stats} additional segments totalling {remaining_rss:,.2f} MiB RSS"
+                )
+            memory_map_lines.append("=" * 130)
+        except Exception as map_error:
+            memory_map_lines.append("")
+            memory_map_lines.append(
+                f"[memory-profiler] Unable to collect memory map data: {type(map_error).__name__}: {map_error}"
+            )
+
+    table_lines.extend(memory_map_lines)
     table_lines.append("")
 
     # Log as single message
