@@ -182,11 +182,13 @@ def _log_tracemalloc_snapshot(
     top_stats: int,
 ) -> None:
     logger = _get_uvicorn_logger()
-    is_diff = previous_snapshot is not None
-    if is_diff:
-        stats = snapshot.compare_to(previous_snapshot, "lineno")
-    else:
-        stats = snapshot.statistics("lineno")
+    stats = snapshot.statistics("lineno")
+
+    diff_map = {}
+    if previous_snapshot is not None:
+        for diff in snapshot.compare_to(previous_snapshot, "lineno"):
+            key = tuple((frame.filename, frame.lineno) for frame in diff.traceback)
+            diff_map[key] = diff
 
     total_current, peak = tracemalloc.get_traced_memory()
 
@@ -198,21 +200,27 @@ def _log_tracemalloc_snapshot(
 
     # Build table
     table_lines = []
-    table_lines.append("")
-    table_lines.append("=" * 120)
+    table_lines.append("=" * 130)
     table_lines.append(
         f"MEMORY PROFILER - Top {top_stats} Allocations | "
         f"Current: {total_current / (1024 * 1024):.1f} MiB | Peak: {peak / (1024 * 1024):.1f} MiB"
     )
-    table_lines.append("=" * 120)
-    table_lines.append(f"{'#':<3} {'Change':>12} {'Blocks':>10} {'Location':<90}")
-    table_lines.append("-" * 120)
+    table_lines.append("=" * 130)
+    table_lines.append(
+        f"{'#':<3} {'Size (KiB)':>12} {'ΔSize (KiB)':>13} {'Blocks':>10} {'ΔBlocks':>10} {'Location':<75}"
+    )
+    table_lines.append("-" * 130)
 
     for idx, stat in enumerate(stats[:top_stats], start=1):
-        size = getattr(stat, "size_diff", stat.size if hasattr(stat, "size") else 0)
-        count = getattr(stat, "count_diff", stat.count if hasattr(stat, "count") else 0)
-        sign = "+" if size >= 0 else ""
+        key = tuple((frame.filename, frame.lineno) for frame in stat.traceback)
+        size = stat.size
+        count = stat.count
+        diff_entry = diff_map.get(key)
+        size_delta = diff_entry.size_diff if diff_entry else 0
+        count_delta = diff_entry.count_diff if diff_entry else 0
+
         size_kb = size / 1024
+        size_delta_kb = size_delta / 1024
 
         primary_frame = stat.traceback[0] if stat.traceback else None
         if primary_frame:
@@ -223,25 +231,31 @@ def _log_tracemalloc_snapshot(
             location = "<unknown>"
 
         table_lines.append(
-            f"{idx:<3} {sign}{size_kb:>11.1f} KiB {count:>10} {location:<90}"
+            f"{idx:<3} {size_kb:>12,.1f} {size_delta_kb:>+13,.1f} {count:>10,} {count_delta:>+10,} {location:<75}"
         )
 
     # Add summary of other entries
     other = stats[top_stats:]
     if other:
-        size_other = sum(
-            getattr(s, "size_diff", s.size if hasattr(s, "size") else 0) for s in other
-        )
-        count_other = sum(
-            getattr(s, "count_diff", s.count if hasattr(s, "count") else 0)
-            for s in other
-        )
-        table_lines.append("-" * 120)
+        other_size = sum(stat.size for stat in other)
+        other_blocks = sum(stat.count for stat in other)
+        other_size_delta = 0
+        other_blocks_delta = 0
+        if diff_map:
+            for stat in other:
+                key = tuple((frame.filename, frame.lineno) for frame in stat.traceback)
+                diff_entry = diff_map.get(key)
+                if diff_entry:
+                    other_size_delta += diff_entry.size_diff
+                    other_blocks_delta += diff_entry.count_diff
+
+        table_lines.append("-" * 130)
         table_lines.append(
-            f"{'':3} {len(other)} other: {sign if size_other >= 0 else ''}{size_other / 1024:>7.1f} KiB {count_other:>10} blocks"
+            f"    {len(other):>3} other entries | Size: {other_size / 1024:,.1f} KiB ({other_size_delta / 1024:+,.1f} KiB)"
+            f" | Blocks: {other_blocks:,} ({other_blocks_delta:+,})"
         )
 
-    table_lines.append("=" * 120)
+    table_lines.append("=" * 130)
     table_lines.append("")
 
     # Log as single message

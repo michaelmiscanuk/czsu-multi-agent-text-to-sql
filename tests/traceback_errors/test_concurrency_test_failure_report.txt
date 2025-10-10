@@ -1,452 +1,220 @@
 ====================================================================================================
 TEST_FAILURE REPORT
-Generated: 2025-10-10 13:59:40
+Generated: 2025-10-10 15:26:01
 Test File: test_concurrency.py
 ====================================================================================================
 
-TOTAL FAILED TESTS: 18
+TOTAL FAILED TESTS: 17
 ====================================================================================================
 
 FAILED TEST #1
 ============================================================
-Test ID: test_16
+Test ID: test_1
 Endpoint: /analyze
-Description: Jaky byl pocet zen hrajicich golf ve veku 19+ v roce 2023?
+Description: Porovnej narust poctu lidi v Brne a Praze v poslednich letech.
 Error Type: Exception
-Timestamp: 2025-10-10T13:58:37.779957
+Timestamp: 2025-10-10T15:26:00.848095
 
-Response Time: 65.49s
-
-SERVER TRACEBACK (FULL ORIGINAL):
-----------------------------------------
-Traceback (most recent call last):
-  File "/app/api/routes/analysis.py", line 266, in analyze
-    result = await asyncio.wait_for(
-             ^^^^^^^^^^^^^^^^^^^^^^^
-    ...<7 lines>...
-    )
-    ^
-  File "/mise/installs/python/3.13.8/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
-    return await fut
-           ^^^^^^^^^
-  File "/app/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
-    result = await func(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
-    result = await func(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/main.py", line 409, in main
-    result = await graph.ainvoke(input_state, config=config)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
-    async for chunk in self.astream(
-    ...<19 lines>...
-            chunks.append(chunk)
-  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2655, in astream
-    async for _ in runner.atick(
-    ...<7 lines>...
-            yield o
-  File "/app/my_agent/utils/nodes.py", line 465, in query_node
-    result = await llm.ainvoke(prompt_template.format_messages(**template_vars))
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 394, in ainvoke
-    llm_result = await self.agenerate_prompt(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<8 lines>...
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 968, in agenerate_prompt
-    return await self.agenerate(
-           ^^^^^^^^^^^^^^^^^^^^^
-        prompt_messages, stop=stop, callbacks=callbacks, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 926, in agenerate
-    raise exceptions[0]
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1094, in _agenerate_with_cache
-    result = await self._agenerate(
-             ^^^^^^^^^^^^^^^^^^^^^^
-        messages, stop=stop, run_manager=run_manager, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1177, in _agenerate
-    response = await self.async_client.create(**payload)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/openai/resources/chat/completions/completions.py", line 2028, in create
-    return await self._post(
-           ^^^^^^^^^^^^^^^^^
-    ...<45 lines>...
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1742, in post
-    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1549, in request
-    raise self._make_status_error_from_response(err.response) from None
-openai.RateLimitError: Error code: 429 - {'error': {'code': '429', 'message': 'Requests to the ChatCompletions_Create Operation under Azure OpenAI API version 2024-05-01-preview have exceeded token rate limit of your current OpenAI S0 pricing tier. Please retry after 19 seconds. Please go here: https://aka.ms/oai/quotaincrease if you would like to further increase the default rate limit. For Free Account customers, upgrade to Pay as you Go here: https://aka.ms/429TrialUpgrade.'}}
-During task with name 'query_gen' and id '32da17cb-348b-8d19-0155-e8e3414358d3'
-
+Response Time: 122.25s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 FAILED TEST #2
 ============================================================
-Test ID: test_3
+Test ID: test_8
 Endpoint: /analyze
-Description: Jak se vyvijel export motorovych benzinu z Ceske republiky mezi lety 2015 a 2023?
+Description: Jaky byl trend vyvozu dieseloveho oleje z CR v obdobi 2020-2023?
 Error Type: Exception
-Timestamp: 2025-10-10T13:58:56.737163
-
-Response Time: 84.45s
-
-SERVER TRACEBACK (FULL ORIGINAL):
-----------------------------------------
-Traceback (most recent call last):
-  File "/app/api/routes/analysis.py", line 266, in analyze
-    result = await asyncio.wait_for(
-             ^^^^^^^^^^^^^^^^^^^^^^^
-    ...<7 lines>...
-    )
-    ^
-  File "/mise/installs/python/3.13.8/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
-    return await fut
-           ^^^^^^^^^
-  File "/app/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
-    result = await func(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
-    result = await func(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/main.py", line 409, in main
-    result = await graph.ainvoke(input_state, config=config)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
-    async for chunk in self.astream(
-    ...<19 lines>...
-            chunks.append(chunk)
-  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2655, in astream
-    async for _ in runner.atick(
-    ...<7 lines>...
-            yield o
-  File "/app/my_agent/utils/nodes.py", line 465, in query_node
-    result = await llm.ainvoke(prompt_template.format_messages(**template_vars))
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 394, in ainvoke
-    llm_result = await self.agenerate_prompt(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<8 lines>...
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 968, in agenerate_prompt
-    return await self.agenerate(
-           ^^^^^^^^^^^^^^^^^^^^^
-        prompt_messages, stop=stop, callbacks=callbacks, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 926, in agenerate
-    raise exceptions[0]
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1094, in _agenerate_with_cache
-    result = await self._agenerate(
-             ^^^^^^^^^^^^^^^^^^^^^^
-        messages, stop=stop, run_manager=run_manager, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1177, in _agenerate
-    response = await self.async_client.create(**payload)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/openai/resources/chat/completions/completions.py", line 2028, in create
-    return await self._post(
-           ^^^^^^^^^^^^^^^^^
-    ...<45 lines>...
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1742, in post
-    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1549, in request
-    raise self._make_status_error_from_response(err.response) from None
-openai.RateLimitError: Error code: 429 - {'error': {'code': '429', 'message': 'Requests to the ChatCompletions_Create Operation under Azure OpenAI API version 2024-05-01-preview have exceeded token rate limit of your current OpenAI S0 pricing tier. Please retry after 11 seconds. Please go here: https://aka.ms/oai/quotaincrease if you would like to further increase the default rate limit. For Free Account customers, upgrade to Pay as you Go here: https://aka.ms/429TrialUpgrade.'}}
-During task with name 'query_gen' and id '29f7f4e1-bfa7-391d-7e10-e97f6f36590c'
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #3
-============================================================
-Test ID: test_14
-Endpoint: /analyze
-Description: Jaky byl pocet holek ve veku 13 let v sportovnich klubech v roce 2023?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:13.226128
-
-Response Time: 100.94s
-
-SERVER TRACEBACK (FULL ORIGINAL):
-----------------------------------------
-Traceback (most recent call last):
-  File "/app/api/routes/analysis.py", line 266, in analyze
-    result = await asyncio.wait_for(
-             ^^^^^^^^^^^^^^^^^^^^^^^
-    ...<7 lines>...
-    )
-    ^
-  File "/mise/installs/python/3.13.8/lib/python3.13/asyncio/tasks.py", line 507, in wait_for
-    return await fut
-           ^^^^^^^^^
-  File "/app/checkpointer/error_handling/retry_decorators.py", line 97, in wrapper
-    result = await func(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/checkpointer/error_handling/retry_decorators.py", line 227, in wrapper
-    result = await func(*args, **kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/main.py", line 409, in main
-    result = await graph.ainvoke(input_state, config=config)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2788, in ainvoke
-    async for chunk in self.astream(
-    ...<19 lines>...
-            chunks.append(chunk)
-  File "/app/.venv/lib/python3.13/site-packages/langgraph/pregel/__init__.py", line 2655, in astream
-    async for _ in runner.atick(
-    ...<7 lines>...
-            yield o
-  File "/app/my_agent/utils/nodes.py", line 284, in rewrite_query_node
-    result = await llm.ainvoke(
-             ^^^^^^^^^^^^^^^^^^
-        prompt.format_messages(summary_content=summary.content, prompt_text=prompt_text)
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 394, in ainvoke
-    llm_result = await self.agenerate_prompt(
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    ...<8 lines>...
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 968, in agenerate_prompt
-    return await self.agenerate(
-           ^^^^^^^^^^^^^^^^^^^^^
-        prompt_messages, stop=stop, callbacks=callbacks, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 926, in agenerate
-    raise exceptions[0]
-  File "/app/.venv/lib/python3.13/site-packages/langchain_core/language_models/chat_models.py", line 1094, in _agenerate_with_cache
-    result = await self._agenerate(
-             ^^^^^^^^^^^^^^^^^^^^^^
-        messages, stop=stop, run_manager=run_manager, **kwargs
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/langchain_openai/chat_models/base.py", line 1177, in _agenerate
-    response = await self.async_client.create(**payload)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/openai/resources/chat/completions/completions.py", line 2028, in create
-    return await self._post(
-           ^^^^^^^^^^^^^^^^^
-    ...<45 lines>...
-    )
-    ^
-  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1742, in post
-    return await self.request(cast_to, opts, stream=stream, stream_cls=stream_cls)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/app/.venv/lib/python3.13/site-packages/openai/_base_client.py", line 1549, in request
-    raise self._make_status_error_from_response(err.response) from None
-openai.BadRequestError: Error code: 400 - {'error': {'message': "The response was filtered due to the prompt triggering Azure OpenAI's content management policy. Please modify your prompt and retry. To learn more about our content filtering policies please read our documentation: https://go.microsoft.com/fwlink/?linkid=2198766", 'type': None, 'param': 'prompt', 'code': 'content_filter', 'status': 400, 'innererror': {'code': 'ResponsibleAIPolicyViolation', 'content_filter_result': {'hate': {'filtered': False, 'severity': 'safe'}, 'jailbreak': {'filtered': False, 'detected': False}, 'self_harm': {'filtered': False, 'severity': 'safe'}, 'sexual': {'filtered': True, 'severity': 'high'}, 'violence': {'filtered': False, 'severity': 'safe'}}}}}
-During task with name 'rewrite_query' and id 'f0841e40-9c34-b5ea-78d6-096c8274f363'
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #4
-============================================================
-Test ID: test_7
-Endpoint: /analyze
-Description: Kolik procent lidi ve veku 16-34 let pouzivalo internet v mobilnim telefonu v roce 2024?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.585240
-
-Response Time: 122.30s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #5
-============================================================
-Test ID: test_18
-Endpoint: /analyze
-Description: Kolik bylo celkove vydaju na zdravotni peci v miliardach korun v roce 2022?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.594244
+Timestamp: 2025-10-10T15:26:00.883095
 
 Response Time: 122.28s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FAILED TEST #6
+FAILED TEST #3
 ============================================================
-Test ID: test_6
+Test ID: test_16
 Endpoint: /analyze
-Description: Jak se zmenil pocet uzivatelu internetoveho bankovnictvi ve vekove skupine 65+ mezi 2010 a 2024?
+Description: Jaky byl pocet zen hrajicich golf ve veku 19+ v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.631241
+Timestamp: 2025-10-10T15:26:00.895094
 
-Response Time: 122.35s
+Response Time: 122.27s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FAILED TEST #7
+FAILED TEST #4
 ============================================================
-Test ID: test_15
+Test ID: test_3
 Endpoint: /analyze
-Description: Kolik muzskych clenu ve veku 19+ hral fotbal ve sportovnich svazeich v roce 2023?
+Description: Jak se vyvijel export motorovych benzinu z Ceske republiky mezi lety 2015 a 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.641240
+Timestamp: 2025-10-10T15:26:01.110114
 
-Response Time: 122.35s
+Response Time: 122.51s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FAILED TEST #8
-============================================================
-Test ID: test_10
-Endpoint: /analyze
-Description: Jaka byla celkova marze v obchode v roce 2022 v milionech korun?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.646240
-
-Response Time: 122.36s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #9
+FAILED TEST #5
 ============================================================
 Test ID: test_11
 Endpoint: /analyze
 Description: Kolik muzskych studentu zdravotnich oboru studovalo na vysokych skolach v roce 2023?
 Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.694752
+Timestamp: 2025-10-10T15:26:01.158624
 
-Response Time: 122.41s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #10
-============================================================
-Test ID: test_13
-Endpoint: /analyze
-Description: Kolik celkem deti a mladeze delalo sport v svazeich a asociacich v roce 2023?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.701753
-
-Response Time: 122.41s
+Response Time: 122.56s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FAILED TEST #11
+FAILED TEST #6
 ============================================================
 Test ID: test_2
 Endpoint: /analyze
 Description: Kontrastuj uroven zivota v Brne a v Praze.
 Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.721751
+Timestamp: 2025-10-10T15:26:01.164623
 
-Response Time: 122.44s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #12
-============================================================
-Test ID: test_22
-Endpoint: /analyze
-Description: Jak se zmenil pocet zamestnancu v obchode (FTE) mezi 2015 a 2022?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.730756
-
-Response Time: 122.34s
+Response Time: 122.57s
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-FAILED TEST #13
-============================================================
-Test ID: test_20
-Endpoint: /analyze
-Description: Kolik procent zen pouzivalo mobilni telefony bez OS v roce 2018?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.730756
-
-Response Time: 122.40s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #14
-============================================================
-Test ID: test_19
-Endpoint: /analyze
-Description: Jaky byl pocet lidi pouzijicich mobilni telefony bez operacniho systemu v roce 2018?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.738752
-
-Response Time: 122.42s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #15
-============================================================
-Test ID: test_4
-Endpoint: /analyze
-Description: Kolik bylo aktivnich podniku v obchode v roce 2022 oproti roku 2015?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.740752
-
-Response Time: 122.46s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #16
-============================================================
-Test ID: test_12
-Endpoint: /analyze
-Description: Jaky byl pocet zen ve veku 80+ s vydaji zdravotnich pojistoven v roce 2022?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.755765
-
-Response Time: 122.47s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #17
-============================================================
-Test ID: test_21
-Endpoint: /analyze
-Description: Jaky byl pocet importu kerosinu do Ceske republiky v roce 2023?
-Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.756765
-
-Response Time: 122.39s
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-FAILED TEST #18
+FAILED TEST #7
 ============================================================
 Test ID: test_5
 Endpoint: /analyze
 Description: Jaka byla prumerna mesicni mzda v obchode v roce 2022?
 Error Type: Exception
-Timestamp: 2025-10-10T13:59:34.770298
+Timestamp: 2025-10-10T15:26:01.187623
 
-Response Time: 122.49s
+Response Time: 122.59s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #8
+============================================================
+Test ID: test_4
+Endpoint: /analyze
+Description: Kolik bylo aktivnich podniku v obchode v roce 2022 oproti roku 2015?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.258133
+
+Response Time: 122.66s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #9
+============================================================
+Test ID: test_15
+Endpoint: /analyze
+Description: Kolik muzskych clenu ve veku 19+ hral fotbal ve sportovnich svazeich v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.305134
+
+Response Time: 122.70s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #10
+============================================================
+Test ID: test_12
+Endpoint: /analyze
+Description: Jaky byl pocet zen ve veku 80+ s vydaji zdravotnich pojistoven v roce 2022?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.306134
+
+Response Time: 122.70s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #11
+============================================================
+Test ID: test_13
+Endpoint: /analyze
+Description: Kolik celkem deti a mladeze delalo sport v svazeich a asociacich v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.306134
+
+Response Time: 122.70s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #12
+============================================================
+Test ID: test_14
+Endpoint: /analyze
+Description: Jaky byl pocet holek ve veku 13 let v sportovnich klubech v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.320134
+
+Response Time: 122.72s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #13
+============================================================
+Test ID: test_21
+Endpoint: /analyze
+Description: Jaky byl pocet importu kerosinu do Ceske republiky v roce 2023?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.331134
+
+Response Time: 122.64s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #14
+============================================================
+Test ID: test_22
+Endpoint: /analyze
+Description: Jak se zmenil pocet zamestnancu v obchode (FTE) mezi 2015 a 2022?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.352643
+
+Response Time: 122.63s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #15
+============================================================
+Test ID: test_20
+Endpoint: /analyze
+Description: Kolik procent zen pouzivalo mobilni telefony bez OS v roce 2018?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.354644
+
+Response Time: 122.71s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #16
+============================================================
+Test ID: test_6
+Endpoint: /analyze
+Description: Jak se zmenil pocet uzivatelu internetoveho bankovnictvi ve vekove skupine 65+ mezi 2010 a 2024?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.355645
+
+Response Time: 122.76s
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+FAILED TEST #17
+============================================================
+Test ID: test_7
+Endpoint: /analyze
+Description: Kolik procent lidi ve veku 16-34 let pouzivalo internet v mobilnim telefonu v roce 2024?
+Error Type: Exception
+Timestamp: 2025-10-10T15:26:01.364645
+
+Response Time: 122.77s
 
 
 TEST SUMMARY:
 ========================================
 Total Requests: 22
-Successful Requests: 4
-Failed Requests: 18
-Success Rate: 18.181818181818183%
-Average Response Time: 95.10469967126846s
-Total Test Time: 122.526351s
+Successful Requests: 5
+Failed Requests: 17
+Success Rate: 22.727272727272727%
+Average Response Time: 78.969881772995s
+Total Test Time: 122.808712s
