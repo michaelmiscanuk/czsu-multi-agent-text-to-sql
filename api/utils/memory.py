@@ -208,24 +208,29 @@ def _log_tracemalloc_snapshot(
         print__memory_monitoring(msg)
         return
 
-    # Build table
+    # Build table with allocations
     table_lines = []
-    table_lines.append("=" * 130)
-    table_lines.append(
+    table_lines.append("=" * 150)
+    header = (
         f"MEMORY PROFILER - Top {top_stats} Allocations | "
-        f"Tracemalloc current: {total_current / (1024 * 1024):.1f} MiB | Tracemalloc peak: {peak / (1024 * 1024):.1f} MiB"
+        f"Tracemalloc current: {total_current / (1024 * 1024):.1f} MiB | "
+        f"Tracemalloc peak: {peak / (1024 * 1024):.1f} MiB"
     )
+    table_lines.append(header)
     if mem_full is not None:
         table_lines.append(
             f"Process RSS: {rss_mb:.1f} MiB | USS: {uss_mb:.1f} MiB | Swap: {swap_mb:.1f} MiB"
         )
-    table_lines.append("=" * 130)
+    table_lines.append("=" * 150)
     table_lines.append(
-        f"{'#':<3} {'Size (KiB)':>12} {'ΔSize (KiB)':>13} {'Blocks':>10} {'ΔBlocks':>10} {'Location':<75}"
+        f"{'#':<3} {'Size (MiB)':>12} {'ΔSize (MiB)':>13} {'Blocks':>10} {'ΔBlocks':>10} {'Location':<90}"
     )
-    table_lines.append("-" * 130)
+    table_lines.append("-" * 150)
 
-    for idx, stat in enumerate(stats[:top_stats], start=1):
+    # Ensure allocations sorted by size descending
+    stats_sorted = sorted(stats, key=lambda s: s.size, reverse=True)
+
+    for idx, stat in enumerate(stats_sorted[:top_stats], start=1):
         key = tuple((frame.filename, frame.lineno) for frame in stat.traceback)
         size = stat.size
         count = stat.count
@@ -233,19 +238,19 @@ def _log_tracemalloc_snapshot(
         size_delta = diff_entry.size_diff if diff_entry else 0
         count_delta = diff_entry.count_diff if diff_entry else 0
 
-        size_kb = size / 1024
-        size_delta_kb = size_delta / 1024
+        size_mb = size / (1024 * 1024)
+        size_delta_mb = size_delta / (1024 * 1024)
 
         primary_frame = stat.traceback[0] if stat.traceback else None
         if primary_frame:
             location = (
-                f"{_shorten_path(primary_frame.filename, 75)}:{primary_frame.lineno}"
+                f"{_shorten_path(primary_frame.filename, 95)}:{primary_frame.lineno}"
             )
         else:
             location = "<unknown>"
 
         table_lines.append(
-            f"{idx:<3} {size_kb:>12,.1f} {size_delta_kb:>+13,.1f} {count:>10,} {count_delta:>+10,} {location:<75}"
+            f"{idx:<3} {size_mb:>12,.2f} {size_delta_mb:>+13,.2f} {count:>10,} {count_delta:>+10,} {location:<90}"
         )
 
     # Add summary of other entries
@@ -263,29 +268,26 @@ def _log_tracemalloc_snapshot(
                     other_size_delta += diff_entry.size_diff
                     other_blocks_delta += diff_entry.count_diff
 
-        table_lines.append("-" * 130)
+        table_lines.append("-" * 150)
         table_lines.append(
-            f"    {len(other):>3} other entries | Size: {other_size / 1024:,.1f} KiB ({other_size_delta / 1024:+,.1f} KiB)"
+            f"    {len(other):>3} other entries | Size: {other_size / (1024 * 1024):,.2f} MiB ({other_size_delta / (1024 * 1024):+,.2f} MiB)"
             f" | Blocks: {other_blocks:,} ({other_blocks_delta:+,})"
         )
 
-    table_lines.append("=" * 130)
+    table_lines.append("=" * 150)
 
-    # Append memory map summary to correlate with RSS growth
-    memory_map_lines: list[str] = []
+    # Append memory map summary beneath allocations within same table
+    table_lines.append("MEMORY MAPS - Top RSS Segments")
+    table_lines.append("-" * 150)
+    table_lines.append(
+        f"{'#':<3} {'RSS (MiB)':>12} {'Private (MiB)':>15} {'Path':<115}"
+    )
+    table_lines.append("-" * 150)
+
     if mem_full is not None:
         try:
-            maps = sorted(
-                process.memory_maps(grouped=True), key=lambda m: m.rss, reverse=True
-            )
+            maps = sorted(process.memory_maps(grouped=True), key=lambda m: m.rss, reverse=True)
             top_maps = maps[:top_stats]
-            memory_map_lines.append("")
-            memory_map_lines.append("MEMORY MAPS - Top RSS Segments")
-            memory_map_lines.append("=" * 130)
-            memory_map_lines.append(
-                f"{'#':<3} {'RSS (MiB)':>12} {'Private (MiB)':>15} {'Path':<95}"
-            )
-            memory_map_lines.append("-" * 130)
             for idx, m in enumerate(top_maps, start=1):
                 rss = m.rss / (1024 * 1024)
                 private_bytes = sum(
@@ -293,24 +295,24 @@ def _log_tracemalloc_snapshot(
                     for attr in ("private", "private_clean", "private_dirty")
                 )
                 private = private_bytes / (1024 * 1024)
-                path = _shorten_path(m.path or "[anonymous]", 95)
-                memory_map_lines.append(
-                    f"{idx:<3} {rss:>12,.2f} {private:>15,.2f} {path:<95}"
+                path = _shorten_path(m.path or "[anonymous]", 115)
+                table_lines.append(
+                    f"{idx:<3} {rss:>12,.2f} {private:>15,.2f} {path:<115}"
                 )
             if len(maps) > top_stats:
                 remaining_rss = sum(m.rss for m in maps[top_stats:]) / (1024 * 1024)
-                memory_map_lines.append("-" * 130)
-                memory_map_lines.append(
+                table_lines.append("-" * 150)
+                table_lines.append(
                     f"    {len(maps) - top_stats} additional segments totalling {remaining_rss:,.2f} MiB RSS"
                 )
-            memory_map_lines.append("=" * 130)
         except Exception as map_error:
-            memory_map_lines.append("")
-            memory_map_lines.append(
+            table_lines.append(
                 f"[memory-profiler] Unable to collect memory map data: {type(map_error).__name__}: {map_error}"
             )
+    else:
+        table_lines.append("[memory-profiler] Process memory info unavailable")
 
-    table_lines.extend(memory_map_lines)
+    table_lines.append("=" * 150)
     table_lines.append("")
 
     # Log as single message
