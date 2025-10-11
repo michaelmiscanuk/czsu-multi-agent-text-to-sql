@@ -405,15 +405,10 @@ async def _memory_profiler_loop(interval: int, top_stats: int) -> None:
 
     if not tracemalloc.is_tracing():
         tracemalloc.start()
-        logger.info("[memory-profiler] tracemalloc tracing started")
         print__memory_monitoring("[memory-profiler] tracemalloc tracing started")
 
     _previous_snapshot = tracemalloc.take_snapshot()
-    logger.info(
-        "[memory-profiler] Background task running every %ss (top %s stats)",
-        interval,
-        top_stats,
-    )
+
     print__memory_monitoring(
         f"[memory-profiler] Background task running every {interval}s (top {top_stats} stats)"
     )

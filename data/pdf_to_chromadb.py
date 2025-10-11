@@ -306,9 +306,9 @@ from langchain_core.documents import Document
 try:
     from rank_bm25 import BM25Okapi
 
-    print("rank_bm25 is available. BM25 search will be enabled.")
+    # print("rank_bm25 is available. BM25 search will be enabled.")
 except ImportError:
-    print("Warning: rank_bm25 not available. BM25 search will be disabled.")
+    # print("Warning: rank_bm25 not available. BM25 search will be disabled.")
     BM25Okapi = None
 
 # --- Ensure project root is in sys.path for local imports ---

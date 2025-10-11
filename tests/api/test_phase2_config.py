@@ -476,16 +476,16 @@ async def test_gc_threshold(results: BaseTestResults):
     endpoint = "internal:gc_threshold"
     start = time.time()
     try:
-        s = load_settings_module()
+        gc_memory_threshold = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))
         assert (
-            isinstance(s.GC_MEMORY_THRESHOLD, int) and s.GC_MEMORY_THRESHOLD > 100
+            isinstance(gc_memory_threshold, int) and gc_memory_threshold > 100
         ), "GC_MEMORY_THRESHOLD too low"
-        assert s.GC_MEMORY_THRESHOLD < 100000, "GC_MEMORY_THRESHOLD unrealistic"
+        assert gc_memory_threshold < 100000, "GC_MEMORY_THRESHOLD unrealistic"
         results.add_result(
             test_id,
             endpoint,
             "GC memory threshold sanity",
-            {"GC_MEMORY_THRESHOLD": s.GC_MEMORY_THRESHOLD},
+            {"GC_MEMORY_THRESHOLD": gc_memory_threshold},
             time.time() - start,
             200,
         )

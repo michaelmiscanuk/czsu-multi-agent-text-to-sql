@@ -41,15 +41,17 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Import configuration and globals
 from api.config.settings import (
-    GC_MEMORY_THRESHOLD,
-    MEMORY_PROFILER_ENABLED,
-    MEMORY_PROFILER_INTERVAL,
-    MEMORY_PROFILER_TOP_STATS,
     _app_startup_time,
     _memory_baseline,
     _request_count,
     throttle_semaphores,
 )
+
+# Load memory-related variables directly from environment
+GC_MEMORY_THRESHOLD = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))
+MEMORY_PROFILER_ENABLED = os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
+MEMORY_PROFILER_INTERVAL = int(os.environ.get("MEMORY_PROFILER_INTERVAL", "30"))
+MEMORY_PROFILER_TOP_STATS = int(os.environ.get("MEMORY_PROFILER_TOP_STATS", "10"))
 
 # Import authentication
 from api.dependencies.auth import get_current_user

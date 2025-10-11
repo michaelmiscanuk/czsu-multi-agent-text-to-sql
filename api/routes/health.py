@@ -33,7 +33,6 @@ from fastapi.responses import JSONResponse
 # Import globals and utilities from config/utils
 from api.config.settings import (
     BULK_CACHE_TIMEOUT,
-    GC_MEMORY_THRESHOLD,
     GLOBAL_CHECKPOINTER,
     RATE_LIMIT_BURST,
     RATE_LIMIT_REQUESTS,
@@ -43,8 +42,10 @@ from api.config.settings import (
     rate_limit_storage,
     start_time,
 )
-from api.helpers import traceback_json_response
+
+# Import memory-related variables from memory.py
 from api.utils.memory import cleanup_bulk_cache
+from api.helpers import traceback_json_response
 
 # Create router for health endpoints
 router = APIRouter()
@@ -207,10 +208,13 @@ async def memory_health_check():
         # Clean up expired cache entries
         cleaned_entries = cleanup_bulk_cache()
 
+        # Get memory threshold from environment
+        gc_memory_threshold = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))
+
         status = "healthy"
-        if rss_mb > GC_MEMORY_THRESHOLD:
+        if rss_mb > gc_memory_threshold:
             status = "high_memory"
-        elif rss_mb > (GC_MEMORY_THRESHOLD * 0.8):
+        elif rss_mb > (gc_memory_threshold * 0.8):
             status = "warning"
 
         cache_info = {
@@ -223,7 +227,7 @@ async def memory_health_check():
         thread_count = len(_bulk_loading_cache)
         memory_per_thread = rss_mb / max(thread_count, 1) if thread_count > 0 else 0
         estimated_max_threads = (
-            int(GC_MEMORY_THRESHOLD / max(memory_per_thread, 38))
+            int(gc_memory_threshold / max(memory_per_thread, 38))
             if memory_per_thread > 0
             else 50
         )
@@ -231,9 +235,9 @@ async def memory_health_check():
         return {
             "status": status,
             "memory_rss_mb": round(rss_mb, 1),
-            "memory_threshold_mb": GC_MEMORY_THRESHOLD,
-            "memory_usage_percent": round((rss_mb / GC_MEMORY_THRESHOLD) * 100, 1),
-            "over_threshold": rss_mb > GC_MEMORY_THRESHOLD,
+            "memory_threshold_mb": gc_memory_threshold,
+            "memory_usage_percent": round((rss_mb / gc_memory_threshold) * 100, 1),
+            "over_threshold": rss_mb > gc_memory_threshold,
             "total_requests_processed": _request_count,
             "cache_info": cache_info,
             "scaling_info": {

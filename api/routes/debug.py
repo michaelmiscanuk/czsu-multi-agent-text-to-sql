@@ -34,7 +34,6 @@ from fastapi.responses import JSONResponse
 
 # Import configuration globals
 from api.config.settings import (
-    GC_MEMORY_THRESHOLD,
     GLOBAL_CHECKPOINTER,
     _bulk_loading_cache,
 )
@@ -327,7 +326,8 @@ async def clear_bulk_cache(user=Depends(get_current_user)):
     try:
         process = psutil.Process()
         rss_mb = process.memory_info().rss / 1024 / 1024
-        memory_status = "normal" if rss_mb < (GC_MEMORY_THRESHOLD * 0.8) else "high"
+        gc_memory_threshold = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))
+        memory_status = "normal" if rss_mb < (gc_memory_threshold * 0.8) else "high"
     except:
         rss_mb = 0
         memory_status = "unknown"
