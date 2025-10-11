@@ -24,6 +24,7 @@ except NameError:
 import asyncio
 
 # Standard imports
+import ctypes
 import gc
 import json
 import logging
@@ -38,13 +39,29 @@ from typing import Optional
 import psutil
 from fastapi import Request
 
-# Import global variables from api.config.settings
+# Try to load libc for malloc_trim support
+try:
+    libc = ctypes.CDLL("libc.so.6")
+    MALLOC_TRIM_AVAILABLE = True
+except (OSError, AttributeError):
+    libc = None
+    MALLOC_TRIM_AVAILABLE = False
+
+# Load memory cleanup environment variables directly
+MEMORY_CLEANUP_ENABLED = os.environ.get("MEMORY_CLEANUP", "1") == "1"
+MEMORY_CLEANUP_INTERVAL = int(os.environ.get("MEMORY_CLEANUP_INTERVAL", "60"))
+
+# Load memory-related environment variables directly (moved from settings.py)
+GC_MEMORY_THRESHOLD = int(
+    os.environ.get("GC_MEMORY_THRESHOLD", "1900")
+)  # 1900MB for 2GB memory allocation
+MEMORY_PROFILER_ENABLED = os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
+MEMORY_PROFILER_INTERVAL = int(os.environ.get("MEMORY_PROFILER_INTERVAL", "30"))
+MEMORY_PROFILER_TOP_STATS = int(os.environ.get("MEMORY_PROFILER_TOP_STATS", "10"))
+
+# Import remaining global variables from api.config.settings
 from api.config.settings import (
     BULK_CACHE_TIMEOUT,
-    GC_MEMORY_THRESHOLD,
-    MEMORY_PROFILER_ENABLED,
-    MEMORY_PROFILER_INTERVAL,
-    MEMORY_PROFILER_TOP_STATS,
     _bulk_loading_cache,
 )
 
@@ -55,6 +72,65 @@ from api.utils.debug import print__memory_monitoring
 # ============================================================
 # UTILITY FUNCTIONS - MEMORY MANAGEMENT
 # ============================================================
+def force_release_memory():
+    """
+    Force the release of free memory back to the OS.
+
+    This addresses the issue where Python's glibc allocator holds onto
+    freed memory in the heap/anon regions rather than returning it to the OS.
+    This is particularly important for memory-constrained environments.
+
+    Returns:
+        dict: Memory statistics before and after the operation
+    """
+    try:
+        process = psutil.Process()
+
+        # Capture initial memory
+        initial_rss = process.memory_info().rss / 1024 / 1024
+
+        # Step 1: Run Python's garbage collector
+        collected = gc.collect()
+
+        # Step 2: Force malloc to return memory to OS (Linux-specific)
+        if MALLOC_TRIM_AVAILABLE:
+            # malloc_trim(0) forces the allocator to return all possible memory to the OS
+            libc.malloc_trim(0)
+            malloc_trim_used = True
+        else:
+            malloc_trim_used = False
+
+        # Capture final memory
+        final_rss = process.memory_info().rss / 1024 / 1024
+        freed_mb = initial_rss - final_rss
+
+        result = {
+            "initial_rss_mb": round(initial_rss, 2),
+            "final_rss_mb": round(final_rss, 2),
+            "freed_mb": round(freed_mb, 2),
+            "gc_collected": collected,
+            "malloc_trim_used": malloc_trim_used,
+        }
+
+        print__memory_monitoring(
+            f"🧹 Memory Release: {freed_mb:.1f}MB freed | "
+            f"RSS: {initial_rss:.1f}MB → {final_rss:.1f}MB | "
+            f"GC collected: {collected} objects | "
+            f"malloc_trim: {'✓' if malloc_trim_used else '✗'}"
+        )
+
+        return result
+
+    except Exception as e:
+        print__memory_monitoring(f"❌ Error in force_release_memory: {e}")
+        return {
+            "error": str(e),
+            "freed_mb": 0,
+            "gc_collected": 0,
+            "malloc_trim_used": False,
+        }
+
+
 def cleanup_bulk_cache():
     """Clean up expired cache entries."""
     current_time = time.time()
@@ -71,7 +147,7 @@ def cleanup_bulk_cache():
 
 
 def check_memory_and_gc():
-    """Enhanced memory check with cache cleanup and scaling strategy."""
+    """Enhanced memory check with cache cleanup, GC, and malloc_trim."""
     try:
         process = psutil.Process()
         memory_info = process.memory_info()
@@ -92,28 +168,27 @@ def check_memory_and_gc():
                 )
                 rss_mb = new_memory
 
-        # Trigger GC only if above threshold
+        # Trigger GC and malloc_trim if above threshold
         if rss_mb > GC_MEMORY_THRESHOLD:
             print__memory_monitoring(
-                f"🚨 MEMORY THRESHOLD EXCEEDED: {rss_mb:.1f}MB > {GC_MEMORY_THRESHOLD}MB - running GC"
+                f"🚨 MEMORY THRESHOLD EXCEEDED: {rss_mb:.1f}MB > {GC_MEMORY_THRESHOLD}MB - forcing memory release"
             )
-            import gc
 
-            collected = gc.collect()
-            print__memory_monitoring(f"🧹 GC collected {collected} objects")
+            # Use the new force_release_memory function
+            release_result = force_release_memory()
 
-            # Log memory after GC
-            new_memory = psutil.Process().memory_info().rss / 1024 / 1024
-            freed = rss_mb - new_memory
+            new_memory = release_result.get("final_rss_mb", rss_mb)
+            freed = release_result.get("freed_mb", 0)
+
             print__memory_monitoring(
-                f"🧹 Memory after GC: {new_memory:.1f}MB (freed: {freed:.1f}MB)"
+                f"🧹 Memory after cleanup: {new_memory:.1f}MB (freed: {freed:.1f}MB)"
             )
 
-            # If memory is still high after GC, provide scaling guidance
+            # If memory is still high after cleanup, provide scaling guidance
             if new_memory > (GC_MEMORY_THRESHOLD * 0.9):
                 thread_count = len(_bulk_loading_cache)
                 print__memory_monitoring(
-                    f"⚠ HIGH MEMORY WARNING: {new_memory:.1f}MB after GC"
+                    f"⚠ HIGH MEMORY WARNING: {new_memory:.1f}MB after cleanup"
                 )
                 print__memory_monitoring(f"📊 Current cache entries: {thread_count}")
                 if thread_count > 20:
@@ -150,6 +225,7 @@ def log_memory_usage(context: str = ""):
 # PERIODIC TRACEMALLOC MONITORING
 # ============================================================
 _memory_profiler_task: Optional[asyncio.Task] = None
+_memory_cleanup_task: Optional[asyncio.Task] = None
 _previous_snapshot: Optional[tracemalloc.Snapshot] = None
 
 
@@ -357,6 +433,56 @@ async def _memory_profiler_loop(interval: int, top_stats: int) -> None:
         _previous_snapshot = None
 
 
+async def _memory_cleanup_loop() -> None:
+    """
+    Periodic memory cleanup task that runs every MEMORY_CLEANUP_INTERVAL seconds.
+
+    This task forces memory to be returned to the OS, preventing the heap
+    and anonymous memory from staying at peak levels when the app is idle.
+    """
+    logger = _get_uvicorn_logger()
+    logger.info(
+        "[memory-cleanup] Background cleanup task running every %ss",
+        MEMORY_CLEANUP_INTERVAL,
+    )
+    print__memory_monitoring(
+        f"[memory-cleanup] Background cleanup task running every {MEMORY_CLEANUP_INTERVAL}s"
+    )
+
+    try:
+        while True:
+            await asyncio.sleep(MEMORY_CLEANUP_INTERVAL)
+
+            process = psutil.Process()
+            initial_rss = process.memory_info().rss / 1024 / 1024
+
+            # Only run cleanup if memory is above a certain threshold (e.g., 100MB)
+            if initial_rss > 100:
+                print__memory_monitoring(
+                    f"[memory-cleanup] Running periodic cleanup (RSS: {initial_rss:.1f}MB)"
+                )
+
+                # Cleanup cache
+                cleaned_entries = cleanup_bulk_cache()
+
+                # Force memory release
+                release_result = force_release_memory()
+
+                print__memory_monitoring(
+                    f"[memory-cleanup] Completed - Cache entries cleaned: {cleaned_entries}, "
+                    f"Memory freed: {release_result.get('freed_mb', 0):.1f}MB"
+                )
+            else:
+                print__memory_monitoring(
+                    f"[memory-cleanup] Skipping cleanup, memory usage is low ({initial_rss:.1f}MB)"
+                )
+
+    except asyncio.CancelledError:
+        logger.info("[memory-cleanup] Background cleanup task cancelled")
+        print__memory_monitoring("[memory-cleanup] Background cleanup task cancelled")
+        raise
+
+
 def start_memory_profiler(
     interval: Optional[int] = None, top_stats: Optional[int] = None
 ) -> Optional[asyncio.Task]:
@@ -374,6 +500,29 @@ def start_memory_profiler(
     top_stats = top_stats or MEMORY_PROFILER_TOP_STATS
     _memory_profiler_task = loop.create_task(_memory_profiler_loop(interval, top_stats))
     return _memory_profiler_task
+
+
+def start_memory_cleanup() -> Optional[asyncio.Task]:
+    """
+    Start the periodic memory cleanup task if enabled.
+
+    Returns:
+        The cleanup task or None if disabled or already running
+    """
+    if not MEMORY_CLEANUP_ENABLED:
+        return None
+
+    global _memory_cleanup_task
+    if _memory_cleanup_task and not _memory_cleanup_task.done():
+        return _memory_cleanup_task
+
+    try:
+        loop = asyncio.get_running_loop()
+        _memory_cleanup_task = loop.create_task(_memory_cleanup_loop())
+        return _memory_cleanup_task
+    except RuntimeError:
+        # No event loop running yet
+        return None
 
 
 async def stop_memory_profiler() -> None:
@@ -395,6 +544,25 @@ async def stop_memory_profiler() -> None:
             logger = _get_uvicorn_logger()
             logger.info("[memory-profiler] tracemalloc tracing stopped")
             print__memory_monitoring("[memory-profiler] tracemalloc tracing stopped")
+
+
+async def stop_memory_cleanup() -> None:
+    """Stop the periodic memory cleanup task if it is running."""
+
+    global _memory_cleanup_task
+    if not _memory_cleanup_task:
+        return
+
+    _memory_cleanup_task.cancel()
+    try:
+        await _memory_cleanup_task
+    except asyncio.CancelledError:
+        pass
+    finally:
+        _memory_cleanup_task = None
+        logger = _get_uvicorn_logger()
+        logger.info("[memory-cleanup] Background cleanup task stopped")
+        print__memory_monitoring("[memory-cleanup] Background cleanup task stopped")
 
 
 def log_comprehensive_error(context: str, error: Exception, request: Request = None):

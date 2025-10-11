@@ -37,9 +37,7 @@ start_time = time.time()
 INMEMORY_FALLBACK_ENABLED = os.environ.get("InMemorySaver_fallback", "1") == "1"
 
 # Read GC memory threshold from environment with default fallback
-GC_MEMORY_THRESHOLD = int(
-    os.environ.get("GC_MEMORY_THRESHOLD", "1900")
-)  # 1900MB for 2GB memory allocation
+# MOVED TO memory.py: GC_MEMORY_THRESHOLD = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))  # 1900MB for 2GB memory allocation
 
 # MEMORY LEAK PREVENTION: Simplified global tracking
 _app_startup_time = None
@@ -47,9 +45,9 @@ _memory_baseline = None  # RSS memory at startup
 _request_count = 0  # Track total requests processed
 
 # Tracemalloc-based memory profiler configuration
-MEMORY_PROFILER_ENABLED = os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
-MEMORY_PROFILER_INTERVAL = int(os.environ.get("MEMORY_PROFILER_INTERVAL", "30"))
-MEMORY_PROFILER_TOP_STATS = int(os.environ.get("MEMORY_PROFILER_TOP_STATS", "10"))
+# MOVED TO memory.py: MEMORY_PROFILER_ENABLED = os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
+# MOVED TO memory.py: MEMORY_PROFILER_INTERVAL = int(os.environ.get("MEMORY_PROFILER_INTERVAL", "30"))
+# MOVED TO memory.py: MEMORY_PROFILER_TOP_STATS = int(os.environ.get("MEMORY_PROFILER_TOP_STATS", "10"))
 
 # Global shared checkpointer for conversation memory across API requests
 # This ensures that conversation state is preserved between frontend requests using PostgreSQL

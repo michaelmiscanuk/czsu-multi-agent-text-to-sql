@@ -9,7 +9,6 @@ for the CZSU Multi-Agent Text-to-SQL application.
 from .settings import (  # Environment variables; Application constants; Checkpointer; Concurrency settings; Rate limiting; Bulk loading cache; JWT settings; Debug functions
     BASE_DIR,
     BULK_CACHE_TIMEOUT,
-    GC_MEMORY_THRESHOLD,
     GLOBAL_CHECKPOINTER,
     GOOGLE_JWK_URL,
     INMEMORY_FALLBACK_ENABLED,
@@ -34,7 +33,7 @@ __all__ = [
     "INMEMORY_FALLBACK_ENABLED",
     "BASE_DIR",
     "start_time",
-    "GC_MEMORY_THRESHOLD",
+    # "GC_MEMORY_THRESHOLD",  # MOVED TO memory.py
     "_app_startup_time",
     "_memory_baseline",
     "_request_count",

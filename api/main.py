@@ -68,7 +68,9 @@ from api.utils.memory import (
     log_memory_usage,
     setup_graceful_shutdown,
     start_memory_profiler,
+    start_memory_cleanup,
     stop_memory_profiler,
+    stop_memory_cleanup,
 )
 
 # Import rate limiting utilities
@@ -145,6 +147,19 @@ async def lifespan(app: FastAPI):
                 f"⚠️ Failed to start memory profiler: {profiler_error}"
             )
 
+    # Start periodic memory cleanup (controlled by MEMORY_CLEANUP env var)
+    # This runs as a background asyncio task that forces memory to be returned to the OS
+    # It helps prevent heap and anonymous memory from staying at peak levels when app is idle
+    try:
+        start_memory_cleanup()  # Runs every MEMORY_CLEANUP_INTERVAL seconds (from .env)
+        print__memory_monitoring(
+            "🧹 Memory cleanup task started (interval from MEMORY_CLEANUP_INTERVAL env var)"
+        )
+    except Exception as cleanup_error:
+        print__memory_monitoring(
+            f"⚠️ Failed to start memory cleanup task: {cleanup_error}"
+        )
+
     log_memory_usage("app_ready")
     print__startup_debug("✅ FastAPI application ready to serve requests")
 
@@ -163,6 +178,14 @@ async def lifespan(app: FastAPI):
             print__memory_monitoring(
                 f"⚠️ Failed to stop memory profiler: {profiler_error}"
             )
+
+    # Stop memory cleanup task
+    try:
+        await stop_memory_cleanup()
+    except Exception as cleanup_error:
+        print__memory_monitoring(
+            f"⚠️ Failed to stop memory cleanup task: {cleanup_error}"
+        )
 
     # Log final memory statistics
     if _memory_baseline:
