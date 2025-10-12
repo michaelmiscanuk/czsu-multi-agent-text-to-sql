@@ -39,17 +39,24 @@ from typing import Optional
 import psutil
 from fastapi import Request
 
+# Import debug functions from utils
+from api.utils.debug import print__memory_monitoring
+
+# Load memory cleanup environment variables directly
+MEMORY_CLEANUP_ENABLED = os.environ.get("MEMORY_CLEANUP_ENABLED", "1") == "1"
+MEMORY_CLEANUP_INTERVAL = int(os.environ.get("MEMORY_CLEANUP_INTERVAL", "60"))
+
 # Try to load libc for malloc_trim support
 try:
     libc = ctypes.CDLL("libc.so.6")
     MALLOC_TRIM_AVAILABLE = True
-except (OSError, AttributeError):
+    print__memory_monitoring("🐧 malloc_trim loaded successfully")
+except (OSError, AttributeError) as e:
     libc = None
     MALLOC_TRIM_AVAILABLE = False
-
-# Load memory cleanup environment variables directly
-MEMORY_CLEANUP_ENABLED = os.environ.get("MEMORY_CLEANUP", "1") == "1"
-MEMORY_CLEANUP_INTERVAL = int(os.environ.get("MEMORY_CLEANUP_INTERVAL", "60"))
+    MEMORY_CLEANUP_ENABLED = False  # Disable cleanup if malloc_trim not available
+    print__memory_monitoring(f"❌ Failed to load libc: {e}")
+    print__memory_monitoring("🧹 Memory cleanup disabled (malloc_trim not available)")
 
 # Load memory-related environment variables directly (moved from settings.py)
 GC_MEMORY_THRESHOLD = int(
@@ -65,70 +72,49 @@ from api.config.settings import (
     _bulk_loading_cache,
 )
 
-# Import debug functions from utils
-from api.utils.debug import print__memory_monitoring
-
 
 # ============================================================
 # UTILITY FUNCTIONS - MEMORY MANAGEMENT
 # ============================================================
 def force_release_memory():
     """
-    Force the release of free memory back to the OS.
-
-    This addresses the issue where Python's glibc allocator holds onto
-    freed memory in the heap/anon regions rather than returning it to the OS.
-    This is particularly important for memory-constrained environments.
-
-    Returns:
-        dict: Memory statistics before and after the operation
+    Force memory release using malloc_trim if available.
     """
     try:
+        # Get initial memory
         process = psutil.Process()
-
-        # Capture initial memory
         initial_rss = process.memory_info().rss / 1024 / 1024
 
-        # Step 1: Run Python's garbage collector
+        # Run garbage collection
         collected = gc.collect()
 
-        # Step 2: Force malloc to return memory to OS (Linux-specific)
+        # Only run malloc_trim if available
         if MALLOC_TRIM_AVAILABLE:
-            # malloc_trim(0) forces the allocator to return all possible memory to the OS
             libc.malloc_trim(0)
+            print__memory_monitoring("🧹 Called malloc_trim(0) to release memory to OS")
             malloc_trim_used = True
         else:
             malloc_trim_used = False
 
-        # Capture final memory
+        # Get final memory
         final_rss = process.memory_info().rss / 1024 / 1024
         freed_mb = initial_rss - final_rss
 
-        result = {
-            "initial_rss_mb": round(initial_rss, 2),
-            "final_rss_mb": round(final_rss, 2),
+        print__memory_monitoring(
+            f"🧹 Memory cleanup: {freed_mb:.1f}MB freed | "
+            f"{initial_rss:.1f}MB → {final_rss:.1f}MB | "
+            f"GC: {collected} | malloc_trim: {'✓' if malloc_trim_used else '✗'}"
+        )
+
+        return {
             "freed_mb": round(freed_mb, 2),
             "gc_collected": collected,
             "malloc_trim_used": malloc_trim_used,
         }
 
-        print__memory_monitoring(
-            f"🧹 Memory Release: {freed_mb:.1f}MB freed | "
-            f"RSS: {initial_rss:.1f}MB → {final_rss:.1f}MB | "
-            f"GC collected: {collected} objects | "
-            f"malloc_trim: {'✓' if malloc_trim_used else '✗'}"
-        )
-
-        return result
-
     except Exception as e:
-        print__memory_monitoring(f"❌ Error in force_release_memory: {e}")
-        return {
-            "error": str(e),
-            "freed_mb": 0,
-            "gc_collected": 0,
-            "malloc_trim_used": False,
-        }
+        print__memory_monitoring(f"❌ Memory cleanup error: {e}")
+        return {"error": str(e), "freed_mb": 0}
 
 
 def cleanup_bulk_cache():
@@ -428,53 +414,44 @@ async def _memory_profiler_loop(interval: int, top_stats: int) -> None:
         _previous_snapshot = None
 
 
+# ============================================================
+# PERIODIC MEMORY CLEANUP
+# ============================================================
+
+
 async def _memory_cleanup_loop() -> None:
     """
-    Periodic memory cleanup task that runs every MEMORY_CLEANUP_INTERVAL seconds.
-
-    This task forces memory to be returned to the OS, preventing the heap
-    and anonymous memory from staying at peak levels when the app is idle.
+    Simple periodic memory cleanup - every MEMORY_CLEANUP_INTERVAL seconds.
     """
-    logger = _get_uvicorn_logger()
-    logger.info(
-        "[memory-cleanup] Background cleanup task running every %ss",
-        MEMORY_CLEANUP_INTERVAL,
-    )
     print__memory_monitoring(
-        f"[memory-cleanup] Background cleanup task running every {MEMORY_CLEANUP_INTERVAL}s"
+        f"🧹 [memory-cleanup] Starting cleanup task (every {MEMORY_CLEANUP_INTERVAL}s)"
     )
 
     try:
         while True:
             await asyncio.sleep(MEMORY_CLEANUP_INTERVAL)
 
+            # Get current memory usage
             process = psutil.Process()
-            initial_rss = process.memory_info().rss / 1024 / 1024
+            rss_mb = process.memory_info().rss / 1024 / 1024
 
-            # Only run cleanup if memory is above a certain threshold (e.g., 100MB)
-            if initial_rss > 100:
-                print__memory_monitoring(
-                    f"[memory-cleanup] Running periodic cleanup (RSS: {initial_rss:.1f}MB)"
-                )
+            print__memory_monitoring(
+                f"🧹 [memory-cleanup] Running (RSS: {rss_mb:.1f}MB)"
+            )
 
-                # Cleanup cache
-                cleaned_entries = cleanup_bulk_cache()
+            # Clean cache first
+            cleaned = cleanup_bulk_cache()
 
-                # Force memory release
-                release_result = force_release_memory()
+            # Force memory release (only effective on Linux)
+            result = force_release_memory()
 
-                print__memory_monitoring(
-                    f"[memory-cleanup] Completed - Cache entries cleaned: {cleaned_entries}, "
-                    f"Memory freed: {release_result.get('freed_mb', 0):.1f}MB"
-                )
-            else:
-                print__memory_monitoring(
-                    f"[memory-cleanup] Skipping cleanup, memory usage is low ({initial_rss:.1f}MB)"
-                )
+            print__memory_monitoring(
+                f"✅ [memory-cleanup] Cache: {cleaned} entries, "
+                f"Memory: {result.get('freed_mb', 0):.1f}MB freed"
+            )
 
     except asyncio.CancelledError:
-        logger.info("[memory-cleanup] Background cleanup task cancelled")
-        print__memory_monitoring("[memory-cleanup] Background cleanup task cancelled")
+        print__memory_monitoring("🛑 [memory-cleanup] Task cancelled")
         raise
 
 
@@ -500,23 +477,28 @@ def start_memory_profiler(
 def start_memory_cleanup() -> Optional[asyncio.Task]:
     """
     Start the periodic memory cleanup task if enabled.
-
-    Returns:
-        The cleanup task or None if disabled or already running
     """
+    global _memory_cleanup_task
+
     if not MEMORY_CLEANUP_ENABLED:
+        print__memory_monitoring(
+            "🧹 Memory cleanup disabled (MEMORY_CLEANUP_ENABLED=0)"
+        )
         return None
 
-    global _memory_cleanup_task
     if _memory_cleanup_task and not _memory_cleanup_task.done():
+        print__memory_monitoring("🧹 Memory cleanup already running")
         return _memory_cleanup_task
 
     try:
         loop = asyncio.get_running_loop()
         _memory_cleanup_task = loop.create_task(_memory_cleanup_loop())
+        print__memory_monitoring(
+            f"✅ Memory cleanup started (every {MEMORY_CLEANUP_INTERVAL}s)"
+        )
         return _memory_cleanup_task
-    except RuntimeError:
-        # No event loop running yet
+    except RuntimeError as e:
+        print__memory_monitoring(f"❌ Cannot start memory cleanup - no event loop: {e}")
         return None
 
 
@@ -558,6 +540,11 @@ async def stop_memory_cleanup() -> None:
         logger = _get_uvicorn_logger()
         logger.info("[memory-cleanup] Background cleanup task stopped")
         print__memory_monitoring("[memory-cleanup] Background cleanup task stopped")
+
+
+# ============================================================
+# ERROR HANDLING AND UTILITIES
+# ============================================================
 
 
 def log_comprehensive_error(context: str, error: Exception, request: Request = None):

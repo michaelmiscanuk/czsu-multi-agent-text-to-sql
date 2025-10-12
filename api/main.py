@@ -152,14 +152,14 @@ async def lifespan(app: FastAPI):
     # Start periodic memory cleanup (controlled by MEMORY_CLEANUP env var)
     # This runs as a background asyncio task that forces memory to be returned to the OS
     # It helps prevent heap and anonymous memory from staying at peak levels when app is idle
-    try:
-        start_memory_cleanup()  # Runs every MEMORY_CLEANUP_INTERVAL seconds (from .env)
+    cleanup_task = (
+        start_memory_cleanup()
+    )  # Runs every MEMORY_CLEANUP_INTERVAL seconds (from .env)
+    if cleanup_task:
+        print__memory_monitoring("✅ Memory cleanup task started successfully")
+    else:
         print__memory_monitoring(
-            "🧹 Memory cleanup task started (interval from MEMORY_CLEANUP_INTERVAL env var)"
-        )
-    except Exception as cleanup_error:
-        print__memory_monitoring(
-            f"⚠️ Failed to start memory cleanup task: {cleanup_error}"
+            "ℹ️ Memory cleanup task not started (disabled or error)"
         )
 
     log_memory_usage("app_ready")
