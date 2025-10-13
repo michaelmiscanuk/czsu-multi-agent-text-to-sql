@@ -116,7 +116,6 @@ Advanced Processing Flow:
    - Tracks numerical data preservation for statistical content
 
 4. ChromaDB Storage & Management (Operation 2):
-   - Optionally clears existing collection based on configuration
    - Processes chunks and generates embeddings in batches
    - Implements document deduplication using content hashes
    - Stores documents with comprehensive metadata structure

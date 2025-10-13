@@ -1,3 +1,156 @@
+module_description = r"""LangGraph Workflow Definition for Multi-Agent Text-to-SQL Analysis
+
+This module defines the LangGraph StateGraph structure and execution flow for a multi-agent
+text-to-SQL analysis system. It orchestrates the complete workflow from natural language
+question input to formatted answer output, managing state transitions, parallel execution
+branches, conditional routing logic, and checkpointing.
+
+Designed for Czech statistical data (CZSU) with support for dual retrieval sources 
+(database selections + PDF documentation) and iterative query improvement through reflection.
+
+Graph Architecture:
+==================
+The workflow implements a directed acyclic graph (with controlled cycles) containing:
+1. Parallel Retrieval Phase (2 branches: database selections + PDF chunks)
+2. Synchronization & Routing Logic (conditional paths based on available data)
+3. Query Generation & Execution Loop (with optional reflection for improvement)
+4. Answer Synthesis & Finalization (multi-source information formatting)
+
+Graph Structure & Execution Flow:
+================================
+
+Phase 1: Query Preprocessing
+----------------------------
+START → rewrite_query → summarize_messages_rewrite
+
+- Converts conversational questions into standalone search queries
+- Summarizes conversation history to manage token limits
+- Prepares optimized query for parallel retrieval
+
+Phase 2: Parallel Retrieval (Dual Branches)
+-------------------------------------------
+summarize_messages_rewrite splits into TWO parallel branches:
+
+Branch A (Database Selections):
+  → retrieve_similar_selections_hybrid_search
+  → rerank (Cohere reranking)
+  → relevant_selections (top-k filtering)
+
+Branch B (PDF Documentation):
+  → retrieve_similar_chunks_hybrid_search
+  → rerank_chunks (Cohere reranking)
+  → relevant_chunks (threshold filtering)
+
+Both branches use hybrid search (semantic + BM25) with configurable weighting.
+
+Phase 3: Synchronization & Conditional Routing
+----------------------------------------------
+[relevant_selections, relevant_chunks] → route_decision
+
+Routing logic:
+- IF top_selection_codes found → get_schema (proceed with database queries)
+- ELIF chromadb_missing → END (error: no ChromaDB available)
+- ELSE → format_answer (PDF-only response, no database data)
+
+Phase 4: Query Loop (Optional Reflection)
+-----------------------------------------
+get_schema → query_gen → summarize_messages_query
+
+Conditional routing based on iteration count:
+- IF iteration < MAX_ITERATIONS → reflect
+- ELSE → format_answer (force answer at iteration limit)
+
+Reflection cycle (optional):
+reflect → summarize_messages_reflect
+
+Reflection decision:
+- IF decision == "improve" → query_gen (loop back for better query)
+- ELIF decision == "answer" → format_answer (sufficient data collected)
+
+Phase 5: Answer Finalization
+----------------------------
+format_answer → summarize_messages_format → submit_final_answer → save → cleanup_resources → END
+
+- Synthesizes information from all sources (SQL results, PDF chunks, selection descriptions)
+- Submits formatted answer to user
+- Optionally saves results to file
+- Cleans up resources and connections
+
+State Management:
+================
+Uses DataAnalysisState TypedDict with key fields:
+- prompt: Original user question
+- rewritten_prompt: Search-optimized standalone question
+- messages: [summary (SystemMessage), last_message] - token-efficient structure
+- iteration: Loop counter for cycle prevention (default max: 1)
+- queries_and_results: Limited list of (SQL_query, result) tuples
+- reflection_decision: "improve" or "answer" from reflect node
+- top_selection_codes: Database table identifiers for schema loading
+- top_chunks: Relevant PDF documentation chunks
+- final_answer: Formatted answer string
+
+Node Summary (18 total):
+=======================
+Preprocessing: rewrite_query
+Retrieval: retrieve_similar_selections_hybrid_search, retrieve_similar_chunks_hybrid_search
+Reranking: rerank, rerank_chunks
+Filtering: relevant_selections, relevant_chunks
+Routing: route_decision (inline function)
+Query: get_schema, query_gen
+Reflection: reflect
+Formatting: format_answer, submit_final_answer
+Persistence: save, cleanup_resources
+Memory: summarize_messages_rewrite/query/reflect/format (4 instances of same node)
+
+(Detailed node documentation available in my_agent/utils/nodes.py)
+
+Key Design Principles:
+=====================
+1. Parallel Execution: Dual retrieval branches run simultaneously for efficiency
+2. Conditional Routing: Smart decision points based on available data
+3. Controlled Iteration: MAX_ITERATIONS prevents infinite reflection loops
+4. State Checkpointing: PostgreSQL persistence for workflow resumption
+5. Token Management: Automatic message summarization at key points
+6. Resource Cleanup: Explicit cleanup node for connection management
+7. Debug Tracing: Unique IDs (84-111) for each graph construction step
+
+Configuration Constants:
+=======================
+Workflow Control:
+- MAX_ITERATIONS: 1 (configurable via environment variable)
+
+Debug Tracing:
+- print__analysis_tracing_debug: Graph-level construction tracing (IDs 84-111)
+
+Usage Example:
+=============
+```python
+from my_agent.agent import create_graph
+
+# Create graph with checkpointer
+graph = create_graph(checkpointer=await get_async_postgres_checkpointer())
+
+# Execute workflow
+result = await graph.ainvoke({
+    "prompt": "Your question here",
+    "messages": [],
+    "iteration": 0
+}, config={"configurable": {"thread_id": "conv-123"}})
+
+# Access final answer
+print(result["final_answer"])
+```
+
+Checkpointer Behavior:
+======================
+- If checkpointer=None: Uses InMemorySaver fallback (development/testing)
+- Production: Should provide AsyncPostgresSaver for persistent state
+- Enables workflow interruption, resumption, and conversation history
+
+See my_agent/utils/nodes.py for detailed node implementation documentation.
+See my_agent/utils/state.py for complete state schema with reducers.
+"""
+
 """Agent graph definition module.
 
 This module defines the data analysis graph using LangGraph. It implements a

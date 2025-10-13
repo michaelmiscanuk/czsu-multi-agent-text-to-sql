@@ -1,3 +1,580 @@
+module_description = r"""Node Implementations for LangGraph Multi-Agent Text-to-SQL Workflow
+
+This module implements all node functions used in the LangGraph workflow, defining the complete
+processing pipeline from query rewriting through parallel retrieval, SQL generation, reflection,
+answer formatting, and resource cleanup. Each node is an async function that receives and returns
+a DataAnalysisState dictionary.
+
+The module contains 16 node functions plus 2 helper functions, organized into logical processing
+stages that handle query optimization, dual-source retrieval (database + PDF), SQL execution,
+iterative improvement, and answer synthesis.
+
+Architecture Overview:
+=====================
+Node functions are organized into 6 processing stages:
+1. Query Preprocessing (rewrite_query_node, summarize_messages_node)
+2. Parallel Retrieval - Database Selections (retrieve, rerank, relevant)
+3. Parallel Retrieval - PDF Chunks (retrieve, rerank, relevant)
+4. SQL Generation & Execution (get_schema, query_node)
+5. Reflection & Improvement (reflect_node)
+6. Answer Finalization (format_answer, submit_final_answer, save, cleanup)
+
+Key Features:
+============
+1. Query Rewriting & Optimization:
+   - LLM-powered conversational context resolution
+   - Pronoun and reference replacement
+   - Topic change detection ("but I meant...")
+   - Brief question expansion (e.g., "hotels" → detailed query)
+   - Vector search optimization with synonyms
+   - Bilingual support (Czech/English)
+   - Escape handling for f-string safety
+
+2. Dual-Source Parallel Retrieval:
+   - Database selections: ChromaDB hybrid search on dataset descriptions
+   - PDF chunks: Hybrid search on parsed documentation content
+   - Independent parallel execution paths
+   - Shared hybrid search algorithm (semantic + BM25)
+   - Cohere reranking for both sources
+   - Configurable result counts and thresholds
+
+3. Schema Loading & SQL Generation:
+   - Dynamic schema retrieval from SQLite metadata DB
+   - Schema truncation for token efficiency
+   - MCP (Model Context Protocol) tool integration
+   - Comprehensive SQL generation prompts with bilingual support
+   - Czech character and diacritics handling
+   - JOIN optimization and aggregation guidance
+   - CELKEM (total) row handling instructions
+
+4. Agentic Reflection & Self-Correction:
+   - Analyzes SQL query results for completeness
+   - Decides "improve" (generate better query) or "answer" (sufficient data)
+   - Provides specific feedback for query improvement
+   - Handles missing data, errors, and ambiguous results
+   - Iteration limit enforcement (MAX_ITERATIONS)
+   - Limited query history to prevent token overflow
+
+5. Multi-Source Answer Synthesis:
+   - Combines SQL results and PDF chunks into single answer
+   - Bilingual response generation (matches query language)
+   - Markdown formatting support
+   - Clear source attribution (SQL vs PDF)
+   - Numerical data presentation without separators
+   - Fallback to PDF-only when no database results
+
+6. Memory & Resource Management:
+   - Message summarization at key points
+   - ChromaDB client cleanup with garbage collection
+   - Minimal checkpoint state (5 essential fields only)
+   - Explicit memory release after retrieval
+   - Token-efficient state management
+
+Processing Stages & Nodes:
+==========================
+
+Stage 1: Query Preprocessing
+----------------------------
+Nodes: rewrite_query_node, summarize_messages_node
+
+rewrite_query_node:
+- Input: state["prompt"], state["messages"] (summary + last message)
+- Output: rewritten_prompt, updated messages
+- LLM: Azure GPT-4o (temp=0.0)
+- Purpose: Converts conversational questions into standalone, search-optimized queries
+- Key Logic:
+  * Resolves pronouns/references using conversation summary
+  * Detects topic corrections ("but I meant X")
+  * Expands vague queries with domain context
+  * Adds synonyms for better vector search
+  * Preserves original language
+  * Escapes curly braces for f-string safety
+
+summarize_messages_node:
+- Input: state["messages"] (may be long list)
+- Output: Updated messages [summary (SystemMessage), last_message]
+- LLM: Azure GPT-4o-mini (temp=0.0)
+- Purpose: Maintains bounded memory by summarizing conversation history
+- Key Logic:
+  * Combines previous summary with latest message
+  * Generates cumulative summary of conversation
+  * Always returns 2-message structure
+  * Enables token-efficient context preservation
+- Called at 4 points: after rewrite, query, reflect, format
+
+Stage 2: Database Selection Retrieval
+-------------------------------------
+Nodes: retrieve_similar_selections_hybrid_search_node, rerank_node, relevant_selections_node
+
+retrieve_similar_selections_hybrid_search_node:
+- Input: rewritten_prompt, n_results (default: 20)
+- Output: hybrid_search_results (List[Document])
+- Purpose: Hybrid search on dataset selection descriptions
+- Key Logic:
+  * Checks ChromaDB directory existence (local) or uses cloud
+  * Initializes ChromaDB client and collection
+  * Calls hybrid_search() (semantic + BM25 weighted combination)
+  * Converts dict results to Document objects
+  * Memory cleanup: Explicitly closes client and runs gc.collect()
+  * Sets chromadb_missing flag if directory not found
+
+rerank_node:
+- Input: hybrid_search_results, rewritten_prompt, n_results (default: 20)
+- Output: most_similar_selections (List[Tuple[str, float]])
+- Purpose: Rerank with Cohere multilingual model for better relevance
+- Key Logic:
+  * Calls cohere_rerank() with query and documents
+  * Extracts selection_code and relevance_score from results
+  * Returns list of (selection_code, score) tuples
+  * Debug logging shows top 10 reranked results
+
+relevant_selections_node:
+- Input: most_similar_selections
+- Output: top_selection_codes (List[str]), clears intermediate results
+- Purpose: Filter by threshold and select top 3 selection codes
+- Key Logic:
+  * Filters by SIMILARITY_THRESHOLD (0.0005)
+  * Takes top 3 codes above threshold
+  * Clears hybrid_search_results and most_similar_selections
+  * Sets final_answer="No Relevant Selections Found" if empty
+
+Stage 3: PDF Chunk Retrieval
+----------------------------
+Nodes: retrieve_similar_chunks_hybrid_search_node, rerank_chunks_node, relevant_chunks_node
+
+retrieve_similar_chunks_hybrid_search_node:
+- Input: rewritten_prompt, n_results (default: 15)
+- Output: hybrid_search_chunks (List[Document])
+- Purpose: Hybrid search on parsed PDF documentation
+- Key Logic:
+  * Translates query to English using Azure Translator API
+  * Checks PDF ChromaDB directory existence or uses cloud
+  * Calls pdf_hybrid_search() on PDF collection
+  * Converts results to Document objects
+  * Memory cleanup: Closes client and runs gc.collect()
+  * Returns empty list if PDF_FUNCTIONALITY_AVAILABLE=False
+
+rerank_chunks_node:
+- Input: hybrid_search_chunks, rewritten_prompt, n_results (default: 5)
+- Output: most_similar_chunks (List[Tuple[Document, float]])
+- Purpose: Rerank PDF chunks with Cohere
+- Key Logic:
+  * Calls pdf_cohere_rerank() with query and documents
+  * Returns list of (Document, relevance_score) tuples
+  * Debug logging shows top N reranked chunks
+
+relevant_chunks_node:
+- Input: most_similar_chunks
+- Output: top_chunks (List[Document]), clears intermediate results
+- Purpose: Filter PDF chunks by relevance threshold
+- Key Logic:
+  * Filters by PDF_RELEVANCE_THRESHOLD (0.01)
+  * Keeps all chunks above threshold (no top-k limit)
+  * Clears hybrid_search_chunks and most_similar_chunks
+  * Debug shows chunk count and previews
+
+Stage 4: SQL Generation & Execution
+-----------------------------------
+Nodes: get_schema_node, query_node
+Helper: load_schema()
+
+get_schema_node:
+- Input: top_selection_codes
+- Output: Updated messages with schema details
+- Purpose: Load database schema for selected tables
+- Key Logic:
+  * Calls load_schema() helper function
+  * Creates AIMessage with schema content
+  * Preserves summary, replaces last_message
+  * Sets message id="schema_details" for tracking
+
+load_schema() helper:
+- Input: top_selection_codes (from state)
+- Output: Formatted schema string
+- Purpose: Retrieve extended descriptions from metadata DB
+- Key Logic:
+  * Connects to selection_descriptions.db
+  * Queries for extended_description by selection_code
+  * Joins multiple schemas with separator
+  * Returns "No schema found" if code missing
+
+query_node:
+- Input: messages (with schema), rewritten_prompt, top_selection_codes, iteration, queries_and_results
+- Output: Updated queries_and_results, messages, iteration
+- LLM: Azure GPT-4o (temp=0.0)
+- MCP Tool: sqlite_query
+- Purpose: Generate and execute SQL query
+- Key Logic:
+  * Loads schema again for prompt context
+  * Builds comprehensive SQL generation system prompt:
+    - Bilingual instructions (Czech/English)
+    - Schema structure explanation (dimensions, metrics, values)
+    - CELKEM (total) row handling warnings
+    - Czech character matching guidelines
+    - Column aliasing best practices
+    - CRITICAL: Output only raw SQL query, no code fences
+  * Skips schema_details message to avoid duplication
+  * Invokes LLM to generate SQL query
+  * Executes query using sqlite_query MCP tool
+  * Handles execution errors gracefully
+  * Appends (query, result) to queries_and_results
+  * Creates AIMessage with query + result
+  * Debug logging for query and result
+
+Stage 5: Reflection & Improvement
+---------------------------------
+Nodes: reflect_node
+
+reflect_node:
+- Input: queries_and_results, messages, iteration, rewritten_prompt
+- Output: reflection_decision ("improve" | "answer"), updated messages, iteration
+- LLM: Azure GPT-4o-mini (temp=0.0)
+- Purpose: Analyze results and decide next action
+- Key Logic:
+  * Forces "answer" if iteration >= MAX_ITERATIONS
+  * Limits query history to last 5 for reflection (token efficiency)
+  * Builds reflection prompt with:
+    - Original question
+    - Conversation summary
+    - Recent queries and results
+    - Guidelines for completeness (comparisons, trends, distributions)
+  * LLM analyzes and provides feedback
+  * Extracts DECISION from response: "answer" or "improve"
+  * Increments iteration if "improve" chosen
+  * Returns reflection message with decision
+
+Stage 6: Answer Finalization
+----------------------------
+Nodes: format_answer_node, submit_final_answer_node, save_node, cleanup_resources_node
+
+format_answer_node:
+- Input: queries_and_results, top_chunks, rewritten_prompt
+- Output: final_answer, updated messages, top_chunks (preserved)
+- LLM: Azure GPT-4o-mini (temp=0.1)
+- Purpose: Synthesize multi-source answer with markdown formatting
+- Key Logic:
+  * Builds SQL context from queries_and_results
+  * Builds PDF context from top_chunks (max 10 chunks)
+  * Separate sections for SQL and PDF data
+  * Comprehensive system prompt:
+    - Use ONLY provided data (SQL + PDF)
+    - Match question's language
+    - No number formatting (plain digits)
+    - Markdown formatting (bullets, headings, tables)
+    - Clear source attribution
+    - Combine SQL and PDF insights
+  * Generates formatted answer
+  * Stores in final_answer field
+  * Preserves top_chunks for frontend display
+  * Debug logging for PDF chunk usage
+
+submit_final_answer_node:
+- Input: final_answer, messages, queries_and_results, top_chunks, top_selection_codes
+- Output: Explicitly preserved final_answer and essential state
+- Purpose: Ensure final_answer persists through checkpointing
+- Key Logic:
+  * Explicitly returns final_answer from state
+  * Preserves messages, queries_and_results, top_chunks, top_selection_codes
+  * Debug logging for final_answer length and preview
+  * Ensures answer reaches API/frontend
+
+save_node:
+- Input: prompt, queries_and_results, final_answer, full state
+- Output: Minimal checkpoint state (5 essential fields)
+- Purpose: Save results to file and create minimal checkpoint
+- Key Logic:
+  * Optionally saves to text file (if SAVE_TO_FILE_TXT_JSONL=1)
+  * Appends to JSONL for memory efficiency
+  * Creates minimal checkpoint with only:
+    - prompt
+    - queries_and_results
+    - most_similar_selections
+    - most_similar_chunks
+    - final_answer
+    - messages (for API compatibility)
+  * Dramatically reduces checkpoint size
+  * Debug logging for checkpoint fields
+
+cleanup_resources_node:
+- Input: full state
+- Output: Essential state fields only
+- Purpose: Final memory cleanup and garbage collection
+- Key Logic:
+  * Creates state_copy with 6 essential fields:
+    - prompt, final_answer, queries_and_results
+    - messages, top_chunks, top_selection_codes
+  * Runs aggressive garbage collection (2 passes)
+  * Catches circular references
+  * Ensures ChromaDB resources released
+  * Debug logging for GC object counts
+
+Helper Functions:
+================
+
+translate_to_english():
+- Input: text (any language)
+- Output: English translation
+- Purpose: Translate PDF search queries to English
+- API: Azure Translator API
+- Key Logic:
+  * Loads API credentials from environment
+  * Constructs translation endpoint with params
+  * Runs synchronous request in thread pool
+  * Returns translated text
+  * Used before PDF chunk retrieval
+
+Constants & Configuration:
+==========================
+
+Debug IDs (for tracing):
+- GET_SCHEMA_ID = 3
+- QUERY_GEN_ID = 4
+- SUBMIT_FINAL_ID = 7
+- SAVE_RESULT_ID = 8
+- RETRIEVE_NODE_ID = 20
+- RELEVANT_NODE_ID = 21
+- HYBRID_SEARCH_NODE_ID = 22
+- RERANK_NODE_ID = 23
+- RETRIEVE_CHUNKS_NODE_ID = 24
+- RERANK_CHUNKS_NODE_ID = 25
+- RELEVANT_CHUNKS_NODE_ID = 26
+- FORMAT_ANSWER_ID = 10
+- REFLECT_NODE_ID = 12
+
+Workflow Control:
+- MAX_ITERATIONS: 1 (default, env configurable)
+- SAVE_TO_FILE_TXT_JSONL: 0 (file saving disabled by default)
+
+Paths:
+- BASE_DIR: Project root (auto-detected from __file__ or cwd)
+- CHROMA_DB_PATH: metadata/czsu_chromadb
+- CHROMA_COLLECTION_NAME: "czsu_selections_chromadb"
+- PDF_CHROMA_DB_PATH: data/pdf_chromadb_llamaparse
+- PDF_COLLECTION_NAME: "pdf_document_collection"
+
+Retrieval Configuration:
+- Database selections:
+  * Default n_results: 20
+  * SIMILARITY_THRESHOLD: 0.0005 (Cohere score)
+  * Top selection codes: 3
+- PDF chunks:
+  * PDF_HYBRID_SEARCH_DEFAULT_RESULTS: 15
+  * PDF_N_TOP_CHUNKS: 5 (for debug display)
+  * PDF_RELEVANCE_THRESHOLD: 0.01 (Cohere score)
+
+LLM Models:
+- Query rewriting: Azure GPT-4o (temp=0.0)
+- Query generation: Azure GPT-4o (temp=0.0)
+- Reflection: Azure GPT-4o-mini (temp=0.0)
+- Answer formatting: Azure GPT-4o-mini (temp=0.1)
+- Message summarization: Azure GPT-4o-mini (temp=0.0)
+
+Embedding Model:
+- EMBEDDING_DEPLOYMENT: "text-embedding-3-large__test1"
+
+Node Execution Patterns:
+========================
+
+Memory Management Pattern:
+-------------------------
+All retrieval nodes follow this pattern:
+1. Initialize ChromaDB client
+2. Get collection
+3. Perform search operation
+4. Convert results to required format
+5. Explicitly set client/collection to None
+6. Delete client reference
+7. Run gc.collect()
+8. Return results
+
+Example:
+```python
+client = get_chromadb_client(path, collection_name)
+collection = client.get_collection(name)
+results = hybrid_search(collection, query, n_results)
+# ... process results ...
+collection = None
+del client
+gc.collect()
+return {"results": processed_results}
+```
+
+Message Structure Pattern:
+--------------------------
+All nodes maintain [summary, last_message] structure:
+```python
+summary = (
+    messages[0] if messages and isinstance(messages[0], SystemMessage)
+    else SystemMessage(content="")
+)
+last_message = messages[1] if len(messages) > 1 else None
+# ... process ...
+return {"messages": [summary, new_message]}
+```
+
+State Update Pattern:
+--------------------
+Nodes return partial state updates:
+```python
+return {
+    "field1": new_value1,
+    "field2": new_value2,
+    # LangGraph merges with existing state
+}
+```
+
+Clearing Intermediate Data Pattern:
+----------------------------------
+After processing, clear intermediate results:
+```python
+return {
+    "final_results": processed_data,
+    "intermediate_results": [],  # Clear to save memory
+}
+```
+
+Error Handling Patterns:
+========================
+
+ChromaDB Missing:
+----------------
+```python
+if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
+    return {"hybrid_search_results": [], "chromadb_missing": True}
+```
+
+SQL Execution Error:
+-------------------
+```python
+try:
+    tool_result = await sqlite_tool.ainvoke({"query": query})
+    if isinstance(tool_result, Exception):
+        new_queries = [(query, f"Error: {str(tool_result)}")]
+        last_message = AIMessage(content=error_msg)
+except Exception as e:
+    new_queries = [(query, f"Error: {str(e)}")]
+    last_message = AIMessage(content=error_msg)
+```
+
+Graceful Degradation:
+--------------------
+```python
+if not PDF_FUNCTIONALITY_AVAILABLE:
+    return {"hybrid_search_chunks": []}
+```
+
+Debug Logging System:
+====================
+Three debug functions with unique IDs:
+- print__nodes_debug(): Node-level operations
+- print__chromadb_debug(): ChromaDB/retrieval operations
+- print__analysis_tracing_debug(): Graph-level tracing
+
+Example usage:
+```python
+print__nodes_debug(f"🧠 {QUERY_GEN_ID}: Generated query: {query}")
+print__nodes_debug(f"✅ {QUERY_GEN_ID}: Successfully executed query")
+print__nodes_debug(f"❌ {QUERY_GEN_ID}: Error: {error_msg}")
+```
+
+Emoji conventions:
+- 🧠: LLM operations
+- 🔍: Search/retrieval
+- 🔄: Reranking/iteration
+- 🎯: Selection/filtering
+- 📊: Results
+- 📄: PDF operations
+- 💾: Schema/save operations
+- 📝: Summarization
+- 🎨: Formatting
+- 📤: Submit
+- 🧹: Cleanup
+- ✅: Success
+- ❌: Error
+
+Integration Points:
+==================
+This module integrates with:
+1. my_agent/utils/state.py: DataAnalysisState TypedDict
+2. my_agent/utils/models.py: LLM client getters
+3. my_agent/utils/mcp_server.py: MCP tool creation
+4. metadata/create_and_load_chromadb.py: Hybrid search, cohere_rerank
+5. data/pdf_to_chromadb.py: PDF hybrid search, pdf_cohere_rerank
+6. metadata/chromadb_client_factory.py: ChromaDB client management
+7. api/utils/debug.py: Debug logging functions
+
+Usage Example:
+=============
+Nodes are called automatically by LangGraph based on graph structure:
+
+```python
+# Define in agent.py
+graph.add_node("rewrite_query", rewrite_query_node)
+graph.add_node("query_gen", query_node)
+# ... etc
+
+# Graph executes nodes based on edges
+graph.add_edge("rewrite_query", "summarize_messages_rewrite")
+graph.add_edge("query_gen", "reflect")
+
+# Nodes receive state and return updates
+result = await rewrite_query_node(state)
+# Returns: {"rewritten_prompt": "...", "messages": [...]}
+```
+
+Performance Considerations:
+==========================
+1. Memory Management:
+   - Explicit client cleanup after retrieval
+   - Garbage collection after ChromaDB operations
+   - Minimal checkpoint state (5 fields vs full 15)
+   - Limited query history (10 most recent)
+   - Capped message summarization points (4 total)
+
+2. Token Efficiency:
+   - Message summarization at key points
+   - Schema truncation for large datasets
+   - Limited query context in reflection (last 5)
+   - Limited PDF chunks in formatting (max 10)
+   - Removing intermediate results after use
+
+3. API Efficiency:
+   - Batch operations where possible
+   - Reusing clients within nodes
+   - Async operations throughout
+   - Connection pooling via factories
+
+4. Parallel Execution:
+   - Database and PDF retrieval run simultaneously
+   - Independent branches until synchronization
+   - No blocking between parallel paths
+
+Quality & Validation:
+====================
+1. Query Generation:
+   - Comprehensive SQL generation instructions
+   - Czech character handling guidance
+   - CELKEM (total) row warnings
+   - Aggregation safety checks
+   - Output format validation (raw SQL only)
+
+2. Reflection:
+   - Completeness checks (comparisons, trends, distributions)
+   - Pattern detection (repetitive queries)
+   - Specific improvement suggestions
+   - Iteration limit enforcement
+
+3. Answer Formatting:
+   - Multi-source synthesis (SQL + PDF)
+   - Source attribution required
+   - Data validation (query vs question match)
+   - No hallucination policy
+   - Markdown formatting standards
+
+See my_agent/agent.py for graph structure connecting these nodes.
+See my_agent/utils/state.py for DataAnalysisState schema.
+"""
+
 """Graph node implementations for the data analysis workflow.
 
 This module defines all the node functions used in the LangGraph workflow,
