@@ -43,7 +43,6 @@ Key Features:
 5. Multi-Stage Query Processing:
    - prompt: Original user question (unchanged)
    - rewritten_prompt: Search-optimized standalone question
-   - rewritten_prompt_history: Full conversation context preservation
 
 6. Explicit Final Answer Tracking:
    - final_answer: Dedicated field for formatted response
@@ -60,7 +59,6 @@ Input Fields (User-Provided):
 Query Processing Fields:
 -----------------------
 - rewritten_prompt: Standalone question optimized for retrieval
-- rewritten_prompt_history: List of all rewritten prompts in conversation
 
 Conversation Management:
 -----------------------
@@ -370,9 +368,6 @@ class DataAnalysisState(TypedDict):
 
     prompt: str  # User query to analyze
     rewritten_prompt: str  # Rewritten user query for downstream nodes
-    rewritten_prompt_history: List[
-        str
-    ]  # History of rewritten prompts for conversational context
     messages: List[
         BaseMessage
     ]  # Always [summary (SystemMessage), last_message (AIMessage or HumanMessage)]

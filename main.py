@@ -383,7 +383,6 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             # Basic conversation fields
             "prompt": prompt,
             "rewritten_prompt": None,
-            "rewritten_prompt_history": [],
             "messages": [
                 SystemMessage(content=""),
                 AIMessage(content=""),
