@@ -8,6 +8,7 @@ import os
 
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from openai import AzureOpenAI
+from langchain_openai import AzureOpenAIEmbeddings
 
 
 # ===============================================================================
@@ -205,7 +206,6 @@ def get_langchain_azure_embedding_model(model_name="text-embedding-3-large__test
     Returns:
         AzureOpenAIEmbeddings: Configured embedding model instance
     """
-    from langchain_openai import AzureOpenAIEmbeddings
 
     return AzureOpenAIEmbeddings(
         model=model_name,

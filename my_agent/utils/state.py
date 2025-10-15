@@ -307,13 +307,12 @@ This module defines the state schema used to represent state
 in the LangGraph-based data analysis application.
 """
 
-from operator import add
 
 # ==============================================================================
 # IMPORTS
 # ==============================================================================
 from typing import Annotated, List, Tuple, TypedDict
-
+import os
 from langchain_core.documents import Document
 from langchain_core.messages import BaseMessage
 
@@ -337,7 +336,6 @@ def limited_queries_reducer(
         Combined list limited to MAX_QUERIES_LIMIT_FOR_REFLECT most recent entries
     """
     # Configurable limit - can be overridden by environment variable
-    import os
 
     MAX_QUERIES_LIMIT_FOR_REFLECT = int(
         os.environ.get("MAX_QUERIES_LIMIT_FOR_REFLECT", "10")
