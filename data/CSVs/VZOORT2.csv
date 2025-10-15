@@ -1,0 +1,1842 @@
+Území;Roky;Typ ceny;Očištění;Země;Ukazatel;value
+Česko;2024;Běžné ceny;Bez očištění;Svět celkem;Vývoz (v mil. Kč, FOB);4646947.179193
+Česko;2024;Běžné ceny;Bez očištění;Svět celkem;Dovoz (v mil. Kč, CIF);4420248.634606
+Česko;2024;Běžné ceny;Bez očištění;Svět celkem;Bilance (v mil. Kč);226698.544587
+Česko;2024;Běžné ceny;Bez očištění;Svět celkem;Obrat zboží (v mil. Kč);9067195.813799
+Česko;2024;Běžné ceny;Bez očištění;Svět celkem;Vývoz (meziroční index);104.6034121889
+Česko;2024;Běžné ceny;Bez očištění;Svět celkem;Dovoz (meziroční index);102.3219748235
+Česko;2024;Běžné ceny;Bez očištění;Svět celkem;Obrat zboží (meziroční index);103.4786413237
+Česko;2024;Běžné ceny;Bez očištění;Eurozóna 20;Vývoz (v mil. Kč, FOB);2926518.724351
+Česko;2024;Běžné ceny;Bez očištění;Eurozóna 20;Dovoz (v mil. Kč, CIF);2075447.096652
+Česko;2024;Běžné ceny;Bez očištění;Eurozóna 20;Bilance (v mil. Kč);851071.627699
+Česko;2024;Běžné ceny;Bez očištění;Eurozóna 20;Obrat zboží (v mil. Kč);5001965.821003
+Česko;2024;Běžné ceny;Bez očištění;Eurozóna 20;Vývoz (meziroční index);101.0871594966
+Česko;2024;Běžné ceny;Bez očištění;Eurozóna 20;Dovoz (meziroční index);102.1638320711
+Česko;2024;Běžné ceny;Bez očištění;Eurozóna 20;Obrat zboží (meziroční index);101.531132594
+Česko;2024;Běžné ceny;Bez očištění;EU27_2020;Vývoz (v mil. Kč, FOB);3623791.368841
+Česko;2024;Běžné ceny;Bez očištění;EU27_2020;Dovoz (v mil. Kč, CIF);2762998.545167
+Česko;2024;Běžné ceny;Bez očištění;EU27_2020;Bilance (v mil. Kč);860792.823674
+Česko;2024;Běžné ceny;Bez očištění;EU27_2020;Obrat zboží (v mil. Kč);6386789.914008
+Česko;2024;Běžné ceny;Bez očištění;EU27_2020;Vývoz (meziroční index);101.7279387241
+Česko;2024;Běžné ceny;Bez očištění;EU27_2020;Dovoz (meziroční index);102.7920574424
+Česko;2024;Běžné ceny;Bez očištění;EU27_2020;Obrat zboží (meziroční index);102.1855725651
+Česko;2024;Běžné ceny;Bez očištění;Svět bez EU27_2020;Vývoz (v mil. Kč, FOB);1020818.276171
+Česko;2024;Běžné ceny;Bez očištění;Svět bez EU27_2020;Dovoz (v mil. Kč, CIF);1620899.623502
+Česko;2024;Běžné ceny;Bez očištění;Svět bez EU27_2020;Bilance (v mil. Kč);-600081.347331
+Česko;2024;Běžné ceny;Bez očištění;Svět bez EU27_2020;Obrat zboží (v mil. Kč);2641717.899673
+Česko;2024;Běžné ceny;Bez očištění;Svět bez EU27_2020;Vývoz (meziroční index);116.2552467779
+Česko;2024;Běžné ceny;Bez očištění;Svět bez EU27_2020;Dovoz (meziroční index);101.5597129548
+Česko;2024;Běžné ceny;Bez očištění;Svět bez EU27_2020;Obrat zboží (meziroční index);106.7753303608
+Česko;2024;Běžné ceny;Bez očištění;Nespecifikováno;Vývoz (v mil. Kč, FOB);2337.534181
+Česko;2024;Běžné ceny;Bez očištění;Nespecifikováno;Dovoz (v mil. Kč, CIF);36350.465937
+Česko;2024;Běžné ceny;Bez očištění;Nespecifikováno;Bilance (v mil. Kč);-34012.931756
+Česko;2024;Běžné ceny;Bez očištění;Nespecifikováno;Obrat zboží (v mil. Kč);38688.000118
+Česko;2024;Běžné ceny;Bez očištění;Nespecifikováno;Vývoz (meziroční index);110.1824533894
+Česko;2024;Běžné ceny;Bez očištění;Nespecifikováno;Dovoz (meziroční index);101.0163265374
+Česko;2024;Běžné ceny;Bez očištění;Nespecifikováno;Obrat zboží (meziroční index);101.526637759
+Česko;2024;Běžné ceny;Bez očištění;Evropa;Vývoz (v mil. Kč, FOB);4127974.33009
+Česko;2024;Běžné ceny;Bez očištění;Evropa;Dovoz (v mil. Kč, CIF);3146763.113011
+Česko;2024;Běžné ceny;Bez očištění;Evropa;Bilance (v mil. Kč);981211.217079
+Česko;2024;Běžné ceny;Bez očištění;Evropa;Obrat zboží (v mil. Kč);7274737.443101
+Česko;2024;Běžné ceny;Bez očištění;Evropa;Vývoz (meziroční index);103.2479854669
+Česko;2024;Běžné ceny;Bez očištění;Evropa;Dovoz (meziroční index);101.4522383933
+Česko;2024;Běžné ceny;Bez očištění;Evropa;Obrat zboží (meziroční index);102.4634739256
+Česko;2024;Běžné ceny;Bez očištění;Afrika;Vývoz (v mil. Kč, FOB);45216.62457
+Česko;2024;Běžné ceny;Bez očištění;Afrika;Dovoz (v mil. Kč, CIF);36026.395574
+Česko;2024;Běžné ceny;Bez očištění;Afrika;Bilance (v mil. Kč);9190.228996
+Česko;2024;Běžné ceny;Bez očištění;Afrika;Obrat zboží (v mil. Kč);81243.020144
+Česko;2024;Běžné ceny;Bez očištění;Afrika;Vývoz (meziroční index);102.9170739819
+Česko;2024;Běžné ceny;Bez očištění;Afrika;Dovoz (meziroční index);96.3964359988
+Česko;2024;Běžné ceny;Bez očištění;Afrika;Obrat zboží (meziroční index);99.9198738508
+Česko;2024;Běžné ceny;Bez očištění;Amerika;Vývoz (v mil. Kč, FOB);184941.862136
+Česko;2024;Běžné ceny;Bez očištění;Amerika;Dovoz (v mil. Kč, CIF);176369.574624
+Česko;2024;Běžné ceny;Bez očištění;Amerika;Bilance (v mil. Kč);8572.287512
+Česko;2024;Běžné ceny;Bez očištění;Amerika;Obrat zboží (v mil. Kč);361311.43676
+Česko;2024;Běžné ceny;Bez očištění;Amerika;Vývoz (meziroční index);113.8631113635
+Česko;2024;Běžné ceny;Bez očištění;Amerika;Dovoz (meziroční index);102.9200613171
+Česko;2024;Běžné ceny;Bez očištění;Amerika;Obrat zboží (meziroční index);108.2450269445
+Česko;2024;Běžné ceny;Bez očištění;Asie;Vývoz (v mil. Kč, FOB);272037.100442
+Česko;2024;Běžné ceny;Bez očištění;Asie;Dovoz (v mil. Kč, CIF);1021808.793326
+Česko;2024;Běžné ceny;Bez očištění;Asie;Bilance (v mil. Kč);-749771.692884
+Česko;2024;Běžné ceny;Bez očištění;Asie;Obrat zboží (v mil. Kč);1293845.893768
+Česko;2024;Běžné ceny;Bez očištění;Asie;Vývoz (meziroční index);123.1842599416
+Česko;2024;Běžné ceny;Bez očištění;Asie;Dovoz (meziroční index);105.267131591
+Česko;2024;Běžné ceny;Bez očištění;Asie;Obrat zboží (meziroční index);108.587912753
+Česko;2024;Běžné ceny;Bez očištění;Oceánie a Polární oblasti;Vývoz (v mil. Kč, FOB);14439.727774
+Česko;2024;Běžné ceny;Bez očištění;Oceánie a Polární oblasti;Dovoz (v mil. Kč, CIF);2930.292134
+Česko;2024;Běžné ceny;Bez očištění;Oceánie a Polární oblasti;Bilance (v mil. Kč);11509.43564
+Česko;2024;Běžné ceny;Bez očištění;Oceánie a Polární oblasti;Obrat zboží (v mil. Kč);17370.019908
+Česko;2024;Běžné ceny;Bez očištění;Oceánie a Polární oblasti;Vývoz (meziroční index);96.2116262786
+Česko;2024;Běžné ceny;Bez očištění;Oceánie a Polární oblasti;Dovoz (meziroční index);104.0317906498
+Česko;2024;Běžné ceny;Bez očištění;Oceánie a Polární oblasti;Obrat zboží (meziroční index);97.4473761117
+Česko;2024;Běžné ceny;Bez očištění;Afghánistán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Afghánistán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Afghánistán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Afghánistán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Afghánistán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Afghánistán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Afghánistán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Albánie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Albánie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Albánie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Albánie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Albánie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Albánie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Albánie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Alžírsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Alžírsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Alžírsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Alžírsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Alžírsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Alžírsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Alžírsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Americká Samoa;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Americká Samoa;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Americká Samoa;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Americká Samoa;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Americká Samoa;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Americká Samoa;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Americká Samoa;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Americké Panenské ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Americké Panenské ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Americké Panenské ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Americké Panenské ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Americké Panenské ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Americké Panenské ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Americké Panenské ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Andorra;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Andorra;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Andorra;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Andorra;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Andorra;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Andorra;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Andorra;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Angola;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Angola;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Angola;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Angola;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Angola;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Angola;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Angola;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Anguilla;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Anguilla;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Anguilla;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Anguilla;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Anguilla;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Anguilla;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Anguilla;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Antarktida;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Antarktida;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Antarktida;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Antarktida;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Antarktida;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Antarktida;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Antarktida;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Antigua a Barbuda;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Antigua a Barbuda;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Antigua a Barbuda;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Antigua a Barbuda;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Antigua a Barbuda;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Antigua a Barbuda;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Antigua a Barbuda;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Argentina;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Argentina;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Argentina;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Argentina;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Argentina;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Argentina;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Argentina;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Arménie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Arménie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Arménie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Arménie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Arménie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Arménie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Arménie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Aruba;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Aruba;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Aruba;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Aruba;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Aruba;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Aruba;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Aruba;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Austrálie;Vývoz (v mil. Kč, FOB);12728.107548
+Česko;2024;Běžné ceny;Bez očištění;Austrálie;Dovoz (v mil. Kč, CIF);1949.04966
+Česko;2024;Běžné ceny;Bez očištění;Austrálie;Bilance (v mil. Kč);10779.057888
+Česko;2024;Běžné ceny;Bez očištění;Austrálie;Obrat zboží (v mil. Kč);14677.157208
+Česko;2024;Běžné ceny;Bez očištění;Austrálie;Vývoz (meziroční index);108.5434591388
+Česko;2024;Běžné ceny;Bez očištění;Austrálie;Dovoz (meziroční index);98.687855003
+Česko;2024;Běžné ceny;Bez očištění;Austrálie;Obrat zboží (meziroční index);107.1228241266
+Česko;2024;Běžné ceny;Bez očištění;Ázerbájdžán;Vývoz (v mil. Kč, FOB);6164.335405
+Česko;2024;Běžné ceny;Bez očištění;Ázerbájdžán;Dovoz (v mil. Kč, CIF);39611.639893
+Česko;2024;Běžné ceny;Bez očištění;Ázerbájdžán;Bilance (v mil. Kč);-33447.304488
+Česko;2024;Běžné ceny;Bez očištění;Ázerbájdžán;Obrat zboží (v mil. Kč);45775.975298
+Česko;2024;Běžné ceny;Bez očištění;Ázerbájdžán;Vývoz (meziroční index);147.2454098299
+Česko;2024;Běžné ceny;Bez očištění;Ázerbájdžán;Dovoz (meziroční index);133.344316194
+Česko;2024;Běžné ceny;Bez očištění;Ázerbájdžán;Obrat zboží (meziroční index);135.0613824323
+Česko;2024;Běžné ceny;Bez očištění;Bahamy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bahamy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bahamy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bahamy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bahamy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bahamy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bahamy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bahrajn;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bahrajn;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bahrajn;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bahrajn;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bahrajn;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bahrajn;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bahrajn;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bangladéš;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bangladéš;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bangladéš;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bangladéš;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bangladéš;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bangladéš;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bangladéš;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Barbados;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Barbados;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Barbados;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Barbados;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Barbados;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Barbados;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Barbados;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Belgie;Vývoz (v mil. Kč, FOB);102054.474061
+Česko;2024;Běžné ceny;Bez očištění;Belgie;Dovoz (v mil. Kč, CIF);68336.983143
+Česko;2024;Běžné ceny;Bez očištění;Belgie;Bilance (v mil. Kč);33717.490918
+Česko;2024;Běžné ceny;Bez očištění;Belgie;Obrat zboží (v mil. Kč);170391.457204
+Česko;2024;Běžné ceny;Bez očištění;Belgie;Vývoz (meziroční index);100.8157498677
+Česko;2024;Běžné ceny;Bez očištění;Belgie;Dovoz (meziroční index);99.6141024519
+Česko;2024;Běžné ceny;Bez očištění;Belgie;Obrat zboží (meziroční index);100.3303534599
+Česko;2024;Běžné ceny;Bez očištění;Belize;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Belize;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Belize;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Belize;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Belize;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Belize;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Belize;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bělorusko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bělorusko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bělorusko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bělorusko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bělorusko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bělorusko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bělorusko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Benin;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Benin;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Benin;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Benin;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Benin;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Benin;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Benin;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bermudy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bermudy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bermudy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bermudy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bermudy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bermudy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bermudy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bhútán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bhútán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bhútán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bhútán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bhútán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bhútán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bhútán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bolívarovská republika Venezuela;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bolívarovská republika Venezuela;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bolívarovská republika Venezuela;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bolívarovská republika Venezuela;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bolívarovská republika Venezuela;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bolívarovská republika Venezuela;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bolívarovská republika Venezuela;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bonaire, Svatý Eustach a Saba;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bonaire, Svatý Eustach a Saba;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bonaire, Svatý Eustach a Saba;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bonaire, Svatý Eustach a Saba;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bonaire, Svatý Eustach a Saba;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bonaire, Svatý Eustach a Saba;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bonaire, Svatý Eustach a Saba;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bosna a Hercegovina;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bosna a Hercegovina;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bosna a Hercegovina;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bosna a Hercegovina;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bosna a Hercegovina;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bosna a Hercegovina;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bosna a Hercegovina;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Botswana;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Botswana;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Botswana;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Botswana;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Botswana;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Botswana;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Botswana;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bouvetův ostrov;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Bouvetův ostrov;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Bouvetův ostrov;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bouvetův ostrov;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Bouvetův ostrov;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bouvetův ostrov;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bouvetův ostrov;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Brazílie;Vývoz (v mil. Kč, FOB);9972.705641
+Česko;2024;Běžné ceny;Bez očištění;Brazílie;Dovoz (v mil. Kč, CIF);5133.980242
+Česko;2024;Běžné ceny;Bez očištění;Brazílie;Bilance (v mil. Kč);4838.725399
+Česko;2024;Běžné ceny;Bez očištění;Brazílie;Obrat zboží (v mil. Kč);15106.685883
+Česko;2024;Běžné ceny;Bez očištění;Brazílie;Vývoz (meziroční index);117.7695474341
+Česko;2024;Běžné ceny;Bez očištění;Brazílie;Dovoz (meziroční index);81.5595006123
+Česko;2024;Běžné ceny;Bez očištění;Brazílie;Obrat zboží (meziroční index);102.3297550226
+Česko;2024;Běžné ceny;Bez očištění;Britské indickooceánské území;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Britské indickooceánské území;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Britské indickooceánské území;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Britské indickooceánské území;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Britské indickooceánské území;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Britské indickooceánské území;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Britské indickooceánské území;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Britské Panenské ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Britské Panenské ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Britské Panenské ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Britské Panenské ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Britské Panenské ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Britské Panenské ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Britské Panenské ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Brunej Darussalam;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Brunej Darussalam;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Brunej Darussalam;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Brunej Darussalam;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Brunej Darussalam;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Brunej Darussalam;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Brunej Darussalam;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Bulharsko;Vývoz (v mil. Kč, FOB);30159.043682
+Česko;2024;Běžné ceny;Bez očištění;Bulharsko;Dovoz (v mil. Kč, CIF);27437.038738
+Česko;2024;Běžné ceny;Bez očištění;Bulharsko;Bilance (v mil. Kč);2722.004944
+Česko;2024;Běžné ceny;Bez očištění;Bulharsko;Obrat zboží (v mil. Kč);57596.08242
+Česko;2024;Běžné ceny;Bez očištění;Bulharsko;Vývoz (meziroční index);99.3233914826
+Česko;2024;Běžné ceny;Bez očištění;Bulharsko;Dovoz (meziroční index);125.9136412782
+Česko;2024;Běžné ceny;Bez očištění;Bulharsko;Obrat zboží (meziroční index);110.4328305025
+Česko;2024;Běžné ceny;Bez očištění;Burkina Faso;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Burkina Faso;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Burkina Faso;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Burkina Faso;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Burkina Faso;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Burkina Faso;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Burkina Faso;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Burundi;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Burundi;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Burundi;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Burundi;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Burundi;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Burundi;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Burundi;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ceuta;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Ceuta;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Ceuta;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ceuta;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ceuta;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ceuta;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ceuta;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Cookovy ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Cookovy ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Cookovy ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Cookovy ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Cookovy ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Cookovy ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Cookovy ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Curaçao;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Curaçao;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Curaçao;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Curaçao;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Curaçao;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Curaçao;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Curaçao;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Čad;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Čad;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Čad;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Čad;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Čad;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Čad;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Čad;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Černá Hora;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Černá Hora;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Černá Hora;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Černá Hora;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Černá Hora;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Černá Hora;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Černá Hora;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Česko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Česko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Česko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Česko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Česko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Česko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Česko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Čína;Vývoz (v mil. Kč, FOB);53294.187503
+Česko;2024;Běžné ceny;Bez očištění;Čína;Dovoz (v mil. Kč, CIF);536776.338523
+Česko;2024;Běžné ceny;Bez očištění;Čína;Bilance (v mil. Kč);-483482.15102
+Česko;2024;Běžné ceny;Bez očištění;Čína;Obrat zboží (v mil. Kč);590070.526026
+Česko;2024;Běžné ceny;Bez očištění;Čína;Vývoz (meziroční index);123.2363509081
+Česko;2024;Běžné ceny;Bez očištění;Čína;Dovoz (meziroční index);102.0452499403
+Česko;2024;Běžné ceny;Bez očištění;Čína;Obrat zboží (meziroční index);103.655084415
+Česko;2024;Běžné ceny;Bez očištění;Dánsko;Vývoz (v mil. Kč, FOB);37117.384142
+Česko;2024;Běžné ceny;Bez očištění;Dánsko;Dovoz (v mil. Kč, CIF);24111.410703
+Česko;2024;Běžné ceny;Bez očištění;Dánsko;Bilance (v mil. Kč);13005.973439
+Česko;2024;Běžné ceny;Bez očištění;Dánsko;Obrat zboží (v mil. Kč);61228.794845
+Česko;2024;Běžné ceny;Bez očištění;Dánsko;Vývoz (meziroční index);109.4107129362
+Česko;2024;Běžné ceny;Bez očištění;Dánsko;Dovoz (meziroční index);102.0340849527
+Česko;2024;Běžné ceny;Bez očištění;Dánsko;Obrat zboží (meziroční index);106.3820708223
+Česko;2024;Běžné ceny;Bez očištění;Demokratická republika Kongo;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Demokratická republika Kongo;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Demokratická republika Kongo;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Demokratická republika Kongo;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Demokratická republika Kongo;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Demokratická republika Kongo;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Demokratická republika Kongo;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Dominika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Dominika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Dominika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Dominika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Dominika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Dominika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Dominika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Dominikánská republika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Dominikánská republika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Dominikánská republika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Dominikánská republika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Dominikánská republika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Dominikánská republika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Dominikánská republika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Džibutsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Džibutsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Džibutsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Džibutsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Džibutsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Džibutsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Džibutsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Egypt;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Egypt;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Egypt;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Egypt;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Egypt;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Egypt;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Egypt;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ekvádor;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Ekvádor;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Ekvádor;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ekvádor;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ekvádor;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ekvádor;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ekvádor;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Eritrea;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Eritrea;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Eritrea;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Eritrea;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Eritrea;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Eritrea;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Eritrea;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Estonsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Estonsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Estonsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Estonsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Estonsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Estonsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Estonsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Etiopie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Etiopie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Etiopie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Etiopie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Etiopie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Etiopie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Etiopie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Evropská unie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Evropská unie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Evropská unie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Evropská unie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Evropská unie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Evropská unie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Evropská unie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Faerské ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Faerské ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Faerské ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Faerské ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Faerské ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Faerské ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Faerské ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Falklandské ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Falklandské ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Falklandské ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Falklandské ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Falklandské ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Falklandské ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Falklandské ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Federativní státy Mikronésie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Federativní státy Mikronésie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Federativní státy Mikronésie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Federativní státy Mikronésie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Federativní státy Mikronésie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Federativní státy Mikronésie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Federativní státy Mikronésie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Fidži;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Fidži;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Fidži;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Fidži;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Fidži;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Fidži;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Fidži;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Filipíny;Vývoz (v mil. Kč, FOB);1569.184803
+Česko;2024;Běžné ceny;Bez očištění;Filipíny;Dovoz (v mil. Kč, CIF);7830.294688
+Česko;2024;Běžné ceny;Bez očištění;Filipíny;Bilance (v mil. Kč);-6261.109885
+Česko;2024;Běžné ceny;Bez očištění;Filipíny;Obrat zboží (v mil. Kč);9399.479491
+Česko;2024;Běžné ceny;Bez očištění;Filipíny;Vývoz (meziroční index);105.2347032811
+Česko;2024;Běžné ceny;Bez očištění;Filipíny;Dovoz (meziroční index);115.0275710248
+Česko;2024;Běžné ceny;Bez očištění;Filipíny;Obrat zboží (meziroční index);113.2679137127
+Česko;2024;Běžné ceny;Bez očištění;Finsko;Vývoz (v mil. Kč, FOB);20264.981714
+Česko;2024;Běžné ceny;Bez očištění;Finsko;Dovoz (v mil. Kč, CIF);13304.787155
+Česko;2024;Běžné ceny;Bez očištění;Finsko;Bilance (v mil. Kč);6960.194559
+Česko;2024;Běžné ceny;Bez očištění;Finsko;Obrat zboží (v mil. Kč);33569.768869
+Česko;2024;Běžné ceny;Bez očištění;Finsko;Vývoz (meziroční index);86.4485462183
+Česko;2024;Běžné ceny;Bez očištění;Finsko;Dovoz (meziroční index);105.3188362416
+Česko;2024;Běžné ceny;Bez očištění;Finsko;Obrat zboží (meziroční index);93.0566936107
+Česko;2024;Běžné ceny;Bez očištění;Francie;Vývoz (v mil. Kč, FOB);222739.23932
+Česko;2024;Běžné ceny;Bez očištění;Francie;Dovoz (v mil. Kč, CIF);132912.95704
+Česko;2024;Běžné ceny;Bez očištění;Francie;Bilance (v mil. Kč);89826.28228
+Česko;2024;Běžné ceny;Bez očištění;Francie;Obrat zboží (v mil. Kč);355652.19636
+Česko;2024;Běžné ceny;Bez očištění;Francie;Vývoz (meziroční index);101.0802887149
+Česko;2024;Běžné ceny;Bez očištění;Francie;Dovoz (meziroční index);97.8956312127
+Česko;2024;Běžné ceny;Bez očištění;Francie;Obrat zboží (meziroční index);99.8661741774
+Česko;2024;Běžné ceny;Bez očištění;Francouzská jižní území;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská jižní území;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská jižní území;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská jižní území;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská jižní území;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská jižní území;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská jižní území;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská Polynésie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská Polynésie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská Polynésie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská Polynésie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská Polynésie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská Polynésie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Francouzská Polynésie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gabon;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Gabon;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Gabon;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gabon;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gabon;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gabon;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gabon;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gambie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Gambie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Gambie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gambie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gambie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gambie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gambie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ghana;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Ghana;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Ghana;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ghana;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ghana;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ghana;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ghana;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gibraltar;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Gibraltar;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Gibraltar;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gibraltar;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gibraltar;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gibraltar;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gibraltar;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Grenada;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Grenada;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Grenada;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Grenada;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Grenada;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Grenada;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Grenada;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Grónsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Grónsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Grónsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Grónsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Grónsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Grónsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Grónsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gruzie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Gruzie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Gruzie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gruzie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Gruzie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gruzie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Gruzie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guam;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Guam;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Guam;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guam;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guam;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guam;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guam;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guatemala;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Guatemala;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Guatemala;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guatemala;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guatemala;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guatemala;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guatemala;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guinea;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Guinea;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Guinea;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guinea;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guinea;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guinea;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guinea;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guinea-Bissau;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Guinea-Bissau;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Guinea-Bissau;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guinea-Bissau;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guinea-Bissau;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guinea-Bissau;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guinea-Bissau;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guyana;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Guyana;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Guyana;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guyana;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Guyana;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guyana;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Guyana;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Haiti;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Haiti;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Haiti;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Haiti;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Haiti;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Haiti;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Haiti;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Heardův ostrov a McDonaldovy ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Heardův ostrov a McDonaldovy ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Heardův ostrov a McDonaldovy ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Heardův ostrov a McDonaldovy ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Heardův ostrov a McDonaldovy ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Heardův ostrov a McDonaldovy ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Heardův ostrov a McDonaldovy ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Honduras;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Honduras;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Honduras;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Honduras;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Honduras;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Honduras;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Honduras;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Hongkong;Vývoz (v mil. Kč, FOB);5519.337376
+Česko;2024;Běžné ceny;Bez očištění;Hongkong;Dovoz (v mil. Kč, CIF);2199.710148
+Česko;2024;Běžné ceny;Bez očištění;Hongkong;Bilance (v mil. Kč);3319.627228
+Česko;2024;Běžné ceny;Bez očištění;Hongkong;Obrat zboží (v mil. Kč);7719.047524
+Česko;2024;Běžné ceny;Bez očištění;Hongkong;Vývoz (meziroční index);103.0584113837
+Česko;2024;Běžné ceny;Bez očištění;Hongkong;Dovoz (meziroční index);124.6070278864
+Česko;2024;Běžné ceny;Bez očištění;Hongkong;Obrat zboží (meziroční index);108.4004844196
+Česko;2024;Běžné ceny;Bez očištění;Chile;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Chile;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Chile;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Chile;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Chile;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Chile;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Chile;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Chorvatsko;Vývoz (v mil. Kč, FOB);21596.892055
+Česko;2024;Běžné ceny;Bez očištění;Chorvatsko;Dovoz (v mil. Kč, CIF);5383.86682
+Česko;2024;Běžné ceny;Bez očištění;Chorvatsko;Bilance (v mil. Kč);16213.025235
+Česko;2024;Běžné ceny;Bez očištění;Chorvatsko;Obrat zboží (v mil. Kč);26980.758875
+Česko;2024;Běžné ceny;Bez očištění;Chorvatsko;Vývoz (meziroční index);109.2771931494
+Česko;2024;Běžné ceny;Bez očištění;Chorvatsko;Dovoz (meziroční index);101.228344575
+Česko;2024;Běžné ceny;Bez očištění;Chorvatsko;Obrat zboží (meziroční index);107.5704632038
+Česko;2024;Běžné ceny;Bez očištění;Indie;Vývoz (v mil. Kč, FOB);23323.118723
+Česko;2024;Běžné ceny;Bez očištění;Indie;Dovoz (v mil. Kč, CIF);35112.37349
+Česko;2024;Běžné ceny;Bez očištění;Indie;Bilance (v mil. Kč);-11789.254767
+Česko;2024;Běžné ceny;Bez očištění;Indie;Obrat zboží (v mil. Kč);58435.492213
+Česko;2024;Běžné ceny;Bez očištění;Indie;Vývoz (meziroční index);97.9937043203
+Česko;2024;Běžné ceny;Bez očištění;Indie;Dovoz (meziroční index);110.1407132584
+Česko;2024;Běžné ceny;Bez očištění;Indie;Obrat zboží (meziroční index);104.9484452456
+Česko;2024;Běžné ceny;Bez očištění;Indonésie;Vývoz (v mil. Kč, FOB);3713.926458
+Česko;2024;Běžné ceny;Bez očištění;Indonésie;Dovoz (v mil. Kč, CIF);8151.200499
+Česko;2024;Běžné ceny;Bez očištění;Indonésie;Bilance (v mil. Kč);-4437.274041
+Česko;2024;Běžné ceny;Bez očištění;Indonésie;Obrat zboží (v mil. Kč);11865.126957
+Česko;2024;Běžné ceny;Bez očištění;Indonésie;Vývoz (meziroční index);96.1811769225
+Česko;2024;Běžné ceny;Bez očištění;Indonésie;Dovoz (meziroční index);85.2004545644
+Česko;2024;Běžné ceny;Bez očištění;Indonésie;Obrat zboží (meziroční index);88.3579849378
+Česko;2024;Běžné ceny;Bez očištění;Irák;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Irák;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Irák;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Irák;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Irák;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Irák;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Irák;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Íránská islámská republika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Íránská islámská republika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Íránská islámská republika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Íránská islámská republika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Íránská islámská republika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Íránská islámská republika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Íránská islámská republika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Irsko;Vývoz (v mil. Kč, FOB);19018.952996
+Česko;2024;Běžné ceny;Bez očištění;Irsko;Dovoz (v mil. Kč, CIF);21256.267343
+Česko;2024;Běžné ceny;Bez očištění;Irsko;Bilance (v mil. Kč);-2237.314347
+Česko;2024;Běžné ceny;Bez očištění;Irsko;Obrat zboží (v mil. Kč);40275.220339
+Česko;2024;Běžné ceny;Bez očištění;Irsko;Vývoz (meziroční index);95.8976024945
+Česko;2024;Běžné ceny;Bez očištění;Irsko;Dovoz (meziroční index);102.6918110701
+Česko;2024;Běžné ceny;Bez očištění;Irsko;Obrat zboží (meziroční index);99.3673332467
+Česko;2024;Běžné ceny;Bez očištění;Island;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Island;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Island;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Island;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Island;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Island;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Island;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Itálie;Vývoz (v mil. Kč, FOB);188219.340484
+Česko;2024;Běžné ceny;Bez očištění;Itálie;Dovoz (v mil. Kč, CIF);194134.358635
+Česko;2024;Běžné ceny;Bez očištění;Itálie;Bilance (v mil. Kč);-5915.018151
+Česko;2024;Běžné ceny;Bez očištění;Itálie;Obrat zboží (v mil. Kč);382353.699119
+Česko;2024;Běžné ceny;Bez očištění;Itálie;Vývoz (meziroční index);101.0221533084
+Česko;2024;Běžné ceny;Bez očištění;Itálie;Dovoz (meziroční index);102.3658947129
+Česko;2024;Běžné ceny;Bez očištění;Itálie;Obrat zboží (meziroční index);101.6999795641
+Česko;2024;Běžné ceny;Bez očištění;Izrael;Vývoz (v mil. Kč, FOB);23611.174102
+Česko;2024;Běžné ceny;Bez očištění;Izrael;Dovoz (v mil. Kč, CIF);5904.953177
+Česko;2024;Běžné ceny;Bez očištění;Izrael;Bilance (v mil. Kč);17706.220925
+Česko;2024;Běžné ceny;Bez očištění;Izrael;Obrat zboží (v mil. Kč);29516.127279
+Česko;2024;Běžné ceny;Bez očištění;Izrael;Vývoz (meziroční index);109.2446342267
+Česko;2024;Běžné ceny;Bez očištění;Izrael;Dovoz (meziroční index);79.3588853489
+Česko;2024;Běžné ceny;Bez očištění;Izrael;Obrat zboží (meziroční index);101.5907836753
+Česko;2024;Běžné ceny;Bez očištění;Jamajka;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Jamajka;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Jamajka;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jamajka;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jamajka;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jamajka;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jamajka;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Japonsko;Vývoz (v mil. Kč, FOB);17885.417034
+Česko;2024;Běžné ceny;Bez očištění;Japonsko;Dovoz (v mil. Kč, CIF);82078.050347
+Česko;2024;Běžné ceny;Bez očištění;Japonsko;Bilance (v mil. Kč);-64192.633313
+Česko;2024;Běžné ceny;Bez očištění;Japonsko;Obrat zboží (v mil. Kč);99963.467381
+Česko;2024;Běžné ceny;Bez očištění;Japonsko;Vývoz (meziroční index);149.4401098815
+Česko;2024;Běžné ceny;Bez očištění;Japonsko;Dovoz (meziroční index);96.7691370293
+Česko;2024;Běžné ceny;Bez očištění;Japonsko;Obrat zboží (meziroční index);103.2822339983
+Česko;2024;Běžné ceny;Bez očištění;Jemen;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Jemen;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Jemen;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jemen;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jemen;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jemen;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jemen;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Afrika;Vývoz (v mil. Kč, FOB);10059.197769
+Česko;2024;Běžné ceny;Bez očištění;Jižní Afrika;Dovoz (v mil. Kč, CIF);11371.32685
+Česko;2024;Běžné ceny;Bez očištění;Jižní Afrika;Bilance (v mil. Kč);-1312.129081
+Česko;2024;Běžné ceny;Bez očištění;Jižní Afrika;Obrat zboží (v mil. Kč);21430.524619
+Česko;2024;Běžné ceny;Bez očištění;Jižní Afrika;Vývoz (meziroční index);102.6684944582
+Česko;2024;Běžné ceny;Bez očištění;Jižní Afrika;Dovoz (meziroční index);68.7429777022
+Česko;2024;Běžné ceny;Bez očištění;Jižní Afrika;Obrat zboží (meziroční index);81.3625409696
+Česko;2024;Běžné ceny;Bez očištění;Jižní Georgie a Jižní Sandwichovy ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Georgie a Jižní Sandwichovy ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Georgie a Jižní Sandwichovy ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Georgie a Jižní Sandwichovy ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Georgie a Jižní Sandwichovy ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Georgie a Jižní Sandwichovy ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Georgie a Jižní Sandwichovy ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Súdán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Súdán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Súdán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Súdán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Súdán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Súdán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jižní Súdán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jordánsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Jordánsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Jordánsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jordánsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Jordánsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jordánsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Jordánsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kajmanské ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kajmanské ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kajmanské ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kajmanské ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kajmanské ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kajmanské ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kajmanské ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kambodža;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kambodža;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kambodža;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kambodža;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kambodža;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kambodža;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kambodža;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kamerun;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kamerun;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kamerun;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kamerun;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kamerun;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kamerun;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kamerun;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kanada;Vývoz (v mil. Kč, FOB);8672.616662
+Česko;2024;Běžné ceny;Bez očištění;Kanada;Dovoz (v mil. Kč, CIF);8501.026669
+Česko;2024;Běžné ceny;Bez očištění;Kanada;Bilance (v mil. Kč);171.589993
+Česko;2024;Běžné ceny;Bez očištění;Kanada;Obrat zboží (v mil. Kč);17173.643331
+Česko;2024;Běžné ceny;Bez očištění;Kanada;Vývoz (meziroční index);106.370736709
+Česko;2024;Běžné ceny;Bez očištění;Kanada;Dovoz (meziroční index);98.0852766636
+Česko;2024;Běžné ceny;Bez očištění;Kanada;Obrat zboží (meziroční index);102.1014657202
+Česko;2024;Běžné ceny;Bez očištění;Kapverdy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kapverdy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kapverdy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kapverdy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kapverdy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kapverdy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kapverdy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Katar;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Katar;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Katar;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Katar;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Katar;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Katar;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Katar;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kazachstán;Vývoz (v mil. Kč, FOB);13133.624159
+Česko;2024;Běžné ceny;Bez očištění;Kazachstán;Dovoz (v mil. Kč, CIF);18134.580396
+Česko;2024;Běžné ceny;Bez očištění;Kazachstán;Bilance (v mil. Kč);-5000.956237
+Česko;2024;Běžné ceny;Bez očištění;Kazachstán;Obrat zboží (v mil. Kč);31268.204555
+Česko;2024;Běžné ceny;Bez očištění;Kazachstán;Vývoz (meziroční index);106.341138031
+Česko;2024;Běžné ceny;Bez očištění;Kazachstán;Dovoz (meziroční index);118.0215186266
+Česko;2024;Běžné ceny;Bez očištění;Kazachstán;Obrat zboží (meziroční index);112.8166413226
+Česko;2024;Běžné ceny;Bez očištění;Keňa;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Keňa;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Keňa;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Keňa;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Keňa;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Keňa;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Keňa;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kiribati;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kiribati;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kiribati;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kiribati;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kiribati;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kiribati;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kiribati;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kokosové (Keelingovy) ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kokosové (Keelingovy) ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kokosové (Keelingovy) ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kokosové (Keelingovy) ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kokosové (Keelingovy) ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kokosové (Keelingovy) ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kokosové (Keelingovy) ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kolumbie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kolumbie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kolumbie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kolumbie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kolumbie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kolumbie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kolumbie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Komory;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Komory;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Komory;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Komory;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Komory;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Komory;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Komory;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kongo;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kongo;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kongo;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kongo;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kongo;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kongo;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kongo;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Korejská lidově demokratická republika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Korejská lidově demokratická republika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Korejská lidově demokratická republika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Korejská lidově demokratická republika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Korejská lidově demokratická republika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Korejská lidově demokratická republika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Korejská lidově demokratická republika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Korejská republika;Vývoz (v mil. Kč, FOB);12528.0029
+Česko;2024;Běžné ceny;Bez očištění;Korejská republika;Dovoz (v mil. Kč, CIF);95211.186725
+Česko;2024;Běžné ceny;Bez očištění;Korejská republika;Bilance (v mil. Kč);-82683.183825
+Česko;2024;Běžné ceny;Bez očištění;Korejská republika;Obrat zboží (v mil. Kč);107739.189625
+Česko;2024;Běžné ceny;Bez očištění;Korejská republika;Vývoz (meziroční index);111.340391924
+Česko;2024;Běžné ceny;Bez očištění;Korejská republika;Dovoz (meziroční index);97.4808337732
+Česko;2024;Běžné ceny;Bez očištění;Korejská republika;Obrat zboží (meziroční index);98.9125474275
+Česko;2024;Běžné ceny;Bez očištění;Kosovo;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kosovo;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kosovo;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kosovo;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kosovo;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kosovo;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kosovo;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kostarika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kostarika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kostarika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kostarika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kostarika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kostarika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kostarika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kuba;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kuba;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kuba;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kuba;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kuba;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kuba;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kuba;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kuvajt;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kuvajt;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kuvajt;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kuvajt;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kuvajt;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kuvajt;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kuvajt;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kypr;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kypr;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kypr;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kypr;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kypr;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kypr;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kypr;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kyrgyzstán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Kyrgyzstán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Kyrgyzstán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kyrgyzstán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Kyrgyzstán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kyrgyzstán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Kyrgyzstán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Laoská lidově demokratická republika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Laoská lidově demokratická republika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Laoská lidově demokratická republika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Laoská lidově demokratická republika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Laoská lidově demokratická republika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Laoská lidově demokratická republika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Laoská lidově demokratická republika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Lesotho;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Lesotho;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Lesotho;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Lesotho;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Lesotho;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Lesotho;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Lesotho;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libanon;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Libanon;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Libanon;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Libanon;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Libanon;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libanon;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libanon;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libérie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Libérie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Libérie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Libérie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Libérie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libérie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libérie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libye;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Libye;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Libye;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Libye;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Libye;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libye;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Libye;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Lichtenštejnsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Lichtenštejnsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Lichtenštejnsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Lichtenštejnsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Lichtenštejnsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Lichtenštejnsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Lichtenštejnsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Litva;Vývoz (v mil. Kč, FOB);16509.853498
+Česko;2024;Běžné ceny;Bez očištění;Litva;Dovoz (v mil. Kč, CIF);9228.691843
+Česko;2024;Běžné ceny;Bez očištění;Litva;Bilance (v mil. Kč);7281.161655
+Česko;2024;Běžné ceny;Bez očištění;Litva;Obrat zboží (v mil. Kč);25738.545341
+Česko;2024;Běžné ceny;Bez očištění;Litva;Vývoz (meziroční index);118.7099472167
+Česko;2024;Běžné ceny;Bez očištění;Litva;Dovoz (meziroční index);105.6213446619
+Česko;2024;Běžné ceny;Bez očištění;Litva;Obrat zboží (meziroční index);113.6597935043
+Česko;2024;Běžné ceny;Bez očištění;Lotyšsko;Vývoz (v mil. Kč, FOB);9523.724472
+Česko;2024;Běžné ceny;Bez očištění;Lotyšsko;Dovoz (v mil. Kč, CIF);3028.674015
+Česko;2024;Běžné ceny;Bez očištění;Lotyšsko;Bilance (v mil. Kč);6495.050457
+Česko;2024;Běžné ceny;Bez očištění;Lotyšsko;Obrat zboží (v mil. Kč);12552.398487
+Česko;2024;Běžné ceny;Bez očištění;Lotyšsko;Vývoz (meziroční index);93.2917114381
+Česko;2024;Běžné ceny;Bez očištění;Lotyšsko;Dovoz (meziroční index);99.2051882811
+Česko;2024;Běžné ceny;Bez očištění;Lotyšsko;Obrat zboží (meziroční index);94.6530588873
+Česko;2024;Běžné ceny;Bez očištění;Lucembursko;Vývoz (v mil. Kč, FOB);8895.304035
+Česko;2024;Běžné ceny;Bez očištění;Lucembursko;Dovoz (v mil. Kč, CIF);4781.431976
+Česko;2024;Běžné ceny;Bez očištění;Lucembursko;Bilance (v mil. Kč);4113.872059
+Česko;2024;Běžné ceny;Bez očištění;Lucembursko;Obrat zboží (v mil. Kč);13676.736011
+Česko;2024;Běžné ceny;Bez očištění;Lucembursko;Vývoz (meziroční index);106.7849853491
+Česko;2024;Běžné ceny;Bez očištění;Lucembursko;Dovoz (meziroční index);90.7354823251
+Česko;2024;Běžné ceny;Bez očištění;Lucembursko;Obrat zboží (meziroční index);100.5661133215
+Česko;2024;Běžné ceny;Bez očištění;Macao;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Macao;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Macao;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Macao;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Macao;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Macao;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Macao;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Madagaskar;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Madagaskar;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Madagaskar;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Madagaskar;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Madagaskar;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Madagaskar;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Madagaskar;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Maďarsko;Vývoz (v mil. Kč, FOB);140901.332483
+Česko;2024;Běžné ceny;Bez očištění;Maďarsko;Dovoz (v mil. Kč, CIF);99907.514546
+Česko;2024;Běžné ceny;Bez očištění;Maďarsko;Bilance (v mil. Kč);40993.817937
+Česko;2024;Běžné ceny;Bez očištění;Maďarsko;Obrat zboží (v mil. Kč);240808.847029
+Česko;2024;Běžné ceny;Bez očištění;Maďarsko;Vývoz (meziroční index);101.8004446985
+Česko;2024;Běžné ceny;Bez očištění;Maďarsko;Dovoz (meziroční index);94.5618223951
+Česko;2024;Běžné ceny;Bez očištění;Maďarsko;Obrat zboží (meziroční index);98.6668902853
+Česko;2024;Běžné ceny;Bez očištění;Malajsie;Vývoz (v mil. Kč, FOB);5330.225985
+Česko;2024;Běžné ceny;Bez očištění;Malajsie;Dovoz (v mil. Kč, CIF);27117.038124
+Česko;2024;Běžné ceny;Bez očištění;Malajsie;Bilance (v mil. Kč);-21786.812139
+Česko;2024;Běžné ceny;Bez očištění;Malajsie;Obrat zboží (v mil. Kč);32447.264109
+Česko;2024;Běžné ceny;Bez očištění;Malajsie;Vývoz (meziroční index);157.1042429445
+Česko;2024;Běžné ceny;Bez očištění;Malajsie;Dovoz (meziroční index);101.1130929304
+Česko;2024;Běžné ceny;Bez očištění;Malajsie;Obrat zboží (meziroční index);107.4010187967
+Česko;2024;Běžné ceny;Bez očištění;Malawi;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Malawi;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Malawi;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Malawi;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Malawi;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Malawi;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Malawi;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Maledivy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Maledivy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Maledivy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Maledivy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Maledivy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Maledivy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Maledivy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mali;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Mali;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Mali;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mali;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mali;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mali;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mali;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Malta;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Malta;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Malta;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Malta;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Malta;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Malta;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Malta;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Maroko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Maroko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Maroko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Maroko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Maroko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Maroko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Maroko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Marshallovy ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Marshallovy ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Marshallovy ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Marshallovy ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Marshallovy ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Marshallovy ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Marshallovy ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mauricius;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Mauricius;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Mauricius;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mauricius;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mauricius;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mauricius;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mauricius;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mauritánie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Mauritánie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Mauritánie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mauritánie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mauritánie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mauritánie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mauritánie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Melilla;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Melilla;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Melilla;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Melilla;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Melilla;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Melilla;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Melilla;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Menší odlehlé ostrovy USA;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Menší odlehlé ostrovy USA;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Menší odlehlé ostrovy USA;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Menší odlehlé ostrovy USA;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Menší odlehlé ostrovy USA;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Menší odlehlé ostrovy USA;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Menší odlehlé ostrovy USA;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mexiko;Vývoz (v mil. Kč, FOB);21805.518412
+Česko;2024;Běžné ceny;Bez očištění;Mexiko;Dovoz (v mil. Kč, CIF);16200.561642
+Česko;2024;Běžné ceny;Bez očištění;Mexiko;Bilance (v mil. Kč);5604.95677
+Česko;2024;Běžné ceny;Bez očištění;Mexiko;Obrat zboží (v mil. Kč);38006.080054
+Česko;2024;Běžné ceny;Bez očištění;Mexiko;Vývoz (meziroční index);94.505621283
+Česko;2024;Běžné ceny;Bez očištění;Mexiko;Dovoz (meziroční index);109.9011819588
+Česko;2024;Běžné ceny;Bez očištění;Mexiko;Obrat zboží (meziroční index);100.5072265458
+Česko;2024;Běžné ceny;Bez očištění;Mnohonárodní stát Bolívie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Mnohonárodní stát Bolívie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Mnohonárodní stát Bolívie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mnohonárodní stát Bolívie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mnohonárodní stát Bolívie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mnohonárodní stát Bolívie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mnohonárodní stát Bolívie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Moldavská republika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Moldavská republika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Moldavská republika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Moldavská republika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Moldavská republika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Moldavská republika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Moldavská republika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mongolsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Mongolsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Mongolsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mongolsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mongolsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mongolsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mongolsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Montserrat;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Montserrat;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Montserrat;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Montserrat;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Montserrat;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Montserrat;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Montserrat;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mosambik;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Mosambik;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Mosambik;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mosambik;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Mosambik;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mosambik;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Mosambik;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Myanmar;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Myanmar;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Myanmar;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Myanmar;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Myanmar;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Myanmar;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Myanmar;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Namibie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Namibie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Namibie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Namibie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Namibie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Namibie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Namibie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nauru;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Nauru;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Nauru;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nauru;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nauru;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nauru;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nauru;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Německo;Vývoz (v mil. Kč, FOB);1365838.338268
+Česko;2024;Běžné ceny;Bez očištění;Německo;Dovoz (v mil. Kč, CIF);1004314.576501
+Česko;2024;Běžné ceny;Bez očištění;Německo;Bilance (v mil. Kč);361523.761767
+Česko;2024;Běžné ceny;Bez očištění;Německo;Obrat zboží (v mil. Kč);2370152.914769
+Česko;2024;Běžné ceny;Bez očištění;Německo;Vývoz (meziroční index);101.3492087273
+Česko;2024;Běžné ceny;Bez očištění;Německo;Dovoz (meziroční index);101.4418323659
+Česko;2024;Běžné ceny;Bez očištění;Německo;Obrat zboží (meziroční index);101.388435861
+Česko;2024;Běžné ceny;Bez očištění;Nepál;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Nepál;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Nepál;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nepál;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nepál;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nepál;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nepál;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Niger;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Niger;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Niger;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Niger;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Niger;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Niger;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Niger;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nigérie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Nigérie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Nigérie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nigérie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nigérie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nigérie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nigérie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nikaragua;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Nikaragua;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Nikaragua;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nikaragua;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nikaragua;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nikaragua;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nikaragua;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Niue;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Niue;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Niue;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Niue;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Niue;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Niue;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Niue;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nizozemsko;Vývoz (v mil. Kč, FOB);147718.470238
+Česko;2024;Běžné ceny;Bez očištění;Nizozemsko;Dovoz (v mil. Kč, CIF);111430.224847
+Česko;2024;Běžné ceny;Bez očištění;Nizozemsko;Bilance (v mil. Kč);36288.245391
+Česko;2024;Běžné ceny;Bez očištění;Nizozemsko;Obrat zboží (v mil. Kč);259148.695085
+Česko;2024;Běžné ceny;Bez očištění;Nizozemsko;Vývoz (meziroční index);98.8745377861
+Česko;2024;Běžné ceny;Bez očištění;Nizozemsko;Dovoz (meziroční index);102.9822903608
+Česko;2024;Běžné ceny;Bez očištění;Nizozemsko;Obrat zboží (meziroční index);100.5999524555
+Česko;2024;Běžné ceny;Bez očištění;Norfolk;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Norfolk;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Norfolk;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Norfolk;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Norfolk;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Norfolk;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Norfolk;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Norsko;Vývoz (v mil. Kč, FOB);24091.718342
+Česko;2024;Běžné ceny;Bez očištění;Norsko;Dovoz (v mil. Kč, CIF);54996.370194
+Česko;2024;Běžné ceny;Bez očištění;Norsko;Bilance (v mil. Kč);-30904.651852
+Česko;2024;Běžné ceny;Bez očištění;Norsko;Obrat zboží (v mil. Kč);79088.088536
+Česko;2024;Běžné ceny;Bez očištění;Norsko;Vývoz (meziroční index);114.5145402474
+Česko;2024;Běžné ceny;Bez očištění;Norsko;Dovoz (meziroční index);64.0653905525
+Česko;2024;Běžné ceny;Bez očištění;Norsko;Obrat zboží (meziroční index);73.995531392
+Česko;2024;Běžné ceny;Bez očištění;Nová Kaledonie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Nová Kaledonie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Nová Kaledonie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nová Kaledonie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nová Kaledonie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nová Kaledonie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nová Kaledonie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nový Zéland;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Nový Zéland;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Nový Zéland;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nový Zéland;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Nový Zéland;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nový Zéland;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Nový Zéland;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Okupované palestinské území;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Okupované palestinské území;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Okupované palestinské území;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Okupované palestinské území;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Okupované palestinské území;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Okupované palestinské území;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Okupované palestinské území;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Omán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Omán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Omán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Omán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Omán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Omán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Omán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ostrovy Turks a Caicos;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Ostrovy Turks a Caicos;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Ostrovy Turks a Caicos;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ostrovy Turks a Caicos;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Ostrovy Turks a Caicos;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ostrovy Turks a Caicos;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ostrovy Turks a Caicos;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pákistán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Pákistán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Pákistán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Pákistán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Pákistán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pákistán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pákistán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Palau;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Palau;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Palau;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Palau;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Palau;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Palau;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Palau;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Panama;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Panama;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Panama;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Panama;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Panama;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Panama;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Panama;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Papua-Nová Guinea;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Papua-Nová Guinea;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Papua-Nová Guinea;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Papua-Nová Guinea;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Papua-Nová Guinea;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Papua-Nová Guinea;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Papua-Nová Guinea;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Paraguay;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Paraguay;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Paraguay;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Paraguay;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Paraguay;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Paraguay;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Paraguay;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Peru;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Peru;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Peru;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Peru;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Peru;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Peru;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Peru;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pitcairn;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Pitcairn;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Pitcairn;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Pitcairn;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Pitcairn;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pitcairn;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pitcairn;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pobřeží slonoviny;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Pobřeží slonoviny;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Pobřeží slonoviny;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Pobřeží slonoviny;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Pobřeží slonoviny;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pobřeží slonoviny;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Pobřeží slonoviny;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Polsko;Vývoz (v mil. Kč, FOB);345089.441452
+Česko;2024;Běžné ceny;Bez očištění;Polsko;Dovoz (v mil. Kč, CIF);416170.17294
+Česko;2024;Běžné ceny;Bez očištění;Polsko;Bilance (v mil. Kč);-71080.731488
+Česko;2024;Běžné ceny;Bez očištění;Polsko;Obrat zboží (v mil. Kč);761259.614392
+Česko;2024;Běžné ceny;Bez očištění;Polsko;Vývoz (meziroční index);107.5219795344
+Česko;2024;Běžné ceny;Bez očištění;Polsko;Dovoz (meziroční index);107.5369638168
+Česko;2024;Běžné ceny;Bez očištění;Polsko;Obrat zboží (meziroční index);107.5301707183
+Česko;2024;Běžné ceny;Bez očištění;Portugalsko;Vývoz (v mil. Kč, FOB);18765.755343
+Česko;2024;Běžné ceny;Bez očištění;Portugalsko;Dovoz (v mil. Kč, CIF);14490.142301
+Česko;2024;Běžné ceny;Bez očištění;Portugalsko;Bilance (v mil. Kč);4275.613042
+Česko;2024;Běžné ceny;Bez očištění;Portugalsko;Obrat zboží (v mil. Kč);33255.897644
+Česko;2024;Běžné ceny;Bez očištění;Portugalsko;Vývoz (meziroční index);104.2278810162
+Česko;2024;Běžné ceny;Bez očištění;Portugalsko;Dovoz (meziroční index);112.7694047122
+Česko;2024;Běžné ceny;Bez očištění;Portugalsko;Obrat zboží (meziroční index);107.7850675205
+Česko;2024;Běžné ceny;Bez očištění;Rakousko;Vývoz (v mil. Kč, FOB);176534.695375
+Česko;2024;Běžné ceny;Bez očištění;Rakousko;Dovoz (v mil. Kč, CIF);119772.137187
+Česko;2024;Běžné ceny;Bez očištění;Rakousko;Bilance (v mil. Kč);56762.558188
+Česko;2024;Běžné ceny;Bez očištění;Rakousko;Obrat zboží (v mil. Kč);296306.832562
+Česko;2024;Běžné ceny;Bez očištění;Rakousko;Vývoz (meziroční index);98.0296846424
+Česko;2024;Běžné ceny;Bez očištění;Rakousko;Dovoz (meziroční index);100.3564612257
+Česko;2024;Běžné ceny;Bez očištění;Rakousko;Obrat zboží (meziroční index);98.9570917112
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu se zeměmi mimo Unii;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu se zeměmi mimo Unii;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu se zeměmi mimo Unii;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu se zeměmi mimo Unii;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu se zeměmi mimo Unii;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu se zeměmi mimo Unii;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu se zeměmi mimo Unii;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu uvnitř Unie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu uvnitř Unie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu uvnitř Unie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu uvnitř Unie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu uvnitř Unie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu uvnitř Unie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rezervy a zásoby v rámci obchodu uvnitř Unie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rovníková Guinea;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Rovníková Guinea;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Rovníková Guinea;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rovníková Guinea;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rovníková Guinea;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rovníková Guinea;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rovníková Guinea;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rumunsko;Vývoz (v mil. Kč, FOB);75575.892045
+Česko;2024;Běžné ceny;Bez očištění;Rumunsko;Dovoz (v mil. Kč, CIF);62221.141743
+Česko;2024;Běžné ceny;Bez očištění;Rumunsko;Bilance (v mil. Kč);13354.750302
+Česko;2024;Běžné ceny;Bez očištění;Rumunsko;Obrat zboží (v mil. Kč);137797.033788
+Česko;2024;Běžné ceny;Bez očištění;Rumunsko;Vývoz (meziroční index);105.4776572032
+Česko;2024;Běžné ceny;Bez očištění;Rumunsko;Dovoz (meziroční index);104.1623492401
+Česko;2024;Běžné ceny;Bez očištění;Rumunsko;Obrat zboží (meziroční index);104.8796505418
+Česko;2024;Běžné ceny;Bez očištění;Ruská federace;Vývoz (v mil. Kč, FOB);14847.94478
+Česko;2024;Běžné ceny;Bez očištění;Ruská federace;Dovoz (v mil. Kč, CIF);78500.907945
+Česko;2024;Běžné ceny;Bez očištění;Ruská federace;Bilance (v mil. Kč);-63652.963165
+Česko;2024;Běžné ceny;Bez očištění;Ruská federace;Obrat zboží (v mil. Kč);93348.852725
+Česko;2024;Běžné ceny;Bez očištění;Ruská federace;Vývoz (meziroční index);93.5140698197
+Česko;2024;Běžné ceny;Bez očištění;Ruská federace;Dovoz (meziroční index);104.4242715103
+Česko;2024;Běžné ceny;Bez očištění;Ruská federace;Obrat zboží (meziroční index);102.521751656
+Česko;2024;Běžné ceny;Bez očištění;Rwanda;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Rwanda;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Rwanda;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rwanda;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Rwanda;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rwanda;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Rwanda;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Řecko;Vývoz (v mil. Kč, FOB);11899.437039
+Česko;2024;Běžné ceny;Bez očištění;Řecko;Dovoz (v mil. Kč, CIF);10561.73733
+Česko;2024;Běžné ceny;Bez očištění;Řecko;Bilance (v mil. Kč);1337.699709
+Česko;2024;Běžné ceny;Bez očištění;Řecko;Obrat zboží (v mil. Kč);22461.174369
+Česko;2024;Běžné ceny;Bez očištění;Řecko;Vývoz (meziroční index);95.8569662877
+Česko;2024;Běžné ceny;Bez očištění;Řecko;Dovoz (meziroční index);115.7139222375
+Česko;2024;Běžné ceny;Bez očištění;Řecko;Obrat zboží (meziroční index);104.2707734852
+Česko;2024;Běžné ceny;Bez očištění;Saint-Pierre a Miquelon;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Saint-Pierre a Miquelon;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Saint-Pierre a Miquelon;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Saint-Pierre a Miquelon;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Saint-Pierre a Miquelon;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Saint-Pierre a Miquelon;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Saint-Pierre a Miquelon;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Salvador;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Salvador;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Salvador;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Salvador;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Salvador;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Salvador;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Salvador;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Samoa;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Samoa;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Samoa;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Samoa;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Samoa;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Samoa;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Samoa;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;San Marino;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;San Marino;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;San Marino;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;San Marino;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;San Marino;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;San Marino;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;San Marino;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Saúdská Arábie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Saúdská Arábie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Saúdská Arábie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Saúdská Arábie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Saúdská Arábie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Saúdská Arábie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Saúdská Arábie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Senegal;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Senegal;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Senegal;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Senegal;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Senegal;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Senegal;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Senegal;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Severní Makedonie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Severní Makedonie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Severní Makedonie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Severní Makedonie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Severní Makedonie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Severní Makedonie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Severní Makedonie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Severní Mariany;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Severní Mariany;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Severní Mariany;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Severní Mariany;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Severní Mariany;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Severní Mariany;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Severní Mariany;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Seychely;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Seychely;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Seychely;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Seychely;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Seychely;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Seychely;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Seychely;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sierra Leone;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Sierra Leone;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Sierra Leone;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Sierra Leone;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Sierra Leone;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sierra Leone;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sierra Leone;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Singapur;Vývoz (v mil. Kč, FOB);16915.657684
+Česko;2024;Běžné ceny;Bez očištění;Singapur;Dovoz (v mil. Kč, CIF);4932.851571
+Česko;2024;Běžné ceny;Bez očištění;Singapur;Bilance (v mil. Kč);11982.806113
+Česko;2024;Běžné ceny;Bez očištění;Singapur;Obrat zboží (v mil. Kč);21848.509255
+Česko;2024;Běžné ceny;Bez očištění;Singapur;Vývoz (meziroční index);229.5847255946
+Česko;2024;Běžné ceny;Bez očištění;Singapur;Dovoz (meziroční index);88.4661051041
+Česko;2024;Běžné ceny;Bez očištění;Singapur;Obrat zboží (meziroční index);168.7936571976
+Česko;2024;Běžné ceny;Bez očištění;Sint Maarten (nizozemská část);Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Sint Maarten (nizozemská část);Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Sint Maarten (nizozemská část);Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Sint Maarten (nizozemská část);Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Sint Maarten (nizozemská část);Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sint Maarten (nizozemská část);Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sint Maarten (nizozemská část);Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sjednocená republika Tanzanie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Sjednocená republika Tanzanie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Sjednocená republika Tanzanie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Sjednocená republika Tanzanie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Sjednocená republika Tanzanie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sjednocená republika Tanzanie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Sjednocená republika Tanzanie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Slovensko;Vývoz (v mil. Kč, FOB);424329.710015
+Česko;2024;Běžné ceny;Bez očištění;Slovensko;Dovoz (v mil. Kč, CIF);238143.051985
+Česko;2024;Běžné ceny;Bez očištění;Slovensko;Bilance (v mil. Kč);186186.65803
+Česko;2024;Běžné ceny;Bez očištění;Slovensko;Obrat zboží (v mil. Kč);662472.762
+Česko;2024;Běžné ceny;Bez očištění;Slovensko;Vývoz (meziroční index);101.5249574075
+Česko;2024;Běžné ceny;Bez očištění;Slovensko;Dovoz (meziroční index);105.2588800909
+Česko;2024;Běžné ceny;Bez očištění;Slovensko;Obrat zboží (meziroční index);102.8363206132
+Česko;2024;Běžné ceny;Bez očištění;Slovinsko;Vývoz (v mil. Kč, FOB);27256.655327
+Česko;2024;Běžné ceny;Bez očištění;Slovinsko;Dovoz (v mil. Kč, CIF);22937.550245
+Česko;2024;Běžné ceny;Bez očištění;Slovinsko;Bilance (v mil. Kč);4319.105082
+Česko;2024;Běžné ceny;Bez očištění;Slovinsko;Obrat zboží (v mil. Kč);50194.205572
+Česko;2024;Běžné ceny;Bez očištění;Slovinsko;Vývoz (meziroční index);112.7242750915
+Česko;2024;Běžné ceny;Bez očištění;Slovinsko;Dovoz (meziroční index);106.4701138134
+Česko;2024;Běžné ceny;Bez očištění;Slovinsko;Obrat zboží (meziroční index);109.7774923879
+Česko;2024;Běžné ceny;Bez očištění;Somálsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Somálsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Somálsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Somálsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Somálsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Somálsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Somálsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Spojené arabské emiráty;Vývoz (v mil. Kč, FOB);19505.94122
+Česko;2024;Běžné ceny;Bez očištění;Spojené arabské emiráty;Dovoz (v mil. Kč, CIF);4315.92282
+Česko;2024;Běžné ceny;Bez očištění;Spojené arabské emiráty;Bilance (v mil. Kč);15190.0184
+Česko;2024;Běžné ceny;Bez očištění;Spojené arabské emiráty;Obrat zboží (v mil. Kč);23821.86404
+Česko;2024;Běžné ceny;Bez očištění;Spojené arabské emiráty;Vývoz (meziroční index);129.5589356117
+Česko;2024;Běžné ceny;Bez očištění;Spojené arabské emiráty;Dovoz (meziroční index);81.7505724501
+Česko;2024;Běžné ceny;Bez očištění;Spojené arabské emiráty;Obrat zboží (meziroční index);117.1469313182
+Česko;2024;Běžné ceny;Bez očištění;Spojené království;Vývoz (v mil. Kč, FOB);217981.086265
+Česko;2024;Běžné ceny;Bez očištění;Spojené království;Dovoz (v mil. Kč, CIF);66850.184416
+Česko;2024;Běžné ceny;Bez očištění;Spojené království;Bilance (v mil. Kč);151130.901849
+Česko;2024;Běžné ceny;Bez očištění;Spojené království;Obrat zboží (v mil. Kč);284831.270681
+Česko;2024;Běžné ceny;Bez očištění;Spojené království;Vývoz (meziroční index);122.0866386772
+Česko;2024;Běžné ceny;Bez očištění;Spojené království;Dovoz (meziroční index);86.7381988187
+Česko;2024;Běžné ceny;Bez očištění;Spojené království;Obrat zboží (meziroční index);111.4287304608
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (Severní Irsko);Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (Severní Irsko);Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (Severní Irsko);Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (Severní Irsko);Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (Severní Irsko);Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (Severní Irsko);Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (Severní Irsko);Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (vyjma Severního Irska);Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (vyjma Severního Irska);Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (vyjma Severního Irska);Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (vyjma Severního Irska);Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (vyjma Severního Irska);Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (vyjma Severního Irska);Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Spojené království (vyjma Severního Irska);Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Spojené státy;Vývoz (v mil. Kč, FOB);133456.226283
+Česko;2024;Běžné ceny;Bez očištění;Spojené státy;Dovoz (v mil. Kč, CIF);129250.478916
+Česko;2024;Běžné ceny;Bez očištění;Spojené státy;Bilance (v mil. Kč);4205.747367
+Česko;2024;Běžné ceny;Bez očištění;Spojené státy;Obrat zboží (v mil. Kč);262706.705199
+Česko;2024;Běžné ceny;Bez očištění;Spojené státy;Vývoz (meziroční index);118.8542640877
+Česko;2024;Běžné ceny;Bez očištění;Spojené státy;Dovoz (meziroční index);101.4277290331
+Česko;2024;Běžné ceny;Bez očištění;Spojené státy;Obrat zboží (meziroční index);109.5904849052
+Česko;2024;Běžné ceny;Bez očištění;Srbsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Srbsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Srbsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Srbsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Srbsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Srbsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Srbsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Středoafrická republika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Středoafrická republika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Středoafrická republika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Středoafrická republika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Středoafrická republika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Středoafrická republika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Středoafrická republika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Súdán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Súdán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Súdán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Súdán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Súdán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Súdán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Súdán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Surinam;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Surinam;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Surinam;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Surinam;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Surinam;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Surinam;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Surinam;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Helena, Ascension a Tristan da Cunha;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Helena, Ascension a Tristan da Cunha;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Helena, Ascension a Tristan da Cunha;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Helena, Ascension a Tristan da Cunha;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Helena, Ascension a Tristan da Cunha;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Helena, Ascension a Tristan da Cunha;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Helena, Ascension a Tristan da Cunha;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Lucie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Lucie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Lucie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Lucie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Lucie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Lucie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatá Lucie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Bartoloměj;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Bartoloměj;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Bartoloměj;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Bartoloměj;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Bartoloměj;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Bartoloměj;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Bartoloměj;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Kryštof a Nevis;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Kryštof a Nevis;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Kryštof a Nevis;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Kryštof a Nevis;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Kryštof a Nevis;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Kryštof a Nevis;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Kryštof a Nevis;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý stolec;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svatý stolec;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svatý stolec;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý stolec;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý stolec;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý stolec;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý stolec;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Tomáš a Princův ostrov;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Tomáš a Princův ostrov;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Tomáš a Princův ostrov;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Tomáš a Princův ostrov;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Tomáš a Princův ostrov;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Tomáš a Princův ostrov;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Tomáš a Princův ostrov;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Vincenc a Grenadiny;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Vincenc a Grenadiny;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Vincenc a Grenadiny;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Vincenc a Grenadiny;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Vincenc a Grenadiny;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Vincenc a Grenadiny;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svatý Vincenc a Grenadiny;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svazijsko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Svazijsko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Svazijsko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svazijsko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Svazijsko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svazijsko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svazijsko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Syrská arabská republika;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Syrská arabská republika;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Syrská arabská republika;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Syrská arabská republika;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Syrská arabská republika;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Syrská arabská republika;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Syrská arabská republika;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Šalamounovy ostrovy;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Šalamounovy ostrovy;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Šalamounovy ostrovy;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Šalamounovy ostrovy;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Šalamounovy ostrovy;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Šalamounovy ostrovy;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Šalamounovy ostrovy;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Španělsko;Vývoz (v mil. Kč, FOB);126915.349675
+Česko;2024;Běžné ceny;Bez očištění;Španělsko;Dovoz (v mil. Kč, CIF);95380.308029
+Česko;2024;Běžné ceny;Bez očištění;Španělsko;Bilance (v mil. Kč);31535.041646
+Česko;2024;Běžné ceny;Bez očištění;Španělsko;Obrat zboží (v mil. Kč);222295.657704
+Česko;2024;Běžné ceny;Bez očištění;Španělsko;Vývoz (meziroční index);100.6810979706
+Česko;2024;Běžné ceny;Bez očištění;Španělsko;Dovoz (meziroční index);107.5059914232
+Česko;2024;Běžné ceny;Bez očištění;Španělsko;Obrat zboží (meziroční index);103.5003424266
+Česko;2024;Běžné ceny;Bez očištění;Šrí Lanka;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Šrí Lanka;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Šrí Lanka;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Šrí Lanka;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Šrí Lanka;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Šrí Lanka;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Šrí Lanka;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Švédsko;Vývoz (v mil. Kč, FOB);68429.550686
+Česko;2024;Běžné ceny;Bez očištění;Švédsko;Dovoz (v mil. Kč, CIF);40881.098843
+Česko;2024;Běžné ceny;Bez očištění;Švédsko;Bilance (v mil. Kč);27548.451843
+Česko;2024;Běžné ceny;Bez očištění;Švédsko;Obrat zboží (v mil. Kč);109310.649529
+Česko;2024;Běžné ceny;Bez očištění;Švédsko;Vývoz (meziroční index);95.1791212073
+Česko;2024;Běžné ceny;Bez očištění;Švédsko;Dovoz (meziroční index);99.4859953166
+Česko;2024;Běžné ceny;Bez očištění;Švédsko;Obrat zboží (meziroční index);96.7454790775
+Česko;2024;Běžné ceny;Bez očištění;Švýcarsko;Vývoz (v mil. Kč, FOB);77894.243753
+Česko;2024;Běžné ceny;Bez očištění;Švýcarsko;Dovoz (v mil. Kč, CIF);47189.09896
+Česko;2024;Běžné ceny;Bez očištění;Švýcarsko;Bilance (v mil. Kč);30705.144793
+Česko;2024;Běžné ceny;Bez očištění;Švýcarsko;Obrat zboží (v mil. Kč);125083.342713
+Česko;2024;Běžné ceny;Bez očištění;Švýcarsko;Vývoz (meziroční index);100.9183258839
+Česko;2024;Běžné ceny;Bez očištění;Švýcarsko;Dovoz (meziroční index);104.7911909877
+Česko;2024;Běžné ceny;Bez očištění;Švýcarsko;Obrat zboží (meziroční index);102.3453053581
+Česko;2024;Běžné ceny;Bez očištění;Tádžikistán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Tádžikistán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Tádžikistán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tádžikistán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tádžikistán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tádžikistán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tádžikistán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Thajsko;Vývoz (v mil. Kč, FOB);3881.648194
+Česko;2024;Běžné ceny;Bez očištění;Thajsko;Dovoz (v mil. Kč, CIF);26044.004868
+Česko;2024;Běžné ceny;Bez očištění;Thajsko;Bilance (v mil. Kč);-22162.356674
+Česko;2024;Běžné ceny;Bez očištění;Thajsko;Obrat zboží (v mil. Kč);29925.653062
+Česko;2024;Běžné ceny;Bez očištění;Thajsko;Vývoz (meziroční index);89.2555709505
+Česko;2024;Běžné ceny;Bez očištění;Thajsko;Dovoz (meziroční index);110.133844334
+Česko;2024;Běžné ceny;Bez očištění;Thajsko;Obrat zboží (meziroční index);106.8906606715
+Česko;2024;Běžné ceny;Bez očištění;Tchaj-wan;Vývoz (v mil. Kč, FOB);9193.159646
+Česko;2024;Běžné ceny;Bez očištění;Tchaj-wan;Dovoz (v mil. Kč, CIF);44069.152979
+Česko;2024;Běžné ceny;Bez očištění;Tchaj-wan;Bilance (v mil. Kč);-34875.993333
+Česko;2024;Běžné ceny;Bez očištění;Tchaj-wan;Obrat zboží (v mil. Kč);53262.312625
+Česko;2024;Běžné ceny;Bez očištění;Tchaj-wan;Vývoz (meziroční index);118.0738038118
+Česko;2024;Běžné ceny;Bez očištění;Tchaj-wan;Dovoz (meziroční index);149.6418206067
+Česko;2024;Běžné ceny;Bez očištění;Tchaj-wan;Obrat zboží (meziroční index);143.0409835127
+Česko;2024;Běžné ceny;Bez očištění;Togo;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Togo;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Togo;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Togo;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Togo;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Togo;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Togo;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tokelau;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Tokelau;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Tokelau;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tokelau;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tokelau;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tokelau;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tokelau;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tonga;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Tonga;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Tonga;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tonga;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tonga;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tonga;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tonga;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Trinidad a Tobago;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Trinidad a Tobago;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Trinidad a Tobago;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Trinidad a Tobago;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Trinidad a Tobago;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Trinidad a Tobago;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Trinidad a Tobago;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tunisko;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Tunisko;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Tunisko;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tunisko;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tunisko;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tunisko;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tunisko;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Turecko;Vývoz (v mil. Kč, FOB);77080.986226
+Česko;2024;Běžné ceny;Bez očištění;Turecko;Dovoz (v mil. Kč, CIF);55471.016433
+Česko;2024;Běžné ceny;Bez očištění;Turecko;Bilance (v mil. Kč);21609.969793
+Česko;2024;Běžné ceny;Bez očištění;Turecko;Obrat zboží (v mil. Kč);132552.002659
+Česko;2024;Běžné ceny;Bez očištění;Turecko;Vývoz (meziroční index);117.0820476837
+Česko;2024;Běžné ceny;Bez očištění;Turecko;Dovoz (meziroční index);97.8329689389
+Česko;2024;Běžné ceny;Bez očištění;Turecko;Obrat zboží (meziroční index);108.1750441016
+Česko;2024;Běžné ceny;Bez očištění;Turkmenistán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Turkmenistán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Turkmenistán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Turkmenistán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Turkmenistán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Turkmenistán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Turkmenistán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tuvalu;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Tuvalu;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Tuvalu;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tuvalu;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Tuvalu;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tuvalu;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Tuvalu;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uganda;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Uganda;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Uganda;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Uganda;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Uganda;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uganda;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uganda;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Ukrajina;Vývoz (v mil. Kč, FOB);44970.698516
+Česko;2024;Běžné ceny;Bez očištění;Ukrajina;Dovoz (v mil. Kč, CIF);32829.158699
+Česko;2024;Běžné ceny;Bez očištění;Ukrajina;Bilance (v mil. Kč);12141.539817
+Česko;2024;Běžné ceny;Bez očištění;Ukrajina;Obrat zboží (v mil. Kč);77799.857215
+Česko;2024;Běžné ceny;Bez očištění;Ukrajina;Vývoz (meziroční index);126.1860444712
+Česko;2024;Běžné ceny;Bez očištění;Ukrajina;Dovoz (meziroční index);107.1828353247
+Česko;2024;Běžné ceny;Bez očištění;Ukrajina;Obrat zboží (meziroční index);117.4026843906
+Česko;2024;Běžné ceny;Bez očištění;Uruguay;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Uruguay;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Uruguay;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Uruguay;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Uruguay;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uruguay;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uruguay;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uzbekistán;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Uzbekistán;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Uzbekistán;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Uzbekistán;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Uzbekistán;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uzbekistán;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Uzbekistán;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vánoční ostrov;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Vánoční ostrov;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Vánoční ostrov;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Vánoční ostrov;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Vánoční ostrov;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vánoční ostrov;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vánoční ostrov;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vanuatu;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Vanuatu;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Vanuatu;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Vanuatu;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Vanuatu;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vanuatu;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vanuatu;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vietnam;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Vietnam;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Vietnam;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Vietnam;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Vietnam;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vietnam;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Vietnam;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Volné moře;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Volné moře;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Volné moře;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Volné moře;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Volné moře;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Volné moře;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Volné moře;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Východní Timor;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Východní Timor;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Východní Timor;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Východní Timor;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Východní Timor;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Východní Timor;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Východní Timor;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Wallis a Futuna;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Wallis a Futuna;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Wallis a Futuna;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Wallis a Futuna;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Wallis a Futuna;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Wallis a Futuna;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Wallis a Futuna;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Zambie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Zambie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Zambie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Zambie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Zambie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Zambie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Zambie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Západní Sahara;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Západní Sahara;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Západní Sahara;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Západní Sahara;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Západní Sahara;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Západní Sahara;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Západní Sahara;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu se zeměmi mimo Unii;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu se zeměmi mimo Unii;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu se zeměmi mimo Unii;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu se zeměmi mimo Unii;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu se zeměmi mimo Unii;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu se zeměmi mimo Unii;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu se zeměmi mimo Unii;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu uvnitř Unie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu uvnitř Unie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu uvnitř Unie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu uvnitř Unie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu uvnitř Unie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu uvnitř Unie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné v rámci obchodu uvnitř Unie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu se zeměmi mimo Unii;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu se zeměmi mimo Unii;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu se zeměmi mimo Unii;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu se zeměmi mimo Unii;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu se zeměmi mimo Unii;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu se zeměmi mimo Unii;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu se zeměmi mimo Unii;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu uvnitř Unie;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu uvnitř Unie;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu uvnitř Unie;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu uvnitř Unie;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu uvnitř Unie;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu uvnitř Unie;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Země a území neuváděné z obchodních nebo vojenských důvodů v rámci obchodu uvnitř Unie;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Zimbabwe;Vývoz (v mil. Kč, FOB);
+Česko;2024;Běžné ceny;Bez očištění;Zimbabwe;Dovoz (v mil. Kč, CIF);
+Česko;2024;Běžné ceny;Bez očištění;Zimbabwe;Bilance (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Zimbabwe;Obrat zboží (v mil. Kč);
+Česko;2024;Běžné ceny;Bez očištění;Zimbabwe;Vývoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Zimbabwe;Dovoz (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Zimbabwe;Obrat zboží (meziroční index);
+Česko;2024;Běžné ceny;Bez očištění;Svět bez 50 vybraných zemí;Vývoz (v mil. Kč, FOB);170125.835218
+Česko;2024;Běžné ceny;Bez očištění;Svět bez 50 vybraných zemí;Dovoz (v mil. Kč, CIF);198039.585887
+Česko;2024;Běžné ceny;Bez očištění;Svět bez 50 vybraných zemí;Bilance (v mil. Kč);-27913.750669
+Česko;2024;Běžné ceny;Bez očištění;Svět bez 50 vybraných zemí;Obrat zboží (v mil. Kč);368165.421105
+Česko;2024;Běžné ceny;Bez očištění;Svět bez 50 vybraných zemí;Vývoz (meziroční index);113.9551292773
+Česko;2024;Běžné ceny;Bez očištění;Svět bez 50 vybraných zemí;Dovoz (meziroční index);115.5868871412
+Česko;2024;Běžné ceny;Bez očištění;Svět bez 50 vybraných zemí;Obrat zboží (meziroční index);114.8270972751
