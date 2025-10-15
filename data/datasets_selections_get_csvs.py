@@ -32,6 +32,8 @@ Key Features:
    - Robust error handling for network issues with timeout protection
    - Automatic retry mechanisms using tenacity library with exponential backoff
    - Response validation and parsing
+   - JSON cleanup for malformed API responses (fixes trailing/leading commas)
+   - Debug file generation for failed API responses
 
 5. Progress Monitoring:
    - Real-time progress bars for datasets and selections
@@ -39,6 +41,7 @@ Key Features:
    - Detailed error logging with selection codes
    - Performance metrics and timing
    - Final processing summary
+   - Retry attempt counters and diagnostics
 
 6. Configuration Management:
    - Config class for network and retry parameters (timeout, retries, rate limiting)
@@ -46,7 +49,7 @@ Key Features:
    - Flexible processing modes (all vs. specific)
    - Configurable target directories
    - Processing scope control
-   - Debug output support
+   - Debug output support with RESPONSE_DIAGNOSTICS toggle
 
 Processing Flow:
 --------------
@@ -73,6 +76,8 @@ Processing Flow:
    - Validates data structure and completeness
    - Handles missing or malformed data
    - Applies data cleaning and validation
+   - Automatic JSON cleanup for API bugs (trailing commas, etc.)
+   - Debug file generation for troubleshooting
 
 5. Data Conversion:
    - Converts JSON-stat to pandas DataFrame
@@ -108,7 +113,7 @@ Required Environment:
 - Python 3.7+
 - Internet connection for API access
 - Write permissions for output directory
-- Required packages: requests, pandas, pyjstat, tqdm, pathlib, tenacity
+- Required packages: requests, pandas, pyjstat, tqdm, pathlib, tenacity, re
 
 API Endpoints:
 -------------
@@ -123,6 +128,7 @@ Output:
 - Files named using selection codes (e.g., OBY01PDT01.csv)
 - UTF-8 encoded with proper header rows
 - Processing statistics and error reports
+- Debug files for failed API responses (when RESPONSE_DIAGNOSTICS=1)
 
 Error Handling:
 -------------
@@ -132,7 +138,10 @@ Error Handling:
 - File system and permission errors
 - Empty or malformed datasets
 - Configurable timeout protection and rate limiting
-- Exponential backoff retry strategy for transient failures"""
+- Exponential backoff retry strategy for transient failures
+- JSON cleanup for API server bugs (trailing/leading commas)
+- Debug file generation for troubleshooting malformed responses
+- Graceful handling of all retry failures without script crashes"""
 
 # ==============================================================================
 # IMPORTS
@@ -162,6 +171,9 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Global counter for tracking retry attempts across function calls
+_fetch_attempt_counter = 0
+
 # ==============================================================================
 # DIRECTORY SETUP AND CONFIGURATION
 # ==============================================================================
@@ -176,13 +188,13 @@ csv_dir.mkdir(parents=True, exist_ok=True)
 PROCESS_ALL_DATASETS = (
     1  # Set to 1 to process all datasets, 0 to process specific dataset
 )
-SPECIFIC_DATASET_ID = "OBY01PD"  # Only used when PROCESS_ALL_DATASETS is 0
+SPECIFIC_DATASET_ID = "WZEM02A"  # Only used when PROCESS_ALL_DATASETS is 0
 
 # Selection processing configuration
 PROCESS_ALL_SELECTIONS = (
     1  # Set to 1 to process all selections, 0 to process specific selection
 )
-SPECIFIC_SELECTION_ID = "OBY01PDT01"  # Only used when PROCESS_ALL_SELECTIONS is 0
+SPECIFIC_SELECTION_ID = "WZEM02AT01"  # Only used when PROCESS_ALL_SELECTIONS is 0
 
 
 # Network and retry configuration
@@ -211,6 +223,12 @@ class Config:
                                  Default 0.5 seconds. Implements rate limiting to
                                  respect API guidelines and prevent overloading.
 
+        RESPONSE_DIAGNOSTICS (int): Enable detailed API response diagnostics.
+                               Set to 1 to show response content previews, content-type
+                               validation, and detailed error information when API
+                               responses are malformed or unexpected. Set to 0 to disable
+                               for cleaner output. Default 1 (enabled).
+
     Usage:
         These settings are used by the fetch_json function to control API
         request behavior, ensuring reliable communication while being
@@ -222,18 +240,12 @@ class Config:
     RETRY_WAIT_MIN = 2  # Minimum wait time between retries (seconds)
     RETRY_WAIT_MAX = 10  # Maximum wait time between retries (seconds)
     RATE_LIMIT_DELAY = 0.5  # Delay between requests (seconds)
+    RESPONSE_DIAGNOSTICS = 1  # Enable detailed response diagnostics (1=yes, 0=no)
 
 
 # ==============================================================================
 # HELPER FUNCTIONS
 # ==============================================================================
-@retry(
-    retry=retry_if_exception_type((requests.exceptions.RequestException,)),
-    stop=stop_after_attempt(Config.MAX_RETRIES),
-    wait=wait_exponential(min=Config.RETRY_WAIT_MIN, max=Config.RETRY_WAIT_MAX),
-    before_sleep=before_sleep_log(logger, logging.INFO),
-    reraise=False,
-)
 def fetch_json(url):
     """Helper function to fetch JSON data with error handling, retry logic, and rate limiting.
 
@@ -266,45 +278,176 @@ def fetch_json(url):
         - Handles common API errors gracefully with detailed logging
         - Automatic retry on connection timeouts, network errors, and HTTP errors
     """
-    # Track retry attempts for visibility
-    attempt = getattr(fetch_json, "_attempt", 0) + 1
-    setattr(fetch_json, "_attempt", attempt)
+    global _fetch_attempt_counter
 
-    print(
-        f"[Attempt {attempt}/{Config.MAX_RETRIES}] Fetching {url} (timeout: {Config.TIMEOUT}s)"
+    # Inner function with retry logic
+    @retry(
+        retry=retry_if_exception_type(
+            (requests.exceptions.RequestException, json.JSONDecodeError)
+        ),
+        stop=stop_after_attempt(Config.MAX_RETRIES),
+        wait=wait_exponential(min=Config.RETRY_WAIT_MIN, max=Config.RETRY_WAIT_MAX),
+        before_sleep=before_sleep_log(logger, logging.INFO),
+        reraise=False,
     )
+    def _fetch_with_retry():
+        # Increment counter for each attempt
+        global _fetch_attempt_counter
+        _fetch_attempt_counter += 1
+        attempt = _fetch_attempt_counter
 
-    try:
-        # Make HTTP GET request with timeout protection
-        response = requests.get(url, timeout=Config.TIMEOUT)
-
-        # Validate HTTP status code and raise exception for bad responses
-        response.raise_for_status()
-
-        # Reset attempt counter on success
-        setattr(fetch_json, "_attempt", 0)
-
-        # Implement rate limiting to be respectful to the API
-        time.sleep(Config.RATE_LIMIT_DELAY)
-
-        # Parse and return JSON response
-        result = response.json()
         print(
-            f"✓ Successfully fetched {url} ({len(result) if isinstance(result, list) else 'data'} items)"
+            f"[Attempt {attempt}/{Config.MAX_RETRIES}] Fetching {url} (timeout: {Config.TIMEOUT}s)"
         )
-        return result
 
-    except requests.exceptions.RequestException as e:
-        # Handle network-related errors (connection, timeout, HTTP errors)
-        # The retry decorator will automatically retry based on Config.MAX_RETRIES
-        print(f"✗ Request failed for {url}: {e}")
-        raise  # Re-raise to trigger retry mechanism
-    except Exception as e:
-        # Handle unexpected errors that shouldn't be retried
-        print(f"✗ Unexpected error fetching {url}: {e}")
-        # Reset attempt counter on unexpected error
-        setattr(fetch_json, "_attempt", 0)
-        return None
+        # Initialize response variable outside try block
+        response = None
+
+        try:
+            # Make HTTP GET request with timeout protection
+            response = requests.get(url, timeout=Config.TIMEOUT)
+
+            # Validate HTTP status code and raise exception for bad responses
+            response.raise_for_status()
+
+            # Implement rate limiting to be respectful to the API
+            time.sleep(Config.RATE_LIMIT_DELAY)
+
+            # Check if response is actually JSON before parsing
+            content_type = response.headers.get("content-type", "").lower()
+            response_text = response.text
+
+            # Check if response looks like HTML (common API error)
+            if (
+                "<html" in response_text.lower()
+                or "<!doctype html" in response_text.lower()
+            ):
+                print(f"✗ API returned HTML error page instead of JSON for {url}")
+                if Config.RESPONSE_DIAGNOSTICS:
+                    print(f"   Content-type: {content_type}")
+                    print(f"   HTML preview: {response_text[:500]}...")
+                # Treat this as a request error and retry
+                raise requests.exceptions.RequestException(
+                    f"API returned HTML error page: {response.status_code}"
+                )
+
+            if "json" not in content_type and "application/json" not in content_type:
+                print(
+                    f"⚠ Warning: Expected JSON response but got content-type: {content_type}"
+                )
+                if Config.RESPONSE_DIAGNOSTICS:
+                    print(f"   Response preview: {response_text[:500]}...")
+                # Still try to parse it as JSON in case content-type is wrong
+
+            # Parse and return JSON response
+            try:
+                result = response.json()
+            except (
+                json.JSONDecodeError,
+                requests.exceptions.JSONDecodeError,
+            ) as json_err:
+                # Try to fix common JSON errors before giving up
+                # Common issue: trailing/leading commas in objects/arrays (e.g., "{,\"key\":\"value\"}")
+                try:
+                    import re
+
+                    # Fix trailing comma followed by closing brace/bracket: {, } or [, ]
+                    cleaned_json = re.sub(r",\s*([}\]])", r"\1", response.text)
+                    # Fix comma at start of object/array: {, "key" -> { "key"
+                    cleaned_json = re.sub(r"([{\[])\s*,\s*", r"\1", cleaned_json)
+
+                    result = json.loads(cleaned_json)
+                    print(f"⚠ Warning: Fixed malformed JSON for {url}")
+                    if Config.RESPONSE_DIAGNOSTICS:
+                        print(f"   Applied JSON cleanup (removed invalid commas)")
+                except (json.JSONDecodeError, Exception):
+                    # Cleanup failed - fall through to error handling
+                    raise json_err
+
+            print(
+                f"✓ Successfully fetched {url} ({len(result) if isinstance(result, list) else 'data'} items)"
+            )
+            return result
+
+        except (json.JSONDecodeError, requests.exceptions.JSONDecodeError) as json_err:
+            # Handle JSON parsing errors - API sent malformed JSON
+            print(f"✗ JSON parsing failed for {url}: {json_err}")
+
+            if Config.RESPONSE_DIAGNOSTICS and response is not None:
+                content_type = response.headers.get("content-type", "").lower()
+                print(f"   Response content-type: {content_type}")
+                print(f"   Response status code: {response.status_code}")
+                print(f"   Response length: {len(response.text)} characters")
+
+                # Show preview of response content for debugging
+                content_preview = response.text[:2000]  # Show more context
+
+                if "html" in content_type or "<html" in content_preview.lower():
+                    print("   Response appears to be HTML (possibly an error page)")
+                    print(f"   HTML preview: {content_preview[:500]}...")
+                elif "json" in content_type:
+                    print("   Response claims to be JSON but parsing failed")
+                    # Try to identify the problematic area
+                    error_char_pos = getattr(json_err, "pos", None)
+                    if error_char_pos:
+                        # Show context around the error position
+                        start = max(0, error_char_pos - 200)
+                        end = min(len(response.text), error_char_pos + 200)
+                        print(f"   Error near position {error_char_pos}:")
+                        print(f"   ...{response.text[start:end]}...")
+                    else:
+                        print(f"   JSON preview: {content_preview}...")
+                else:
+                    print(f"   Response content preview: {content_preview}...")
+
+                # Try to save the problematic response for manual inspection
+                try:
+                    debug_file = csv_dir / f"debug_response_{url.split('/')[-1]}.txt"
+                    with open(debug_file, "w", encoding="utf-8") as f:
+                        f.write(f"URL: {url}\n")
+                        f.write(f"Status: {response.status_code}\n")
+                        f.write(f"Content-Type: {content_type}\n")
+                        f.write(f"Error: {json_err}\n")
+                        f.write(f"\n{'='*80}\n")
+                        f.write(f"Response Content:\n")
+                        f.write(f"{'='*80}\n")
+                        f.write(response.text)
+                    print(f"   💾 Saved problematic response to: {debug_file}")
+                except Exception as save_err:
+                    print(f"   ❌ Could not save debug file: {save_err}")
+
+            raise  # Re-raise to trigger retry mechanism
+
+        except requests.exceptions.RequestException as e:
+            # Handle network-related errors (connection, timeout, HTTP errors)
+            # The retry decorator will automatically retry based on Config.MAX_RETRIES
+            print(f"✗ Request failed for {url}: {e}")
+            raise  # Re-raise to trigger retry mechanism
+        except Exception as e:
+            # Handle unexpected errors that shouldn't be retried
+            print(f"✗ Unexpected error fetching {url}: {e}")
+            return None
+
+    # Reset counter before starting new URL request
+    _fetch_attempt_counter = 0
+
+    # Call inner function with retry logic
+    try:
+        result = _fetch_with_retry()
+    except RetryError as e:
+        # All retries exhausted - log and return None to continue processing
+        print(f"❌ All {Config.MAX_RETRIES} retry attempts failed for {url}")
+        print(f"   Last error: {e}")
+        if Config.RESPONSE_DIAGNOSTICS:
+            print(
+                f"   Check debug file (if saved) for details: data/CSVs/debug_response_{url.split('/')[-1]}.txt"
+            )
+        result = None
+
+    # Reset counter after completion (success or failure)
+    _fetch_attempt_counter = 0
+
+    return result
 
 
 def save_to_csv(df, filename):
@@ -390,6 +533,9 @@ def main():
         f"Retry wait: {Config.RETRY_WAIT_MIN}-{Config.RETRY_WAIT_MAX}s (exponential backoff)"
     )
     print(f"Rate limit delay: {Config.RATE_LIMIT_DELAY}s")
+    print(
+        f"Response diagnostics: {'Enabled' if Config.RESPONSE_DIAGNOSTICS else 'Disabled'}"
+    )
     print("=" * 40)
 
     if PROCESS_ALL_DATASETS:
@@ -541,7 +687,7 @@ def main():
     # FINAL REPORTING AND STATISTICS
     # ==========================================================================
     # Display comprehensive processing results
-    print(f"\nProcessing complete:")
+    print("\nProcessing complete:")
     print(f"Successfully saved {successful_saves} files to {csv_dir}")
 
     # Report failed dataset processing if any occurred
