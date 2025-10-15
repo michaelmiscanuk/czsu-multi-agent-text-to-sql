@@ -188,6 +188,7 @@ from .utils.nodes import (
     retrieve_similar_chunks_hybrid_search_node,
     retrieve_similar_selections_hybrid_search_node,
     rewrite_query_node,
+    route_decision_node,
     save_node,
     submit_final_answer_node,
     summarize_messages_node,
@@ -303,14 +304,7 @@ def create_graph(checkpointer=None):
         "89 - PARALLEL EDGES: Added parallel processing edges for selections and chunks"
     )
 
-    # Add a synchronization node that both branches feed into
-    def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
-        """Synchronization node that waits for both selection and chunk processing to complete."""
-        print__analysis_tracing_debug(
-            "90 - SYNC NODE: Both selection and chunk branches completed"
-        )
-        return state  # Pass through state unchanged
-
+    # Add the synchronization node that both branches feed into
     graph.add_node("route_decision", route_decision_node)
     print__analysis_tracing_debug(
         "91 - SYNC NODE ADDED: Route decision synchronization node added"

@@ -2033,6 +2033,16 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     }
 
 
+async def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Synchronization node that waits for both selection and chunk processing to complete."""
+    from api.utils.debug import print__analysis_tracing_debug
+    
+    print__analysis_tracing_debug(
+        "90 - SYNC NODE: Both selection and chunk branches completed"
+    )
+    return state  # Pass through state unchanged
+
+
 async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Final cleanup to ensure all ChromaDB resources and large objects are released from memory.
 
