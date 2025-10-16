@@ -1,26 +1,31 @@
-Území;Ukazatel;Roky;value
-Česko;Počet aktivních jednotek;2018;50.0
-Česko;Počet aktivních jednotek;2019;49.0
-Česko;Počet aktivních jednotek;2020;48.0
-Česko;Počet aktivních jednotek;2021;41.0
-Česko;Počet aktivních jednotek;2022;43.0
-Česko;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2018;12624.0
-Česko;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2019;12372.0
-Česko;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2020;12322.0
-Česko;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2021;11872.0
-Česko;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2022;11805.0
-Česko;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2018;12610.0
-Česko;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2019;12466.0
-Česko;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2020;12458.0
-Česko;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2021;11678.0
-Česko;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2022;11850.0
-Česko;Mzdy bez ostatních osobních nákladů (mil. Kč);2018;7625.094
-Česko;Mzdy bez ostatních osobních nákladů (mil. Kč);2019;7787.919
-Česko;Mzdy bez ostatních osobních nákladů (mil. Kč);2020;8096.768
-Česko;Mzdy bez ostatních osobních nákladů (mil. Kč);2021;8284.049
-Česko;Mzdy bez ostatních osobních nákladů (mil. Kč);2022;8791.22
-Česko;Průměrná hrubá mzda na zaměstnance (Kč);2018;50334.6403675539
-Česko;Průměrná hrubá mzda na zaměstnance (Kč);2019;52456.6157452312
-Česko;Průměrná hrubá mzda na zaměstnance (Kč);2020;54758.2102472542
-Česko;Průměrná hrubá mzda na zaměstnance (Kč);2021;58148.3673068284
-Česko;Průměrná hrubá mzda na zaměstnance (Kč);2022;62058.5909925173
+Území,Ukazatel,Roky,value
+Česko,Počet aktivních jednotek,2018,50.0
+Česko,Počet aktivních jednotek,2019,49.0
+Česko,Počet aktivních jednotek,2020,48.0
+Česko,Počet aktivních jednotek,2021,41.0
+Česko,Počet aktivních jednotek,2022,43.0
+Česko,Počet aktivních jednotek,2023,43.0
+Česko,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2018,12624.0
+Česko,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2019,12372.0
+Česko,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2020,12322.0
+Česko,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2021,11872.0
+Česko,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2022,11805.0
+Česko,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2023,11971.0
+Česko,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2018,12610.0
+Česko,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2019,12466.0
+Česko,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2020,12458.0
+Česko,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2021,11678.0
+Česko,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2022,11850.0
+Česko,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2023,11963.0
+Česko,Mzdy bez ostatních osobních nákladů (mil. Kč),2018,7625.094
+Česko,Mzdy bez ostatních osobních nákladů (mil. Kč),2019,7787.919
+Česko,Mzdy bez ostatních osobních nákladů (mil. Kč),2020,8096.768
+Česko,Mzdy bez ostatních osobních nákladů (mil. Kč),2021,8284.049
+Česko,Mzdy bez ostatních osobních nákladů (mil. Kč),2022,8791.22
+Česko,Mzdy bez ostatních osobních nákladů (mil. Kč),2023,9749.123
+Česko,Průměrná hrubá mzda na zaměstnance (Kč),2018,50334.6403675539
+Česko,Průměrná hrubá mzda na zaměstnance (Kč),2019,52456.6157452312
+Česko,Průměrná hrubá mzda na zaměstnance (Kč),2020,54758.2102472542
+Česko,Průměrná hrubá mzda na zaměstnance (Kč),2021,58148.3673068284
+Česko,Průměrná hrubá mzda na zaměstnance (Kč),2022,62058.5909925173
+Česko,Průměrná hrubá mzda na zaměstnance (Kč),2023,67866.2531673767

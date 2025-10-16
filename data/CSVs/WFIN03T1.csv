@@ -1,29 +1,29 @@
-Území;Roky;Finanční instituce;Ukazatel;value
-Česko;2022;Bankovní peněžní instituce;Počet aktivních jednotek;46.0
-Česko;2022;Bankovní peněžní instituce;Aktiva celkem (mil. Kč);11985875.61
-Česko;2022;Bankovní peněžní instituce;Finanční aktiva (mil. Kč);11910866.643
-Česko;2022;Bankovní peněžní instituce;Průměrná hrubá mzda na zaměstnance (Kč);70401.2241635446
-Česko;2022;Nebankovní peněžní instituce účtující jako banky;Počet aktivních jednotek;359.0
-Česko;2022;Nebankovní peněžní instituce účtující jako banky;Aktiva celkem (mil. Kč);895755.265483074
-Česko;2022;Nebankovní peněžní instituce účtující jako banky;Finanční aktiva (mil. Kč);833845.480433485
-Česko;2022;Nebankovní peněžní instituce účtující jako banky;Průměrná hrubá mzda na zaměstnance (Kč);79271.7010000117
-Česko;2022;Nebankovní peněžní instituce účtující jako podnikatelé;Počet aktivních jednotek;4761.0
-Česko;2022;Nebankovní peněžní instituce účtující jako podnikatelé;Aktiva celkem (mil. Kč);2742339.62495612
-Česko;2022;Nebankovní peněžní instituce účtující jako podnikatelé;Finanční aktiva (mil. Kč);2611830.50834385
-Česko;2022;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrná hrubá mzda na zaměstnance (Kč);53069.1495161777
-Česko;2022;Finanční leasingové společnosti;Počet aktivních jednotek;79.0
-Česko;2022;Finanční leasingové společnosti;Aktiva celkem (mil. Kč);310242.322885281
-Česko;2022;Finanční leasingové společnosti;Finanční aktiva (mil. Kč);221311.693590041
-Česko;2022;Finanční leasingové společnosti;Průměrná hrubá mzda na zaměstnance (Kč);69181.5010552915
-Česko;2022;Investiční společnosti a fondy;Počet aktivních jednotek;286.0
-Česko;2022;Investiční společnosti a fondy;Aktiva celkem (mil. Kč);800345.771562727
-Česko;2022;Investiční společnosti a fondy;Finanční aktiva (mil. Kč);744764.034940633
-Česko;2022;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);91834.9700752717
-Česko;2022;Pojišťovny;Počet aktivních jednotek;43.0
-Česko;2022;Pojišťovny;Aktiva celkem (mil. Kč);493678.791
-Česko;2022;Pojišťovny;Finanční aktiva (mil. Kč);485627.505
-Česko;2022;Pojišťovny;Průměrná hrubá mzda na zaměstnance (Kč);62058.5909925173
-Česko;2022;Penzijní společnosti a fondy;Počet aktivních jednotek;9.0
-Česko;2022;Penzijní společnosti a fondy;Aktiva celkem (mil. Kč);609745.05
-Česko;2022;Penzijní společnosti a fondy;Finanční aktiva (mil. Kč);607654.686
-Česko;2022;Penzijní společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);53824.4234800839
+Území,Roky,Finanční instituce,Ukazatel,value
+Česko,2023,Bankovní peněžní instituce,Počet aktivních jednotek,47.0
+Česko,2023,Bankovní peněžní instituce,Aktiva celkem (mil. Kč),13145931.866
+Česko,2023,Bankovní peněžní instituce,Finanční aktiva (mil. Kč),13071398.392
+Česko,2023,Bankovní peněžní instituce,Průměrná hrubá mzda na zaměstnance (Kč),74484.7239165057
+Česko,2023,Nebankovní peněžní instituce účtující jako banky,Počet aktivních jednotek,395.0
+Česko,2023,Nebankovní peněžní instituce účtující jako banky,Aktiva celkem (mil. Kč),1185533.2454924015
+Česko,2023,Nebankovní peněžní instituce účtující jako banky,Finanční aktiva (mil. Kč),1123102.1152770435
+Česko,2023,Nebankovní peněžní instituce účtující jako banky,Průměrná hrubá mzda na zaměstnance (Kč),81208.6101351017
+Česko,2023,Nebankovní peněžní instituce účtující jako podnikatelé,Počet aktivních jednotek,5125.0
+Česko,2023,Nebankovní peněžní instituce účtující jako podnikatelé,Aktiva celkem (mil. Kč),3230304.899165099
+Česko,2023,Nebankovní peněžní instituce účtující jako podnikatelé,Finanční aktiva (mil. Kč),3091288.254662452
+Česko,2023,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrná hrubá mzda na zaměstnance (Kč),58043.3574341653
+Česko,2023,Finanční leasingové společnosti,Počet aktivních jednotek,74.0
+Česko,2023,Finanční leasingové společnosti,Aktiva celkem (mil. Kč),347412.251
+Česko,2023,Finanční leasingové společnosti,Finanční aktiva (mil. Kč),258744.8913895864
+Česko,2023,Finanční leasingové společnosti,Průměrná hrubá mzda na zaměstnance (Kč),74300.5648288087
+Česko,2023,Investiční společnosti a fondy,Počet aktivních jednotek,329.0
+Česko,2023,Investiční společnosti a fondy,Aktiva celkem (mil. Kč),1027031.9598466814
+Česko,2023,Investiční společnosti a fondy,Finanční aktiva (mil. Kč),968915.4585538316
+Česko,2023,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),97039.9273548459
+Česko,2023,Pojišťovny,Počet aktivních jednotek,43.0
+Česko,2023,Pojišťovny,Aktiva celkem (mil. Kč),527014.95
+Česko,2023,Pojišťovny,Finanční aktiva (mil. Kč),518140.907
+Česko,2023,Pojišťovny,Průměrná hrubá mzda na zaměstnance (Kč),67866.2531673767
+Česko,2023,Penzijní společnosti a fondy,Počet aktivních jednotek,9.0
+Česko,2023,Penzijní společnosti a fondy,Aktiva celkem (mil. Kč),625287.655
+Česko,2023,Penzijní společnosti a fondy,Finanční aktiva (mil. Kč),623227.081
+Česko,2023,Penzijní společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),56936.6161616162

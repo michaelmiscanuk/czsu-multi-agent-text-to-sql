@@ -1,51 +1,61 @@
-Území;Ukazatel;Roky;value
-Česko;Celkové předepsané příspěvky;2018;55169.361
-Česko;Celkové předepsané příspěvky;2019;57194.565
-Česko;Celkové předepsané příspěvky;2020;60143.828
-Česko;Celkové předepsané příspěvky;2021;64347.223
-Česko;Celkové předepsané příspěvky;2022;64293.314
-Česko;Přijaté příspěvky od fyzických osob (předpis);2018;37958.668
-Česko;Přijaté příspěvky od fyzických osob (předpis);2019;38806.056
-Česko;Přijaté příspěvky od fyzických osob (předpis);2020;40599.304
-Česko;Přijaté příspěvky od fyzických osob (předpis);2021;43267.631
-Česko;Přijaté příspěvky od fyzických osob (předpis);2022;42785.481
-Česko;Přijaté příspěvky od zaměstnavatelů (předpis);2018;10422.89
-Česko;Přijaté příspěvky od zaměstnavatelů (předpis);2019;11374.791
-Česko;Přijaté příspěvky od zaměstnavatelů (předpis);2020;12408.932
-Česko;Přijaté příspěvky od zaměstnavatelů (předpis);2021;13653.199
-Česko;Přijaté příspěvky od zaměstnavatelů (předpis);2022;14115.86
-Česko;Státní příspěvek;2018;6787.803
-Česko;Státní příspěvek;2019;7013.718
-Česko;Státní příspěvek;2020;7135.592
-Česko;Státní příspěvek;2021;7426.393
-Česko;Státní příspěvek;2022;7391.973
-Česko;Prostředky účastníků  celkem k 31. 12.;2018;448620.786
-Česko;Prostředky účastníků  celkem k 31. 12.;2019;486634.985
-Česko;Prostředky účastníků  celkem k 31. 12.;2020;524345.253
-Česko;Prostředky účastníků  celkem k 31. 12.;2021;560411.383
-Česko;Prostředky účastníků  celkem k 31. 12.;2022;584478.44
-Česko;Počet účastníků celkem k 31. 12. (počet osob);2018;4342084.0
-Česko;Počet účastníků celkem k 31. 12. (počet osob);2019;4352343.0
-Česko;Počet účastníků celkem k 31. 12. (počet osob);2020;4338794.0
-Česko;Počet účastníků celkem k 31. 12. (počet osob);2021;4329721.0
-Česko;Počet účastníků celkem k 31. 12. (počet osob);2022;4305535.0
-Česko;Počet příjemců starobních penzí (počet osob);2018;10093.0
-Česko;Počet příjemců starobních penzí (počet osob);2019;13674.0
-Česko;Počet příjemců starobních penzí (počet osob);2020;15938.0
-Česko;Počet příjemců starobních penzí (počet osob);2021;20413.0
-Česko;Počet příjemců starobních penzí (počet osob);2022;24917.0
-Česko;Počet příjemců pozůstalostní penze (počet osob);2018;15440.0
-Česko;Počet příjemců pozůstalostní penze (počet osob);2019;15086.0
-Česko;Počet příjemců pozůstalostní penze (počet osob);2020;15332.0
-Česko;Počet příjemců pozůstalostní penze (počet osob);2021;13691.0
-Česko;Počet příjemců pozůstalostní penze (počet osob);2022;12095.0
-Česko;Počet příjemců výsluhové penze (počet osob);2018;284.0
-Česko;Počet příjemců výsluhové penze (počet osob);2019;317.0
-Česko;Počet příjemců výsluhové penze (počet osob);2020;272.0
-Česko;Počet příjemců výsluhové penze (počet osob);2021;215.0
-Česko;Počet příjemců výsluhové penze (počet osob);2022;265.0
-Česko;Počet příjemců invalidní penze (počet osob);2018;1054.0
-Česko;Počet příjemců invalidní penze (počet osob);2019;1309.0
-Česko;Počet příjemců invalidní penze (počet osob);2020;1269.0
-Česko;Počet příjemců invalidní penze (počet osob);2021;1142.0
-Česko;Počet příjemců invalidní penze (počet osob);2022;1043.0
+Území,Ukazatel,Roky,value
+Česko,Celkové předepsané příspěvky,2018,55169.361
+Česko,Celkové předepsané příspěvky,2019,57194.565
+Česko,Celkové předepsané příspěvky,2020,60143.828
+Česko,Celkové předepsané příspěvky,2021,64347.223
+Česko,Celkové předepsané příspěvky,2022,64293.314
+Česko,Celkové předepsané příspěvky,2023,64570.29
+Česko,Přijaté příspěvky od fyzických osob (předpis),2018,37958.668
+Česko,Přijaté příspěvky od fyzických osob (předpis),2019,38806.056
+Česko,Přijaté příspěvky od fyzických osob (předpis),2020,40599.304
+Česko,Přijaté příspěvky od fyzických osob (předpis),2021,43267.631
+Česko,Přijaté příspěvky od fyzických osob (předpis),2022,42785.481
+Česko,Přijaté příspěvky od fyzických osob (předpis),2023,42128.045
+Česko,Přijaté příspěvky od zaměstnavatelů (předpis),2018,10422.89
+Česko,Přijaté příspěvky od zaměstnavatelů (předpis),2019,11374.791
+Česko,Přijaté příspěvky od zaměstnavatelů (předpis),2020,12408.932
+Česko,Přijaté příspěvky od zaměstnavatelů (předpis),2021,13653.199
+Česko,Přijaté příspěvky od zaměstnavatelů (předpis),2022,14115.86
+Česko,Přijaté příspěvky od zaměstnavatelů (předpis),2023,15173.926
+Česko,Státní příspěvek,2018,6787.803
+Česko,Státní příspěvek,2019,7013.718
+Česko,Státní příspěvek,2020,7135.592
+Česko,Státní příspěvek,2021,7426.393
+Česko,Státní příspěvek,2022,7391.973
+Česko,Státní příspěvek,2023,7268.319
+Česko,Prostředky účastníků  celkem k 31. 12.,2018,448620.786
+Česko,Prostředky účastníků  celkem k 31. 12.,2019,486634.985
+Česko,Prostředky účastníků  celkem k 31. 12.,2020,524345.253
+Česko,Prostředky účastníků  celkem k 31. 12.,2021,560411.383
+Česko,Prostředky účastníků  celkem k 31. 12.,2022,584478.44
+Česko,Prostředky účastníků  celkem k 31. 12.,2023,711440.145
+Česko,Počet účastníků celkem k 31. 12. (počet osob),2018,4342084.0
+Česko,Počet účastníků celkem k 31. 12. (počet osob),2019,4352343.0
+Česko,Počet účastníků celkem k 31. 12. (počet osob),2020,4338794.0
+Česko,Počet účastníků celkem k 31. 12. (počet osob),2021,4329721.0
+Česko,Počet účastníků celkem k 31. 12. (počet osob),2022,4305535.0
+Česko,Počet účastníků celkem k 31. 12. (počet osob),2023,4139278.0
+Česko,Počet příjemců starobních penzí (počet osob),2018,10093.0
+Česko,Počet příjemců starobních penzí (počet osob),2019,13674.0
+Česko,Počet příjemců starobních penzí (počet osob),2020,15938.0
+Česko,Počet příjemců starobních penzí (počet osob),2021,20413.0
+Česko,Počet příjemců starobních penzí (počet osob),2022,24917.0
+Česko,Počet příjemců starobních penzí (počet osob),2023,29937.0
+Česko,Počet příjemců pozůstalostní penze (počet osob),2018,15440.0
+Česko,Počet příjemců pozůstalostní penze (počet osob),2019,15086.0
+Česko,Počet příjemců pozůstalostní penze (počet osob),2020,15332.0
+Česko,Počet příjemců pozůstalostní penze (počet osob),2021,13691.0
+Česko,Počet příjemců pozůstalostní penze (počet osob),2022,12095.0
+Česko,Počet příjemců pozůstalostní penze (počet osob),2023,11237.0
+Česko,Počet příjemců výsluhové penze (počet osob),2018,284.0
+Česko,Počet příjemců výsluhové penze (počet osob),2019,317.0
+Česko,Počet příjemců výsluhové penze (počet osob),2020,272.0
+Česko,Počet příjemců výsluhové penze (počet osob),2021,215.0
+Česko,Počet příjemců výsluhové penze (počet osob),2022,265.0
+Česko,Počet příjemců výsluhové penze (počet osob),2023,364.0
+Česko,Počet příjemců invalidní penze (počet osob),2018,1054.0
+Česko,Počet příjemců invalidní penze (počet osob),2019,1309.0
+Česko,Počet příjemců invalidní penze (počet osob),2020,1269.0
+Česko,Počet příjemců invalidní penze (počet osob),2021,1142.0
+Česko,Počet příjemců invalidní penze (počet osob),2022,1043.0
+Česko,Počet příjemců invalidní penze (počet osob),2023,1142.0

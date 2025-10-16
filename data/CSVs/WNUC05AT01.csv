@@ -1,27 +1,31 @@
-Území;Ukazatel;Čtvrtletí;value
-Česko;Deficit/přebytek vládních institucí;4. čtvrtletí 2015;-32245
-Česko;Deficit/přebytek vládních institucí;1. čtvrtletí 2022;-63614
-Česko;Deficit/přebytek vládních institucí;2. čtvrtletí 2022;1908
-Česko;Deficit/přebytek vládních institucí;3. čtvrtletí 2022;-55608
-Česko;Deficit/přebytek vládních institucí;4. čtvrtletí 2022;-99031
-Česko;Deficit/přebytek vládních institucí;1. čtvrtletí 2023;-111030
-Česko;Deficit/přebytek vládních institucí;2. čtvrtletí 2023;-15391
-Česko;Deficit/přebytek vládních institucí;3. čtvrtletí 2023;-44985
-Česko;Deficit/přebytek vládních institucí;4. čtvrtletí 2023;-114660
-Česko;Deficit/přebytek vládních institucí;1. čtvrtletí 2024;-62819
-Česko;Deficit/přebytek vládních institucí;2. čtvrtletí 2024;-1019
-Česko;Deficit/přebytek vládních institucí;3. čtvrtletí 2024;-35682
-Česko;Deficit/přebytek vládních institucí;4. čtvrtletí 2024;-77653
-Česko;Konsolidovaný dluh vládních institucí;4. čtvrtletí 2015;1836047
-Česko;Konsolidovaný dluh vládních institucí;1. čtvrtletí 2022;2684150
-Česko;Konsolidovaný dluh vládních institucí;2. čtvrtletí 2022;2793661
-Česko;Konsolidovaný dluh vládních institucí;3. čtvrtletí 2022;2983299
-Česko;Konsolidovaný dluh vládních institucí;4. čtvrtletí 2022;2997632
-Česko;Konsolidovaný dluh vládních institucí;1. čtvrtletí 2023;3099459
-Česko;Konsolidovaný dluh vládních institucí;2. čtvrtletí 2023;3150740
-Česko;Konsolidovaný dluh vládních institucí;3. čtvrtletí 2023;3214174
-Česko;Konsolidovaný dluh vládních institucí;4. čtvrtletí 2023;3234077
-Česko;Konsolidovaný dluh vládních institucí;1. čtvrtletí 2024;3337075
-Česko;Konsolidovaný dluh vládních institucí;2. čtvrtletí 2024;3320799
-Česko;Konsolidovaný dluh vládních institucí;3. čtvrtletí 2024;3449352
-Česko;Konsolidovaný dluh vládních institucí;4. čtvrtletí 2024;3491908
+Území,Ukazatel,Čtvrtletí,value
+Česko,Deficit/přebytek vládních institucí,4. čtvrtletí 2015,-32245
+Česko,Deficit/přebytek vládních institucí,1. čtvrtletí 2022,-63614
+Česko,Deficit/přebytek vládních institucí,2. čtvrtletí 2022,1908
+Česko,Deficit/přebytek vládních institucí,3. čtvrtletí 2022,-55608
+Česko,Deficit/přebytek vládních institucí,4. čtvrtletí 2022,-99031
+Česko,Deficit/přebytek vládních institucí,1. čtvrtletí 2023,-111030
+Česko,Deficit/přebytek vládních institucí,2. čtvrtletí 2023,-15391
+Česko,Deficit/přebytek vládních institucí,3. čtvrtletí 2023,-44985
+Česko,Deficit/přebytek vládních institucí,4. čtvrtletí 2023,-114660
+Česko,Deficit/přebytek vládních institucí,1. čtvrtletí 2024,-58987
+Česko,Deficit/přebytek vládních institucí,2. čtvrtletí 2024,3698
+Česko,Deficit/přebytek vládních institucí,3. čtvrtletí 2024,-31576
+Česko,Deficit/přebytek vládních institucí,4. čtvrtletí 2024,-76622
+Česko,Deficit/přebytek vládních institucí,1. čtvrtletí 2025,-71259
+Česko,Deficit/přebytek vládních institucí,2. čtvrtletí 2025,8257
+Česko,Konsolidovaný dluh vládních institucí,4. čtvrtletí 2015,1836047
+Česko,Konsolidovaný dluh vládních institucí,1. čtvrtletí 2022,2684150
+Česko,Konsolidovaný dluh vládních institucí,2. čtvrtletí 2022,2793661
+Česko,Konsolidovaný dluh vládních institucí,3. čtvrtletí 2022,2983299
+Česko,Konsolidovaný dluh vládních institucí,4. čtvrtletí 2022,2997632
+Česko,Konsolidovaný dluh vládních institucí,1. čtvrtletí 2023,3099459
+Česko,Konsolidovaný dluh vládních institucí,2. čtvrtletí 2023,3150740
+Česko,Konsolidovaný dluh vládních institucí,3. čtvrtletí 2023,3214174
+Česko,Konsolidovaný dluh vládních institucí,4. čtvrtletí 2023,3234102
+Česko,Konsolidovaný dluh vládních institucí,1. čtvrtletí 2024,3337007
+Česko,Konsolidovaný dluh vládních institucí,2. čtvrtletí 2024,3320798
+Česko,Konsolidovaný dluh vládních institucí,3. čtvrtletí 2024,3449070
+Česko,Konsolidovaný dluh vládních institucí,4. čtvrtletí 2024,3488471
+Česko,Konsolidovaný dluh vládních institucí,1. čtvrtletí 2025,3535088
+Česko,Konsolidovaný dluh vládních institucí,2. čtvrtletí 2025,3627034

@@ -1,79 +1,85 @@
-Území;Roky;Ukazatel;Pohlaví;value
-Česko;2023;Průměrná hrubá měsíční mzda (Kč);Celkem;45927
-Česko;2023;Průměrná hrubá měsíční mzda (Kč);Ženy;41139
-Česko;2023;Průměrná hrubá měsíční mzda (Kč);Muži;50010
-Česko;2023;Medián měsíčních mezd (Kč);Celkem;39518
-Česko;2023;Medián měsíčních mezd (Kč);Ženy;36669
-Česko;2023;Medián měsíčních mezd (Kč);Muži;42231
-Česko;2022;Průměrná hrubá měsíční mzda (Kč);Celkem;43413
-Česko;2022;Průměrná hrubá měsíční mzda (Kč);Ženy;38861
-Česko;2022;Průměrná hrubá měsíční mzda (Kč);Muži;47239
-Česko;2022;Medián měsíčních mezd (Kč);Celkem;37418
-Česko;2022;Medián měsíčních mezd (Kč);Ženy;34587
-Česko;2022;Medián měsíčních mezd (Kč);Muži;40020
-Česko;2021;Průměrná hrubá měsíční mzda (Kč);Celkem;40777
-Česko;2021;Průměrná hrubá měsíční mzda (Kč);Ženy;37125
-Česko;2021;Průměrná hrubá měsíční mzda (Kč);Muži;43785
-Česko;2021;Medián měsíčních mezd (Kč);Celkem;35169
-Česko;2021;Medián měsíčních mezd (Kč);Ženy;32800
-Česko;2021;Medián měsíčních mezd (Kč);Muži;37070
-Česko;2020;Průměrná hrubá měsíční mzda (Kč);Celkem;38628
-Česko;2020;Průměrná hrubá měsíční mzda (Kč);Ženy;34899
-Česko;2020;Průměrná hrubá měsíční mzda (Kč);Muži;41667
-Česko;2020;Medián měsíčních mezd (Kč);Celkem;33195
-Česko;2020;Medián měsíčních mezd (Kč);Ženy;30926
-Česko;2020;Medián měsíčních mezd (Kč);Muži;35051
-Česko;2019;Průměrná hrubá měsíční mzda (Kč);Celkem;36380
-Česko;2019;Průměrná hrubá měsíční mzda (Kč);Ženy;32207
-Česko;2019;Průměrná hrubá měsíční mzda (Kč);Muži;39820
-Česko;2019;Medián měsíčních mezd (Kč);Celkem;31449
-Česko;2019;Medián měsíčních mezd (Kč);Ženy;28750
-Česko;2019;Medián měsíčních mezd (Kč);Muži;33844
-Česko;2018;Průměrná hrubá měsíční mzda (Kč);Celkem;33684
-Česko;2018;Průměrná hrubá měsíční mzda (Kč);Ženy;29627
-Česko;2018;Průměrná hrubá měsíční mzda (Kč);Muži;37008
-Česko;2018;Medián měsíčních mezd (Kč);Celkem;29184
-Česko;2018;Medián měsíčních mezd (Kč);Ženy;26678
-Česko;2018;Medián měsíčních mezd (Kč);Muži;31433
-Česko;2017;Průměrná hrubá měsíční mzda (Kč);Celkem;31109
-Česko;2017;Průměrná hrubá měsíční mzda (Kč);Ženy;27187
-Česko;2017;Průměrná hrubá měsíční mzda (Kč);Muži;34293
-Česko;2017;Medián měsíčních mezd (Kč);Celkem;26843
-Česko;2017;Medián měsíčních mezd (Kč);Ženy;24477
-Česko;2017;Medián měsíčních mezd (Kč);Muži;29006
-Česko;2016;Průměrná hrubá měsíční mzda (Kč);Celkem;29056
-Česko;2016;Průměrná hrubá měsíční mzda (Kč);Ženy;25309
-Česko;2016;Průměrná hrubá měsíční mzda (Kč);Muži;32065
-Česko;2016;Medián měsíčních mezd (Kč);Celkem;24982
-Česko;2016;Medián měsíčních mezd (Kč);Ženy;22651
-Česko;2016;Medián měsíčních mezd (Kč);Muži;26973
-Česko;2015;Průměrná hrubá měsíční mzda (Kč);Celkem;27811
-Česko;2015;Průměrná hrubá měsíční mzda (Kč);Ženy;24094
-Česko;2015;Průměrná hrubá měsíční mzda (Kč);Muži;30842
-Česko;2015;Medián měsíčních mezd (Kč);Celkem;23726
-Česko;2015;Medián měsíčních mezd (Kč);Ženy;21461
-Česko;2015;Medián měsíčních mezd (Kč);Muži;25688
-Česko;2014;Průměrná hrubá měsíční mzda (Kč);Celkem;26802
-Česko;2014;Průměrná hrubá měsíční mzda (Kč);Ženy;23203
-Česko;2014;Průměrná hrubá měsíční mzda (Kč);Muži;29721
-Česko;2014;Medián měsíčních mezd (Kč);Celkem;22844
-Česko;2014;Medián měsíčních mezd (Kč);Ženy;20660
-Česko;2014;Medián měsíčních mezd (Kč);Muži;24670
-Česko;2013;Průměrná hrubá měsíční mzda (Kč);Celkem;26211
-Česko;2013;Průměrná hrubá měsíční mzda (Kč);Ženy;22729
-Česko;2013;Průměrná hrubá měsíční mzda (Kč);Muži;29026
-Česko;2013;Medián měsíčních mezd (Kč);Celkem;22266
-Česko;2013;Medián měsíčních mezd (Kč);Ženy;20271
-Česko;2013;Medián měsíčních mezd (Kč);Muži;23955
-Česko;2012;Průměrná hrubá měsíční mzda (Kč);Celkem;26033
-Česko;2012;Průměrná hrubá měsíční mzda (Kč);Ženy;22496
-Česko;2012;Průměrná hrubá měsíční mzda (Kč);Muži;28873
-Česko;2012;Medián měsíčních mezd (Kč);Celkem;21997
-Česko;2012;Medián měsíčních mezd (Kč);Ženy;20042
-Česko;2012;Medián měsíčních mezd (Kč);Muži;23652
-Česko;2011;Průměrná hrubá měsíční mzda (Kč);Celkem;25625
-Česko;2011;Průměrná hrubá měsíční mzda (Kč);Ženy;22133
-Česko;2011;Průměrná hrubá měsíční mzda (Kč);Muži;28431
-Česko;2011;Medián měsíčních mezd (Kč);Celkem;21782
-Česko;2011;Medián měsíčních mezd (Kč);Ženy;19731
-Česko;2011;Medián měsíčních mezd (Kč);Muži;23533
+Území,Roky,Ukazatel,Pohlaví,value
+Česko,2024,Průměrná hrubá měsíční mzda (Kč),Celkem,48936
+Česko,2024,Průměrná hrubá měsíční mzda (Kč),Ženy,43741
+Česko,2024,Průměrná hrubá měsíční mzda (Kč),Muži,53423
+Česko,2024,Medián měsíčních mezd (Kč),Celkem,41742
+Česko,2024,Medián měsíčních mezd (Kč),Ženy,38676
+Česko,2024,Medián měsíčních mezd (Kč),Muži,44740
+Česko,2023,Průměrná hrubá měsíční mzda (Kč),Celkem,45927
+Česko,2023,Průměrná hrubá měsíční mzda (Kč),Ženy,41139
+Česko,2023,Průměrná hrubá měsíční mzda (Kč),Muži,50010
+Česko,2023,Medián měsíčních mezd (Kč),Celkem,39518
+Česko,2023,Medián měsíčních mezd (Kč),Ženy,36669
+Česko,2023,Medián měsíčních mezd (Kč),Muži,42231
+Česko,2022,Průměrná hrubá měsíční mzda (Kč),Celkem,43413
+Česko,2022,Průměrná hrubá měsíční mzda (Kč),Ženy,38861
+Česko,2022,Průměrná hrubá měsíční mzda (Kč),Muži,47239
+Česko,2022,Medián měsíčních mezd (Kč),Celkem,37418
+Česko,2022,Medián měsíčních mezd (Kč),Ženy,34587
+Česko,2022,Medián měsíčních mezd (Kč),Muži,40020
+Česko,2021,Průměrná hrubá měsíční mzda (Kč),Celkem,40777
+Česko,2021,Průměrná hrubá měsíční mzda (Kč),Ženy,37125
+Česko,2021,Průměrná hrubá měsíční mzda (Kč),Muži,43785
+Česko,2021,Medián měsíčních mezd (Kč),Celkem,35169
+Česko,2021,Medián měsíčních mezd (Kč),Ženy,32800
+Česko,2021,Medián měsíčních mezd (Kč),Muži,37070
+Česko,2020,Průměrná hrubá měsíční mzda (Kč),Celkem,38628
+Česko,2020,Průměrná hrubá měsíční mzda (Kč),Ženy,34899
+Česko,2020,Průměrná hrubá měsíční mzda (Kč),Muži,41667
+Česko,2020,Medián měsíčních mezd (Kč),Celkem,33195
+Česko,2020,Medián měsíčních mezd (Kč),Ženy,30926
+Česko,2020,Medián měsíčních mezd (Kč),Muži,35051
+Česko,2019,Průměrná hrubá měsíční mzda (Kč),Celkem,36380
+Česko,2019,Průměrná hrubá měsíční mzda (Kč),Ženy,32207
+Česko,2019,Průměrná hrubá měsíční mzda (Kč),Muži,39820
+Česko,2019,Medián měsíčních mezd (Kč),Celkem,31449
+Česko,2019,Medián měsíčních mezd (Kč),Ženy,28750
+Česko,2019,Medián měsíčních mezd (Kč),Muži,33844
+Česko,2018,Průměrná hrubá měsíční mzda (Kč),Celkem,33684
+Česko,2018,Průměrná hrubá měsíční mzda (Kč),Ženy,29627
+Česko,2018,Průměrná hrubá měsíční mzda (Kč),Muži,37008
+Česko,2018,Medián měsíčních mezd (Kč),Celkem,29184
+Česko,2018,Medián měsíčních mezd (Kč),Ženy,26678
+Česko,2018,Medián měsíčních mezd (Kč),Muži,31433
+Česko,2017,Průměrná hrubá měsíční mzda (Kč),Celkem,31109
+Česko,2017,Průměrná hrubá měsíční mzda (Kč),Ženy,27187
+Česko,2017,Průměrná hrubá měsíční mzda (Kč),Muži,34293
+Česko,2017,Medián měsíčních mezd (Kč),Celkem,26843
+Česko,2017,Medián měsíčních mezd (Kč),Ženy,24477
+Česko,2017,Medián měsíčních mezd (Kč),Muži,29006
+Česko,2016,Průměrná hrubá měsíční mzda (Kč),Celkem,29056
+Česko,2016,Průměrná hrubá měsíční mzda (Kč),Ženy,25309
+Česko,2016,Průměrná hrubá měsíční mzda (Kč),Muži,32065
+Česko,2016,Medián měsíčních mezd (Kč),Celkem,24982
+Česko,2016,Medián měsíčních mezd (Kč),Ženy,22651
+Česko,2016,Medián měsíčních mezd (Kč),Muži,26973
+Česko,2015,Průměrná hrubá měsíční mzda (Kč),Celkem,27811
+Česko,2015,Průměrná hrubá měsíční mzda (Kč),Ženy,24094
+Česko,2015,Průměrná hrubá měsíční mzda (Kč),Muži,30842
+Česko,2015,Medián měsíčních mezd (Kč),Celkem,23726
+Česko,2015,Medián měsíčních mezd (Kč),Ženy,21461
+Česko,2015,Medián měsíčních mezd (Kč),Muži,25688
+Česko,2014,Průměrná hrubá měsíční mzda (Kč),Celkem,26802
+Česko,2014,Průměrná hrubá měsíční mzda (Kč),Ženy,23203
+Česko,2014,Průměrná hrubá měsíční mzda (Kč),Muži,29721
+Česko,2014,Medián měsíčních mezd (Kč),Celkem,22844
+Česko,2014,Medián měsíčních mezd (Kč),Ženy,20660
+Česko,2014,Medián měsíčních mezd (Kč),Muži,24670
+Česko,2013,Průměrná hrubá měsíční mzda (Kč),Celkem,26211
+Česko,2013,Průměrná hrubá měsíční mzda (Kč),Ženy,22729
+Česko,2013,Průměrná hrubá měsíční mzda (Kč),Muži,29026
+Česko,2013,Medián měsíčních mezd (Kč),Celkem,22266
+Česko,2013,Medián měsíčních mezd (Kč),Ženy,20271
+Česko,2013,Medián měsíčních mezd (Kč),Muži,23955
+Česko,2012,Průměrná hrubá měsíční mzda (Kč),Celkem,26033
+Česko,2012,Průměrná hrubá měsíční mzda (Kč),Ženy,22496
+Česko,2012,Průměrná hrubá měsíční mzda (Kč),Muži,28873
+Česko,2012,Medián měsíčních mezd (Kč),Celkem,21997
+Česko,2012,Medián měsíčních mezd (Kč),Ženy,20042
+Česko,2012,Medián měsíčních mezd (Kč),Muži,23652
+Česko,2011,Průměrná hrubá měsíční mzda (Kč),Celkem,25625
+Česko,2011,Průměrná hrubá měsíční mzda (Kč),Ženy,22133
+Česko,2011,Průměrná hrubá měsíční mzda (Kč),Muži,28431
+Česko,2011,Medián měsíčních mezd (Kč),Celkem,21782
+Česko,2011,Medián měsíčních mezd (Kč),Ženy,19731
+Česko,2011,Medián měsíčních mezd (Kč),Muži,23533

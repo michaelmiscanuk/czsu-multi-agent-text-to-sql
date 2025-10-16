@@ -1,43 +1,43 @@
-Roky;Území;Ukazatel;value
-2024;Hlavní město Praha;Počet obyvatel ve věku 0 - 14 let;215285
-2024;Hlavní město Praha;Počet obyvatel ve věku 15 - 64 let;925154
-2024;Hlavní město Praha;Počet obyvatel ve věku 65 a více let;257441
-2024;Středočeský kraj;Počet obyvatel ve věku 0 - 14 let;251729
-2024;Středočeský kraj;Počet obyvatel ve věku 15 - 64 let;939165
-2024;Středočeský kraj;Počet obyvatel ve věku 65 a více let;275321
-2024;Jihočeský kraj;Počet obyvatel ve věku 0 - 14 let;100376
-2024;Jihočeský kraj;Počet obyvatel ve věku 15 - 64 let;410412
-2024;Jihočeský kraj;Počet obyvatel ve věku 65 a více let;142439
-2024;Plzeňský kraj;Počet obyvatel ve věku 0 - 14 let;91983
-2024;Plzeňský kraj;Počet obyvatel ve věku 15 - 64 let;395427
-2024;Plzeňský kraj;Počet obyvatel ve věku 65 a více let;127230
-2024;Karlovarský kraj;Počet obyvatel ve věku 0 - 14 let;41623
-2024;Karlovarský kraj;Počet obyvatel ve věku 15 - 64 let;188324
-2024;Karlovarský kraj;Počet obyvatel ve věku 65 a více let;63248
-2024;Ústecký kraj;Počet obyvatel ve věku 0 - 14 let;122271
-2024;Ústecký kraj;Počet obyvatel ve věku 15 - 64 let;518221
-2024;Ústecký kraj;Počet obyvatel ve věku 65 a více let;167864
-2024;Liberecký kraj;Počet obyvatel ve věku 0 - 14 let;69377
-2024;Liberecký kraj;Počet obyvatel ve věku 15 - 64 let;285665
-2024;Liberecký kraj;Počet obyvatel ve věku 65 a více let;94452
-2024;Královéhradecký kraj;Počet obyvatel ve věku 0 - 14 let;83689
-2024;Královéhradecký kraj;Počet obyvatel ve věku 15 - 64 let;346214
-2024;Královéhradecký kraj;Počet obyvatel ve věku 65 a více let;126020
-2024;Pardubický kraj;Počet obyvatel ve věku 0 - 14 let;83033
-2024;Pardubický kraj;Počet obyvatel ve věku 15 - 64 let;335020
-2024;Pardubický kraj;Počet obyvatel ve věku 65 a více let;112416
-2024;Kraj Vysočina;Počet obyvatel ve věku 0 - 14 let;79965
-2024;Kraj Vysočina;Počet obyvatel ve věku 15 - 64 let;325396
-2024;Kraj Vysočina;Počet obyvatel ve věku 65 a více let;112286
-2024;Jihomoravský kraj;Počet obyvatel ve věku 0 - 14 let;195085
-2024;Jihomoravský kraj;Počet obyvatel ve věku 15 - 64 let;780610
-2024;Jihomoravský kraj;Počet obyvatel ve věku 65 a více let;253648
-2024;Olomoucký kraj;Počet obyvatel ve věku 0 - 14 let;95930
-2024;Olomoucký kraj;Počet obyvatel ve věku 15 - 64 let;396466
-2024;Olomoucký kraj;Počet obyvatel ve věku 65 a více let;139104
-2024;Zlínský kraj;Počet obyvatel ve věku 0 - 14 let;86154
-2024;Zlínský kraj;Počet obyvatel ve věku 15 - 64 let;363508
-2024;Zlínský kraj;Počet obyvatel ve věku 65 a více let;129336
-2024;Moravskoslezský kraj;Počet obyvatel ve věku 0 - 14 let;174283
-2024;Moravskoslezský kraj;Počet obyvatel ve věku 15 - 64 let;753248
-2024;Moravskoslezský kraj;Počet obyvatel ve věku 65 a více let;255082
+Roky,Území,Ukazatel,value
+2024,Hlavní město Praha,Počet obyvatel ve věku 0 - 14 let,215285
+2024,Hlavní město Praha,Počet obyvatel ve věku 15 - 64 let,925154
+2024,Hlavní město Praha,Počet obyvatel ve věku 65 a více let,257441
+2024,Středočeský kraj,Počet obyvatel ve věku 0 - 14 let,251729
+2024,Středočeský kraj,Počet obyvatel ve věku 15 - 64 let,939165
+2024,Středočeský kraj,Počet obyvatel ve věku 65 a více let,275321
+2024,Jihočeský kraj,Počet obyvatel ve věku 0 - 14 let,100376
+2024,Jihočeský kraj,Počet obyvatel ve věku 15 - 64 let,410412
+2024,Jihočeský kraj,Počet obyvatel ve věku 65 a více let,142439
+2024,Plzeňský kraj,Počet obyvatel ve věku 0 - 14 let,91983
+2024,Plzeňský kraj,Počet obyvatel ve věku 15 - 64 let,395427
+2024,Plzeňský kraj,Počet obyvatel ve věku 65 a více let,127230
+2024,Karlovarský kraj,Počet obyvatel ve věku 0 - 14 let,41623
+2024,Karlovarský kraj,Počet obyvatel ve věku 15 - 64 let,188324
+2024,Karlovarský kraj,Počet obyvatel ve věku 65 a více let,63248
+2024,Ústecký kraj,Počet obyvatel ve věku 0 - 14 let,122271
+2024,Ústecký kraj,Počet obyvatel ve věku 15 - 64 let,518221
+2024,Ústecký kraj,Počet obyvatel ve věku 65 a více let,167864
+2024,Liberecký kraj,Počet obyvatel ve věku 0 - 14 let,69377
+2024,Liberecký kraj,Počet obyvatel ve věku 15 - 64 let,285665
+2024,Liberecký kraj,Počet obyvatel ve věku 65 a více let,94452
+2024,Královéhradecký kraj,Počet obyvatel ve věku 0 - 14 let,83689
+2024,Královéhradecký kraj,Počet obyvatel ve věku 15 - 64 let,346214
+2024,Královéhradecký kraj,Počet obyvatel ve věku 65 a více let,126020
+2024,Pardubický kraj,Počet obyvatel ve věku 0 - 14 let,83033
+2024,Pardubický kraj,Počet obyvatel ve věku 15 - 64 let,335020
+2024,Pardubický kraj,Počet obyvatel ve věku 65 a více let,112416
+2024,Kraj Vysočina,Počet obyvatel ve věku 0 - 14 let,79965
+2024,Kraj Vysočina,Počet obyvatel ve věku 15 - 64 let,325396
+2024,Kraj Vysočina,Počet obyvatel ve věku 65 a více let,112286
+2024,Jihomoravský kraj,Počet obyvatel ve věku 0 - 14 let,195085
+2024,Jihomoravský kraj,Počet obyvatel ve věku 15 - 64 let,780610
+2024,Jihomoravský kraj,Počet obyvatel ve věku 65 a více let,253648
+2024,Olomoucký kraj,Počet obyvatel ve věku 0 - 14 let,95930
+2024,Olomoucký kraj,Počet obyvatel ve věku 15 - 64 let,396466
+2024,Olomoucký kraj,Počet obyvatel ve věku 65 a více let,139104
+2024,Zlínský kraj,Počet obyvatel ve věku 0 - 14 let,86154
+2024,Zlínský kraj,Počet obyvatel ve věku 15 - 64 let,363508
+2024,Zlínský kraj,Počet obyvatel ve věku 65 a více let,129336
+2024,Moravskoslezský kraj,Počet obyvatel ve věku 0 - 14 let,174283
+2024,Moravskoslezský kraj,Počet obyvatel ve věku 15 - 64 let,753248
+2024,Moravskoslezský kraj,Počet obyvatel ve věku 65 a více let,255082

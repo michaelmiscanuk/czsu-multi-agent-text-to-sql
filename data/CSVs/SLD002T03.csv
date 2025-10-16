@@ -1,46 +1,46 @@
-Ukazatel;Rok sčítání;Území (ČR, kraje, SO ORP);Pohlaví;value
-Počet obyvatel (obvyklý pobyt);2021;Česká republika;Celkem;10524167
-Počet obyvatel (obvyklý pobyt);2021;Česká republika;Muži;5186548
-Počet obyvatel (obvyklý pobyt);2021;Česká republika;Ženy;5337619
-Počet obyvatel (obvyklý pobyt);2021;Hlavní město Praha;Celkem;1301432
-Počet obyvatel (obvyklý pobyt);2021;Hlavní město Praha;Muži;633449
-Počet obyvatel (obvyklý pobyt);2021;Hlavní město Praha;Ženy;667983
-Počet obyvatel (obvyklý pobyt);2021;Jihočeský kraj;Celkem;631803
-Počet obyvatel (obvyklý pobyt);2021;Jihočeský kraj;Muži;312168
-Počet obyvatel (obvyklý pobyt);2021;Jihočeský kraj;Ženy;319635
-Počet obyvatel (obvyklý pobyt);2021;Jihomoravský kraj;Celkem;1197651
-Počet obyvatel (obvyklý pobyt);2021;Jihomoravský kraj;Muži;589553
-Počet obyvatel (obvyklý pobyt);2021;Jihomoravský kraj;Ženy;608098
-Počet obyvatel (obvyklý pobyt);2021;Karlovarský kraj;Celkem;279103
-Počet obyvatel (obvyklý pobyt);2021;Karlovarský kraj;Muži;138110
-Počet obyvatel (obvyklý pobyt);2021;Karlovarský kraj;Ženy;140993
-Počet obyvatel (obvyklý pobyt);2021;Kraj Vysočina;Celkem;497661
-Počet obyvatel (obvyklý pobyt);2021;Kraj Vysočina;Muži;247368
-Počet obyvatel (obvyklý pobyt);2021;Kraj Vysočina;Ženy;250293
-Počet obyvatel (obvyklý pobyt);2021;Královéhradecký kraj;Celkem;538303
-Počet obyvatel (obvyklý pobyt);2021;Královéhradecký kraj;Muži;266017
-Počet obyvatel (obvyklý pobyt);2021;Královéhradecký kraj;Ženy;272286
-Počet obyvatel (obvyklý pobyt);2021;Liberecký kraj;Celkem;435220
-Počet obyvatel (obvyklý pobyt);2021;Liberecký kraj;Muži;215420
-Počet obyvatel (obvyklý pobyt);2021;Liberecký kraj;Ženy;219800
-Počet obyvatel (obvyklý pobyt);2021;Moravskoslezský kraj;Celkem;1162841
-Počet obyvatel (obvyklý pobyt);2021;Moravskoslezský kraj;Muži;570091
-Počet obyvatel (obvyklý pobyt);2021;Moravskoslezský kraj;Ženy;592750
-Počet obyvatel (obvyklý pobyt);2021;Olomoucký kraj;Celkem;619788
-Počet obyvatel (obvyklý pobyt);2021;Olomoucký kraj;Muži;303895
-Počet obyvatel (obvyklý pobyt);2021;Olomoucký kraj;Ženy;315893
-Počet obyvatel (obvyklý pobyt);2021;Pardubický kraj;Celkem;510037
-Počet obyvatel (obvyklý pobyt);2021;Pardubický kraj;Muži;252946
-Počet obyvatel (obvyklý pobyt);2021;Pardubický kraj;Ženy;257091
-Počet obyvatel (obvyklý pobyt);2021;Plzeňský kraj;Celkem;581436
-Počet obyvatel (obvyklý pobyt);2021;Plzeňský kraj;Muži;288879
-Počet obyvatel (obvyklý pobyt);2021;Plzeňský kraj;Ženy;292557
-Počet obyvatel (obvyklý pobyt);2021;Středočeský kraj;Celkem;1415463
-Počet obyvatel (obvyklý pobyt);2021;Středočeský kraj;Muži;702541
-Počet obyvatel (obvyklý pobyt);2021;Středočeský kraj;Ženy;712922
-Počet obyvatel (obvyklý pobyt);2021;Ústecký kraj;Celkem;789098
-Počet obyvatel (obvyklý pobyt);2021;Ústecký kraj;Muži;388965
-Počet obyvatel (obvyklý pobyt);2021;Ústecký kraj;Ženy;400133
-Počet obyvatel (obvyklý pobyt);2021;Zlínský kraj;Celkem;564331
-Počet obyvatel (obvyklý pobyt);2021;Zlínský kraj;Muži;277146
-Počet obyvatel (obvyklý pobyt);2021;Zlínský kraj;Ženy;287185
+Ukazatel,Rok sčítání,"Území (ČR, kraje, SO ORP)",Pohlaví,value
+Počet obyvatel (obvyklý pobyt),2021,Česká republika,Celkem,10524167
+Počet obyvatel (obvyklý pobyt),2021,Česká republika,Muži,5186548
+Počet obyvatel (obvyklý pobyt),2021,Česká republika,Ženy,5337619
+Počet obyvatel (obvyklý pobyt),2021,Hlavní město Praha,Celkem,1301432
+Počet obyvatel (obvyklý pobyt),2021,Hlavní město Praha,Muži,633449
+Počet obyvatel (obvyklý pobyt),2021,Hlavní město Praha,Ženy,667983
+Počet obyvatel (obvyklý pobyt),2021,Jihočeský kraj,Celkem,631803
+Počet obyvatel (obvyklý pobyt),2021,Jihočeský kraj,Muži,312168
+Počet obyvatel (obvyklý pobyt),2021,Jihočeský kraj,Ženy,319635
+Počet obyvatel (obvyklý pobyt),2021,Jihomoravský kraj,Celkem,1197651
+Počet obyvatel (obvyklý pobyt),2021,Jihomoravský kraj,Muži,589553
+Počet obyvatel (obvyklý pobyt),2021,Jihomoravský kraj,Ženy,608098
+Počet obyvatel (obvyklý pobyt),2021,Karlovarský kraj,Celkem,279103
+Počet obyvatel (obvyklý pobyt),2021,Karlovarský kraj,Muži,138110
+Počet obyvatel (obvyklý pobyt),2021,Karlovarský kraj,Ženy,140993
+Počet obyvatel (obvyklý pobyt),2021,Kraj Vysočina,Celkem,497661
+Počet obyvatel (obvyklý pobyt),2021,Kraj Vysočina,Muži,247368
+Počet obyvatel (obvyklý pobyt),2021,Kraj Vysočina,Ženy,250293
+Počet obyvatel (obvyklý pobyt),2021,Královéhradecký kraj,Celkem,538303
+Počet obyvatel (obvyklý pobyt),2021,Královéhradecký kraj,Muži,266017
+Počet obyvatel (obvyklý pobyt),2021,Královéhradecký kraj,Ženy,272286
+Počet obyvatel (obvyklý pobyt),2021,Liberecký kraj,Celkem,435220
+Počet obyvatel (obvyklý pobyt),2021,Liberecký kraj,Muži,215420
+Počet obyvatel (obvyklý pobyt),2021,Liberecký kraj,Ženy,219800
+Počet obyvatel (obvyklý pobyt),2021,Moravskoslezský kraj,Celkem,1162841
+Počet obyvatel (obvyklý pobyt),2021,Moravskoslezský kraj,Muži,570091
+Počet obyvatel (obvyklý pobyt),2021,Moravskoslezský kraj,Ženy,592750
+Počet obyvatel (obvyklý pobyt),2021,Olomoucký kraj,Celkem,619788
+Počet obyvatel (obvyklý pobyt),2021,Olomoucký kraj,Muži,303895
+Počet obyvatel (obvyklý pobyt),2021,Olomoucký kraj,Ženy,315893
+Počet obyvatel (obvyklý pobyt),2021,Pardubický kraj,Celkem,510037
+Počet obyvatel (obvyklý pobyt),2021,Pardubický kraj,Muži,252946
+Počet obyvatel (obvyklý pobyt),2021,Pardubický kraj,Ženy,257091
+Počet obyvatel (obvyklý pobyt),2021,Plzeňský kraj,Celkem,581436
+Počet obyvatel (obvyklý pobyt),2021,Plzeňský kraj,Muži,288879
+Počet obyvatel (obvyklý pobyt),2021,Plzeňský kraj,Ženy,292557
+Počet obyvatel (obvyklý pobyt),2021,Středočeský kraj,Celkem,1415463
+Počet obyvatel (obvyklý pobyt),2021,Středočeský kraj,Muži,702541
+Počet obyvatel (obvyklý pobyt),2021,Středočeský kraj,Ženy,712922
+Počet obyvatel (obvyklý pobyt),2021,Ústecký kraj,Celkem,789098
+Počet obyvatel (obvyklý pobyt),2021,Ústecký kraj,Muži,388965
+Počet obyvatel (obvyklý pobyt),2021,Ústecký kraj,Ženy,400133
+Počet obyvatel (obvyklý pobyt),2021,Zlínský kraj,Celkem,564331
+Počet obyvatel (obvyklý pobyt),2021,Zlínský kraj,Muži,277146
+Počet obyvatel (obvyklý pobyt),2021,Zlínský kraj,Ženy,287185

@@ -1,41 +1,49 @@
-Území;Instituce;Ukazatel;Roky;value
-Česko;Finanční leasingové společnosti;Finanční aktiva ;2018;179264.948130754
-Česko;Finanční leasingové společnosti;Finanční aktiva ;2019;190405.906693587
-Česko;Finanční leasingové společnosti;Finanční aktiva ;2020;187229.640503113
-Česko;Finanční leasingové společnosti;Finanční aktiva ;2021;209309.627462361
-Česko;Finanční leasingové společnosti;Finanční aktiva ;2022;221311.693590041
-Česko;Finanční leasingové společnosti;Pokladní hotovost;2018;49.6962119808
-Česko;Finanční leasingové společnosti;Pokladní hotovost;2019;17.0473678324
-Česko;Finanční leasingové společnosti;Pokladní hotovost;2020;34.1688893606
-Česko;Finanční leasingové společnosti;Pokladní hotovost;2021;19.3960618495
-Česko;Finanční leasingové společnosti;Pokladní hotovost;2022;1829.7258096193
-Česko;Finanční leasingové společnosti;Vklady na učtech;2018;3120.0407172838
-Česko;Finanční leasingové společnosti;Vklady na učtech;2019;4292.4427196214
-Česko;Finanční leasingové společnosti;Vklady na učtech;2020;5668.3481274808
-Česko;Finanční leasingové společnosti;Vklady na učtech;2021;3102.0408959197
-Česko;Finanční leasingové společnosti;Vklady na učtech;2022;2215.8136145008
-Česko;Finanční leasingové společnosti;Úvěry a půjčky poskytnuté;2018;32989.5015572521
-Česko;Finanční leasingové společnosti;Úvěry a půjčky poskytnuté;2019;38591.9805209684
-Česko;Finanční leasingové společnosti;Úvěry a půjčky poskytnuté;2020;38779.3442901145
-Česko;Finanční leasingové společnosti;Úvěry a půjčky poskytnuté;2021;49080.077342168
-Česko;Finanční leasingové společnosti;Úvěry a půjčky poskytnuté;2022;52579.4168304032
-Česko;Finanční leasingové společnosti;Dluhové cenné papíry;2018;162.5127612546
-Česko;Finanční leasingové společnosti;Dluhové cenné papíry;2019;55.5179588908
-Česko;Finanční leasingové společnosti;Dluhové cenné papíry;2020;0.7779746857
-Česko;Finanční leasingové společnosti;Dluhové cenné papíry;2021;12.3309963693
-Česko;Finanční leasingové společnosti;Dluhové cenné papíry;2022;0.1502817789
-Česko;Finanční leasingové společnosti;Akcie, účasti a jiné podíly;2018;5223.7045104585
-Česko;Finanční leasingové společnosti;Akcie, účasti a jiné podíly;2019;4232.5699330275
-Česko;Finanční leasingové společnosti;Akcie, účasti a jiné podíly;2020;3772.0944424682
-Česko;Finanční leasingové společnosti;Akcie, účasti a jiné podíly;2021;4235.505322605
-Česko;Finanční leasingové společnosti;Akcie, účasti a jiné podíly;2022;3297.381003844
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh;2018;42592.4994647942
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh;2019;46979.5976962923
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh;2020;44409.6408200156
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh;2021;55170.6573931203
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh;2022;38927.4124453002
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní;2018;92049.2727694248
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní;2019;92733.2581964346
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní;2020;91820.7096559888
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní;2021;95424.3932340654
-Česko;Finanční leasingové společnosti;Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní;2022;120549.743943816
+Území,Instituce,Ukazatel,Roky,value
+Česko,Finanční leasingové společnosti,Finanční aktiva ,2018,179264.948130754
+Česko,Finanční leasingové společnosti,Finanční aktiva ,2019,190405.906693587
+Česko,Finanční leasingové společnosti,Finanční aktiva ,2020,187229.6405031126
+Česko,Finanční leasingové společnosti,Finanční aktiva ,2021,209309.6274623613
+Česko,Finanční leasingové společnosti,Finanční aktiva ,2022,221311.6935900408
+Česko,Finanční leasingové společnosti,Finanční aktiva ,2023,258744.8913895864
+Česko,Finanční leasingové společnosti,Pokladní hotovost,2018,49.6962119808
+Česko,Finanční leasingové společnosti,Pokladní hotovost,2019,17.0473678324
+Česko,Finanční leasingové společnosti,Pokladní hotovost,2020,34.1688893606
+Česko,Finanční leasingové společnosti,Pokladní hotovost,2021,19.3960618495
+Česko,Finanční leasingové společnosti,Pokladní hotovost,2022,1829.7258096193
+Česko,Finanční leasingové společnosti,Pokladní hotovost,2023,21.0944613397
+Česko,Finanční leasingové společnosti,Vklady na učtech,2018,3120.0407172838
+Česko,Finanční leasingové společnosti,Vklady na učtech,2019,4292.4427196214
+Česko,Finanční leasingové společnosti,Vklady na učtech,2020,5668.3481274808
+Česko,Finanční leasingové společnosti,Vklady na učtech,2021,3102.0408959197
+Česko,Finanční leasingové společnosti,Vklady na učtech,2022,2215.8136145008
+Česko,Finanční leasingové společnosti,Vklady na učtech,2023,6791.2406228092
+Česko,Finanční leasingové společnosti,Úvěry a půjčky poskytnuté,2018,32989.5015572521
+Česko,Finanční leasingové společnosti,Úvěry a půjčky poskytnuté,2019,38591.9805209684
+Česko,Finanční leasingové společnosti,Úvěry a půjčky poskytnuté,2020,38779.3442901145
+Česko,Finanční leasingové společnosti,Úvěry a půjčky poskytnuté,2021,49080.077342168
+Česko,Finanční leasingové společnosti,Úvěry a půjčky poskytnuté,2022,52579.4168304032
+Česko,Finanční leasingové společnosti,Úvěry a půjčky poskytnuté,2023,50651.3981231709
+Česko,Finanční leasingové společnosti,Dluhové cenné papíry,2018,162.5127612546
+Česko,Finanční leasingové společnosti,Dluhové cenné papíry,2019,55.5179588908
+Česko,Finanční leasingové společnosti,Dluhové cenné papíry,2020,0.7779746857
+Česko,Finanční leasingové společnosti,Dluhové cenné papíry,2021,12.3309963693
+Česko,Finanční leasingové společnosti,Dluhové cenné papíry,2022,0.1502817789
+Česko,Finanční leasingové společnosti,Dluhové cenné papíry,2023,0.1826075734
+Česko,Finanční leasingové společnosti,"Akcie, účasti a jiné podíly",2018,5223.7045104585
+Česko,Finanční leasingové společnosti,"Akcie, účasti a jiné podíly",2019,4232.5699330275
+Česko,Finanční leasingové společnosti,"Akcie, účasti a jiné podíly",2020,3772.0944424682
+Česko,Finanční leasingové společnosti,"Akcie, účasti a jiné podíly",2021,4235.505322605
+Česko,Finanční leasingové společnosti,"Akcie, účasti a jiné podíly",2022,3297.381003844
+Česko,Finanční leasingové společnosti,"Akcie, účasti a jiné podíly",2023,7657.952752015
+Česko,Finanční leasingové společnosti,Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh,2018,42592.4994647942
+Česko,Finanční leasingové společnosti,Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh,2019,46979.5976962923
+Česko,Finanční leasingové společnosti,Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh,2020,44409.6408200156
+Česko,Finanční leasingové společnosti,Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh,2021,55170.6573931203
+Česko,Finanční leasingové společnosti,Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh,2022,38927.4124453002
+Česko,Finanční leasingové společnosti,Dlouhodobé a krátkodobé pohledávky bez pohledávek z obchodních vztahů a poskytnutých záloh,2023,46609.1526845344
+Česko,Finanční leasingové společnosti,"Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní",2018,92049.2727694248
+Česko,Finanční leasingové společnosti,"Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní",2019,92733.2581964346
+Česko,Finanční leasingové společnosti,"Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní",2020,91820.7096559888
+Česko,Finanční leasingové společnosti,"Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní",2021,95424.3932340654
+Česko,Finanční leasingové společnosti,"Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní",2022,120549.7439438159
+Česko,Finanční leasingové společnosti,"Dlouhodobé a krátkodobé pohledávky z obchodních vztahů, poskytnuté zálohy a dohadné účty aktivní",2023,144963.4800286868

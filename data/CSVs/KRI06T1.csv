@@ -1,7 +1,91 @@
-Roky;Česko, kraje, okresy;Ukazatel;value
-2024;Česko;Počet požárů;17630.0
-2024;Česko;Počet požárů na 1000 obyvatel;1.61943231
-2024;Česko;Přímé škody způsobené při požárech (tis. Kč);3708229.0
-2024;Česko;Uchráněné hodnoty při požárech (tis. Kč);31579946.7
-2024;Česko;Počet osob usmrcených při požárech;107.0
-2024;Česko;Počet osob zraněných při požárech;1493.0
+Roky,"Česko, kraje, okresy",Ukazatel,value
+2024,Česko,Počet požárů,17630.0
+2024,Česko,Počet požárů na 1000 obyvatel,1.61943231
+2024,Česko,Přímé škody způsobené při požárech (tis. Kč),3708229.0
+2024,Česko,Uchráněné hodnoty při požárech (tis. Kč),31579946.7
+2024,Česko,Počet osob usmrcených při požárech,107.0
+2024,Česko,Počet osob zraněných při požárech,1493.0
+2024,Hlavní město Praha,Počet požárů,2255.0
+2024,Hlavní město Praha,Počet požárů na 1000 obyvatel,1.62539626
+2024,Hlavní město Praha,Přímé škody způsobené při požárech (tis. Kč),158658.5
+2024,Hlavní město Praha,Uchráněné hodnoty při požárech (tis. Kč),8878839.5
+2024,Hlavní město Praha,Počet osob usmrcených při požárech,7.0
+2024,Hlavní město Praha,Počet osob zraněných při požárech,87.0
+2024,Středočeský kraj,Počet požárů,2567.0
+2024,Středočeský kraj,Počet požárů na 1000 obyvatel,1.75867089
+2024,Středočeský kraj,Přímé škody způsobené při požárech (tis. Kč),692156.0
+2024,Středočeský kraj,Uchráněné hodnoty při požárech (tis. Kč),2753182.0
+2024,Středočeský kraj,Počet osob usmrcených při požárech,7.0
+2024,Středočeský kraj,Počet osob zraněných při požárech,228.0
+2024,Jihočeský kraj,Počet požárů,1031.0
+2024,Jihočeský kraj,Počet požárů na 1000 obyvatel,1.57857668
+2024,Jihočeský kraj,Přímé škody způsobené při požárech (tis. Kč),186667.6
+2024,Jihočeský kraj,Uchráněné hodnoty při požárech (tis. Kč),477871.0
+2024,Jihočeský kraj,Počet osob usmrcených při požárech,11.0
+2024,Jihočeský kraj,Počet osob zraněných při požárech,67.0
+2024,Plzeňský kraj,Počet požárů,1028.0
+2024,Plzeňský kraj,Počet požárů na 1000 obyvatel,1.6808344
+2024,Plzeňský kraj,Přímé škody způsobené při požárech (tis. Kč),274842.2
+2024,Plzeňský kraj,Uchráněné hodnoty při požárech (tis. Kč),1514299.5
+2024,Plzeňský kraj,Počet osob usmrcených při požárech,4.0
+2024,Plzeňský kraj,Počet osob zraněných při požárech,87.0
+2024,Karlovarský kraj,Počet požárů,619.0
+2024,Karlovarský kraj,Počet požárů na 1000 obyvatel,2.11061822
+2024,Karlovarský kraj,Přímé škody způsobené při požárech (tis. Kč),66313.1
+2024,Karlovarský kraj,Uchráněné hodnoty při požárech (tis. Kč),235907.0
+2024,Karlovarský kraj,Počet osob usmrcených při požárech,6.0
+2024,Karlovarský kraj,Počet osob zraněných při požárech,85.0
+2024,Ústecký kraj,Počet požárů,1726.0
+2024,Ústecký kraj,Počet požárů na 1000 obyvatel,2.13333729
+2024,Ústecký kraj,Přímé škody způsobené při požárech (tis. Kč),415384.1
+2024,Ústecký kraj,Uchráněné hodnoty při požárech (tis. Kč),7800476.7
+2024,Ústecký kraj,Počet osob usmrcených při požárech,11.0
+2024,Ústecký kraj,Počet osob zraněných při požárech,184.0
+2024,Liberecký kraj,Počet požárů,857.0
+2024,Liberecký kraj,Počet požárů na 1000 obyvatel,1.9070847
+2024,Liberecký kraj,Přímé škody způsobené při požárech (tis. Kč),208630.5
+2024,Liberecký kraj,Uchráněné hodnoty při požárech (tis. Kč),873443.0
+2024,Liberecký kraj,Počet osob usmrcených při požárech,5.0
+2024,Liberecký kraj,Počet osob zraněných při požárech,117.0
+2024,Královéhradecký kraj,Počet požárů,798.0
+2024,Královéhradecký kraj,Počet požárů na 1000 obyvatel,1.436629
+2024,Královéhradecký kraj,Přímé škody způsobené při požárech (tis. Kč),148483.6
+2024,Královéhradecký kraj,Uchráněné hodnoty při požárech (tis. Kč),1155107.0
+2024,Královéhradecký kraj,Počet osob usmrcených při požárech,1.0
+2024,Královéhradecký kraj,Počet osob zraněných při požárech,85.0
+2024,Pardubický kraj,Počet požárů,758.0
+2024,Pardubický kraj,Počet požárů na 1000 obyvatel,1.43153108
+2024,Pardubický kraj,Přímé škody způsobené při požárech (tis. Kč),133066.2
+2024,Pardubický kraj,Uchráněné hodnoty při požárech (tis. Kč),1302967.5
+2024,Pardubický kraj,Počet osob usmrcených při požárech,3.0
+2024,Pardubický kraj,Počet osob zraněných při požárech,69.0
+2024,Kraj Vysočina,Počet požárů,808.0
+2024,Kraj Vysočina,Počet požárů na 1000 obyvatel,1.56294429
+2024,Kraj Vysočina,Přímé škody způsobené při požárech (tis. Kč),191083.8
+2024,Kraj Vysočina,Uchráněné hodnoty při požárech (tis. Kč),838327.0
+2024,Kraj Vysočina,Počet osob usmrcených při požárech,7.0
+2024,Kraj Vysočina,Počet osob zraněných při požárech,43.0
+2024,Jihomoravský kraj,Počet požárů,1668.0
+2024,Jihomoravský kraj,Počet požárů na 1000 obyvatel,1.36064632
+2024,Jihomoravský kraj,Přímé škody způsobené při požárech (tis. Kč),337534.0
+2024,Jihomoravský kraj,Uchráněné hodnoty při požárech (tis. Kč),2843424.0
+2024,Jihomoravský kraj,Počet osob usmrcených při požárech,15.0
+2024,Jihomoravský kraj,Počet osob zraněných při požárech,144.0
+2024,Olomoucký kraj,Počet požárů,892.0
+2024,Olomoucký kraj,Počet požárů na 1000 obyvatel,1.41261503
+2024,Olomoucký kraj,Přímé škody způsobené při požárech (tis. Kč),200524.8
+2024,Olomoucký kraj,Uchráněné hodnoty při požárech (tis. Kč),847592.0
+2024,Olomoucký kraj,Počet osob usmrcených při požárech,6.0
+2024,Olomoucký kraj,Počet osob zraněných při požárech,57.0
+2024,Zlínský kraj,Počet požárů,641.0
+2024,Zlínský kraj,Počet požárů na 1000 obyvatel,1.10676004
+2024,Zlínský kraj,Přímé škody způsobené při požárech (tis. Kč),167216.1
+2024,Zlínský kraj,Uchráněné hodnoty při požárech (tis. Kč),555195.0
+2024,Zlínský kraj,Počet osob usmrcených při požárech,8.0
+2024,Zlínský kraj,Počet osob zraněných při požárech,76.0
+2024,Moravskoslezský kraj,Počet požárů,1982.0
+2024,Moravskoslezský kraj,Počet požárů na 1000 obyvatel,1.67305105
+2024,Moravskoslezský kraj,Přímé škody způsobené při požárech (tis. Kč),527668.5
+2024,Moravskoslezský kraj,Uchráněné hodnoty při požárech (tis. Kč),1503315.5
+2024,Moravskoslezský kraj,Počet osob usmrcených při požárech,16.0
+2024,Moravskoslezský kraj,Počet osob zraněných při požárech,164.0

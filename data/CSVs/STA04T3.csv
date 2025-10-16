@@ -1,31 +1,31 @@
-Území;Ukazatel;CZ-NACE;Roky;Očištění;Typ indexu;value
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2024;Bez očištění;Meziroční index;96.0433884747
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2024;Bez očištění;Bazický index (2021 = 100);92.421300305
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2024;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Meziroční index;95.7509461733
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2024;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Bazický index (2021 = 100);92.4875867075
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2024;Sezónně očištěno, včetně očištění o kalendářní vlivy;Meziroční index;95.5467814636
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2024;Sezónně očištěno, včetně očištění o kalendářní vlivy;Bazický index (2021 = 100);92.7690788233
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2023;Bez očištění;Meziroční index;94.2245496054
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2023;Bez očištění;Bazický index (2021 = 100);96.2286959808
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2023;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Meziroční index;94.5488241882
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2023;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Bazický index (2021 = 100);96.5918253592
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2023;Sezónně očištěno, včetně očištění o kalendářní vlivy;Meziroční index;94.4031564804
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2023;Sezónně očištěno, včetně očištění o kalendářní vlivy;Bazický index (2021 = 100);97.0928349467
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2022;Bez očištění;Meziroční index;102.1269896016
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2022;Bez očištění;Bazický index (2021 = 100);102.126989605
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2022;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Meziroční index;102.16078961
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2022;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Bazický index (2021 = 100);102.1607896117
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2022;Sezónně očištěno, včetně očištění o kalendářní vlivy;Meziroční index;102.8491403967
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2022;Sezónně očištěno, včetně očištění o kalendářní vlivy;Bazický index (2021 = 100);102.8491403958
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2021;Bez očištění;Meziroční index;101.6050665216
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2021;Bez očištění;Bazický index (2021 = 100);100.0000000033
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2021;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Meziroční index;101.3815878122
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2021;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Bazický index (2021 = 100);100.0000000017
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2021;Sezónně očištěno, včetně očištění o kalendářní vlivy;Meziroční index;100.435654885
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2021;Sezónně očištěno, včetně očištění o kalendářní vlivy;Bazický index (2021 = 100);99.9999999992
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2020;Bez očištění;Meziroční index;86.7511410054
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2020;Bez očištění;Bazický index (2021 = 100);98.4202888958
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2020;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Meziroční index;86.797252395
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2020;Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy;Bazický index (2021 = 100);98.6372399167
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2020;Sezónně očištěno, včetně očištění o kalendářní vlivy;Meziroční index;87.8160162867
-Česko;Index stavební produkce (%);NACE 41 - Výstavba budov;2020;Sezónně očištěno, včetně očištění o kalendářní vlivy;Bazický index (2021 = 100);99.5662348333
+Území,Ukazatel,CZ-NACE,Roky,Očištění,Typ indexu,value
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2024,Bez očištění,Meziroční index,96.0433884747
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2024,Bez očištění,Bazický index (2021 = 100),92.421300305
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2024,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Meziroční index,95.7672089864
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2024,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Bazický index (2021 = 100),92.4852117617
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2024,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Meziroční index,95.5519272984
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2024,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Bazický index (2021 = 100),92.7744159592
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2023,Bez očištění,Meziroční index,94.2245496054
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2023,Bez očištění,Bazický index (2021 = 100),96.2286959808
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2023,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Meziroční index,94.531307568
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2023,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Bazický index (2021 = 100),96.5729425975
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2023,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Meziroční index,94.4010420156
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2023,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Bazický index (2021 = 100),97.093191715
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2022,Bez očištění,Meziroční index,102.1269896016
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2022,Bez očištění,Bazický index (2021 = 100),102.126989605
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2022,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Meziroční index,102.1597448317
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2022,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Bazický index (2021 = 100),102.1597448317
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2022,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Meziroční index,102.8518220158
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2022,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Bazický index (2021 = 100),102.8518220158
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2021,Bez očištění,Meziroční index,101.6050665216
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2021,Bez očištění,Bazický index (2021 = 100),100.0000000033
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2021,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Meziroční index,101.3815878105
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2021,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Bazický index (2021 = 100),100.0
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2021,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Meziroční index,100.4356548858
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2021,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Bazický index (2021 = 100),100.0
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2020,Bez očištění,Meziroční index,86.7511410054
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2020,Bez očištění,Bazický index (2021 = 100),98.4202888958
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2020,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Meziroční index,86.797252395
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2020,"Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy",Bazický index (2021 = 100),98.6372399167
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2020,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Meziroční index,87.8160162867
+Česko,Index stavební produkce (%),NACE 41 - Výstavba budov,2020,"Sezónně očištěno, včetně očištění o kalendářní vlivy",Bazický index (2021 = 100),99.5662348333

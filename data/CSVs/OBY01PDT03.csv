@@ -1,166 +1,136 @@
-Kumulace čtvrtletí;ČR, kraje;Ukazatel;value
-Q1-Q3 2024;Česko;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Česko;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Kojenecká úmrtnost;
-Q1-Q3 2024;Česko;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Česko;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Hlavní město Praha;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Kojenecká úmrtnost;
-Q1-Q3 2024;Hlavní město Praha;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Hlavní město Praha;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Středočeský kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Středočeský kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Středočeský kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Jihočeský kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Jihočeský kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Jihočeský kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Plzeňský kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Plzeňský kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Plzeňský kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Karlovarský kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Karlovarský kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Karlovarský kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Ústecký kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Ústecký kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Ústecký kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Liberecký kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Liberecký kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Liberecký kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Královéhradecký kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Královéhradecký kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Královéhradecký kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Pardubický kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Pardubický kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Pardubický kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Kraj Vysočina;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Kojenecká úmrtnost;
-Q1-Q3 2024;Kraj Vysočina;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Kraj Vysočina;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Jihomoravský kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Jihomoravský kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Jihomoravský kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Olomoucký kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Olomoucký kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Olomoucký kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Zlínský kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Zlínský kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Zlínský kraj;Rozvody na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Živě narození na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Podíl živě narozených mimo manželství (%);
-Q1-Q3 2024;Moravskoslezský kraj;Zemřelí na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Kojenecká úmrtnost;
-Q1-Q3 2024;Moravskoslezský kraj;Přirozený přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Přistěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Vystěhovalí na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Přírůstek/úbytek stěhováním na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Celkový přírůstek/úbytek na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Sňatky na 1 000 obyvatel;
-Q1-Q3 2024;Moravskoslezský kraj;Rozvody na 1 000 obyvatel;
+Kumulace čtvrtletí,"ČR, kraje",Ukazatel,value
+Q1-Q2 2025,Česko,Živě narození na 1 000 obyvatel,6.928889205
+Q1-Q2 2025,Česko,Zemřelí na 1 000 obyvatel,10.684945
+Q1-Q2 2025,Česko,Přirozený přírůstek/úbytek na 1 000 obyvatel,-3.756055794
+Q1-Q2 2025,Česko,Přistěhovalí na 1 000 obyvatel,9.177006963
+Q1-Q2 2025,Česko,Vystěhovalí na 1 000 obyvatel,10.44784317
+Q1-Q2 2025,Česko,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-1.270836204
+Q1-Q2 2025,Česko,Celkový přírůstek/úbytek na 1 000 obyvatel,-5.026891997
+Q1-Q2 2025,Česko,Sňatky na 1 000 obyvatel,3.208741105
+Q1-Q2 2025,Česko,Rozvody na 1 000 obyvatel,1.922727423
+Q1-Q2 2025,Hlavní město Praha,Živě narození na 1 000 obyvatel,7.579968488
+Q1-Q2 2025,Hlavní město Praha,Zemřelí na 1 000 obyvatel,8.850990992
+Q1-Q2 2025,Hlavní město Praha,Přirozený přírůstek/úbytek na 1 000 obyvatel,-1.271022504
+Q1-Q2 2025,Hlavní město Praha,Přistěhovalí na 1 000 obyvatel,41.96826862
+Q1-Q2 2025,Hlavní město Praha,Vystěhovalí na 1 000 obyvatel,42.1312942
+Q1-Q2 2025,Hlavní město Praha,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-0.163025588
+Q1-Q2 2025,Hlavní město Praha,Celkový přírůstek/úbytek na 1 000 obyvatel,-1.434048092
+Q1-Q2 2025,Hlavní město Praha,Sňatky na 1 000 obyvatel,3.624073247
+Q1-Q2 2025,Hlavní město Praha,Rozvody na 1 000 obyvatel,1.692292165
+Q1-Q2 2025,Středočeský kraj,Živě narození na 1 000 obyvatel,6.7381477
+Q1-Q2 2025,Středočeský kraj,Zemřelí na 1 000 obyvatel,9.518097639
+Q1-Q2 2025,Středočeský kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-2.779949939
+Q1-Q2 2025,Středočeský kraj,Přistěhovalí na 1 000 obyvatel,30.73480756
+Q1-Q2 2025,Středočeský kraj,Vystěhovalí na 1 000 obyvatel,25.8815814
+Q1-Q2 2025,Středočeský kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,4.853226154
+Q1-Q2 2025,Středočeský kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,2.073276215
+Q1-Q2 2025,Středočeský kraj,Sňatky na 1 000 obyvatel,3.116788581
+Q1-Q2 2025,Středočeský kraj,Rozvody na 1 000 obyvatel,2.08564988
+Q1-Q2 2025,Jihočeský kraj,Živě narození na 1 000 obyvatel,6.979124992
+Q1-Q2 2025,Jihočeský kraj,Zemřelí na 1 000 obyvatel,11.19812659
+Q1-Q2 2025,Jihočeský kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-4.219001601
+Q1-Q2 2025,Jihočeský kraj,Přistěhovalí na 1 000 obyvatel,14.85768549
+Q1-Q2 2025,Jihočeský kraj,Vystěhovalí na 1 000 obyvatel,14.95659249
+Q1-Q2 2025,Jihočeský kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-0.098906997
+Q1-Q2 2025,Jihočeský kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-4.317908598
+Q1-Q2 2025,Jihočeský kraj,Sňatky na 1 000 obyvatel,3.02902679
+Q1-Q2 2025,Jihočeský kraj,Rozvody na 1 000 obyvatel,1.984321632
+Q1-Q2 2025,Plzeňský kraj,Živě narození na 1 000 obyvatel,6.596467257
+Q1-Q2 2025,Plzeňský kraj,Zemřelí na 1 000 obyvatel,11.14983917
+Q1-Q2 2025,Plzeňský kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-4.553371912
+Q1-Q2 2025,Plzeňský kraj,Přistěhovalí na 1 000 obyvatel,23.74070211
+Q1-Q2 2025,Plzeňský kraj,Vystěhovalí na 1 000 obyvatel,30.27794921
+Q1-Q2 2025,Plzeňský kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-6.537247102
+Q1-Q2 2025,Plzeňský kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-11.09061901
+Q1-Q2 2025,Plzeňský kraj,Sňatky na 1 000 obyvatel,3.155118254
+Q1-Q2 2025,Plzeňský kraj,Rozvody na 1 000 obyvatel,1.809504734
+Q1-Q2 2025,Karlovarský kraj,Živě narození na 1 000 obyvatel,6.159975593
+Q1-Q2 2025,Karlovarský kraj,Zemřelí na 1 000 obyvatel,12.07851877
+Q1-Q2 2025,Karlovarský kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-5.918543179
+Q1-Q2 2025,Karlovarský kraj,Přistěhovalí na 1 000 obyvatel,20.57004168
+Q1-Q2 2025,Karlovarský kraj,Vystěhovalí na 1 000 obyvatel,25.31591313
+Q1-Q2 2025,Karlovarský kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-4.745871454
+Q1-Q2 2025,Karlovarský kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-10.66441463
+Q1-Q2 2025,Karlovarský kraj,Sňatky na 1 000 obyvatel,2.966169659
+Q1-Q2 2025,Karlovarský kraj,Rozvody na 1 000 obyvatel,2.248770485
+Q1-Q2 2025,Ústecký kraj,Živě narození na 1 000 obyvatel,6.614892032
+Q1-Q2 2025,Ústecký kraj,Zemřelí na 1 000 obyvatel,12.1123023
+Q1-Q2 2025,Ústecký kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-5.497410272
+Q1-Q2 2025,Ústecký kraj,Přistěhovalí na 1 000 obyvatel,13.35478202
+Q1-Q2 2025,Ústecký kraj,Vystěhovalí na 1 000 obyvatel,15.39224877
+Q1-Q2 2025,Ústecký kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-2.037466745
+Q1-Q2 2025,Ústecký kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-7.534877016
+Q1-Q2 2025,Ústecký kraj,Sňatky na 1 000 obyvatel,3.257446832
+Q1-Q2 2025,Ústecký kraj,Rozvody na 1 000 obyvatel,2.134965153
+Q1-Q2 2025,Liberecký kraj,Živě narození na 1 000 obyvatel,6.841468677
+Q1-Q2 2025,Liberecký kraj,Zemřelí na 1 000 obyvatel,10.76564881
+Q1-Q2 2025,Liberecký kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-3.924180128
+Q1-Q2 2025,Liberecký kraj,Přistěhovalí na 1 000 obyvatel,17.53519666
+Q1-Q2 2025,Liberecký kraj,Vystěhovalí na 1 000 obyvatel,21.20765389
+Q1-Q2 2025,Liberecký kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-3.672457233
+Q1-Q2 2025,Liberecký kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-7.596637361
+Q1-Q2 2025,Liberecký kraj,Sňatky na 1 000 obyvatel,2.980219273
+Q1-Q2 2025,Liberecký kraj,Rozvody na 1 000 obyvatel,2.144139658
+Q1-Q2 2025,Královéhradecký kraj,Živě narození na 1 000 obyvatel,6.980068766
+Q1-Q2 2025,Královéhradecký kraj,Zemřelí na 1 000 obyvatel,11.21537091
+Q1-Q2 2025,Královéhradecký kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-4.235302142
+Q1-Q2 2025,Královéhradecký kraj,Přistěhovalí na 1 000 obyvatel,17.14115845
+Q1-Q2 2025,Královéhradecký kraj,Vystěhovalí na 1 000 obyvatel,21.1619689
+Q1-Q2 2025,Královéhradecký kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-4.020810446
+Q1-Q2 2025,Královéhradecký kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-8.256112588
+Q1-Q2 2025,Královéhradecký kraj,Sňatky na 1 000 obyvatel,3.115582777
+Q1-Q2 2025,Královéhradecký kraj,Rozvody na 1 000 obyvatel,2.115833345
+Q1-Q2 2025,Pardubický kraj,Živě narození na 1 000 obyvatel,6.952590072
+Q1-Q2 2025,Pardubický kraj,Zemřelí na 1 000 obyvatel,10.53353548
+Q1-Q2 2025,Pardubický kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-3.580945407
+Q1-Q2 2025,Pardubický kraj,Přistěhovalí na 1 000 obyvatel,20.88821396
+Q1-Q2 2025,Pardubický kraj,Vystěhovalí na 1 000 obyvatel,21.22690061
+Q1-Q2 2025,Pardubický kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-0.338686654
+Q1-Q2 2025,Pardubický kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-3.91963206
+Q1-Q2 2025,Pardubický kraj,Sňatky na 1 000 obyvatel,2.975875991
+Q1-Q2 2025,Pardubický kraj,Rozvody na 1 000 obyvatel,1.84565199
+Q1-Q2 2025,Kraj Vysočina,Živě narození na 1 000 obyvatel,7.480521939
+Q1-Q2 2025,Kraj Vysočina,Zemřelí na 1 000 obyvatel,10.83426325
+Q1-Q2 2025,Kraj Vysočina,Přirozený přírůstek/úbytek na 1 000 obyvatel,-3.353741308
+Q1-Q2 2025,Kraj Vysočina,Přistěhovalí na 1 000 obyvatel,16.24553851
+Q1-Q2 2025,Kraj Vysočina,Vystěhovalí na 1 000 obyvatel,21.05165673
+Q1-Q2 2025,Kraj Vysočina,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-4.806118219
+Q1-Q2 2025,Kraj Vysočina,Celkový přírůstek/úbytek na 1 000 obyvatel,-8.159859526
+Q1-Q2 2025,Kraj Vysočina,Sňatky na 1 000 obyvatel,3.119486967
+Q1-Q2 2025,Kraj Vysočina,Rozvody na 1 000 obyvatel,1.674918534
+Q1-Q2 2025,Jihomoravský kraj,Živě narození na 1 000 obyvatel,6.861656916
+Q1-Q2 2025,Jihomoravský kraj,Zemřelí na 1 000 obyvatel,10.51101995
+Q1-Q2 2025,Jihomoravský kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-3.649363029
+Q1-Q2 2025,Jihomoravský kraj,Přistěhovalí na 1 000 obyvatel,18.18601981
+Q1-Q2 2025,Jihomoravský kraj,Vystěhovalí na 1 000 obyvatel,20.1758346
+Q1-Q2 2025,Jihomoravský kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-1.989814781
+Q1-Q2 2025,Jihomoravský kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-5.63917781
+Q1-Q2 2025,Jihomoravský kraj,Sňatky na 1 000 obyvatel,3.493266907
+Q1-Q2 2025,Jihomoravský kraj,Rozvody na 1 000 obyvatel,1.825503073
+Q1-Q2 2025,Olomoucký kraj,Živě narození na 1 000 obyvatel,7.075419844
+Q1-Q2 2025,Olomoucký kraj,Zemřelí na 1 000 obyvatel,11.30532515
+Q1-Q2 2025,Olomoucký kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-4.229905311
+Q1-Q2 2025,Olomoucký kraj,Přistěhovalí na 1 000 obyvatel,14.08689554
+Q1-Q2 2025,Olomoucký kraj,Vystěhovalí na 1 000 obyvatel,14.57606826
+Q1-Q2 2025,Olomoucký kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-0.489172723
+Q1-Q2 2025,Olomoucký kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-4.719078034
+Q1-Q2 2025,Olomoucký kraj,Sňatky na 1 000 obyvatel,3.267545902
+Q1-Q2 2025,Olomoucký kraj,Rozvody na 1 000 obyvatel,1.985465758
+Q1-Q2 2025,Zlínský kraj,Živě narození na 1 000 obyvatel,6.829059674
+Q1-Q2 2025,Zlínský kraj,Zemřelí na 1 000 obyvatel,10.92021749
+Q1-Q2 2025,Zlínský kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-4.091157813
+Q1-Q2 2025,Zlínský kraj,Přistěhovalí na 1 000 obyvatel,13.05124683
+Q1-Q2 2025,Zlínský kraj,Vystěhovalí na 1 000 obyvatel,14.12548094
+Q1-Q2 2025,Zlínský kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-1.074234106
+Q1-Q2 2025,Zlínský kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-5.165391919
+Q1-Q2 2025,Zlínský kraj,Sňatky na 1 000 obyvatel,2.898339423
+Q1-Q2 2025,Zlínský kraj,Rozvody na 1 000 obyvatel,1.545083471
+Q1-Q2 2025,Moravskoslezský kraj,Živě narození na 1 000 obyvatel,6.742407923
+Q1-Q2 2025,Moravskoslezský kraj,Zemřelí na 1 000 obyvatel,11.91796636
+Q1-Q2 2025,Moravskoslezský kraj,Přirozený přírůstek/úbytek na 1 000 obyvatel,-5.175558438
+Q1-Q2 2025,Moravskoslezský kraj,Přistěhovalí na 1 000 obyvatel,8.762054695
+Q1-Q2 2025,Moravskoslezský kraj,Vystěhovalí na 1 000 obyvatel,11.91625769
+Q1-Q2 2025,Moravskoslezský kraj,Přírůstek/úbytek stěhováním na 1 000 obyvatel,-3.154202997
+Q1-Q2 2025,Moravskoslezský kraj,Celkový přírůstek/úbytek na 1 000 obyvatel,-8.329761435
+Q1-Q2 2025,Moravskoslezský kraj,Sňatky na 1 000 obyvatel,3.084147567
+Q1-Q2 2025,Moravskoslezský kraj,Rozvody na 1 000 obyvatel,2.012812097

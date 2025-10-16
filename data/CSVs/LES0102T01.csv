@@ -1,73 +1,81 @@
-Území;Ukazatel;Roky;value
-Česko;Lesní pozemky k 31. 12. (ha);2015;2668392.1581
-Česko;Lesní pozemky k 31. 12. (ha);2016;2669849.7527
-Česko;Lesní pozemky k 31. 12. (ha);2017;2671658.5139
-Česko;Lesní pozemky k 31. 12. (ha);2018;2673391.6741
-Česko;Lesní pozemky k 31. 12. (ha);2019;2675669.8919
-Česko;Lesní pozemky k 31. 12. (ha);2020;2677328.9744
-Česko;Lesní pozemky k 31. 12. (ha);2021;2678804.1595
-Česko;Lesní pozemky k 31. 12. (ha);2022;2680371.9726
-Česko;Lesní pozemky k 31. 12. (ha);2023;2681763.6948
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2015;2568226.51
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2016;2570036.44
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2017;2571749.17
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2018;2574151.32
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2019;2576068.1
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2020;2571033.29
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2021;2565377.88
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2022;2557600.26
-Česko;Plochy dřevin k 31. 12. - celkem (ha);2023;2553668.89
-Česko;Zalesňování celkem (ha);2015;18797.16
-Česko;Zalesňování celkem (ha);2016;19928.73
-Česko;Zalesňování celkem (ha);2017;19973.2
-Česko;Zalesňování celkem (ha);2018;21245.32
-Česko;Zalesňování celkem (ha);2019;28670.24
-Česko;Zalesňování celkem (ha);2020;33670.77
-Česko;Zalesňování celkem (ha);2021;40679.15
-Česko;Zalesňování celkem (ha);2022;39969.69
-Česko;Zalesňování celkem (ha);2023;35222.26
-Česko;Přirozená obnova lesa (ha);2015;4749.13
-Česko;Přirozená obnova lesa (ha);2016;4813.25
-Česko;Přirozená obnova lesa (ha);2017;4472.96
-Česko;Přirozená obnova lesa (ha);2018;4075.28
-Česko;Přirozená obnova lesa (ha);2019;5224.14
-Česko;Přirozená obnova lesa (ha);2020;6614.82
-Česko;Přirozená obnova lesa (ha);2021;9111.3
-Česko;Přirozená obnova lesa (ha);2022;10088.42
-Česko;Přirozená obnova lesa (ha);2023;9566.05
-Česko;Těžba dřeva celkem (m³ bez kůry);2015;16162645.3
-Česko;Těžba dřeva celkem (m³ bez kůry);2016;17616552.8
-Česko;Těžba dřeva celkem (m³ bez kůry);2017;19387109.0
-Česko;Těžba dřeva celkem (m³ bez kůry);2018;25688785.1
-Česko;Těžba dřeva celkem (m³ bez kůry);2019;32585563.0
-Česko;Těžba dřeva celkem (m³ bez kůry);2020;35753599.0
-Česko;Těžba dřeva celkem (m³ bez kůry);2021;30256482.0
-Česko;Těžba dřeva celkem (m³ bez kůry);2022;25110201.0
-Česko;Těžba dřeva celkem (m³ bez kůry);2023;18492856.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2015;8153095.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2016;9399229.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2017;11742894.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2018;23012587.1
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2019;30944758.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2020;33912020.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2021;26278904.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2022;19776372.0
-Česko;"Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry)";2023;11033836.0
-Česko;Prořezávky (ha);2015;37791.0
-Česko;Prořezávky (ha);2016;36364.0
-Česko;Prořezávky (ha);2017;35024.0
-Česko;Prořezávky (ha);2018;32008.0
-Česko;Prořezávky (ha);2019;25346.07
-Česko;Prořezávky (ha);2020;27689.23
-Česko;Prořezávky (ha);2021;29765.92
-Česko;Prořezávky (ha);2022;37548.69
-Česko;Prořezávky (ha);2023;47301.08
-Česko;Probírky (ha);2015;62387.0
-Česko;Probírky (ha);2016;60258.0
-Česko;Probírky (ha);2017;53515.0
-Česko;Probírky (ha);2018;27450.0
-Česko;Probírky (ha);2019;14464.35
-Česko;Probírky (ha);2020;16179.61
-Česko;Probírky (ha);2021;28751.56
-Česko;Probírky (ha);2022;44174.32
-Česko;Probírky (ha);2023;54677.54
+Území,Ukazatel,Roky,value
+Česko,Lesní pozemky k 31. 12. (ha),2015,2668392.1581
+Česko,Lesní pozemky k 31. 12. (ha),2016,2669849.7527
+Česko,Lesní pozemky k 31. 12. (ha),2017,2671658.5139
+Česko,Lesní pozemky k 31. 12. (ha),2018,2673391.6741
+Česko,Lesní pozemky k 31. 12. (ha),2019,2675669.8919
+Česko,Lesní pozemky k 31. 12. (ha),2020,2677328.9744
+Česko,Lesní pozemky k 31. 12. (ha),2021,2678804.1595
+Česko,Lesní pozemky k 31. 12. (ha),2022,2680371.9726
+Česko,Lesní pozemky k 31. 12. (ha),2023,2681763.6948
+Česko,Lesní pozemky k 31. 12. (ha),2024,2683138.3181
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2015,2568226.51
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2016,2570036.44
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2017,2571749.17
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2018,2574151.32
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2019,2576068.1
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2020,2571033.29
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2021,2565377.88
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2022,2557600.26
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2023,2553668.89
+Česko,Plochy dřevin k 31. 12. - celkem (ha),2024,2547019.27
+Česko,Zalesňování celkem (ha),2015,18797.16
+Česko,Zalesňování celkem (ha),2016,19928.73
+Česko,Zalesňování celkem (ha),2017,19973.2
+Česko,Zalesňování celkem (ha),2018,21245.32
+Česko,Zalesňování celkem (ha),2019,28670.24
+Česko,Zalesňování celkem (ha),2020,33670.77
+Česko,Zalesňování celkem (ha),2021,40679.15
+Česko,Zalesňování celkem (ha),2022,39969.69
+Česko,Zalesňování celkem (ha),2023,35222.26
+Česko,Zalesňování celkem (ha),2024,29494.4711248277
+Česko,Přirozená obnova lesa (ha),2015,4749.13
+Česko,Přirozená obnova lesa (ha),2016,4813.25
+Česko,Přirozená obnova lesa (ha),2017,4472.96
+Česko,Přirozená obnova lesa (ha),2018,4075.28
+Česko,Přirozená obnova lesa (ha),2019,5224.14
+Česko,Přirozená obnova lesa (ha),2020,6614.82
+Česko,Přirozená obnova lesa (ha),2021,9111.3
+Česko,Přirozená obnova lesa (ha),2022,10088.42
+Česko,Přirozená obnova lesa (ha),2023,9566.05
+Česko,Přirozená obnova lesa (ha),2024,12447.1809361309
+Česko,Těžba dřeva celkem (m³ bez kůry),2015,16162645.3
+Česko,Těžba dřeva celkem (m³ bez kůry),2016,17616552.8
+Česko,Těžba dřeva celkem (m³ bez kůry),2017,19387109.0
+Česko,Těžba dřeva celkem (m³ bez kůry),2018,25688785.1
+Česko,Těžba dřeva celkem (m³ bez kůry),2019,32585563.0
+Česko,Těžba dřeva celkem (m³ bez kůry),2020,35753599.0
+Česko,Těžba dřeva celkem (m³ bez kůry),2021,30256482.0
+Česko,Těžba dřeva celkem (m³ bez kůry),2022,25110201.0
+Česko,Těžba dřeva celkem (m³ bez kůry),2023,18492856.0
+Česko,Těžba dřeva celkem (m³ bez kůry),2024,17806956.38193377
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2015,8153095.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2016,9399229.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2017,11742894.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2018,23012587.1
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2019,30944758.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2020,33912020.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2021,26278904.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2022,19776372.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2023,11033836.0
+Česko,Nahodilá těžba dřeva celkem  (z těžby dřeva celkem; m³ bez kůry),2024,8018861.252254952
+Česko,Prořezávky (ha),2015,37791.0
+Česko,Prořezávky (ha),2016,36364.0
+Česko,Prořezávky (ha),2017,35024.0
+Česko,Prořezávky (ha),2018,32008.0
+Česko,Prořezávky (ha),2019,25346.07
+Česko,Prořezávky (ha),2020,27689.23
+Česko,Prořezávky (ha),2021,29765.92
+Česko,Prořezávky (ha),2022,37548.69
+Česko,Prořezávky (ha),2023,47301.08
+Česko,Prořezávky (ha),2024,49593.0507495476
+Česko,Probírky (ha),2015,62387.0
+Česko,Probírky (ha),2016,60258.0
+Česko,Probírky (ha),2017,53515.0
+Česko,Probírky (ha),2018,27450.0
+Česko,Probírky (ha),2019,14464.35
+Česko,Probírky (ha),2020,16179.61
+Česko,Probírky (ha),2021,28751.56
+Česko,Probírky (ha),2022,44174.32
+Česko,Probírky (ha),2023,54677.54
+Česko,Probírky (ha),2024,73172.7030617034

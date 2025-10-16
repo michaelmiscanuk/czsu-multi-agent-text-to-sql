@@ -1,21 +1,25 @@
-Území;Ukazatel;Roky;value
-Česko;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2018;1322.328
-Česko;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2019;1758.898
-Česko;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2020;2530.016
-Česko;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2021;911.601
-Česko;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2022;3606.903
-Česko;Vyplacené dividendy a podíly na zisku nerezidentům;2018;592.489
-Česko;Vyplacené dividendy a podíly na zisku nerezidentům;2019;0.0
-Česko;Vyplacené dividendy a podíly na zisku nerezidentům;2020;0.0
-Česko;Vyplacené dividendy a podíly na zisku nerezidentům;2021;0.0
-Česko;Vyplacené dividendy a podíly na zisku nerezidentům;2022;0.0
-Česko;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2018;729.839
-Česko;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2019;1758.898
-Česko;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2020;1159.32
-Česko;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2021;911.601
-Česko;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2022;2444.403
-Česko;Přijaté dividendy a podíly na zisku - brutto;2018;118.537
-Česko;Přijaté dividendy a podíly na zisku - brutto;2019;135.892
-Česko;Přijaté dividendy a podíly na zisku - brutto;2020;125.853
-Česko;Přijaté dividendy a podíly na zisku - brutto;2021;178.61
-Česko;Přijaté dividendy a podíly na zisku - brutto;2022;274.21
+Území,Ukazatel,Roky,value
+Česko,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2018,1322.328
+Česko,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2019,1758.898
+Česko,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2020,2530.016
+Česko,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2021,911.601
+Česko,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2022,3606.903
+Česko,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2023,3873.027
+Česko,Vyplacené dividendy a podíly na zisku nerezidentům,2018,592.489
+Česko,Vyplacené dividendy a podíly na zisku nerezidentům,2019,0.0
+Česko,Vyplacené dividendy a podíly na zisku nerezidentům,2020,0.0
+Česko,Vyplacené dividendy a podíly na zisku nerezidentům,2021,0.0
+Česko,Vyplacené dividendy a podíly na zisku nerezidentům,2022,0.0
+Česko,Vyplacené dividendy a podíly na zisku nerezidentům,2023,0.0
+Česko,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2018,729.839
+Česko,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2019,1758.898
+Česko,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2020,1159.32
+Česko,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2021,911.601
+Česko,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2022,2444.403
+Česko,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2023,2988.027
+Česko,Přijaté dividendy a podíly na zisku - brutto,2018,118.537
+Česko,Přijaté dividendy a podíly na zisku - brutto,2019,135.892
+Česko,Přijaté dividendy a podíly na zisku - brutto,2020,125.853
+Česko,Přijaté dividendy a podíly na zisku - brutto,2021,178.61
+Česko,Přijaté dividendy a podíly na zisku - brutto,2022,274.21
+Česko,Přijaté dividendy a podíly na zisku - brutto,2023,520.492

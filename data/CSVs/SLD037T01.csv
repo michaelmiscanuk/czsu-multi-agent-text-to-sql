@@ -1,41 +1,41 @@
-Rok sčítání;Území;Ukazatel;Druh domu;value
-2021;Česká republika;Počet  obydlených bytů;Domy celkem;4480139
-2021;Česká republika;Počet  obydlených bytů;Rodinné domy;1974855
-2021;Česká republika;Počet  obydlených bytů;Bytové domy;2431918
-2021;Česká republika;Počet  obydlených bytů;Ostatní budovy;73366
-2021;Česká republika;Obydlené byty ve vlastním domě;Domy celkem;1595698
-2021;Česká republika;Obydlené byty ve vlastním domě;Rodinné domy;1549895
-2021;Česká republika;Obydlené byty ve vlastním domě;Bytové domy;35885
-2021;Česká republika;Obydlené byty ve vlastním domě;Ostatní budovy;9918
-2021;Česká republika;Obydlené byty v osobním vlastnictví;Domy celkem;1121375
-2021;Česká republika;Obydlené byty v osobním vlastnictví;Rodinné domy;19389
-2021;Česká republika;Obydlené byty v osobním vlastnictví;Bytové domy;1100593
-2021;Česká republika;Obydlené byty v osobním vlastnictví;Ostatní budovy;1393
-2021;Česká republika;Obydlené družstevní byty;Domy celkem;140821
-2021;Česká republika;Obydlené družstevní byty;Rodinné domy;691
-2021;Česká republika;Obydlené družstevní byty;Bytové domy;140017
-2021;Česká republika;Obydlené družstevní byty;Ostatní budovy;113
-2021;Česká republika;Obydlené nájemní/pronajaté byty;Domy celkem;890802
-2021;Česká republika;Obydlené nájemní/pronajaté byty;Rodinné domy;100296
-2021;Česká republika;Obydlené nájemní/pronajaté byty;Bytové domy;747627
-2021;Česká republika;Obydlené nájemní/pronajaté byty;Ostatní budovy;42879
-2021;Česká republika;Obydlené byty s 1 obytnou místností;Domy celkem;150054
-2021;Česká republika;Obydlené byty s 1 obytnou místností;Rodinné domy;14990
-2021;Česká republika;Obydlené byty s 1 obytnou místností;Bytové domy;120650
-2021;Česká republika;Obydlené byty s 1 obytnou místností;Ostatní budovy;14414
-2021;Česká republika;Obydlené byty se 2 obytnými místnostmi;Domy celkem;496141
-2021;Česká republika;Obydlené byty se 2 obytnými místnostmi;Rodinné domy;74383
-2021;Česká republika;Obydlené byty se 2 obytnými místnostmi;Bytové domy;406506
-2021;Česká republika;Obydlené byty se 2 obytnými místnostmi;Ostatní budovy;15252
-2021;Česká republika;Obydlené byty se 3 obytnými místnostmi;Domy celkem;990093
-2021;Česká republika;Obydlené byty se 3 obytnými místnostmi;Rodinné domy;264157
-2021;Česká republika;Obydlené byty se 3 obytnými místnostmi;Bytové domy;711856
-2021;Česká republika;Obydlené byty se 3 obytnými místnostmi;Ostatní budovy;14080
-2021;Česká republika;Obydlené byty se 4 obytnými místnostmi;Domy celkem;1299052
-2021;Česká republika;Obydlené byty se 4 obytnými místnostmi;Rodinné domy;514838
-2021;Česká republika;Obydlené byty se 4 obytnými místnostmi;Bytové domy;773068
-2021;Česká republika;Obydlené byty se 4 obytnými místnostmi;Ostatní budovy;11146
-2021;Česká republika;Obydlené byty s 5 a více obytnými místnostmi;Domy celkem;1208779
-2021;Česká republika;Obydlené byty s 5 a více obytnými místnostmi;Rodinné domy;1004047
-2021;Česká republika;Obydlené byty s 5 a více obytnými místnostmi;Bytové domy;196423
-2021;Česká republika;Obydlené byty s 5 a více obytnými místnostmi;Ostatní budovy;8309
+Rok sčítání,Území,Ukazatel,Druh domu,value
+2021,Česká republika,Počet  obydlených bytů,Domy celkem,4480139
+2021,Česká republika,Počet  obydlených bytů,Rodinné domy,1974855
+2021,Česká republika,Počet  obydlených bytů,Bytové domy,2431918
+2021,Česká republika,Počet  obydlených bytů,Ostatní budovy,73366
+2021,Česká republika,Obydlené byty ve vlastním domě,Domy celkem,1595698
+2021,Česká republika,Obydlené byty ve vlastním domě,Rodinné domy,1549895
+2021,Česká republika,Obydlené byty ve vlastním domě,Bytové domy,35885
+2021,Česká republika,Obydlené byty ve vlastním domě,Ostatní budovy,9918
+2021,Česká republika,Obydlené byty v osobním vlastnictví,Domy celkem,1121375
+2021,Česká republika,Obydlené byty v osobním vlastnictví,Rodinné domy,19389
+2021,Česká republika,Obydlené byty v osobním vlastnictví,Bytové domy,1100593
+2021,Česká republika,Obydlené byty v osobním vlastnictví,Ostatní budovy,1393
+2021,Česká republika,Obydlené družstevní byty,Domy celkem,140821
+2021,Česká republika,Obydlené družstevní byty,Rodinné domy,691
+2021,Česká republika,Obydlené družstevní byty,Bytové domy,140017
+2021,Česká republika,Obydlené družstevní byty,Ostatní budovy,113
+2021,Česká republika,Obydlené nájemní/pronajaté byty,Domy celkem,890802
+2021,Česká republika,Obydlené nájemní/pronajaté byty,Rodinné domy,100296
+2021,Česká republika,Obydlené nájemní/pronajaté byty,Bytové domy,747627
+2021,Česká republika,Obydlené nájemní/pronajaté byty,Ostatní budovy,42879
+2021,Česká republika,Obydlené byty s 1 obytnou místností,Domy celkem,150054
+2021,Česká republika,Obydlené byty s 1 obytnou místností,Rodinné domy,14990
+2021,Česká republika,Obydlené byty s 1 obytnou místností,Bytové domy,120650
+2021,Česká republika,Obydlené byty s 1 obytnou místností,Ostatní budovy,14414
+2021,Česká republika,Obydlené byty se 2 obytnými místnostmi,Domy celkem,496141
+2021,Česká republika,Obydlené byty se 2 obytnými místnostmi,Rodinné domy,74383
+2021,Česká republika,Obydlené byty se 2 obytnými místnostmi,Bytové domy,406506
+2021,Česká republika,Obydlené byty se 2 obytnými místnostmi,Ostatní budovy,15252
+2021,Česká republika,Obydlené byty se 3 obytnými místnostmi,Domy celkem,990093
+2021,Česká republika,Obydlené byty se 3 obytnými místnostmi,Rodinné domy,264157
+2021,Česká republika,Obydlené byty se 3 obytnými místnostmi,Bytové domy,711856
+2021,Česká republika,Obydlené byty se 3 obytnými místnostmi,Ostatní budovy,14080
+2021,Česká republika,Obydlené byty se 4 obytnými místnostmi,Domy celkem,1299052
+2021,Česká republika,Obydlené byty se 4 obytnými místnostmi,Rodinné domy,514838
+2021,Česká republika,Obydlené byty se 4 obytnými místnostmi,Bytové domy,773068
+2021,Česká republika,Obydlené byty se 4 obytnými místnostmi,Ostatní budovy,11146
+2021,Česká republika,Obydlené byty s 5 a více obytnými místnostmi,Domy celkem,1208779
+2021,Česká republika,Obydlené byty s 5 a více obytnými místnostmi,Rodinné domy,1004047
+2021,Česká republika,Obydlené byty s 5 a více obytnými místnostmi,Bytové domy,196423
+2021,Česká republika,Obydlené byty s 5 a více obytnými místnostmi,Ostatní budovy,8309

@@ -1,73 +1,73 @@
-Území;Ukazatel;Hospodářský rok;value
-Česko;Minerální hnojiva (živiny);2017;380658.5
-Česko;Minerální hnojiva (živiny);2018;374995.0
-Česko;Minerální hnojiva (živiny);2019;365070.9
-Česko;Minerální hnojiva (živiny);2020;360414.0
-Česko;Minerální hnojiva (živiny);2021;343049.0
-Česko;Minerální hnojiva (živiny);2022;299451.9
-Česko;Minerální hnojiva (živiny);2023;295302.8
-Česko;Minerální hnojiva (živiny);2024;297747.4
-Česko;Minerální hnojiva - dusíkatá (N);2017;285738.8
-Česko;Minerální hnojiva - dusíkatá (N);2018;281270.9
-Česko;Minerální hnojiva - dusíkatá (N);2019;274304.5
-Česko;Minerální hnojiva - dusíkatá (N);2020;267675.9
-Česko;Minerální hnojiva - dusíkatá (N);2021;256520.6
-Česko;Minerální hnojiva - dusíkatá (N);2022;228660.5
-Česko;Minerální hnojiva - dusíkatá (N);2023;231198.2
-Česko;Minerální hnojiva - dusíkatá (N);2024;229263.3
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2017;56194.4
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2018;54969.2
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2019;52595.4
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2020;55655.5
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2021;51617.4
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2022;40834.4
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2023;38474.3
-Česko;Minerální hnojiva - fosforečná (P₂0₅);2024;41659.5
-Česko;Minerální hnojiva - draselná (K₂O);2017;38725.3
-Česko;Minerální hnojiva - draselná (K₂O);2018;38754.9
-Česko;Minerální hnojiva - draselná (K₂O);2019;38171.0
-Česko;Minerální hnojiva - draselná (K₂O);2020;37082.6
-Česko;Minerální hnojiva - draselná (K₂O);2021;34911.0
-Česko;Minerální hnojiva - draselná (K₂O);2022;29957.0
-Česko;Minerální hnojiva - draselná (K₂O);2023;25630.3
-Česko;Minerální hnojiva - draselná (K₂O);2024;26824.6
-Česko;Vápenatá hnojiva;2017;345041.0
-Česko;Vápenatá hnojiva;2018;408364.5
-Česko;Vápenatá hnojiva;2019;420049.2
-Česko;Vápenatá hnojiva;2020;415958.3
-Česko;Vápenatá hnojiva;2021;373310.8
-Česko;Vápenatá hnojiva;2022;383592.6
-Česko;Vápenatá hnojiva;2023;335128.4
-Česko;Vápenatá hnojiva;2024;323221.1
-Česko;Statková hnojiva;2017;12911883.4
-Česko;Statková hnojiva;2018;13341814.4
-Česko;Statková hnojiva;2019;13435546.5
-Česko;Statková hnojiva;2020;13008964.2
-Česko;Statková hnojiva;2021;13173527.4
-Česko;Statková hnojiva;2022;12954276.1
-Česko;Statková hnojiva;2023;12997028.0
-Česko;Statková hnojiva;2024;12873298.2
-Česko;Statková hnojiva - hnůj;2017;7113347.6
-Česko;Statková hnojiva - hnůj;2018;7259277.1
-Česko;Statková hnojiva - hnůj;2019;7386213.4
-Česko;Statková hnojiva - hnůj;2020;7308229.1
-Česko;Statková hnojiva - hnůj;2021;7409550.5
-Česko;Statková hnojiva - hnůj;2022;7240789.9
-Česko;Statková hnojiva - hnůj;2023;7395923.7
-Česko;Statková hnojiva - hnůj;2024;7375804.5
-Česko;Organická hnojiva;2017;4658472.8
-Česko;Organická hnojiva;2018;4525177.5
-Česko;Organická hnojiva;2019;4696887.7
-Česko;Organická hnojiva;2020;5065388.7
-Česko;Organická hnojiva;2021;5221629.4
-Česko;Organická hnojiva;2022;5382294.5
-Česko;Organická hnojiva;2023;5542395.5
-Česko;Organická hnojiva;2024;5589669.4
-Česko;Organominerální hnojiva;2017;70994.4
-Česko;Organominerální hnojiva;2018;72021.1
-Česko;Organominerální hnojiva;2019;63778.6
-Česko;Organominerální hnojiva;2020;47449.9
-Česko;Organominerální hnojiva;2021;39717.1
-Česko;Organominerální hnojiva;2022;52578.0
-Česko;Organominerální hnojiva;2023;75775.1
-Česko;Organominerální hnojiva;2024;77396.9
+Území,Ukazatel,Hospodářský rok,value
+Česko,Minerální hnojiva (živiny),2017,380658.5
+Česko,Minerální hnojiva (živiny),2018,374995.0
+Česko,Minerální hnojiva (živiny),2019,365070.9
+Česko,Minerální hnojiva (živiny),2020,360414.0
+Česko,Minerální hnojiva (živiny),2021,343049.0
+Česko,Minerální hnojiva (živiny),2022,299451.9
+Česko,Minerální hnojiva (živiny),2023,295302.8
+Česko,Minerální hnojiva (živiny),2024,297747.4
+Česko,Minerální hnojiva - dusíkatá (N),2017,285738.8
+Česko,Minerální hnojiva - dusíkatá (N),2018,281270.9
+Česko,Minerální hnojiva - dusíkatá (N),2019,274304.5
+Česko,Minerální hnojiva - dusíkatá (N),2020,267675.9
+Česko,Minerální hnojiva - dusíkatá (N),2021,256520.6
+Česko,Minerální hnojiva - dusíkatá (N),2022,228660.5
+Česko,Minerální hnojiva - dusíkatá (N),2023,231198.2
+Česko,Minerální hnojiva - dusíkatá (N),2024,229263.3
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2017,56194.4
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2018,54969.2
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2019,52595.4
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2020,55655.5
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2021,51617.4
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2022,40834.4
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2023,38474.3
+Česko,Minerální hnojiva - fosforečná (P₂0₅),2024,41659.5
+Česko,Minerální hnojiva - draselná (K₂O),2017,38725.3
+Česko,Minerální hnojiva - draselná (K₂O),2018,38754.9
+Česko,Minerální hnojiva - draselná (K₂O),2019,38171.0
+Česko,Minerální hnojiva - draselná (K₂O),2020,37082.6
+Česko,Minerální hnojiva - draselná (K₂O),2021,34911.0
+Česko,Minerální hnojiva - draselná (K₂O),2022,29957.0
+Česko,Minerální hnojiva - draselná (K₂O),2023,25630.3
+Česko,Minerální hnojiva - draselná (K₂O),2024,26824.6
+Česko,Vápenatá hnojiva,2017,345041.0
+Česko,Vápenatá hnojiva,2018,408364.5
+Česko,Vápenatá hnojiva,2019,420049.2
+Česko,Vápenatá hnojiva,2020,415958.3
+Česko,Vápenatá hnojiva,2021,373310.8
+Česko,Vápenatá hnojiva,2022,383592.6
+Česko,Vápenatá hnojiva,2023,335128.4
+Česko,Vápenatá hnojiva,2024,323221.1
+Česko,Statková hnojiva,2017,12911883.4
+Česko,Statková hnojiva,2018,13341814.4
+Česko,Statková hnojiva,2019,13435546.5
+Česko,Statková hnojiva,2020,13008964.2
+Česko,Statková hnojiva,2021,13173527.4
+Česko,Statková hnojiva,2022,12954276.1
+Česko,Statková hnojiva,2023,12997028.0
+Česko,Statková hnojiva,2024,12873298.2
+Česko,Statková hnojiva - hnůj,2017,7113347.6
+Česko,Statková hnojiva - hnůj,2018,7259277.1
+Česko,Statková hnojiva - hnůj,2019,7386213.4
+Česko,Statková hnojiva - hnůj,2020,7308229.1
+Česko,Statková hnojiva - hnůj,2021,7409550.5
+Česko,Statková hnojiva - hnůj,2022,7240789.9
+Česko,Statková hnojiva - hnůj,2023,7395923.7
+Česko,Statková hnojiva - hnůj,2024,7375804.5
+Česko,Organická hnojiva,2017,4658472.8
+Česko,Organická hnojiva,2018,4525177.5
+Česko,Organická hnojiva,2019,4696887.7
+Česko,Organická hnojiva,2020,5065388.7
+Česko,Organická hnojiva,2021,5221629.4
+Česko,Organická hnojiva,2022,5382294.5
+Česko,Organická hnojiva,2023,5542395.5
+Česko,Organická hnojiva,2024,5589669.4
+Česko,Organominerální hnojiva,2017,70994.4
+Česko,Organominerální hnojiva,2018,72021.1
+Česko,Organominerální hnojiva,2019,63778.6
+Česko,Organominerální hnojiva,2020,47449.9
+Česko,Organominerální hnojiva,2021,39717.1
+Česko,Organominerální hnojiva,2022,52578.0
+Česko,Organominerální hnojiva,2023,75775.1
+Česko,Organominerální hnojiva,2024,77396.9

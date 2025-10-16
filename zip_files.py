@@ -14,13 +14,11 @@ except NameError:
 
 # Configuration of paths to zip
 PATHS_TO_ZIP = [
-    # BASE_DIR / "metadata" / "czsu_chromadb",
-    # BASE_DIR / "data" / "czsu_data.db",
-    # BASE_DIR / "data" / "CSVs",
-    # BASE_DIR / "metadata" / "schemas",
-    # BASE_DIR
-    # / "data"
-    # / "pdf_chromadb_llamaparse",
+    # BASE_DIR / "metadata" / "czsu_chromadb", # On Cloud
+    # BASE_DIR / "data" / "pdf_chromadb_llamaparse", # On Cloud
+    BASE_DIR / "data" / "czsu_data.db",
+    BASE_DIR / "data" / "CSVs",
+    BASE_DIR / "metadata" / "schemas",
 ]
 
 

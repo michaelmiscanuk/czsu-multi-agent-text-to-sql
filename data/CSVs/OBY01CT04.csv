@@ -1,937 +1,2893 @@
-Území;Roky;Ukazatel;value
-Česko;2024;Počet obyvatel - celkem;10909500.0
-Česko;2024;Počet obyvatel ve věku 0 - 14 let;1690783.0
-Česko;2024;Počet obyvatel ve věku 15 - 64 let;6962830.0
-Česko;2024;Počet obyvatel ve věku 20 - 64 let;6344244.0
-Česko;2024;Počet obyvatel ve věku 65 a více let;2255887.0
-Česko;2024;Počet obyvatel ve věku 80 a více let;519802.0
-Česko;2024;Podíl obyvatel ve věku 0 - 14 let (%);15.49826298
-Česko;2024;Podíl obyvatel ve věku 15 - 64 let (%);63.82354828
-Česko;2024;Podíl obyvatel ve věku 65 a více let (%);20.67818873
-Česko;2024;Průměrný věk (roky);43.06147486
-Česko;2024;Index stáří;133.4226214
-Česko;2024;Index ekonomické závislosti;71.95902301
-Česko;2023;Počet obyvatel - celkem;10900555.0
-Česko;2023;Počet obyvatel ve věku 0 - 14 let;1727758.0
-Česko;2023;Počet obyvatel ve věku 15 - 64 let;6935475.0
-Česko;2023;Počet obyvatel ve věku 20 - 64 let;6342155.0
-Česko;2023;Počet obyvatel ve věku 65 a více let;2237322.0
-Česko;2023;Počet obyvatel ve věku 80 a více let;491972.0
-Česko;2023;Podíl obyvatel ve věku 0 - 14 let (%);15.85018378
-Česko;2023;Podíl obyvatel ve věku 15 - 64 let (%);63.62497139
-Česko;2023;Podíl obyvatel ve věku 65 a více let (%);20.52484484
-Česko;2023;Průměrný věk (roky);42.80415635
-Česko;2023;Index stáří;129.4927878
-Česko;2023;Index ekonomické závislosti;71.87462306
-Česko;2022;Počet obyvatel - celkem;10827529.0
-Česko;2022;Počet obyvatel ve věku 0 - 14 let;1750808.0
-Česko;2022;Počet obyvatel ve věku 15 - 64 let;6868872.0
-Česko;2022;Počet obyvatel ve věku 20 - 64 let;6312183.0
-Česko;2022;Počet obyvatel ve věku 65 a více let;2207849.0
-Česko;2022;Počet obyvatel ve věku 80 a více let;465991.0
-Česko;2022;Podíl obyvatel ve věku 0 - 14 let (%);16.16996824
-Česko;2022;Podíl obyvatel ve věku 15 - 64 let (%);63.43896193
-Česko;2022;Podíl obyvatel ve věku 65 a více let (%);20.39106984
-Česko;2022;Průměrný věk (roky);42.6068977
-Česko;2022;Index stáří;126.1045757
-Česko;2022;Index ekonomické závislosti;71.53382594
-Česko;2021;Počet obyvatel - celkem;10516707.0
-Česko;2021;Počet obyvatel ve věku 0 - 14 let;1693408.0
-Česko;2021;Počet obyvatel ve věku 15 - 64 let;6654190.0
-Česko;2021;Počet obyvatel ve věku 20 - 64 let;6150885.0
-Česko;2021;Počet obyvatel ve věku 65 a více let;2169109.0
-Česko;2021;Počet obyvatel ve věku 80 a více let;451143.0
-Česko;2021;Podíl obyvatel ve věku 0 - 14 let (%);16.10207454
-Česko;2021;Podíl obyvatel ve věku 15 - 64 let (%);63.27256241
-Česko;2021;Podíl obyvatel ve věku 65 a více let (%);20.62536305
-Česko;2021;Průměrný věk (roky);42.7827715
-Česko;2021;Index stáří;128.0913401
-Česko;2021;Index ekonomické závislosti;70.97876159
-Česko;2020;Počet obyvatel - celkem;10701777.0
-Česko;2020;Počet obyvatel ve věku 0 - 14 let;1719741.0
-Česko;2020;Počet obyvatel ve věku 15 - 64 let;6823714.0
-Česko;2020;Počet obyvatel ve věku 20 - 64 let;6333264.0
-Česko;2020;Počet obyvatel ve věku 65 a více let;2158322.0
-Česko;2020;Počet obyvatel ve věku 80 a více let;447526.0
-Česko;2020;Podíl obyvatel ve věku 0 - 14 let (%);16.06967703
-Česko;2020;Podíl obyvatel ve věku 15 - 64 let (%);63.76243871
-Česko;2020;Podíl obyvatel ve věku 65 a více let (%);20.16788427
-Česko;2020;Průměrný věk (roky);42.58078929
-Česko;2020;Index stáří;125.5027356
-Česko;2020;Index ekonomické závislosti;68.97727617
-Česko;2019;Počet obyvatel - celkem;10693939.0
-Česko;2019;Počet obyvatel ve věku 0 - 14 let;1710202.0
-Česko;2019;Počet obyvatel ve věku 15 - 64 let;6852107.0
-Česko;2019;Počet obyvatel ve věku 20 - 64 let;6374077.0
-Česko;2019;Počet obyvatel ve věku 65 a více let;2131630.0
-Česko;2019;Počet obyvatel ve věku 80 a více let;441100.0
-Česko;2019;Podíl obyvatel ve věku 0 - 14 let (%);15.99225505
-Česko;2019;Podíl obyvatel ve věku 15 - 64 let (%);64.07467819
-Česko;2019;Podíl obyvatel ve věku 65 a více let (%);19.93306676
-Česko;2019;Průměrný věk (roky);42.48015483
-Česko;2019;Index stáří;124.6420014
-Česko;2019;Index ekonomické závislosti;67.77235355
-Česko;2018;Počet obyvatel - celkem;10649800.0
-Česko;2018;Počet obyvatel ve věku 0 - 14 let;1693060.0
-Česko;2018;Počet obyvatel ve věku 15 - 64 let;6870123.0
-Česko;2018;Počet obyvatel ve věku 20 - 64 let;6402732.0
-Česko;2018;Počet obyvatel ve věku 65 a více let;2086617.0
-Česko;2018;Počet obyvatel ve věku 80 a více let;432907.0
-Česko;2018;Podíl obyvatel ve věku 0 - 14 let (%);15.89757554
-Česko;2018;Podíl obyvatel ve věku 15 - 64 let (%);64.50940863
-Česko;2018;Podíl obyvatel ve věku 65 a více let (%);19.59301583
-Česko;2018;Průměrný věk (roky);42.33474225
-Česko;2018;Index stáří;123.2453073
-Česko;2018;Index ekonomické závislosti;66.33212198
-Česko;2017;Počet obyvatel - celkem;10610055.0
-Česko;2017;Počet obyvatel ve věku 0 - 14 let;1670677.0
-Česko;2017;Počet obyvatel ve věku 15 - 64 let;6899195.0
-Česko;2017;Počet obyvatel ve věku 20 - 64 let;6436995.0
-Česko;2017;Počet obyvatel ve věku 65 a více let;2040183.0
-Česko;2017;Počet obyvatel ve věku 80 a více let;427422.0
-Česko;2017;Podíl obyvatel ve věku 0 - 14 let (%);15.7461672
-Česko;2017;Podíl obyvatel ve věku 15 - 64 let (%);65.02506349
-Česko;2017;Podíl obyvatel ve věku 65 a více let (%);19.22876931
-Česko;2017;Průměrný věk (roky);42.19534908
-Česko;2017;Index stáří;122.1171417
-Česko;2017;Index ekonomické závislosti;64.82931865
-Česko;2016;Počet obyvatel - celkem;10578820.0
-Česko;2016;Počet obyvatel ve věku 0 - 14 let;1647275.0
-Česko;2016;Počet obyvatel ve věku 15 - 64 let;6942623.0
-Česko;2016;Počet obyvatel ve věku 20 - 64 let;6483950.0
-Česko;2016;Počet obyvatel ve věku 65 a více let;1988922.0
-Česko;2016;Počet obyvatel ve věku 80 a více let;424841.0
-Česko;2016;Podíl obyvatel ve věku 0 - 14 let (%);15.5714437
-Česko;2016;Podíl obyvatel ve věku 15 - 64 let (%);65.62757472
-Česko;2016;Podíl obyvatel ve věku 65 a více let (%);18.80098158
-Česko;2016;Průměrný věk (roky);42.04648864
-Česko;2016;Index stáří;120.7401314
-Česko;2016;Index ekonomické závislosti;63.15394166
-Česko;2015;Počet obyvatel - celkem;10553843.0
-Česko;2015;Počet obyvatel ve věku 0 - 14 let;1623716.0
-Česko;2015;Počet obyvatel ve věku 15 - 64 let;6997715.0
-Česko;2015;Počet obyvatel ve věku 20 - 64 let;6539712.0
-Česko;2015;Počet obyvatel ve věku 65 a více let;1932412.0
-Česko;2015;Počet obyvatel ve věku 80 a více let;420536.0
-Česko;2015;Podíl obyvatel ve věku 0 - 14 let (%);15.38506874
-Česko;2015;Podíl obyvatel ve věku 15 - 64 let (%);66.30489955
-Česko;2015;Podíl obyvatel ve věku 65 a více let (%);18.31003171
-Česko;2015;Průměrný věk (roky);41.86871109
-Česko;2015;Index stáří;119.0116991
-Česko;2015;Index ekonomické závislosti;61.38085286
-Česko;2014;Počet obyvatel - celkem;10538275.0
-Česko;2014;Počet obyvatel ve věku 0 - 14 let;1601045.0
-Česko;2014;Počet obyvatel ve věku 15 - 64 let;7056824.0
-Česko;2014;Počet obyvatel ve věku 20 - 64 let;6593741.0
-Česko;2014;Počet obyvatel ve věku 65 a více let;1880406.0
-Česko;2014;Počet obyvatel ve věku 80 a více let;418698.0
-Česko;2014;Podíl obyvatel ve věku 0 - 14 let (%);15.19266673
-Česko;2014;Podíl obyvatel ve věku 15 - 64 let (%);66.96374881
-Česko;2014;Podíl obyvatel ve věku 65 a více let (%);17.84358446
-Česko;2014;Průměrný věk (roky);41.6959761
-Česko;2014;Index stáří;117.4486663
-Česko;2014;Index ekonomické závislosti;59.82239824
-Česko;2013;Počet obyvatel - celkem;10512419.0
-Česko;2013;Počet obyvatel ve věku 0 - 14 let;1577455.0
-Česko;2013;Počet obyvatel ve věku 15 - 64 let;7109420.0
-Česko;2013;Počet obyvatel ve věku 20 - 64 let;6629546.0
-Česko;2013;Počet obyvatel ve věku 65 a více let;1825544.0
-Česko;2013;Počet obyvatel ve věku 80 a více let;412049.0
-Česko;2013;Podíl obyvatel ve věku 0 - 14 let (%);15.00563286
-Česko;2013;Podíl obyvatel ve věku 15 - 64 let (%);67.62877317
-Česko;2013;Podíl obyvatel ve věku 65 a více let (%);17.36559397
-Česko;2013;Průměrný věk (roky);41.500765
-Česko;2013;Index stáří;115.7271681
-Česko;2013;Index ekonomické závislosti;58.56921424
-Česko;2012;Počet obyvatel - celkem;10516125.0
-Česko;2012;Počet obyvatel ve věku 0 - 14 let;1560296.0
-Česko;2012;Počet obyvatel ve věku 15 - 64 let;7188211.0
-Česko;2012;Počet obyvatel ve věku 20 - 64 let;6677946.0
-Česko;2012;Počet obyvatel ve věku 65 a více let;1767618.0
-Česko;2012;Počet obyvatel ve věku 80 a více let;406181.0
-Česko;2012;Podíl obyvatel ve věku 0 - 14 let (%);14.83717624
-Česko;2012;Podíl obyvatel ve věku 15 - 64 let (%);68.35417989
-Česko;2012;Podíl obyvatel ve věku 65 a více let (%);16.80864387
-Česko;2012;Průměrný věk (roky);41.28494607
-Česko;2012;Index stáří;113.2873506
-Česko;2012;Index ekonomické závislosti;57.4754423
-Česko;2011;Počet obyvatel - celkem;10505445.0
-Česko;2011;Počet obyvatel ve věku 0 - 14 let;1541241.0
-Česko;2011;Počet obyvatel ve věku 15 - 64 let;7262768.0
-Česko;2011;Počet obyvatel ve věku 20 - 64 let;6721663.0
-Česko;2011;Počet obyvatel ve věku 65 a více let;1701436.0
-Česko;2011;Počet obyvatel ve věku 80 a více let;396383.0
-Česko;2011;Podíl obyvatel ve věku 0 - 14 let (%);14.67087782
-Česko;2011;Podíl obyvatel ve věku 15 - 64 let (%);69.13336846
-Česko;2011;Podíl obyvatel ve věku 65 a více let (%);16.19575373
-Česko;2011;Průměrný věk (roky);41.0754811
-Česko;2011;Index stáří;110.3938969
-Česko;2011;Index ekonomické závislosti;56.29234908
-Česko;2010;Počet obyvatel - celkem;10532770.0
-Česko;2010;Počet obyvatel ve věku 0 - 14 let;1518142.0
-Česko;2010;Počet obyvatel ve věku 15 - 64 let;7378802.0
-Česko;2010;Počet obyvatel ve věku 20 - 64 let;6796152.0
-Česko;2010;Počet obyvatel ve věku 65 a více let;1635826.0
-Česko;2010;Počet obyvatel ve věku 80 a více let;386512.0
-Česko;2010;Podíl obyvatel ve věku 0 - 14 let (%);14.41351136
-Česko;2010;Podíl obyvatel ve věku 15 - 64 let (%);70.05566437
-Česko;2010;Podíl obyvatel ve věku 65 a více let (%);15.53082428
-Česko;2010;Průměrný věk (roky);40.80254311
-Česko;2010;Index stáří;107.751844
-Česko;2010;Index ekonomické závislosti;54.9813777
-Česko;2009;Počet obyvatel - celkem;10506813.0
-Česko;2009;Počet obyvatel ve věku 0 - 14 let;1494370.0
-Česko;2009;Počet obyvatel ve věku 15 - 64 let;7413560.0
-Česko;2009;Počet obyvatel ve věku 20 - 64 let;6797569.0
-Česko;2009;Počet obyvatel ve věku 65 a více let;1598883.0
-Česko;2009;Počet obyvatel ve věku 80 a více let;373047.0
-Česko;2009;Podíl obyvatel ve věku 0 - 14 let (%);14.22286663
-Česko;2009;Podíl obyvatel ve věku 15 - 64 let (%);70.55955027
-Česko;2009;Podíl obyvatel ve věku 65 a více let (%);15.21758311
-Česko;2009;Průměrný věk (roky);40.63006865
-Česko;2009;Index stáří;106.9937833
-Česko;2009;Index ekonomické závislosti;54.56721366
-Česko;2008;Počet obyvatel - celkem;10467542.0
-Česko;2008;Počet obyvatel ve věku 0 - 14 let;1480007.0
-Česko;2008;Počet obyvatel ve věku 15 - 64 let;7431383.0
-Česko;2008;Počet obyvatel ve věku 20 - 64 let;6794135.0
-Česko;2008;Počet obyvatel ve věku 65 a více let;1556152.0
-Česko;2008;Počet obyvatel ve věku 80 a více let;361866.0
-Česko;2008;Podíl obyvatel ve věku 0 - 14 let (%);14.13901181
-Česko;2008;Podíl obyvatel ve věku 15 - 64 let (%);70.99453721
-Česko;2008;Podíl obyvatel ve věku 65 a více let (%);14.86645098
-Česko;2008;Průměrný věk (roky);40.47382442
-Česko;2008;Index stáří;105.1449081
-Česko;2008;Index ekonomické závislosti;54.06732424
-Česko;2007;Počet obyvatel - celkem;10381130.0
-Česko;2007;Počet obyvatel ve věku 0 - 14 let;1476923.0
-Česko;2007;Počet obyvatel ve věku 15 - 64 let;7391373.0
-Česko;2007;Počet obyvatel ve věku 20 - 64 let;6744946.0
-Česko;2007;Počet obyvatel ve věku 65 a více let;1512834.0
-Česko;2007;Počet obyvatel ve věku 80 a více let;348546.0
-Česko;2007;Podíl obyvatel ve věku 0 - 14 let (%);14.22699648
-Česko;2007;Podíl obyvatel ve věku 15 - 64 let (%);71.2000813
-Česko;2007;Podíl obyvatel ve věku 65 a více let (%);14.57292222
-Česko;2007;Průměrný věk (roky);40.34592198
-Česko;2007;Index stáří;102.4314741
-Česko;2007;Index ekonomické závislosti;53.90975702
-Česko;2006;Počet obyvatel - celkem;10287189.0
-Česko;2006;Počet obyvatel ve věku 0 - 14 let;1479514.0
-Česko;2006;Počet obyvatel ve věku 15 - 64 let;7325238.0
-Česko;2006;Počet obyvatel ve věku 20 - 64 let;6673991.0
-Česko;2006;Počet obyvatel ve věku 65 a více let;1482437.0
-Česko;2006;Počet obyvatel ve věku 80 a více let;335554.0
-Česko;2006;Podíl obyvatel ve věku 0 - 14 let (%);14.38210186
-Česko;2006;Podíl obyvatel ve věku 15 - 64 let (%);71.20738231
-Česko;2006;Podíl obyvatel ve věku 65 a více let (%);14.41051584
-Česko;2006;Průměrný věk (roky);40.20551324
-Česko;2006;Index stáří;100.1975649
-Česko;2006;Index ekonomické závislosti;54.13849075
-Česko;2005;Počet obyvatel - celkem;10251079.0
-Česko;2005;Počet obyvatel ve věku 0 - 14 let;1501331.0
-Česko;2005;Počet obyvatel ve věku 15 - 64 let;7293357.0
-Česko;2005;Počet obyvatel ve věku 20 - 64 let;6639838.0
-Česko;2005;Počet obyvatel ve věku 65 a více let;1456391.0
-Česko;2005;Počet obyvatel ve věku 80 a více let;321532.0
-Česko;2005;Podíl obyvatel ve věku 0 - 14 let (%);14.64558999
-Česko;2005;Podíl obyvatel ve věku 15 - 64 let (%);71.14721289
-Česko;2005;Podíl obyvatel ve věku 65 a více let (%);14.20719712
-Česko;2005;Průměrný věk (roky);39.9891369
-Česko;2005;Index stáří;97.00665609
-Česko;2005;Index ekonomické závislosti;54.38748656
-Česko;2004;Počet obyvatel - celkem;10220577.0
-Česko;2004;Počet obyvatel ve věku 0 - 14 let;1526946.0
-Česko;2004;Počet obyvatel ve věku 15 - 64 let;7259001.0
-Česko;2004;Počet obyvatel ve věku 20 - 64 let;6601806.0
-Česko;2004;Počet obyvatel ve věku 65 a více let;1434630.0
-Česko;2004;Počet obyvatel ve věku 80 a více let;308332.0
-Česko;2004;Podíl obyvatel ve věku 0 - 14 let (%);14.93991973
-Česko;2004;Podíl obyvatel ve věku 15 - 64 let (%);71.02339721
-Česko;2004;Podíl obyvatel ve věku 65 a více let (%);14.03668306
-Česko;2004;Průměrný věk (roky);39.77216937
-Česko;2004;Index stáří;93.95420663
-Česko;2004;Index ekonomické závislosti;54.8148643
-Česko;2003;Počet obyvatel - celkem;10211455.0
-Česko;2003;Počet obyvatel ve věku 0 - 14 let;1554475.0
-Česko;2003;Počet obyvatel ve věku 15 - 64 let;7233788.0
-Česko;2003;Počet obyvatel ve věku 20 - 64 let;6569747.0
-Česko;2003;Počet obyvatel ve věku 65 a více let;1423192.0
-Česko;2003;Počet obyvatel ve věku 80 a více let;292753.0
-Česko;2003;Podíl obyvatel ve věku 0 - 14 let (%);15.22285512
-Česko;2003;Podíl obyvatel ve věku 15 - 64 let (%);70.83993417
-Česko;2003;Podíl obyvatel ve věku 65 a více let (%);13.93721071
-Česko;2003;Průměrný věk (roky);39.52081026
-Česko;2003;Index stáří;91.55451197
-Česko;2003;Index ekonomické závislosti;55.43148009
-Česko;2002;Počet obyvatel - celkem;10203269.0
-Česko;2002;Počet obyvatel ve věku 0 - 14 let;1589766.0
-Česko;2002;Počet obyvatel ve věku 15 - 64 let;7195541.0
-Česko;2002;Počet obyvatel ve věku 20 - 64 let;6530259.0
-Česko;2002;Počet obyvatel ve věku 65 a více let;1417962.0
-Česko;2002;Počet obyvatel ve věku 80 a více let;277204.0
-Česko;2002;Podíl obyvatel ve věku 0 - 14 let (%);15.58094764
-Česko;2002;Podíl obyvatel ve věku 15 - 64 let (%);70.52191802
-Česko;2002;Podíl obyvatel ve věku 65 a více let (%);13.89713434
-Česko;2002;Průměrný věk (roky);39.27685593
-Česko;2002;Index stáří;89.19312654
-Česko;2002;Index ekonomické závislosti;56.24600801
-Česko;2001;Počet obyvatel - celkem;10206436.0
-Česko;2001;Počet obyvatel ve věku 0 - 14 let;1621862.0
-Česko;2001;Počet obyvatel ve věku 15 - 64 let;7170017.0
-Česko;2001;Počet obyvatel ve věku 20 - 64 let;6495559.0
-Česko;2001;Počet obyvatel ve věku 65 a více let;1414557.0
-Česko;2001;Počet obyvatel ve věku 80 a více let;260302.0
-Česko;2001;Podíl obyvatel ve věku 0 - 14 let (%);15.8905812
-Česko;2001;Podíl obyvatel ve věku 15 - 64 let (%);70.24995797
-Česko;2001;Podíl obyvatel ve věku 65 a více let (%);13.85946083
-Česko;2001;Průměrný věk (roky);39.0134619
-Česko;2001;Index stáří;87.21808637
-Česko;2001;Index ekonomické závislosti;57.12944798
-Česko;2000;Počet obyvatel - celkem;10266546.0
-Česko;2000;Počet obyvatel ve věku 0 - 14 let;1664434.0
-Česko;2000;Počet obyvatel ve věku 15 - 64 let;7179109.0
-Česko;2000;Počet obyvatel ve věku 20 - 64 let;6496776.0
-Česko;2000;Počet obyvatel ve věku 65 a více let;1423003.0
-Česko;2000;Počet obyvatel ve věku 80 a více let;249767.0
-Česko;2000;Podíl obyvatel ve věku 0 - 14 let (%);16.21221003
-Česko;2000;Podíl obyvatel ve věku 15 - 64 let (%);69.92720824
-Česko;2000;Podíl obyvatel ve věku 65 a více let (%);13.86058174
-Česko;2000;Průměrný věk (roky);38.7564547
-Česko;2000;Index stáří;85.49470871
-Česko;2000;Index ekonomické závislosti;58.02524206
-Česko;1999;Počet obyvatel - celkem;10278098.0
-Česko;1999;Počet obyvatel ve věku 0 - 14 let;1707205.0
-Česko;1999;Počet obyvatel ve věku 15 - 64 let;7152815.0
-Česko;1999;Počet obyvatel ve věku 20 - 64 let;6453283.0
-Česko;1999;Počet obyvatel ve věku 65 a více let;1418078.0
-Česko;1999;Počet obyvatel ve věku 80 a více let;237215.0
-Česko;1999;Podíl obyvatel ve věku 0 - 14 let (%);16.6101257256
-Česko;1999;Podíl obyvatel ve věku 15 - 64 let (%);69.5927884712
-Česko;1999;Podíl obyvatel ve věku 65 a více let (%);13.7970858032
-Česko;1999;Průměrný věk (roky);
-Česko;1999;Index stáří;83.0643068641
-Česko;1999;Index ekonomické závislosti;59.2692897553
-Česko;1998;Počet obyvatel - celkem;10289621.0
-Česko;1998;Počet obyvatel ve věku 0 - 14 let;1751471.0
-Česko;1998;Počet obyvatel ve věku 15 - 64 let;7126712.0
-Česko;1998;Počet obyvatel ve věku 20 - 64 let;6393464.0
-Česko;1998;Počet obyvatel ve věku 65 a více let;1411438.0
-Česko;1998;Počet obyvatel ve věku 80 a více let;234256.0
-Česko;1998;Podíl obyvatel ve věku 0 - 14 let (%);17.0217250956
-Česko;1998;Podíl obyvatel ve věku 15 - 64 let (%);69.2611710383
-Česko;1998;Podíl obyvatel ve věku 65 a více let (%);13.7171038661
-Česko;1998;Průměrný věk (roky);
-Česko;1998;Index stáří;80.585861827
-Česko;1998;Index ekonomické závislosti;60.9396877811
-Česko;1997;Počet obyvatel - celkem;10299125.0
-Česko;1997;Počet obyvatel ve věku 0 - 14 let;1795032.0
-Česko;1997;Počet obyvatel ve věku 15 - 64 let;7102231.0
-Česko;1997;Počet obyvatel ve věku 20 - 64 let;6329734.0
-Česko;1997;Počet obyvatel ve věku 65 a více let;1401862.0
-Česko;1997;Počet obyvatel ve věku 80 a více let;247832.0
-Česko;1997;Podíl obyvatel ve věku 0 - 14 let (%);17.4289757625
-Česko;1997;Podíl obyvatel ve věku 15 - 64 let (%);68.9595572439
-Česko;1997;Podíl obyvatel ve věku 65 a více let (%);13.6114669936
-Česko;1997;Průměrný věk (roky);
-Česko;1997;Index stáří;78.0967693055
-Česko;1997;Index ekonomické závislosti;62.710233953
-Česko;1996;Počet obyvatel - celkem;10309137.0
-Česko;1996;Počet obyvatel ve věku 0 - 14 let;1842679.0
-Česko;1996;Počet obyvatel ve věku 15 - 64 let;7078210.0
-Česko;1996;Počet obyvatel ve věku 20 - 64 let;6267352.0
-Česko;1996;Počet obyvatel ve věku 65 a více let;1388248.0
-Česko;1996;Počet obyvatel ve věku 80 a více let;263167.0
-Česko;1996;Podíl obyvatel ve věku 0 - 14 let (%);17.8742313736
-Česko;1996;Podíl obyvatel ve věku 15 - 64 let (%);68.6595783915
-Česko;1996;Podíl obyvatel ve věku 65 a více let (%);13.4661902349
-Česko;1996;Průměrný věk (roky);
-Česko;1996;Index stáří;75.3385695501
-Česko;1996;Index ekonomické závislosti;64.4895164656
-Česko;1995;Počet obyvatel - celkem;10321344.0
-Česko;1995;Počet obyvatel ve věku 0 - 14 let;1893259.0
-Česko;1995;Počet obyvatel ve věku 15 - 64 let;7055805.0
-Česko;1995;Počet obyvatel ve věku 20 - 64 let;6204140.0
-Česko;1995;Počet obyvatel ve věku 65 a více let;1372280.0
-Česko;1995;Počet obyvatel ve věku 80 a více let;277109.0
-Česko;1995;Podíl obyvatel ve věku 0 - 14 let (%);18.3431440712
-Česko;1995;Podíl obyvatel ve věku 15 - 64 let (%);68.3613006213
-Česko;1995;Podíl obyvatel ve věku 65 a více let (%);13.2955553075
-Česko;1995;Průměrný věk (roky);
-Česko;1995;Index stáří;72.4824231656
-Česko;1995;Index ekonomické závislosti;66.362203303
-Česko;1994;Počet obyvatel - celkem;10333161.0
-Česko;1994;Počet obyvatel ve věku 0 - 14 let;1948024.0
-Česko;1994;Počet obyvatel ve věku 15 - 64 let;7028905.0
-Česko;1994;Počet obyvatel ve věku 20 - 64 let;6140855.0
-Česko;1994;Počet obyvatel ve věku 65 a více let;1356232.0
-Česko;1994;Počet obyvatel ve věku 80 a více let;285096.0
-Česko;1994;Podíl obyvatel ve věku 0 - 14 let (%);18.8521595667
-Česko;1994;Podíl obyvatel ve věku 15 - 64 let (%);68.022795735
-Česko;1994;Podíl obyvatel ve věku 65 a více let (%);13.1250446983
-Česko;1994;Průměrný věk (roky);
-Česko;1994;Index stáří;69.6209081613
-Česko;1994;Index ekonomické závislosti;68.2690928218
-Česko;1993;Počet obyvatel - celkem;10334013.0
-Česko;1993;Počet obyvatel ve věku 0 - 14 let;2009752.0
-Česko;1993;Počet obyvatel ve věku 15 - 64 let;6981337.0
-Česko;1993;Počet obyvatel ve věku 20 - 64 let;6072727.0
-Česko;1993;Počet obyvatel ve věku 65 a více let;1342924.0
-Česko;1993;Počet obyvatel ve věku 80 a více let;279640.0
-Česko;1993;Podíl obyvatel ve věku 0 - 14 let (%);19.4479337311
-Česko;1993;Podíl obyvatel ve věku 15 - 64 let (%);67.556882307
-Česko;1993;Podíl obyvatel ve věku 65 a více let (%);12.9951839619
-Česko;1993;Průměrný věk (roky);
-Česko;1993;Index stáří;66.8203838085
-Česko;1993;Index ekonomické závislosti;70.1708803969
-Česko;1992;Počet obyvatel - celkem;10325697.0
-Česko;1992;Počet obyvatel ve věku 0 - 14 let;2064545.0
-Česko;1992;Počet obyvatel ve věku 15 - 64 let;6932894.0
-Česko;1992;Počet obyvatel ve věku 20 - 64 let;6022234.0
-Česko;1992;Počet obyvatel ve věku 65 a více let;1328258.0
-Česko;1992;Počet obyvatel ve věku 80 a více let;272305.0
-Česko;1992;Podíl obyvatel ve věku 0 - 14 let (%);19.9942434879
-Česko;1992;Podíl obyvatel ve věku 15 - 64 let (%);67.1421406226
-Česko;1992;Podíl obyvatel ve věku 65 a více let (%);12.8636158896
-Česko;1992;Průměrný věk (roky);
-Česko;1992;Index stáří;64.3365971679
-Česko;1992;Index ekonomické závislosti;71.4595779573
-Česko;1991;Počet obyvatel - celkem;10312548.0
-Česko;1991;Počet obyvatel ve věku 0 - 14 let;2120802.0
-Česko;1991;Počet obyvatel ve věku 15 - 64 let;6876788.0
-Česko;1991;Počet obyvatel ve věku 20 - 64 let;5983545.0
-Česko;1991;Počet obyvatel ve věku 65 a více let;1314958.0
-Česko;1991;Počet obyvatel ve věku 80 a více let;263878.0
-Česko;1991;Podíl obyvatel ve věku 0 - 14 let (%);20.5652570053
-Česko;1991;Podíl obyvatel ve věku 15 - 64 let (%);66.6836944662
-Česko;1991;Podíl obyvatel ve věku 65 a více let (%);12.7510485285
-Česko;1991;Průměrný věk (roky);
-Česko;1991;Index stáří;62.0028649539
-Česko;1991;Index ekonomické závislosti;72.3484656671
-Česko;1990;Počet obyvatel - celkem;10304607.0
-Česko;1990;Počet obyvatel ve věku 0 - 14 let;2193682.0
-Česko;1990;Počet obyvatel ve věku 15 - 64 let;6867991.0
-Česko;1990;Počet obyvatel ve věku 20 - 64 let;6003253.0
-Česko;1990;Počet obyvatel ve věku 65 a více let;1302451.0
-Česko;1990;Počet obyvatel ve věku 80 a více let;258954.0
-Česko;1990;Podíl obyvatel ve věku 0 - 14 let (%);21.1661110963
-Česko;1990;Podíl obyvatel ve věku 15 - 64 let (%);66.2669705611
-Česko;1990;Podíl obyvatel ve věku 65 a více let (%);12.5669183425
-Česko;1990;Průměrný věk (roky);
-Česko;1990;Index stáří;59.3728261434
-Česko;1990;Index ekonomické závislosti;72.6417993711
-Česko;1989;Počet obyvatel - celkem;10362102.0
-Česko;1989;Počet obyvatel ve věku 0 - 14 let;2252709.0
-Česko;1989;Počet obyvatel ve věku 15 - 64 let;6817371.0
-Česko;1989;Počet obyvatel ve věku 20 - 64 let;5995565.0
-Česko;1989;Počet obyvatel ve věku 65 a více let;1292022.0
-Česko;1989;Počet obyvatel ve věku 80 a více let;251632.0
-Česko;1989;Podíl obyvatel ve věku 0 - 14 let (%);21.7398844366
-Česko;1989;Podíl obyvatel ve věku 15 - 64 let (%);65.7913905885
-Česko;1989;Podíl obyvatel ve věku 65 a více let (%);12.4687249749
-Česko;1989;Průměrný věk (roky);
-Česko;1989;Index stáří;57.3541456087
-Česko;1989;Index ekonomické závislosti;72.8294497683
-Česko;1988;Počet obyvatel - celkem;10360034.0
-Česko;1988;Počet obyvatel ve věku 0 - 14 let;2316017.0
-Česko;1988;Počet obyvatel ve věku 15 - 64 let;6765414.0
-Česko;1988;Počet obyvatel ve věku 20 - 64 let;5993995.0
-Česko;1988;Počet obyvatel ve věku 65 a více let;1278603.0
-Česko;1988;Počet obyvatel ve věku 80 a více let;243931.0
-Česko;1988;Podíl obyvatel ve věku 0 - 14 let (%);22.3553030811
-Česko;1988;Podíl obyvatel ve věku 15 - 64 let (%);65.3030096233
-Česko;1988;Podíl obyvatel ve věku 65 a více let (%);12.3416872956
-Česko;1988;Průměrný věk (roky);
-Česko;1988;Index stáří;55.2069781871
-Česko;1988;Index ekonomické závislosti;72.8402175844
-Česko;1987;Počet obyvatel - celkem;10350517.0
-Česko;1987;Počet obyvatel ve věku 0 - 14 let;2362242.0
-Česko;1987;Počet obyvatel ve věku 15 - 64 let;6729577.0
-Česko;1987;Počet obyvatel ve věku 20 - 64 let;6002328.0
-Česko;1987;Počet obyvatel ve věku 65 a více let;1258698.0
-Česko;1987;Počet obyvatel ve věku 80 a více let;235569.0
-Česko;1987;Podíl obyvatel ve věku 0 - 14 let (%);22.8224541827
-Česko;1987;Podíl obyvatel ve věku 15 - 64 let (%);65.0168199328
-Česko;1987;Podíl obyvatel ve věku 65 a více let (%);12.1607258845
-Česko;1987;Průměrný věk (roky);
-Česko;1987;Index stáří;53.2840411778
-Česko;1987;Index ekonomické závislosti;72.4417092835
-Česko;1986;Počet obyvatel - celkem;10344119.0
-Česko;1986;Počet obyvatel ve věku 0 - 14 let;2392949.0
-Česko;1986;Počet obyvatel ve věku 15 - 64 let;6711373.0
-Česko;1986;Počet obyvatel ve věku 20 - 64 let;6010017.0
-Česko;1986;Počet obyvatel ve věku 65 a více let;1239797.0
-Česko;1986;Počet obyvatel ve věku 80 a více let;228398.0
-Česko;1986;Podíl obyvatel ve věku 0 - 14 let (%);23.1334248958
-Česko;1986;Podíl obyvatel ve věku 15 - 64 let (%);64.8810498023
-Česko;1986;Podíl obyvatel ve věku 65 a více let (%);11.9855253019
-Česko;1986;Průměrný věk (roky);
-Česko;1986;Index stáří;51.8104230387
-Česko;1986;Index ekonomické závislosti;72.1146379453
-Česko;1985;Počet obyvatel - celkem;10340335.0
-Česko;1985;Počet obyvatel ve věku 0 - 14 let;2411785.0
-Česko;1985;Počet obyvatel ve věku 15 - 64 let;6703143.0
-Česko;1985;Počet obyvatel ve věku 20 - 64 let;6016040.0
-Česko;1985;Počet obyvatel ve věku 65 a více let;1225407.0
-Česko;1985;Počet obyvatel ve věku 80 a více let;222379.0
-Česko;1985;Podíl obyvatel ve věku 0 - 14 let (%);23.3240509132
-Česko;1985;Podíl obyvatel ve věku 15 - 64 let (%);64.8252015046
-Česko;1985;Podíl obyvatel ve věku 65 a více let (%);11.8507475822
-Česko;1985;Průměrný věk (roky);
-Česko;1985;Index stáří;50.8091309963
-Česko;1985;Index ekonomické závislosti;71.8794256687
-Česko;1984;Počet obyvatel - celkem;10333900.0
-Česko;1984;Počet obyvatel ve věku 0 - 14 let;2422577.0
-Česko;1984;Počet obyvatel ve věku 15 - 64 let;6692112.0
-Česko;1984;Počet obyvatel ve věku 20 - 64 let;6007400.0
-Česko;1984;Počet obyvatel ve věku 65 a více let;1219211.0
-Česko;1984;Počet obyvatel ve věku 80 a více let;218546.0
-Česko;1984;Podíl obyvatel ve věku 0 - 14 let (%);23.4430079641
-Česko;1984;Podíl obyvatel ve věku 15 - 64 let (%);64.7588229033
-Česko;1984;Podíl obyvatel ve věku 65 a více let (%);11.7981691327
-Česko;1984;Průměrný věk (roky);
-Česko;1984;Index stáří;50.327027789
-Česko;1984;Index ekonomické závislosti;72.0195092719
-Česko;1983;Počet obyvatel - celkem;10326526.0
-Česko;1983;Počet obyvatel ve věku 0 - 14 let;2426972.0
-Česko;1983;Počet obyvatel ve věku 15 - 64 let;6667437.0
-Česko;1983;Počet obyvatel ve věku 20 - 64 let;5972847.0
-Česko;1983;Počet obyvatel ve věku 65 a více let;1232117.0
-Česko;1983;Počet obyvatel ve věku 80 a více let;213324.0
-Česko;1983;Podíl obyvatel ve věku 0 - 14 let (%);23.5023085208
-Česko;1983;Podíl obyvatel ve věku 15 - 64 let (%);64.5661183635
-Česko;1983;Podíl obyvatel ve věku 65 a více let (%);11.9315731157
-Česko;1983;Průměrný věk (roky);
-Česko;1983;Index stáří;50.7676643983
-Česko;1983;Index ekonomické závislosti;72.8911857277
-Česko;1982;Počet obyvatel - celkem;10321186.0
-Česko;1982;Počet obyvatel ve věku 0 - 14 let;2424992.0
-Česko;1982;Počet obyvatel ve věku 15 - 64 let;6613987.0
-Česko;1982;Počet obyvatel ve věku 20 - 64 let;5908780.0
-Česko;1982;Počet obyvatel ve věku 65 a více let;1282207.0
-Česko;1982;Počet obyvatel ve věku 80 a více let;208438.0
-Česko;1982;Podíl obyvatel ve věku 0 - 14 let (%);23.4952843598
-Česko;1982;Podíl obyvatel ve věku 15 - 64 let (%);64.0816568949
-Česko;1982;Podíl obyvatel ve věku 65 a více let (%);12.4230587454
-Česko;1982;Průměrný věk (roky);
-Česko;1982;Index stáří;52.8746898959
-Česko;1982;Index ekonomické závislosti;74.6754152295
-Česko;1981;Počet obyvatel - celkem;10308465.0
-Česko;1981;Počet obyvatel ve věku 0 - 14 let;2419754.0
-Česko;1981;Počet obyvatel ve věku 15 - 64 let;6559945.0
-Česko;1981;Počet obyvatel ve věku 20 - 64 let;5859646.0
-Česko;1981;Počet obyvatel ve věku 65 a více let;1328766.0
-Česko;1981;Počet obyvatel ve věku 80 a více let;201095.0
-Česko;1981;Podíl obyvatel ve věku 0 - 14 let (%);23.4734657391
-Česko;1981;Podíl obyvatel ve věku 15 - 64 let (%);63.6364871006
-Česko;1981;Podíl obyvatel ve věku 65 a více let (%);12.8900471603
-Česko;1981;Průměrný věk (roky);
-Česko;1981;Index stáří;54.9132680429
-Česko;1981;Index ekonomické závislosti;75.922999444
-Česko;1980;Počet obyvatel - celkem;10292717.0
-Česko;1980;Počet obyvatel ve věku 0 - 14 let;2414163.0
-Česko;1980;Počet obyvatel ve věku 15 - 64 let;6509099.0
-Česko;1980;Počet obyvatel ve věku 20 - 64 let;5817863.0
-Česko;1980;Počet obyvatel ve věku 65 a více let;1369455.0
-Česko;1980;Počet obyvatel ve věku 80 a více let;194810.0
-Česko;1980;Podíl obyvatel ve věku 0 - 14 let (%);23.4550605054
-Česko;1980;Podíl obyvatel ve věku 15 - 64 let (%);63.2398520235
-Česko;1980;Podíl obyvatel ve věku 65 a více let (%);13.3050874711
-Česko;1980;Průměrný věk (roky);
-Česko;1980;Index stáří;56.7258714511
-Česko;1980;Index ekonomické závislosti;76.9157678687
-Česko;1979;Počet obyvatel - celkem;10315669.0
-Česko;1979;Počet obyvatel ve věku 0 - 14 let;2407530.0
-Česko;1979;Počet obyvatel ve věku 15 - 64 let;6504728.0
-Česko;1979;Počet obyvatel ve věku 20 - 64 let;5827884.0
-Česko;1979;Počet obyvatel ve věku 65 a více let;1403411.0
-Česko;1979;Počet obyvatel ve věku 80 a více let;192550.0
-Česko;1979;Podíl obyvatel ve věku 0 - 14 let (%);23.3385735816
-Česko;1979;Podíl obyvatel ve věku 15 - 64 let (%);63.0567731477
-Česko;1979;Podíl obyvatel ve věku 65 a více let (%);13.6046532707
-Česko;1979;Průměrný věk (roky);
-Česko;1979;Index stáří;58.2925654094
-Česko;1979;Index ekonomické závislosti;77.0053933812
-Česko;1978;Počet obyvatel - celkem;10269012.0
-Česko;1978;Počet obyvatel ve věku 0 - 14 let;2388081.0
-Česko;1978;Počet obyvatel ve věku 15 - 64 let;6489857.0
-Česko;1978;Počet obyvatel ve věku 20 - 64 let;5837323.0
-Česko;1978;Počet obyvatel ve věku 65 a více let;1391074.0
-Česko;1978;Počet obyvatel ve věku 80 a více let;186051.0
-Česko;1978;Podíl obyvatel ve věku 0 - 14 let (%);23.2552167628
-Česko;1978;Podíl obyvatel ve věku 15 - 64 let (%);63.1984557034
-Česko;1978;Podíl obyvatel ve věku 65 a více let (%);13.5463275337
-Česko;1978;Průměrný věk (roky);
-Česko;1978;Index stáří;58.2507042265
-Česko;1978;Index ekonomické závislosti;75.9198865644
-Česko;1977;Počet obyvatel - celkem;10215183.0
-Česko;1977;Počet obyvatel ve věku 0 - 14 let;2356892.0
-Česko;1977;Počet obyvatel ve věku 15 - 64 let;6485346.0
-Česko;1977;Počet obyvatel ve věku 20 - 64 let;5839741.0
-Česko;1977;Počet obyvatel ve věku 65 a více let;1372945.0
-Česko;1977;Počet obyvatel ve věku 80 a více let;179702.0
-Česko;1977;Podíl obyvatel ve věku 0 - 14 let (%);23.0724403077
-Česko;1977;Podíl obyvatel ve věku 15 - 64 let (%);63.4873207851
-Česko;1977;Podíl obyvatel ve věku 65 a více let (%);13.4402389071
-Česko;1977;Průměrný věk (roky);
-Česko;1977;Index stáří;58.2523509775
-Česko;1977;Index ekonomické závislosti;74.9252749394
-Česko;1976;Počet obyvatel - celkem;10158327.0
-Česko;1976;Počet obyvatel ve věku 0 - 14 let;2308846.0
-Česko;1976;Počet obyvatel ve věku 15 - 64 let;6496824.0
-Česko;1976;Počet obyvatel ve věku 20 - 64 let;5830860.0
-Česko;1976;Počet obyvatel ve věku 65 a více let;1352657.0
-Česko;1976;Počet obyvatel ve věku 80 a více let;173725.0
-Česko;1976;Podíl obyvatel ve věku 0 - 14 let (%);22.7286048185
-Česko;1976;Podíl obyvatel ve věku 15 - 64 let (%);63.9556493899
-Česko;1976;Podíl obyvatel ve věku 65 a více let (%);13.3157457916
-Česko;1976;Průměrný věk (roky);
-Česko;1976;Index stáří;58.5858476486
-Česko;1976;Index ekonomické závislosti;74.2166164168
-Česko;1975;Počet obyvatel - celkem;10093551.0
-Česko;1975;Počet obyvatel ve věku 0 - 14 let;2253053.0
-Česko;1975;Počet obyvatel ve věku 15 - 64 let;6510054.0
-Česko;1975;Počet obyvatel ve věku 20 - 64 let;5814626.0
-Česko;1975;Počet obyvatel ve věku 65 a více let;1330444.0
-Česko;1975;Počet obyvatel ve věku 80 a více let;168566.0
-Česko;1975;Podíl obyvatel ve věku 0 - 14 let (%);22.3217081877
-Česko;1975;Podíl obyvatel ve věku 15 - 64 let (%);64.4971625942
-Česko;1975;Podíl obyvatel ve věku 65 a více let (%);13.1811292181
-Česko;1975;Průměrný věk (roky);
-Česko;1975;Index stáří;59.0507191797
-Česko;1975;Index ekonomické závislosti;73.5889978134
-Česko;1974;Počet obyvatel - celkem;10023688.0
-Česko;1974;Počet obyvatel ve věku 0 - 14 let;2190972.0
-Česko;1974;Počet obyvatel ve věku 15 - 64 let;6528594.0
-Česko;1974;Počet obyvatel ve věku 20 - 64 let;5798659.0
-Česko;1974;Počet obyvatel ve věku 65 a více let;1304122.0
-Česko;1974;Počet obyvatel ve věku 80 a více let;162795.0
-Česko;1974;Podíl obyvatel ve věku 0 - 14 let (%);21.8579429048
-Česko;1974;Podíl obyvatel ve věku 15 - 64 let (%);65.131656133
-Česko;1974;Podíl obyvatel ve věku 65 a více let (%);13.0104009622
-Česko;1974;Průměrný věk (roky);
-Česko;1974;Index stáří;59.5225315522
-Česko;1974;Index ekonomické závislosti;72.8621738233
-Česko;1973;Počet obyvatel - celkem;9953230.0
-Česko;1973;Počet obyvatel ve věku 0 - 14 let;2126416.0
-Česko;1973;Počet obyvatel ve věku 15 - 64 let;6549512.0
-Česko;1973;Počet obyvatel ve věku 20 - 64 let;5783037.0
-Česko;1973;Počet obyvatel ve věku 65 a více let;1277302.0
-Česko;1973;Počet obyvatel ve věku 80 a více let;159011.0
-Česko;1973;Podíl obyvatel ve věku 0 - 14 let (%);21.3640798012
-Česko;1973;Podíl obyvatel ve věku 15 - 64 let (%);65.8028800701
-Česko;1973;Podíl obyvatel ve věku 65 a více let (%);12.8330401287
-Česko;1973;Průměrný věk (roky);
-Česko;1973;Index stáří;60.0683027216
-Česko;1973;Index ekonomické závislosti;72.1107784716
-Česko;1972;Počet obyvatel - celkem;9891302.0
-Česko;1972;Počet obyvatel ve věku 0 - 14 let;2086057.0
-Česko;1972;Počet obyvatel ve věku 15 - 64 let;6554567.0
-Česko;1972;Počet obyvatel ve věku 20 - 64 let;5761155.0
-Česko;1972;Počet obyvatel ve věku 65 a více let;1250678.0
-Česko;1972;Počet obyvatel ve věku 80 a více let;155728.0
-Česko;1972;Podíl obyvatel ve věku 0 - 14 let (%);21.0898120389
-Česko;1972;Podíl obyvatel ve věku 15 - 64 let (%);66.265967817
-Česko;1972;Podíl obyvatel ve věku 65 a více let (%);12.6442201441
-Česko;1972;Průměrný věk (roky);
-Česko;1972;Index stáří;59.9541623263
-Česko;1972;Index ekonomické závislosti;71.6895657208
-Česko;1971;Počet obyvatel - celkem;9843962.0
-Česko;1971;Počet obyvatel ve věku 0 - 14 let;2075768.0
-Česko;1971;Počet obyvatel ve věku 15 - 64 let;6546761.0
-Česko;1971;Počet obyvatel ve věku 20 - 64 let;5733515.0
-Česko;1971;Počet obyvatel ve věku 65 a více let;1221433.0
-Česko;1971;Počet obyvatel ve věku 80 a více let;152330.0
-Česko;1971;Podíl obyvatel ve věku 0 - 14 let (%);21.08671285
-Česko;1971;Podíl obyvatel ve věku 15 - 64 let (%);66.5053461198
-Česko;1971;Podíl obyvatel ve věku 65 a více let (%);12.4079410302
-Česko;1971;Průměrný věk (roky);
-Česko;1971;Index stáří;58.8424621634
-Česko;1971;Index ekonomické závislosti;71.6915714008
-Česko;1970;Počet obyvatel - celkem;9809667.0
-Česko;1970;Počet obyvatel ve věku 0 - 14 let;2081669.0
-Česko;1970;Počet obyvatel ve věku 15 - 64 let;6534836.0
-Česko;1970;Počet obyvatel ve věku 20 - 64 let;5705614.0
-Česko;1970;Počet obyvatel ve věku 65 a více let;1193162.0
-Česko;1970;Počet obyvatel ve věku 80 a více let;148100.0
-Česko;1970;Podíl obyvatel ve věku 0 - 14 let (%);21.220587814
-Česko;1970;Podíl obyvatel ve věku 15 - 64 let (%);66.6162877904
-Česko;1970;Podíl obyvatel ve věku 65 a více let (%);12.1631243956
-Česko;1970;Průměrný věk (roky);
-Česko;1970;Index stáří;57.317565857
-Česko;1970;Index ekonomické závislosti;71.9300850005
-Česko;1969;Počet obyvatel - celkem;9906474.0
-Česko;1969;Počet obyvatel ve věku 0 - 14 let;2115048.0
-Česko;1969;Počet obyvatel ve věku 15 - 64 let;6608415.0
-Česko;1969;Počet obyvatel ve věku 20 - 64 let;5760300.0
-Česko;1969;Počet obyvatel ve věku 65 a více let;1183011.0
-Česko;1969;Počet obyvatel ve věku 80 a více let;152178.0
-Česko;1969;Podíl obyvatel ve věku 0 - 14 let (%);21.3501595018
-Česko;1969;Podíl obyvatel ve věku 15 - 64 let (%);66.708043649
-Česko;1969;Podíl obyvatel ve věku 65 a více let (%);11.9417968492
-Česko;1969;Průměrný věk (roky);
-Česko;1969;Index stáří;55.9330568384
-Česko;1969;Index ekonomické závislosti;71.978438623
-Česko;1968;Počet obyvatel - celkem;9886686.0
-Česko;1968;Počet obyvatel ve věku 0 - 14 let;2139756.0
-Česko;1968;Počet obyvatel ve věku 15 - 64 let;6590507.0
-Česko;1968;Počet obyvatel ve věku 20 - 64 let;5735274.0
-Česko;1968;Počet obyvatel ve věku 65 a více let;1156423.0
-Česko;1968;Počet obyvatel ve věku 80 a více let;148686.0
-Česko;1968;Podíl obyvatel ve věku 0 - 14 let (%);21.6428032609
-Česko;1968;Podíl obyvatel ve věku 15 - 64 let (%);66.6604259506
-Česko;1968;Podíl obyvatel ve věku 65 a více let (%);11.6967707885
-Česko;1968;Průměrný věk (roky);
-Česko;1968;Index stáří;54.0446200408
-Česko;1968;Index ekonomické závislosti;72.3838477464
-Česko;1967;Počet obyvatel - celkem;9866006.0
-Česko;1967;Počet obyvatel ve věku 0 - 14 let;2173155.0
-Česko;1967;Počet obyvatel ve věku 15 - 64 let;6565548.0
-Česko;1967;Počet obyvatel ve věku 20 - 64 let;5698152.0
-Česko;1967;Počet obyvatel ve věku 65 a více let;1127303.0
-Česko;1967;Počet obyvatel ve věku 80 a více let;145680.0
-Česko;1967;Podíl obyvatel ve věku 0 - 14 let (%);22.0266944902
-Česko;1967;Podíl obyvatel ve věku 15 - 64 let (%);66.5471721789
-Česko;1967;Podíl obyvatel ve věku 65 a více let (%);11.426133331
-Česko;1967;Průměrný věk (roky);
-Česko;1967;Index stáří;51.874026473
-Česko;1967;Index ekonomické závislosti;73.1439596557
-Česko;1966;Počet obyvatel - celkem;9839792.0
-Česko;1966;Počet obyvatel ve věku 0 - 14 let;2210247.0
-Česko;1966;Počet obyvatel ve věku 15 - 64 let;6537691.0
-Česko;1966;Počet obyvatel ve věku 20 - 64 let;5654734.0
-Česko;1966;Počet obyvatel ve věku 65 a více let;1091854.0
-Česko;1966;Počet obyvatel ve věku 80 a více let;141747.0
-Česko;1966;Podíl obyvatel ve věku 0 - 14 let (%);22.4623345697
-Česko;1966;Podíl obyvatel ve věku 15 - 64 let (%);66.4413536384
-Česko;1966;Podíl obyvatel ve věku 65 a více let (%);11.096311792
-Česko;1966;Průměrný věk (roky);
-Česko;1966;Index stáří;49.3996372351
-Česko;1966;Index ekonomické závislosti;74.0098119558
-Česko;1965;Počet obyvatel - celkem;9802287.0
-Česko;1965;Počet obyvatel ve věku 0 - 14 let;2246555.0
-Česko;1965;Počet obyvatel ve věku 15 - 64 let;6498331.0
-Česko;1965;Počet obyvatel ve věku 20 - 64 let;5606018.0
-Česko;1965;Počet obyvatel ve věku 65 a více let;1057401.0
-Česko;1965;Počet obyvatel ve věku 80 a více let;137100.0
-Česko;1965;Podíl obyvatel ve věku 0 - 14 let (%);22.9186821402
-Česko;1965;Podíl obyvatel ve věku 15 - 64 let (%);66.2940291383
-Česko;1965;Podíl obyvatel ve věku 65 a více let (%);10.7872887215
-Česko;1965;Průměrný věk (roky);
-Česko;1965;Index stáří;47.0676658261
-Česko;1965;Index ekonomické závislosti;74.8529348283
-Česko;1964;Počet obyvatel - celkem;9756429.0
-Česko;1964;Počet obyvatel ve věku 0 - 14 let;2276531.0
-Česko;1964;Počet obyvatel ve věku 15 - 64 let;6457145.0
-Česko;1964;Počet obyvatel ve věku 20 - 64 let;5588298.0
-Česko;1964;Počet obyvatel ve věku 65 a více let;1022753.0
-Česko;1964;Počet obyvatel ve věku 80 a více let;132960.0
-Česko;1964;Podíl obyvatel ve věku 0 - 14 let (%);23.3336500476
-Česko;1964;Podíl obyvatel ve věku 15 - 64 let (%);66.1834878315
-Česko;1964;Podíl obyvatel ve věku 65 a více let (%);10.482862121
-Česko;1964;Průměrný věk (roky);
-Česko;1964;Index stáří;44.9259421462
-Česko;1964;Index ekonomické závislosti;74.5867704263
-Česko;1963;Počet obyvatel - celkem;9699179.0
-Česko;1963;Počet obyvatel ve věku 0 - 14 let;2294061.0
-Česko;1963;Počet obyvatel ve věku 15 - 64 let;6413790.0
-Česko;1963;Počet obyvatel ve věku 20 - 64 let;5557064.0
-Česko;1963;Počet obyvatel ve věku 65 a více let;991328.0
-Česko;1963;Počet obyvatel ve věku 80 a více let;128030.0
-Česko;1963;Podíl obyvatel ve věku 0 - 14 let (%);23.6521152976
-Česko;1963;Podíl obyvatel ve věku 15 - 64 let (%);66.1271433386
-Česko;1963;Podíl obyvatel ve věku 65 a více let (%);10.2207413638
-Česko;1963;Průměrný věk (roky);
-Česko;1963;Index stáří;43.2128003571
-Česko;1963;Index ekonomické závislosti;74.537831488
-Česko;1962;Počet obyvatel - celkem;9642191.0
-Česko;1962;Počet obyvatel ve věku 0 - 14 let;2325239.0
-Česko;1962;Počet obyvatel ve věku 15 - 64 let;6355074.0
-Česko;1962;Počet obyvatel ve věku 20 - 64 let;5522025.0
-Česko;1962;Počet obyvatel ve věku 65 a více let;961878.0
-Česko;1962;Počet obyvatel ve věku 80 a více let;124095.0
-Česko;1962;Podíl obyvatel ve věku 0 - 14 let (%);24.1152555472
-Česko;1962;Podíl obyvatel ve věku 15 - 64 let (%);65.9090242041
-Česko;1962;Podíl obyvatel ve věku 65 a více let (%);9.9757202486
-Česko;1962;Průměrný věk (roky);
-Česko;1962;Index stáří;41.3668444405
-Česko;1962;Index ekonomické závislosti;74.6133166728
-Česko;1961;Počet obyvatel - celkem;9607129.0
-Česko;1961;Počet obyvatel ve věku 0 - 14 let;2380828.0
-Česko;1961;Počet obyvatel ve věku 15 - 64 let;6288723.0
-Česko;1961;Počet obyvatel ve věku 20 - 64 let;5504925.0
-Česko;1961;Počet obyvatel ve věku 65 a více let;937578.0
-Česko;1961;Počet obyvatel ve věku 80 a více let;121525.0
-Česko;1961;Podíl obyvatel ve věku 0 - 14 let (%);24.781888533
-Česko;1961;Podíl obyvatel ve věku 15 - 64 let (%);65.4589211824
-Česko;1961;Podíl obyvatel ve věku 65 a více let (%);9.7591902846
-Česko;1961;Průměrný věk (roky);
-Česko;1961;Index stáří;39.3803332286
-Česko;1961;Index ekonomické závislosti;74.5187990754
-Česko;1960;Počet obyvatel - celkem;9566172.0
-Česko;1960;Počet obyvatel ve věku 0 - 14 let;2435976.0
-Česko;1960;Počet obyvatel ve věku 15 - 64 let;6220350.0
-Česko;1960;Počet obyvatel ve věku 20 - 64 let;5487446.0
-Česko;1960;Počet obyvatel ve věku 65 a více let;909846.0
-Česko;1960;Počet obyvatel ve věku 80 a více let;117818.0
-Česko;1960;Podíl obyvatel ve věku 0 - 14 let (%);25.464480463
-Česko;1960;Podíl obyvatel ve věku 15 - 64 let (%);65.0244423788
-Česko;1960;Podíl obyvatel ve věku 65 a více let (%);9.5110771581
-Česko;1960;Průměrný věk (roky);
-Česko;1960;Index stáří;37.3503679839
-Česko;1960;Index ekonomické závislosti;74.3283122968
-Česko;1959;Počet obyvatel - celkem;9637840.0
-Česko;1959;Počet obyvatel ve věku 0 - 14 let;2469772.0
-Česko;1959;Počet obyvatel ve věku 15 - 64 let;6254454.0
-Česko;1959;Počet obyvatel ve věku 20 - 64 let;5540185.0
-Česko;1959;Počet obyvatel ve věku 65 a více let;913614.0
-Česko;1959;Počet obyvatel ve věku 80 a více let;121089.0
-Česko;1959;Podíl obyvatel ve věku 0 - 14 let (%);25.6257833705
-Česko;1959;Podíl obyvatel ve věku 15 - 64 let (%);64.8947689524
-Česko;1959;Podíl obyvatel ve věku 65 a více let (%);9.4794476771
-Česko;1959;Průměrný věk (roky);
-Česko;1959;Index stáří;36.9918356836
-Česko;1959;Index ekonomické závislosti;73.9624218325
-Česko;1958;Počet obyvatel - celkem;9597963.0
-Česko;1958;Počet obyvatel ve věku 0 - 14 let;2497758.0
-Česko;1958;Počet obyvatel ve věku 15 - 64 let;6208534.0
-Česko;1958;Počet obyvatel ve věku 20 - 64 let;5534640.0
-Česko;1958;Počet obyvatel ve věku 65 a více let;891671.0
-Česko;1958;Počet obyvatel ve věku 80 a více let;117417.0
-Česko;1958;Podíl obyvatel ve věku 0 - 14 let (%);26.0238344324
-Česko;1958;Podíl obyvatel ve věku 15 - 64 let (%);64.6859547177
-Česko;1958;Podíl obyvatel ve věku 65 a více let (%);9.2902108499
-Česko;1958;Průměrný věk (roky);
-Česko;1958;Index stáří;35.6988547329
-Česko;1958;Index ekonomické závislosti;73.4162113525
-Česko;1957;Počet obyvatel - celkem;9543780.0
-Česko;1957;Počet obyvatel ve věku 0 - 14 let;2516431.0
-Česko;1957;Počet obyvatel ve věku 15 - 64 let;6159915.0
-Česko;1957;Počet obyvatel ve věku 20 - 64 let;5530212.0
-Česko;1957;Počet obyvatel ve věku 65 a více let;867434.0
-Česko;1957;Počet obyvatel ve věku 80 a více let;110035.0
-Česko;1957;Podíl obyvatel ve věku 0 - 14 let (%);26.3672360427
-Česko;1957;Podíl obyvatel ve věku 15 - 64 let (%);64.5437656778
-Česko;1957;Podíl obyvatel ve věku 65 a více let (%);9.0889982795
-Česko;1957;Průměrný věk (roky);
-Česko;1957;Index stáří;34.4708040872
-Česko;1957;Index ekonomické závislosti;72.5753009107
-Česko;1956;Počet obyvatel - celkem;9480206.0
-Česko;1956;Počet obyvatel ve věku 0 - 14 let;2502297.0
-Česko;1956;Počet obyvatel ve věku 15 - 64 let;6124418.0
-Česko;1956;Počet obyvatel ve věku 20 - 64 let;5526778.0
-Česko;1956;Počet obyvatel ve věku 65 a více let;853491.0
-Česko;1956;Počet obyvatel ve věku 80 a více let;108901.0
-Česko;1956;Podíl obyvatel ve věku 0 - 14 let (%);26.3949644132
-Česko;1956;Podíl obyvatel ve věku 15 - 64 let (%);64.6021615986
-Česko;1956;Podíl obyvatel ve věku 65 a více let (%);9.0028739882
-Česko;1956;Průměrný věk (roky);
-Česko;1956;Index stáří;34.1083012928
-Česko;1956;Index ekonomické závislosti;71.5322381322
-Česko;1955;Počet obyvatel - celkem;9405047.0
-Česko;1955;Počet obyvatel ve věku 0 - 14 let;2475043.0
-Česko;1955;Počet obyvatel ve věku 15 - 64 let;6096427.0
-Česko;1955;Počet obyvatel ve věku 20 - 64 let;5524539.0
-Česko;1955;Počet obyvatel ve věku 65 a více let;833577.0
-Česko;1955;Počet obyvatel ve věku 80 a více let;107662.0
-Česko;1955;Podíl obyvatel ve věku 0 - 14 let (%);26.3161151667
-Česko;1955;Podíl obyvatel ve věku 15 - 64 let (%);64.8208031284
-Česko;1955;Podíl obyvatel ve věku 65 a více let (%);8.863081705
-Česko;1955;Průměrný věk (roky);
-Česko;1955;Index stáří;33.6792936527
-Česko;1955;Index ekonomické závislosti;70.2412997718
-Česko;1954;Počet obyvatel - celkem;9329036.0
-Česko;1954;Počet obyvatel ve věku 0 - 14 let;2445537.0
-Česko;1954;Počet obyvatel ve věku 15 - 64 let;6065015.0
-Česko;1954;Počet obyvatel ve věku 20 - 64 let;5515927.0
-Česko;1954;Počet obyvatel ve věku 65 a více let;818484.0
-Česko;1954;Počet obyvatel ve věku 80 a více let;104348.0
-Česko;1954;Podíl obyvatel ve věku 0 - 14 let (%);26.2142519334
-Česko;1954;Podíl obyvatel ve věku 15 - 64 let (%);65.0122370629
-Česko;1954;Podíl obyvatel ve věku 65 a více let (%);8.7735110037
-Česko;1954;Průměrný věk (roky);
-Česko;1954;Index stáří;33.4684774755
-Česko;1954;Index ekonomické závislosti;69.1290693296
-Česko;1953;Počet obyvatel - celkem;9262646.0
-Česko;1953;Počet obyvatel ve věku 0 - 14 let;2397522.0
-Česko;1953;Počet obyvatel ve věku 15 - 64 let;6057570.0
-Česko;1953;Počet obyvatel ve věku 20 - 64 let;5508915.0
-Česko;1953;Počet obyvatel ve věku 65 a více let;807554.0
-Česko;1953;Počet obyvatel ve věku 80 a více let;102871.0
-Česko;1953;Podíl obyvatel ve věku 0 - 14 let (%);25.8837701452
-Česko;1953;Podíl obyvatel ve věku 15 - 64 let (%);65.3978355645
-Česko;1953;Podíl obyvatel ve věku 65 a více let (%);8.7183942904
-Česko;1953;Průměrný věk (roky);
-Česko;1953;Index stáří;33.6828608872
-Česko;1953;Index ekonomické závislosti;68.1392070852
-Česko;1952;Počet obyvatel - celkem;9177611.0
-Česko;1952;Počet obyvatel ve věku 0 - 14 let;2342240.0
-Česko;1952;Počet obyvatel ve věku 15 - 64 let;6044286.0
-Česko;1952;Počet obyvatel ve věku 20 - 64 let;5488250.0
-Česko;1952;Počet obyvatel ve věku 65 a více let;791085.0
-Česko;1952;Počet obyvatel ve věku 80 a více let;99334.0
-Česko;1952;Podíl obyvatel ve věku 0 - 14 let (%);25.5212385881
-Česko;1952;Podíl obyvatel ve věku 15 - 64 let (%);65.859034557
-Česko;1952;Podíl obyvatel ve věku 65 a více let (%);8.6197268548
-Česko;1952;Průměrný věk (roky);
-Česko;1952;Index stáří;33.7747199262
-Česko;1952;Index ekonomické závislosti;67.2229034756
-Česko;1951;Počet obyvatel - celkem;9074172.0
-Česko;1951;Počet obyvatel ve věku 0 - 14 let;2272098.0
-Česko;1951;Počet obyvatel ve věku 15 - 64 let;6027105.0
-Česko;1951;Počet obyvatel ve věku 20 - 64 let;5450305.0
-Česko;1951;Počet obyvatel ve věku 65 a více let;774969.0
-Česko;1951;Počet obyvatel ve věku 80 a více let;95374.0
-Česko;1951;Podíl obyvatel ve věku 0 - 14 let (%);25.0391771282
-Česko;1951;Podíl obyvatel ve věku 15 - 64 let (%);66.4204403443
-Česko;1951;Podíl obyvatel ve věku 65 a více let (%);8.5403825275
-Česko;1951;Průměrný věk (roky);
-Česko;1951;Index stáří;34.1080798451
-Česko;1951;Index ekonomické závislosti;66.489251519
-Česko;1950;Počet obyvatel - celkem;8978854.0
-Česko;1950;Počet obyvatel ve věku 0 - 14 let;2203161.0
-Česko;1950;Počet obyvatel ve věku 15 - 64 let;6015068.0
-Česko;1950;Počet obyvatel ve věku 20 - 64 let;5411612.0
-Česko;1950;Počet obyvatel ve věku 65 a více let;760625.0
-Česko;1950;Počet obyvatel ve věku 80 a více let;92868.0
-Česko;1950;Podíl obyvatel ve věku 0 - 14 let (%);24.5372182241
-Česko;1950;Podíl obyvatel ve věku 15 - 64 let (%);66.9914891143
-Česko;1950;Podíl obyvatel ve věku 65 a více let (%);8.4712926616
-Česko;1950;Průměrný věk (roky);
-Česko;1950;Index stáří;34.524258554
-Česko;1950;Index ekonomické závislosti;65.918288303
-Česko;1949;Počet obyvatel - celkem;8892449.0
-Česko;1949;Počet obyvatel ve věku 0 - 14 let;2139927.0
-Česko;1949;Počet obyvatel ve věku 15 - 64 let;6014231.0
-Česko;1949;Počet obyvatel ve věku 20 - 64 let;5377451.0
-Česko;1949;Počet obyvatel ve věku 65 a více let;738291.0
-Česko;1949;Počet obyvatel ve věku 80 a více let;86584.0
-Česko;1949;Podíl obyvatel ve věku 0 - 14 let (%);24.0645406007
-Česko;1949;Podíl obyvatel ve věku 15 - 64 let (%);67.6330108837
-Česko;1949;Podíl obyvatel ve věku 65 a více let (%);8.3024485156
-Česko;1949;Průměrný věk (roky);
-Česko;1949;Index stáří;34.5007563342
-Česko;1949;Index ekonomické závislosti;65.3655049576
-Česko;1948;Počet obyvatel - celkem;8893180.0
-Česko;1948;Počet obyvatel ve věku 0 - 14 let;2096818.0
-Česko;1948;Počet obyvatel ve věku 15 - 64 let;6071801.0
-Česko;1948;Počet obyvatel ve věku 20 - 64 let;5406531.0
-Česko;1948;Počet obyvatel ve věku 65 a více let;724561.0
-Česko;1948;Počet obyvatel ve věku 80 a více let;83897.0
-Česko;1948;Podíl obyvatel ve věku 0 - 14 let (%);23.5778203072
-Česko;1948;Podíl obyvatel ve věku 15 - 64 let (%);68.2748015895
-Česko;1948;Podíl obyvatel ve věku 65 a více let (%);8.1473781032
-Česko;1948;Průměrný věk (roky);
-Česko;1948;Index stáří;34.5552642146
-Česko;1948;Index ekonomické závislosti;64.4895775128
-Česko;1947;Počet obyvatel - celkem;8840287.0
-Česko;1947;Počet obyvatel ve věku 0 - 14 let;2039645.0
-Česko;1947;Počet obyvatel ve věku 15 - 64 let;6090160.0
-Česko;1947;Počet obyvatel ve věku 20 - 64 let;5398747.0
-Česko;1947;Počet obyvatel ve věku 65 a více let;710482.0
-Česko;1947;Počet obyvatel ve věku 80 a více let;80348.0
-Česko;1947;Podíl obyvatel ve věku 0 - 14 let (%);23.0721581777
-Česko;1947;Podíl obyvatel ve věku 15 - 64 let (%);68.8909760509
-Česko;1947;Podíl obyvatel ve věku 65 a více let (%);8.0368657714
-Česko;1947;Průměrný věk (roky);
-Česko;1947;Index stáří;34.8336107509
-Česko;1947;Index ekonomické závislosti;63.7470138904
+Území,Roky,Ukazatel,value
+Česko,2025,Počet obyvatel - celkem,
+Česko,2025,Počet obyvatel ve věku 0 - 14 let,
+Česko,2025,Počet obyvatel ve věku 15 - 64 let,
+Česko,2025,Počet obyvatel ve věku 20 - 64 let,
+Česko,2025,Počet obyvatel ve věku 65 a více let,
+Česko,2025,Počet obyvatel ve věku 80 a více let,
+Česko,2025,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,2025,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,2025,Podíl obyvatel ve věku 65 a více let (%),
+Česko,2025,Průměrný věk (roky),
+Česko,2025,Index stáří,
+Česko,2025,Index ekonomické závislosti,
+Česko,2024,Počet obyvatel - celkem,10909500.0
+Česko,2024,Počet obyvatel ve věku 0 - 14 let,1690783.0
+Česko,2024,Počet obyvatel ve věku 15 - 64 let,6962830.0
+Česko,2024,Počet obyvatel ve věku 20 - 64 let,6344244.0
+Česko,2024,Počet obyvatel ve věku 65 a více let,2255887.0
+Česko,2024,Počet obyvatel ve věku 80 a více let,519802.0
+Česko,2024,Podíl obyvatel ve věku 0 - 14 let (%),15.49826298
+Česko,2024,Podíl obyvatel ve věku 15 - 64 let (%),63.82354828
+Česko,2024,Podíl obyvatel ve věku 65 a více let (%),20.67818873
+Česko,2024,Průměrný věk (roky),43.06147486
+Česko,2024,Index stáří,133.4226214
+Česko,2024,Index ekonomické závislosti,71.95902301
+Česko,2023,Počet obyvatel - celkem,10900555.0
+Česko,2023,Počet obyvatel ve věku 0 - 14 let,1727758.0
+Česko,2023,Počet obyvatel ve věku 15 - 64 let,6935475.0
+Česko,2023,Počet obyvatel ve věku 20 - 64 let,6342155.0
+Česko,2023,Počet obyvatel ve věku 65 a více let,2237322.0
+Česko,2023,Počet obyvatel ve věku 80 a více let,491972.0
+Česko,2023,Podíl obyvatel ve věku 0 - 14 let (%),15.85018378
+Česko,2023,Podíl obyvatel ve věku 15 - 64 let (%),63.62497139
+Česko,2023,Podíl obyvatel ve věku 65 a více let (%),20.52484484
+Česko,2023,Průměrný věk (roky),42.80415635
+Česko,2023,Index stáří,129.4927878
+Česko,2023,Index ekonomické závislosti,71.87462306
+Česko,2022,Počet obyvatel - celkem,10827529.0
+Česko,2022,Počet obyvatel ve věku 0 - 14 let,1750808.0
+Česko,2022,Počet obyvatel ve věku 15 - 64 let,6868872.0
+Česko,2022,Počet obyvatel ve věku 20 - 64 let,6312183.0
+Česko,2022,Počet obyvatel ve věku 65 a více let,2207849.0
+Česko,2022,Počet obyvatel ve věku 80 a více let,465991.0
+Česko,2022,Podíl obyvatel ve věku 0 - 14 let (%),16.16996824
+Česko,2022,Podíl obyvatel ve věku 15 - 64 let (%),63.43896193
+Česko,2022,Podíl obyvatel ve věku 65 a více let (%),20.39106984
+Česko,2022,Průměrný věk (roky),42.6068977
+Česko,2022,Index stáří,126.1045757
+Česko,2022,Index ekonomické závislosti,71.53382594
+Česko,2021,Počet obyvatel - celkem,10516707.0
+Česko,2021,Počet obyvatel ve věku 0 - 14 let,1693408.0
+Česko,2021,Počet obyvatel ve věku 15 - 64 let,6654190.0
+Česko,2021,Počet obyvatel ve věku 20 - 64 let,6150885.0
+Česko,2021,Počet obyvatel ve věku 65 a více let,2169109.0
+Česko,2021,Počet obyvatel ve věku 80 a více let,451143.0
+Česko,2021,Podíl obyvatel ve věku 0 - 14 let (%),16.10207454
+Česko,2021,Podíl obyvatel ve věku 15 - 64 let (%),63.27256241
+Česko,2021,Podíl obyvatel ve věku 65 a více let (%),20.62536305
+Česko,2021,Průměrný věk (roky),42.7827715
+Česko,2021,Index stáří,128.0913401
+Česko,2021,Index ekonomické závislosti,70.97876159
+Česko,2020,Počet obyvatel - celkem,10701777.0
+Česko,2020,Počet obyvatel ve věku 0 - 14 let,1719741.0
+Česko,2020,Počet obyvatel ve věku 15 - 64 let,6823714.0
+Česko,2020,Počet obyvatel ve věku 20 - 64 let,6333264.0
+Česko,2020,Počet obyvatel ve věku 65 a více let,2158322.0
+Česko,2020,Počet obyvatel ve věku 80 a více let,447526.0
+Česko,2020,Podíl obyvatel ve věku 0 - 14 let (%),16.06967703
+Česko,2020,Podíl obyvatel ve věku 15 - 64 let (%),63.76243871
+Česko,2020,Podíl obyvatel ve věku 65 a více let (%),20.16788427
+Česko,2020,Průměrný věk (roky),42.58078929
+Česko,2020,Index stáří,125.5027356
+Česko,2020,Index ekonomické závislosti,68.97727617
+Česko,2019,Počet obyvatel - celkem,10693939.0
+Česko,2019,Počet obyvatel ve věku 0 - 14 let,1710202.0
+Česko,2019,Počet obyvatel ve věku 15 - 64 let,6852107.0
+Česko,2019,Počet obyvatel ve věku 20 - 64 let,6374077.0
+Česko,2019,Počet obyvatel ve věku 65 a více let,2131630.0
+Česko,2019,Počet obyvatel ve věku 80 a více let,441100.0
+Česko,2019,Podíl obyvatel ve věku 0 - 14 let (%),15.99225505
+Česko,2019,Podíl obyvatel ve věku 15 - 64 let (%),64.07467819
+Česko,2019,Podíl obyvatel ve věku 65 a více let (%),19.93306676
+Česko,2019,Průměrný věk (roky),42.48015483
+Česko,2019,Index stáří,124.6420014
+Česko,2019,Index ekonomické závislosti,67.77235355
+Česko,2018,Počet obyvatel - celkem,10649800.0
+Česko,2018,Počet obyvatel ve věku 0 - 14 let,1693060.0
+Česko,2018,Počet obyvatel ve věku 15 - 64 let,6870123.0
+Česko,2018,Počet obyvatel ve věku 20 - 64 let,6402732.0
+Česko,2018,Počet obyvatel ve věku 65 a více let,2086617.0
+Česko,2018,Počet obyvatel ve věku 80 a více let,432907.0
+Česko,2018,Podíl obyvatel ve věku 0 - 14 let (%),15.89757554
+Česko,2018,Podíl obyvatel ve věku 15 - 64 let (%),64.50940863
+Česko,2018,Podíl obyvatel ve věku 65 a více let (%),19.59301583
+Česko,2018,Průměrný věk (roky),42.33474225
+Česko,2018,Index stáří,123.2453073
+Česko,2018,Index ekonomické závislosti,66.33212198
+Česko,2017,Počet obyvatel - celkem,10610055.0
+Česko,2017,Počet obyvatel ve věku 0 - 14 let,1670677.0
+Česko,2017,Počet obyvatel ve věku 15 - 64 let,6899195.0
+Česko,2017,Počet obyvatel ve věku 20 - 64 let,6436995.0
+Česko,2017,Počet obyvatel ve věku 65 a více let,2040183.0
+Česko,2017,Počet obyvatel ve věku 80 a více let,427422.0
+Česko,2017,Podíl obyvatel ve věku 0 - 14 let (%),15.7461672
+Česko,2017,Podíl obyvatel ve věku 15 - 64 let (%),65.02506349
+Česko,2017,Podíl obyvatel ve věku 65 a více let (%),19.22876931
+Česko,2017,Průměrný věk (roky),42.19534908
+Česko,2017,Index stáří,122.1171417
+Česko,2017,Index ekonomické závislosti,64.82931865
+Česko,2016,Počet obyvatel - celkem,10578820.0
+Česko,2016,Počet obyvatel ve věku 0 - 14 let,1647275.0
+Česko,2016,Počet obyvatel ve věku 15 - 64 let,6942623.0
+Česko,2016,Počet obyvatel ve věku 20 - 64 let,6483950.0
+Česko,2016,Počet obyvatel ve věku 65 a více let,1988922.0
+Česko,2016,Počet obyvatel ve věku 80 a více let,424841.0
+Česko,2016,Podíl obyvatel ve věku 0 - 14 let (%),15.5714437
+Česko,2016,Podíl obyvatel ve věku 15 - 64 let (%),65.62757472
+Česko,2016,Podíl obyvatel ve věku 65 a více let (%),18.80098158
+Česko,2016,Průměrný věk (roky),42.04648864
+Česko,2016,Index stáří,120.7401314
+Česko,2016,Index ekonomické závislosti,63.15394166
+Česko,2015,Počet obyvatel - celkem,10553843.0
+Česko,2015,Počet obyvatel ve věku 0 - 14 let,1623716.0
+Česko,2015,Počet obyvatel ve věku 15 - 64 let,6997715.0
+Česko,2015,Počet obyvatel ve věku 20 - 64 let,6539712.0
+Česko,2015,Počet obyvatel ve věku 65 a více let,1932412.0
+Česko,2015,Počet obyvatel ve věku 80 a více let,420536.0
+Česko,2015,Podíl obyvatel ve věku 0 - 14 let (%),15.38506874
+Česko,2015,Podíl obyvatel ve věku 15 - 64 let (%),66.30489955
+Česko,2015,Podíl obyvatel ve věku 65 a více let (%),18.31003171
+Česko,2015,Průměrný věk (roky),41.86871109
+Česko,2015,Index stáří,119.0116991
+Česko,2015,Index ekonomické závislosti,61.38085286
+Česko,2014,Počet obyvatel - celkem,10538275.0
+Česko,2014,Počet obyvatel ve věku 0 - 14 let,1601045.0
+Česko,2014,Počet obyvatel ve věku 15 - 64 let,7056824.0
+Česko,2014,Počet obyvatel ve věku 20 - 64 let,6593741.0
+Česko,2014,Počet obyvatel ve věku 65 a více let,1880406.0
+Česko,2014,Počet obyvatel ve věku 80 a více let,418698.0
+Česko,2014,Podíl obyvatel ve věku 0 - 14 let (%),15.19266673
+Česko,2014,Podíl obyvatel ve věku 15 - 64 let (%),66.96374881
+Česko,2014,Podíl obyvatel ve věku 65 a více let (%),17.84358446
+Česko,2014,Průměrný věk (roky),41.6959761
+Česko,2014,Index stáří,117.4486663
+Česko,2014,Index ekonomické závislosti,59.82239824
+Česko,2013,Počet obyvatel - celkem,10512419.0
+Česko,2013,Počet obyvatel ve věku 0 - 14 let,1577455.0
+Česko,2013,Počet obyvatel ve věku 15 - 64 let,7109420.0
+Česko,2013,Počet obyvatel ve věku 20 - 64 let,6629546.0
+Česko,2013,Počet obyvatel ve věku 65 a více let,1825544.0
+Česko,2013,Počet obyvatel ve věku 80 a více let,412049.0
+Česko,2013,Podíl obyvatel ve věku 0 - 14 let (%),15.00563286
+Česko,2013,Podíl obyvatel ve věku 15 - 64 let (%),67.62877317
+Česko,2013,Podíl obyvatel ve věku 65 a více let (%),17.36559397
+Česko,2013,Průměrný věk (roky),41.500765
+Česko,2013,Index stáří,115.7271681
+Česko,2013,Index ekonomické závislosti,58.56921424
+Česko,2012,Počet obyvatel - celkem,10516125.0
+Česko,2012,Počet obyvatel ve věku 0 - 14 let,1560296.0
+Česko,2012,Počet obyvatel ve věku 15 - 64 let,7188211.0
+Česko,2012,Počet obyvatel ve věku 20 - 64 let,6677946.0
+Česko,2012,Počet obyvatel ve věku 65 a více let,1767618.0
+Česko,2012,Počet obyvatel ve věku 80 a více let,406181.0
+Česko,2012,Podíl obyvatel ve věku 0 - 14 let (%),14.83717624
+Česko,2012,Podíl obyvatel ve věku 15 - 64 let (%),68.35417989
+Česko,2012,Podíl obyvatel ve věku 65 a více let (%),16.80864387
+Česko,2012,Průměrný věk (roky),41.28494607
+Česko,2012,Index stáří,113.2873506
+Česko,2012,Index ekonomické závislosti,57.4754423
+Česko,2011,Počet obyvatel - celkem,10505445.0
+Česko,2011,Počet obyvatel ve věku 0 - 14 let,1541241.0
+Česko,2011,Počet obyvatel ve věku 15 - 64 let,7262768.0
+Česko,2011,Počet obyvatel ve věku 20 - 64 let,6721663.0
+Česko,2011,Počet obyvatel ve věku 65 a více let,1701436.0
+Česko,2011,Počet obyvatel ve věku 80 a více let,396383.0
+Česko,2011,Podíl obyvatel ve věku 0 - 14 let (%),14.67087782
+Česko,2011,Podíl obyvatel ve věku 15 - 64 let (%),69.13336846
+Česko,2011,Podíl obyvatel ve věku 65 a více let (%),16.19575373
+Česko,2011,Průměrný věk (roky),41.0754811
+Česko,2011,Index stáří,110.3938969
+Česko,2011,Index ekonomické závislosti,56.29234908
+Česko,2010,Počet obyvatel - celkem,10532770.0
+Česko,2010,Počet obyvatel ve věku 0 - 14 let,1518142.0
+Česko,2010,Počet obyvatel ve věku 15 - 64 let,7378802.0
+Česko,2010,Počet obyvatel ve věku 20 - 64 let,6796152.0
+Česko,2010,Počet obyvatel ve věku 65 a více let,1635826.0
+Česko,2010,Počet obyvatel ve věku 80 a více let,386512.0
+Česko,2010,Podíl obyvatel ve věku 0 - 14 let (%),14.41351136
+Česko,2010,Podíl obyvatel ve věku 15 - 64 let (%),70.05566437
+Česko,2010,Podíl obyvatel ve věku 65 a více let (%),15.53082428
+Česko,2010,Průměrný věk (roky),40.80254311
+Česko,2010,Index stáří,107.751844
+Česko,2010,Index ekonomické závislosti,54.9813777
+Česko,2009,Počet obyvatel - celkem,10506813.0
+Česko,2009,Počet obyvatel ve věku 0 - 14 let,1494370.0
+Česko,2009,Počet obyvatel ve věku 15 - 64 let,7413560.0
+Česko,2009,Počet obyvatel ve věku 20 - 64 let,6797569.0
+Česko,2009,Počet obyvatel ve věku 65 a více let,1598883.0
+Česko,2009,Počet obyvatel ve věku 80 a více let,373047.0
+Česko,2009,Podíl obyvatel ve věku 0 - 14 let (%),14.22286663
+Česko,2009,Podíl obyvatel ve věku 15 - 64 let (%),70.55955027
+Česko,2009,Podíl obyvatel ve věku 65 a více let (%),15.21758311
+Česko,2009,Průměrný věk (roky),40.63006865
+Česko,2009,Index stáří,106.9937833
+Česko,2009,Index ekonomické závislosti,54.56721366
+Česko,2008,Počet obyvatel - celkem,10467542.0
+Česko,2008,Počet obyvatel ve věku 0 - 14 let,1480007.0
+Česko,2008,Počet obyvatel ve věku 15 - 64 let,7431383.0
+Česko,2008,Počet obyvatel ve věku 20 - 64 let,6794135.0
+Česko,2008,Počet obyvatel ve věku 65 a více let,1556152.0
+Česko,2008,Počet obyvatel ve věku 80 a více let,361866.0
+Česko,2008,Podíl obyvatel ve věku 0 - 14 let (%),14.13901181
+Česko,2008,Podíl obyvatel ve věku 15 - 64 let (%),70.99453721
+Česko,2008,Podíl obyvatel ve věku 65 a více let (%),14.86645098
+Česko,2008,Průměrný věk (roky),40.47382442
+Česko,2008,Index stáří,105.1449081
+Česko,2008,Index ekonomické závislosti,54.06732424
+Česko,2007,Počet obyvatel - celkem,10381130.0
+Česko,2007,Počet obyvatel ve věku 0 - 14 let,1476923.0
+Česko,2007,Počet obyvatel ve věku 15 - 64 let,7391373.0
+Česko,2007,Počet obyvatel ve věku 20 - 64 let,6744946.0
+Česko,2007,Počet obyvatel ve věku 65 a více let,1512834.0
+Česko,2007,Počet obyvatel ve věku 80 a více let,348546.0
+Česko,2007,Podíl obyvatel ve věku 0 - 14 let (%),14.22699648
+Česko,2007,Podíl obyvatel ve věku 15 - 64 let (%),71.2000813
+Česko,2007,Podíl obyvatel ve věku 65 a více let (%),14.57292222
+Česko,2007,Průměrný věk (roky),40.34592198
+Česko,2007,Index stáří,102.4314741
+Česko,2007,Index ekonomické závislosti,53.90975702
+Česko,2006,Počet obyvatel - celkem,10287189.0
+Česko,2006,Počet obyvatel ve věku 0 - 14 let,1479514.0
+Česko,2006,Počet obyvatel ve věku 15 - 64 let,7325238.0
+Česko,2006,Počet obyvatel ve věku 20 - 64 let,6673991.0
+Česko,2006,Počet obyvatel ve věku 65 a více let,1482437.0
+Česko,2006,Počet obyvatel ve věku 80 a více let,335554.0
+Česko,2006,Podíl obyvatel ve věku 0 - 14 let (%),14.38210186
+Česko,2006,Podíl obyvatel ve věku 15 - 64 let (%),71.20738231
+Česko,2006,Podíl obyvatel ve věku 65 a více let (%),14.41051584
+Česko,2006,Průměrný věk (roky),40.20551324
+Česko,2006,Index stáří,100.1975649
+Česko,2006,Index ekonomické závislosti,54.13849075
+Česko,2005,Počet obyvatel - celkem,10251079.0
+Česko,2005,Počet obyvatel ve věku 0 - 14 let,1501331.0
+Česko,2005,Počet obyvatel ve věku 15 - 64 let,7293357.0
+Česko,2005,Počet obyvatel ve věku 20 - 64 let,6639838.0
+Česko,2005,Počet obyvatel ve věku 65 a více let,1456391.0
+Česko,2005,Počet obyvatel ve věku 80 a více let,321532.0
+Česko,2005,Podíl obyvatel ve věku 0 - 14 let (%),14.64558999
+Česko,2005,Podíl obyvatel ve věku 15 - 64 let (%),71.14721289
+Česko,2005,Podíl obyvatel ve věku 65 a více let (%),14.20719712
+Česko,2005,Průměrný věk (roky),39.9891369
+Česko,2005,Index stáří,97.00665609
+Česko,2005,Index ekonomické závislosti,54.38748656
+Česko,2004,Počet obyvatel - celkem,10220577.0
+Česko,2004,Počet obyvatel ve věku 0 - 14 let,1526946.0
+Česko,2004,Počet obyvatel ve věku 15 - 64 let,7259001.0
+Česko,2004,Počet obyvatel ve věku 20 - 64 let,6601806.0
+Česko,2004,Počet obyvatel ve věku 65 a více let,1434630.0
+Česko,2004,Počet obyvatel ve věku 80 a více let,308332.0
+Česko,2004,Podíl obyvatel ve věku 0 - 14 let (%),14.93991973
+Česko,2004,Podíl obyvatel ve věku 15 - 64 let (%),71.02339721
+Česko,2004,Podíl obyvatel ve věku 65 a více let (%),14.03668306
+Česko,2004,Průměrný věk (roky),39.77216937
+Česko,2004,Index stáří,93.95420663
+Česko,2004,Index ekonomické závislosti,54.8148643
+Česko,2003,Počet obyvatel - celkem,10211455.0
+Česko,2003,Počet obyvatel ve věku 0 - 14 let,1554475.0
+Česko,2003,Počet obyvatel ve věku 15 - 64 let,7233788.0
+Česko,2003,Počet obyvatel ve věku 20 - 64 let,6569747.0
+Česko,2003,Počet obyvatel ve věku 65 a více let,1423192.0
+Česko,2003,Počet obyvatel ve věku 80 a více let,292753.0
+Česko,2003,Podíl obyvatel ve věku 0 - 14 let (%),15.22285512
+Česko,2003,Podíl obyvatel ve věku 15 - 64 let (%),70.83993417
+Česko,2003,Podíl obyvatel ve věku 65 a více let (%),13.93721071
+Česko,2003,Průměrný věk (roky),39.52081026
+Česko,2003,Index stáří,91.55451197
+Česko,2003,Index ekonomické závislosti,55.43148009
+Česko,2002,Počet obyvatel - celkem,10203269.0
+Česko,2002,Počet obyvatel ve věku 0 - 14 let,1589766.0
+Česko,2002,Počet obyvatel ve věku 15 - 64 let,7195541.0
+Česko,2002,Počet obyvatel ve věku 20 - 64 let,6530259.0
+Česko,2002,Počet obyvatel ve věku 65 a více let,1417962.0
+Česko,2002,Počet obyvatel ve věku 80 a více let,277204.0
+Česko,2002,Podíl obyvatel ve věku 0 - 14 let (%),15.58094764
+Česko,2002,Podíl obyvatel ve věku 15 - 64 let (%),70.52191802
+Česko,2002,Podíl obyvatel ve věku 65 a více let (%),13.89713434
+Česko,2002,Průměrný věk (roky),39.27685593
+Česko,2002,Index stáří,89.19312654
+Česko,2002,Index ekonomické závislosti,56.24600801
+Česko,2001,Počet obyvatel - celkem,10206436.0
+Česko,2001,Počet obyvatel ve věku 0 - 14 let,1621862.0
+Česko,2001,Počet obyvatel ve věku 15 - 64 let,7170017.0
+Česko,2001,Počet obyvatel ve věku 20 - 64 let,6495559.0
+Česko,2001,Počet obyvatel ve věku 65 a více let,1414557.0
+Česko,2001,Počet obyvatel ve věku 80 a více let,260302.0
+Česko,2001,Podíl obyvatel ve věku 0 - 14 let (%),15.8905812
+Česko,2001,Podíl obyvatel ve věku 15 - 64 let (%),70.24995797
+Česko,2001,Podíl obyvatel ve věku 65 a více let (%),13.85946083
+Česko,2001,Průměrný věk (roky),39.0134619
+Česko,2001,Index stáří,87.21808637
+Česko,2001,Index ekonomické závislosti,57.12944798
+Česko,2000,Počet obyvatel - celkem,10266546.0
+Česko,2000,Počet obyvatel ve věku 0 - 14 let,1664434.0
+Česko,2000,Počet obyvatel ve věku 15 - 64 let,7179109.0
+Česko,2000,Počet obyvatel ve věku 20 - 64 let,6496776.0
+Česko,2000,Počet obyvatel ve věku 65 a více let,1423003.0
+Česko,2000,Počet obyvatel ve věku 80 a více let,249767.0
+Česko,2000,Podíl obyvatel ve věku 0 - 14 let (%),16.21221003
+Česko,2000,Podíl obyvatel ve věku 15 - 64 let (%),69.92720824
+Česko,2000,Podíl obyvatel ve věku 65 a více let (%),13.86058174
+Česko,2000,Průměrný věk (roky),38.7564547
+Česko,2000,Index stáří,85.49470871
+Česko,2000,Index ekonomické závislosti,58.02524206
+Česko,1999,Počet obyvatel - celkem,10278098.0
+Česko,1999,Počet obyvatel ve věku 0 - 14 let,1707205.0
+Česko,1999,Počet obyvatel ve věku 15 - 64 let,7152815.0
+Česko,1999,Počet obyvatel ve věku 20 - 64 let,6453283.0
+Česko,1999,Počet obyvatel ve věku 65 a více let,1418078.0
+Česko,1999,Počet obyvatel ve věku 80 a více let,237215.0
+Česko,1999,Podíl obyvatel ve věku 0 - 14 let (%),16.6101257256
+Česko,1999,Podíl obyvatel ve věku 15 - 64 let (%),69.5927884712
+Česko,1999,Podíl obyvatel ve věku 65 a více let (%),13.7970858032
+Česko,1999,Průměrný věk (roky),
+Česko,1999,Index stáří,83.0643068641
+Česko,1999,Index ekonomické závislosti,59.2692897553
+Česko,1998,Počet obyvatel - celkem,10289621.0
+Česko,1998,Počet obyvatel ve věku 0 - 14 let,1751471.0
+Česko,1998,Počet obyvatel ve věku 15 - 64 let,7126712.0
+Česko,1998,Počet obyvatel ve věku 20 - 64 let,6393464.0
+Česko,1998,Počet obyvatel ve věku 65 a více let,1411438.0
+Česko,1998,Počet obyvatel ve věku 80 a více let,234256.0
+Česko,1998,Podíl obyvatel ve věku 0 - 14 let (%),17.0217250956
+Česko,1998,Podíl obyvatel ve věku 15 - 64 let (%),69.2611710383
+Česko,1998,Podíl obyvatel ve věku 65 a více let (%),13.7171038661
+Česko,1998,Průměrný věk (roky),
+Česko,1998,Index stáří,80.585861827
+Česko,1998,Index ekonomické závislosti,60.9396877811
+Česko,1997,Počet obyvatel - celkem,10299125.0
+Česko,1997,Počet obyvatel ve věku 0 - 14 let,1795032.0
+Česko,1997,Počet obyvatel ve věku 15 - 64 let,7102231.0
+Česko,1997,Počet obyvatel ve věku 20 - 64 let,6329734.0
+Česko,1997,Počet obyvatel ve věku 65 a více let,1401862.0
+Česko,1997,Počet obyvatel ve věku 80 a více let,247832.0
+Česko,1997,Podíl obyvatel ve věku 0 - 14 let (%),17.4289757625
+Česko,1997,Podíl obyvatel ve věku 15 - 64 let (%),68.9595572439
+Česko,1997,Podíl obyvatel ve věku 65 a více let (%),13.6114669936
+Česko,1997,Průměrný věk (roky),
+Česko,1997,Index stáří,78.0967693055
+Česko,1997,Index ekonomické závislosti,62.710233953
+Česko,1996,Počet obyvatel - celkem,10309137.0
+Česko,1996,Počet obyvatel ve věku 0 - 14 let,1842679.0
+Česko,1996,Počet obyvatel ve věku 15 - 64 let,7078210.0
+Česko,1996,Počet obyvatel ve věku 20 - 64 let,6267352.0
+Česko,1996,Počet obyvatel ve věku 65 a více let,1388248.0
+Česko,1996,Počet obyvatel ve věku 80 a více let,263167.0
+Česko,1996,Podíl obyvatel ve věku 0 - 14 let (%),17.8742313736
+Česko,1996,Podíl obyvatel ve věku 15 - 64 let (%),68.6595783915
+Česko,1996,Podíl obyvatel ve věku 65 a více let (%),13.4661902349
+Česko,1996,Průměrný věk (roky),
+Česko,1996,Index stáří,75.3385695501
+Česko,1996,Index ekonomické závislosti,64.4895164656
+Česko,1995,Počet obyvatel - celkem,10321344.0
+Česko,1995,Počet obyvatel ve věku 0 - 14 let,1893259.0
+Česko,1995,Počet obyvatel ve věku 15 - 64 let,7055805.0
+Česko,1995,Počet obyvatel ve věku 20 - 64 let,6204140.0
+Česko,1995,Počet obyvatel ve věku 65 a více let,1372280.0
+Česko,1995,Počet obyvatel ve věku 80 a více let,277109.0
+Česko,1995,Podíl obyvatel ve věku 0 - 14 let (%),18.3431440712
+Česko,1995,Podíl obyvatel ve věku 15 - 64 let (%),68.3613006213
+Česko,1995,Podíl obyvatel ve věku 65 a více let (%),13.2955553075
+Česko,1995,Průměrný věk (roky),
+Česko,1995,Index stáří,72.4824231656
+Česko,1995,Index ekonomické závislosti,66.362203303
+Česko,1994,Počet obyvatel - celkem,10333161.0
+Česko,1994,Počet obyvatel ve věku 0 - 14 let,1948024.0
+Česko,1994,Počet obyvatel ve věku 15 - 64 let,7028905.0
+Česko,1994,Počet obyvatel ve věku 20 - 64 let,6140855.0
+Česko,1994,Počet obyvatel ve věku 65 a více let,1356232.0
+Česko,1994,Počet obyvatel ve věku 80 a více let,285096.0
+Česko,1994,Podíl obyvatel ve věku 0 - 14 let (%),18.8521595667
+Česko,1994,Podíl obyvatel ve věku 15 - 64 let (%),68.022795735
+Česko,1994,Podíl obyvatel ve věku 65 a více let (%),13.1250446983
+Česko,1994,Průměrný věk (roky),
+Česko,1994,Index stáří,69.6209081613
+Česko,1994,Index ekonomické závislosti,68.2690928218
+Česko,1993,Počet obyvatel - celkem,10334013.0
+Česko,1993,Počet obyvatel ve věku 0 - 14 let,2009752.0
+Česko,1993,Počet obyvatel ve věku 15 - 64 let,6981337.0
+Česko,1993,Počet obyvatel ve věku 20 - 64 let,6072727.0
+Česko,1993,Počet obyvatel ve věku 65 a více let,1342924.0
+Česko,1993,Počet obyvatel ve věku 80 a více let,279640.0
+Česko,1993,Podíl obyvatel ve věku 0 - 14 let (%),19.4479337311
+Česko,1993,Podíl obyvatel ve věku 15 - 64 let (%),67.556882307
+Česko,1993,Podíl obyvatel ve věku 65 a více let (%),12.9951839619
+Česko,1993,Průměrný věk (roky),
+Česko,1993,Index stáří,66.8203838085
+Česko,1993,Index ekonomické závislosti,70.1708803969
+Česko,1992,Počet obyvatel - celkem,10325697.0
+Česko,1992,Počet obyvatel ve věku 0 - 14 let,2064545.0
+Česko,1992,Počet obyvatel ve věku 15 - 64 let,6932894.0
+Česko,1992,Počet obyvatel ve věku 20 - 64 let,6022234.0
+Česko,1992,Počet obyvatel ve věku 65 a více let,1328258.0
+Česko,1992,Počet obyvatel ve věku 80 a více let,272305.0
+Česko,1992,Podíl obyvatel ve věku 0 - 14 let (%),19.9942434879
+Česko,1992,Podíl obyvatel ve věku 15 - 64 let (%),67.1421406226
+Česko,1992,Podíl obyvatel ve věku 65 a více let (%),12.8636158896
+Česko,1992,Průměrný věk (roky),
+Česko,1992,Index stáří,64.3365971679
+Česko,1992,Index ekonomické závislosti,71.4595779573
+Česko,1991,Počet obyvatel - celkem,10312548.0
+Česko,1991,Počet obyvatel ve věku 0 - 14 let,2120802.0
+Česko,1991,Počet obyvatel ve věku 15 - 64 let,6876788.0
+Česko,1991,Počet obyvatel ve věku 20 - 64 let,5983545.0
+Česko,1991,Počet obyvatel ve věku 65 a více let,1314958.0
+Česko,1991,Počet obyvatel ve věku 80 a více let,263878.0
+Česko,1991,Podíl obyvatel ve věku 0 - 14 let (%),20.5652570053
+Česko,1991,Podíl obyvatel ve věku 15 - 64 let (%),66.6836944662
+Česko,1991,Podíl obyvatel ve věku 65 a více let (%),12.7510485285
+Česko,1991,Průměrný věk (roky),
+Česko,1991,Index stáří,62.0028649539
+Česko,1991,Index ekonomické závislosti,72.3484656671
+Česko,1990,Počet obyvatel - celkem,10304607.0
+Česko,1990,Počet obyvatel ve věku 0 - 14 let,2193682.0
+Česko,1990,Počet obyvatel ve věku 15 - 64 let,6867991.0
+Česko,1990,Počet obyvatel ve věku 20 - 64 let,6003253.0
+Česko,1990,Počet obyvatel ve věku 65 a více let,1302451.0
+Česko,1990,Počet obyvatel ve věku 80 a více let,258954.0
+Česko,1990,Podíl obyvatel ve věku 0 - 14 let (%),21.1661110963
+Česko,1990,Podíl obyvatel ve věku 15 - 64 let (%),66.2669705611
+Česko,1990,Podíl obyvatel ve věku 65 a více let (%),12.5669183425
+Česko,1990,Průměrný věk (roky),
+Česko,1990,Index stáří,59.3728261434
+Česko,1990,Index ekonomické závislosti,72.6417993711
+Česko,1989,Počet obyvatel - celkem,10362102.0
+Česko,1989,Počet obyvatel ve věku 0 - 14 let,2252709.0
+Česko,1989,Počet obyvatel ve věku 15 - 64 let,6817371.0
+Česko,1989,Počet obyvatel ve věku 20 - 64 let,5995565.0
+Česko,1989,Počet obyvatel ve věku 65 a více let,1292022.0
+Česko,1989,Počet obyvatel ve věku 80 a více let,251632.0
+Česko,1989,Podíl obyvatel ve věku 0 - 14 let (%),21.7398844366
+Česko,1989,Podíl obyvatel ve věku 15 - 64 let (%),65.7913905885
+Česko,1989,Podíl obyvatel ve věku 65 a více let (%),12.4687249749
+Česko,1989,Průměrný věk (roky),
+Česko,1989,Index stáří,57.3541456087
+Česko,1989,Index ekonomické závislosti,72.8294497683
+Česko,1988,Počet obyvatel - celkem,10360034.0
+Česko,1988,Počet obyvatel ve věku 0 - 14 let,2316017.0
+Česko,1988,Počet obyvatel ve věku 15 - 64 let,6765414.0
+Česko,1988,Počet obyvatel ve věku 20 - 64 let,5993995.0
+Česko,1988,Počet obyvatel ve věku 65 a více let,1278603.0
+Česko,1988,Počet obyvatel ve věku 80 a více let,243931.0
+Česko,1988,Podíl obyvatel ve věku 0 - 14 let (%),22.3553030811
+Česko,1988,Podíl obyvatel ve věku 15 - 64 let (%),65.3030096233
+Česko,1988,Podíl obyvatel ve věku 65 a více let (%),12.3416872956
+Česko,1988,Průměrný věk (roky),
+Česko,1988,Index stáří,55.2069781871
+Česko,1988,Index ekonomické závislosti,72.8402175844
+Česko,1987,Počet obyvatel - celkem,10350517.0
+Česko,1987,Počet obyvatel ve věku 0 - 14 let,2362242.0
+Česko,1987,Počet obyvatel ve věku 15 - 64 let,6729577.0
+Česko,1987,Počet obyvatel ve věku 20 - 64 let,6002328.0
+Česko,1987,Počet obyvatel ve věku 65 a více let,1258698.0
+Česko,1987,Počet obyvatel ve věku 80 a více let,235569.0
+Česko,1987,Podíl obyvatel ve věku 0 - 14 let (%),22.8224541827
+Česko,1987,Podíl obyvatel ve věku 15 - 64 let (%),65.0168199328
+Česko,1987,Podíl obyvatel ve věku 65 a více let (%),12.1607258845
+Česko,1987,Průměrný věk (roky),
+Česko,1987,Index stáří,53.2840411778
+Česko,1987,Index ekonomické závislosti,72.4417092835
+Česko,1986,Počet obyvatel - celkem,10344119.0
+Česko,1986,Počet obyvatel ve věku 0 - 14 let,2392949.0
+Česko,1986,Počet obyvatel ve věku 15 - 64 let,6711373.0
+Česko,1986,Počet obyvatel ve věku 20 - 64 let,6010017.0
+Česko,1986,Počet obyvatel ve věku 65 a více let,1239797.0
+Česko,1986,Počet obyvatel ve věku 80 a více let,228398.0
+Česko,1986,Podíl obyvatel ve věku 0 - 14 let (%),23.1334248958
+Česko,1986,Podíl obyvatel ve věku 15 - 64 let (%),64.8810498023
+Česko,1986,Podíl obyvatel ve věku 65 a více let (%),11.9855253019
+Česko,1986,Průměrný věk (roky),
+Česko,1986,Index stáří,51.8104230387
+Česko,1986,Index ekonomické závislosti,72.1146379453
+Česko,1985,Počet obyvatel - celkem,10340335.0
+Česko,1985,Počet obyvatel ve věku 0 - 14 let,2411785.0
+Česko,1985,Počet obyvatel ve věku 15 - 64 let,6703143.0
+Česko,1985,Počet obyvatel ve věku 20 - 64 let,6016040.0
+Česko,1985,Počet obyvatel ve věku 65 a více let,1225407.0
+Česko,1985,Počet obyvatel ve věku 80 a více let,222379.0
+Česko,1985,Podíl obyvatel ve věku 0 - 14 let (%),23.3240509132
+Česko,1985,Podíl obyvatel ve věku 15 - 64 let (%),64.8252015046
+Česko,1985,Podíl obyvatel ve věku 65 a více let (%),11.8507475822
+Česko,1985,Průměrný věk (roky),
+Česko,1985,Index stáří,50.8091309963
+Česko,1985,Index ekonomické závislosti,71.8794256687
+Česko,1984,Počet obyvatel - celkem,10333900.0
+Česko,1984,Počet obyvatel ve věku 0 - 14 let,2422577.0
+Česko,1984,Počet obyvatel ve věku 15 - 64 let,6692112.0
+Česko,1984,Počet obyvatel ve věku 20 - 64 let,6007400.0
+Česko,1984,Počet obyvatel ve věku 65 a více let,1219211.0
+Česko,1984,Počet obyvatel ve věku 80 a více let,218546.0
+Česko,1984,Podíl obyvatel ve věku 0 - 14 let (%),23.4430079641
+Česko,1984,Podíl obyvatel ve věku 15 - 64 let (%),64.7588229033
+Česko,1984,Podíl obyvatel ve věku 65 a více let (%),11.7981691327
+Česko,1984,Průměrný věk (roky),
+Česko,1984,Index stáří,50.327027789
+Česko,1984,Index ekonomické závislosti,72.0195092719
+Česko,1983,Počet obyvatel - celkem,10326526.0
+Česko,1983,Počet obyvatel ve věku 0 - 14 let,2426972.0
+Česko,1983,Počet obyvatel ve věku 15 - 64 let,6667437.0
+Česko,1983,Počet obyvatel ve věku 20 - 64 let,5972847.0
+Česko,1983,Počet obyvatel ve věku 65 a více let,1232117.0
+Česko,1983,Počet obyvatel ve věku 80 a více let,213324.0
+Česko,1983,Podíl obyvatel ve věku 0 - 14 let (%),23.5023085208
+Česko,1983,Podíl obyvatel ve věku 15 - 64 let (%),64.5661183635
+Česko,1983,Podíl obyvatel ve věku 65 a více let (%),11.9315731157
+Česko,1983,Průměrný věk (roky),
+Česko,1983,Index stáří,50.7676643983
+Česko,1983,Index ekonomické závislosti,72.8911857277
+Česko,1982,Počet obyvatel - celkem,10321186.0
+Česko,1982,Počet obyvatel ve věku 0 - 14 let,2424992.0
+Česko,1982,Počet obyvatel ve věku 15 - 64 let,6613987.0
+Česko,1982,Počet obyvatel ve věku 20 - 64 let,5908780.0
+Česko,1982,Počet obyvatel ve věku 65 a více let,1282207.0
+Česko,1982,Počet obyvatel ve věku 80 a více let,208438.0
+Česko,1982,Podíl obyvatel ve věku 0 - 14 let (%),23.4952843598
+Česko,1982,Podíl obyvatel ve věku 15 - 64 let (%),64.0816568949
+Česko,1982,Podíl obyvatel ve věku 65 a více let (%),12.4230587454
+Česko,1982,Průměrný věk (roky),
+Česko,1982,Index stáří,52.8746898959
+Česko,1982,Index ekonomické závislosti,74.6754152295
+Česko,1981,Počet obyvatel - celkem,10308465.0
+Česko,1981,Počet obyvatel ve věku 0 - 14 let,2419754.0
+Česko,1981,Počet obyvatel ve věku 15 - 64 let,6559945.0
+Česko,1981,Počet obyvatel ve věku 20 - 64 let,5859646.0
+Česko,1981,Počet obyvatel ve věku 65 a více let,1328766.0
+Česko,1981,Počet obyvatel ve věku 80 a více let,201095.0
+Česko,1981,Podíl obyvatel ve věku 0 - 14 let (%),23.4734657391
+Česko,1981,Podíl obyvatel ve věku 15 - 64 let (%),63.6364871006
+Česko,1981,Podíl obyvatel ve věku 65 a více let (%),12.8900471603
+Česko,1981,Průměrný věk (roky),
+Česko,1981,Index stáří,54.9132680429
+Česko,1981,Index ekonomické závislosti,75.922999444
+Česko,1980,Počet obyvatel - celkem,10292717.0
+Česko,1980,Počet obyvatel ve věku 0 - 14 let,2414163.0
+Česko,1980,Počet obyvatel ve věku 15 - 64 let,6509099.0
+Česko,1980,Počet obyvatel ve věku 20 - 64 let,5817863.0
+Česko,1980,Počet obyvatel ve věku 65 a více let,1369455.0
+Česko,1980,Počet obyvatel ve věku 80 a více let,194810.0
+Česko,1980,Podíl obyvatel ve věku 0 - 14 let (%),23.4550605054
+Česko,1980,Podíl obyvatel ve věku 15 - 64 let (%),63.2398520235
+Česko,1980,Podíl obyvatel ve věku 65 a více let (%),13.3050874711
+Česko,1980,Průměrný věk (roky),
+Česko,1980,Index stáří,56.7258714511
+Česko,1980,Index ekonomické závislosti,76.9157678687
+Česko,1979,Počet obyvatel - celkem,10315669.0
+Česko,1979,Počet obyvatel ve věku 0 - 14 let,2407530.0
+Česko,1979,Počet obyvatel ve věku 15 - 64 let,6504728.0
+Česko,1979,Počet obyvatel ve věku 20 - 64 let,5827884.0
+Česko,1979,Počet obyvatel ve věku 65 a více let,1403411.0
+Česko,1979,Počet obyvatel ve věku 80 a více let,192550.0
+Česko,1979,Podíl obyvatel ve věku 0 - 14 let (%),23.3385735816
+Česko,1979,Podíl obyvatel ve věku 15 - 64 let (%),63.0567731477
+Česko,1979,Podíl obyvatel ve věku 65 a více let (%),13.6046532707
+Česko,1979,Průměrný věk (roky),
+Česko,1979,Index stáří,58.2925654094
+Česko,1979,Index ekonomické závislosti,77.0053933812
+Česko,1978,Počet obyvatel - celkem,10269012.0
+Česko,1978,Počet obyvatel ve věku 0 - 14 let,2388081.0
+Česko,1978,Počet obyvatel ve věku 15 - 64 let,6489857.0
+Česko,1978,Počet obyvatel ve věku 20 - 64 let,5837323.0
+Česko,1978,Počet obyvatel ve věku 65 a více let,1391074.0
+Česko,1978,Počet obyvatel ve věku 80 a více let,186051.0
+Česko,1978,Podíl obyvatel ve věku 0 - 14 let (%),23.2552167628
+Česko,1978,Podíl obyvatel ve věku 15 - 64 let (%),63.1984557034
+Česko,1978,Podíl obyvatel ve věku 65 a více let (%),13.5463275337
+Česko,1978,Průměrný věk (roky),
+Česko,1978,Index stáří,58.2507042265
+Česko,1978,Index ekonomické závislosti,75.9198865644
+Česko,1977,Počet obyvatel - celkem,10215183.0
+Česko,1977,Počet obyvatel ve věku 0 - 14 let,2356892.0
+Česko,1977,Počet obyvatel ve věku 15 - 64 let,6485346.0
+Česko,1977,Počet obyvatel ve věku 20 - 64 let,5839741.0
+Česko,1977,Počet obyvatel ve věku 65 a více let,1372945.0
+Česko,1977,Počet obyvatel ve věku 80 a více let,179702.0
+Česko,1977,Podíl obyvatel ve věku 0 - 14 let (%),23.0724403077
+Česko,1977,Podíl obyvatel ve věku 15 - 64 let (%),63.4873207851
+Česko,1977,Podíl obyvatel ve věku 65 a více let (%),13.4402389071
+Česko,1977,Průměrný věk (roky),
+Česko,1977,Index stáří,58.2523509775
+Česko,1977,Index ekonomické závislosti,74.9252749394
+Česko,1976,Počet obyvatel - celkem,10158327.0
+Česko,1976,Počet obyvatel ve věku 0 - 14 let,2308846.0
+Česko,1976,Počet obyvatel ve věku 15 - 64 let,6496824.0
+Česko,1976,Počet obyvatel ve věku 20 - 64 let,5830860.0
+Česko,1976,Počet obyvatel ve věku 65 a více let,1352657.0
+Česko,1976,Počet obyvatel ve věku 80 a více let,173725.0
+Česko,1976,Podíl obyvatel ve věku 0 - 14 let (%),22.7286048185
+Česko,1976,Podíl obyvatel ve věku 15 - 64 let (%),63.9556493899
+Česko,1976,Podíl obyvatel ve věku 65 a více let (%),13.3157457916
+Česko,1976,Průměrný věk (roky),
+Česko,1976,Index stáří,58.5858476486
+Česko,1976,Index ekonomické závislosti,74.2166164168
+Česko,1975,Počet obyvatel - celkem,10093551.0
+Česko,1975,Počet obyvatel ve věku 0 - 14 let,2253053.0
+Česko,1975,Počet obyvatel ve věku 15 - 64 let,6510054.0
+Česko,1975,Počet obyvatel ve věku 20 - 64 let,5814626.0
+Česko,1975,Počet obyvatel ve věku 65 a více let,1330444.0
+Česko,1975,Počet obyvatel ve věku 80 a více let,168566.0
+Česko,1975,Podíl obyvatel ve věku 0 - 14 let (%),22.3217081877
+Česko,1975,Podíl obyvatel ve věku 15 - 64 let (%),64.4971625942
+Česko,1975,Podíl obyvatel ve věku 65 a více let (%),13.1811292181
+Česko,1975,Průměrný věk (roky),
+Česko,1975,Index stáří,59.0507191797
+Česko,1975,Index ekonomické závislosti,73.5889978134
+Česko,1974,Počet obyvatel - celkem,10023688.0
+Česko,1974,Počet obyvatel ve věku 0 - 14 let,2190972.0
+Česko,1974,Počet obyvatel ve věku 15 - 64 let,6528594.0
+Česko,1974,Počet obyvatel ve věku 20 - 64 let,5798659.0
+Česko,1974,Počet obyvatel ve věku 65 a více let,1304122.0
+Česko,1974,Počet obyvatel ve věku 80 a více let,162795.0
+Česko,1974,Podíl obyvatel ve věku 0 - 14 let (%),21.8579429048
+Česko,1974,Podíl obyvatel ve věku 15 - 64 let (%),65.131656133
+Česko,1974,Podíl obyvatel ve věku 65 a více let (%),13.0104009622
+Česko,1974,Průměrný věk (roky),
+Česko,1974,Index stáří,59.5225315522
+Česko,1974,Index ekonomické závislosti,72.8621738233
+Česko,1973,Počet obyvatel - celkem,9953230.0
+Česko,1973,Počet obyvatel ve věku 0 - 14 let,2126416.0
+Česko,1973,Počet obyvatel ve věku 15 - 64 let,6549512.0
+Česko,1973,Počet obyvatel ve věku 20 - 64 let,5783037.0
+Česko,1973,Počet obyvatel ve věku 65 a více let,1277302.0
+Česko,1973,Počet obyvatel ve věku 80 a více let,159011.0
+Česko,1973,Podíl obyvatel ve věku 0 - 14 let (%),21.3640798012
+Česko,1973,Podíl obyvatel ve věku 15 - 64 let (%),65.8028800701
+Česko,1973,Podíl obyvatel ve věku 65 a více let (%),12.8330401287
+Česko,1973,Průměrný věk (roky),
+Česko,1973,Index stáří,60.0683027216
+Česko,1973,Index ekonomické závislosti,72.1107784716
+Česko,1972,Počet obyvatel - celkem,9891302.0
+Česko,1972,Počet obyvatel ve věku 0 - 14 let,2086057.0
+Česko,1972,Počet obyvatel ve věku 15 - 64 let,6554567.0
+Česko,1972,Počet obyvatel ve věku 20 - 64 let,5761155.0
+Česko,1972,Počet obyvatel ve věku 65 a více let,1250678.0
+Česko,1972,Počet obyvatel ve věku 80 a více let,155728.0
+Česko,1972,Podíl obyvatel ve věku 0 - 14 let (%),21.0898120389
+Česko,1972,Podíl obyvatel ve věku 15 - 64 let (%),66.265967817
+Česko,1972,Podíl obyvatel ve věku 65 a více let (%),12.6442201441
+Česko,1972,Průměrný věk (roky),
+Česko,1972,Index stáří,59.9541623263
+Česko,1972,Index ekonomické závislosti,71.6895657208
+Česko,1971,Počet obyvatel - celkem,9843962.0
+Česko,1971,Počet obyvatel ve věku 0 - 14 let,2075768.0
+Česko,1971,Počet obyvatel ve věku 15 - 64 let,6546761.0
+Česko,1971,Počet obyvatel ve věku 20 - 64 let,5733515.0
+Česko,1971,Počet obyvatel ve věku 65 a více let,1221433.0
+Česko,1971,Počet obyvatel ve věku 80 a více let,152330.0
+Česko,1971,Podíl obyvatel ve věku 0 - 14 let (%),21.08671285
+Česko,1971,Podíl obyvatel ve věku 15 - 64 let (%),66.5053461198
+Česko,1971,Podíl obyvatel ve věku 65 a více let (%),12.4079410302
+Česko,1971,Průměrný věk (roky),
+Česko,1971,Index stáří,58.8424621634
+Česko,1971,Index ekonomické závislosti,71.6915714008
+Česko,1970,Počet obyvatel - celkem,9809667.0
+Česko,1970,Počet obyvatel ve věku 0 - 14 let,2081669.0
+Česko,1970,Počet obyvatel ve věku 15 - 64 let,6534836.0
+Česko,1970,Počet obyvatel ve věku 20 - 64 let,5705614.0
+Česko,1970,Počet obyvatel ve věku 65 a více let,1193162.0
+Česko,1970,Počet obyvatel ve věku 80 a více let,148100.0
+Česko,1970,Podíl obyvatel ve věku 0 - 14 let (%),21.220587814
+Česko,1970,Podíl obyvatel ve věku 15 - 64 let (%),66.6162877904
+Česko,1970,Podíl obyvatel ve věku 65 a více let (%),12.1631243956
+Česko,1970,Průměrný věk (roky),
+Česko,1970,Index stáří,57.317565857
+Česko,1970,Index ekonomické závislosti,71.9300850005
+Česko,1969,Počet obyvatel - celkem,9906474.0
+Česko,1969,Počet obyvatel ve věku 0 - 14 let,2115048.0
+Česko,1969,Počet obyvatel ve věku 15 - 64 let,6608415.0
+Česko,1969,Počet obyvatel ve věku 20 - 64 let,5760300.0
+Česko,1969,Počet obyvatel ve věku 65 a více let,1183011.0
+Česko,1969,Počet obyvatel ve věku 80 a více let,152178.0
+Česko,1969,Podíl obyvatel ve věku 0 - 14 let (%),21.3501595018
+Česko,1969,Podíl obyvatel ve věku 15 - 64 let (%),66.708043649
+Česko,1969,Podíl obyvatel ve věku 65 a více let (%),11.9417968492
+Česko,1969,Průměrný věk (roky),
+Česko,1969,Index stáří,55.9330568384
+Česko,1969,Index ekonomické závislosti,71.978438623
+Česko,1968,Počet obyvatel - celkem,9886686.0
+Česko,1968,Počet obyvatel ve věku 0 - 14 let,2139756.0
+Česko,1968,Počet obyvatel ve věku 15 - 64 let,6590507.0
+Česko,1968,Počet obyvatel ve věku 20 - 64 let,5735274.0
+Česko,1968,Počet obyvatel ve věku 65 a více let,1156423.0
+Česko,1968,Počet obyvatel ve věku 80 a více let,148686.0
+Česko,1968,Podíl obyvatel ve věku 0 - 14 let (%),21.6428032609
+Česko,1968,Podíl obyvatel ve věku 15 - 64 let (%),66.6604259506
+Česko,1968,Podíl obyvatel ve věku 65 a více let (%),11.6967707885
+Česko,1968,Průměrný věk (roky),
+Česko,1968,Index stáří,54.0446200408
+Česko,1968,Index ekonomické závislosti,72.3838477464
+Česko,1967,Počet obyvatel - celkem,9866006.0
+Česko,1967,Počet obyvatel ve věku 0 - 14 let,2173155.0
+Česko,1967,Počet obyvatel ve věku 15 - 64 let,6565548.0
+Česko,1967,Počet obyvatel ve věku 20 - 64 let,5698152.0
+Česko,1967,Počet obyvatel ve věku 65 a více let,1127303.0
+Česko,1967,Počet obyvatel ve věku 80 a více let,145680.0
+Česko,1967,Podíl obyvatel ve věku 0 - 14 let (%),22.0266944902
+Česko,1967,Podíl obyvatel ve věku 15 - 64 let (%),66.5471721789
+Česko,1967,Podíl obyvatel ve věku 65 a více let (%),11.426133331
+Česko,1967,Průměrný věk (roky),
+Česko,1967,Index stáří,51.874026473
+Česko,1967,Index ekonomické závislosti,73.1439596557
+Česko,1966,Počet obyvatel - celkem,9839792.0
+Česko,1966,Počet obyvatel ve věku 0 - 14 let,2210247.0
+Česko,1966,Počet obyvatel ve věku 15 - 64 let,6537691.0
+Česko,1966,Počet obyvatel ve věku 20 - 64 let,5654734.0
+Česko,1966,Počet obyvatel ve věku 65 a více let,1091854.0
+Česko,1966,Počet obyvatel ve věku 80 a více let,141747.0
+Česko,1966,Podíl obyvatel ve věku 0 - 14 let (%),22.4623345697
+Česko,1966,Podíl obyvatel ve věku 15 - 64 let (%),66.4413536384
+Česko,1966,Podíl obyvatel ve věku 65 a více let (%),11.096311792
+Česko,1966,Průměrný věk (roky),
+Česko,1966,Index stáří,49.3996372351
+Česko,1966,Index ekonomické závislosti,74.0098119558
+Česko,1965,Počet obyvatel - celkem,9802287.0
+Česko,1965,Počet obyvatel ve věku 0 - 14 let,2246555.0
+Česko,1965,Počet obyvatel ve věku 15 - 64 let,6498331.0
+Česko,1965,Počet obyvatel ve věku 20 - 64 let,5606018.0
+Česko,1965,Počet obyvatel ve věku 65 a více let,1057401.0
+Česko,1965,Počet obyvatel ve věku 80 a více let,137100.0
+Česko,1965,Podíl obyvatel ve věku 0 - 14 let (%),22.9186821402
+Česko,1965,Podíl obyvatel ve věku 15 - 64 let (%),66.2940291383
+Česko,1965,Podíl obyvatel ve věku 65 a více let (%),10.7872887215
+Česko,1965,Průměrný věk (roky),
+Česko,1965,Index stáří,47.0676658261
+Česko,1965,Index ekonomické závislosti,74.8529348283
+Česko,1964,Počet obyvatel - celkem,9756429.0
+Česko,1964,Počet obyvatel ve věku 0 - 14 let,2276531.0
+Česko,1964,Počet obyvatel ve věku 15 - 64 let,6457145.0
+Česko,1964,Počet obyvatel ve věku 20 - 64 let,5588298.0
+Česko,1964,Počet obyvatel ve věku 65 a více let,1022753.0
+Česko,1964,Počet obyvatel ve věku 80 a více let,132960.0
+Česko,1964,Podíl obyvatel ve věku 0 - 14 let (%),23.3336500476
+Česko,1964,Podíl obyvatel ve věku 15 - 64 let (%),66.1834878315
+Česko,1964,Podíl obyvatel ve věku 65 a více let (%),10.482862121
+Česko,1964,Průměrný věk (roky),
+Česko,1964,Index stáří,44.9259421462
+Česko,1964,Index ekonomické závislosti,74.5867704263
+Česko,1963,Počet obyvatel - celkem,9699179.0
+Česko,1963,Počet obyvatel ve věku 0 - 14 let,2294061.0
+Česko,1963,Počet obyvatel ve věku 15 - 64 let,6413790.0
+Česko,1963,Počet obyvatel ve věku 20 - 64 let,5557064.0
+Česko,1963,Počet obyvatel ve věku 65 a více let,991328.0
+Česko,1963,Počet obyvatel ve věku 80 a více let,128030.0
+Česko,1963,Podíl obyvatel ve věku 0 - 14 let (%),23.6521152976
+Česko,1963,Podíl obyvatel ve věku 15 - 64 let (%),66.1271433386
+Česko,1963,Podíl obyvatel ve věku 65 a více let (%),10.2207413638
+Česko,1963,Průměrný věk (roky),
+Česko,1963,Index stáří,43.2128003571
+Česko,1963,Index ekonomické závislosti,74.537831488
+Česko,1962,Počet obyvatel - celkem,9642191.0
+Česko,1962,Počet obyvatel ve věku 0 - 14 let,2325239.0
+Česko,1962,Počet obyvatel ve věku 15 - 64 let,6355074.0
+Česko,1962,Počet obyvatel ve věku 20 - 64 let,5522025.0
+Česko,1962,Počet obyvatel ve věku 65 a více let,961878.0
+Česko,1962,Počet obyvatel ve věku 80 a více let,124095.0
+Česko,1962,Podíl obyvatel ve věku 0 - 14 let (%),24.1152555472
+Česko,1962,Podíl obyvatel ve věku 15 - 64 let (%),65.9090242041
+Česko,1962,Podíl obyvatel ve věku 65 a více let (%),9.9757202486
+Česko,1962,Průměrný věk (roky),
+Česko,1962,Index stáří,41.3668444405
+Česko,1962,Index ekonomické závislosti,74.6133166728
+Česko,1961,Počet obyvatel - celkem,9607129.0
+Česko,1961,Počet obyvatel ve věku 0 - 14 let,2380828.0
+Česko,1961,Počet obyvatel ve věku 15 - 64 let,6288723.0
+Česko,1961,Počet obyvatel ve věku 20 - 64 let,5504925.0
+Česko,1961,Počet obyvatel ve věku 65 a více let,937578.0
+Česko,1961,Počet obyvatel ve věku 80 a více let,121525.0
+Česko,1961,Podíl obyvatel ve věku 0 - 14 let (%),24.781888533
+Česko,1961,Podíl obyvatel ve věku 15 - 64 let (%),65.4589211824
+Česko,1961,Podíl obyvatel ve věku 65 a více let (%),9.7591902846
+Česko,1961,Průměrný věk (roky),
+Česko,1961,Index stáří,39.3803332286
+Česko,1961,Index ekonomické závislosti,74.5187990754
+Česko,1960,Počet obyvatel - celkem,9566172.0
+Česko,1960,Počet obyvatel ve věku 0 - 14 let,2435976.0
+Česko,1960,Počet obyvatel ve věku 15 - 64 let,6220350.0
+Česko,1960,Počet obyvatel ve věku 20 - 64 let,5487446.0
+Česko,1960,Počet obyvatel ve věku 65 a více let,909846.0
+Česko,1960,Počet obyvatel ve věku 80 a více let,117818.0
+Česko,1960,Podíl obyvatel ve věku 0 - 14 let (%),25.464480463
+Česko,1960,Podíl obyvatel ve věku 15 - 64 let (%),65.0244423788
+Česko,1960,Podíl obyvatel ve věku 65 a více let (%),9.5110771581
+Česko,1960,Průměrný věk (roky),
+Česko,1960,Index stáří,37.3503679839
+Česko,1960,Index ekonomické závislosti,74.3283122968
+Česko,1959,Počet obyvatel - celkem,9637840.0
+Česko,1959,Počet obyvatel ve věku 0 - 14 let,2469772.0
+Česko,1959,Počet obyvatel ve věku 15 - 64 let,6254454.0
+Česko,1959,Počet obyvatel ve věku 20 - 64 let,5540185.0
+Česko,1959,Počet obyvatel ve věku 65 a více let,913614.0
+Česko,1959,Počet obyvatel ve věku 80 a více let,121089.0
+Česko,1959,Podíl obyvatel ve věku 0 - 14 let (%),25.6257833705
+Česko,1959,Podíl obyvatel ve věku 15 - 64 let (%),64.8947689524
+Česko,1959,Podíl obyvatel ve věku 65 a více let (%),9.4794476771
+Česko,1959,Průměrný věk (roky),
+Česko,1959,Index stáří,36.9918356836
+Česko,1959,Index ekonomické závislosti,73.9624218325
+Česko,1958,Počet obyvatel - celkem,9597963.0
+Česko,1958,Počet obyvatel ve věku 0 - 14 let,2497758.0
+Česko,1958,Počet obyvatel ve věku 15 - 64 let,6208534.0
+Česko,1958,Počet obyvatel ve věku 20 - 64 let,5534640.0
+Česko,1958,Počet obyvatel ve věku 65 a více let,891671.0
+Česko,1958,Počet obyvatel ve věku 80 a více let,117417.0
+Česko,1958,Podíl obyvatel ve věku 0 - 14 let (%),26.0238344324
+Česko,1958,Podíl obyvatel ve věku 15 - 64 let (%),64.6859547177
+Česko,1958,Podíl obyvatel ve věku 65 a více let (%),9.2902108499
+Česko,1958,Průměrný věk (roky),
+Česko,1958,Index stáří,35.6988547329
+Česko,1958,Index ekonomické závislosti,73.4162113525
+Česko,1957,Počet obyvatel - celkem,9543780.0
+Česko,1957,Počet obyvatel ve věku 0 - 14 let,2516431.0
+Česko,1957,Počet obyvatel ve věku 15 - 64 let,6159915.0
+Česko,1957,Počet obyvatel ve věku 20 - 64 let,5530212.0
+Česko,1957,Počet obyvatel ve věku 65 a více let,867434.0
+Česko,1957,Počet obyvatel ve věku 80 a více let,110035.0
+Česko,1957,Podíl obyvatel ve věku 0 - 14 let (%),26.3672360427
+Česko,1957,Podíl obyvatel ve věku 15 - 64 let (%),64.5437656778
+Česko,1957,Podíl obyvatel ve věku 65 a více let (%),9.0889982795
+Česko,1957,Průměrný věk (roky),
+Česko,1957,Index stáří,34.4708040872
+Česko,1957,Index ekonomické závislosti,72.5753009107
+Česko,1956,Počet obyvatel - celkem,9480206.0
+Česko,1956,Počet obyvatel ve věku 0 - 14 let,2502297.0
+Česko,1956,Počet obyvatel ve věku 15 - 64 let,6124418.0
+Česko,1956,Počet obyvatel ve věku 20 - 64 let,5526778.0
+Česko,1956,Počet obyvatel ve věku 65 a více let,853491.0
+Česko,1956,Počet obyvatel ve věku 80 a více let,108901.0
+Česko,1956,Podíl obyvatel ve věku 0 - 14 let (%),26.3949644132
+Česko,1956,Podíl obyvatel ve věku 15 - 64 let (%),64.6021615986
+Česko,1956,Podíl obyvatel ve věku 65 a více let (%),9.0028739882
+Česko,1956,Průměrný věk (roky),
+Česko,1956,Index stáří,34.1083012928
+Česko,1956,Index ekonomické závislosti,71.5322381322
+Česko,1955,Počet obyvatel - celkem,9405047.0
+Česko,1955,Počet obyvatel ve věku 0 - 14 let,2475043.0
+Česko,1955,Počet obyvatel ve věku 15 - 64 let,6096427.0
+Česko,1955,Počet obyvatel ve věku 20 - 64 let,5524539.0
+Česko,1955,Počet obyvatel ve věku 65 a více let,833577.0
+Česko,1955,Počet obyvatel ve věku 80 a více let,107662.0
+Česko,1955,Podíl obyvatel ve věku 0 - 14 let (%),26.3161151667
+Česko,1955,Podíl obyvatel ve věku 15 - 64 let (%),64.8208031284
+Česko,1955,Podíl obyvatel ve věku 65 a více let (%),8.863081705
+Česko,1955,Průměrný věk (roky),
+Česko,1955,Index stáří,33.6792936527
+Česko,1955,Index ekonomické závislosti,70.2412997718
+Česko,1954,Počet obyvatel - celkem,9329036.0
+Česko,1954,Počet obyvatel ve věku 0 - 14 let,2445537.0
+Česko,1954,Počet obyvatel ve věku 15 - 64 let,6065015.0
+Česko,1954,Počet obyvatel ve věku 20 - 64 let,5515927.0
+Česko,1954,Počet obyvatel ve věku 65 a více let,818484.0
+Česko,1954,Počet obyvatel ve věku 80 a více let,104348.0
+Česko,1954,Podíl obyvatel ve věku 0 - 14 let (%),26.2142519334
+Česko,1954,Podíl obyvatel ve věku 15 - 64 let (%),65.0122370629
+Česko,1954,Podíl obyvatel ve věku 65 a více let (%),8.7735110037
+Česko,1954,Průměrný věk (roky),
+Česko,1954,Index stáří,33.4684774755
+Česko,1954,Index ekonomické závislosti,69.1290693296
+Česko,1953,Počet obyvatel - celkem,9262646.0
+Česko,1953,Počet obyvatel ve věku 0 - 14 let,2397522.0
+Česko,1953,Počet obyvatel ve věku 15 - 64 let,6057570.0
+Česko,1953,Počet obyvatel ve věku 20 - 64 let,5508915.0
+Česko,1953,Počet obyvatel ve věku 65 a více let,807554.0
+Česko,1953,Počet obyvatel ve věku 80 a více let,102871.0
+Česko,1953,Podíl obyvatel ve věku 0 - 14 let (%),25.8837701452
+Česko,1953,Podíl obyvatel ve věku 15 - 64 let (%),65.3978355645
+Česko,1953,Podíl obyvatel ve věku 65 a více let (%),8.7183942904
+Česko,1953,Průměrný věk (roky),
+Česko,1953,Index stáří,33.6828608872
+Česko,1953,Index ekonomické závislosti,68.1392070852
+Česko,1952,Počet obyvatel - celkem,9177611.0
+Česko,1952,Počet obyvatel ve věku 0 - 14 let,2342240.0
+Česko,1952,Počet obyvatel ve věku 15 - 64 let,6044286.0
+Česko,1952,Počet obyvatel ve věku 20 - 64 let,5488250.0
+Česko,1952,Počet obyvatel ve věku 65 a více let,791085.0
+Česko,1952,Počet obyvatel ve věku 80 a více let,99334.0
+Česko,1952,Podíl obyvatel ve věku 0 - 14 let (%),25.5212385881
+Česko,1952,Podíl obyvatel ve věku 15 - 64 let (%),65.859034557
+Česko,1952,Podíl obyvatel ve věku 65 a více let (%),8.6197268548
+Česko,1952,Průměrný věk (roky),
+Česko,1952,Index stáří,33.7747199262
+Česko,1952,Index ekonomické závislosti,67.2229034756
+Česko,1951,Počet obyvatel - celkem,9074172.0
+Česko,1951,Počet obyvatel ve věku 0 - 14 let,2272098.0
+Česko,1951,Počet obyvatel ve věku 15 - 64 let,6027105.0
+Česko,1951,Počet obyvatel ve věku 20 - 64 let,5450305.0
+Česko,1951,Počet obyvatel ve věku 65 a více let,774969.0
+Česko,1951,Počet obyvatel ve věku 80 a více let,95374.0
+Česko,1951,Podíl obyvatel ve věku 0 - 14 let (%),25.0391771282
+Česko,1951,Podíl obyvatel ve věku 15 - 64 let (%),66.4204403443
+Česko,1951,Podíl obyvatel ve věku 65 a více let (%),8.5403825275
+Česko,1951,Průměrný věk (roky),
+Česko,1951,Index stáří,34.1080798451
+Česko,1951,Index ekonomické závislosti,66.489251519
+Česko,1950,Počet obyvatel - celkem,8978854.0
+Česko,1950,Počet obyvatel ve věku 0 - 14 let,2203161.0
+Česko,1950,Počet obyvatel ve věku 15 - 64 let,6015068.0
+Česko,1950,Počet obyvatel ve věku 20 - 64 let,5411612.0
+Česko,1950,Počet obyvatel ve věku 65 a více let,760625.0
+Česko,1950,Počet obyvatel ve věku 80 a více let,92868.0
+Česko,1950,Podíl obyvatel ve věku 0 - 14 let (%),24.5372182241
+Česko,1950,Podíl obyvatel ve věku 15 - 64 let (%),66.9914891143
+Česko,1950,Podíl obyvatel ve věku 65 a více let (%),8.4712926616
+Česko,1950,Průměrný věk (roky),
+Česko,1950,Index stáří,34.524258554
+Česko,1950,Index ekonomické závislosti,65.918288303
+Česko,1949,Počet obyvatel - celkem,8892449.0
+Česko,1949,Počet obyvatel ve věku 0 - 14 let,2139927.0
+Česko,1949,Počet obyvatel ve věku 15 - 64 let,6014231.0
+Česko,1949,Počet obyvatel ve věku 20 - 64 let,5377451.0
+Česko,1949,Počet obyvatel ve věku 65 a více let,738291.0
+Česko,1949,Počet obyvatel ve věku 80 a více let,86584.0
+Česko,1949,Podíl obyvatel ve věku 0 - 14 let (%),24.0645406007
+Česko,1949,Podíl obyvatel ve věku 15 - 64 let (%),67.6330108837
+Česko,1949,Podíl obyvatel ve věku 65 a více let (%),8.3024485156
+Česko,1949,Průměrný věk (roky),
+Česko,1949,Index stáří,34.5007563342
+Česko,1949,Index ekonomické závislosti,65.3655049576
+Česko,1948,Počet obyvatel - celkem,8893180.0
+Česko,1948,Počet obyvatel ve věku 0 - 14 let,2096818.0
+Česko,1948,Počet obyvatel ve věku 15 - 64 let,6071801.0
+Česko,1948,Počet obyvatel ve věku 20 - 64 let,5406531.0
+Česko,1948,Počet obyvatel ve věku 65 a více let,724561.0
+Česko,1948,Počet obyvatel ve věku 80 a více let,83897.0
+Česko,1948,Podíl obyvatel ve věku 0 - 14 let (%),23.5778203072
+Česko,1948,Podíl obyvatel ve věku 15 - 64 let (%),68.2748015895
+Česko,1948,Podíl obyvatel ve věku 65 a více let (%),8.1473781032
+Česko,1948,Průměrný věk (roky),
+Česko,1948,Index stáří,34.5552642146
+Česko,1948,Index ekonomické závislosti,64.4895775128
+Česko,1947,Počet obyvatel - celkem,8840287.0
+Česko,1947,Počet obyvatel ve věku 0 - 14 let,2039645.0
+Česko,1947,Počet obyvatel ve věku 15 - 64 let,6090160.0
+Česko,1947,Počet obyvatel ve věku 20 - 64 let,5398747.0
+Česko,1947,Počet obyvatel ve věku 65 a více let,710482.0
+Česko,1947,Počet obyvatel ve věku 80 a více let,80348.0
+Česko,1947,Podíl obyvatel ve věku 0 - 14 let (%),23.0721581777
+Česko,1947,Podíl obyvatel ve věku 15 - 64 let (%),68.8909760509
+Česko,1947,Podíl obyvatel ve věku 65 a více let (%),8.0368657714
+Česko,1947,Průměrný věk (roky),
+Česko,1947,Index stáří,34.8336107509
+Česko,1947,Index ekonomické závislosti,63.7470138904
+Česko,1946,Počet obyvatel - celkem,
+Česko,1946,Počet obyvatel ve věku 0 - 14 let,
+Česko,1946,Počet obyvatel ve věku 15 - 64 let,
+Česko,1946,Počet obyvatel ve věku 20 - 64 let,
+Česko,1946,Počet obyvatel ve věku 65 a více let,
+Česko,1946,Počet obyvatel ve věku 80 a více let,
+Česko,1946,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1946,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1946,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1946,Průměrný věk (roky),
+Česko,1946,Index stáří,
+Česko,1946,Index ekonomické závislosti,
+Česko,1945,Počet obyvatel - celkem,
+Česko,1945,Počet obyvatel ve věku 0 - 14 let,
+Česko,1945,Počet obyvatel ve věku 15 - 64 let,
+Česko,1945,Počet obyvatel ve věku 20 - 64 let,
+Česko,1945,Počet obyvatel ve věku 65 a více let,
+Česko,1945,Počet obyvatel ve věku 80 a více let,
+Česko,1945,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1945,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1945,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1945,Průměrný věk (roky),
+Česko,1945,Index stáří,
+Česko,1945,Index ekonomické závislosti,
+Česko,1944,Počet obyvatel - celkem,
+Česko,1944,Počet obyvatel ve věku 0 - 14 let,
+Česko,1944,Počet obyvatel ve věku 15 - 64 let,
+Česko,1944,Počet obyvatel ve věku 20 - 64 let,
+Česko,1944,Počet obyvatel ve věku 65 a více let,
+Česko,1944,Počet obyvatel ve věku 80 a více let,
+Česko,1944,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1944,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1944,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1944,Průměrný věk (roky),
+Česko,1944,Index stáří,
+Česko,1944,Index ekonomické závislosti,
+Česko,1943,Počet obyvatel - celkem,
+Česko,1943,Počet obyvatel ve věku 0 - 14 let,
+Česko,1943,Počet obyvatel ve věku 15 - 64 let,
+Česko,1943,Počet obyvatel ve věku 20 - 64 let,
+Česko,1943,Počet obyvatel ve věku 65 a více let,
+Česko,1943,Počet obyvatel ve věku 80 a více let,
+Česko,1943,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1943,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1943,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1943,Průměrný věk (roky),
+Česko,1943,Index stáří,
+Česko,1943,Index ekonomické závislosti,
+Česko,1942,Počet obyvatel - celkem,
+Česko,1942,Počet obyvatel ve věku 0 - 14 let,
+Česko,1942,Počet obyvatel ve věku 15 - 64 let,
+Česko,1942,Počet obyvatel ve věku 20 - 64 let,
+Česko,1942,Počet obyvatel ve věku 65 a více let,
+Česko,1942,Počet obyvatel ve věku 80 a více let,
+Česko,1942,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1942,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1942,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1942,Průměrný věk (roky),
+Česko,1942,Index stáří,
+Česko,1942,Index ekonomické závislosti,
+Česko,1941,Počet obyvatel - celkem,
+Česko,1941,Počet obyvatel ve věku 0 - 14 let,
+Česko,1941,Počet obyvatel ve věku 15 - 64 let,
+Česko,1941,Počet obyvatel ve věku 20 - 64 let,
+Česko,1941,Počet obyvatel ve věku 65 a více let,
+Česko,1941,Počet obyvatel ve věku 80 a více let,
+Česko,1941,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1941,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1941,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1941,Průměrný věk (roky),
+Česko,1941,Index stáří,
+Česko,1941,Index ekonomické závislosti,
+Česko,1940,Počet obyvatel - celkem,
+Česko,1940,Počet obyvatel ve věku 0 - 14 let,
+Česko,1940,Počet obyvatel ve věku 15 - 64 let,
+Česko,1940,Počet obyvatel ve věku 20 - 64 let,
+Česko,1940,Počet obyvatel ve věku 65 a více let,
+Česko,1940,Počet obyvatel ve věku 80 a více let,
+Česko,1940,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1940,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1940,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1940,Průměrný věk (roky),
+Česko,1940,Index stáří,
+Česko,1940,Index ekonomické závislosti,
+Česko,1939,Počet obyvatel - celkem,
+Česko,1939,Počet obyvatel ve věku 0 - 14 let,
+Česko,1939,Počet obyvatel ve věku 15 - 64 let,
+Česko,1939,Počet obyvatel ve věku 20 - 64 let,
+Česko,1939,Počet obyvatel ve věku 65 a více let,
+Česko,1939,Počet obyvatel ve věku 80 a více let,
+Česko,1939,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1939,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1939,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1939,Průměrný věk (roky),
+Česko,1939,Index stáří,
+Česko,1939,Index ekonomické závislosti,
+Česko,1938,Počet obyvatel - celkem,
+Česko,1938,Počet obyvatel ve věku 0 - 14 let,
+Česko,1938,Počet obyvatel ve věku 15 - 64 let,
+Česko,1938,Počet obyvatel ve věku 20 - 64 let,
+Česko,1938,Počet obyvatel ve věku 65 a více let,
+Česko,1938,Počet obyvatel ve věku 80 a více let,
+Česko,1938,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1938,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1938,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1938,Průměrný věk (roky),
+Česko,1938,Index stáří,
+Česko,1938,Index ekonomické závislosti,
+Česko,1937,Počet obyvatel - celkem,
+Česko,1937,Počet obyvatel ve věku 0 - 14 let,
+Česko,1937,Počet obyvatel ve věku 15 - 64 let,
+Česko,1937,Počet obyvatel ve věku 20 - 64 let,
+Česko,1937,Počet obyvatel ve věku 65 a více let,
+Česko,1937,Počet obyvatel ve věku 80 a více let,
+Česko,1937,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1937,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1937,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1937,Průměrný věk (roky),
+Česko,1937,Index stáří,
+Česko,1937,Index ekonomické závislosti,
+Česko,1936,Počet obyvatel - celkem,
+Česko,1936,Počet obyvatel ve věku 0 - 14 let,
+Česko,1936,Počet obyvatel ve věku 15 - 64 let,
+Česko,1936,Počet obyvatel ve věku 20 - 64 let,
+Česko,1936,Počet obyvatel ve věku 65 a více let,
+Česko,1936,Počet obyvatel ve věku 80 a více let,
+Česko,1936,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1936,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1936,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1936,Průměrný věk (roky),
+Česko,1936,Index stáří,
+Česko,1936,Index ekonomické závislosti,
+Česko,1935,Počet obyvatel - celkem,
+Česko,1935,Počet obyvatel ve věku 0 - 14 let,
+Česko,1935,Počet obyvatel ve věku 15 - 64 let,
+Česko,1935,Počet obyvatel ve věku 20 - 64 let,
+Česko,1935,Počet obyvatel ve věku 65 a více let,
+Česko,1935,Počet obyvatel ve věku 80 a více let,
+Česko,1935,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1935,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1935,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1935,Průměrný věk (roky),
+Česko,1935,Index stáří,
+Česko,1935,Index ekonomické závislosti,
+Česko,1934,Počet obyvatel - celkem,
+Česko,1934,Počet obyvatel ve věku 0 - 14 let,
+Česko,1934,Počet obyvatel ve věku 15 - 64 let,
+Česko,1934,Počet obyvatel ve věku 20 - 64 let,
+Česko,1934,Počet obyvatel ve věku 65 a více let,
+Česko,1934,Počet obyvatel ve věku 80 a více let,
+Česko,1934,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1934,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1934,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1934,Průměrný věk (roky),
+Česko,1934,Index stáří,
+Česko,1934,Index ekonomické závislosti,
+Česko,1933,Počet obyvatel - celkem,
+Česko,1933,Počet obyvatel ve věku 0 - 14 let,
+Česko,1933,Počet obyvatel ve věku 15 - 64 let,
+Česko,1933,Počet obyvatel ve věku 20 - 64 let,
+Česko,1933,Počet obyvatel ve věku 65 a více let,
+Česko,1933,Počet obyvatel ve věku 80 a více let,
+Česko,1933,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1933,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1933,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1933,Průměrný věk (roky),
+Česko,1933,Index stáří,
+Česko,1933,Index ekonomické závislosti,
+Česko,1932,Počet obyvatel - celkem,
+Česko,1932,Počet obyvatel ve věku 0 - 14 let,
+Česko,1932,Počet obyvatel ve věku 15 - 64 let,
+Česko,1932,Počet obyvatel ve věku 20 - 64 let,
+Česko,1932,Počet obyvatel ve věku 65 a více let,
+Česko,1932,Počet obyvatel ve věku 80 a více let,
+Česko,1932,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1932,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1932,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1932,Průměrný věk (roky),
+Česko,1932,Index stáří,
+Česko,1932,Index ekonomické závislosti,
+Česko,1931,Počet obyvatel - celkem,
+Česko,1931,Počet obyvatel ve věku 0 - 14 let,
+Česko,1931,Počet obyvatel ve věku 15 - 64 let,
+Česko,1931,Počet obyvatel ve věku 20 - 64 let,
+Česko,1931,Počet obyvatel ve věku 65 a více let,
+Česko,1931,Počet obyvatel ve věku 80 a více let,
+Česko,1931,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1931,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1931,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1931,Průměrný věk (roky),
+Česko,1931,Index stáří,
+Česko,1931,Index ekonomické závislosti,
+Česko,1930,Počet obyvatel - celkem,
+Česko,1930,Počet obyvatel ve věku 0 - 14 let,
+Česko,1930,Počet obyvatel ve věku 15 - 64 let,
+Česko,1930,Počet obyvatel ve věku 20 - 64 let,
+Česko,1930,Počet obyvatel ve věku 65 a více let,
+Česko,1930,Počet obyvatel ve věku 80 a více let,
+Česko,1930,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1930,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1930,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1930,Průměrný věk (roky),
+Česko,1930,Index stáří,
+Česko,1930,Index ekonomické závislosti,
+Česko,1929,Počet obyvatel - celkem,
+Česko,1929,Počet obyvatel ve věku 0 - 14 let,
+Česko,1929,Počet obyvatel ve věku 15 - 64 let,
+Česko,1929,Počet obyvatel ve věku 20 - 64 let,
+Česko,1929,Počet obyvatel ve věku 65 a více let,
+Česko,1929,Počet obyvatel ve věku 80 a více let,
+Česko,1929,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1929,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1929,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1929,Průměrný věk (roky),
+Česko,1929,Index stáří,
+Česko,1929,Index ekonomické závislosti,
+Česko,1928,Počet obyvatel - celkem,
+Česko,1928,Počet obyvatel ve věku 0 - 14 let,
+Česko,1928,Počet obyvatel ve věku 15 - 64 let,
+Česko,1928,Počet obyvatel ve věku 20 - 64 let,
+Česko,1928,Počet obyvatel ve věku 65 a více let,
+Česko,1928,Počet obyvatel ve věku 80 a více let,
+Česko,1928,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1928,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1928,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1928,Průměrný věk (roky),
+Česko,1928,Index stáří,
+Česko,1928,Index ekonomické závislosti,
+Česko,1927,Počet obyvatel - celkem,
+Česko,1927,Počet obyvatel ve věku 0 - 14 let,
+Česko,1927,Počet obyvatel ve věku 15 - 64 let,
+Česko,1927,Počet obyvatel ve věku 20 - 64 let,
+Česko,1927,Počet obyvatel ve věku 65 a více let,
+Česko,1927,Počet obyvatel ve věku 80 a více let,
+Česko,1927,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1927,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1927,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1927,Průměrný věk (roky),
+Česko,1927,Index stáří,
+Česko,1927,Index ekonomické závislosti,
+Česko,1926,Počet obyvatel - celkem,
+Česko,1926,Počet obyvatel ve věku 0 - 14 let,
+Česko,1926,Počet obyvatel ve věku 15 - 64 let,
+Česko,1926,Počet obyvatel ve věku 20 - 64 let,
+Česko,1926,Počet obyvatel ve věku 65 a více let,
+Česko,1926,Počet obyvatel ve věku 80 a více let,
+Česko,1926,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1926,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1926,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1926,Průměrný věk (roky),
+Česko,1926,Index stáří,
+Česko,1926,Index ekonomické závislosti,
+Česko,1925,Počet obyvatel - celkem,
+Česko,1925,Počet obyvatel ve věku 0 - 14 let,
+Česko,1925,Počet obyvatel ve věku 15 - 64 let,
+Česko,1925,Počet obyvatel ve věku 20 - 64 let,
+Česko,1925,Počet obyvatel ve věku 65 a více let,
+Česko,1925,Počet obyvatel ve věku 80 a více let,
+Česko,1925,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1925,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1925,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1925,Průměrný věk (roky),
+Česko,1925,Index stáří,
+Česko,1925,Index ekonomické závislosti,
+Česko,1924,Počet obyvatel - celkem,
+Česko,1924,Počet obyvatel ve věku 0 - 14 let,
+Česko,1924,Počet obyvatel ve věku 15 - 64 let,
+Česko,1924,Počet obyvatel ve věku 20 - 64 let,
+Česko,1924,Počet obyvatel ve věku 65 a více let,
+Česko,1924,Počet obyvatel ve věku 80 a více let,
+Česko,1924,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1924,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1924,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1924,Průměrný věk (roky),
+Česko,1924,Index stáří,
+Česko,1924,Index ekonomické závislosti,
+Česko,1923,Počet obyvatel - celkem,
+Česko,1923,Počet obyvatel ve věku 0 - 14 let,
+Česko,1923,Počet obyvatel ve věku 15 - 64 let,
+Česko,1923,Počet obyvatel ve věku 20 - 64 let,
+Česko,1923,Počet obyvatel ve věku 65 a více let,
+Česko,1923,Počet obyvatel ve věku 80 a více let,
+Česko,1923,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1923,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1923,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1923,Průměrný věk (roky),
+Česko,1923,Index stáří,
+Česko,1923,Index ekonomické závislosti,
+Česko,1922,Počet obyvatel - celkem,
+Česko,1922,Počet obyvatel ve věku 0 - 14 let,
+Česko,1922,Počet obyvatel ve věku 15 - 64 let,
+Česko,1922,Počet obyvatel ve věku 20 - 64 let,
+Česko,1922,Počet obyvatel ve věku 65 a více let,
+Česko,1922,Počet obyvatel ve věku 80 a více let,
+Česko,1922,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1922,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1922,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1922,Průměrný věk (roky),
+Česko,1922,Index stáří,
+Česko,1922,Index ekonomické závislosti,
+Česko,1921,Počet obyvatel - celkem,
+Česko,1921,Počet obyvatel ve věku 0 - 14 let,
+Česko,1921,Počet obyvatel ve věku 15 - 64 let,
+Česko,1921,Počet obyvatel ve věku 20 - 64 let,
+Česko,1921,Počet obyvatel ve věku 65 a více let,
+Česko,1921,Počet obyvatel ve věku 80 a více let,
+Česko,1921,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1921,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1921,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1921,Průměrný věk (roky),
+Česko,1921,Index stáří,
+Česko,1921,Index ekonomické závislosti,
+Česko,1920,Počet obyvatel - celkem,
+Česko,1920,Počet obyvatel ve věku 0 - 14 let,
+Česko,1920,Počet obyvatel ve věku 15 - 64 let,
+Česko,1920,Počet obyvatel ve věku 20 - 64 let,
+Česko,1920,Počet obyvatel ve věku 65 a více let,
+Česko,1920,Počet obyvatel ve věku 80 a více let,
+Česko,1920,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1920,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1920,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1920,Průměrný věk (roky),
+Česko,1920,Index stáří,
+Česko,1920,Index ekonomické závislosti,
+Česko,1919,Počet obyvatel - celkem,
+Česko,1919,Počet obyvatel ve věku 0 - 14 let,
+Česko,1919,Počet obyvatel ve věku 15 - 64 let,
+Česko,1919,Počet obyvatel ve věku 20 - 64 let,
+Česko,1919,Počet obyvatel ve věku 65 a více let,
+Česko,1919,Počet obyvatel ve věku 80 a více let,
+Česko,1919,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1919,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1919,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1919,Průměrný věk (roky),
+Česko,1919,Index stáří,
+Česko,1919,Index ekonomické závislosti,
+Česko,1918,Počet obyvatel - celkem,
+Česko,1918,Počet obyvatel ve věku 0 - 14 let,
+Česko,1918,Počet obyvatel ve věku 15 - 64 let,
+Česko,1918,Počet obyvatel ve věku 20 - 64 let,
+Česko,1918,Počet obyvatel ve věku 65 a více let,
+Česko,1918,Počet obyvatel ve věku 80 a více let,
+Česko,1918,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1918,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1918,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1918,Průměrný věk (roky),
+Česko,1918,Index stáří,
+Česko,1918,Index ekonomické závislosti,
+Česko,1917,Počet obyvatel - celkem,
+Česko,1917,Počet obyvatel ve věku 0 - 14 let,
+Česko,1917,Počet obyvatel ve věku 15 - 64 let,
+Česko,1917,Počet obyvatel ve věku 20 - 64 let,
+Česko,1917,Počet obyvatel ve věku 65 a více let,
+Česko,1917,Počet obyvatel ve věku 80 a více let,
+Česko,1917,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1917,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1917,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1917,Průměrný věk (roky),
+Česko,1917,Index stáří,
+Česko,1917,Index ekonomické závislosti,
+Česko,1916,Počet obyvatel - celkem,
+Česko,1916,Počet obyvatel ve věku 0 - 14 let,
+Česko,1916,Počet obyvatel ve věku 15 - 64 let,
+Česko,1916,Počet obyvatel ve věku 20 - 64 let,
+Česko,1916,Počet obyvatel ve věku 65 a více let,
+Česko,1916,Počet obyvatel ve věku 80 a více let,
+Česko,1916,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1916,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1916,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1916,Průměrný věk (roky),
+Česko,1916,Index stáří,
+Česko,1916,Index ekonomické závislosti,
+Česko,1915,Počet obyvatel - celkem,
+Česko,1915,Počet obyvatel ve věku 0 - 14 let,
+Česko,1915,Počet obyvatel ve věku 15 - 64 let,
+Česko,1915,Počet obyvatel ve věku 20 - 64 let,
+Česko,1915,Počet obyvatel ve věku 65 a více let,
+Česko,1915,Počet obyvatel ve věku 80 a více let,
+Česko,1915,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1915,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1915,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1915,Průměrný věk (roky),
+Česko,1915,Index stáří,
+Česko,1915,Index ekonomické závislosti,
+Česko,1914,Počet obyvatel - celkem,
+Česko,1914,Počet obyvatel ve věku 0 - 14 let,
+Česko,1914,Počet obyvatel ve věku 15 - 64 let,
+Česko,1914,Počet obyvatel ve věku 20 - 64 let,
+Česko,1914,Počet obyvatel ve věku 65 a více let,
+Česko,1914,Počet obyvatel ve věku 80 a více let,
+Česko,1914,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1914,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1914,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1914,Průměrný věk (roky),
+Česko,1914,Index stáří,
+Česko,1914,Index ekonomické závislosti,
+Česko,1913,Počet obyvatel - celkem,
+Česko,1913,Počet obyvatel ve věku 0 - 14 let,
+Česko,1913,Počet obyvatel ve věku 15 - 64 let,
+Česko,1913,Počet obyvatel ve věku 20 - 64 let,
+Česko,1913,Počet obyvatel ve věku 65 a více let,
+Česko,1913,Počet obyvatel ve věku 80 a více let,
+Česko,1913,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1913,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1913,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1913,Průměrný věk (roky),
+Česko,1913,Index stáří,
+Česko,1913,Index ekonomické závislosti,
+Česko,1912,Počet obyvatel - celkem,
+Česko,1912,Počet obyvatel ve věku 0 - 14 let,
+Česko,1912,Počet obyvatel ve věku 15 - 64 let,
+Česko,1912,Počet obyvatel ve věku 20 - 64 let,
+Česko,1912,Počet obyvatel ve věku 65 a více let,
+Česko,1912,Počet obyvatel ve věku 80 a více let,
+Česko,1912,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1912,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1912,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1912,Průměrný věk (roky),
+Česko,1912,Index stáří,
+Česko,1912,Index ekonomické závislosti,
+Česko,1911,Počet obyvatel - celkem,
+Česko,1911,Počet obyvatel ve věku 0 - 14 let,
+Česko,1911,Počet obyvatel ve věku 15 - 64 let,
+Česko,1911,Počet obyvatel ve věku 20 - 64 let,
+Česko,1911,Počet obyvatel ve věku 65 a více let,
+Česko,1911,Počet obyvatel ve věku 80 a více let,
+Česko,1911,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1911,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1911,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1911,Průměrný věk (roky),
+Česko,1911,Index stáří,
+Česko,1911,Index ekonomické závislosti,
+Česko,1910,Počet obyvatel - celkem,10076727.0
+Česko,1910,Počet obyvatel ve věku 0 - 14 let,
+Česko,1910,Počet obyvatel ve věku 15 - 64 let,
+Česko,1910,Počet obyvatel ve věku 20 - 64 let,
+Česko,1910,Počet obyvatel ve věku 65 a více let,
+Česko,1910,Počet obyvatel ve věku 80 a více let,
+Česko,1910,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1910,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1910,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1910,Průměrný věk (roky),
+Česko,1910,Index stáří,
+Česko,1910,Index ekonomické závislosti,
+Česko,1909,Počet obyvatel - celkem,
+Česko,1909,Počet obyvatel ve věku 0 - 14 let,
+Česko,1909,Počet obyvatel ve věku 15 - 64 let,
+Česko,1909,Počet obyvatel ve věku 20 - 64 let,
+Česko,1909,Počet obyvatel ve věku 65 a více let,
+Česko,1909,Počet obyvatel ve věku 80 a více let,
+Česko,1909,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1909,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1909,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1909,Průměrný věk (roky),
+Česko,1909,Index stáří,
+Česko,1909,Index ekonomické závislosti,
+Česko,1908,Počet obyvatel - celkem,
+Česko,1908,Počet obyvatel ve věku 0 - 14 let,
+Česko,1908,Počet obyvatel ve věku 15 - 64 let,
+Česko,1908,Počet obyvatel ve věku 20 - 64 let,
+Česko,1908,Počet obyvatel ve věku 65 a více let,
+Česko,1908,Počet obyvatel ve věku 80 a více let,
+Česko,1908,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1908,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1908,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1908,Průměrný věk (roky),
+Česko,1908,Index stáří,
+Česko,1908,Index ekonomické závislosti,
+Česko,1907,Počet obyvatel - celkem,
+Česko,1907,Počet obyvatel ve věku 0 - 14 let,
+Česko,1907,Počet obyvatel ve věku 15 - 64 let,
+Česko,1907,Počet obyvatel ve věku 20 - 64 let,
+Česko,1907,Počet obyvatel ve věku 65 a více let,
+Česko,1907,Počet obyvatel ve věku 80 a více let,
+Česko,1907,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1907,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1907,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1907,Průměrný věk (roky),
+Česko,1907,Index stáří,
+Česko,1907,Index ekonomické závislosti,
+Česko,1906,Počet obyvatel - celkem,
+Česko,1906,Počet obyvatel ve věku 0 - 14 let,
+Česko,1906,Počet obyvatel ve věku 15 - 64 let,
+Česko,1906,Počet obyvatel ve věku 20 - 64 let,
+Česko,1906,Počet obyvatel ve věku 65 a více let,
+Česko,1906,Počet obyvatel ve věku 80 a více let,
+Česko,1906,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1906,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1906,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1906,Průměrný věk (roky),
+Česko,1906,Index stáří,
+Česko,1906,Index ekonomické závislosti,
+Česko,1905,Počet obyvatel - celkem,
+Česko,1905,Počet obyvatel ve věku 0 - 14 let,
+Česko,1905,Počet obyvatel ve věku 15 - 64 let,
+Česko,1905,Počet obyvatel ve věku 20 - 64 let,
+Česko,1905,Počet obyvatel ve věku 65 a více let,
+Česko,1905,Počet obyvatel ve věku 80 a více let,
+Česko,1905,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1905,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1905,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1905,Průměrný věk (roky),
+Česko,1905,Index stáří,
+Česko,1905,Index ekonomické závislosti,
+Česko,1904,Počet obyvatel - celkem,
+Česko,1904,Počet obyvatel ve věku 0 - 14 let,
+Česko,1904,Počet obyvatel ve věku 15 - 64 let,
+Česko,1904,Počet obyvatel ve věku 20 - 64 let,
+Česko,1904,Počet obyvatel ve věku 65 a více let,
+Česko,1904,Počet obyvatel ve věku 80 a více let,
+Česko,1904,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1904,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1904,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1904,Průměrný věk (roky),
+Česko,1904,Index stáří,
+Česko,1904,Index ekonomické závislosti,
+Česko,1903,Počet obyvatel - celkem,
+Česko,1903,Počet obyvatel ve věku 0 - 14 let,
+Česko,1903,Počet obyvatel ve věku 15 - 64 let,
+Česko,1903,Počet obyvatel ve věku 20 - 64 let,
+Česko,1903,Počet obyvatel ve věku 65 a více let,
+Česko,1903,Počet obyvatel ve věku 80 a více let,
+Česko,1903,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1903,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1903,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1903,Průměrný věk (roky),
+Česko,1903,Index stáří,
+Česko,1903,Index ekonomické závislosti,
+Česko,1902,Počet obyvatel - celkem,
+Česko,1902,Počet obyvatel ve věku 0 - 14 let,
+Česko,1902,Počet obyvatel ve věku 15 - 64 let,
+Česko,1902,Počet obyvatel ve věku 20 - 64 let,
+Česko,1902,Počet obyvatel ve věku 65 a více let,
+Česko,1902,Počet obyvatel ve věku 80 a více let,
+Česko,1902,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1902,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1902,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1902,Průměrný věk (roky),
+Česko,1902,Index stáří,
+Česko,1902,Index ekonomické závislosti,
+Česko,1901,Počet obyvatel - celkem,
+Česko,1901,Počet obyvatel ve věku 0 - 14 let,
+Česko,1901,Počet obyvatel ve věku 15 - 64 let,
+Česko,1901,Počet obyvatel ve věku 20 - 64 let,
+Česko,1901,Počet obyvatel ve věku 65 a více let,
+Česko,1901,Počet obyvatel ve věku 80 a více let,
+Česko,1901,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1901,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1901,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1901,Průměrný věk (roky),
+Česko,1901,Index stáří,
+Česko,1901,Index ekonomické závislosti,
+Česko,1900,Počet obyvatel - celkem,9374028.0
+Česko,1900,Počet obyvatel ve věku 0 - 14 let,
+Česko,1900,Počet obyvatel ve věku 15 - 64 let,
+Česko,1900,Počet obyvatel ve věku 20 - 64 let,
+Česko,1900,Počet obyvatel ve věku 65 a více let,
+Česko,1900,Počet obyvatel ve věku 80 a více let,
+Česko,1900,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1900,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1900,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1900,Průměrný věk (roky),
+Česko,1900,Index stáří,
+Česko,1900,Index ekonomické závislosti,
+Česko,1899,Počet obyvatel - celkem,
+Česko,1899,Počet obyvatel ve věku 0 - 14 let,
+Česko,1899,Počet obyvatel ve věku 15 - 64 let,
+Česko,1899,Počet obyvatel ve věku 20 - 64 let,
+Česko,1899,Počet obyvatel ve věku 65 a více let,
+Česko,1899,Počet obyvatel ve věku 80 a více let,
+Česko,1899,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1899,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1899,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1899,Průměrný věk (roky),
+Česko,1899,Index stáří,
+Česko,1899,Index ekonomické závislosti,
+Česko,1898,Počet obyvatel - celkem,
+Česko,1898,Počet obyvatel ve věku 0 - 14 let,
+Česko,1898,Počet obyvatel ve věku 15 - 64 let,
+Česko,1898,Počet obyvatel ve věku 20 - 64 let,
+Česko,1898,Počet obyvatel ve věku 65 a více let,
+Česko,1898,Počet obyvatel ve věku 80 a více let,
+Česko,1898,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1898,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1898,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1898,Průměrný věk (roky),
+Česko,1898,Index stáří,
+Česko,1898,Index ekonomické závislosti,
+Česko,1897,Počet obyvatel - celkem,
+Česko,1897,Počet obyvatel ve věku 0 - 14 let,
+Česko,1897,Počet obyvatel ve věku 15 - 64 let,
+Česko,1897,Počet obyvatel ve věku 20 - 64 let,
+Česko,1897,Počet obyvatel ve věku 65 a více let,
+Česko,1897,Počet obyvatel ve věku 80 a více let,
+Česko,1897,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1897,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1897,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1897,Průměrný věk (roky),
+Česko,1897,Index stáří,
+Česko,1897,Index ekonomické závislosti,
+Česko,1896,Počet obyvatel - celkem,
+Česko,1896,Počet obyvatel ve věku 0 - 14 let,
+Česko,1896,Počet obyvatel ve věku 15 - 64 let,
+Česko,1896,Počet obyvatel ve věku 20 - 64 let,
+Česko,1896,Počet obyvatel ve věku 65 a více let,
+Česko,1896,Počet obyvatel ve věku 80 a více let,
+Česko,1896,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1896,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1896,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1896,Průměrný věk (roky),
+Česko,1896,Index stáří,
+Česko,1896,Index ekonomické závislosti,
+Česko,1895,Počet obyvatel - celkem,
+Česko,1895,Počet obyvatel ve věku 0 - 14 let,
+Česko,1895,Počet obyvatel ve věku 15 - 64 let,
+Česko,1895,Počet obyvatel ve věku 20 - 64 let,
+Česko,1895,Počet obyvatel ve věku 65 a více let,
+Česko,1895,Počet obyvatel ve věku 80 a více let,
+Česko,1895,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1895,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1895,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1895,Průměrný věk (roky),
+Česko,1895,Index stáří,
+Česko,1895,Index ekonomické závislosti,
+Česko,1894,Počet obyvatel - celkem,
+Česko,1894,Počet obyvatel ve věku 0 - 14 let,
+Česko,1894,Počet obyvatel ve věku 15 - 64 let,
+Česko,1894,Počet obyvatel ve věku 20 - 64 let,
+Česko,1894,Počet obyvatel ve věku 65 a více let,
+Česko,1894,Počet obyvatel ve věku 80 a více let,
+Česko,1894,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1894,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1894,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1894,Průměrný věk (roky),
+Česko,1894,Index stáří,
+Česko,1894,Index ekonomické závislosti,
+Česko,1893,Počet obyvatel - celkem,
+Česko,1893,Počet obyvatel ve věku 0 - 14 let,
+Česko,1893,Počet obyvatel ve věku 15 - 64 let,
+Česko,1893,Počet obyvatel ve věku 20 - 64 let,
+Česko,1893,Počet obyvatel ve věku 65 a více let,
+Česko,1893,Počet obyvatel ve věku 80 a více let,
+Česko,1893,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1893,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1893,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1893,Průměrný věk (roky),
+Česko,1893,Index stáří,
+Česko,1893,Index ekonomické závislosti,
+Česko,1892,Počet obyvatel - celkem,
+Česko,1892,Počet obyvatel ve věku 0 - 14 let,
+Česko,1892,Počet obyvatel ve věku 15 - 64 let,
+Česko,1892,Počet obyvatel ve věku 20 - 64 let,
+Česko,1892,Počet obyvatel ve věku 65 a více let,
+Česko,1892,Počet obyvatel ve věku 80 a více let,
+Česko,1892,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1892,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1892,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1892,Průměrný věk (roky),
+Česko,1892,Index stáří,
+Česko,1892,Index ekonomické závislosti,
+Česko,1891,Počet obyvatel - celkem,
+Česko,1891,Počet obyvatel ve věku 0 - 14 let,
+Česko,1891,Počet obyvatel ve věku 15 - 64 let,
+Česko,1891,Počet obyvatel ve věku 20 - 64 let,
+Česko,1891,Počet obyvatel ve věku 65 a více let,
+Česko,1891,Počet obyvatel ve věku 80 a více let,
+Česko,1891,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1891,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1891,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1891,Průměrný věk (roky),
+Česko,1891,Index stáří,
+Česko,1891,Index ekonomické závislosti,
+Česko,1890,Počet obyvatel - celkem,8666456.0
+Česko,1890,Počet obyvatel ve věku 0 - 14 let,
+Česko,1890,Počet obyvatel ve věku 15 - 64 let,
+Česko,1890,Počet obyvatel ve věku 20 - 64 let,
+Česko,1890,Počet obyvatel ve věku 65 a více let,
+Česko,1890,Počet obyvatel ve věku 80 a více let,
+Česko,1890,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1890,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1890,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1890,Průměrný věk (roky),
+Česko,1890,Index stáří,
+Česko,1890,Index ekonomické závislosti,
+Česko,1889,Počet obyvatel - celkem,
+Česko,1889,Počet obyvatel ve věku 0 - 14 let,
+Česko,1889,Počet obyvatel ve věku 15 - 64 let,
+Česko,1889,Počet obyvatel ve věku 20 - 64 let,
+Česko,1889,Počet obyvatel ve věku 65 a více let,
+Česko,1889,Počet obyvatel ve věku 80 a více let,
+Česko,1889,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1889,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1889,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1889,Průměrný věk (roky),
+Česko,1889,Index stáří,
+Česko,1889,Index ekonomické závislosti,
+Česko,1888,Počet obyvatel - celkem,
+Česko,1888,Počet obyvatel ve věku 0 - 14 let,
+Česko,1888,Počet obyvatel ve věku 15 - 64 let,
+Česko,1888,Počet obyvatel ve věku 20 - 64 let,
+Česko,1888,Počet obyvatel ve věku 65 a více let,
+Česko,1888,Počet obyvatel ve věku 80 a více let,
+Česko,1888,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1888,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1888,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1888,Průměrný věk (roky),
+Česko,1888,Index stáří,
+Česko,1888,Index ekonomické závislosti,
+Česko,1887,Počet obyvatel - celkem,
+Česko,1887,Počet obyvatel ve věku 0 - 14 let,
+Česko,1887,Počet obyvatel ve věku 15 - 64 let,
+Česko,1887,Počet obyvatel ve věku 20 - 64 let,
+Česko,1887,Počet obyvatel ve věku 65 a více let,
+Česko,1887,Počet obyvatel ve věku 80 a více let,
+Česko,1887,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1887,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1887,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1887,Průměrný věk (roky),
+Česko,1887,Index stáří,
+Česko,1887,Index ekonomické závislosti,
+Česko,1886,Počet obyvatel - celkem,
+Česko,1886,Počet obyvatel ve věku 0 - 14 let,
+Česko,1886,Počet obyvatel ve věku 15 - 64 let,
+Česko,1886,Počet obyvatel ve věku 20 - 64 let,
+Česko,1886,Počet obyvatel ve věku 65 a více let,
+Česko,1886,Počet obyvatel ve věku 80 a více let,
+Česko,1886,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1886,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1886,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1886,Průměrný věk (roky),
+Česko,1886,Index stáří,
+Česko,1886,Index ekonomické závislosti,
+Česko,1885,Počet obyvatel - celkem,
+Česko,1885,Počet obyvatel ve věku 0 - 14 let,
+Česko,1885,Počet obyvatel ve věku 15 - 64 let,
+Česko,1885,Počet obyvatel ve věku 20 - 64 let,
+Česko,1885,Počet obyvatel ve věku 65 a více let,
+Česko,1885,Počet obyvatel ve věku 80 a více let,
+Česko,1885,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1885,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1885,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1885,Průměrný věk (roky),
+Česko,1885,Index stáří,
+Česko,1885,Index ekonomické závislosti,
+Česko,1884,Počet obyvatel - celkem,
+Česko,1884,Počet obyvatel ve věku 0 - 14 let,
+Česko,1884,Počet obyvatel ve věku 15 - 64 let,
+Česko,1884,Počet obyvatel ve věku 20 - 64 let,
+Česko,1884,Počet obyvatel ve věku 65 a více let,
+Česko,1884,Počet obyvatel ve věku 80 a více let,
+Česko,1884,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1884,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1884,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1884,Průměrný věk (roky),
+Česko,1884,Index stáří,
+Česko,1884,Index ekonomické závislosti,
+Česko,1883,Počet obyvatel - celkem,
+Česko,1883,Počet obyvatel ve věku 0 - 14 let,
+Česko,1883,Počet obyvatel ve věku 15 - 64 let,
+Česko,1883,Počet obyvatel ve věku 20 - 64 let,
+Česko,1883,Počet obyvatel ve věku 65 a více let,
+Česko,1883,Počet obyvatel ve věku 80 a více let,
+Česko,1883,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1883,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1883,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1883,Průměrný věk (roky),
+Česko,1883,Index stáří,
+Česko,1883,Index ekonomické závislosti,
+Česko,1882,Počet obyvatel - celkem,
+Česko,1882,Počet obyvatel ve věku 0 - 14 let,
+Česko,1882,Počet obyvatel ve věku 15 - 64 let,
+Česko,1882,Počet obyvatel ve věku 20 - 64 let,
+Česko,1882,Počet obyvatel ve věku 65 a více let,
+Česko,1882,Počet obyvatel ve věku 80 a více let,
+Česko,1882,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1882,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1882,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1882,Průměrný věk (roky),
+Česko,1882,Index stáří,
+Česko,1882,Index ekonomické závislosti,
+Česko,1881,Počet obyvatel - celkem,
+Česko,1881,Počet obyvatel ve věku 0 - 14 let,
+Česko,1881,Počet obyvatel ve věku 15 - 64 let,
+Česko,1881,Počet obyvatel ve věku 20 - 64 let,
+Česko,1881,Počet obyvatel ve věku 65 a více let,
+Česko,1881,Počet obyvatel ve věku 80 a více let,
+Česko,1881,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1881,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1881,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1881,Průměrný věk (roky),
+Česko,1881,Index stáří,
+Česko,1881,Index ekonomické závislosti,
+Česko,1880,Počet obyvatel - celkem,8223227.0
+Česko,1880,Počet obyvatel ve věku 0 - 14 let,
+Česko,1880,Počet obyvatel ve věku 15 - 64 let,
+Česko,1880,Počet obyvatel ve věku 20 - 64 let,
+Česko,1880,Počet obyvatel ve věku 65 a více let,
+Česko,1880,Počet obyvatel ve věku 80 a více let,
+Česko,1880,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1880,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1880,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1880,Průměrný věk (roky),
+Česko,1880,Index stáří,
+Česko,1880,Index ekonomické závislosti,
+Česko,1879,Počet obyvatel - celkem,
+Česko,1879,Počet obyvatel ve věku 0 - 14 let,
+Česko,1879,Počet obyvatel ve věku 15 - 64 let,
+Česko,1879,Počet obyvatel ve věku 20 - 64 let,
+Česko,1879,Počet obyvatel ve věku 65 a více let,
+Česko,1879,Počet obyvatel ve věku 80 a více let,
+Česko,1879,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1879,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1879,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1879,Průměrný věk (roky),
+Česko,1879,Index stáří,
+Česko,1879,Index ekonomické závislosti,
+Česko,1878,Počet obyvatel - celkem,
+Česko,1878,Počet obyvatel ve věku 0 - 14 let,
+Česko,1878,Počet obyvatel ve věku 15 - 64 let,
+Česko,1878,Počet obyvatel ve věku 20 - 64 let,
+Česko,1878,Počet obyvatel ve věku 65 a více let,
+Česko,1878,Počet obyvatel ve věku 80 a více let,
+Česko,1878,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1878,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1878,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1878,Průměrný věk (roky),
+Česko,1878,Index stáří,
+Česko,1878,Index ekonomické závislosti,
+Česko,1877,Počet obyvatel - celkem,
+Česko,1877,Počet obyvatel ve věku 0 - 14 let,
+Česko,1877,Počet obyvatel ve věku 15 - 64 let,
+Česko,1877,Počet obyvatel ve věku 20 - 64 let,
+Česko,1877,Počet obyvatel ve věku 65 a více let,
+Česko,1877,Počet obyvatel ve věku 80 a více let,
+Česko,1877,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1877,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1877,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1877,Průměrný věk (roky),
+Česko,1877,Index stáří,
+Česko,1877,Index ekonomické závislosti,
+Česko,1876,Počet obyvatel - celkem,
+Česko,1876,Počet obyvatel ve věku 0 - 14 let,
+Česko,1876,Počet obyvatel ve věku 15 - 64 let,
+Česko,1876,Počet obyvatel ve věku 20 - 64 let,
+Česko,1876,Počet obyvatel ve věku 65 a více let,
+Česko,1876,Počet obyvatel ve věku 80 a více let,
+Česko,1876,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1876,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1876,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1876,Průměrný věk (roky),
+Česko,1876,Index stáří,
+Česko,1876,Index ekonomické závislosti,
+Česko,1875,Počet obyvatel - celkem,
+Česko,1875,Počet obyvatel ve věku 0 - 14 let,
+Česko,1875,Počet obyvatel ve věku 15 - 64 let,
+Česko,1875,Počet obyvatel ve věku 20 - 64 let,
+Česko,1875,Počet obyvatel ve věku 65 a více let,
+Česko,1875,Počet obyvatel ve věku 80 a více let,
+Česko,1875,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1875,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1875,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1875,Průměrný věk (roky),
+Česko,1875,Index stáří,
+Česko,1875,Index ekonomické závislosti,
+Česko,1874,Počet obyvatel - celkem,
+Česko,1874,Počet obyvatel ve věku 0 - 14 let,
+Česko,1874,Počet obyvatel ve věku 15 - 64 let,
+Česko,1874,Počet obyvatel ve věku 20 - 64 let,
+Česko,1874,Počet obyvatel ve věku 65 a více let,
+Česko,1874,Počet obyvatel ve věku 80 a více let,
+Česko,1874,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1874,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1874,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1874,Průměrný věk (roky),
+Česko,1874,Index stáří,
+Česko,1874,Index ekonomické závislosti,
+Česko,1873,Počet obyvatel - celkem,
+Česko,1873,Počet obyvatel ve věku 0 - 14 let,
+Česko,1873,Počet obyvatel ve věku 15 - 64 let,
+Česko,1873,Počet obyvatel ve věku 20 - 64 let,
+Česko,1873,Počet obyvatel ve věku 65 a více let,
+Česko,1873,Počet obyvatel ve věku 80 a více let,
+Česko,1873,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1873,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1873,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1873,Průměrný věk (roky),
+Česko,1873,Index stáří,
+Česko,1873,Index ekonomické závislosti,
+Česko,1872,Počet obyvatel - celkem,
+Česko,1872,Počet obyvatel ve věku 0 - 14 let,
+Česko,1872,Počet obyvatel ve věku 15 - 64 let,
+Česko,1872,Počet obyvatel ve věku 20 - 64 let,
+Česko,1872,Počet obyvatel ve věku 65 a více let,
+Česko,1872,Počet obyvatel ve věku 80 a více let,
+Česko,1872,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1872,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1872,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1872,Průměrný věk (roky),
+Česko,1872,Index stáří,
+Česko,1872,Index ekonomické závislosti,
+Česko,1871,Počet obyvatel - celkem,
+Česko,1871,Počet obyvatel ve věku 0 - 14 let,
+Česko,1871,Počet obyvatel ve věku 15 - 64 let,
+Česko,1871,Počet obyvatel ve věku 20 - 64 let,
+Česko,1871,Počet obyvatel ve věku 65 a více let,
+Česko,1871,Počet obyvatel ve věku 80 a více let,
+Česko,1871,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1871,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1871,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1871,Průměrný věk (roky),
+Česko,1871,Index stáří,
+Česko,1871,Index ekonomické závislosti,
+Česko,1870,Počet obyvatel - celkem,
+Česko,1870,Počet obyvatel ve věku 0 - 14 let,
+Česko,1870,Počet obyvatel ve věku 15 - 64 let,
+Česko,1870,Počet obyvatel ve věku 20 - 64 let,
+Česko,1870,Počet obyvatel ve věku 65 a více let,
+Česko,1870,Počet obyvatel ve věku 80 a více let,
+Česko,1870,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1870,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1870,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1870,Průměrný věk (roky),
+Česko,1870,Index stáří,
+Česko,1870,Index ekonomické závislosti,
+Česko,1869,Počet obyvatel - celkem,7565463.0
+Česko,1869,Počet obyvatel ve věku 0 - 14 let,
+Česko,1869,Počet obyvatel ve věku 15 - 64 let,
+Česko,1869,Počet obyvatel ve věku 20 - 64 let,
+Česko,1869,Počet obyvatel ve věku 65 a více let,
+Česko,1869,Počet obyvatel ve věku 80 a více let,
+Česko,1869,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1869,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1869,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1869,Průměrný věk (roky),
+Česko,1869,Index stáří,
+Česko,1869,Index ekonomické závislosti,
+Česko,1868,Počet obyvatel - celkem,
+Česko,1868,Počet obyvatel ve věku 0 - 14 let,
+Česko,1868,Počet obyvatel ve věku 15 - 64 let,
+Česko,1868,Počet obyvatel ve věku 20 - 64 let,
+Česko,1868,Počet obyvatel ve věku 65 a více let,
+Česko,1868,Počet obyvatel ve věku 80 a více let,
+Česko,1868,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1868,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1868,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1868,Průměrný věk (roky),
+Česko,1868,Index stáří,
+Česko,1868,Index ekonomické závislosti,
+Česko,1867,Počet obyvatel - celkem,
+Česko,1867,Počet obyvatel ve věku 0 - 14 let,
+Česko,1867,Počet obyvatel ve věku 15 - 64 let,
+Česko,1867,Počet obyvatel ve věku 20 - 64 let,
+Česko,1867,Počet obyvatel ve věku 65 a více let,
+Česko,1867,Počet obyvatel ve věku 80 a více let,
+Česko,1867,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1867,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1867,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1867,Průměrný věk (roky),
+Česko,1867,Index stáří,
+Česko,1867,Index ekonomické závislosti,
+Česko,1866,Počet obyvatel - celkem,
+Česko,1866,Počet obyvatel ve věku 0 - 14 let,
+Česko,1866,Počet obyvatel ve věku 15 - 64 let,
+Česko,1866,Počet obyvatel ve věku 20 - 64 let,
+Česko,1866,Počet obyvatel ve věku 65 a více let,
+Česko,1866,Počet obyvatel ve věku 80 a více let,
+Česko,1866,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1866,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1866,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1866,Průměrný věk (roky),
+Česko,1866,Index stáří,
+Česko,1866,Index ekonomické závislosti,
+Česko,1865,Počet obyvatel - celkem,
+Česko,1865,Počet obyvatel ve věku 0 - 14 let,
+Česko,1865,Počet obyvatel ve věku 15 - 64 let,
+Česko,1865,Počet obyvatel ve věku 20 - 64 let,
+Česko,1865,Počet obyvatel ve věku 65 a více let,
+Česko,1865,Počet obyvatel ve věku 80 a více let,
+Česko,1865,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1865,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1865,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1865,Průměrný věk (roky),
+Česko,1865,Index stáří,
+Česko,1865,Index ekonomické závislosti,
+Česko,1864,Počet obyvatel - celkem,
+Česko,1864,Počet obyvatel ve věku 0 - 14 let,
+Česko,1864,Počet obyvatel ve věku 15 - 64 let,
+Česko,1864,Počet obyvatel ve věku 20 - 64 let,
+Česko,1864,Počet obyvatel ve věku 65 a více let,
+Česko,1864,Počet obyvatel ve věku 80 a více let,
+Česko,1864,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1864,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1864,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1864,Průměrný věk (roky),
+Česko,1864,Index stáří,
+Česko,1864,Index ekonomické závislosti,
+Česko,1863,Počet obyvatel - celkem,
+Česko,1863,Počet obyvatel ve věku 0 - 14 let,
+Česko,1863,Počet obyvatel ve věku 15 - 64 let,
+Česko,1863,Počet obyvatel ve věku 20 - 64 let,
+Česko,1863,Počet obyvatel ve věku 65 a více let,
+Česko,1863,Počet obyvatel ve věku 80 a více let,
+Česko,1863,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1863,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1863,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1863,Průměrný věk (roky),
+Česko,1863,Index stáří,
+Česko,1863,Index ekonomické závislosti,
+Česko,1862,Počet obyvatel - celkem,
+Česko,1862,Počet obyvatel ve věku 0 - 14 let,
+Česko,1862,Počet obyvatel ve věku 15 - 64 let,
+Česko,1862,Počet obyvatel ve věku 20 - 64 let,
+Česko,1862,Počet obyvatel ve věku 65 a více let,
+Česko,1862,Počet obyvatel ve věku 80 a více let,
+Česko,1862,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1862,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1862,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1862,Průměrný věk (roky),
+Česko,1862,Index stáří,
+Česko,1862,Index ekonomické závislosti,
+Česko,1861,Počet obyvatel - celkem,
+Česko,1861,Počet obyvatel ve věku 0 - 14 let,
+Česko,1861,Počet obyvatel ve věku 15 - 64 let,
+Česko,1861,Počet obyvatel ve věku 20 - 64 let,
+Česko,1861,Počet obyvatel ve věku 65 a více let,
+Česko,1861,Počet obyvatel ve věku 80 a více let,
+Česko,1861,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1861,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1861,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1861,Průměrný věk (roky),
+Česko,1861,Index stáří,
+Česko,1861,Index ekonomické závislosti,
+Česko,1860,Počet obyvatel - celkem,
+Česko,1860,Počet obyvatel ve věku 0 - 14 let,
+Česko,1860,Počet obyvatel ve věku 15 - 64 let,
+Česko,1860,Počet obyvatel ve věku 20 - 64 let,
+Česko,1860,Počet obyvatel ve věku 65 a více let,
+Česko,1860,Počet obyvatel ve věku 80 a více let,
+Česko,1860,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1860,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1860,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1860,Průměrný věk (roky),
+Česko,1860,Index stáří,
+Česko,1860,Index ekonomické závislosti,
+Česko,1859,Počet obyvatel - celkem,
+Česko,1859,Počet obyvatel ve věku 0 - 14 let,
+Česko,1859,Počet obyvatel ve věku 15 - 64 let,
+Česko,1859,Počet obyvatel ve věku 20 - 64 let,
+Česko,1859,Počet obyvatel ve věku 65 a více let,
+Česko,1859,Počet obyvatel ve věku 80 a více let,
+Česko,1859,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1859,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1859,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1859,Průměrný věk (roky),
+Česko,1859,Index stáří,
+Česko,1859,Index ekonomické závislosti,
+Česko,1858,Počet obyvatel - celkem,
+Česko,1858,Počet obyvatel ve věku 0 - 14 let,
+Česko,1858,Počet obyvatel ve věku 15 - 64 let,
+Česko,1858,Počet obyvatel ve věku 20 - 64 let,
+Česko,1858,Počet obyvatel ve věku 65 a více let,
+Česko,1858,Počet obyvatel ve věku 80 a více let,
+Česko,1858,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1858,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1858,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1858,Průměrný věk (roky),
+Česko,1858,Index stáří,
+Česko,1858,Index ekonomické závislosti,
+Česko,1857,Počet obyvatel - celkem,
+Česko,1857,Počet obyvatel ve věku 0 - 14 let,
+Česko,1857,Počet obyvatel ve věku 15 - 64 let,
+Česko,1857,Počet obyvatel ve věku 20 - 64 let,
+Česko,1857,Počet obyvatel ve věku 65 a více let,
+Česko,1857,Počet obyvatel ve věku 80 a více let,
+Česko,1857,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1857,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1857,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1857,Průměrný věk (roky),
+Česko,1857,Index stáří,
+Česko,1857,Index ekonomické závislosti,
+Česko,1856,Počet obyvatel - celkem,
+Česko,1856,Počet obyvatel ve věku 0 - 14 let,
+Česko,1856,Počet obyvatel ve věku 15 - 64 let,
+Česko,1856,Počet obyvatel ve věku 20 - 64 let,
+Česko,1856,Počet obyvatel ve věku 65 a více let,
+Česko,1856,Počet obyvatel ve věku 80 a více let,
+Česko,1856,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1856,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1856,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1856,Průměrný věk (roky),
+Česko,1856,Index stáří,
+Česko,1856,Index ekonomické závislosti,
+Česko,1855,Počet obyvatel - celkem,
+Česko,1855,Počet obyvatel ve věku 0 - 14 let,
+Česko,1855,Počet obyvatel ve věku 15 - 64 let,
+Česko,1855,Počet obyvatel ve věku 20 - 64 let,
+Česko,1855,Počet obyvatel ve věku 65 a více let,
+Česko,1855,Počet obyvatel ve věku 80 a více let,
+Česko,1855,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1855,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1855,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1855,Průměrný věk (roky),
+Česko,1855,Index stáří,
+Česko,1855,Index ekonomické závislosti,
+Česko,1854,Počet obyvatel - celkem,
+Česko,1854,Počet obyvatel ve věku 0 - 14 let,
+Česko,1854,Počet obyvatel ve věku 15 - 64 let,
+Česko,1854,Počet obyvatel ve věku 20 - 64 let,
+Česko,1854,Počet obyvatel ve věku 65 a více let,
+Česko,1854,Počet obyvatel ve věku 80 a více let,
+Česko,1854,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1854,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1854,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1854,Průměrný věk (roky),
+Česko,1854,Index stáří,
+Česko,1854,Index ekonomické závislosti,
+Česko,1853,Počet obyvatel - celkem,
+Česko,1853,Počet obyvatel ve věku 0 - 14 let,
+Česko,1853,Počet obyvatel ve věku 15 - 64 let,
+Česko,1853,Počet obyvatel ve věku 20 - 64 let,
+Česko,1853,Počet obyvatel ve věku 65 a více let,
+Česko,1853,Počet obyvatel ve věku 80 a více let,
+Česko,1853,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1853,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1853,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1853,Průměrný věk (roky),
+Česko,1853,Index stáří,
+Česko,1853,Index ekonomické závislosti,
+Česko,1852,Počet obyvatel - celkem,
+Česko,1852,Počet obyvatel ve věku 0 - 14 let,
+Česko,1852,Počet obyvatel ve věku 15 - 64 let,
+Česko,1852,Počet obyvatel ve věku 20 - 64 let,
+Česko,1852,Počet obyvatel ve věku 65 a více let,
+Česko,1852,Počet obyvatel ve věku 80 a více let,
+Česko,1852,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1852,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1852,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1852,Průměrný věk (roky),
+Česko,1852,Index stáří,
+Česko,1852,Index ekonomické závislosti,
+Česko,1851,Počet obyvatel - celkem,
+Česko,1851,Počet obyvatel ve věku 0 - 14 let,
+Česko,1851,Počet obyvatel ve věku 15 - 64 let,
+Česko,1851,Počet obyvatel ve věku 20 - 64 let,
+Česko,1851,Počet obyvatel ve věku 65 a více let,
+Česko,1851,Počet obyvatel ve věku 80 a více let,
+Česko,1851,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1851,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1851,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1851,Průměrný věk (roky),
+Česko,1851,Index stáří,
+Česko,1851,Index ekonomické závislosti,
+Česko,1850,Počet obyvatel - celkem,
+Česko,1850,Počet obyvatel ve věku 0 - 14 let,
+Česko,1850,Počet obyvatel ve věku 15 - 64 let,
+Česko,1850,Počet obyvatel ve věku 20 - 64 let,
+Česko,1850,Počet obyvatel ve věku 65 a více let,
+Česko,1850,Počet obyvatel ve věku 80 a více let,
+Česko,1850,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1850,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1850,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1850,Průměrný věk (roky),
+Česko,1850,Index stáří,
+Česko,1850,Index ekonomické závislosti,
+Česko,1849,Počet obyvatel - celkem,
+Česko,1849,Počet obyvatel ve věku 0 - 14 let,
+Česko,1849,Počet obyvatel ve věku 15 - 64 let,
+Česko,1849,Počet obyvatel ve věku 20 - 64 let,
+Česko,1849,Počet obyvatel ve věku 65 a více let,
+Česko,1849,Počet obyvatel ve věku 80 a více let,
+Česko,1849,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1849,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1849,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1849,Průměrný věk (roky),
+Česko,1849,Index stáří,
+Česko,1849,Index ekonomické závislosti,
+Česko,1848,Počet obyvatel - celkem,
+Česko,1848,Počet obyvatel ve věku 0 - 14 let,
+Česko,1848,Počet obyvatel ve věku 15 - 64 let,
+Česko,1848,Počet obyvatel ve věku 20 - 64 let,
+Česko,1848,Počet obyvatel ve věku 65 a více let,
+Česko,1848,Počet obyvatel ve věku 80 a více let,
+Česko,1848,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1848,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1848,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1848,Průměrný věk (roky),
+Česko,1848,Index stáří,
+Česko,1848,Index ekonomické závislosti,
+Česko,1847,Počet obyvatel - celkem,
+Česko,1847,Počet obyvatel ve věku 0 - 14 let,
+Česko,1847,Počet obyvatel ve věku 15 - 64 let,
+Česko,1847,Počet obyvatel ve věku 20 - 64 let,
+Česko,1847,Počet obyvatel ve věku 65 a více let,
+Česko,1847,Počet obyvatel ve věku 80 a více let,
+Česko,1847,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1847,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1847,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1847,Průměrný věk (roky),
+Česko,1847,Index stáří,
+Česko,1847,Index ekonomické závislosti,
+Česko,1846,Počet obyvatel - celkem,
+Česko,1846,Počet obyvatel ve věku 0 - 14 let,
+Česko,1846,Počet obyvatel ve věku 15 - 64 let,
+Česko,1846,Počet obyvatel ve věku 20 - 64 let,
+Česko,1846,Počet obyvatel ve věku 65 a více let,
+Česko,1846,Počet obyvatel ve věku 80 a více let,
+Česko,1846,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1846,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1846,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1846,Průměrný věk (roky),
+Česko,1846,Index stáří,
+Česko,1846,Index ekonomické závislosti,
+Česko,1845,Počet obyvatel - celkem,
+Česko,1845,Počet obyvatel ve věku 0 - 14 let,
+Česko,1845,Počet obyvatel ve věku 15 - 64 let,
+Česko,1845,Počet obyvatel ve věku 20 - 64 let,
+Česko,1845,Počet obyvatel ve věku 65 a více let,
+Česko,1845,Počet obyvatel ve věku 80 a více let,
+Česko,1845,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1845,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1845,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1845,Průměrný věk (roky),
+Česko,1845,Index stáří,
+Česko,1845,Index ekonomické závislosti,
+Česko,1844,Počet obyvatel - celkem,
+Česko,1844,Počet obyvatel ve věku 0 - 14 let,
+Česko,1844,Počet obyvatel ve věku 15 - 64 let,
+Česko,1844,Počet obyvatel ve věku 20 - 64 let,
+Česko,1844,Počet obyvatel ve věku 65 a více let,
+Česko,1844,Počet obyvatel ve věku 80 a více let,
+Česko,1844,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1844,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1844,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1844,Průměrný věk (roky),
+Česko,1844,Index stáří,
+Česko,1844,Index ekonomické závislosti,
+Česko,1843,Počet obyvatel - celkem,
+Česko,1843,Počet obyvatel ve věku 0 - 14 let,
+Česko,1843,Počet obyvatel ve věku 15 - 64 let,
+Česko,1843,Počet obyvatel ve věku 20 - 64 let,
+Česko,1843,Počet obyvatel ve věku 65 a více let,
+Česko,1843,Počet obyvatel ve věku 80 a více let,
+Česko,1843,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1843,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1843,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1843,Průměrný věk (roky),
+Česko,1843,Index stáří,
+Česko,1843,Index ekonomické závislosti,
+Česko,1842,Počet obyvatel - celkem,
+Česko,1842,Počet obyvatel ve věku 0 - 14 let,
+Česko,1842,Počet obyvatel ve věku 15 - 64 let,
+Česko,1842,Počet obyvatel ve věku 20 - 64 let,
+Česko,1842,Počet obyvatel ve věku 65 a více let,
+Česko,1842,Počet obyvatel ve věku 80 a více let,
+Česko,1842,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1842,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1842,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1842,Průměrný věk (roky),
+Česko,1842,Index stáří,
+Česko,1842,Index ekonomické závislosti,
+Česko,1841,Počet obyvatel - celkem,
+Česko,1841,Počet obyvatel ve věku 0 - 14 let,
+Česko,1841,Počet obyvatel ve věku 15 - 64 let,
+Česko,1841,Počet obyvatel ve věku 20 - 64 let,
+Česko,1841,Počet obyvatel ve věku 65 a více let,
+Česko,1841,Počet obyvatel ve věku 80 a více let,
+Česko,1841,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1841,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1841,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1841,Průměrný věk (roky),
+Česko,1841,Index stáří,
+Česko,1841,Index ekonomické závislosti,
+Česko,1840,Počet obyvatel - celkem,
+Česko,1840,Počet obyvatel ve věku 0 - 14 let,
+Česko,1840,Počet obyvatel ve věku 15 - 64 let,
+Česko,1840,Počet obyvatel ve věku 20 - 64 let,
+Česko,1840,Počet obyvatel ve věku 65 a více let,
+Česko,1840,Počet obyvatel ve věku 80 a více let,
+Česko,1840,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1840,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1840,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1840,Průměrný věk (roky),
+Česko,1840,Index stáří,
+Česko,1840,Index ekonomické závislosti,
+Česko,1839,Počet obyvatel - celkem,
+Česko,1839,Počet obyvatel ve věku 0 - 14 let,
+Česko,1839,Počet obyvatel ve věku 15 - 64 let,
+Česko,1839,Počet obyvatel ve věku 20 - 64 let,
+Česko,1839,Počet obyvatel ve věku 65 a více let,
+Česko,1839,Počet obyvatel ve věku 80 a více let,
+Česko,1839,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1839,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1839,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1839,Průměrný věk (roky),
+Česko,1839,Index stáří,
+Česko,1839,Index ekonomické závislosti,
+Česko,1838,Počet obyvatel - celkem,
+Česko,1838,Počet obyvatel ve věku 0 - 14 let,
+Česko,1838,Počet obyvatel ve věku 15 - 64 let,
+Česko,1838,Počet obyvatel ve věku 20 - 64 let,
+Česko,1838,Počet obyvatel ve věku 65 a více let,
+Česko,1838,Počet obyvatel ve věku 80 a více let,
+Česko,1838,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1838,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1838,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1838,Průměrný věk (roky),
+Česko,1838,Index stáří,
+Česko,1838,Index ekonomické závislosti,
+Česko,1837,Počet obyvatel - celkem,
+Česko,1837,Počet obyvatel ve věku 0 - 14 let,
+Česko,1837,Počet obyvatel ve věku 15 - 64 let,
+Česko,1837,Počet obyvatel ve věku 20 - 64 let,
+Česko,1837,Počet obyvatel ve věku 65 a více let,
+Česko,1837,Počet obyvatel ve věku 80 a více let,
+Česko,1837,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1837,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1837,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1837,Průměrný věk (roky),
+Česko,1837,Index stáří,
+Česko,1837,Index ekonomické závislosti,
+Česko,1836,Počet obyvatel - celkem,
+Česko,1836,Počet obyvatel ve věku 0 - 14 let,
+Česko,1836,Počet obyvatel ve věku 15 - 64 let,
+Česko,1836,Počet obyvatel ve věku 20 - 64 let,
+Česko,1836,Počet obyvatel ve věku 65 a více let,
+Česko,1836,Počet obyvatel ve věku 80 a více let,
+Česko,1836,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1836,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1836,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1836,Průměrný věk (roky),
+Česko,1836,Index stáří,
+Česko,1836,Index ekonomické závislosti,
+Česko,1835,Počet obyvatel - celkem,
+Česko,1835,Počet obyvatel ve věku 0 - 14 let,
+Česko,1835,Počet obyvatel ve věku 15 - 64 let,
+Česko,1835,Počet obyvatel ve věku 20 - 64 let,
+Česko,1835,Počet obyvatel ve věku 65 a více let,
+Česko,1835,Počet obyvatel ve věku 80 a více let,
+Česko,1835,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1835,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1835,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1835,Průměrný věk (roky),
+Česko,1835,Index stáří,
+Česko,1835,Index ekonomické závislosti,
+Česko,1834,Počet obyvatel - celkem,
+Česko,1834,Počet obyvatel ve věku 0 - 14 let,
+Česko,1834,Počet obyvatel ve věku 15 - 64 let,
+Česko,1834,Počet obyvatel ve věku 20 - 64 let,
+Česko,1834,Počet obyvatel ve věku 65 a více let,
+Česko,1834,Počet obyvatel ve věku 80 a více let,
+Česko,1834,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1834,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1834,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1834,Průměrný věk (roky),
+Česko,1834,Index stáří,
+Česko,1834,Index ekonomické závislosti,
+Česko,1833,Počet obyvatel - celkem,
+Česko,1833,Počet obyvatel ve věku 0 - 14 let,
+Česko,1833,Počet obyvatel ve věku 15 - 64 let,
+Česko,1833,Počet obyvatel ve věku 20 - 64 let,
+Česko,1833,Počet obyvatel ve věku 65 a více let,
+Česko,1833,Počet obyvatel ve věku 80 a více let,
+Česko,1833,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1833,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1833,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1833,Průměrný věk (roky),
+Česko,1833,Index stáří,
+Česko,1833,Index ekonomické závislosti,
+Česko,1832,Počet obyvatel - celkem,
+Česko,1832,Počet obyvatel ve věku 0 - 14 let,
+Česko,1832,Počet obyvatel ve věku 15 - 64 let,
+Česko,1832,Počet obyvatel ve věku 20 - 64 let,
+Česko,1832,Počet obyvatel ve věku 65 a více let,
+Česko,1832,Počet obyvatel ve věku 80 a více let,
+Česko,1832,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1832,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1832,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1832,Průměrný věk (roky),
+Česko,1832,Index stáří,
+Česko,1832,Index ekonomické závislosti,
+Česko,1831,Počet obyvatel - celkem,
+Česko,1831,Počet obyvatel ve věku 0 - 14 let,
+Česko,1831,Počet obyvatel ve věku 15 - 64 let,
+Česko,1831,Počet obyvatel ve věku 20 - 64 let,
+Česko,1831,Počet obyvatel ve věku 65 a více let,
+Česko,1831,Počet obyvatel ve věku 80 a více let,
+Česko,1831,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1831,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1831,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1831,Průměrný věk (roky),
+Česko,1831,Index stáří,
+Česko,1831,Index ekonomické závislosti,
+Česko,1830,Počet obyvatel - celkem,
+Česko,1830,Počet obyvatel ve věku 0 - 14 let,
+Česko,1830,Počet obyvatel ve věku 15 - 64 let,
+Česko,1830,Počet obyvatel ve věku 20 - 64 let,
+Česko,1830,Počet obyvatel ve věku 65 a více let,
+Česko,1830,Počet obyvatel ve věku 80 a více let,
+Česko,1830,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1830,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1830,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1830,Průměrný věk (roky),
+Česko,1830,Index stáří,
+Česko,1830,Index ekonomické závislosti,
+Česko,1829,Počet obyvatel - celkem,
+Česko,1829,Počet obyvatel ve věku 0 - 14 let,
+Česko,1829,Počet obyvatel ve věku 15 - 64 let,
+Česko,1829,Počet obyvatel ve věku 20 - 64 let,
+Česko,1829,Počet obyvatel ve věku 65 a více let,
+Česko,1829,Počet obyvatel ve věku 80 a více let,
+Česko,1829,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1829,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1829,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1829,Průměrný věk (roky),
+Česko,1829,Index stáří,
+Česko,1829,Index ekonomické závislosti,
+Česko,1828,Počet obyvatel - celkem,
+Česko,1828,Počet obyvatel ve věku 0 - 14 let,
+Česko,1828,Počet obyvatel ve věku 15 - 64 let,
+Česko,1828,Počet obyvatel ve věku 20 - 64 let,
+Česko,1828,Počet obyvatel ve věku 65 a více let,
+Česko,1828,Počet obyvatel ve věku 80 a více let,
+Česko,1828,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1828,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1828,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1828,Průměrný věk (roky),
+Česko,1828,Index stáří,
+Česko,1828,Index ekonomické závislosti,
+Česko,1827,Počet obyvatel - celkem,
+Česko,1827,Počet obyvatel ve věku 0 - 14 let,
+Česko,1827,Počet obyvatel ve věku 15 - 64 let,
+Česko,1827,Počet obyvatel ve věku 20 - 64 let,
+Česko,1827,Počet obyvatel ve věku 65 a více let,
+Česko,1827,Počet obyvatel ve věku 80 a více let,
+Česko,1827,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1827,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1827,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1827,Průměrný věk (roky),
+Česko,1827,Index stáří,
+Česko,1827,Index ekonomické závislosti,
+Česko,1826,Počet obyvatel - celkem,
+Česko,1826,Počet obyvatel ve věku 0 - 14 let,
+Česko,1826,Počet obyvatel ve věku 15 - 64 let,
+Česko,1826,Počet obyvatel ve věku 20 - 64 let,
+Česko,1826,Počet obyvatel ve věku 65 a více let,
+Česko,1826,Počet obyvatel ve věku 80 a více let,
+Česko,1826,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1826,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1826,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1826,Průměrný věk (roky),
+Česko,1826,Index stáří,
+Česko,1826,Index ekonomické závislosti,
+Česko,1825,Počet obyvatel - celkem,
+Česko,1825,Počet obyvatel ve věku 0 - 14 let,
+Česko,1825,Počet obyvatel ve věku 15 - 64 let,
+Česko,1825,Počet obyvatel ve věku 20 - 64 let,
+Česko,1825,Počet obyvatel ve věku 65 a více let,
+Česko,1825,Počet obyvatel ve věku 80 a více let,
+Česko,1825,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1825,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1825,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1825,Průměrný věk (roky),
+Česko,1825,Index stáří,
+Česko,1825,Index ekonomické závislosti,
+Česko,1824,Počet obyvatel - celkem,
+Česko,1824,Počet obyvatel ve věku 0 - 14 let,
+Česko,1824,Počet obyvatel ve věku 15 - 64 let,
+Česko,1824,Počet obyvatel ve věku 20 - 64 let,
+Česko,1824,Počet obyvatel ve věku 65 a více let,
+Česko,1824,Počet obyvatel ve věku 80 a více let,
+Česko,1824,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1824,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1824,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1824,Průměrný věk (roky),
+Česko,1824,Index stáří,
+Česko,1824,Index ekonomické závislosti,
+Česko,1823,Počet obyvatel - celkem,
+Česko,1823,Počet obyvatel ve věku 0 - 14 let,
+Česko,1823,Počet obyvatel ve věku 15 - 64 let,
+Česko,1823,Počet obyvatel ve věku 20 - 64 let,
+Česko,1823,Počet obyvatel ve věku 65 a více let,
+Česko,1823,Počet obyvatel ve věku 80 a více let,
+Česko,1823,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1823,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1823,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1823,Průměrný věk (roky),
+Česko,1823,Index stáří,
+Česko,1823,Index ekonomické závislosti,
+Česko,1822,Počet obyvatel - celkem,
+Česko,1822,Počet obyvatel ve věku 0 - 14 let,
+Česko,1822,Počet obyvatel ve věku 15 - 64 let,
+Česko,1822,Počet obyvatel ve věku 20 - 64 let,
+Česko,1822,Počet obyvatel ve věku 65 a více let,
+Česko,1822,Počet obyvatel ve věku 80 a více let,
+Česko,1822,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1822,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1822,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1822,Průměrný věk (roky),
+Česko,1822,Index stáří,
+Česko,1822,Index ekonomické závislosti,
+Česko,1821,Počet obyvatel - celkem,
+Česko,1821,Počet obyvatel ve věku 0 - 14 let,
+Česko,1821,Počet obyvatel ve věku 15 - 64 let,
+Česko,1821,Počet obyvatel ve věku 20 - 64 let,
+Česko,1821,Počet obyvatel ve věku 65 a více let,
+Česko,1821,Počet obyvatel ve věku 80 a více let,
+Česko,1821,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1821,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1821,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1821,Průměrný věk (roky),
+Česko,1821,Index stáří,
+Česko,1821,Index ekonomické závislosti,
+Česko,1820,Počet obyvatel - celkem,
+Česko,1820,Počet obyvatel ve věku 0 - 14 let,
+Česko,1820,Počet obyvatel ve věku 15 - 64 let,
+Česko,1820,Počet obyvatel ve věku 20 - 64 let,
+Česko,1820,Počet obyvatel ve věku 65 a více let,
+Česko,1820,Počet obyvatel ve věku 80 a více let,
+Česko,1820,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1820,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1820,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1820,Průměrný věk (roky),
+Česko,1820,Index stáří,
+Česko,1820,Index ekonomické závislosti,
+Česko,1819,Počet obyvatel - celkem,
+Česko,1819,Počet obyvatel ve věku 0 - 14 let,
+Česko,1819,Počet obyvatel ve věku 15 - 64 let,
+Česko,1819,Počet obyvatel ve věku 20 - 64 let,
+Česko,1819,Počet obyvatel ve věku 65 a více let,
+Česko,1819,Počet obyvatel ve věku 80 a více let,
+Česko,1819,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1819,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1819,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1819,Průměrný věk (roky),
+Česko,1819,Index stáří,
+Česko,1819,Index ekonomické závislosti,
+Česko,1818,Počet obyvatel - celkem,
+Česko,1818,Počet obyvatel ve věku 0 - 14 let,
+Česko,1818,Počet obyvatel ve věku 15 - 64 let,
+Česko,1818,Počet obyvatel ve věku 20 - 64 let,
+Česko,1818,Počet obyvatel ve věku 65 a více let,
+Česko,1818,Počet obyvatel ve věku 80 a více let,
+Česko,1818,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1818,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1818,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1818,Průměrný věk (roky),
+Česko,1818,Index stáří,
+Česko,1818,Index ekonomické závislosti,
+Česko,1817,Počet obyvatel - celkem,
+Česko,1817,Počet obyvatel ve věku 0 - 14 let,
+Česko,1817,Počet obyvatel ve věku 15 - 64 let,
+Česko,1817,Počet obyvatel ve věku 20 - 64 let,
+Česko,1817,Počet obyvatel ve věku 65 a více let,
+Česko,1817,Počet obyvatel ve věku 80 a více let,
+Česko,1817,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1817,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1817,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1817,Průměrný věk (roky),
+Česko,1817,Index stáří,
+Česko,1817,Index ekonomické závislosti,
+Česko,1816,Počet obyvatel - celkem,
+Česko,1816,Počet obyvatel ve věku 0 - 14 let,
+Česko,1816,Počet obyvatel ve věku 15 - 64 let,
+Česko,1816,Počet obyvatel ve věku 20 - 64 let,
+Česko,1816,Počet obyvatel ve věku 65 a více let,
+Česko,1816,Počet obyvatel ve věku 80 a více let,
+Česko,1816,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1816,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1816,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1816,Průměrný věk (roky),
+Česko,1816,Index stáří,
+Česko,1816,Index ekonomické závislosti,
+Česko,1815,Počet obyvatel - celkem,
+Česko,1815,Počet obyvatel ve věku 0 - 14 let,
+Česko,1815,Počet obyvatel ve věku 15 - 64 let,
+Česko,1815,Počet obyvatel ve věku 20 - 64 let,
+Česko,1815,Počet obyvatel ve věku 65 a více let,
+Česko,1815,Počet obyvatel ve věku 80 a více let,
+Česko,1815,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1815,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1815,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1815,Průměrný věk (roky),
+Česko,1815,Index stáří,
+Česko,1815,Index ekonomické závislosti,
+Česko,1814,Počet obyvatel - celkem,
+Česko,1814,Počet obyvatel ve věku 0 - 14 let,
+Česko,1814,Počet obyvatel ve věku 15 - 64 let,
+Česko,1814,Počet obyvatel ve věku 20 - 64 let,
+Česko,1814,Počet obyvatel ve věku 65 a více let,
+Česko,1814,Počet obyvatel ve věku 80 a více let,
+Česko,1814,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1814,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1814,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1814,Průměrný věk (roky),
+Česko,1814,Index stáří,
+Česko,1814,Index ekonomické závislosti,
+Česko,1813,Počet obyvatel - celkem,
+Česko,1813,Počet obyvatel ve věku 0 - 14 let,
+Česko,1813,Počet obyvatel ve věku 15 - 64 let,
+Česko,1813,Počet obyvatel ve věku 20 - 64 let,
+Česko,1813,Počet obyvatel ve věku 65 a více let,
+Česko,1813,Počet obyvatel ve věku 80 a více let,
+Česko,1813,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1813,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1813,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1813,Průměrný věk (roky),
+Česko,1813,Index stáří,
+Česko,1813,Index ekonomické závislosti,
+Česko,1812,Počet obyvatel - celkem,
+Česko,1812,Počet obyvatel ve věku 0 - 14 let,
+Česko,1812,Počet obyvatel ve věku 15 - 64 let,
+Česko,1812,Počet obyvatel ve věku 20 - 64 let,
+Česko,1812,Počet obyvatel ve věku 65 a více let,
+Česko,1812,Počet obyvatel ve věku 80 a více let,
+Česko,1812,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1812,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1812,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1812,Průměrný věk (roky),
+Česko,1812,Index stáří,
+Česko,1812,Index ekonomické závislosti,
+Česko,1811,Počet obyvatel - celkem,
+Česko,1811,Počet obyvatel ve věku 0 - 14 let,
+Česko,1811,Počet obyvatel ve věku 15 - 64 let,
+Česko,1811,Počet obyvatel ve věku 20 - 64 let,
+Česko,1811,Počet obyvatel ve věku 65 a více let,
+Česko,1811,Počet obyvatel ve věku 80 a více let,
+Česko,1811,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1811,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1811,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1811,Průměrný věk (roky),
+Česko,1811,Index stáří,
+Česko,1811,Index ekonomické závislosti,
+Česko,1810,Počet obyvatel - celkem,
+Česko,1810,Počet obyvatel ve věku 0 - 14 let,
+Česko,1810,Počet obyvatel ve věku 15 - 64 let,
+Česko,1810,Počet obyvatel ve věku 20 - 64 let,
+Česko,1810,Počet obyvatel ve věku 65 a více let,
+Česko,1810,Počet obyvatel ve věku 80 a více let,
+Česko,1810,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1810,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1810,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1810,Průměrný věk (roky),
+Česko,1810,Index stáří,
+Česko,1810,Index ekonomické závislosti,
+Česko,1809,Počet obyvatel - celkem,
+Česko,1809,Počet obyvatel ve věku 0 - 14 let,
+Česko,1809,Počet obyvatel ve věku 15 - 64 let,
+Česko,1809,Počet obyvatel ve věku 20 - 64 let,
+Česko,1809,Počet obyvatel ve věku 65 a více let,
+Česko,1809,Počet obyvatel ve věku 80 a více let,
+Česko,1809,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1809,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1809,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1809,Průměrný věk (roky),
+Česko,1809,Index stáří,
+Česko,1809,Index ekonomické závislosti,
+Česko,1808,Počet obyvatel - celkem,
+Česko,1808,Počet obyvatel ve věku 0 - 14 let,
+Česko,1808,Počet obyvatel ve věku 15 - 64 let,
+Česko,1808,Počet obyvatel ve věku 20 - 64 let,
+Česko,1808,Počet obyvatel ve věku 65 a více let,
+Česko,1808,Počet obyvatel ve věku 80 a více let,
+Česko,1808,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1808,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1808,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1808,Průměrný věk (roky),
+Česko,1808,Index stáří,
+Česko,1808,Index ekonomické závislosti,
+Česko,1807,Počet obyvatel - celkem,
+Česko,1807,Počet obyvatel ve věku 0 - 14 let,
+Česko,1807,Počet obyvatel ve věku 15 - 64 let,
+Česko,1807,Počet obyvatel ve věku 20 - 64 let,
+Česko,1807,Počet obyvatel ve věku 65 a více let,
+Česko,1807,Počet obyvatel ve věku 80 a více let,
+Česko,1807,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1807,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1807,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1807,Průměrný věk (roky),
+Česko,1807,Index stáří,
+Česko,1807,Index ekonomické závislosti,
+Česko,1806,Počet obyvatel - celkem,
+Česko,1806,Počet obyvatel ve věku 0 - 14 let,
+Česko,1806,Počet obyvatel ve věku 15 - 64 let,
+Česko,1806,Počet obyvatel ve věku 20 - 64 let,
+Česko,1806,Počet obyvatel ve věku 65 a více let,
+Česko,1806,Počet obyvatel ve věku 80 a více let,
+Česko,1806,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1806,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1806,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1806,Průměrný věk (roky),
+Česko,1806,Index stáří,
+Česko,1806,Index ekonomické závislosti,
+Česko,1805,Počet obyvatel - celkem,
+Česko,1805,Počet obyvatel ve věku 0 - 14 let,
+Česko,1805,Počet obyvatel ve věku 15 - 64 let,
+Česko,1805,Počet obyvatel ve věku 20 - 64 let,
+Česko,1805,Počet obyvatel ve věku 65 a více let,
+Česko,1805,Počet obyvatel ve věku 80 a více let,
+Česko,1805,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1805,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1805,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1805,Průměrný věk (roky),
+Česko,1805,Index stáří,
+Česko,1805,Index ekonomické závislosti,
+Česko,1804,Počet obyvatel - celkem,
+Česko,1804,Počet obyvatel ve věku 0 - 14 let,
+Česko,1804,Počet obyvatel ve věku 15 - 64 let,
+Česko,1804,Počet obyvatel ve věku 20 - 64 let,
+Česko,1804,Počet obyvatel ve věku 65 a více let,
+Česko,1804,Počet obyvatel ve věku 80 a více let,
+Česko,1804,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1804,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1804,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1804,Průměrný věk (roky),
+Česko,1804,Index stáří,
+Česko,1804,Index ekonomické závislosti,
+Česko,1803,Počet obyvatel - celkem,
+Česko,1803,Počet obyvatel ve věku 0 - 14 let,
+Česko,1803,Počet obyvatel ve věku 15 - 64 let,
+Česko,1803,Počet obyvatel ve věku 20 - 64 let,
+Česko,1803,Počet obyvatel ve věku 65 a více let,
+Česko,1803,Počet obyvatel ve věku 80 a více let,
+Česko,1803,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1803,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1803,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1803,Průměrný věk (roky),
+Česko,1803,Index stáří,
+Česko,1803,Index ekonomické závislosti,
+Česko,1802,Počet obyvatel - celkem,
+Česko,1802,Počet obyvatel ve věku 0 - 14 let,
+Česko,1802,Počet obyvatel ve věku 15 - 64 let,
+Česko,1802,Počet obyvatel ve věku 20 - 64 let,
+Česko,1802,Počet obyvatel ve věku 65 a více let,
+Česko,1802,Počet obyvatel ve věku 80 a více let,
+Česko,1802,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1802,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1802,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1802,Průměrný věk (roky),
+Česko,1802,Index stáří,
+Česko,1802,Index ekonomické závislosti,
+Česko,1801,Počet obyvatel - celkem,
+Česko,1801,Počet obyvatel ve věku 0 - 14 let,
+Česko,1801,Počet obyvatel ve věku 15 - 64 let,
+Česko,1801,Počet obyvatel ve věku 20 - 64 let,
+Česko,1801,Počet obyvatel ve věku 65 a více let,
+Česko,1801,Počet obyvatel ve věku 80 a více let,
+Česko,1801,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1801,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1801,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1801,Průměrný věk (roky),
+Česko,1801,Index stáří,
+Česko,1801,Index ekonomické závislosti,
+Česko,1800,Počet obyvatel - celkem,
+Česko,1800,Počet obyvatel ve věku 0 - 14 let,
+Česko,1800,Počet obyvatel ve věku 15 - 64 let,
+Česko,1800,Počet obyvatel ve věku 20 - 64 let,
+Česko,1800,Počet obyvatel ve věku 65 a více let,
+Česko,1800,Počet obyvatel ve věku 80 a více let,
+Česko,1800,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1800,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1800,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1800,Průměrný věk (roky),
+Česko,1800,Index stáří,
+Česko,1800,Index ekonomické závislosti,
+Česko,1799,Počet obyvatel - celkem,
+Česko,1799,Počet obyvatel ve věku 0 - 14 let,
+Česko,1799,Počet obyvatel ve věku 15 - 64 let,
+Česko,1799,Počet obyvatel ve věku 20 - 64 let,
+Česko,1799,Počet obyvatel ve věku 65 a více let,
+Česko,1799,Počet obyvatel ve věku 80 a více let,
+Česko,1799,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1799,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1799,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1799,Průměrný věk (roky),
+Česko,1799,Index stáří,
+Česko,1799,Index ekonomické závislosti,
+Česko,1798,Počet obyvatel - celkem,
+Česko,1798,Počet obyvatel ve věku 0 - 14 let,
+Česko,1798,Počet obyvatel ve věku 15 - 64 let,
+Česko,1798,Počet obyvatel ve věku 20 - 64 let,
+Česko,1798,Počet obyvatel ve věku 65 a více let,
+Česko,1798,Počet obyvatel ve věku 80 a více let,
+Česko,1798,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1798,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1798,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1798,Průměrný věk (roky),
+Česko,1798,Index stáří,
+Česko,1798,Index ekonomické závislosti,
+Česko,1797,Počet obyvatel - celkem,
+Česko,1797,Počet obyvatel ve věku 0 - 14 let,
+Česko,1797,Počet obyvatel ve věku 15 - 64 let,
+Česko,1797,Počet obyvatel ve věku 20 - 64 let,
+Česko,1797,Počet obyvatel ve věku 65 a více let,
+Česko,1797,Počet obyvatel ve věku 80 a více let,
+Česko,1797,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1797,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1797,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1797,Průměrný věk (roky),
+Česko,1797,Index stáří,
+Česko,1797,Index ekonomické závislosti,
+Česko,1796,Počet obyvatel - celkem,
+Česko,1796,Počet obyvatel ve věku 0 - 14 let,
+Česko,1796,Počet obyvatel ve věku 15 - 64 let,
+Česko,1796,Počet obyvatel ve věku 20 - 64 let,
+Česko,1796,Počet obyvatel ve věku 65 a více let,
+Česko,1796,Počet obyvatel ve věku 80 a více let,
+Česko,1796,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1796,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1796,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1796,Průměrný věk (roky),
+Česko,1796,Index stáří,
+Česko,1796,Index ekonomické závislosti,
+Česko,1795,Počet obyvatel - celkem,
+Česko,1795,Počet obyvatel ve věku 0 - 14 let,
+Česko,1795,Počet obyvatel ve věku 15 - 64 let,
+Česko,1795,Počet obyvatel ve věku 20 - 64 let,
+Česko,1795,Počet obyvatel ve věku 65 a více let,
+Česko,1795,Počet obyvatel ve věku 80 a více let,
+Česko,1795,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1795,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1795,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1795,Průměrný věk (roky),
+Česko,1795,Index stáří,
+Česko,1795,Index ekonomické závislosti,
+Česko,1794,Počet obyvatel - celkem,
+Česko,1794,Počet obyvatel ve věku 0 - 14 let,
+Česko,1794,Počet obyvatel ve věku 15 - 64 let,
+Česko,1794,Počet obyvatel ve věku 20 - 64 let,
+Česko,1794,Počet obyvatel ve věku 65 a více let,
+Česko,1794,Počet obyvatel ve věku 80 a více let,
+Česko,1794,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1794,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1794,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1794,Průměrný věk (roky),
+Česko,1794,Index stáří,
+Česko,1794,Index ekonomické závislosti,
+Česko,1793,Počet obyvatel - celkem,
+Česko,1793,Počet obyvatel ve věku 0 - 14 let,
+Česko,1793,Počet obyvatel ve věku 15 - 64 let,
+Česko,1793,Počet obyvatel ve věku 20 - 64 let,
+Česko,1793,Počet obyvatel ve věku 65 a více let,
+Česko,1793,Počet obyvatel ve věku 80 a více let,
+Česko,1793,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1793,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1793,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1793,Průměrný věk (roky),
+Česko,1793,Index stáří,
+Česko,1793,Index ekonomické závislosti,
+Česko,1792,Počet obyvatel - celkem,
+Česko,1792,Počet obyvatel ve věku 0 - 14 let,
+Česko,1792,Počet obyvatel ve věku 15 - 64 let,
+Česko,1792,Počet obyvatel ve věku 20 - 64 let,
+Česko,1792,Počet obyvatel ve věku 65 a více let,
+Česko,1792,Počet obyvatel ve věku 80 a více let,
+Česko,1792,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1792,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1792,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1792,Průměrný věk (roky),
+Česko,1792,Index stáří,
+Česko,1792,Index ekonomické závislosti,
+Česko,1791,Počet obyvatel - celkem,
+Česko,1791,Počet obyvatel ve věku 0 - 14 let,
+Česko,1791,Počet obyvatel ve věku 15 - 64 let,
+Česko,1791,Počet obyvatel ve věku 20 - 64 let,
+Česko,1791,Počet obyvatel ve věku 65 a více let,
+Česko,1791,Počet obyvatel ve věku 80 a více let,
+Česko,1791,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1791,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1791,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1791,Průměrný věk (roky),
+Česko,1791,Index stáří,
+Česko,1791,Index ekonomické závislosti,
+Česko,1790,Počet obyvatel - celkem,
+Česko,1790,Počet obyvatel ve věku 0 - 14 let,
+Česko,1790,Počet obyvatel ve věku 15 - 64 let,
+Česko,1790,Počet obyvatel ve věku 20 - 64 let,
+Česko,1790,Počet obyvatel ve věku 65 a více let,
+Česko,1790,Počet obyvatel ve věku 80 a více let,
+Česko,1790,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1790,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1790,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1790,Průměrný věk (roky),
+Česko,1790,Index stáří,
+Česko,1790,Index ekonomické závislosti,
+Česko,1789,Počet obyvatel - celkem,
+Česko,1789,Počet obyvatel ve věku 0 - 14 let,
+Česko,1789,Počet obyvatel ve věku 15 - 64 let,
+Česko,1789,Počet obyvatel ve věku 20 - 64 let,
+Česko,1789,Počet obyvatel ve věku 65 a více let,
+Česko,1789,Počet obyvatel ve věku 80 a více let,
+Česko,1789,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1789,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1789,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1789,Průměrný věk (roky),
+Česko,1789,Index stáří,
+Česko,1789,Index ekonomické závislosti,
+Česko,1788,Počet obyvatel - celkem,
+Česko,1788,Počet obyvatel ve věku 0 - 14 let,
+Česko,1788,Počet obyvatel ve věku 15 - 64 let,
+Česko,1788,Počet obyvatel ve věku 20 - 64 let,
+Česko,1788,Počet obyvatel ve věku 65 a více let,
+Česko,1788,Počet obyvatel ve věku 80 a více let,
+Česko,1788,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1788,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1788,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1788,Průměrný věk (roky),
+Česko,1788,Index stáří,
+Česko,1788,Index ekonomické závislosti,
+Česko,1787,Počet obyvatel - celkem,
+Česko,1787,Počet obyvatel ve věku 0 - 14 let,
+Česko,1787,Počet obyvatel ve věku 15 - 64 let,
+Česko,1787,Počet obyvatel ve věku 20 - 64 let,
+Česko,1787,Počet obyvatel ve věku 65 a více let,
+Česko,1787,Počet obyvatel ve věku 80 a více let,
+Česko,1787,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1787,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1787,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1787,Průměrný věk (roky),
+Česko,1787,Index stáří,
+Česko,1787,Index ekonomické závislosti,
+Česko,1786,Počet obyvatel - celkem,
+Česko,1786,Počet obyvatel ve věku 0 - 14 let,
+Česko,1786,Počet obyvatel ve věku 15 - 64 let,
+Česko,1786,Počet obyvatel ve věku 20 - 64 let,
+Česko,1786,Počet obyvatel ve věku 65 a více let,
+Česko,1786,Počet obyvatel ve věku 80 a více let,
+Česko,1786,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1786,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1786,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1786,Průměrný věk (roky),
+Česko,1786,Index stáří,
+Česko,1786,Index ekonomické závislosti,
+Česko,1785,Počet obyvatel - celkem,
+Česko,1785,Počet obyvatel ve věku 0 - 14 let,
+Česko,1785,Počet obyvatel ve věku 15 - 64 let,
+Česko,1785,Počet obyvatel ve věku 20 - 64 let,
+Česko,1785,Počet obyvatel ve věku 65 a více let,
+Česko,1785,Počet obyvatel ve věku 80 a více let,
+Česko,1785,Podíl obyvatel ve věku 0 - 14 let (%),
+Česko,1785,Podíl obyvatel ve věku 15 - 64 let (%),
+Česko,1785,Podíl obyvatel ve věku 65 a více let (%),
+Česko,1785,Průměrný věk (roky),
+Česko,1785,Index stáří,
+Česko,1785,Index ekonomické závislosti,

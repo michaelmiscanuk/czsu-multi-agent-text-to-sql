@@ -1,64 +1,64 @@
-Území;Ukazatel;Roky;value
-Česko;Počet okrsků;2000;13677.0
-Česko;Počet okrsků;2004;13653.0
-Česko;Počet okrsků;2008;13659.0
-Česko;Počet okrsků;2012;13670.0
-Česko;Počet okrsků;2016;13660.0
-Česko;Počet okrsků;2020;13656.0
-Česko;Počet okrsků;2024;13591.0
-Česko;Voliči v seznamu;2000;7182503.0
-Česko;Voliči v seznamu;2004;7307378.0
-Česko;Voliči v seznamu;2008;7415830.0
-Česko;Voliči v seznamu;2012;7491806.0
-Česko;Voliči v seznamu;2016;7461766.0
-Česko;Voliči v seznamu;2020;7399299.0
-Česko;Voliči v seznamu;2024;7325529.0
-Česko;Vydané obálky;2000;2416385.0
-Česko;Vydané obálky;2004;2164456.0
-Česko;Vydané obálky;2008;2988487.0
-Česko;Vydané obálky;2012;2763464.0
-Česko;Vydané obálky;2016;2579668.0
-Česko;Vydané obálky;2020;2807967.0
-Česko;Vydané obálky;2024;2410892.0
-Česko;Volební účast (%);2000;33.64
-Česko;Volební účast (%);2004;29.62
-Česko;Volební účast (%);2008;40.3
-Česko;Volební účast (%);2012;36.89
-Česko;Volební účast (%);2016;34.57
-Česko;Volební účast (%);2020;37.95
-Česko;Volební účast (%);2024;32.91
-Česko;Odevzdané obálky;2000;2406665.0
-Česko;Odevzdané obálky;2004;2159929.0
-Česko;Odevzdané obálky;2008;2980733.0
-Česko;Odevzdané obálky;2012;2757176.0
-Česko;Odevzdané obálky;2016;2575821.0
-Česko;Odevzdané obálky;2020;2804725.0
-Česko;Odevzdané obálky;2024;2408352.0
-Česko;Platné hlasy;2000;2349124.0
-Česko;Platné hlasy;2004;2117443.0
-Česko;Platné hlasy;2008;2913642.0
-Česko;Platné hlasy;2012;2637115.0
-Česko;Platné hlasy;2016;2532311.0
-Česko;Platné hlasy;2020;2769361.0
-Česko;Platné hlasy;2024;2382422.0
-Česko;Počet kandidátů;2000;7725.0
-Česko;Počet kandidátů;2004;8309.0
-Česko;Počet kandidátů;2008;8206.0
-Česko;Počet kandidátů;2012;11304.0
-Česko;Počet kandidátů;2016;11803.0
-Česko;Počet kandidátů;2020;9711.0
-Česko;Počet kandidátů;2024;8269.0
-Česko;Počet zvolených mužů;2000;
-Česko;Počet zvolených mužů;2004;
-Česko;Počet zvolených mužů;2008;
-Česko;Počet zvolených mužů;2012;
-Česko;Počet zvolených mužů;2016;538.0
-Česko;Počet zvolených mužů;2020;526.0
-Česko;Počet zvolených mužů;2024;540.0
-Česko;Počet zvolených žen;2000;
-Česko;Počet zvolených žen;2004;
-Česko;Počet zvolených žen;2008;
-Česko;Počet zvolených žen;2012;
-Česko;Počet zvolených žen;2016;137.0
-Česko;Počet zvolených žen;2020;149.0
-Česko;Počet zvolených žen;2024;145.0
+Území,Ukazatel,Roky,value
+Česko,Počet okrsků,2000,13677.0
+Česko,Počet okrsků,2004,13653.0
+Česko,Počet okrsků,2008,13659.0
+Česko,Počet okrsků,2012,13670.0
+Česko,Počet okrsků,2016,13660.0
+Česko,Počet okrsků,2020,13656.0
+Česko,Počet okrsků,2024,13591.0
+Česko,Voliči v seznamu,2000,7182503.0
+Česko,Voliči v seznamu,2004,7307378.0
+Česko,Voliči v seznamu,2008,7415830.0
+Česko,Voliči v seznamu,2012,7491806.0
+Česko,Voliči v seznamu,2016,7461766.0
+Česko,Voliči v seznamu,2020,7399299.0
+Česko,Voliči v seznamu,2024,7325529.0
+Česko,Vydané obálky,2000,2416385.0
+Česko,Vydané obálky,2004,2164456.0
+Česko,Vydané obálky,2008,2988487.0
+Česko,Vydané obálky,2012,2763464.0
+Česko,Vydané obálky,2016,2579668.0
+Česko,Vydané obálky,2020,2807967.0
+Česko,Vydané obálky,2024,2410892.0
+Česko,Volební účast (%),2000,33.64
+Česko,Volební účast (%),2004,29.62
+Česko,Volební účast (%),2008,40.3
+Česko,Volební účast (%),2012,36.89
+Česko,Volební účast (%),2016,34.57
+Česko,Volební účast (%),2020,37.95
+Česko,Volební účast (%),2024,32.91
+Česko,Odevzdané obálky,2000,2406665.0
+Česko,Odevzdané obálky,2004,2159929.0
+Česko,Odevzdané obálky,2008,2980733.0
+Česko,Odevzdané obálky,2012,2757176.0
+Česko,Odevzdané obálky,2016,2575821.0
+Česko,Odevzdané obálky,2020,2804725.0
+Česko,Odevzdané obálky,2024,2408352.0
+Česko,Platné hlasy,2000,2349124.0
+Česko,Platné hlasy,2004,2117443.0
+Česko,Platné hlasy,2008,2913642.0
+Česko,Platné hlasy,2012,2637115.0
+Česko,Platné hlasy,2016,2532311.0
+Česko,Platné hlasy,2020,2769361.0
+Česko,Platné hlasy,2024,2382422.0
+Česko,Počet kandidátů,2000,7725.0
+Česko,Počet kandidátů,2004,8309.0
+Česko,Počet kandidátů,2008,8206.0
+Česko,Počet kandidátů,2012,11304.0
+Česko,Počet kandidátů,2016,11803.0
+Česko,Počet kandidátů,2020,9711.0
+Česko,Počet kandidátů,2024,8269.0
+Česko,Počet zvolených mužů,2000,
+Česko,Počet zvolených mužů,2004,
+Česko,Počet zvolených mužů,2008,
+Česko,Počet zvolených mužů,2012,
+Česko,Počet zvolených mužů,2016,538.0
+Česko,Počet zvolených mužů,2020,526.0
+Česko,Počet zvolených mužů,2024,540.0
+Česko,Počet zvolených žen,2000,
+Česko,Počet zvolených žen,2004,
+Česko,Počet zvolených žen,2008,
+Česko,Počet zvolených žen,2012,
+Česko,Počet zvolených žen,2016,137.0
+Česko,Počet zvolených žen,2020,149.0
+Česko,Počet zvolených žen,2024,145.0

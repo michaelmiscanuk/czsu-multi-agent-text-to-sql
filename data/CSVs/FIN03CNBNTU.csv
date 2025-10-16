@@ -1,66 +1,79 @@
-Území;Ukazatel;Roky;value
-Česko;Výsledek technického účtu k neživotnímu pojištění;2018;7107.791
-Česko;Výsledek technického účtu k neživotnímu pojištění;2019;4749.297
-Česko;Výsledek technického účtu k neživotnímu pojištění;2020;8921.206
-Česko;Výsledek technického účtu k neživotnímu pojištění;2021;16711.954
-Česko;Výsledek technického účtu k neživotnímu pojištění;2022;8631.949
-Česko;Výsledek technického účtu k životnímu pojištění;2018;9450.537
-Česko;Výsledek technického účtu k životnímu pojištění;2019;10164.443
-Česko;Výsledek technického účtu k životnímu pojištění;2020;8447.906
-Česko;Výsledek technického účtu k životnímu pojištění;2021;14853.438
-Česko;Výsledek technického účtu k životnímu pojištění;2022;9511.532
-Česko;Výnosy z investic;2018;8052.787
-Česko;Výnosy z investic;2019;14573.054
-Česko;Výnosy z investic;2020;8453.407
-Česko;Výnosy z investic;2021;17630.631
-Česko;Výnosy z investic;2022;10347.239
-Česko;Výnosy z ostatních investic;2018;1704.466
-Česko;Výnosy z ostatních investic;2019;2084.57
-Česko;Výnosy z ostatních investic;2020;1558.169
-Česko;Výnosy z ostatních investic;2021;1092.537
-Česko;Výnosy z ostatních investic;2022;2070.429
-Česko;Výnosy z realizace investic;2018;4568.725
-Česko;Výnosy z realizace investic;2019;11288.448
-Česko;Výnosy z realizace investic;2020;4966.212
-Česko;Výnosy z realizace investic;2021;14683.696
-Česko;Výnosy z realizace investic;2022;6891.086
-Česko;Převedené výnosy investic z technického účtu k životnímu pojištění ;2018;388.538
-Česko;Převedené výnosy investic z technického účtu k životnímu pojištění ;2019;601.927
-Česko;Převedené výnosy investic z technického účtu k životnímu pojištění ;2020;379.798
-Česko;Převedené výnosy investic z technického účtu k životnímu pojištění ;2021;500.901
-Česko;Převedené výnosy investic z technického účtu k životnímu pojištění ;2022;836.617
-Česko;Náklady na investice;2018;5781.457
-Česko;Náklady na investice;2019;12432.645
-Česko;Náklady na investice;2020;6400.18
-Česko;Náklady na investice;2021;9895.919
-Česko;Náklady na investice;2022;8536.283
-Česko;Náklady na správu investic, včetně úroků;2018;709.949
-Česko;Náklady na správu investic, včetně úroků;2019;808.605
-Česko;Náklady na správu investic, včetně úroků;2020;662.813
-Česko;Náklady na správu investic, včetně úroků;2021;398.377
-Česko;Náklady na správu investic, včetně úroků;2022;689.187
-Česko;Náklady spojené s realizací investic;2018;4583.973
-Česko;Náklady spojené s realizací investic;2019;11101.554
-Česko;Náklady spojené s realizací investic;2020;4862.55
-Česko;Náklady spojené s realizací investic;2021;8692.173
-Česko;Náklady spojené s realizací investic;2022;6869.85
-Česko;Ostatní výnosy;2018;2723.724
-Česko;Ostatní výnosy;2019;6566.246
-Česko;Ostatní výnosy;2020;1552.109
-Česko;Ostatní výnosy;2021;1561.09
-Česko;Ostatní výnosy;2022;2659.911
-Česko;Ostatní náklady;2018;1550.845
-Česko;Ostatní náklady;2019;1683.153
-Česko;Ostatní náklady;2020;1085.0
-Česko;Ostatní náklady;2021;1520.226
-Česko;Ostatní náklady;2022;1292.004
-Česko;Zisk nebo ztráta z běžné činnosti po zdanění;2018;14714.137
-Česko;Zisk nebo ztráta z běžné činnosti po zdanění;2019;16166.818
-Česko;Zisk nebo ztráta z běžné činnosti po zdanění;2020;14879.088
-Česko;Zisk nebo ztráta z běžné činnosti po zdanění;2021;29469.905
-Česko;Zisk nebo ztráta z běžné činnosti po zdanění;2022;16821.335
-Česko;Zisk nebo ztráta za účetní období;2018;14780.253
-Česko;Zisk nebo ztráta za účetní období;2019;16604.025
-Česko;Zisk nebo ztráta za účetní období;2020;14926.787
-Česko;Zisk nebo ztráta za účetní období;2021;29478.861
-Česko;Zisk nebo ztráta za účetní období;2022;16842.055
+Území,Ukazatel,Roky,value
+Česko,Výsledek technického účtu k neživotnímu pojištění,2018,7107.791
+Česko,Výsledek technického účtu k neživotnímu pojištění,2019,4749.297
+Česko,Výsledek technického účtu k neživotnímu pojištění,2020,8921.206
+Česko,Výsledek technického účtu k neživotnímu pojištění,2021,16711.954
+Česko,Výsledek technického účtu k neživotnímu pojištění,2022,8631.949
+Česko,Výsledek technického účtu k neživotnímu pojištění,2023,11795.252
+Česko,Výsledek technického účtu k životnímu pojištění,2018,9450.537
+Česko,Výsledek technického účtu k životnímu pojištění,2019,10164.443
+Česko,Výsledek technického účtu k životnímu pojištění,2020,8447.906
+Česko,Výsledek technického účtu k životnímu pojištění,2021,14853.438
+Česko,Výsledek technického účtu k životnímu pojištění,2022,9511.532
+Česko,Výsledek technického účtu k životnímu pojištění,2023,16222.091
+Česko,Výnosy z investic,2018,8052.787
+Česko,Výnosy z investic,2019,14573.054
+Česko,Výnosy z investic,2020,8453.407
+Česko,Výnosy z investic,2021,17630.631
+Česko,Výnosy z investic,2022,10347.239
+Česko,Výnosy z investic,2023,11480.275
+Česko,Výnosy z ostatních investic,2018,1704.466
+Česko,Výnosy z ostatních investic,2019,2084.57
+Česko,Výnosy z ostatních investic,2020,1558.169
+Česko,Výnosy z ostatních investic,2021,1092.537
+Česko,Výnosy z ostatních investic,2022,2070.429
+Česko,Výnosy z ostatních investic,2023,3141.453
+Česko,Výnosy z realizace investic,2018,4568.725
+Česko,Výnosy z realizace investic,2019,11288.448
+Česko,Výnosy z realizace investic,2020,4966.212
+Česko,Výnosy z realizace investic,2021,14683.696
+Česko,Výnosy z realizace investic,2022,6891.086
+Česko,Výnosy z realizace investic,2023,6558.499
+Česko,Převedené výnosy investic z technického účtu k životnímu pojištění ,2018,388.538
+Česko,Převedené výnosy investic z technického účtu k životnímu pojištění ,2019,601.927
+Česko,Převedené výnosy investic z technického účtu k životnímu pojištění ,2020,379.798
+Česko,Převedené výnosy investic z technického účtu k životnímu pojištění ,2021,500.901
+Česko,Převedené výnosy investic z technického účtu k životnímu pojištění ,2022,836.617
+Česko,Převedené výnosy investic z technického účtu k životnímu pojištění ,2023,1630.567
+Česko,Náklady na investice,2018,5781.457
+Česko,Náklady na investice,2019,12432.645
+Česko,Náklady na investice,2020,6400.18
+Česko,Náklady na investice,2021,9895.919
+Česko,Náklady na investice,2022,8536.283
+Česko,Náklady na investice,2023,8448.657
+Česko,"Náklady na správu investic, včetně úroků",2018,709.949
+Česko,"Náklady na správu investic, včetně úroků",2019,808.605
+Česko,"Náklady na správu investic, včetně úroků",2020,662.813
+Česko,"Náklady na správu investic, včetně úroků",2021,398.377
+Česko,"Náklady na správu investic, včetně úroků",2022,689.187
+Česko,"Náklady na správu investic, včetně úroků",2023,846.944
+Česko,Náklady spojené s realizací investic,2018,4583.973
+Česko,Náklady spojené s realizací investic,2019,11101.554
+Česko,Náklady spojené s realizací investic,2020,4862.55
+Česko,Náklady spojené s realizací investic,2021,8692.173
+Česko,Náklady spojené s realizací investic,2022,6869.85
+Česko,Náklady spojené s realizací investic,2023,6726.985
+Česko,Ostatní výnosy,2018,2723.724
+Česko,Ostatní výnosy,2019,6566.246
+Česko,Ostatní výnosy,2020,1552.109
+Česko,Ostatní výnosy,2021,1561.09
+Česko,Ostatní výnosy,2022,2659.911
+Česko,Ostatní výnosy,2023,3001.73
+Česko,Ostatní náklady,2018,1550.845
+Česko,Ostatní náklady,2019,1683.153
+Česko,Ostatní náklady,2020,1085.0
+Česko,Ostatní náklady,2021,1520.226
+Česko,Ostatní náklady,2022,1292.004
+Česko,Ostatní náklady,2023,7836.217
+Česko,Zisk nebo ztráta z běžné činnosti po zdanění,2018,14714.137
+Česko,Zisk nebo ztráta z běžné činnosti po zdanění,2019,16166.818
+Česko,Zisk nebo ztráta z běžné činnosti po zdanění,2020,14879.088
+Česko,Zisk nebo ztráta z běžné činnosti po zdanění,2021,29469.905
+Česko,Zisk nebo ztráta z běžné činnosti po zdanění,2022,16821.335
+Česko,Zisk nebo ztráta z běžné činnosti po zdanění,2023,21338.098
+Česko,Zisk nebo ztráta za účetní období,2018,14780.253
+Česko,Zisk nebo ztráta za účetní období,2019,16604.025
+Česko,Zisk nebo ztráta za účetní období,2020,14926.787
+Česko,Zisk nebo ztráta za účetní období,2021,29478.861
+Česko,Zisk nebo ztráta za účetní období,2022,16842.055
+Česko,Zisk nebo ztráta za účetní období,2023,21326.441

@@ -1,109 +1,127 @@
-Území;Ukazatel;Typ kontroly;Roky;value
-Česko;Počet aktivních podniků;Podniky celkem;2022;1124406.0
-Česko;Počet aktivních podniků;Podniky celkem;2021;1089002.0
-Česko;Počet aktivních podniků;Podniky celkem;2020;1068446.0
-Česko;Počet aktivních podniků;Podniky celkem;2019;1058776.0
-Česko;Počet aktivních podniků;Podniky celkem;2018;1043330.0
-Česko;Počet aktivních podniků;Podniky celkem;2017;1019773.0
-Česko;Počet aktivních podniků;Podniky pod tuzemskou kontrolou;2022;1101555.0
-Česko;Počet aktivních podniků;Podniky pod tuzemskou kontrolou;2021;1068574.0
-Česko;Počet aktivních podniků;Podniky pod tuzemskou kontrolou;2020;1048595.0
-Česko;Počet aktivních podniků;Podniky pod tuzemskou kontrolou;2019;1040762.0
-Česko;Počet aktivních podniků;Podniky pod tuzemskou kontrolou;2018;1025907.0
-Česko;Počet aktivních podniků;Podniky pod tuzemskou kontrolou;2017;1004700.0
-Česko;Počet aktivních podniků;Podniky pod zahraniční kontrolou;2022;22851.0
-Česko;Počet aktivních podniků;Podniky pod zahraniční kontrolou;2021;20428.0
-Česko;Počet aktivních podniků;Podniky pod zahraniční kontrolou;2020;19851.0
-Česko;Počet aktivních podniků;Podniky pod zahraniční kontrolou;2019;18014.0
-Česko;Počet aktivních podniků;Podniky pod zahraniční kontrolou;2018;17423.0
-Česko;Počet aktivních podniků;Podniky pod zahraniční kontrolou;2017;15073.0
-Česko;Obrat (mil. CZK);Podniky celkem;2022;
-Česko;Obrat (mil. CZK);Podniky celkem;2021;
-Česko;Obrat (mil. CZK);Podniky celkem;2020;13582694.094
-Česko;Obrat (mil. CZK);Podniky celkem;2019;14422473.875
-Česko;Obrat (mil. CZK);Podniky celkem;2018;13877245.767
-Česko;Obrat (mil. CZK);Podniky celkem;2017;13057540.081
-Česko;Obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2022;
-Česko;Obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2021;
-Česko;Obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2020;7393233.39
-Česko;Obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2019;7801368.383
-Česko;Obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2018;7468654.695
-Česko;Obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2017;6937482.414
-Česko;Obrat (mil. CZK);Podniky pod zahraniční kontrolou;2022;
-Česko;Obrat (mil. CZK);Podniky pod zahraniční kontrolou;2021;
-Česko;Obrat (mil. CZK);Podniky pod zahraniční kontrolou;2020;6189460.704
-Česko;Obrat (mil. CZK);Podniky pod zahraniční kontrolou;2019;6621105.493
-Česko;Obrat (mil. CZK);Podniky pod zahraniční kontrolou;2018;6408591.073
-Česko;Obrat (mil. CZK);Podniky pod zahraniční kontrolou;2017;6120057.667
-Česko;Čistý obrat (mil. CZK);Podniky celkem;2022;19261343.201995
-Česko;Čistý obrat (mil. CZK);Podniky celkem;2021;15804110.9669463
-Česko;Čistý obrat (mil. CZK);Podniky celkem;2020;
-Česko;Čistý obrat (mil. CZK);Podniky celkem;2019;
-Česko;Čistý obrat (mil. CZK);Podniky celkem;2018;
-Česko;Čistý obrat (mil. CZK);Podniky celkem;2017;
-Česko;Čistý obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2022;10488697.4552836
-Česko;Čistý obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2021;8787825.40075438
-Česko;Čistý obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2020;
-Česko;Čistý obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2019;
-Česko;Čistý obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2018;
-Česko;Čistý obrat (mil. CZK);Podniky pod tuzemskou kontrolou;2017;
-Česko;Čistý obrat (mil. CZK);Podniky pod zahraniční kontrolou;2022;8772645.74671142
-Česko;Čistý obrat (mil. CZK);Podniky pod zahraniční kontrolou;2021;7016285.56619191
-Česko;Čistý obrat (mil. CZK);Podniky pod zahraniční kontrolou;2020;
-Česko;Čistý obrat (mil. CZK);Podniky pod zahraniční kontrolou;2019;
-Česko;Čistý obrat (mil. CZK);Podniky pod zahraniční kontrolou;2018;
-Česko;Čistý obrat (mil. CZK);Podniky pod zahraniční kontrolou;2017;
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky celkem;2022;13337738.0871185
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky celkem;2021;11256779.2566759
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky celkem;2020;9827206.738
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky celkem;2019;10474576.296
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky celkem;2018;10076316.835
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky celkem;2017;9400952.654
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2022;6682210.25644183
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2021;6013569.93735734
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2020;5244730.372
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2019;5529425.114
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2018;5261829.795
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2017;4840123.598
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2022;6655527.83067663
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2021;5243209.3193186
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2020;4582476.365
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2019;4945151.182
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2018;4814487.04
-Česko;Výkony v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2017;4560829.056
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky celkem;2022;3626967.37205511
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky celkem;2021;3185452.41741964
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky celkem;2020;2982557.071
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky celkem;2019;3026392.629
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky celkem;2018;2882281.726
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky celkem;2017;2711708.66
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2022;2160546.10351085
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2021;1832259.72956231
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2020;1720795.593
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2019;1734651.476
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2018;1647409.504
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod tuzemskou kontrolou;2017;1549454.667
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2022;1466421.26854426
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2021;1353192.68785733
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2020;1261761.478
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2019;1291741.153
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2018;1234872.222
-Česko;Přidaná hodnota v metodice podnikových statistik (mil. CZK);Podniky pod zahraniční kontrolou;2017;1162253.993
-Česko;Počet pracujících osob;Podniky celkem;2022;3871464.0
-Česko;Počet pracujících osob;Podniky celkem;2021;3763639.54017663
-Česko;Počet pracujících osob;Podniky celkem;2020;3710274.0
-Česko;Počet pracujících osob;Podniky celkem;2019;3789469.0
-Česko;Počet pracujících osob;Podniky celkem;2018;3778328.0
-Česko;Počet pracujících osob;Podniky celkem;2017;3722789.0
-Česko;Počet pracujících osob;Podniky pod tuzemskou kontrolou;2022;2778286.0
-Česko;Počet pracujících osob;Podniky pod tuzemskou kontrolou;2021;2691369.76547576
-Česko;Počet pracujících osob;Podniky pod tuzemskou kontrolou;2020;2654262.0
-Česko;Počet pracujících osob;Podniky pod tuzemskou kontrolou;2019;2713257.0
-Česko;Počet pracujících osob;Podniky pod tuzemskou kontrolou;2018;2708592.0
-Česko;Počet pracujících osob;Podniky pod tuzemskou kontrolou;2017;2679244.0
-Česko;Počet pracujících osob;Podniky pod zahraniční kontrolou;2022;1093177.0
-Česko;Počet pracujících osob;Podniky pod zahraniční kontrolou;2021;1072269.77470087
-Česko;Počet pracujících osob;Podniky pod zahraniční kontrolou;2020;1056012.0
-Česko;Počet pracujících osob;Podniky pod zahraniční kontrolou;2019;1076213.0
-Česko;Počet pracujících osob;Podniky pod zahraniční kontrolou;2018;1069735.0
-Česko;Počet pracujících osob;Podniky pod zahraniční kontrolou;2017;1043545.0
+Území,Ukazatel,Typ kontroly,Roky,value
+Česko,Počet aktivních podniků,Podniky celkem,2023,1147007.0
+Česko,Počet aktivních podniků,Podniky celkem,2022,1124406.0
+Česko,Počet aktivních podniků,Podniky celkem,2021,1089002.0
+Česko,Počet aktivních podniků,Podniky celkem,2020,1068446.0
+Česko,Počet aktivních podniků,Podniky celkem,2019,1058776.0
+Česko,Počet aktivních podniků,Podniky celkem,2018,1043330.0
+Česko,Počet aktivních podniků,Podniky celkem,2017,1019773.0
+Česko,Počet aktivních podniků,Podniky pod tuzemskou kontrolou,2023,1121320.0
+Česko,Počet aktivních podniků,Podniky pod tuzemskou kontrolou,2022,1101555.0
+Česko,Počet aktivních podniků,Podniky pod tuzemskou kontrolou,2021,1068574.0
+Česko,Počet aktivních podniků,Podniky pod tuzemskou kontrolou,2020,1048595.0
+Česko,Počet aktivních podniků,Podniky pod tuzemskou kontrolou,2019,1040762.0
+Česko,Počet aktivních podniků,Podniky pod tuzemskou kontrolou,2018,1025907.0
+Česko,Počet aktivních podniků,Podniky pod tuzemskou kontrolou,2017,1004700.0
+Česko,Počet aktivních podniků,Podniky pod zahraniční kontrolou,2023,25687.0
+Česko,Počet aktivních podniků,Podniky pod zahraniční kontrolou,2022,22851.0
+Česko,Počet aktivních podniků,Podniky pod zahraniční kontrolou,2021,20428.0
+Česko,Počet aktivních podniků,Podniky pod zahraniční kontrolou,2020,19851.0
+Česko,Počet aktivních podniků,Podniky pod zahraniční kontrolou,2019,18014.0
+Česko,Počet aktivních podniků,Podniky pod zahraniční kontrolou,2018,17423.0
+Česko,Počet aktivních podniků,Podniky pod zahraniční kontrolou,2017,15073.0
+Česko,Obrat (mil. CZK),Podniky celkem,2023,
+Česko,Obrat (mil. CZK),Podniky celkem,2022,
+Česko,Obrat (mil. CZK),Podniky celkem,2021,
+Česko,Obrat (mil. CZK),Podniky celkem,2020,13582694.094
+Česko,Obrat (mil. CZK),Podniky celkem,2019,14422473.875
+Česko,Obrat (mil. CZK),Podniky celkem,2018,13877245.767
+Česko,Obrat (mil. CZK),Podniky celkem,2017,13057540.081
+Česko,Obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2023,
+Česko,Obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2022,
+Česko,Obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2021,
+Česko,Obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2020,7393233.39
+Česko,Obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2019,7801368.383
+Česko,Obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2018,7468654.695
+Česko,Obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2017,6937482.414
+Česko,Obrat (mil. CZK),Podniky pod zahraniční kontrolou,2023,
+Česko,Obrat (mil. CZK),Podniky pod zahraniční kontrolou,2022,
+Česko,Obrat (mil. CZK),Podniky pod zahraniční kontrolou,2021,
+Česko,Obrat (mil. CZK),Podniky pod zahraniční kontrolou,2020,6189460.704
+Česko,Obrat (mil. CZK),Podniky pod zahraniční kontrolou,2019,6621105.493
+Česko,Obrat (mil. CZK),Podniky pod zahraniční kontrolou,2018,6408591.073
+Česko,Obrat (mil. CZK),Podniky pod zahraniční kontrolou,2017,6120057.667
+Česko,Čistý obrat (mil. CZK),Podniky celkem,2023,18472473.4672655
+Česko,Čistý obrat (mil. CZK),Podniky celkem,2022,19261343.201995
+Česko,Čistý obrat (mil. CZK),Podniky celkem,2021,15804110.9669463
+Česko,Čistý obrat (mil. CZK),Podniky celkem,2020,
+Česko,Čistý obrat (mil. CZK),Podniky celkem,2019,
+Česko,Čistý obrat (mil. CZK),Podniky celkem,2018,
+Česko,Čistý obrat (mil. CZK),Podniky celkem,2017,
+Česko,Čistý obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2023,10082956.6576846
+Česko,Čistý obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2022,10488697.4552836
+Česko,Čistý obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2021,8787825.40075438
+Česko,Čistý obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2020,
+Česko,Čistý obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2019,
+Česko,Čistý obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2018,
+Česko,Čistý obrat (mil. CZK),Podniky pod tuzemskou kontrolou,2017,
+Česko,Čistý obrat (mil. CZK),Podniky pod zahraniční kontrolou,2023,8389516.80958082
+Česko,Čistý obrat (mil. CZK),Podniky pod zahraniční kontrolou,2022,8772645.74671142
+Česko,Čistý obrat (mil. CZK),Podniky pod zahraniční kontrolou,2021,7016285.56619191
+Česko,Čistý obrat (mil. CZK),Podniky pod zahraniční kontrolou,2020,
+Česko,Čistý obrat (mil. CZK),Podniky pod zahraniční kontrolou,2019,
+Česko,Čistý obrat (mil. CZK),Podniky pod zahraniční kontrolou,2018,
+Česko,Čistý obrat (mil. CZK),Podniky pod zahraniční kontrolou,2017,
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky celkem,2023,13169863.2271048
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky celkem,2022,13337738.0871185
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky celkem,2021,11256779.2566759
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky celkem,2020,9827206.738
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky celkem,2019,10474576.296
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky celkem,2018,10076316.835
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky celkem,2017,9400952.654
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2023,6781519.89526033
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2022,6682210.25644183
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2021,6013569.93735734
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2020,5244730.372
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2019,5529425.114
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2018,5261829.795
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2017,4840123.598
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2023,6388343.33184441
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2022,6655527.83067663
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2021,5243209.3193186
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2020,4582476.365
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2019,4945151.182
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2018,4814487.04
+Česko,Výkony v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2017,4560829.056
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky celkem,2023,3827084.16775176
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky celkem,2022,3626967.37205511
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky celkem,2021,3185452.41741964
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky celkem,2020,2982557.071
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky celkem,2019,3026392.629
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky celkem,2018,2882281.726
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky celkem,2017,2711708.66
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2023,2270752.95018699
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2022,2160546.10351085
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2021,1832259.72956231
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2020,1720795.593
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2019,1734651.476
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2018,1647409.504
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod tuzemskou kontrolou,2017,1549454.667
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2023,1556331.21756476
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2022,1466421.26854426
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2021,1353192.68785733
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2020,1261761.478
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2019,1291741.153
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2018,1234872.222
+Česko,Přidaná hodnota v metodice podnikových statistik (mil. CZK),Podniky pod zahraniční kontrolou,2017,1162253.993
+Česko,Počet pracujících osob,Podniky celkem,2023,3894593.0
+Česko,Počet pracujících osob,Podniky celkem,2022,3871464.0
+Česko,Počet pracujících osob,Podniky celkem,2021,3763639.54017663
+Česko,Počet pracujících osob,Podniky celkem,2020,3710274.0
+Česko,Počet pracujících osob,Podniky celkem,2019,3789469.0
+Česko,Počet pracujících osob,Podniky celkem,2018,3778328.0
+Česko,Počet pracujících osob,Podniky celkem,2017,3722789.0
+Česko,Počet pracujících osob,Podniky pod tuzemskou kontrolou,2023,2796767.0
+Česko,Počet pracujících osob,Podniky pod tuzemskou kontrolou,2022,2778286.0
+Česko,Počet pracujících osob,Podniky pod tuzemskou kontrolou,2021,2691369.76547576
+Česko,Počet pracujících osob,Podniky pod tuzemskou kontrolou,2020,2654262.0
+Česko,Počet pracujících osob,Podniky pod tuzemskou kontrolou,2019,2713257.0
+Česko,Počet pracujících osob,Podniky pod tuzemskou kontrolou,2018,2708592.0
+Česko,Počet pracujících osob,Podniky pod tuzemskou kontrolou,2017,2679244.0
+Česko,Počet pracujících osob,Podniky pod zahraniční kontrolou,2023,1097826.0
+Česko,Počet pracujících osob,Podniky pod zahraniční kontrolou,2022,1093177.0
+Česko,Počet pracujících osob,Podniky pod zahraniční kontrolou,2021,1072269.77470087
+Česko,Počet pracujících osob,Podniky pod zahraniční kontrolou,2020,1056012.0
+Česko,Počet pracujících osob,Podniky pod zahraniční kontrolou,2019,1076213.0
+Česko,Počet pracujících osob,Podniky pod zahraniční kontrolou,2018,1069735.0
+Česko,Počet pracujících osob,Podniky pod zahraniční kontrolou,2017,1043545.0

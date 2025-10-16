@@ -1,33 +1,33 @@
-Území;Rok sčítání;Ukazatel;Druh domu;value
-Česká republika;2011;Počet domů;Domy celkem;2158119
-Česká republika;2011;Počet domů;Rodinné domy;1901126
-Česká republika;2011;Počet domů;Bytové domy;214760
-Česká republika;2011;Počet domů;Ostatní budovy;42233
-Česká republika;2011;Počet obydlených domů;Domy celkem;1800075
-Česká republika;2011;Počet obydlených domů;Rodinné domy;1554794
-Česká republika;2011;Počet obydlených domů;Bytové domy;211252
-Česká republika;2011;Počet obydlených domů;Ostatní budovy;34029
-Česká republika;2011;Vlastník domu - fyzická osoba;Domy celkem;1499512
-Česká republika;2011;Vlastník domu - fyzická osoba;Rodinné domy;1455367
-Česká republika;2011;Vlastník domu - fyzická osoba;Bytové domy;36763
-Česká republika;2011;Vlastník domu - fyzická osoba;Ostatní budovy;7382
-Česká republika;2011;Vlastník domu - obec, stát;Domy celkem;48948
-Česká republika;2011;Vlastník domu - obec, stát;Rodinné domy;9580
-Česká republika;2011;Vlastník domu - obec, stát;Bytové domy;31531
-Česká republika;2011;Vlastník domu - obec, stát;Ostatní budovy;7837
-Česká republika;2011;Vlastník domu - bytové družstvo;Domy celkem;31509
-Česká republika;2011;Vlastník domu - bytové družstvo;Rodinné domy;1037
-Česká republika;2011;Vlastník domu - bytové družstvo;Bytové domy;30404
-Česká republika;2011;Vlastník domu - bytové družstvo;Ostatní budovy;68
-Česká republika;2011;Vlastník domu - spoluvlastnictví vlastníků bytů;Domy celkem;137687
-Česká republika;2011;Vlastník domu - spoluvlastnictví vlastníků bytů;Rodinné domy;60651
-Česká republika;2011;Vlastník domu - spoluvlastnictví vlastníků bytů;Bytové domy;76522
-Česká republika;2011;Vlastník domu - spoluvlastnictví vlastníků bytů;Ostatní budovy;514
-Česká republika;2011;Období výstavby nebo rekonstrukce - 1919 a dříve;Domy celkem;230908
-Česká republika;2011;Období výstavby nebo rekonstrukce - 1919 a dříve;Rodinné domy;199845
-Česká republika;2011;Období výstavby nebo rekonstrukce - 1919 a dříve;Bytové domy;26077
-Česká republika;2011;Období výstavby nebo rekonstrukce - 1919 a dříve;Ostatní budovy;4986
-Česká republika;2011;Období výstavby nebo rekonstrukce - 2001 - 2011;Domy celkem;219379
-Česká republika;2011;Období výstavby nebo rekonstrukce - 2001 - 2011;Rodinné domy;203775
-Česká republika;2011;Období výstavby nebo rekonstrukce - 2001 - 2011;Bytové domy;12674
-Česká republika;2011;Období výstavby nebo rekonstrukce - 2001 - 2011;Ostatní budovy;2930
+Území,Rok sčítání,Ukazatel,Druh domu,value
+Česká republika,2011,Počet domů,Domy celkem,2158119
+Česká republika,2011,Počet domů,Rodinné domy,1901126
+Česká republika,2011,Počet domů,Bytové domy,214760
+Česká republika,2011,Počet domů,Ostatní budovy,42233
+Česká republika,2011,Počet obydlených domů,Domy celkem,1800075
+Česká republika,2011,Počet obydlených domů,Rodinné domy,1554794
+Česká republika,2011,Počet obydlených domů,Bytové domy,211252
+Česká republika,2011,Počet obydlených domů,Ostatní budovy,34029
+Česká republika,2011,Vlastník domu - fyzická osoba,Domy celkem,1499512
+Česká republika,2011,Vlastník domu - fyzická osoba,Rodinné domy,1455367
+Česká republika,2011,Vlastník domu - fyzická osoba,Bytové domy,36763
+Česká republika,2011,Vlastník domu - fyzická osoba,Ostatní budovy,7382
+Česká republika,2011,"Vlastník domu - obec, stát",Domy celkem,48948
+Česká republika,2011,"Vlastník domu - obec, stát",Rodinné domy,9580
+Česká republika,2011,"Vlastník domu - obec, stát",Bytové domy,31531
+Česká republika,2011,"Vlastník domu - obec, stát",Ostatní budovy,7837
+Česká republika,2011,Vlastník domu - bytové družstvo,Domy celkem,31509
+Česká republika,2011,Vlastník domu - bytové družstvo,Rodinné domy,1037
+Česká republika,2011,Vlastník domu - bytové družstvo,Bytové domy,30404
+Česká republika,2011,Vlastník domu - bytové družstvo,Ostatní budovy,68
+Česká republika,2011,Vlastník domu - spoluvlastnictví vlastníků bytů,Domy celkem,137687
+Česká republika,2011,Vlastník domu - spoluvlastnictví vlastníků bytů,Rodinné domy,60651
+Česká republika,2011,Vlastník domu - spoluvlastnictví vlastníků bytů,Bytové domy,76522
+Česká republika,2011,Vlastník domu - spoluvlastnictví vlastníků bytů,Ostatní budovy,514
+Česká republika,2011,Období výstavby nebo rekonstrukce - 1919 a dříve,Domy celkem,230908
+Česká republika,2011,Období výstavby nebo rekonstrukce - 1919 a dříve,Rodinné domy,199845
+Česká republika,2011,Období výstavby nebo rekonstrukce - 1919 a dříve,Bytové domy,26077
+Česká republika,2011,Období výstavby nebo rekonstrukce - 1919 a dříve,Ostatní budovy,4986
+Česká republika,2011,Období výstavby nebo rekonstrukce - 2001 - 2011,Domy celkem,219379
+Česká republika,2011,Období výstavby nebo rekonstrukce - 2001 - 2011,Rodinné domy,203775
+Česká republika,2011,Období výstavby nebo rekonstrukce - 2001 - 2011,Bytové domy,12674
+Česká republika,2011,Období výstavby nebo rekonstrukce - 2001 - 2011,Ostatní budovy,2930

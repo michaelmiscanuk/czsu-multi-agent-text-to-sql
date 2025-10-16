@@ -1,28 +1,31 @@
-Území;Instituce;Ukazatel;Roky;value
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2014;109.825066227
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2015;53.2154715369
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2016;38.1806189407
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2017;46.18
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2018;49.27
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2019;49.1052575457
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2020;68.0233469582
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2021;92.3487624618
-Česko;Investiční společnosti a fondy;Pořízení dlouhodobého nehmotného majetku, (vč. dotací);2022;80.9646546779
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2014;102.2863364819
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2015;53.2154715369
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2016;38.1806189407
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2017;46.18
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2018;49.27
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2019;48.5592575457
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2020;68.0233469582
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2021;92.3487624618
-Česko;Investiční společnosti a fondy;Nákup nového DNM;2022;80.9646546779
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2014;6453.1133070523
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2015;6463.6567823069
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2016;7335.6315831273
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2017;6531.292
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2018;6798.4736255252
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2019;6715.9416345878
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2020;6863.000007607
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2021;7004.7858441287
-Česko;Investiční společnosti a fondy;Stav dlouhodobého nehmotného majetku - brutto;2022;6890.2326041432
+Území,Instituce,Ukazatel,Roky,value
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2014,109.825066227
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2015,53.2154715369
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2016,38.1806189407
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2017,46.18
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2018,49.27
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2019,49.1052575457
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2020,68.0233469582
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2021,92.3487624618
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2022,80.9646546779
+Česko,Investiční společnosti a fondy,"Pořízení dlouhodobého nehmotného majetku, (vč. dotací)",2023,297.461977388
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2014,102.2863364819
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2015,53.2154715369
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2016,38.1806189407
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2017,46.18
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2018,49.27
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2019,48.5592575457
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2020,68.0233469582
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2021,92.3487624618
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2022,80.9646546779
+Česko,Investiční společnosti a fondy,Nákup nového DNM,2023,297.461977388
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2014,6453.1133070523
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2015,6463.6567823069
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2016,7335.6315831273
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2017,6531.292
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2018,6798.4736255252
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2019,6715.9416345878
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2020,6863.000007607
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2021,7004.7858441287
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2022,6890.2326041432
+Česko,Investiční společnosti a fondy,Stav dlouhodobého nehmotného majetku - brutto,2023,7173.7784739189

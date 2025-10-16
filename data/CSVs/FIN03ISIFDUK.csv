@@ -1,37 +1,41 @@
-Území;Instituce;Ukazatel;Roky;value
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2014;454.4451181504
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2015;376.8447559333
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2016;434.0597242359
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2017;541.1982497633
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2018;2895.9382008963
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2019;1273.2663313329
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2020;959.349
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2021;2063.934
-Česko;Investiční společnosti a fondy;Přijaté dividendy a podíly na zisku - brutto;2022;2644.083
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2014;4092.5966481506
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2015;5311.8161033479
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2016;1823.1335342118
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2017;2744.313459116
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2018;1874.7065303352
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2019;4293.0719086876
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2020;2316.7942549371
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2021;2244.1804274776
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.;2022;1103.5444285866
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2014;248.929350981
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2015;158.516618304
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2016;243.1975281685
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2017;73.9322843759
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2018;29.839
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2019;214.7227855005
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2020;0.179
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2021;185.49
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku nerezidentům;2022;247.25
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2014;26.428
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2015;0.0162920438
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2016;0.0
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2017;0.9610344537
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2018;9.2514914581
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2019;161.8579227408
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2020;195.5076041611
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2021;196.5112202781
-Česko;Investiční společnosti a fondy;Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům);2022;274.2863619085
+Území,Instituce,Ukazatel,Roky,value
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2014,454.4451181504
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2015,376.8447559333
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2016,434.0597242359
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2017,541.1982497633
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2018,2895.9382008963
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2019,1273.2663313329
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2020,959.349
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2021,2063.934
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2022,2644.083
+Česko,Investiční společnosti a fondy,Přijaté dividendy a podíly na zisku - brutto,2023,5327.062
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2014,4092.5966481506
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2015,5311.8161033479
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2016,1823.1335342118
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2017,2744.313459116
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2018,1874.7065303352
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2019,4293.0719086876
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2020,2316.7942549371
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2021,2244.1804274776
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2022,1103.5444285866
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku vč. daně z příjmu od 1. 1. do 31. 12.,2023,1313.3325384832
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2014,248.929350981
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2015,158.516618304
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2016,243.1975281685
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2017,73.9322843759
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2018,29.839
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2019,214.7227855005
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2020,0.179
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2021,185.49
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2022,247.25
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku nerezidentům,2023,420.8813425383
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2014,26.428
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2015,0.0162920438
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2016,0.0
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2017,0.9610344537
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2018,9.2514914581
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2019,161.8579227408
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2020,195.5076041611
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2021,196.5112202781
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2022,274.2863619085
+Česko,Investiční společnosti a fondy,Vyplacené dividendy a podíly na zisku fyzickým osobám (rezidentům),2023,169.1267370527

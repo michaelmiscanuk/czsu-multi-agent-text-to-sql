@@ -1,955 +1,955 @@
-Okresy;Pětileté období (okresy);Pohlaví;Věk (roky);Ukazatel;value
-Praha;2019-2023;muži;0;Počet zemřelých (Dx);63.0
-Praha;2019-2023;muži;0;Počet obyvatel (Px);36401.0
-Praha;2019-2023;muži;0;Míra úmrtnosti (mx);0.001730722
-Praha;2019-2023;muži;0;Pravděpodobnost úmrtí (qx);0.001728179
-Praha;2019-2023;muži;0;Tabulkový počet dožívajících (lx);100000.0
-Praha;2019-2023;muži;0;Tabulkový počet zemřelých (dx);172.8179336
-Praha;2019-2023;muži;0;Tabulkový počet žijících (Lx);99853.10476
-Praha;2019-2023;muži;0;Pomocný ukazatel (Tx);7779953.218
-Praha;2019-2023;muži;0;Naděje dožití (ex);77.79953218
-Praha;2019-2023;muži;1;Počet zemřelých (Dx);3.0
-Praha;2019-2023;muži;1;Počet obyvatel (Px);37555.0
-Praha;2019-2023;muži;1;Míra úmrtnosti (mx);0.000121693
-Praha;2019-2023;muži;1;Pravděpodobnost úmrtí (qx);0.000121685
-Praha;2019-2023;muži;1;Tabulkový počet dožívajících (lx);99827.18207
-Praha;2019-2023;muži;1;Tabulkový počet zemřelých (dx);12.14750257
-Praha;2019-2023;muži;1;Tabulkový počet žijících (Lx);99821.10832
-Praha;2019-2023;muži;1;Pomocný ukazatel (Tx);7680100.114
-Praha;2019-2023;muži;1;Naděje dožití (ex);76.93395681
-Praha;2019-2023;muži;2;Počet zemřelých (Dx);6.0
-Praha;2019-2023;muži;2;Počet obyvatel (Px);37552.0
-Praha;2019-2023;muži;2;Míra úmrtnosti (mx);0.000119866
-Praha;2019-2023;muži;2;Pravděpodobnost úmrtí (qx);0.000119859
-Praha;2019-2023;muži;2;Tabulkový počet dožívajících (lx);99815.03456
-Praha;2019-2023;muži;2;Tabulkový počet zemřelých (dx);11.96373587
-Praha;2019-2023;muži;2;Tabulkový počet žijících (Lx);99809.0527
-Praha;2019-2023;muži;2;Pomocný ukazatel (Tx);7580279.005
-Praha;2019-2023;muži;2;Naděje dožití (ex);75.94325883
-Praha;2019-2023;muži;3;Počet zemřelých (Dx);8.0
-Praha;2019-2023;muži;3;Počet obyvatel (Px);37343.0
-Praha;2019-2023;muži;3;Míra úmrtnosti (mx);0.000180312
-Praha;2019-2023;muži;3;Pravděpodobnost úmrtí (qx);0.000180296
-Praha;2019-2023;muži;3;Tabulkový počet dožívajících (lx);99803.07083
-Praha;2019-2023;muži;3;Tabulkový počet zemřelých (dx);17.99405482
-Praha;2019-2023;muži;3;Tabulkový počet žijících (Lx);99794.0738
-Praha;2019-2023;muži;3;Pomocný ukazatel (Tx);7480469.953
-Praha;2019-2023;muži;3;Naděje dožití (ex);74.95230248
-Praha;2019-2023;muži;4;Počet zemřelých (Dx);2.0
-Praha;2019-2023;muži;4;Počet obyvatel (Px);37373.0
-Praha;2019-2023;muži;4;Míra úmrtnosti (mx);0.000115066
-Praha;2019-2023;muži;4;Pravděpodobnost úmrtí (qx);0.00011506
-Praha;2019-2023;muži;4;Tabulkový počet dožívajících (lx);99785.07677
-Praha;2019-2023;muži;4;Tabulkový počet zemřelých (dx);11.48122423
-Praha;2019-2023;muži;4;Tabulkový počet žijících (Lx);99779.33616
-Praha;2019-2023;muži;4;Pomocný ukazatel (Tx);7380675.879
-Praha;2019-2023;muži;4;Naděje dožití (ex);73.96572832
-Praha;2019-2023;muži;5;Počet zemřelých (Dx);2.0
-Praha;2019-2023;muži;5;Počet obyvatel (Px);37107.0
-Praha;2019-2023;muži;5;Míra úmrtnosti (mx);4.97e-05
-Praha;2019-2023;muži;5;Pravděpodobnost úmrtí (qx);4.97e-05
-Praha;2019-2023;muži;5;Tabulkový počet dožívajících (lx);99773.59555
-Praha;2019-2023;muži;5;Tabulkový počet zemřelých (dx);4.961798044
-Praha;2019-2023;muži;5;Tabulkový počet žijících (Lx);99771.11465
-Praha;2019-2023;muži;5;Pomocný ukazatel (Tx);7280896.543
-Praha;2019-2023;muži;5;Naděje dožití (ex);72.97418222
-Praha;2019-2023;muži;6;Počet zemřelých (Dx);2.0
-Praha;2019-2023;muži;6;Počet obyvatel (Px);36702.0
-Praha;2019-2023;muži;6;Míra úmrtnosti (mx);2.79e-05
-Praha;2019-2023;muži;6;Pravděpodobnost úmrtí (qx);2.79e-05
-Praha;2019-2023;muži;6;Tabulkový počet dožívajících (lx);99768.63375
-Praha;2019-2023;muži;6;Tabulkový počet zemřelých (dx);2.782773435
-Praha;2019-2023;muži;6;Tabulkový počet žijících (Lx);99767.24236
-Praha;2019-2023;muži;6;Pomocný ukazatel (Tx);7181125.428
-Praha;2019-2023;muži;6;Naděje dožití (ex);71.97778659
-Praha;2019-2023;muži;7;Počet zemřelých (Dx);1.0
-Praha;2019-2023;muži;7;Počet obyvatel (Px);36212.0
-Praha;2019-2023;muži;7;Míra úmrtnosti (mx);2.66e-05
-Praha;2019-2023;muži;7;Pravděpodobnost úmrtí (qx);2.66e-05
-Praha;2019-2023;muži;7;Tabulkový počet dožívajících (lx);99765.85098
-Praha;2019-2023;muži;7;Tabulkový počet zemřelých (dx);2.650798028
-Praha;2019-2023;muži;7;Tabulkový počet žijících (Lx);99764.52558
-Praha;2019-2023;muži;7;Pomocný ukazatel (Tx);7081358.186
-Praha;2019-2023;muži;7;Naděje dožití (ex);70.97978032
-Praha;2019-2023;muži;8;Počet zemřelých (Dx);0.0
-Praha;2019-2023;muži;8;Počet obyvatel (Px);36057.0
-Praha;2019-2023;muži;8;Míra úmrtnosti (mx);3.51e-05
-Praha;2019-2023;muži;8;Pravděpodobnost úmrtí (qx);3.5087e-05
-Praha;2019-2023;muži;8;Tabulkový počet dožívajících (lx);99763.20018
-Praha;2019-2023;muži;8;Tabulkový počet zemřelých (dx);3.500393254
-Praha;2019-2023;muži;8;Tabulkový počet žijících (Lx);99761.44998
-Praha;2019-2023;muži;8;Pomocný ukazatel (Tx);6981593.66
-Praha;2019-2023;muži;8;Naděje dožití (ex);69.98165303
-Praha;2019-2023;muži;9;Počet zemřelých (Dx);2.0
-Praha;2019-2023;muži;9;Počet obyvatel (Px);36115.0
-Praha;2019-2023;muži;9;Míra úmrtnosti (mx);5.12e-05
-Praha;2019-2023;muži;9;Pravděpodobnost úmrtí (qx);5.1211e-05
-Praha;2019-2023;muži;9;Tabulkový počet dožívajících (lx);99759.69979
-Praha;2019-2023;muži;9;Tabulkový počet zemřelých (dx);5.108796849
-Praha;2019-2023;muži;9;Tabulkový počet žijících (Lx);99757.14539
-Praha;2019-2023;muži;9;Pomocný ukazatel (Tx);6881832.21
-Praha;2019-2023;muži;9;Naděje dožití (ex);68.98409102
-Praha;2019-2023;muži;10;Počet zemřelých (Dx);3.0
-Praha;2019-2023;muži;10;Počet obyvatel (Px);36129.0
-Praha;2019-2023;muži;10;Míra úmrtnosti (mx);7.27e-05
-Praha;2019-2023;muži;10;Pravděpodobnost úmrtí (qx);7.2714e-05
-Praha;2019-2023;muži;10;Tabulkový počet dožívajících (lx);99754.59099
-Praha;2019-2023;muži;10;Tabulkový počet zemřelých (dx);7.253556669
-Praha;2019-2023;muži;10;Tabulkový počet žijících (Lx);99750.96421
-Praha;2019-2023;muži;10;Pomocný ukazatel (Tx);6782075.065
-Praha;2019-2023;muži;10;Naděje dožití (ex);67.98759834
-Praha;2019-2023;muži;11;Počet zemřelých (Dx);5.0
-Praha;2019-2023;muži;11;Počet obyvatel (Px);35885.0
-Praha;2019-2023;muži;11;Míra úmrtnosti (mx);9.59e-05
-Praha;2019-2023;muži;11;Pravděpodobnost úmrtí (qx);9.59e-05
-Praha;2019-2023;muži;11;Tabulkový počet dožívajících (lx);99747.33743
-Praha;2019-2023;muži;11;Tabulkový počet zemřelých (dx);9.566189918
-Praha;2019-2023;muži;11;Tabulkový počet žijících (Lx);99742.55434
-Praha;2019-2023;muži;11;Pomocný ukazatel (Tx);6682324.101
-Praha;2019-2023;muži;11;Naděje dožití (ex);66.99250599
-Praha;2019-2023;muži;12;Počet zemřelých (Dx);3.0
-Praha;2019-2023;muži;12;Počet obyvatel (Px);35169.0
-Praha;2019-2023;muži;12;Míra úmrtnosti (mx);0.000113332
-Praha;2019-2023;muži;12;Pravděpodobnost úmrtí (qx);0.000113326
-Praha;2019-2023;muži;12;Tabulkový počet dožívajících (lx);99737.77124
-Praha;2019-2023;muži;12;Tabulkový počet zemřelých (dx);11.30286492
-Praha;2019-2023;muži;12;Tabulkový počet žijících (Lx);99732.11981
-Praha;2019-2023;muži;12;Pomocný ukazatel (Tx);6582581.546
-Praha;2019-2023;muži;12;Naděje dožití (ex);65.99888351
-Praha;2019-2023;muži;13;Počet zemřelých (Dx);4.0
-Praha;2019-2023;muži;13;Počet obyvatel (Px);33736.0
-Praha;2019-2023;muži;13;Míra úmrtnosti (mx);0.000124248
-Praha;2019-2023;muži;13;Pravděpodobnost úmrtí (qx);0.00012424
-Praha;2019-2023;muži;13;Tabulkový počet dožívajících (lx);99726.46838
-Praha;2019-2023;muži;13;Tabulkový počet zemřelých (dx);12.39004271
-Praha;2019-2023;muži;13;Tabulkový počet žijících (Lx);99720.27336
-Praha;2019-2023;muži;13;Pomocný ukazatel (Tx);6482849.426
-Praha;2019-2023;muži;13;Naděje dožití (ex);65.00630707
-Praha;2019-2023;muži;14;Počet zemřelých (Dx);4.0
-Praha;2019-2023;muži;14;Počet obyvatel (Px);31818.0
-Praha;2019-2023;muži;14;Míra úmrtnosti (mx);0.000136013
-Praha;2019-2023;muži;14;Pravděpodobnost úmrtí (qx);0.000136004
-Praha;2019-2023;muži;14;Tabulkový počet dožívajících (lx);99714.07834
-Praha;2019-2023;muži;14;Tabulkový počet zemřelých (dx);13.56146579
-Praha;2019-2023;muži;14;Tabulkový počet žijících (Lx);99707.2976
-Praha;2019-2023;muži;14;Pomocný ukazatel (Tx);6383129.153
-Praha;2019-2023;muži;14;Naděje dožití (ex);64.01432235
-Praha;2019-2023;muži;15;Počet zemřelých (Dx);6.0
-Praha;2019-2023;muži;15;Počet obyvatel (Px);29862.0
-Praha;2019-2023;muži;15;Míra úmrtnosti (mx);0.000158581
-Praha;2019-2023;muži;15;Pravděpodobnost úmrtí (qx);0.000158568
-Praha;2019-2023;muži;15;Tabulkový počet dožívajících (lx);99700.51687
-Praha;2019-2023;muži;15;Tabulkový počet zemřelých (dx);15.80935228
-Praha;2019-2023;muži;15;Tabulkový počet žijících (Lx);99692.61219
-Praha;2019-2023;muži;15;Pomocný ukazatel (Tx);6283421.855
-Praha;2019-2023;muži;15;Naděje dožití (ex);63.02296169
-Praha;2019-2023;muži;16;Počet zemřelých (Dx);5.0
-Praha;2019-2023;muži;16;Počet obyvatel (Px);28205.0
-Praha;2019-2023;muži;16;Míra úmrtnosti (mx);0.00019932
-Praha;2019-2023;muži;16;Pravděpodobnost úmrtí (qx);0.0001993
-Praha;2019-2023;muži;16;Tabulkový počet dožívajících (lx);99684.70752
-Praha;2019-2023;muži;16;Tabulkový počet zemřelých (dx);19.8671293
-Praha;2019-2023;muži;16;Tabulkový počet žijících (Lx);99674.77395
-Praha;2019-2023;muži;16;Pomocný ukazatel (Tx);6183729.243
-Praha;2019-2023;muži;16;Naděje dožití (ex);62.03287743
-Praha;2019-2023;muži;17;Počet zemřelých (Dx);6.0
-Praha;2019-2023;muži;17;Počet obyvatel (Px);28121.0
-Praha;2019-2023;muži;17;Míra úmrtnosti (mx);0.000268391
-Praha;2019-2023;muži;17;Pravděpodobnost úmrtí (qx);0.000268355
-Praha;2019-2023;muži;17;Tabulkový počet dožívajících (lx);99664.84039
-Praha;2019-2023;muži;17;Tabulkový počet zemřelých (dx);26.74559821
-Praha;2019-2023;muži;17;Tabulkový počet žijících (Lx);99651.46759
-Praha;2019-2023;muži;17;Pomocný ukazatel (Tx);6084054.469
-Praha;2019-2023;muži;17;Naděje dožití (ex);61.04514336
-Praha;2019-2023;muži;18;Počet zemřelých (Dx);9.0
-Praha;2019-2023;muži;18;Počet obyvatel (Px);29194.0
-Praha;2019-2023;muži;18;Míra úmrtnosti (mx);0.000378692
-Praha;2019-2023;muži;18;Pravděpodobnost úmrtí (qx);0.00037862
-Praha;2019-2023;muži;18;Tabulkový počet dožívajících (lx);99638.09479
-Praha;2019-2023;muži;18;Tabulkový počet zemřelých (dx);37.72496144
-Praha;2019-2023;muži;18;Tabulkový počet žijících (Lx);99619.23231
-Praha;2019-2023;muži;18;Pomocný ukazatel (Tx);5984403.002
-Praha;2019-2023;muži;18;Naděje dožití (ex);60.06139534
-Praha;2019-2023;muži;19;Počet zemřelých (Dx);16.0
-Praha;2019-2023;muži;19;Počet obyvatel (Px);29232.0
-Praha;2019-2023;muži;19;Míra úmrtnosti (mx);0.000517914
-Praha;2019-2023;muži;19;Pravděpodobnost úmrtí (qx);0.00051778
-Praha;2019-2023;muži;19;Tabulkový počet dožívajících (lx);99600.36983
-Praha;2019-2023;muži;19;Tabulkový počet zemřelých (dx);51.57110944
-Praha;2019-2023;muži;19;Tabulkový počet žijících (Lx);99574.58427
-Praha;2019-2023;muži;19;Pomocný ukazatel (Tx);5884783.769
-Praha;2019-2023;muži;19;Naděje dožití (ex);59.08395501
-Praha;2019-2023;muži;20;Počet zemřelých (Dx);20.0
-Praha;2019-2023;muži;20;Počet obyvatel (Px);28555.0
-Praha;2019-2023;muži;20;Míra úmrtnosti (mx);0.000627522
-Praha;2019-2023;muži;20;Pravděpodobnost úmrtí (qx);0.000627325
-Praha;2019-2023;muži;20;Tabulkový počet dožívajících (lx);99548.79872
-Praha;2019-2023;muži;20;Tabulkový počet zemřelých (dx);62.44944063
-Praha;2019-2023;muži;20;Tabulkový počet žijících (Lx);99517.574
-Praha;2019-2023;muži;20;Pomocný ukazatel (Tx);5785209.185
-Praha;2019-2023;muži;20;Naděje dožití (ex);58.11430434
-Praha;2019-2023;muži;21;Počet zemřelých (Dx);23.0
-Praha;2019-2023;muži;21;Počet obyvatel (Px);28240.0
-Praha;2019-2023;muži;21;Míra úmrtnosti (mx);0.00064409
-Praha;2019-2023;muži;21;Pravděpodobnost úmrtí (qx);0.000643882
-Praha;2019-2023;muži;21;Tabulkový počet dožívajících (lx);99486.34928
-Praha;2019-2023;muži;21;Tabulkový počet zemřelých (dx);64.05749163
-Praha;2019-2023;muži;21;Tabulkový počet žijících (Lx);99454.32053
-Praha;2019-2023;muži;21;Pomocný ukazatel (Tx);5685691.611
-Praha;2019-2023;muži;21;Naděje dožití (ex);57.15046991
-Praha;2019-2023;muži;22;Počet zemřelých (Dx);16.0
-Praha;2019-2023;muži;22;Počet obyvatel (Px);28369.0
-Praha;2019-2023;muži;22;Míra úmrtnosti (mx);0.000592176
-Praha;2019-2023;muži;22;Pravděpodobnost úmrtí (qx);0.000592001
-Praha;2019-2023;muži;22;Tabulkový počet dožívajících (lx);99422.29179
-Praha;2019-2023;muži;22;Tabulkový počet zemřelých (dx);58.85806884
-Praha;2019-2023;muži;22;Tabulkový počet žijících (Lx);99392.86275
-Praha;2019-2023;muži;22;Pomocný ukazatel (Tx);5586237.291
-Praha;2019-2023;muži;22;Naděje dožití (ex);56.18696964
-Praha;2019-2023;muži;23;Počet zemřelých (Dx);10.0
-Praha;2019-2023;muži;23;Počet obyvatel (Px);29108.0
-Praha;2019-2023;muži;23;Míra úmrtnosti (mx);0.000522555
-Praha;2019-2023;muži;23;Pravděpodobnost úmrtí (qx);0.000522418
-Praha;2019-2023;muži;23;Tabulkový počet dožívajících (lx);99363.43372
-Praha;2019-2023;muži;23;Tabulkový počet zemřelých (dx);51.90926585
-Praha;2019-2023;muži;23;Tabulkový počet žijících (Lx);99337.47908
-Praha;2019-2023;muži;23;Pomocný ukazatel (Tx);5486844.428
-Praha;2019-2023;muži;23;Naděje dožití (ex);55.2199559
-Praha;2019-2023;muži;24;Počet zemřelých (Dx);15.0
-Praha;2019-2023;muži;24;Počet obyvatel (Px);30567.0
-Praha;2019-2023;muži;24;Míra úmrtnosti (mx);0.000465667
-Praha;2019-2023;muži;24;Pravděpodobnost úmrtí (qx);0.000465559
-Praha;2019-2023;muži;24;Tabulkový počet dožívajících (lx);99311.52445
-Praha;2019-2023;muži;24;Tabulkový počet zemřelých (dx);46.23533907
-Praha;2019-2023;muži;24;Tabulkový počet žijících (Lx);99288.40678
-Praha;2019-2023;muži;24;Pomocný ukazatel (Tx);5387506.949
-Praha;2019-2023;muži;24;Naděje dožití (ex);54.24855754
-Praha;2019-2023;muži;25;Počet zemřelých (Dx);17.0
-Praha;2019-2023;muži;25;Počet obyvatel (Px);32939.0
-Praha;2019-2023;muži;25;Míra úmrtnosti (mx);0.000429402
-Praha;2019-2023;muži;25;Pravděpodobnost úmrtí (qx);0.000429309
-Praha;2019-2023;muži;25;Tabulkový počet dožívajících (lx);99265.28911
-Praha;2019-2023;muži;25;Tabulkový počet zemřelých (dx);42.6155241
-Praha;2019-2023;muži;25;Tabulkový počet žijících (Lx);99243.98135
-Praha;2019-2023;muži;25;Pomocný ukazatel (Tx);5288218.542
-Praha;2019-2023;muži;25;Naděje dožití (ex);53.2735923
-Praha;2019-2023;muži;26;Počet zemřelých (Dx);14.0
-Praha;2019-2023;muži;26;Počet obyvatel (Px);35893.0
-Praha;2019-2023;muži;26;Míra úmrtnosti (mx);0.000418618
-Praha;2019-2023;muži;26;Pravděpodobnost úmrtí (qx);0.00041853
-Praha;2019-2023;muži;26;Tabulkový počet dožívajících (lx);99222.67359
-Praha;2019-2023;muži;26;Tabulkový počet zemřelých (dx);41.52768362
-Praha;2019-2023;muži;26;Tabulkový počet žijících (Lx);99201.90975
-Praha;2019-2023;muži;26;Pomocný ukazatel (Tx);5188974.561
-Praha;2019-2023;muži;26;Naděje dožití (ex);52.29625823
-Praha;2019-2023;muži;27;Počet zemřelých (Dx);15.0
-Praha;2019-2023;muži;27;Počet obyvatel (Px);39554.0
-Praha;2019-2023;muži;27;Míra úmrtnosti (mx);0.000433147
-Praha;2019-2023;muži;27;Pravděpodobnost úmrtí (qx);0.000433053
-Praha;2019-2023;muži;27;Tabulkový počet dožívajících (lx);99181.1459
-Praha;2019-2023;muži;27;Tabulkový počet zemřelých (dx);42.95073615
-Praha;2019-2023;muži;27;Tabulkový počet žijících (Lx);99159.67054
-Praha;2019-2023;muži;27;Pomocný ukazatel (Tx);5089772.651
-Praha;2019-2023;muži;27;Naděje dožití (ex);51.31794561
-Praha;2019-2023;muži;28;Počet zemřelých (Dx);17.0
-Praha;2019-2023;muži;28;Počet obyvatel (Px);43353.0
-Praha;2019-2023;muži;28;Míra úmrtnosti (mx);0.000469519
-Praha;2019-2023;muži;28;Pravděpodobnost úmrtí (qx);0.000469409
-Praha;2019-2023;muži;28;Tabulkový počet dožívajících (lx);99138.19517
-Praha;2019-2023;muži;28;Tabulkový počet zemřelých (dx);46.53634514
-Praha;2019-2023;muži;28;Tabulkový počet žijících (Lx);99114.927
-Praha;2019-2023;muži;28;Pomocný ukazatel (Tx);4990612.98
-Praha;2019-2023;muži;28;Naděje dožití (ex);50.33996203
-Praha;2019-2023;muži;29;Počet zemřelých (Dx);29.0
-Praha;2019-2023;muži;29;Počet obyvatel (Px);46632.0
-Praha;2019-2023;muži;29;Míra úmrtnosti (mx);0.00052571
-Praha;2019-2023;muži;29;Pravděpodobnost úmrtí (qx);0.000525571
-Praha;2019-2023;muži;29;Tabulkový počet dožívajících (lx);99091.65882
-Praha;2019-2023;muži;29;Tabulkový počet zemřelých (dx);52.07974578
-Praha;2019-2023;muži;29;Tabulkový počet žijících (Lx);99065.61895
-Praha;2019-2023;muži;29;Pomocný ukazatel (Tx);4891498.053
-Praha;2019-2023;muži;29;Naděje dožití (ex);49.36336833
-Praha;2019-2023;muži;30;Počet zemřelých (Dx);27.0
-Praha;2019-2023;muži;30;Počet obyvatel (Px);49443.0
-Praha;2019-2023;muži;30;Míra úmrtnosti (mx);0.000596961
-Praha;2019-2023;muži;30;Pravděpodobnost úmrtí (qx);0.000596782
-Praha;2019-2023;muži;30;Tabulkový počet dožívajících (lx);99039.57908
-Praha;2019-2023;muži;30;Tabulkový počet zemřelých (dx);59.10507432
-Praha;2019-2023;muži;30;Tabulkový počet žijících (Lx);99010.02654
-Praha;2019-2023;muži;30;Pomocný ukazatel (Tx);4792432.434
-Praha;2019-2023;muži;30;Naděje dožití (ex);48.38906303
-Praha;2019-2023;muži;31;Počet zemřelých (Dx);38.0
-Praha;2019-2023;muži;31;Počet obyvatel (Px);51529.0
-Praha;2019-2023;muži;31;Míra úmrtnosti (mx);0.00067314
-Praha;2019-2023;muži;31;Pravděpodobnost úmrtí (qx);0.000672913
-Praha;2019-2023;muži;31;Tabulkový počet dožívajících (lx);98980.474
-Praha;2019-2023;muži;31;Tabulkový počet zemřelých (dx);66.60526801
-Praha;2019-2023;muži;31;Tabulkový počet žijících (Lx);98947.17137
-Praha;2019-2023;muži;31;Pomocný ukazatel (Tx);4693422.408
-Praha;2019-2023;muži;31;Naděje dožití (ex);47.41765944
-Praha;2019-2023;muži;32;Počet zemřelých (Dx);40.0
-Praha;2019-2023;muži;32;Počet obyvatel (Px);52992.0
-Praha;2019-2023;muži;32;Míra úmrtnosti (mx);0.000740172
-Praha;2019-2023;muži;32;Pravděpodobnost úmrtí (qx);0.000739898
-Praha;2019-2023;muži;32;Tabulkový počet dožívajících (lx);98913.86874
-Praha;2019-2023;muži;32;Tabulkový počet zemřelých (dx);73.18614573
-Praha;2019-2023;muži;32;Tabulkový počet žijících (Lx);98877.27566
-Praha;2019-2023;muži;32;Pomocný ukazatel (Tx);4594475.237
-Praha;2019-2023;muži;32;Naděje dožití (ex);46.44925222
-Praha;2019-2023;muži;33;Počet zemřelých (Dx);43.0
-Praha;2019-2023;muži;33;Počet obyvatel (Px);53925.0
-Praha;2019-2023;muži;33;Míra úmrtnosti (mx);0.000795046
-Praha;2019-2023;muži;33;Pravděpodobnost úmrtí (qx);0.000794731
-Praha;2019-2023;muži;33;Tabulkový počet dožívajících (lx);98840.68259
-Praha;2019-2023;muži;33;Tabulkový počet zemřelých (dx);78.55170696
-Praha;2019-2023;muži;33;Tabulkový počet žijících (Lx);98801.40674
-Praha;2019-2023;muži;33;Pomocný ukazatel (Tx);4495597.961
-Praha;2019-2023;muži;33;Naděje dožití (ex);45.48327514
-Praha;2019-2023;muži;34;Počet zemřelých (Dx);43.0
-Praha;2019-2023;muži;34;Počet obyvatel (Px);54677.0
-Praha;2019-2023;muži;34;Míra úmrtnosti (mx);0.000842662
-Praha;2019-2023;muži;34;Pravděpodobnost úmrtí (qx);0.000842307
-Praha;2019-2023;muži;34;Tabulkový počet dožívajících (lx);98762.13088
-Praha;2019-2023;muži;34;Tabulkový počet zemřelých (dx);83.18805218
-Praha;2019-2023;muži;34;Tabulkový počet žijících (Lx);98720.53686
-Praha;2019-2023;muži;34;Pomocný ukazatel (Tx);4396796.554
-Praha;2019-2023;muži;34;Naděje dožití (ex);44.51905315
-Praha;2019-2023;muži;35;Počet zemřelých (Dx);50.0
-Praha;2019-2023;muži;35;Počet obyvatel (Px);55033.0
-Praha;2019-2023;muži;35;Míra úmrtnosti (mx);0.000889017
-Praha;2019-2023;muži;35;Pravděpodobnost úmrtí (qx);0.000888622
-Praha;2019-2023;muži;35;Tabulkový počet dožívajících (lx);98678.94283
-Praha;2019-2023;muži;35;Tabulkový počet zemřelých (dx);87.68825152
-Praha;2019-2023;muži;35;Tabulkový počet žijících (Lx);98635.0987
-Praha;2019-2023;muži;35;Pomocný ukazatel (Tx);4298076.017
-Praha;2019-2023;muži;35;Naděje dožití (ex);43.55616197
-Praha;2019-2023;muži;36;Počet zemřelých (Dx);49.0
-Praha;2019-2023;muži;36;Počet obyvatel (Px);55211.0
-Praha;2019-2023;muži;36;Míra úmrtnosti (mx);0.000936468
-Praha;2019-2023;muži;36;Pravděpodobnost úmrtí (qx);0.00093603
-Praha;2019-2023;muži;36;Tabulkový počet dožívajících (lx);98591.25458
-Praha;2019-2023;muži;36;Tabulkový počet zemřelých (dx);92.28432549
-Praha;2019-2023;muži;36;Tabulkový počet žijících (Lx);98545.11242
-Praha;2019-2023;muži;36;Pomocný ukazatel (Tx);4199440.919
-Praha;2019-2023;muži;36;Naděje dožití (ex);42.59445664
-Praha;2019-2023;muži;37;Počet zemřelých (Dx);65.0
-Praha;2019-2023;muži;37;Počet obyvatel (Px);55279.0
-Praha;2019-2023;muži;37;Míra úmrtnosti (mx);0.000986474
-Praha;2019-2023;muži;37;Pravděpodobnost úmrtí (qx);0.000985987
-Praha;2019-2023;muži;37;Tabulkový počet dožívajících (lx);98498.97025
-Praha;2019-2023;muži;37;Tabulkový počet zemřelých (dx);97.11872558
-Praha;2019-2023;muži;37;Tabulkový počet žijících (Lx);98450.41089
-Praha;2019-2023;muži;37;Pomocný ukazatel (Tx);4100895.806
-Praha;2019-2023;muži;37;Naděje dožití (ex);41.63389521
-Praha;2019-2023;muži;38;Počet zemřelých (Dx);49.0
-Praha;2019-2023;muži;38;Počet obyvatel (Px);55550.0
-Praha;2019-2023;muži;38;Míra úmrtnosti (mx);0.001041823
-Praha;2019-2023;muži;38;Pravděpodobnost úmrtí (qx);0.001041281
-Praha;2019-2023;muži;38;Tabulkový počet dožívajících (lx);98401.85153
-Praha;2019-2023;muži;38;Tabulkový počet zemřelých (dx);102.4639415
-Praha;2019-2023;muži;38;Tabulkový počet žijících (Lx);98350.61956
-Praha;2019-2023;muži;38;Pomocný ukazatel (Tx);4002445.395
-Praha;2019-2023;muži;38;Naděje dožití (ex);40.67449274
-Praha;2019-2023;muži;39;Počet zemřelých (Dx);63.0
-Praha;2019-2023;muži;39;Počet obyvatel (Px);56656.0
-Praha;2019-2023;muži;39;Míra úmrtnosti (mx);0.001108782
-Praha;2019-2023;muži;39;Pravděpodobnost úmrtí (qx);0.001108168
-Praha;2019-2023;muži;39;Tabulkový počet dožívajících (lx);98299.38759
-Praha;2019-2023;muži;39;Tabulkový počet zemřelých (dx);108.932183
-Praha;2019-2023;muži;39;Tabulkový počet žijících (Lx);98244.9215
-Praha;2019-2023;muži;39;Pomocný ukazatel (Tx);3904094.776
-Praha;2019-2023;muži;39;Naděje dožití (ex);39.71636926
-Praha;2019-2023;muži;40;Počet zemřelých (Dx);70.0
-Praha;2019-2023;muži;40;Počet obyvatel (Px);58326.0
-Praha;2019-2023;muži;40;Míra úmrtnosti (mx);0.001195732
-Praha;2019-2023;muži;40;Pravděpodobnost úmrtí (qx);0.001195017
-Praha;2019-2023;muži;40;Tabulkový počet dožívajících (lx);98190.4554
-Praha;2019-2023;muži;40;Tabulkový počet zemřelých (dx);117.3392628
-Praha;2019-2023;muži;40;Tabulkový počet žijících (Lx);98131.78577
-Praha;2019-2023;muži;40;Pomocný ukazatel (Tx);3805849.854
-Praha;2019-2023;muži;40;Naděje dožití (ex);38.75987578
-Praha;2019-2023;muži;41;Počet zemřelých (Dx);79.0
-Praha;2019-2023;muži;41;Počet obyvatel (Px);59906.0
-Praha;2019-2023;muži;41;Míra úmrtnosti (mx);0.001309114
-Praha;2019-2023;muži;41;Pravděpodobnost úmrtí (qx);0.001308258
-Praha;2019-2023;muži;41;Tabulkový počet dožívajících (lx);98073.11614
-Praha;2019-2023;muži;41;Tabulkový počet zemřelých (dx);128.3048994
-Praha;2019-2023;muži;41;Tabulkový počet žijících (Lx);98008.96369
-Praha;2019-2023;muži;41;Pomocný ukazatel (Tx);3707718.068
-Praha;2019-2023;muži;41;Naděje dožití (ex);37.80565168
-Praha;2019-2023;muži;42;Počet zemřelých (Dx);89.0
-Praha;2019-2023;muži;42;Počet obyvatel (Px);61209.0
-Praha;2019-2023;muži;42;Míra úmrtnosti (mx);0.001448789
-Praha;2019-2023;muži;42;Pravděpodobnost úmrtí (qx);0.00144774
-Praha;2019-2023;muži;42;Tabulkový počet dožívajících (lx);97944.81124
-Praha;2019-2023;muži;42;Tabulkový počet zemřelých (dx);141.7986275
-Praha;2019-2023;muži;42;Tabulkový počet žijících (Lx);97873.91193
-Praha;2019-2023;muži;42;Pomocný ukazatel (Tx);3609709.105
-Praha;2019-2023;muži;42;Naděje dožití (ex);36.85452102
-Praha;2019-2023;muži;43;Počet zemřelých (Dx);100.0
-Praha;2019-2023;muži;43;Počet obyvatel (Px);62140.0
-Praha;2019-2023;muži;43;Míra úmrtnosti (mx);0.001612821
-Praha;2019-2023;muži;43;Pravděpodobnost úmrtí (qx);0.001611521
-Praha;2019-2023;muži;43;Tabulkový počet dožívajících (lx);97803.01261
-Praha;2019-2023;muži;43;Tabulkový počet zemřelých (dx);157.6116298
-Praha;2019-2023;muži;43;Tabulkový počet žijících (Lx);97724.2068
-Praha;2019-2023;muži;43;Pomocný ukazatel (Tx);3511835.193
-Praha;2019-2023;muži;43;Naděje dožití (ex);35.90722922
-Praha;2019-2023;muži;44;Počet zemřelých (Dx);102.0
-Praha;2019-2023;muži;44;Počet obyvatel (Px);62199.0
-Praha;2019-2023;muži;44;Míra úmrtnosti (mx);0.001797975
-Praha;2019-2023;muži;44;Pravděpodobnost úmrtí (qx);0.00179636
-Praha;2019-2023;muži;44;Tabulkový počet dožívajících (lx);97645.40098
-Praha;2019-2023;muži;44;Tabulkový počet zemřelých (dx);175.4062643
-Praha;2019-2023;muži;44;Tabulkový počet žijících (Lx);97557.69785
-Praha;2019-2023;muži;44;Pomocný ukazatel (Tx);3414110.986
-Praha;2019-2023;muži;44;Naděje dožití (ex);34.96438083
-Praha;2019-2023;muži;45;Počet zemřelých (Dx);147.0
-Praha;2019-2023;muži;45;Počet obyvatel (Px);61113.0
-Praha;2019-2023;muži;45;Míra úmrtnosti (mx);0.001999308
-Praha;2019-2023;muži;45;Pravděpodobnost úmrtí (qx);0.001997311
-Praha;2019-2023;muži;45;Tabulkový počet dožívajících (lx);97469.99472
-Praha;2019-2023;muži;45;Tabulkový počet zemřelých (dx);194.6778918
-Praha;2019-2023;muži;45;Tabulkový počet žijících (Lx);97372.65577
-Praha;2019-2023;muži;45;Pomocný ukazatel (Tx);3316553.288
-Praha;2019-2023;muži;45;Naděje dožití (ex);34.02640267
-Praha;2019-2023;muži;46;Počet zemřelých (Dx);105.0
-Praha;2019-2023;muži;46;Počet obyvatel (Px);59007.0
-Praha;2019-2023;muži;46;Míra úmrtnosti (mx);0.002209727
-Praha;2019-2023;muži;46;Pravděpodobnost úmrtí (qx);0.002207288
-Praha;2019-2023;muži;46;Tabulkový počet dožívajících (lx);97275.31683
-Praha;2019-2023;muži;46;Tabulkový počet zemřelých (dx);214.7146452
-Praha;2019-2023;muži;46;Tabulkový počet žijících (Lx);97167.95951
-Praha;2019-2023;muži;46;Pomocný ukazatel (Tx);3219180.632
-Praha;2019-2023;muži;46;Naděje dožití (ex);33.09349933
-Praha;2019-2023;muži;47;Počet zemřelých (Dx);154.0
-Praha;2019-2023;muži;47;Počet obyvatel (Px);56124.0
-Praha;2019-2023;muži;47;Míra úmrtnosti (mx);0.002432687
-Praha;2019-2023;muži;47;Pravděpodobnost úmrtí (qx);0.002429732
-Praha;2019-2023;muži;47;Tabulkový počet dožívajících (lx);97060.60218
-Praha;2019-2023;muži;47;Tabulkový počet zemřelých (dx);235.8312381
-Praha;2019-2023;muži;47;Tabulkový počet žijících (Lx);96942.68656
-Praha;2019-2023;muži;47;Pomocný ukazatel (Tx);3122012.673
-Praha;2019-2023;muži;47;Naděje dožití (ex);32.16560172
-Praha;2019-2023;muži;48;Počet zemřelých (Dx);138.0
-Praha;2019-2023;muži;48;Počet obyvatel (Px);52830.0
-Praha;2019-2023;muži;48;Míra úmrtnosti (mx);0.002684727
-Praha;2019-2023;muži;48;Pravděpodobnost úmrtí (qx);0.002681128
-Praha;2019-2023;muži;48;Tabulkový počet dožívajících (lx);96824.77094
-Praha;2019-2023;muži;48;Tabulkový počet zemřelých (dx);259.5995835
-Praha;2019-2023;muži;48;Tabulkový počet žijících (Lx);96694.97115
-Praha;2019-2023;muži;48;Pomocný ukazatel (Tx);3025069.986
-Praha;2019-2023;muži;48;Naděje dožití (ex);31.24272804
-Praha;2019-2023;muži;49;Počet zemřelých (Dx);146.0
-Praha;2019-2023;muži;49;Počet obyvatel (Px);49116.0
-Praha;2019-2023;muži;49;Míra úmrtnosti (mx);0.002987642
-Praha;2019-2023;muži;49;Pravděpodobnost úmrtí (qx);0.002983186
-Praha;2019-2023;muži;49;Tabulkový počet dožívajících (lx);96565.17136
-Praha;2019-2023;muži;49;Tabulkový počet zemřelých (dx);288.0718407
-Praha;2019-2023;muži;49;Tabulkový počet žijících (Lx);96421.13544
-Praha;2019-2023;muži;49;Pomocný ukazatel (Tx);2928375.015
-Praha;2019-2023;muži;49;Naděje dožití (ex);30.32537481
-Praha;2019-2023;muži;50;Počet zemřelých (Dx);147.0
-Praha;2019-2023;muži;50;Počet obyvatel (Px);45433.0
-Praha;2019-2023;muži;50;Míra úmrtnosti (mx);0.00335469
-Praha;2019-2023;muži;50;Pravděpodobnost úmrtí (qx);0.003349073
-Praha;2019-2023;muži;50;Tabulkový počet dožívajících (lx);96277.09952
-Praha;2019-2023;muži;50;Tabulkový počet zemřelých (dx);322.4390061
-Praha;2019-2023;muži;50;Tabulkový počet žijících (Lx);96115.88002
-Praha;2019-2023;muži;50;Pomocný ukazatel (Tx);2831953.88
-Praha;2019-2023;muži;50;Naděje dožití (ex);29.41461566
-Praha;2019-2023;muži;51;Počet zemřelých (Dx);155.0
-Praha;2019-2023;muži;51;Počet obyvatel (Px);42779.0
-Praha;2019-2023;muži;51;Míra úmrtnosti (mx);0.003793437
-Praha;2019-2023;muži;51;Pravděpodobnost úmrtí (qx);0.003786256
-Praha;2019-2023;muži;51;Tabulkový počet dožívajících (lx);95954.66051
-Praha;2019-2023;muži;51;Tabulkový počet zemřelých (dx);363.3088771
-Praha;2019-2023;muži;51;Tabulkový počet žijících (Lx);95773.00608
-Praha;2019-2023;muži;51;Pomocný ukazatel (Tx);2735838.0
-Praha;2019-2023;muži;51;Naděje dožití (ex);28.51177822
-Praha;2019-2023;muži;52;Počet zemřelých (Dx);188.0
-Praha;2019-2023;muži;52;Počet obyvatel (Px);40839.0
-Praha;2019-2023;muži;52;Míra úmrtnosti (mx);0.004307418
-Praha;2019-2023;muži;52;Pravděpodobnost úmrtí (qx);0.004298161
-Praha;2019-2023;muži;52;Tabulkový počet dožívajících (lx);95591.35164
-Praha;2019-2023;muži;52;Tabulkový počet zemřelých (dx);410.8670589
-Praha;2019-2023;muži;52;Tabulkový počet žijících (Lx);95385.91811
-Praha;2019-2023;muži;52;Pomocný ukazatel (Tx);2640064.994
-Praha;2019-2023;muži;52;Naděje dožití (ex);27.61824107
-Praha;2019-2023;muži;53;Počet zemřelých (Dx);183.0
-Praha;2019-2023;muži;53;Počet obyvatel (Px);39486.0
-Praha;2019-2023;muži;53;Míra úmrtnosti (mx);0.004874114
-Praha;2019-2023;muži;53;Pravděpodobnost úmrtí (qx);0.004862265
-Praha;2019-2023;muži;53;Tabulkový počet dožívajících (lx);95180.48458
-Praha;2019-2023;muži;53;Tabulkový počet zemřelých (dx);462.7926978
-Praha;2019-2023;muži;53;Tabulkový počet žijících (Lx);94949.08823
-Praha;2019-2023;muži;53;Pomocný ukazatel (Tx);2544679.076
-Praha;2019-2023;muži;53;Naděje dožití (ex);26.7353028
-Praha;2019-2023;muži;54;Počet zemřelých (Dx);224.0
-Praha;2019-2023;muži;54;Počet obyvatel (Px);39084.0
-Praha;2019-2023;muži;54;Míra úmrtnosti (mx);0.005446419
-Praha;2019-2023;muži;54;Pravděpodobnost úmrtí (qx);0.005431628
-Praha;2019-2023;muži;54;Tabulkový počet dožívajících (lx);94717.69188
-Praha;2019-2023;muži;54;Tabulkový počet zemřelých (dx);514.4712508
-Praha;2019-2023;muži;54;Tabulkový počet žijících (Lx);94460.45626
-Praha;2019-2023;muži;54;Pomocný ukazatel (Tx);2449729.987
-Praha;2019-2023;muži;54;Naděje dožití (ex);25.86348906
-Praha;2019-2023;muži;55;Počet zemřelých (Dx);242.0
-Praha;2019-2023;muži;55;Počet obyvatel (Px);39197.0
-Praha;2019-2023;muži;55;Míra úmrtnosti (mx);0.005979755
-Praha;2019-2023;muži;55;Pravděpodobnost úmrtí (qx);0.005961929
-Praha;2019-2023;muži;55;Tabulkový počet dožívajících (lx);94203.22063
-Praha;2019-2023;muži;55;Tabulkový počet zemřelých (dx);561.63293
-Praha;2019-2023;muži;55;Tabulkový počet žijících (Lx);93922.40416
-Praha;2019-2023;muži;55;Pomocný ukazatel (Tx);2355269.531
-Praha;2019-2023;muži;55;Naděje dožití (ex);25.00200646
-Praha;2019-2023;muži;56;Počet zemřelých (Dx);249.0
-Praha;2019-2023;muži;56;Počet obyvatel (Px);38664.0
-Praha;2019-2023;muži;56;Míra úmrtnosti (mx);0.006502273
-Praha;2019-2023;muži;56;Pravděpodobnost úmrtí (qx);0.006481202
-Praha;2019-2023;muži;56;Tabulkový počet dožívajících (lx);93641.5877
-Praha;2019-2023;muži;56;Tabulkový počet zemřelých (dx);606.9100566
-Praha;2019-2023;muži;56;Tabulkový počet žijících (Lx);93338.13267
-Praha;2019-2023;muži;56;Pomocný ukazatel (Tx);2261347.127
-Praha;2019-2023;muži;56;Naděje dožití (ex);24.14896183
-Praha;2019-2023;muži;57;Počet zemřelých (Dx);253.0
-Praha;2019-2023;muži;57;Počet obyvatel (Px);37566.0
-Praha;2019-2023;muži;57;Míra úmrtnosti (mx);0.007076366
-Praha;2019-2023;muži;57;Pravděpodobnost úmrtí (qx);0.007051417
-Praha;2019-2023;muži;57;Tabulkový počet dožívajících (lx);93034.67764
-Praha;2019-2023;muži;57;Tabulkový počet zemřelých (dx);656.0262733
-Praha;2019-2023;muži;57;Tabulkový počet žijících (Lx);92706.66451
-Praha;2019-2023;muži;57;Pomocný ukazatel (Tx);2168008.994
-Praha;2019-2023;muži;57;Naděje dožití (ex);23.30323541
-Praha;2019-2023;muži;58;Počet zemřelých (Dx);271.0
-Praha;2019-2023;muži;58;Počet obyvatel (Px);36068.0
-Praha;2019-2023;muži;58;Míra úmrtnosti (mx);0.007759354
-Praha;2019-2023;muži;58;Pravděpodobnost úmrtí (qx);0.007729366
-Praha;2019-2023;muži;58;Tabulkový počet dožívajících (lx);92378.65137
-Praha;2019-2023;muži;58;Tabulkový počet zemřelých (dx);714.028409
-Praha;2019-2023;muži;58;Tabulkový počet žijících (Lx);92021.63717
-Praha;2019-2023;muži;58;Pomocný ukazatel (Tx);2075302.33
-Praha;2019-2023;muži;58;Naděje dožití (ex);22.46517241
-Praha;2019-2023;muži;59;Počet zemřelých (Dx);314.0
-Praha;2019-2023;muži;59;Počet obyvatel (Px);34014.0
-Praha;2019-2023;muži;59;Míra úmrtnosti (mx);0.008564119
-Praha;2019-2023;muži;59;Pravděpodobnost úmrtí (qx);0.008527603
-Praha;2019-2023;muži;59;Tabulkový počet dožívajících (lx);91664.62296
-Praha;2019-2023;muži;59;Tabulkový počet zemřelých (dx);781.6795436
-Praha;2019-2023;muži;59;Tabulkový počet žijících (Lx);91273.78319
-Praha;2019-2023;muži;59;Pomocný ukazatel (Tx);1983280.693
-Praha;2019-2023;muži;59;Naděje dožití (ex);21.63627175
-Praha;2019-2023;muži;60;Počet zemřelých (Dx);302.0
-Praha;2019-2023;muži;60;Počet obyvatel (Px);32162.0
-Praha;2019-2023;muži;60;Míra úmrtnosti (mx);0.009496025
-Praha;2019-2023;muži;60;Pravděpodobnost úmrtí (qx);0.009451151
-Praha;2019-2023;muži;60;Tabulkový počet dožívajících (lx);90882.94342
-Praha;2019-2023;muži;60;Tabulkový počet zemřelých (dx);858.9484364
-Praha;2019-2023;muži;60;Tabulkový počet žijících (Lx);90453.4692
-Praha;2019-2023;muži;60;Pomocný ukazatel (Tx);1892006.909
-Praha;2019-2023;muži;60;Naděje dožití (ex);20.81806374
-Praha;2019-2023;muži;61;Počet zemřelých (Dx);298.0
-Praha;2019-2023;muži;61;Počet obyvatel (Px);31159.0
-Praha;2019-2023;muži;61;Míra úmrtnosti (mx);0.010549112
-Praha;2019-2023;muži;61;Pravděpodobnost úmrtí (qx);0.010493762
-Praha;2019-2023;muži;61;Tabulkový počet dožívajících (lx);90023.99498
-Praha;2019-2023;muži;61;Tabulkový počet zemřelých (dx);944.6903369
-Praha;2019-2023;muži;61;Tabulkový počet žijících (Lx);89551.64981
-Praha;2019-2023;muži;61;Pomocný ukazatel (Tx);1801553.44
-Praha;2019-2023;muži;61;Naděje dožití (ex);20.01192505
-Praha;2019-2023;muži;62;Počet zemřelých (Dx);391.0
-Praha;2019-2023;muži;62;Počet obyvatel (Px);30857.0
-Praha;2019-2023;muži;62;Míra úmrtnosti (mx);0.011696499
-Praha;2019-2023;muži;62;Pravděpodobnost úmrtí (qx);0.011628493
-Praha;2019-2023;muži;62;Tabulkový počet dožívajících (lx);89079.30464
-Praha;2019-2023;muži;62;Tabulkový počet zemřelých (dx);1035.858066
-Praha;2019-2023;muži;62;Tabulkový počet žijících (Lx);88561.37561
-Praha;2019-2023;muži;62;Pomocný ukazatel (Tx);1712001.79
-Praha;2019-2023;muži;62;Naděje dožití (ex);19.21884996
-Praha;2019-2023;muži;63;Počet zemřelých (Dx);408.0
-Praha;2019-2023;muži;63;Počet obyvatel (Px);31045.0
-Praha;2019-2023;muži;63;Míra úmrtnosti (mx);0.012897418
-Praha;2019-2023;muži;63;Pravděpodobnost úmrtí (qx);0.012814779
-Praha;2019-2023;muži;63;Tabulkový počet dožívajících (lx);88043.44658
-Praha;2019-2023;muži;63;Tabulkový počet zemřelých (dx);1128.257296
-Praha;2019-2023;muži;63;Tabulkový počet žijících (Lx);87479.31793
-Praha;2019-2023;muži;63;Pomocný ukazatel (Tx);1623440.415
-Praha;2019-2023;muži;63;Naděje dožití (ex);18.43908295
-Praha;2019-2023;muži;64;Počet zemřelých (Dx);449.0
-Praha;2019-2023;muži;64;Počet obyvatel (Px);31683.0
-Praha;2019-2023;muži;64;Míra úmrtnosti (mx);0.014166266
-Praha;2019-2023;muži;64;Pravděpodobnost úmrtí (qx);0.014066631
-Praha;2019-2023;muži;64;Tabulkový počet dožívajících (lx);86915.18928
-Praha;2019-2023;muži;64;Tabulkový počet zemřelých (dx);1222.603853
-Praha;2019-2023;muži;64;Tabulkový počet žijících (Lx);86303.88735
-Praha;2019-2023;muži;64;Pomocný ukazatel (Tx);1535961.097
-Praha;2019-2023;muži;64;Naděje dožití (ex);17.6719525
-Praha;2019-2023;muži;65;Počet zemřelých (Dx);484.0
-Praha;2019-2023;muži;65;Počet obyvatel (Px);32337.0
-Praha;2019-2023;muži;65;Míra úmrtnosti (mx);0.015595757
-Praha;2019-2023;muži;65;Pravděpodobnost úmrtí (qx);0.015475084
-Praha;2019-2023;muži;65;Tabulkový počet dožívajících (lx);85692.58543
-Praha;2019-2023;muži;65;Tabulkový počet zemřelých (dx);1326.099926
-Praha;2019-2023;muži;65;Tabulkový počet žijících (Lx);85029.53547
-Praha;2019-2023;muži;65;Pomocný ukazatel (Tx);1449657.209
-Praha;2019-2023;muži;65;Naděje dožití (ex);16.91695031
-Praha;2019-2023;muži;66;Počet zemřelých (Dx);549.0
-Praha;2019-2023;muži;66;Počet obyvatel (Px);32708.0
-Praha;2019-2023;muži;66;Míra úmrtnosti (mx);0.017306904
-Praha;2019-2023;muži;66;Pravděpodobnost úmrtí (qx);0.017158424
-Praha;2019-2023;muži;66;Tabulkový počet dožívajících (lx);84366.4855
-Praha;2019-2023;muži;66;Tabulkový počet zemřelých (dx);1447.595924
-Praha;2019-2023;muži;66;Tabulkový počet žijících (Lx);83642.68754
-Praha;2019-2023;muži;66;Pomocný ukazatel (Tx);1364627.674
-Praha;2019-2023;muži;66;Naděje dožití (ex);16.17499729
-Praha;2019-2023;muži;67;Počet zemřelých (Dx);673.0
-Praha;2019-2023;muži;67;Počet obyvatel (Px);32790.0
-Praha;2019-2023;muži;67;Míra úmrtnosti (mx);0.019334347
-Praha;2019-2023;muži;67;Pravděpodobnost úmrtí (qx);0.019149229
-Praha;2019-2023;muži;67;Tabulkový počet dožívajících (lx);82918.88958
-Praha;2019-2023;muži;67;Tabulkový počet zemřelých (dx);1587.832765
-Praha;2019-2023;muži;67;Tabulkový počet žijících (Lx);82124.9732
-Praha;2019-2023;muži;67;Pomocný ukazatel (Tx);1280984.986
-Praha;2019-2023;muži;67;Naděje dožití (ex);15.448651
-Praha;2019-2023;muži;68;Počet zemřelých (Dx);678.0
-Praha;2019-2023;muži;68;Počet obyvatel (Px);32531.0
-Praha;2019-2023;muži;68;Míra úmrtnosti (mx);0.021627477
-Praha;2019-2023;muži;68;Pravděpodobnost úmrtí (qx);0.021396105
-Praha;2019-2023;muži;68;Tabulkový počet dožívajících (lx);81331.05681
-Praha;2019-2023;muži;68;Tabulkový počet zemřelých (dx);1740.167829
-Praha;2019-2023;muži;68;Tabulkový počet žijících (Lx);80460.9729
-Praha;2019-2023;muži;68;Pomocný ukazatel (Tx);1198860.013
-Praha;2019-2023;muži;68;Naděje dožití (ex);14.74049472
-Praha;2019-2023;muži;69;Počet zemřelých (Dx);796.0
-Praha;2019-2023;muži;69;Počet obyvatel (Px);31849.0
-Praha;2019-2023;muži;69;Míra úmrtnosti (mx);0.024109198
-Praha;2019-2023;muži;69;Pravděpodobnost úmrtí (qx);0.023822033
-Praha;2019-2023;muži;69;Tabulkový počet dožívajících (lx);79590.88898
-Praha;2019-2023;muži;69;Tabulkový počet zemřelých (dx);1896.016758
-Praha;2019-2023;muži;69;Tabulkový počet žijících (Lx);78642.8806
-Praha;2019-2023;muži;69;Pomocný ukazatel (Tx);1118399.04
-Praha;2019-2023;muži;69;Naděje dožití (ex);14.05184757
-Praha;2019-2023;muži;70;Počet zemřelých (Dx);793.0
-Praha;2019-2023;muži;70;Počet obyvatel (Px);30937.0
-Praha;2019-2023;muži;70;Míra úmrtnosti (mx);0.026763893
-Praha;2019-2023;muži;70;Pravděpodobnost úmrtí (qx);0.026410469
-Praha;2019-2023;muži;70;Tabulkový počet dožívajících (lx);77694.87223
-Praha;2019-2023;muži;70;Tabulkový počet zemřelých (dx);2051.958026
-Praha;2019-2023;muži;70;Tabulkový počet žijících (Lx);76668.89321
-Praha;2019-2023;muži;70;Pomocný ukazatel (Tx);1039756.16
-Praha;2019-2023;muži;70;Naděje dožití (ex);13.38255833
-Praha;2019-2023;muži;71;Počet zemřelých (Dx);925.0
-Praha;2019-2023;muži;71;Počet obyvatel (Px);30289.0
-Praha;2019-2023;muži;71;Míra úmrtnosti (mx);0.029611227
-Praha;2019-2023;muži;71;Pravděpodobnost úmrtí (qx);0.029179211
-Praha;2019-2023;muži;71;Tabulkový počet dožívajících (lx);75642.9142
-Praha;2019-2023;muži;71;Tabulkový počet zemřelých (dx);2207.200559
-Praha;2019-2023;muži;71;Tabulkový počet žijících (Lx);74539.31392
-Praha;2019-2023;muži;71;Pomocný ukazatel (Tx);963087.2665
-Praha;2019-2023;muži;71;Naděje dožití (ex);12.73202225
-Praha;2019-2023;muži;72;Počet zemřelých (Dx);965.0
-Praha;2019-2023;muži;72;Počet obyvatel (Px);29914.0
-Praha;2019-2023;muži;72;Míra úmrtnosti (mx);0.032677113
-Praha;2019-2023;muži;72;Pravděpodobnost úmrtí (qx);0.032151799
-Praha;2019-2023;muži;72;Tabulkový počet dožívajících (lx);73435.71364
-Praha;2019-2023;muži;72;Tabulkový počet zemřelých (dx);2361.090327
-Praha;2019-2023;muži;72;Tabulkový počet žijících (Lx);72255.16848
-Praha;2019-2023;muži;72;Pomocný ukazatel (Tx);888547.9526
-Praha;2019-2023;muži;72;Naděje dožití (ex);12.0996707
-Praha;2019-2023;muži;73;Počet zemřelých (Dx);1047.0
-Praha;2019-2023;muži;73;Počet obyvatel (Px);29117.0
-Praha;2019-2023;muži;73;Míra úmrtnosti (mx);0.035991714
-Praha;2019-2023;muži;73;Pravděpodobnost úmrtí (qx);0.035355462
-Praha;2019-2023;muži;73;Tabulkový počet dožívajících (lx);71074.62331
-Praha;2019-2023;muži;73;Tabulkový počet zemřelých (dx);2512.87616
-Praha;2019-2023;muži;73;Tabulkový počet žijících (Lx);69818.18523
-Praha;2019-2023;muži;73;Pomocný ukazatel (Tx);816292.7841
-Praha;2019-2023;muži;73;Naděje dožití (ex);11.48501035
-Praha;2019-2023;muži;74;Počet zemřelých (Dx);1117.0
-Praha;2019-2023;muži;74;Počet obyvatel (Px);28115.0
-Praha;2019-2023;muži;74;Míra úmrtnosti (mx);0.039495517
-Praha;2019-2023;muži;74;Pravděpodobnost úmrtí (qx);0.038730673
-Praha;2019-2023;muži;74;Tabulkový počet dožívajících (lx);68561.74715
-Praha;2019-2023;muži;74;Tabulkový počet zemřelých (dx);2655.442597
-Praha;2019-2023;muži;74;Tabulkový počet žijících (Lx);67234.02585
-Praha;2019-2023;muži;74;Pomocný ukazatel (Tx);746474.5989
-Praha;2019-2023;muži;74;Naděje dožití (ex);10.8876251
-Praha;2019-2023;muži;75;Počet zemřelých (Dx);1188.0
-Praha;2019-2023;muži;75;Počet obyvatel (Px);26981.0
-Praha;2019-2023;muži;75;Míra úmrtnosti (mx);0.043280745
-Praha;2019-2023;muži;75;Pravděpodobnost úmrtí (qx);0.042363973
-Praha;2019-2023;muži;75;Tabulkový počet dožívajících (lx);65906.30456
-Praha;2019-2023;muži;75;Tabulkový počet zemřelých (dx);2792.052912
-Praha;2019-2023;muži;75;Tabulkový počet žijících (Lx);64510.2781
-Praha;2019-2023;muži;75;Pomocný ukazatel (Tx);679240.573
-Praha;2019-2023;muži;75;Naděje dožití (ex);10.30615474
-Praha;2019-2023;muži;76;Počet zemřelých (Dx);1158.0
-Praha;2019-2023;muži;76;Počet obyvatel (Px);25010.0
-Praha;2019-2023;muži;76;Míra úmrtnosti (mx);0.047401516
-Praha;2019-2023;muži;76;Pravděpodobnost úmrtí (qx);0.046304074
-Praha;2019-2023;muži;76;Tabulkový počet dožívajících (lx);63114.25164
-Praha;2019-2023;muži;76;Tabulkový počet zemřelých (dx);2922.446971
-Praha;2019-2023;muži;76;Tabulkový počet žijících (Lx);61653.02816
-Praha;2019-2023;muži;76;Pomocný ukazatel (Tx);614730.2949
-Praha;2019-2023;muži;76;Naděje dožití (ex);9.739960134
-Praha;2019-2023;muži;77;Počet zemřelých (Dx);1173.0
-Praha;2019-2023;muži;77;Počet obyvatel (Px);22181.0
-Praha;2019-2023;muži;77;Míra úmrtnosti (mx);0.051929038
-Praha;2019-2023;muži;77;Pravděpodobnost úmrtí (qx);0.050614847
-Praha;2019-2023;muži;77;Tabulkový počet dožívajících (lx);60191.80467
-Praha;2019-2023;muži;77;Tabulkový počet zemřelých (dx);3046.599009
-Praha;2019-2023;muži;77;Tabulkový počet žijících (Lx);58668.50517
-Praha;2019-2023;muži;77;Pomocný ukazatel (Tx);553077.2668
-Praha;2019-2023;muži;77;Naděje dožití (ex);9.1885809
-Praha;2019-2023;muži;78;Počet zemřelých (Dx);1150.0
-Praha;2019-2023;muži;78;Počet obyvatel (Px);19632.0
-Praha;2019-2023;muži;78;Míra úmrtnosti (mx);0.056992488
-Praha;2019-2023;muži;78;Pravděpodobnost úmrtí (qx);0.055413414
-Praha;2019-2023;muži;78;Tabulkový počet dožívajících (lx);57145.20566
-Praha;2019-2023;muži;78;Tabulkový počet zemřelých (dx);3166.610922
-Praha;2019-2023;muži;78;Tabulkový počet žijících (Lx);55561.9002
-Praha;2019-2023;muži;78;Pomocný ukazatel (Tx);494408.7616
-Praha;2019-2023;muži;78;Naděje dožití (ex);8.651797747
-Praha;2019-2023;muži;79;Počet zemřelých (Dx);1061.0
-Praha;2019-2023;muži;79;Počet obyvatel (Px);17161.0
-Praha;2019-2023;muži;79;Míra úmrtnosti (mx);0.062782989
-Praha;2019-2023;muži;79;Pravděpodobnost úmrtí (qx);0.060872122
-Praha;2019-2023;muži;79;Tabulkový počet dožívajících (lx);53978.59474
-Praha;2019-2023;muži;79;Tabulkový počet zemřelých (dx);3285.791601
-Praha;2019-2023;muži;79;Tabulkový počet žijících (Lx);52335.69894
-Praha;2019-2023;muži;79;Pomocný ukazatel (Tx);438846.8614
-Praha;2019-2023;muži;79;Naděje dožití (ex);8.130016417
-Praha;2019-2023;muži;80;Počet zemřelých (Dx);990.0
-Praha;2019-2023;muži;80;Počet obyvatel (Px);14602.0
-Praha;2019-2023;muži;80;Míra úmrtnosti (mx);0.069484939
-Praha;2019-2023;muži;80;Pravděpodobnost úmrtí (qx);0.067151916
-Praha;2019-2023;muži;80;Tabulkový počet dožívajících (lx);50692.80314
-Praha;2019-2023;muži;80;Tabulkový počet zemřelých (dx);3404.118848
-Praha;2019-2023;muži;80;Tabulkový počet žijících (Lx);48990.74372
-Praha;2019-2023;muži;80;Pomocný ukazatel (Tx);386511.1624
-Praha;2019-2023;muži;80;Naděje dožití (ex);7.624576636
-Praha;2019-2023;muži;81;Počet zemřelých (Dx);936.0
-Praha;2019-2023;muži;81;Počet obyvatel (Px);12501.0
-Praha;2019-2023;muži;81;Míra úmrtnosti (mx);0.077244875
-Praha;2019-2023;muži;81;Pravděpodobnost úmrtí (qx);0.07437243
-Praha;2019-2023;muži;81;Tabulkový počet dožívajících (lx);47288.68429
-Praha;2019-2023;muži;81;Tabulkový počet zemřelých (dx);3516.974379
-Praha;2019-2023;muži;81;Tabulkový počet žijících (Lx);45530.1971
-Praha;2019-2023;muži;81;Pomocný ukazatel (Tx);337520.4187
-Praha;2019-2023;muži;81;Naděje dožití (ex);7.13744575
-Praha;2019-2023;muži;82;Počet zemřelých (Dx);921.0
-Praha;2019-2023;muži;82;Počet obyvatel (Px);10834.0
-Praha;2019-2023;muži;82;Míra úmrtnosti (mx);0.086160711
-Praha;2019-2023;muži;82;Pravděpodobnost úmrtí (qx);0.08260218
-Praha;2019-2023;muži;82;Tabulkový počet dožívajících (lx);43771.70991
-Praha;2019-2023;muži;82;Tabulkový počet zemřelých (dx);3615.638648
-Praha;2019-2023;muži;82;Tabulkový počet žijících (Lx);41963.89059
-Praha;2019-2023;muži;82;Pomocný ukazatel (Tx);291990.2216
-Praha;2019-2023;muži;82;Naděje dožití (ex);6.670752004
-Praha;2019-2023;muži;83;Počet zemřelých (Dx);879.0
-Praha;2019-2023;muži;83;Počet obyvatel (Px);9366.0
-Praha;2019-2023;muži;83;Míra úmrtnosti (mx);0.096270473
-Praha;2019-2023;muži;83;Pravděpodobnost úmrtí (qx);0.091849286
-Praha;2019-2023;muži;83;Tabulkový počet dožívajících (lx);40156.07127
-Praha;2019-2023;muži;83;Tabulkový počet zemřelých (dx);3688.306472
-Praha;2019-2023;muži;83;Tabulkový počet žijících (Lx);38311.91803
-Praha;2019-2023;muži;83;Pomocný ukazatel (Tx);250026.331
-Praha;2019-2023;muži;83;Naděje dožití (ex);6.226364362
-Praha;2019-2023;muži;84;Počet zemřelých (Dx);830.0
-Praha;2019-2023;muži;84;Počet obyvatel (Px);8250.0
-Praha;2019-2023;muži;84;Míra úmrtnosti (mx);0.107251514
-Praha;2019-2023;muži;84;Pravděpodobnost úmrtí (qx);0.101792798
-Praha;2019-2023;muži;84;Tabulkový počet dožívajících (lx);36467.76479
-Praha;2019-2023;muži;84;Tabulkový počet zemřelých (dx);3712.155828
-Praha;2019-2023;muži;84;Tabulkový počet žijících (Lx);34611.68688
-Praha;2019-2023;muži;84;Pomocný ukazatel (Tx);211714.413
-Praha;2019-2023;muži;84;Naděje dožití (ex);5.805522061
-Praha;2019-2023;muži;85;Počet zemřelých (Dx);884.0
-Praha;2019-2023;muži;85;Počet obyvatel (Px);7355.0
-Praha;2019-2023;muži;85;Míra úmrtnosti (mx);0.119492591
-Praha;2019-2023;muži;85;Pravděpodobnost úmrtí (qx);0.112755847
-Praha;2019-2023;muži;85;Tabulkový počet dožívajících (lx);32755.60897
-Praha;2019-2023;muži;85;Tabulkový počet zemřelých (dx);3693.386417
-Praha;2019-2023;muži;85;Tabulkový počet žijících (Lx);30908.91576
-Praha;2019-2023;muži;85;Pomocný ukazatel (Tx);177102.7261
-Praha;2019-2023;muži;85;Naděje dožití (ex);5.406790828
-Praha;2019-2023;muži;86;Počet zemřelých (Dx);866.0
-Praha;2019-2023;muži;86;Počet obyvatel (Px);6552.0
-Praha;2019-2023;muži;86;Míra úmrtnosti (mx);0.133093427
-Praha;2019-2023;muži;86;Pravděpodobnost úmrtí (qx);0.124789121
-Praha;2019-2023;muži;86;Tabulkový počet dožívajících (lx);29062.22255
-Praha;2019-2023;muži;86;Tabulkový počet zemřelých (dx);3626.649214
-Praha;2019-2023;muži;86;Tabulkový počet žijících (Lx);27248.89794
-Praha;2019-2023;muži;86;Pomocný ukazatel (Tx);146193.8104
-Praha;2019-2023;muži;86;Naděje dožití (ex);5.030372682
-Praha;2019-2023;muži;87;Počet zemřelých (Dx);865.0
-Praha;2019-2023;muži;87;Počet obyvatel (Px);5853.0
-Praha;2019-2023;muži;87;Míra úmrtnosti (mx);0.148149891
-Praha;2019-2023;muži;87;Pravděpodobnost úmrtí (qx);0.137932546
-Praha;2019-2023;muži;87;Tabulkový počet dožívajících (lx);25435.57333
-Praha;2019-2023;muži;87;Tabulkový počet zemřelých (dx);3508.393379
-Praha;2019-2023;muži;87;Tabulkový počet žijících (Lx);23681.37664
-Praha;2019-2023;muži;87;Pomocný ukazatel (Tx);118944.9124
-Praha;2019-2023;muži;87;Naděje dožití (ex);4.676321264
-Praha;2019-2023;muži;88;Počet zemřelých (Dx);900.0
-Praha;2019-2023;muži;88;Počet obyvatel (Px);5171.0
-Praha;2019-2023;muži;88;Míra úmrtnosti (mx);0.164750425
-Praha;2019-2023;muži;88;Pravděpodobnost úmrtí (qx);0.152211935
-Praha;2019-2023;muži;88;Tabulkový počet dožívajících (lx);21927.17995
-Praha;2019-2023;muži;88;Tabulkový počet zemřelých (dx);3337.578485
-Praha;2019-2023;muži;88;Tabulkový počet žijících (Lx);20258.39071
-Praha;2019-2023;muži;88;Pomocný ukazatel (Tx);95263.53579
-Praha;2019-2023;muži;88;Naděje dožití (ex);4.344541158
-Praha;2019-2023;muži;89;Počet zemřelých (Dx);840.0
-Praha;2019-2023;muži;89;Počet obyvatel (Px);4465.0
-Praha;2019-2023;muži;89;Míra úmrtnosti (mx);0.182971873
-Praha;2019-2023;muži;89;Pravděpodobnost úmrtí (qx);0.167635575
-Praha;2019-2023;muži;89;Tabulkový počet dožívajících (lx);18589.60147
-Praha;2019-2023;muži;89;Tabulkový počet zemřelých (dx);3116.278536
-Praha;2019-2023;muži;89;Tabulkový počet žijících (Lx);17031.4622
-Praha;2019-2023;muži;89;Pomocný ukazatel (Tx);75005.14508
-Praha;2019-2023;muži;89;Naděje dožití (ex);4.034790375
-Praha;2019-2023;muži;90;Počet zemřelých (Dx);779.0
-Praha;2019-2023;muži;90;Počet obyvatel (Px);3719.0
-Praha;2019-2023;muži;90;Míra úmrtnosti (mx);0.202874787
-Praha;2019-2023;muži;90;Pravděpodobnost úmrtí (qx);0.184190938
-Praha;2019-2023;muži;90;Tabulkový počet dožívajících (lx);15473.32293
-Praha;2019-2023;muži;90;Tabulkový počet zemřelých (dx);2850.045869
-Praha;2019-2023;muži;90;Tabulkový počet žijících (Lx);14048.3
-Praha;2019-2023;muži;90;Pomocný ukazatel (Tx);57973.68288
-Praha;2019-2023;muži;90;Naděje dožití (ex);3.74668603
-Praha;2019-2023;muži;91;Počet zemřelých (Dx);700.0
-Praha;2019-2023;muži;91;Počet obyvatel (Px);2974.0
-Praha;2019-2023;muži;91;Míra úmrtnosti (mx);0.224498371
-Praha;2019-2023;muži;91;Pravděpodobnost úmrtí (qx);0.201841794
-Praha;2019-2023;muži;91;Tabulkový počet dožívajících (lx);12623.27706
-Praha;2019-2023;muži;91;Tabulkový počet zemřelých (dx);2547.904889
-Praha;2019-2023;muži;91;Tabulkový počet žijících (Lx);11349.32462
-Praha;2019-2023;muži;91;Pomocný ukazatel (Tx);43925.38288
-Praha;2019-2023;muži;91;Naděje dožití (ex);3.479713125
-Praha;2019-2023;muži;92;Počet zemřelých (Dx);578.0
-Praha;2019-2023;muži;92;Počet obyvatel (Px);2314.0
-Praha;2019-2023;muži;92;Míra úmrtnosti (mx);0.247855297
-Praha;2019-2023;muži;92;Pravděpodobnost úmrtí (qx);0.220526025
-Praha;2019-2023;muži;92;Tabulkový počet dožívajících (lx);10075.37217
-Praha;2019-2023;muži;92;Tabulkový počet zemřelých (dx);2221.881775
-Praha;2019-2023;muži;92;Tabulkový počet žijících (Lx);8964.431287
-Praha;2019-2023;muži;92;Pomocný ukazatel (Tx);32576.05826
-Praha;2019-2023;muži;92;Naděje dožití (ex);3.233236221
-Praha;2019-2023;muži;93;Počet zemřelých (Dx);526.0
-Praha;2019-2023;muži;93;Počet obyvatel (Px);1693.0
-Praha;2019-2023;muži;93;Míra úmrtnosti (mx);0.272926723
-Praha;2019-2023;muži;93;Pravděpodobnost úmrtí (qx);0.240154441
-Praha;2019-2023;muži;93;Tabulkový počet dožívajících (lx);7853.490399
-Praha;2019-2023;muži;93;Tabulkový počet zemřelých (dx);1886.050596
-Praha;2019-2023;muži;93;Tabulkový počet žijících (Lx);6910.465101
-Praha;2019-2023;muži;93;Pomocný ukazatel (Tx);23611.62697
-Praha;2019-2023;muži;93;Naděje dožití (ex);3.006513763
-Praha;2019-2023;muži;94;Počet zemřelých (Dx);412.0
-Praha;2019-2023;muži;94;Počet obyvatel (Px);1169.0
-Praha;2019-2023;muži;94;Míra úmrtnosti (mx);0.299657924
-Praha;2019-2023;muži;94;Pravděpodobnost úmrtí (qx);0.260610868
-Praha;2019-2023;muži;94;Tabulkový počet dožívajících (lx);5967.439803
-Praha;2019-2023;muži;94;Tabulkový počet zemřelých (dx);1555.179668
-Praha;2019-2023;muži;94;Tabulkový počet žijících (Lx);5189.849969
-Praha;2019-2023;muži;94;Pomocný ukazatel (Tx);16701.16187
-Praha;2019-2023;muži;94;Naděje dožití (ex);2.798714762
-Praha;2019-2023;muži;95;Počet zemřelých (Dx);292.0
-Praha;2019-2023;muži;95;Počet obyvatel (Px);802.0
-Praha;2019-2023;muži;95;Míra úmrtnosti (mx);0.327954967
-Praha;2019-2023;muži;95;Pravděpodobnost úmrtí (qx);0.281753704
-Praha;2019-2023;muži;95;Tabulkový počet dožívajících (lx);4412.260136
-Praha;2019-2023;muži;95;Tabulkový počet zemřelých (dx);1243.170635
-Praha;2019-2023;muži;95;Tabulkový počet žijících (Lx);3790.674818
-Praha;2019-2023;muži;95;Pomocný ukazatel (Tx);11511.3119
-Praha;2019-2023;muži;95;Naděje dožití (ex);2.608937721
-Praha;2019-2023;muži;96;Počet zemřelých (Dx);224.0
-Praha;2019-2023;muži;96;Počet obyvatel (Px);534.0
-Praha;2019-2023;muži;96;Míra úmrtnosti (mx);0.357682915
-Praha;2019-2023;muži;96;Pravděpodobnost úmrtí (qx);0.303419016
-Praha;2019-2023;muži;96;Tabulkový počet dožívajících (lx);3169.0895
-Praha;2019-2023;muži;96;Tabulkový počet zemřelých (dx);961.5620177
-Praha;2019-2023;muži;96;Tabulkový počet žijících (Lx);2688.308491
-Praha;2019-2023;muži;96;Pomocný ukazatel (Tx);7720.637083
-Praha;2019-2023;muži;96;Naděje dožití (ex);2.436231947
-Praha;2019-2023;muži;97;Počet zemřelých (Dx);154.0
-Praha;2019-2023;muži;97;Počet obyvatel (Px);319.0
-Praha;2019-2023;muži;97;Míra úmrtnosti (mx);0.388665949
-Praha;2019-2023;muži;97;Pravděpodobnost úmrtí (qx);0.325425118
-Praha;2019-2023;muži;97;Tabulkový počet dožívajících (lx);2207.527483
-Praha;2019-2023;muži;97;Tabulkový počet zemřelých (dx);718.3848919
-Praha;2019-2023;muži;97;Tabulkový počet žijících (Lx);1848.335037
-Praha;2019-2023;muži;97;Pomocný ukazatel (Tx);5032.328592
-Praha;2019-2023;muži;97;Naděje dožití (ex);2.279622171
-Praha;2019-2023;muži;98;Počet zemřelých (Dx);89.0
-Praha;2019-2023;muži;98;Počet obyvatel (Px);186.0
-Praha;2019-2023;muži;98;Míra úmrtnosti (mx);0.420689718
-Praha;2019-2023;muži;98;Pravděpodobnost úmrtí (qx);0.34757839
-Praha;2019-2023;muži;98;Tabulkový počet dožívajících (lx);1489.142591
-Praha;2019-2023;muži;98;Tabulkový počet zemřelých (dx);517.5937844
-Praha;2019-2023;muži;98;Tabulkový počet žijících (Lx);1230.345699
-Praha;2019-2023;muži;98;Pomocný ukazatel (Tx);3183.993555
-Praha;2019-2023;muži;98;Naděje dožití (ex);2.138138802
-Praha;2019-2023;muži;99;Počet zemřelých (Dx);51.0
-Praha;2019-2023;muži;99;Počet obyvatel (Px);102.0
-Praha;2019-2023;muži;99;Míra úmrtnosti (mx);0.453506018
-Praha;2019-2023;muži;99;Pravděpodobnost úmrtí (qx);0.369679972
-Praha;2019-2023;muži;99;Tabulkový počet dožívajících (lx);971.5488064
-Praha;2019-2023;muži;99;Tabulkový počet zemřelých (dx);359.1621356
-Praha;2019-2023;muži;99;Tabulkový počet žijících (Lx);791.9677386
-Praha;2019-2023;muži;99;Pomocný ukazatel (Tx);1953.647856
-Praha;2019-2023;muži;99;Naděje dožití (ex);2.010859201
-Praha;2019-2023;muži;100;Počet zemřelých (Dx);31.0
-Praha;2019-2023;muži;100;Počet obyvatel (Px);50.0
-Praha;2019-2023;muži;100;Míra úmrtnosti (mx);0.486839722
-Praha;2019-2023;muži;100;Pravděpodobnost úmrtí (qx);0.39153285
-Praha;2019-2023;muži;100;Tabulkový počet dožívajících (lx);612.3866708
-Praha;2019-2023;muži;100;Tabulkový počet zemřelých (dx);239.7694987
-Praha;2019-2023;muži;100;Tabulkový počet žijících (Lx);492.5019214
-Praha;2019-2023;muži;100;Pomocný ukazatel (Tx);1161.680118
-Praha;2019-2023;muži;100;Naděje dožití (ex);1.896971592
-Praha;2019-2023;muži;101;Počet zemřelých (Dx);6.0
-Praha;2019-2023;muži;101;Počet obyvatel (Px);30.0
-Praha;2019-2023;muži;101;Míra úmrtnosti (mx);0.520397585
-Praha;2019-2023;muži;101;Pravděpodobnost úmrtí (qx);0.412948805
-Praha;2019-2023;muži;101;Tabulkový počet dožívajících (lx);372.6171721
-Praha;2019-2023;muži;101;Tabulkový počet zemřelých (dx);153.8718158
-Praha;2019-2023;muži;101;Tabulkový počet žijících (Lx);295.6812642
-Praha;2019-2023;muži;101;Pomocný ukazatel (Tx);669.1781964
-Praha;2019-2023;muži;101;Naděje dožití (ex);1.795886627
-Praha;2019-2023;muži;102;Počet zemřelých (Dx);7.0
-Praha;2019-2023;muži;102;Počet obyvatel (Px);22.0
-Praha;2019-2023;muži;102;Míra úmrtnosti (mx);0.55387838
-Praha;2019-2023;muži;102;Pravděpodobnost úmrtí (qx);0.433754704
-Praha;2019-2023;muži;102;Tabulkový počet dožívajících (lx);218.7453563
-Praha;2019-2023;muži;102;Tabulkový počet zemřelých (dx);94.88182726
-Praha;2019-2023;muži;102;Tabulkový počet žijících (Lx);171.3044427
-Praha;2019-2023;muži;102;Pomocný ukazatel (Tx);373.4969322
-Praha;2019-2023;muži;102;Naděje dožití (ex);1.707450794
-Praha;2019-2023;muži;103;Počet zemřelých (Dx);3.0
-Praha;2019-2023;muži;103;Počet obyvatel (Px);14.0
-Praha;2019-2023;muži;103;Míra úmrtnosti (mx);0.586983636
-Praha;2019-2023;muži;103;Pravděpodobnost úmrtí (qx);0.453797718
-Praha;2019-2023;muži;103;Tabulkový počet dožívajících (lx);123.863529
-Praha;2019-2023;muži;103;Tabulkový počet zemřelých (dx);56.20898686
-Praha;2019-2023;muži;103;Tabulkový počet žijících (Lx);95.75903559
-Praha;2019-2023;muži;103;Pomocný ukazatel (Tx);202.1924896
-Praha;2019-2023;muži;103;Naděje dožití (ex);1.632381147
-Praha;2019-2023;muži;104;Počet zemřelých (Dx);3.0
-Praha;2019-2023;muži;104;Počet obyvatel (Px);13.0
-Praha;2019-2023;muži;104;Míra úmrtnosti (mx);0.619428157
-Praha;2019-2023;muži;104;Pravděpodobnost úmrtí (qx);0.472949147
-Praha;2019-2023;muži;104;Tabulkový počet dožívajících (lx);67.65454216
-Praha;2019-2023;muži;104;Tabulkový počet zemřelých (dx);31.99715803
-Praha;2019-2023;muži;104;Tabulkový počet žijících (Lx);51.65596315
-Praha;2019-2023;muži;104;Pomocný ukazatel (Tx);106.433454
-Praha;2019-2023;muži;104;Naděje dožití (ex);1.573190071
-Praha;2019-2023;muži;105;Počet zemřelých (Dx);0.0
-Praha;2019-2023;muži;105;Počet obyvatel (Px);3.0
-Praha;2019-2023;muži;105;Míra úmrtnosti (mx);0.65094957
-Praha;2019-2023;muži;105;Pravděpodobnost úmrtí (qx);1.0
-Praha;2019-2023;muži;105;Tabulkový počet dožívajících (lx);35.65738413
-Praha;2019-2023;muži;105;Tabulkový počet zemřelých (dx);35.65738413
-Praha;2019-2023;muži;105;Tabulkový počet žijících (Lx);54.77749085
-Praha;2019-2023;muži;105;Pomocný ukazatel (Tx);54.77749085
-Praha;2019-2023;muži;105;Naděje dožití (ex);1.536217313
+Okresy,Pětileté období (okresy),Pohlaví,Věk (roky),Ukazatel,value
+Praha,2020-2024,muži,0,Počet zemřelých (Dx),60.0
+Praha,2020-2024,muži,0,Počet obyvatel (Px),34985.0
+Praha,2020-2024,muži,0,Míra úmrtnosti (mx),0.0017150207
+Praha,2020-2024,muži,0,Pravděpodobnost úmrtí (qx),0.0017124949
+Praha,2020-2024,muži,0,Tabulkový počet dožívajících (lx),100000.0
+Praha,2020-2024,muži,0,Tabulkový počet zemřelých (dx),171.2494933869
+Praha,2020-2024,muži,0,Tabulkový počet žijících (Lx),99852.7254356873
+Praha,2020-2024,muži,0,Pomocný ukazatel (Tx),7790077.42519243
+Praha,2020-2024,muži,0,Naděje dožití (ex),77.9007742519
+Praha,2020-2024,muži,1,Počet zemřelých (Dx),3.0
+Praha,2020-2024,muži,1,Počet obyvatel (Px),36339.0
+Praha,2020-2024,muži,1,Míra úmrtnosti (mx),0.0001266728
+Praha,2020-2024,muži,1,Pravděpodobnost úmrtí (qx),0.0001266648
+Praha,2020-2024,muži,1,Tabulkový počet dožívajících (lx),99828.7505066131
+Praha,2020-2024,muži,1,Tabulkový počet zemřelých (dx),12.6447900914
+Praha,2020-2024,muži,1,Tabulkový počet žijících (Lx),99822.4281115674
+Praha,2020-2024,muži,1,Pomocný ukazatel (Tx),7690224.69975674
+Praha,2020-2024,muži,1,Naděje dožití (ex),77.0341676194
+Praha,2020-2024,muži,2,Počet zemřelých (Dx),6.0
+Praha,2020-2024,muži,2,Počet obyvatel (Px),37292.0
+Praha,2020-2024,muži,2,Míra úmrtnosti (mx),0.000120658
+Praha,2020-2024,muži,2,Pravděpodobnost úmrtí (qx),0.0001206507
+Praha,2020-2024,muži,2,Tabulkový počet dožívajících (lx),99816.1057165217
+Praha,2020-2024,muži,2,Tabulkový počet zemřelých (dx),12.0428829914
+Praha,2020-2024,muži,2,Tabulkový počet žijících (Lx),99810.084275026
+Praha,2020-2024,muži,2,Pomocný ukazatel (Tx),7590402.27164517
+Praha,2020-2024,muži,2,Naděje dožití (ex),76.0438630335
+Praha,2020-2024,muži,3,Počet zemřelých (Dx),8.0
+Praha,2020-2024,muži,3,Počet obyvatel (Px),37248.0
+Praha,2020-2024,muži,3,Míra úmrtnosti (mx),0.0001737488
+Praha,2020-2024,muži,3,Pravděpodobnost úmrtí (qx),0.0001737337
+Praha,2020-2024,muži,3,Tabulkový počet dožívajících (lx),99804.0628335303
+Praha,2020-2024,muži,3,Tabulkový počet zemřelých (dx),17.3393253487
+Praha,2020-2024,muži,3,Tabulkový počet žijících (Lx),99795.393170856
+Praha,2020-2024,muži,3,Pomocný ukazatel (Tx),7490592.18737015
+Praha,2020-2024,muži,3,Naděje dožití (ex),75.0529785532
+Praha,2020-2024,muži,4,Počet zemřelých (Dx),1.0
+Praha,2020-2024,muži,4,Počet obyvatel (Px),37030.0
+Praha,2020-2024,muži,4,Míra úmrtnosti (mx),0.0001090319
+Praha,2020-2024,muži,4,Pravděpodobnost úmrtí (qx),0.0001090259
+Praha,2020-2024,muži,4,Tabulkový počet dožívajících (lx),99786.7235081817
+Praha,2020-2024,muži,4,Tabulkový počet zemřelých (dx),10.8793407143
+Praha,2020-2024,muži,4,Tabulkový počet žijících (Lx),99781.2838378245
+Praha,2020-2024,muži,4,Pomocný ukazatel (Tx),7390796.79419929
+Praha,2020-2024,muži,4,Naděje dožití (ex),74.0659331659
+Praha,2020-2024,muži,5,Počet zemřelých (Dx),3.0
+Praha,2020-2024,muži,5,Počet obyvatel (Px),37239.0
+Praha,2020-2024,muži,5,Míra úmrtnosti (mx),4.61636e-05
+Praha,2020-2024,muži,5,Pravděpodobnost úmrtí (qx),4.61626e-05
+Praha,2020-2024,muži,5,Tabulkový počet dožívajících (lx),99775.8441674674
+Praha,2020-2024,muži,5,Tabulkový počet zemřelých (dx),4.6059088146
+Praha,2020-2024,muži,5,Tabulkový počet žijících (Lx),99773.54121306
+Praha,2020-2024,muži,5,Pomocný ukazatel (Tx),7291015.51036147
+Praha,2020-2024,muži,5,Naděje dožití (ex),73.073954635
+Praha,2020-2024,muži,6,Počet zemřelých (Dx),1.0
+Praha,2020-2024,muži,6,Počet obyvatel (Px),37121.0
+Praha,2020-2024,muži,6,Míra úmrtnosti (mx),2.43483e-05
+Praha,2020-2024,muži,6,Pravděpodobnost úmrtí (qx),2.4348e-05
+Praha,2020-2024,muži,6,Tabulkový počet dožívajících (lx),99771.2382586527
+Praha,2020-2024,muži,6,Tabulkový počet zemřelých (dx),2.4292307718
+Praha,2020-2024,muži,6,Tabulkový počet žijících (Lx),99770.0236432668
+Praha,2020-2024,muži,6,Pomocný ukazatel (Tx),7191241.96914841
+Praha,2020-2024,muži,6,Naděje dožití (ex),72.0773049895
+Praha,2020-2024,muži,7,Počet zemřelých (Dx),1.0
+Praha,2020-2024,muži,7,Počet obyvatel (Px),36728.0
+Praha,2020-2024,muži,7,Míra úmrtnosti (mx),2.09569e-05
+Praha,2020-2024,muži,7,Pravděpodobnost úmrtí (qx),2.09567e-05
+Praha,2020-2024,muži,7,Tabulkový počet dožívajících (lx),99768.8090278809
+Praha,2020-2024,muži,7,Tabulkový počet zemřelých (dx),2.0908260197
+Praha,2020-2024,muži,7,Tabulkový počet žijících (Lx),99767.7636148711
+Praha,2020-2024,muži,7,Pomocný ukazatel (Tx),7091471.94550514
+Praha,2020-2024,muži,7,Naděje dožití (ex),71.0790477966
+Praha,2020-2024,muži,8,Počet zemřelých (Dx),0.0
+Praha,2020-2024,muži,8,Počet obyvatel (Px),36441.0
+Praha,2020-2024,muži,8,Míra úmrtnosti (mx),2.52039e-05
+Praha,2020-2024,muži,8,Pravděpodobnost úmrtí (qx),2.52035e-05
+Praha,2020-2024,muži,8,Tabulkový počet dožívajících (lx),99766.7182018613
+Praha,2020-2024,muži,8,Tabulkový počet zemřelých (dx),2.5144750874
+Praha,2020-2024,muži,8,Tabulkový počet žijících (Lx),99765.4609643176
+Praha,2020-2024,muži,8,Pomocný ukazatel (Tx),6991704.18189027
+Praha,2020-2024,muži,8,Naděje dožití (ex),70.0805269323
+Praha,2020-2024,muži,9,Počet zemřelých (Dx),1.0
+Praha,2020-2024,muži,9,Počet obyvatel (Px),36327.0
+Praha,2020-2024,muži,9,Míra úmrtnosti (mx),3.54408e-05
+Praha,2020-2024,muži,9,Pravděpodobnost úmrtí (qx),3.54401e-05
+Praha,2020-2024,muži,9,Tabulkový počet dožívajících (lx),99764.2037267738
+Praha,2020-2024,muži,9,Tabulkový počet zemřelých (dx),3.5356582664
+Praha,2020-2024,muži,9,Tabulkový počet žijících (Lx),99762.4358976406
+Praha,2020-2024,muži,9,Pomocný ukazatel (Tx),6891938.72092595
+Praha,2020-2024,muži,9,Naděje dožití (ex),69.0822806525
+Praha,2020-2024,muži,10,Počet zemřelých (Dx),3.0
+Praha,2020-2024,muži,10,Počet obyvatel (Px),36351.0
+Praha,2020-2024,muži,10,Míra úmrtnosti (mx),5.16519e-05
+Praha,2020-2024,muži,10,Pravděpodobnost úmrtí (qx),5.16506e-05
+Praha,2020-2024,muži,10,Tabulkový počet dožívajících (lx),99760.6680685074
+Praha,2020-2024,muži,10,Tabulkový počet zemřelých (dx),5.1526973095
+Praha,2020-2024,muži,10,Tabulkový počet žijících (Lx),99758.0917198526
+Praha,2020-2024,muži,10,Pomocný ukazatel (Tx),6792176.28502831
+Praha,2020-2024,muži,10,Naděje dožití (ex),68.0847113049
+Praha,2020-2024,muži,11,Počet zemřelých (Dx),2.0
+Praha,2020-2024,muži,11,Počet obyvatel (Px),36295.0
+Praha,2020-2024,muži,11,Míra úmrtnosti (mx),7.2523e-05
+Praha,2020-2024,muži,11,Pravděpodobnost úmrtí (qx),7.25204e-05
+Praha,2020-2024,muži,11,Tabulkový počet dožívajících (lx),99755.5153711979
+Praha,2020-2024,muži,11,Tabulkový počet zemřelých (dx),7.2343066939
+Praha,2020-2024,muži,11,Tabulkový počet žijících (Lx),99751.8982178509
+Praha,2020-2024,muži,11,Pomocný ukazatel (Tx),6692418.19330846
+Praha,2020-2024,muži,11,Naděje dožití (ex),67.0882022754
+Praha,2020-2024,muži,12,Počet zemřelých (Dx),4.0
+Praha,2020-2024,muži,12,Počet obyvatel (Px),36025.0
+Praha,2020-2024,muži,12,Míra úmrtnosti (mx),9.21854e-05
+Praha,2020-2024,muži,12,Pravděpodobnost úmrtí (qx),9.21812e-05
+Praha,2020-2024,muži,12,Tabulkový počet dožívajících (lx),99748.281064504
+Praha,2020-2024,muži,12,Tabulkový počet zemřelých (dx),9.1949129961
+Praha,2020-2024,muži,12,Tabulkový počet žijících (Lx),99743.683608006
+Praha,2020-2024,muži,12,Pomocný ukazatel (Tx),6592666.29509061
+Praha,2020-2024,muži,12,Naděje dožití (ex),66.0930316266
+Praha,2020-2024,muži,13,Počet zemřelých (Dx),5.0
+Praha,2020-2024,muži,13,Počet obyvatel (Px),35370.0
+Praha,2020-2024,muži,13,Míra úmrtnosti (mx),0.000108858
+Praha,2020-2024,muži,13,Pravděpodobnost úmrtí (qx),0.0001088521
+Praha,2020-2024,muži,13,Tabulkový počet dožívajících (lx),99739.0861515079
+Praha,2020-2024,muži,13,Tabulkový počet zemřelých (dx),10.8568090146
+Praha,2020-2024,muži,13,Tabulkový počet žijících (Lx),99733.6577470007
+Praha,2020-2024,muži,13,Pomocný ukazatel (Tx),6492922.6114826
+Praha,2020-2024,muži,13,Naděje dožití (ex),65.0990786262
+Praha,2020-2024,muži,14,Počet zemřelých (Dx),3.0
+Praha,2020-2024,muži,14,Počet obyvatel (Px),33972.0
+Praha,2020-2024,muži,14,Míra úmrtnosti (mx),0.0001285344
+Praha,2020-2024,muži,14,Pravděpodobnost úmrtí (qx),0.0001285261
+Praha,2020-2024,muži,14,Tabulkový počet dožívajících (lx),99728.2293424934
+Praha,2020-2024,muži,14,Tabulkový počet zemřelých (dx),12.8176835418
+Praha,2020-2024,muži,14,Tabulkový počet žijících (Lx),99721.8205007225
+Praha,2020-2024,muži,14,Pomocný ukazatel (Tx),6393188.9537356
+Praha,2020-2024,muži,14,Naděje dožití (ex),64.1061111371
+Praha,2020-2024,muži,15,Počet zemřelých (Dx),5.0
+Praha,2020-2024,muži,15,Počet obyvatel (Px),32284.0
+Praha,2020-2024,muži,15,Míra úmrtnosti (mx),0.000161471
+Praha,2020-2024,muži,15,Pravděpodobnost úmrtí (qx),0.0001614579
+Praha,2020-2024,muži,15,Tabulkový počet dožívajících (lx),99715.4116589516
+Praha,2020-2024,muži,15,Tabulkový počet zemřelých (dx),16.0998438828
+Praha,2020-2024,muži,15,Tabulkový počet žijících (Lx),99707.3617370102
+Praha,2020-2024,muži,15,Pomocný ukazatel (Tx),6293467.13323488
+Praha,2020-2024,muži,15,Naděje dožití (ex),63.1142872354
+Praha,2020-2024,muži,16,Počet zemřelých (Dx),7.0
+Praha,2020-2024,muži,16,Počet obyvatel (Px),30963.0
+Praha,2020-2024,muži,16,Míra úmrtnosti (mx),0.0002146941
+Praha,2020-2024,muži,16,Pravděpodobnost úmrtí (qx),0.0002146711
+Praha,2020-2024,muži,16,Tabulkový počet dožívajících (lx),99699.3118150688
+Praha,2020-2024,muži,16,Tabulkový počet zemřelých (dx),21.4025593659
+Praha,2020-2024,muži,16,Tabulkový počet žijících (Lx),99688.6105353859
+Praha,2020-2024,muži,16,Pomocný ukazatel (Tx),6193759.77149787
+Praha,2020-2024,muži,16,Naděje dožití (ex),62.1243984411
+Praha,2020-2024,muži,17,Počet zemřelých (Dx),6.0
+Praha,2020-2024,muži,17,Počet obyvatel (Px),31306.0
+Praha,2020-2024,muži,17,Míra úmrtnosti (mx),0.0002935818
+Praha,2020-2024,muži,17,Pravděpodobnost úmrtí (qx),0.0002935387
+Praha,2020-2024,muži,17,Tabulkový počet dožívajících (lx),99677.9092557029
+Praha,2020-2024,muži,17,Tabulkový počet zemřelých (dx),29.2593229306
+Praha,2020-2024,muži,17,Tabulkový počet žijících (Lx),99663.2795942376
+Praha,2020-2024,muži,17,Pomocný ukazatel (Tx),6094071.16096248
+Praha,2020-2024,muži,17,Naděje dožití (ex),61.137630258
+Praha,2020-2024,muži,18,Počet zemřelých (Dx),13.0
+Praha,2020-2024,muži,18,Počet obyvatel (Px),32432.0
+Praha,2020-2024,muži,18,Míra úmrtnosti (mx),0.0003993524
+Praha,2020-2024,muži,18,Pravděpodobnost úmrtí (qx),0.0003992727
+Praha,2020-2024,muži,18,Tabulkový počet dožívajících (lx),99648.6499327724
+Praha,2020-2024,muži,18,Tabulkový počet zemřelých (dx),39.786982022
+Praha,2020-2024,muži,18,Tabulkový počet žijících (Lx),99628.7564417613
+Praha,2020-2024,muži,18,Pomocný ukazatel (Tx),5994407.88136824
+Praha,2020-2024,muži,18,Naděje dožití (ex),60.1554349749
+Praha,2020-2024,muži,19,Počet zemřelých (Dx),19.0
+Praha,2020-2024,muži,19,Počet obyvatel (Px),31736.0
+Praha,2020-2024,muži,19,Míra úmrtnosti (mx),0.0005143614
+Praha,2020-2024,muži,19,Pravděpodobnost úmrtí (qx),0.0005142292
+Praha,2020-2024,muži,19,Tabulkový počet dožívajících (lx),99608.8629507504
+Praha,2020-2024,muži,19,Tabulkový počet zemřelých (dx),51.2217813606
+Praha,2020-2024,muži,19,Tabulkový počet žijících (Lx),99583.2520600701
+Praha,2020-2024,muži,19,Pomocný ukazatel (Tx),5894779.12492648
+Praha,2020-2024,muži,19,Naděje dožití (ex),59.1792632734
+Praha,2020-2024,muži,20,Počet zemřelých (Dx),21.0
+Praha,2020-2024,muži,20,Počet obyvatel (Px),30590.0
+Praha,2020-2024,muži,20,Míra úmrtnosti (mx),0.0005950703
+Praha,2020-2024,muži,20,Pravděpodobnost úmrtí (qx),0.0005948933
+Praha,2020-2024,muži,20,Tabulkový počet dožívajících (lx),99557.6411693898
+Praha,2020-2024,muži,20,Tabulkový počet zemřelých (dx),59.2261733697
+Praha,2020-2024,muži,20,Tabulkový počet žijících (Lx),99528.0280827049
+Praha,2020-2024,muži,20,Pomocný ukazatel (Tx),5795195.87286641
+Praha,2020-2024,muži,20,Naděje dožití (ex),58.209453386
+Praha,2020-2024,muži,21,Počet zemřelých (Dx),18.0
+Praha,2020-2024,muži,21,Počet obyvatel (Px),29753.0
+Praha,2020-2024,muži,21,Míra úmrtnosti (mx),0.0006048806
+Praha,2020-2024,muži,21,Pravděpodobnost úmrtí (qx),0.0006046977
+Praha,2020-2024,muži,21,Tabulkový počet dožívajících (lx),99498.4149960201
+Praha,2020-2024,muži,21,Tabulkový počet zemřelých (dx),60.1664623618
+Praha,2020-2024,muži,21,Tabulkový počet žijících (Lx),99468.3317648392
+Praha,2020-2024,muži,21,Pomocný ukazatel (Tx),5695667.84478371
+Praha,2020-2024,muži,21,Naděje dožití (ex),57.2438047884
+Praha,2020-2024,muži,22,Počet zemřelých (Dx),15.0
+Praha,2020-2024,muži,22,Počet obyvatel (Px),29720.0
+Praha,2020-2024,muži,22,Míra úmrtnosti (mx),0.0005657837
+Praha,2020-2024,muži,22,Pravděpodobnost úmrtí (qx),0.0005656237
+Praha,2020-2024,muži,22,Tabulkový počet dožívajících (lx),99438.2485336583
+Praha,2020-2024,muži,22,Tabulkový počet zemřelých (dx),56.2446253071
+Praha,2020-2024,muži,22,Tabulkový počet žijících (Lx),99410.1262210047
+Praha,2020-2024,muži,22,Pomocný ukazatel (Tx),5596199.51301887
+Praha,2020-2024,muži,22,Naděje dožití (ex),56.2781383979
+Praha,2020-2024,muži,23,Počet zemřelých (Dx),14.0
+Praha,2020-2024,muži,23,Počet obyvatel (Px),30125.0
+Praha,2020-2024,muži,23,Míra úmrtnosti (mx),0.00051459
+Praha,2020-2024,muži,23,Pravděpodobnost úmrtí (qx),0.0005144576
+Praha,2020-2024,muži,23,Tabulkový počet dožívajících (lx),99382.0039083512
+Praha,2020-2024,muži,23,Tabulkový počet zemřelých (dx),51.1278274761
+Praha,2020-2024,muži,23,Tabulkový počet žijících (Lx),99356.4399946131
+Praha,2020-2024,muži,23,Pomocný ukazatel (Tx),5496789.38679786
+Praha,2020-2024,muži,23,Naděje dožití (ex),55.3097056874
+Praha,2020-2024,muži,24,Počet zemřelých (Dx),15.0
+Praha,2020-2024,muži,24,Počet obyvatel (Px),31153.0
+Praha,2020-2024,muži,24,Míra úmrtnosti (mx),0.0004733014
+Praha,2020-2024,muži,24,Pravděpodobnost úmrtí (qx),0.0004731894
+Praha,2020-2024,muži,24,Tabulkový počet dožívajících (lx),99330.8760808751
+Praha,2020-2024,muži,24,Tabulkový počet zemřelých (dx),47.0023176405
+Praha,2020-2024,muži,24,Tabulkový počet žijících (Lx),99307.3749220548
+Praha,2020-2024,muži,24,Pomocný ukazatel (Tx),5397432.94680325
+Praha,2020-2024,muži,24,Naděje dožití (ex),54.337917471
+Praha,2020-2024,muži,25,Počet zemřelých (Dx),18.0
+Praha,2020-2024,muži,25,Počet obyvatel (Px),32987.0
+Praha,2020-2024,muži,25,Míra úmrtnosti (mx),0.0004473506
+Praha,2020-2024,muži,25,Pravděpodobnost úmrtí (qx),0.0004472506
+Praha,2020-2024,muži,25,Tabulkový počet dožívajících (lx),99283.8737632346
+Praha,2020-2024,muži,25,Tabulkový počet zemřelých (dx),44.4047693628
+Praha,2020-2024,muži,25,Tabulkový počet žijících (Lx),99261.6713785532
+Praha,2020-2024,muži,25,Pomocný ukazatel (Tx),5298125.5718812
+Praha,2020-2024,muži,25,Naděje dožití (ex),53.3634050633
+Praha,2020-2024,muži,26,Počet zemřelých (Dx),15.0
+Praha,2020-2024,muži,26,Počet obyvatel (Px),35564.0
+Praha,2020-2024,muži,26,Míra úmrtnosti (mx),0.000440514
+Praha,2020-2024,muži,26,Pravděpodobnost úmrtí (qx),0.000440417
+Praha,2020-2024,muži,26,Tabulkový počet dožívajících (lx),99239.4689938718
+Praha,2020-2024,muži,26,Tabulkový počet zemřelých (dx),43.7067525329
+Praha,2020-2024,muži,26,Tabulkový počet žijících (Lx),99217.6156176053
+Praha,2020-2024,muži,26,Pomocný ukazatel (Tx),5198863.90050264
+Praha,2020-2024,muži,26,Naděje dožití (ex),52.3870588306
+Praha,2020-2024,muži,27,Počet zemřelých (Dx),14.0
+Praha,2020-2024,muži,27,Počet obyvatel (Px),38746.0
+Praha,2020-2024,muži,27,Míra úmrtnosti (mx),0.0004534977
+Praha,2020-2024,muži,27,Pravděpodobnost úmrtí (qx),0.0004533949
+Praha,2020-2024,muži,27,Tabulkový počet dožívajících (lx),99195.7622413389
+Praha,2020-2024,muži,27,Tabulkový počet zemřelých (dx),44.9748565595
+Praha,2020-2024,muži,27,Tabulkový počet žijících (Lx),99173.2748130591
+Praha,2020-2024,muži,27,Pomocný ukazatel (Tx),5099646.28488504
+Praha,2020-2024,muži,27,Naděje dožití (ex),51.409920844
+Praha,2020-2024,muži,28,Počet zemřelých (Dx),17.0
+Praha,2020-2024,muži,28,Počet obyvatel (Px),42269.0
+Praha,2020-2024,muži,28,Míra úmrtnosti (mx),0.0004849356
+Praha,2020-2024,muži,28,Pravděpodobnost úmrtí (qx),0.0004848181
+Praha,2020-2024,muži,28,Tabulkový počet dožívajících (lx),99150.7873847794
+Praha,2020-2024,muži,28,Tabulkový počet zemřelých (dx),48.0700955056
+Praha,2020-2024,muži,28,Tabulkový počet žijících (Lx),99126.7523370266
+Praha,2020-2024,muži,28,Pomocný ukazatel (Tx),5000473.01007198
+Praha,2020-2024,muži,28,Naděje dožití (ex),50.4330136146
+Praha,2020-2024,muži,29,Počet zemřelých (Dx),30.0
+Praha,2020-2024,muži,29,Počet obyvatel (Px),45724.0
+Praha,2020-2024,muži,29,Míra úmrtnosti (mx),0.0005346028
+Praha,2020-2024,muži,29,Pravděpodobnost úmrtí (qx),0.00053446
+Praha,2020-2024,muži,29,Tabulkový počet dožívajících (lx),99102.7172892738
+Praha,2020-2024,muži,29,Tabulkový počet zemřelých (dx),52.9664356871
+Praha,2020-2024,muži,29,Tabulkový počet žijících (Lx),99076.2340714303
+Praha,2020-2024,muži,29,Pomocný ukazatel (Tx),4901346.25773495
+Praha,2020-2024,muži,29,Naděje dožití (ex),49.4572337853
+Praha,2020-2024,muži,30,Počet zemřelých (Dx),27.0
+Praha,2020-2024,muži,30,Počet obyvatel (Px),48795.0
+Praha,2020-2024,muži,30,Míra úmrtnosti (mx),0.000598777
+Praha,2020-2024,muži,30,Pravděpodobnost úmrtí (qx),0.0005985978
+Praha,2020-2024,muži,30,Tabulkový počet dožívajících (lx),99049.7508535867
+Praha,2020-2024,muži,30,Tabulkový počet zemřelých (dx),59.290966005
+Praha,2020-2024,muži,30,Tabulkový počet žijících (Lx),99020.1053705842
+Praha,2020-2024,muži,30,Pomocný ukazatel (Tx),4802270.02366352
+Praha,2020-2024,muži,30,Naděje dožití (ex),48.4834134592
+Praha,2020-2024,muži,31,Počet zemřelých (Dx),35.0
+Praha,2020-2024,muži,31,Počet obyvatel (Px),51000.0
+Praha,2020-2024,muži,31,Míra úmrtnosti (mx),0.0006684268
+Praha,2020-2024,muži,31,Pravděpodobnost úmrtí (qx),0.0006682035
+Praha,2020-2024,muži,31,Tabulkový počet dožívajících (lx),98990.4598875817
+Praha,2020-2024,muži,31,Tabulkový počet zemřelých (dx),66.1457733014
+Praha,2020-2024,muži,31,Tabulkový počet žijících (Lx),98957.387000931
+Praha,2020-2024,muži,31,Pomocný ukazatel (Tx),4703249.91829294
+Praha,2020-2024,muži,31,Naděje dožití (ex),47.5121534301
+Praha,2020-2024,muži,32,Počet zemřelých (Dx),39.0
+Praha,2020-2024,muži,32,Počet obyvatel (Px),52571.0
+Praha,2020-2024,muži,32,Míra úmrtnosti (mx),0.0007317181
+Praha,2020-2024,muži,32,Pravděpodobnost úmrtí (qx),0.0007314505
+Praha,2020-2024,muži,32,Tabulkový počet dožívajících (lx),98924.3141142803
+Praha,2020-2024,muži,32,Tabulkový počet zemřelých (dx),72.3582395875
+Praha,2020-2024,muži,32,Tabulkový počet žijících (Lx),98888.1349944866
+Praha,2020-2024,muži,32,Pomocný ukazatel (Tx),4604292.53129201
+Praha,2020-2024,muži,32,Naděje dožití (ex),46.543588121
+Praha,2020-2024,muži,33,Počet zemřelých (Dx),49.0
+Praha,2020-2024,muži,33,Počet obyvatel (Px),53636.0
+Praha,2020-2024,muži,33,Míra úmrtnosti (mx),0.0007888366
+Praha,2020-2024,muži,33,Pravděpodobnost úmrtí (qx),0.0007885256
+Praha,2020-2024,muži,33,Tabulkový počet dožívajících (lx),98851.9558746928
+Praha,2020-2024,muži,33,Tabulkový počet zemřelých (dx),77.947301025
+Praha,2020-2024,muži,33,Tabulkový počet žijících (Lx),98812.9822241803
+Praha,2020-2024,muži,33,Pomocný ukazatel (Tx),4505404.39629752
+Praha,2020-2024,muži,33,Naděje dožití (ex),45.5772913791
+Praha,2020-2024,muži,34,Počet zemřelých (Dx),41.0
+Praha,2020-2024,muži,34,Počet obyvatel (Px),54265.0
+Praha,2020-2024,muži,34,Míra úmrtnosti (mx),0.0008482847
+Praha,2020-2024,muži,34,Pravděpodobnost úmrtí (qx),0.0008479251
+Praha,2020-2024,muži,34,Tabulkový počet dožívajících (lx),98774.0085736678
+Praha,2020-2024,muži,34,Tabulkový počet zemřelých (dx),83.7529606878
+Praha,2020-2024,muži,34,Tabulkový počet žijících (Lx),98732.1320933239
+Praha,2020-2024,muži,34,Pomocný ukazatel (Tx),4406591.41407334
+Praha,2020-2024,muži,34,Naděje dožití (ex),44.6128640288
+Praha,2020-2024,muži,35,Počet zemřelých (Dx),45.0
+Praha,2020-2024,muži,35,Počet obyvatel (Px),54784.0
+Praha,2020-2024,muži,35,Míra úmrtnosti (mx),0.0009185842
+Praha,2020-2024,muži,35,Pravděpodobnost úmrtí (qx),0.0009181625
+Praha,2020-2024,muži,35,Tabulkový počet dožívajících (lx),98690.25561298
+Praha,2020-2024,muži,35,Tabulkový počet zemřelých (dx),90.6136930912
+Praha,2020-2024,muži,35,Tabulkový počet žijících (Lx),98644.9487664344
+Praha,2020-2024,muži,35,Pomocný ukazatel (Tx),4307859.28198002
+Praha,2020-2024,muži,35,Naděje dožití (ex),43.6503001763
+Praha,2020-2024,muži,36,Počet zemřelých (Dx),50.0
+Praha,2020-2024,muži,36,Počet obyvatel (Px),55098.0
+Praha,2020-2024,muži,36,Míra úmrtnosti (mx),0.0009969822
+Praha,2020-2024,muži,36,Pravděpodobnost úmrtí (qx),0.0009964855
+Praha,2020-2024,muži,36,Tabulkový počet dožívajících (lx),98599.6419198888
+Praha,2020-2024,muži,36,Tabulkový počet zemřelých (dx),98.2531138684
+Praha,2020-2024,muži,36,Tabulkový počet žijících (Lx),98550.5153629546
+Praha,2020-2024,muži,36,Pomocný ukazatel (Tx),4209214.33321358
+Praha,2020-2024,muži,36,Naděje dožití (ex),42.6899555744
+Praha,2020-2024,muži,37,Počet zemřelých (Dx),74.0
+Praha,2020-2024,muži,37,Počet obyvatel (Px),54947.0
+Praha,2020-2024,muži,37,Míra úmrtnosti (mx),0.0010754783
+Praha,2020-2024,muži,37,Pravděpodobnost úmrtí (qx),0.0010749003
+Praha,2020-2024,muži,37,Tabulkový počet dožívajících (lx),98501.3888060204
+Praha,2020-2024,muži,37,Tabulkový počet zemřelých (dx),105.8791724423
+Praha,2020-2024,muži,37,Tabulkový počet žijících (Lx),98448.4492197992
+Praha,2020-2024,muži,37,Pomocný ukazatel (Tx),4110663.81785063
+Praha,2020-2024,muži,37,Naděje dožití (ex),41.7320391893
+Praha,2020-2024,muži,38,Počet zemřelých (Dx),60.0
+Praha,2020-2024,muži,38,Počet obyvatel (Px),55001.0
+Praha,2020-2024,muži,38,Míra úmrtnosti (mx),0.0011480132
+Praha,2020-2024,muži,38,Pravděpodobnost úmrtí (qx),0.0011473546
+Praha,2020-2024,muži,38,Tabulkový počet dožívajících (lx),98395.5096335781
+Praha,2020-2024,muži,38,Tabulkový počet zemřelých (dx),112.8945455168
+Praha,2020-2024,muži,38,Tabulkový počet žijících (Lx),98339.0623608197
+Praha,2020-2024,muži,38,Pomocný ukazatel (Tx),4012215.36863083
+Praha,2020-2024,muži,38,Naděje dožití (ex),40.7764072118
+Praha,2020-2024,muži,39,Počet zemřelých (Dx),67.0
+Praha,2020-2024,muži,39,Počet obyvatel (Px),55237.0
+Praha,2020-2024,muži,39,Míra úmrtnosti (mx),0.0012201008
+Praha,2020-2024,muži,39,Pravděpodobnost úmrtí (qx),0.0012193569
+Praha,2020-2024,muži,39,Tabulkový počet dožívajících (lx),98282.6150880613
+Praha,2020-2024,muži,39,Tabulkový počet zemřelých (dx),119.8415851206
+Praha,2020-2024,muži,39,Tabulkový počet žijících (Lx),98222.694295501
+Praha,2020-2024,muži,39,Pomocný ukazatel (Tx),3913876.30627001
+Praha,2020-2024,muži,39,Naděje dožití (ex),39.8226716166
+Praha,2020-2024,muži,40,Počet zemřelých (Dx),68.0
+Praha,2020-2024,muži,40,Počet obyvatel (Px),56203.0
+Praha,2020-2024,muži,40,Míra úmrtnosti (mx),0.0013012348
+Praha,2020-2024,muži,40,Pravděpodobnost úmrtí (qx),0.0013003888
+Praha,2020-2024,muži,40,Tabulkový počet dožívajících (lx),98162.7735029407
+Praha,2020-2024,muži,40,Tabulkový počet zemřelých (dx),127.6497668079
+Praha,2020-2024,muži,40,Tabulkový počet žijících (Lx),98098.9486195367
+Praha,2020-2024,muži,40,Pomocný ukazatel (Tx),3815653.61197451
+Praha,2020-2024,muži,40,Naděje dožití (ex),38.8706785252
+Praha,2020-2024,muži,41,Počet zemřelých (Dx),84.0
+Praha,2020-2024,muži,41,Počet obyvatel (Px),57824.0
+Praha,2020-2024,muži,41,Míra úmrtnosti (mx),0.0013993085
+Praha,2020-2024,muži,41,Pravděpodobnost úmrtí (qx),0.0013983302
+Praha,2020-2024,muži,41,Tabulkový počet dožívajících (lx),98035.1237361328
+Praha,2020-2024,muži,41,Tabulkový počet zemřelých (dx),137.0854730351
+Praha,2020-2024,muži,41,Tabulkový počet žijících (Lx),97966.5809996152
+Praha,2020-2024,muži,41,Pomocný ukazatel (Tx),3717554.66335497
+Praha,2020-2024,muži,41,Naděje dožití (ex),37.9206402938
+Praha,2020-2024,muži,42,Počet zemřelých (Dx),89.0
+Praha,2020-2024,muži,42,Počet obyvatel (Px),59462.0
+Praha,2020-2024,muži,42,Míra úmrtnosti (mx),0.0015166706
+Praha,2020-2024,muži,42,Pravděpodobnost úmrtí (qx),0.0015155214
+Praha,2020-2024,muži,42,Tabulkový počet dožívajících (lx),97898.0382630977
+Praha,2020-2024,muži,42,Tabulkový počet zemřelých (dx),148.3665693005
+Praha,2020-2024,muži,42,Tabulkový počet žijících (Lx),97823.8549784474
+Praha,2020-2024,muži,42,Pomocný ukazatel (Tx),3619588.08235535
+Praha,2020-2024,muži,42,Naděje dožití (ex),36.9730399768
+Praha,2020-2024,muži,43,Počet zemřelých (Dx),101.0
+Praha,2020-2024,muži,43,Počet obyvatel (Px),60798.0
+Praha,2020-2024,muži,43,Míra úmrtnosti (mx),0.0016553273
+Praha,2020-2024,muži,43,Pravděpodobnost úmrtí (qx),0.0016539584
+Praha,2020-2024,muži,43,Tabulkový počet dožívajících (lx),97749.6716937971
+Praha,2020-2024,muži,43,Tabulkový počet zemřelých (dx),161.6738876466
+Praha,2020-2024,muži,43,Tabulkový počet žijících (Lx),97668.8347499738
+Praha,2020-2024,muži,43,Pomocný ukazatel (Tx),3521764.22737691
+Praha,2020-2024,muži,43,Naděje dožití (ex),36.028399547
+Praha,2020-2024,muži,44,Počet zemřelých (Dx),107.0
+Praha,2020-2024,muži,44,Počet obyvatel (Px),61688.0
+Praha,2020-2024,muži,44,Míra úmrtnosti (mx),0.0018169697
+Praha,2020-2024,muži,44,Pravděpodobnost úmrtí (qx),0.0018153205
+Praha,2020-2024,muži,44,Tabulkový počet dožívajících (lx),97587.9978061506
+Praha,2020-2024,muži,44,Tabulkový počet zemřelých (dx),177.1534929466
+Praha,2020-2024,muži,44,Tabulkový počet žijících (Lx),97499.4210596772
+Praha,2020-2024,muži,44,Pomocný ukazatel (Tx),3424095.39262693
+Praha,2020-2024,muži,44,Naděje dožití (ex),35.0872593926
+Praha,2020-2024,muži,45,Počet zemřelých (Dx),140.0
+Praha,2020-2024,muži,45,Počet obyvatel (Px),61739.0
+Praha,2020-2024,muži,45,Míra úmrtnosti (mx),0.0020025454
+Praha,2020-2024,muži,45,Pravděpodobnost úmrtí (qx),0.0020005424
+Praha,2020-2024,muži,45,Tabulkový počet dožívajících (lx),97410.8443132039
+Praha,2020-2024,muži,45,Tabulkový počet zemřelých (dx),194.8745194897
+Praha,2020-2024,muži,45,Tabulkový počet žijících (Lx),97313.4070534591
+Praha,2020-2024,muži,45,Pomocný ukazatel (Tx),3326595.97156726
+Praha,2020-2024,muži,45,Naděje dožití (ex),34.1501605393
+Praha,2020-2024,muži,46,Počet zemřelých (Dx),115.0
+Praha,2020-2024,muži,46,Počet obyvatel (Px),60673.0
+Praha,2020-2024,muži,46,Míra úmrtnosti (mx),0.0022125936
+Praha,2020-2024,muži,46,Pravděpodobnost úmrtí (qx),0.0022101485
+Praha,2020-2024,muži,46,Tabulkový počet dožívajících (lx),97215.9697937142
+Praha,2020-2024,muži,46,Tabulkový počet zemřelých (dx),214.8617321468
+Praha,2020-2024,muži,46,Tabulkový počet žijících (Lx),97108.5389276408
+Praha,2020-2024,muži,46,Pomocný ukazatel (Tx),3229282.5645138
+Praha,2020-2024,muži,46,Naděje dožití (ex),33.2176140542
+Praha,2020-2024,muži,47,Počet zemřelých (Dx),149.0
+Praha,2020-2024,muži,47,Počet obyvatel (Px),58602.0
+Praha,2020-2024,muži,47,Míra úmrtnosti (mx),0.0024487462
+Praha,2020-2024,muži,47,Pravděpodobnost úmrtí (qx),0.0024457517
+Praha,2020-2024,muži,47,Tabulkový počet dožívajících (lx),97001.1080615674
+Praha,2020-2024,muži,47,Tabulkový počet zemřelých (dx),237.2406257855
+Praha,2020-2024,muži,47,Tabulkový počet žijících (Lx),96882.4877486747
+Praha,2020-2024,muži,47,Pomocný ukazatel (Tx),3132174.02558616
+Praha,2020-2024,muži,47,Naděje dožití (ex),32.2900850122
+Praha,2020-2024,muži,48,Počet zemřelých (Dx),158.0
+Praha,2020-2024,muži,48,Počet obyvatel (Px),55757.0
+Praha,2020-2024,muži,48,Míra úmrtnosti (mx),0.0027138834
+Praha,2020-2024,muži,48,Pravděpodobnost úmrtí (qx),0.0027102058
+Praha,2020-2024,muži,48,Tabulkový počet dožívajících (lx),96763.867435782
+Praha,2020-2024,muži,48,Tabulkový počet zemřelých (dx),262.2499985136
+Praha,2020-2024,muži,48,Tabulkový počet žijících (Lx),96632.7424365252
+Praha,2020-2024,muži,48,Pomocný ukazatel (Tx),3035291.53783748
+Praha,2020-2024,muži,48,Naděje dožití (ex),31.368026292
+Praha,2020-2024,muži,49,Počet zemřelých (Dx),163.0
+Praha,2020-2024,muži,49,Počet obyvatel (Px),52357.0
+Praha,2020-2024,muži,49,Míra úmrtnosti (mx),0.0030120948
+Praha,2020-2024,muži,49,Pravděpodobnost úmrtí (qx),0.0030075652
+Praha,2020-2024,muži,49,Tabulkový počet dožívajících (lx),96501.6174372684
+Praha,2020-2024,muži,49,Tabulkový počet zemřelých (dx),290.2349108306
+Praha,2020-2024,muži,49,Tabulkový počet žijících (Lx),96356.499981853
+Praha,2020-2024,muži,49,Pomocný ukazatel (Tx),2938658.79540096
+Praha,2020-2024,muži,49,Naděje dožití (ex),30.4519123455
+Praha,2020-2024,muži,50,Počet zemřelých (Dx),158.0
+Praha,2020-2024,muži,50,Počet obyvatel (Px),48702.0
+Praha,2020-2024,muži,50,Míra úmrtnosti (mx),0.0033568281
+Praha,2020-2024,muži,50,Pravděpodobnost úmrtí (qx),0.0033512034
+Praha,2020-2024,muži,50,Tabulkový počet dožívajících (lx),96211.3825264377
+Praha,2020-2024,muži,50,Tabulkový počet zemřelých (dx),322.423912968
+Praha,2020-2024,muži,50,Tabulkový počet žijících (Lx),96050.1705699537
+Praha,2020-2024,muži,50,Pomocný ukazatel (Tx),2842302.2954191
+Praha,2020-2024,muži,50,Naděje dožití (ex),29.5422664219
+Praha,2020-2024,muži,51,Počet zemřelých (Dx),152.0
+Praha,2020-2024,muži,51,Počet obyvatel (Px),45094.0
+Praha,2020-2024,muži,51,Míra úmrtnosti (mx),0.0037712262
+Praha,2020-2024,muži,51,Pravděpodobnost úmrtí (qx),0.0037641285
+Praha,2020-2024,muži,51,Tabulkový počet dožívajících (lx),95888.9586134698
+Praha,2020-2024,muži,51,Tabulkový počet zemřelých (dx),360.9383665244
+Praha,2020-2024,muži,51,Tabulkový počet žijících (Lx),95708.4894302076
+Praha,2020-2024,muži,51,Pomocný ukazatel (Tx),2746252.12484915
+Praha,2020-2024,muži,51,Naděje dožití (ex),28.6399202219
+Praha,2020-2024,muži,52,Počet zemřelých (Dx),189.0
+Praha,2020-2024,muži,52,Počet obyvatel (Px),42395.0
+Praha,2020-2024,muži,52,Míra úmrtnosti (mx),0.0042788965
+Praha,2020-2024,muži,52,Pravděpodobnost úmrtí (qx),0.0042697615
+Praha,2020-2024,muži,52,Tabulkový počet dožívajících (lx),95528.0202469454
+Praha,2020-2024,muži,52,Tabulkový počet zemřelých (dx),407.8818671118
+Praha,2020-2024,muži,52,Tabulkový počet žijících (Lx),95324.0793133895
+Praha,2020-2024,muži,52,Pomocný ukazatel (Tx),2650543.63541894
+Praha,2020-2024,muži,52,Naděje dožití (ex),27.7462427104
+Praha,2020-2024,muži,53,Počet zemřelých (Dx),197.0
+Praha,2020-2024,muži,53,Počet obyvatel (Px),40419.0
+Praha,2020-2024,muži,53,Míra úmrtnosti (mx),0.0048603365
+Praha,2020-2024,muži,53,Pravděpodobnost úmrtí (qx),0.0048485537
+Praha,2020-2024,muži,53,Tabulkový počet dožívajících (lx),95120.1383798336
+Praha,2020-2024,muži,53,Tabulkový počet zemřelých (dx),461.19509538
+Praha,2020-2024,muži,53,Tabulkový počet žijících (Lx),94889.5408321437
+Praha,2020-2024,muži,53,Pomocný ukazatel (Tx),2555219.55610555
+Praha,2020-2024,muži,53,Naděje dožití (ex),26.8630765223
+Praha,2020-2024,muži,54,Počet zemřelých (Dx),225.0
+Praha,2020-2024,muži,54,Počet obyvatel (Px),39003.0
+Praha,2020-2024,muži,54,Míra úmrtnosti (mx),0.0054603473
+Praha,2020-2024,muži,54,Pravděpodobnost úmrtí (qx),0.0054454802
+Praha,2020-2024,muži,54,Tabulkový počet dožívajících (lx),94658.9432844537
+Praha,2020-2024,muži,54,Tabulkový počet zemřelých (dx),515.4634013
+Praha,2020-2024,muži,54,Tabulkový počet žijících (Lx),94401.2115838037
+Praha,2020-2024,muži,54,Pomocný ukazatel (Tx),2460330.01527341
+Praha,2020-2024,muži,54,Naděje dožití (ex),25.9915220887
+Praha,2020-2024,muži,55,Počet zemřelých (Dx),229.0
+Praha,2020-2024,muži,55,Počet obyvatel (Px),38682.0
+Praha,2020-2024,muži,55,Míra úmrtnosti (mx),0.0060194086
+Praha,2020-2024,muži,55,Pravděpodobnost úmrtí (qx),0.0060013464
+Praha,2020-2024,muži,55,Tabulkový počet dožívajících (lx),94143.4798831536
+Praha,2020-2024,muži,55,Tabulkový počet zemřelých (dx),564.9876298934
+Praha,2020-2024,muži,55,Tabulkový počet žijících (Lx),93860.9860682069
+Praha,2020-2024,muži,55,Pomocný ukazatel (Tx),2365928.80368961
+Praha,2020-2024,muži,55,Naděje dožití (ex),25.1310957129
+Praha,2020-2024,muži,56,Počet zemřelých (Dx),262.0
+Praha,2020-2024,muži,56,Počet obyvatel (Px),38676.0
+Praha,2020-2024,muži,56,Míra úmrtnosti (mx),0.0065465691
+Praha,2020-2024,muži,56,Pravděpodobnost úmrtí (qx),0.0065252102
+Praha,2020-2024,muži,56,Tabulkový počet dožívajících (lx),93578.4922532602
+Praha,2020-2024,muži,56,Tabulkový počet zemřelých (dx),610.6193322528
+Praha,2020-2024,muži,56,Tabulkový počet žijících (Lx),93273.1825871338
+Praha,2020-2024,muži,56,Pomocný ukazatel (Tx),2272067.8176214
+Praha,2020-2024,muži,56,Naděje dožití (ex),24.2798079229
+Praha,2020-2024,muži,57,Počet zemřelých (Dx),264.0
+Praha,2020-2024,muži,57,Počet obyvatel (Px),38139.0
+Praha,2020-2024,muži,57,Míra úmrtnosti (mx),0.0070808661
+Praha,2020-2024,muži,57,Pravděpodobnost úmrtí (qx),0.0070558852
+Praha,2020-2024,muži,57,Tabulkový počet dožívajících (lx),92967.8729210074
+Praha,2020-2024,muži,57,Tabulkový počet zemřelých (dx),655.9706356322
+Praha,2020-2024,muži,57,Tabulkový počet žijících (Lx),92639.8876031914
+Praha,2020-2024,muži,57,Pomocný ukazatel (Tx),2178794.63503426
+Praha,2020-2024,muži,57,Naděje dožití (ex),23.4359953237
+Praha,2020-2024,muži,58,Počet zemřelých (Dx),275.0
+Praha,2020-2024,muži,58,Počet obyvatel (Px),36952.0
+Praha,2020-2024,muži,58,Míra úmrtnosti (mx),0.007669602
+Praha,2020-2024,muži,58,Pravděpodobnost úmrtí (qx),0.007640303
+Praha,2020-2024,muži,58,Tabulkový počet dožívajících (lx),92311.9022853753
+Praha,2020-2024,muži,58,Tabulkový počet zemřelých (dx),705.2909031266
+Praha,2020-2024,muži,58,Tabulkový počet žijících (Lx),91959.256833812
+Praha,2020-2024,muži,58,Pomocný ukazatel (Tx),2086154.74743107
+Praha,2020-2024,muži,58,Naděje dožití (ex),22.5989790675
+Praha,2020-2024,muži,59,Počet zemřelých (Dx),305.0
+Praha,2020-2024,muži,59,Počet obyvatel (Px),35490.0
+Praha,2020-2024,muži,59,Míra úmrtnosti (mx),0.0083577892
+Praha,2020-2024,muži,59,Pravděpodobnost úmrtí (qx),0.0083230082
+Praha,2020-2024,muži,59,Tabulkový počet dožívajících (lx),91606.6113822487
+Praha,2020-2024,muži,59,Tabulkový počet zemřelých (dx),762.4425806474
+Praha,2020-2024,muži,59,Tabulkový počet žijících (Lx),91225.390091925
+Praha,2020-2024,muži,59,Pomocný ukazatel (Tx),1994195.49059726
+Praha,2020-2024,muži,59,Naděje dožití (ex),21.7691219062
+Praha,2020-2024,muži,60,Počet zemřelých (Dx),307.0
+Praha,2020-2024,muži,60,Počet obyvatel (Px),33696.0
+Praha,2020-2024,muži,60,Míra úmrtnosti (mx),0.00920215
+Praha,2020-2024,muži,60,Pravděpodobnost úmrtí (qx),0.0091600042
+Praha,2020-2024,muži,60,Tabulkový počet dožívajících (lx),90844.1688016012
+Praha,2020-2024,muži,60,Tabulkový počet zemřelých (dx),832.1329634895
+Praha,2020-2024,muži,60,Tabulkový počet žijících (Lx),90428.1023198565
+Praha,2020-2024,muži,60,Pomocný ukazatel (Tx),1902970.10050534
+Praha,2020-2024,muži,60,Naděje dožití (ex),20.9476307132
+Praha,2020-2024,muži,61,Počet zemřelých (Dx),294.0
+Praha,2020-2024,muži,61,Počet obyvatel (Px),31694.0
+Praha,2020-2024,muži,61,Míra úmrtnosti (mx),0.0102298424
+Praha,2020-2024,muži,61,Pravděpodobnost úmrtí (qx),0.0101777838
+Praha,2020-2024,muži,61,Tabulkový počet dožívajících (lx),90012.0358381118
+Praha,2020-2024,muži,61,Tabulkový počet zemřelých (dx),916.1230395173
+Praha,2020-2024,muži,61,Tabulkový počet žijících (Lx),89553.9743183531
+Praha,2020-2024,muži,61,Pomocný ukazatel (Tx),1812541.99818548
+Praha,2020-2024,muži,61,Naděje dožití (ex),20.1366626286
+Praha,2020-2024,muži,62,Počet zemřelých (Dx),376.0
+Praha,2020-2024,muži,62,Počet obyvatel (Px),30492.0
+Praha,2020-2024,muži,62,Míra úmrtnosti (mx),0.0113993852
+Praha,2020-2024,muži,62,Pravděpodobnost úmrtí (qx),0.0113347805
+Praha,2020-2024,muži,62,Tabulkový počet dožívajících (lx),89095.9127985945
+Praha,2020-2024,muži,62,Tabulkový počet zemřelých (dx),1009.8826118354
+Praha,2020-2024,muži,62,Tabulkový počet žijících (Lx),88590.9714926768
+Praha,2020-2024,muži,62,Pomocný ukazatel (Tx),1722988.02386713
+Praha,2020-2024,muži,62,Naděje dožití (ex),19.3385753594
+Praha,2020-2024,muži,63,Počet zemřelých (Dx),405.0
+Praha,2020-2024,muži,63,Počet obyvatel (Px),30182.0
+Praha,2020-2024,muži,63,Míra úmrtnosti (mx),0.0126396413
+Praha,2020-2024,muži,63,Pravděpodobnost úmrtí (qx),0.0125602627
+Praha,2020-2024,muži,63,Tabulkový počet dožívajících (lx),88086.0301867591
+Praha,2020-2024,muži,63,Tabulkový počet zemřelých (dx),1106.3836813206
+Praha,2020-2024,muži,63,Tabulkový počet žijících (Lx),87532.8383460988
+Praha,2020-2024,muži,63,Pomocný ukazatel (Tx),1634397.05237445
+Praha,2020-2024,muži,63,Naděje dožití (ex),18.5545545521
+Praha,2020-2024,muži,64,Počet zemřelých (Dx),406.0
+Praha,2020-2024,muži,64,Počet obyvatel (Px),30395.0
+Praha,2020-2024,muži,64,Míra úmrtnosti (mx),0.0139347093
+Praha,2020-2024,muži,64,Pravděpodobnost úmrtí (qx),0.013838293
+Praha,2020-2024,muži,64,Tabulkový počet dožívajících (lx),86979.6465054385
+Praha,2020-2024,muži,64,Tabulkový počet zemřelých (dx),1203.6498345776
+Praha,2020-2024,muži,64,Tabulkový počet žijících (Lx),86377.8215881496
+Praha,2020-2024,muži,64,Pomocný ukazatel (Tx),1546864.21402835
+Praha,2020-2024,muži,64,Naděje dožití (ex),17.784209021
+Praha,2020-2024,muži,65,Počet zemřelých (Dx),462.0
+Praha,2020-2024,muži,65,Počet obyvatel (Px),30933.0
+Praha,2020-2024,muži,65,Míra úmrtnosti (mx),0.0153520364
+Praha,2020-2024,muži,65,Pravděpodobnost úmrtí (qx),0.0152350916
+Praha,2020-2024,muži,65,Tabulkový počet dožívajících (lx),85775.9966708608
+Praha,2020-2024,muži,65,Tabulkový počet zemřelých (dx),1306.8051670247
+Praha,2020-2024,muži,65,Tabulkový počet žijících (Lx),85122.5940873485
+Praha,2020-2024,muži,65,Pomocný ukazatel (Tx),1460486.3924402
+Praha,2020-2024,muži,65,Naděje dožití (ex),17.0267493136
+Praha,2020-2024,muži,66,Počet zemřelých (Dx),530.0
+Praha,2020-2024,muži,66,Počet obyvatel (Px),31545.0
+Praha,2020-2024,muži,66,Míra úmrtnosti (mx),0.0169838038
+Praha,2020-2024,muži,66,Pravděpodobnost úmrtí (qx),0.0168407934
+Praha,2020-2024,muži,66,Tabulkový počet dožívajících (lx),84469.1915038361
+Praha,2020-2024,muži,66,Tabulkový počet zemřelých (dx),1422.5282052209
+Praha,2020-2024,muži,66,Tabulkový počet žijících (Lx),83757.9274012257
+Praha,2020-2024,muži,66,Pomocný ukazatel (Tx),1375363.79835285
+Praha,2020-2024,muži,66,Naděje dožití (ex),16.2824311902
+Praha,2020-2024,muži,67,Počet zemřelých (Dx),629.0
+Praha,2020-2024,muži,67,Počet obyvatel (Px),31861.0
+Praha,2020-2024,muži,67,Míra úmrtnosti (mx),0.0188759843
+Praha,2020-2024,muži,67,Pravděpodobnost úmrtí (qx),0.0186994986
+Praha,2020-2024,muži,67,Tabulkový počet dožívajících (lx),83046.6632986153
+Praha,2020-2024,muži,67,Tabulkový počet zemřelých (dx),1552.9309660054
+Praha,2020-2024,muži,67,Tabulkový počet žijících (Lx),82270.1978156126
+Praha,2020-2024,muži,67,Pomocný ukazatel (Tx),1291605.87095163
+Praha,2020-2024,muži,67,Naděje dožití (ex),15.5527726178
+Praha,2020-2024,muži,68,Počet zemřelých (Dx),645.0
+Praha,2020-2024,muži,68,Počet obyvatel (Px),31957.0
+Praha,2020-2024,muži,68,Míra úmrtnosti (mx),0.0210325317
+Praha,2020-2024,muži,68,Pravděpodobnost úmrtí (qx),0.0208136498
+Praha,2020-2024,muži,68,Tabulkový počet dožívajících (lx),81493.7323326099
+Praha,2020-2024,muži,68,Tabulkový počet zemřelých (dx),1696.182008606
+Praha,2020-2024,muži,68,Tabulkový počet žijících (Lx),80645.6413283069
+Praha,2020-2024,muži,68,Pomocný ukazatel (Tx),1209335.67313601
+Praha,2020-2024,muži,68,Naděje dožití (ex),14.8396157412
+Praha,2020-2024,muži,69,Počet zemřelých (Dx),763.0
+Praha,2020-2024,muži,69,Počet obyvatel (Px),31674.0
+Praha,2020-2024,muži,69,Míra úmrtnosti (mx),0.023448168
+Praha,2020-2024,muži,69,Pravděpodobnost úmrtí (qx),0.0231764454
+Praha,2020-2024,muži,69,Tabulkový počet dožívajících (lx),79797.5503240039
+Praha,2020-2024,muži,69,Tabulkový počet zemřelých (dx),1849.4235698518
+Praha,2020-2024,muži,69,Tabulkový počet žijících (Lx),78872.838539078
+Praha,2020-2024,muži,69,Pomocný ukazatel (Tx),1128690.03180771
+Praha,2020-2024,muži,69,Naděje dožití (ex),14.1444195621
+Praha,2020-2024,muži,70,Počet zemřelých (Dx),787.0
+Praha,2020-2024,muži,70,Počet obyvatel (Px),30817.0
+Praha,2020-2024,muži,70,Míra úmrtnosti (mx),0.0261177441
+Praha,2020-2024,muži,70,Pravděpodobnost úmrtí (qx),0.0257810724
+Praha,2020-2024,muži,70,Tabulkový počet dožívajících (lx),77948.126754152
+Praha,2020-2024,muži,70,Tabulkový počet zemřelých (dx),2009.5862978172
+Praha,2020-2024,muži,70,Tabulkový počet žijících (Lx),76943.3336052434
+Praha,2020-2024,muži,70,Pomocný ukazatel (Tx),1049817.19326863
+Praha,2020-2024,muži,70,Naděje dožití (ex),13.4681516668
+Praha,2020-2024,muži,71,Počet zemřelých (Dx),883.0
+Praha,2020-2024,muži,71,Počet obyvatel (Px),29890.0
+Praha,2020-2024,muži,71,Míra úmrtnosti (mx),0.0290294286
+Praha,2020-2024,muži,71,Pravděpodobnost úmrtí (qx),0.0286141031
+Praha,2020-2024,muži,71,Tabulkový počet dožívajících (lx),75938.5404563348
+Praha,2020-2024,muži,71,Tabulkový počet zemřelých (dx),2172.9132249677
+Praha,2020-2024,muži,71,Tabulkový počet žijících (Lx),74852.083843851
+Praha,2020-2024,muži,71,Pomocný ukazatel (Tx),972873.859663386
+Praha,2020-2024,muži,71,Naděje dožití (ex),12.8113320827
+Praha,2020-2024,muži,72,Počet zemřelých (Dx),934.0
+Praha,2020-2024,muži,72,Počet obyvatel (Px),29221.0
+Praha,2020-2024,muži,72,Míra úmrtnosti (mx),0.0321633311
+Praha,2020-2024,muži,72,Pravděpodobnost úmrtí (qx),0.0316542776
+Praha,2020-2024,muži,72,Tabulkový počet dožívajících (lx),73765.6272313671
+Praha,2020-2024,muži,72,Tabulkový počet zemřelých (dx),2334.9976394121
+Praha,2020-2024,muži,72,Tabulkový počet žijících (Lx),72598.128411661
+Praha,2020-2024,muži,72,Pomocný ukazatel (Tx),898021.775819535
+Praha,2020-2024,muži,72,Naděje dožití (ex),12.173986849
+Praha,2020-2024,muži,73,Počet zemřelých (Dx),1006.0
+Praha,2020-2024,muži,73,Počet obyvatel (Px),28766.0
+Praha,2020-2024,muži,73,Míra úmrtnosti (mx),0.0355090061
+Praha,2020-2024,muži,73,Pravděpodobnost úmrtí (qx),0.0348895593
+Praha,2020-2024,muži,73,Tabulkový počet dožívajících (lx),71430.629591955
+Praha,2020-2024,muži,73,Tabulkový počet zemřelých (dx),2492.1831894928
+Praha,2020-2024,muži,73,Tabulkový počet žijících (Lx),70184.5379972086
+Praha,2020-2024,muži,73,Pomocný ukazatel (Tx),825423.647407874
+Praha,2020-2024,muži,73,Naděje dožití (ex),11.5555980974
+Praha,2020-2024,muži,74,Počet zemřelých (Dx),1128.0
+Praha,2020-2024,muži,74,Počet obyvatel (Px),27959.0
+Praha,2020-2024,muži,74,Míra úmrtnosti (mx),0.039054994
+Praha,2020-2024,muži,74,Pravděpodobnost úmrtí (qx),0.038306955
+Praha,2020-2024,muži,74,Tabulkový počet dožívajících (lx),68938.4464024621
+Praha,2020-2024,muži,74,Tabulkový počet zemřelých (dx),2640.8219667578
+Praha,2020-2024,muži,74,Tabulkový počet žijících (Lx),67618.0354190832
+Praha,2020-2024,muži,74,Pomocný ukazatel (Tx),755239.109410666
+Praha,2020-2024,muži,74,Naděje dožití (ex),10.9552673265
+Praha,2020-2024,muži,75,Počet zemřelých (Dx),1156.0
+Praha,2020-2024,muži,75,Počet obyvatel (Px),26854.0
+Praha,2020-2024,muži,75,Míra úmrtnosti (mx),0.0427040183
+Praha,2020-2024,muži,75,Pravděpodobnost úmrtí (qx),0.0418112638
+Praha,2020-2024,muži,75,Tabulkový počet dožívajících (lx),66297.6244357043
+Praha,2020-2024,muži,75,Tabulkový počet zemřelých (dx),2771.9874655753
+Praha,2020-2024,muži,75,Tabulkový počet žijících (Lx),64911.6307029167
+Praha,2020-2024,muži,75,Pomocný ukazatel (Tx),687621.073991582
+Praha,2020-2024,muži,75,Naděje dožití (ex),10.3717302067
+Praha,2020-2024,muži,76,Počet zemřelých (Dx),1151.0
+Praha,2020-2024,muži,76,Počet obyvatel (Px),25753.0
+Praha,2020-2024,muži,76,Míra úmrtnosti (mx),0.0466912368
+Praha,2020-2024,muži,76,Pravděpodobnost úmrtí (qx),0.045626068
+Praha,2020-2024,muži,76,Tabulkový počet dožívajících (lx),63525.6369701291
+Praha,2020-2024,muži,76,Tabulkový počet zemřelých (dx),2898.4250337801
+Praha,2020-2024,muži,76,Tabulkový počet žijících (Lx),62076.424453239
+Praha,2020-2024,muži,76,Pomocný ukazatel (Tx),622709.443288666
+Praha,2020-2024,muži,76,Naděje dožití (ex),9.8024903486
+Praha,2020-2024,muži,77,Počet zemřelých (Dx),1240.0
+Praha,2020-2024,muži,77,Počet obyvatel (Px),23707.0
+Praha,2020-2024,muži,77,Míra úmrtnosti (mx),0.0512001424
+Praha,2020-2024,muži,77,Pravděpodobnost úmrtí (qx),0.0499221323
+Praha,2020-2024,muži,77,Tabulkový počet dožívajících (lx),60627.2119363489
+Praha,2020-2024,muži,77,Tabulkový počet zemřelých (dx),3026.6396951249
+Praha,2020-2024,muži,77,Tabulkový počet žijících (Lx),59113.8920887865
+Praha,2020-2024,muži,77,Pomocný ukazatel (Tx),560633.018835427
+Praha,2020-2024,muži,77,Naděje dožití (ex),9.2472175601
+Praha,2020-2024,muži,78,Počet zemřelých (Dx),1201.0
+Praha,2020-2024,muži,78,Počet obyvatel (Px),20921.0
+Praha,2020-2024,muži,78,Míra úmrtnosti (mx),0.0563384709
+Praha,2020-2024,muži,78,Pravděpodobnost úmrtí (qx),0.0547949394
+Praha,2020-2024,muži,78,Tabulkový počet dožívajících (lx),57600.572241224
+Praha,2020-2024,muži,78,Tabulkový počet zemřelých (dx),3156.2198641108
+Praha,2020-2024,muži,78,Tabulkový počet žijících (Lx),56022.4623091686
+Praha,2020-2024,muži,78,Pomocný ukazatel (Tx),501519.12674664
+Praha,2020-2024,muži,78,Naděje dožití (ex),8.7068427835
+Praha,2020-2024,muži,79,Počet zemřelých (Dx),1139.0
+Praha,2020-2024,muži,79,Počet obyvatel (Px),18407.0
+Praha,2020-2024,muži,79,Míra úmrtnosti (mx),0.0621144149
+Praha,2020-2024,muži,79,Pravděpodobnost úmrtí (qx),0.0602434224
+Praha,2020-2024,muži,79,Tabulkový počet dožívajících (lx),54444.3523771132
+Praha,2020-2024,muži,79,Tabulkový počet zemřelých (dx),3279.9141199869
+Praha,2020-2024,muži,79,Tabulkový počet žijících (Lx),52804.3953171198
+Praha,2020-2024,muži,79,Pomocný ukazatel (Tx),445496.664437472
+Praha,2020-2024,muži,79,Naděje dožití (ex),8.1826056328
+Praha,2020-2024,muži,80,Počet zemřelých (Dx),1108.0
+Praha,2020-2024,muži,80,Počet obyvatel (Px),16055.0
+Praha,2020-2024,muži,80,Míra úmrtnosti (mx),0.0685810207
+Praha,2020-2024,muži,80,Pravděpodobnost úmrtí (qx),0.0663073093
+Praha,2020-2024,muži,80,Tabulkový počet dožívajících (lx),51164.4382571264
+Praha,2020-2024,muži,80,Tabulkový počet zemřelých (dx),3392.5762311389
+Praha,2020-2024,muži,80,Tabulkový počet žijících (Lx),49468.1501415569
+Praha,2020-2024,muži,80,Pomocný ukazatel (Tx),392692.269120352
+Praha,2020-2024,muži,80,Naděje dožití (ex),7.6751017405
+Praha,2020-2024,muži,81,Počet zemřelých (Dx),1015.0
+Praha,2020-2024,muži,81,Počet obyvatel (Px),13563.0
+Praha,2020-2024,muži,81,Míra úmrtnosti (mx),0.0759650614
+Praha,2020-2024,muži,81,Pravděpodobnost úmrtí (qx),0.0731852985
+Praha,2020-2024,muži,81,Tabulkový počet dožívajících (lx),47771.8620259875
+Praha,2020-2024,muži,81,Tabulkový počet zemřelých (dx),3496.1979835975
+Praha,2020-2024,muži,81,Tabulkový počet žijících (Lx),46023.7630341887
+Praha,2020-2024,muži,81,Pomocný ukazatel (Tx),343224.118978795
+Praha,2020-2024,muži,81,Naděje dožití (ex),7.1846502192
+Praha,2020-2024,muži,82,Počet zemřelých (Dx),927.0
+Praha,2020-2024,muži,82,Počet obyvatel (Px),11526.0
+Praha,2020-2024,muži,82,Míra úmrtnosti (mx),0.0845759142
+Praha,2020-2024,muži,82,Pravděpodobnost úmrtí (qx),0.0811444799
+Praha,2020-2024,muži,82,Tabulkový počet dožívajících (lx),44275.66404239
+Praha,2020-2024,muži,82,Tabulkový počet zemřelých (dx),3592.7257324752
+Praha,2020-2024,muži,82,Tabulkový počet žijících (Lx),42479.3011761523
+Praha,2020-2024,muži,82,Pomocný ukazatel (Tx),297200.355944606
+Praha,2020-2024,muži,82,Naděje dožití (ex),6.7124991205
+Praha,2020-2024,muži,83,Počet zemřelých (Dx),915.0
+Praha,2020-2024,muži,83,Počet obyvatel (Px),9875.0
+Praha,2020-2024,muži,83,Míra úmrtnosti (mx),0.0945890186
+Praha,2020-2024,muži,83,Pravděpodobnost úmrtí (qx),0.0903174969
+Praha,2020-2024,muži,83,Tabulkový počet dožívajících (lx),40682.9383099147
+Praha,2020-2024,muži,83,Tabulkový počet zemřelých (dx),3674.3811545016
+Praha,2020-2024,muži,83,Tabulkový počet žijících (Lx),38845.7477326639
+Praha,2020-2024,muži,83,Pomocný ukazatel (Tx),254721.054768454
+Praha,2020-2024,muži,83,Naděje dožití (ex),6.2611272772
+Praha,2020-2024,muži,84,Počet zemřelých (Dx),831.0
+Praha,2020-2024,muži,84,Počet obyvatel (Px),8474.0
+Praha,2020-2024,muži,84,Míra úmrtnosti (mx),0.1059608447
+Praha,2020-2024,muži,84,Pravděpodobnost úmrtí (qx),0.1006294537
+Praha,2020-2024,muži,84,Tabulkový počet dožívajících (lx),37008.5571554131
+Praha,2020-2024,muži,84,Tabulkový počet zemřelých (dx),3724.1508901105
+Praha,2020-2024,muži,84,Tabulkový počet žijících (Lx),35146.4817103578
+Praha,2020-2024,muži,84,Pomocný ukazatel (Tx),215875.30703579
+Praha,2020-2024,muži,84,Naděje dožití (ex),5.8331187063
+Praha,2020-2024,muži,85,Počet zemřelých (Dx),849.0
+Praha,2020-2024,muži,85,Počet obyvatel (Px),7375.0
+Praha,2020-2024,muži,85,Míra úmrtnosti (mx),0.118185834
+Praha,2020-2024,muži,85,Pravděpodobnost úmrtí (qx),0.111591563
+Praha,2020-2024,muži,85,Tabulkový počet dožívajících (lx),33284.4062653026
+Praha,2020-2024,muži,85,Tabulkový počet zemřelých (dx),3714.258918649
+Praha,2020-2024,muži,85,Tabulkový počet žijících (Lx),31427.2768059781
+Praha,2020-2024,muži,85,Pomocný ukazatel (Tx),180728.825325432
+Praha,2020-2024,muži,85,Naděje dožití (ex),5.4298347366
+Praha,2020-2024,muži,86,Počet zemřelých (Dx),830.0
+Praha,2020-2024,muži,86,Počet obyvatel (Px),6472.0
+Praha,2020-2024,muži,86,Míra úmrtnosti (mx),0.1317943703
+Praha,2020-2024,muži,86,Pravděpodobnost úmrtí (qx),0.1236464193
+Praha,2020-2024,muži,86,Tabulkový počet dožívajících (lx),29570.1473466536
+Praha,2020-2024,muži,86,Tabulkový počet zemřelých (dx),3656.2428371923
+Praha,2020-2024,muži,86,Tabulkový počet žijících (Lx),27742.0259280575
+Praha,2020-2024,muži,86,Pomocný ukazatel (Tx),149301.548519454
+Praha,2020-2024,muži,86,Naděje dožití (ex),5.0490633939
+Praha,2020-2024,muži,87,Počet zemřelých (Dx),869.0
+Praha,2020-2024,muži,87,Počet obyvatel (Px),5695.0
+Praha,2020-2024,muži,87,Míra úmrtnosti (mx),0.1468869406
+Praha,2020-2024,muži,87,Pravděpodobnost úmrtí (qx),0.1368371457
+Praha,2020-2024,muži,87,Tabulkový počet dožívajících (lx),25913.9045094613
+Praha,2020-2024,muži,87,Tabulkový počet zemřelých (dx),3545.9847281966
+Praha,2020-2024,muži,87,Tabulkový počet žijících (Lx),24140.912145363
+Praha,2020-2024,muži,87,Pomocný ukazatel (Tx),121559.522591397
+Praha,2020-2024,muži,87,Naděje dožití (ex),4.6908995341
+Praha,2020-2024,muži,88,Počet zemřelých (Dx),869.0
+Praha,2020-2024,muži,88,Počet obyvatel (Px),4962.0
+Praha,2020-2024,muži,88,Míra úmrtnosti (mx),0.1635566691
+Praha,2020-2024,muži,88,Pravděpodobnost úmrtí (qx),0.1511924059
+Praha,2020-2024,muži,88,Tabulkový počet dožívajících (lx),22367.9197812647
+Praha,2020-2024,muži,88,Tabulkový počet zemřelých (dx),3381.8596074642
+Praha,2020-2024,muži,88,Tabulkový počet žijících (Lx),20676.9899775326
+Praha,2020-2024,muži,88,Pomocný ukazatel (Tx),97418.6104460336
+Praha,2020-2024,muži,88,Naděje dožití (ex),4.3552825385
+Praha,2020-2024,muži,89,Počet zemřelých (Dx),807.0
+Praha,2020-2024,muži,89,Počet obyvatel (Px),4301.0
+Praha,2020-2024,muži,89,Míra úmrtnosti (mx),0.1818849237
+Praha,2020-2024,muži,89,Pravděpodobnost úmrtí (qx),0.1667227467
+Praha,2020-2024,muži,89,Tabulkový počet dožívajících (lx),18986.0601738005
+Praha,2020-2024,muži,89,Tabulkový počet zemřelých (dx),3165.408100614
+Praha,2020-2024,muži,89,Tabulkový počet žijících (Lx),17403.3561234935
+Praha,2020-2024,muži,89,Pomocný ukazatel (Tx),76741.620468501
+Praha,2020-2024,muži,89,Naděje dožití (ex),4.0419981695
+Praha,2020-2024,muži,90,Počet zemřelých (Dx),762.0
+Praha,2020-2024,muži,90,Počet obyvatel (Px),3645.0
+Praha,2020-2024,muži,90,Míra úmrtnosti (mx),0.2019363455
+Praha,2020-2024,muži,90,Pravděpodobnost úmrtí (qx),0.1834170601
+Praha,2020-2024,muži,90,Tabulkový počet dožívajících (lx),15820.6520731865
+Praha,2020-2024,muži,90,Tabulkový počet zemřelých (dx),2901.7774917638
+Praha,2020-2024,muži,90,Tabulkový počet žijících (Lx),14369.7633273046
+Praha,2020-2024,muži,90,Pomocný ukazatel (Tx),59338.2643450076
+Praha,2020-2024,muži,90,Naděje dožití (ex),3.7506838574
+Praha,2020-2024,muži,91,Počet zemřelých (Dx),693.0
+Praha,2020-2024,muži,91,Počet obyvatel (Px),2945.0
+Praha,2020-2024,muži,91,Míra úmrtnosti (mx),0.2237534642
+Praha,2020-2024,muži,91,Pravděpodobnost úmrtí (qx),0.2012394519
+Praha,2020-2024,muži,91,Tabulkový počet dožívajících (lx),12918.8745814227
+Praha,2020-2024,muži,91,Tabulkový počet zemřelých (dx),2599.7872400728
+Praha,2020-2024,muži,91,Tabulkový počet žijících (Lx),11618.9809613863
+Praha,2020-2024,muži,91,Pomocný ukazatel (Tx),44968.501017703
+Praha,2020-2024,muži,91,Naděje dožití (ex),3.4808373388
+Praha,2020-2024,muži,92,Počet zemřelých (Dx),551.0
+Praha,2020-2024,muži,92,Počet obyvatel (Px),2320.0
+Praha,2020-2024,muži,92,Míra úmrtnosti (mx),0.2473511564
+Praha,2020-2024,muži,92,Pravděpodobnost úmrtí (qx),0.2201268419
+Praha,2020-2024,muži,92,Tabulkový počet dožívajících (lx),10319.0873413499
+Praha,2020-2024,muži,92,Tabulkový počet zemřelých (dx),2271.5081079213
+Praha,2020-2024,muži,92,Tabulkový počet žijících (Lx),9183.3332873892
+Praha,2020-2024,muži,92,Pomocný ukazatel (Tx),33349.5200563167
+Praha,2020-2024,muži,92,Naděje dožití (ex),3.2318284508
+Praha,2020-2024,muži,93,Počet zemřelých (Dx),525.0
+Praha,2020-2024,muži,93,Počet obyvatel (Px),1767.0
+Praha,2020-2024,muži,93,Míra úmrtnosti (mx),0.272711299
+Praha,2020-2024,muži,93,Pravděpodobnost úmrtí (qx),0.2399876299
+Praha,2020-2024,muži,93,Tabulkový počet dožívajících (lx),8047.5792334286
+Praha,2020-2024,muži,93,Tabulkový počet zemřelých (dx),1931.3194665146
+Praha,2020-2024,muži,93,Tabulkový počet žijících (Lx),7081.9195001713
+Praha,2020-2024,muži,93,Pomocný ukazatel (Tx),24166.1867689274
+Praha,2020-2024,muži,93,Naděje dožití (ex),3.002913804
+Praha,2020-2024,muži,94,Počet zemřelých (Dx),432.0
+Praha,2020-2024,muži,94,Počet obyvatel (Px),1204.0
+Praha,2020-2024,muži,94,Míra úmrtnosti (mx),0.2997780555
+Praha,2020-2024,muži,94,Pravděpodobnost úmrtí (qx),0.2607017271
+Praha,2020-2024,muži,94,Tabulkový počet dožívajících (lx),6116.259766914
+Praha,2020-2024,muži,94,Tabulkový počet zemřelých (dx),1594.5194846627
+Praha,2020-2024,muži,94,Tabulkový počet žijících (Lx),5319.0000245826
+Praha,2020-2024,muži,94,Pomocný ukazatel (Tx),17084.2672687562
+Praha,2020-2024,muži,94,Naděje dožití (ex),2.7932540343
+Praha,2020-2024,muži,95,Počet zemřelých (Dx),284.0
+Praha,2020-2024,muži,95,Počet obyvatel (Px),819.0
+Praha,2020-2024,muži,95,Míra úmrtnosti (mx),0.3284542896
+Praha,2020-2024,muži,95,Pravděpodobnost úmrtí (qx),0.282122171
+Praha,2020-2024,muži,95,Tabulkový počet dožívajících (lx),4521.7402822512
+Praha,2020-2024,muži,95,Tabulkový počet zemřelých (dx),1275.6831850657
+Praha,2020-2024,muži,95,Tabulkový počet žijících (Lx),3883.8986897184
+Praha,2020-2024,muži,95,Pomocný ukazatel (Tx),11765.2672441736
+Praha,2020-2024,muži,95,Naděje dožití (ex),2.6019334393
+Praha,2020-2024,muži,96,Počet zemřelých (Dx),206.0
+Praha,2020-2024,muži,96,Počet obyvatel (Px),547.0
+Praha,2020-2024,muži,96,Míra úmrtnosti (mx),0.3585996122
+Praha,2020-2024,muži,96,Pravděpodobnost úmrtí (qx),0.3040784119
+Praha,2020-2024,muži,96,Tabulkový počet dožívajících (lx),3246.0570971855
+Praha,2020-2024,muži,96,Tabulkový počet zemřelých (dx),987.0558871267
+Praha,2020-2024,muži,96,Tabulkový počet žijících (Lx),2752.5291536222
+Praha,2020-2024,muži,96,Pomocný ukazatel (Tx),7881.3685544552
+Praha,2020-2024,muži,96,Naděje dožití (ex),2.4279821083
+Praha,2020-2024,muži,97,Počet zemřelých (Dx),162.0
+Praha,2020-2024,muži,97,Počet obyvatel (Px),334.0
+Praha,2020-2024,muži,97,Míra úmrtnosti (mx),0.3900305117
+Praha,2020-2024,muži,97,Pravděpodobnost úmrtí (qx),0.3263811987
+Praha,2020-2024,muži,97,Tabulkový počet dožívajících (lx),2259.0012100588
+Praha,2020-2024,muži,97,Tabulkový počet zemřelých (dx),737.2955229097
+Praha,2020-2024,muži,97,Tabulkový počet žijících (Lx),1890.353448604
+Praha,2020-2024,muži,97,Pomocný ukazatel (Tx),5128.8394008331
+Praha,2020-2024,muži,97,Naděje dožití (ex),2.2704013517
+Praha,2020-2024,muži,98,Počet zemřelých (Dx),93.0
+Praha,2020-2024,muži,98,Počet obyvatel (Px),195.0
+Praha,2020-2024,muži,98,Míra úmrtnosti (mx),0.4225228919
+Praha,2020-2024,muži,98,Pravděpodobnost úmrtí (qx),0.3488288126
+Praha,2020-2024,muži,98,Tabulkový počet dožívajících (lx),1521.7056871491
+Praha,2020-2024,muži,98,Tabulkový počet zemřelých (dx),530.8147879696
+Praha,2020-2024,muži,98,Tabulkový počet žijících (Lx),1256.2982931643
+Praha,2020-2024,muži,98,Pomocný ukazatel (Tx),3238.4859522291
+Praha,2020-2024,muži,98,Naděje dožití (ex),2.1281946828
+Praha,2020-2024,muži,99,Počet zemřelých (Dx),56.0
+Praha,2020-2024,muži,99,Počet obyvatel (Px),112.0
+Praha,2020-2024,muži,99,Míra úmrtnosti (mx),0.4558171446
+Praha,2020-2024,muži,99,Pravděpodobnost úmrtí (qx),0.3712142377
+Praha,2020-2024,muži,99,Tabulkový počet dožívajících (lx),990.8908991794
+Praha,2020-2024,muži,99,Tabulkový počet zemřelých (dx),367.8328097631
+Praha,2020-2024,muži,99,Tabulkový počet žijících (Lx),806.9744942979
+Praha,2020-2024,muži,99,Pomocný ukazatel (Tx),1982.1876590648
+Praha,2020-2024,muži,99,Naděje dožití (ex),2.0004095917
+Praha,2020-2024,muži,100,Počet zemřelých (Dx),31.0
+Praha,2020-2024,muži,100,Počet obyvatel (Px),55.0
+Praha,2020-2024,muži,100,Míra úmrtnosti (mx),0.489625635
+Praha,2020-2024,muži,100,Pravděpodobnost úmrtí (qx),0.393332739
+Praha,2020-2024,muži,100,Tabulkový počet dožívajících (lx),623.0580894163
+Praha,2020-2024,muži,100,Tabulkový počet zemřelých (dx),245.0691448381
+Praha,2020-2024,muži,100,Tabulkový počet žijících (Lx),500.5235169973
+Praha,2020-2024,muži,100,Pomocný ukazatel (Tx),1175.213164767
+Praha,2020-2024,muži,100,Naděje dožití (ex),1.8862015994
+Praha,2020-2024,muži,101,Počet zemřelých (Dx),7.0
+Praha,2020-2024,muži,101,Počet obyvatel (Px),34.0
+Praha,2020-2024,muži,101,Míra úmrtnosti (mx),0.523642212
+Praha,2020-2024,muži,101,Pravděpodobnost úmrtí (qx),0.414989264
+Praha,2020-2024,muži,101,Tabulkový počet dožívajících (lx),377.9889445782
+Praha,2020-2024,muži,101,Tabulkový počet zemřelých (dx),156.8613538928
+Praha,2020-2024,muži,101,Tabulkový počet žijících (Lx),299.5582676318
+Praha,2020-2024,muži,101,Pomocný ukazatel (Tx),674.6896477697
+Praha,2020-2024,muži,101,Naděje dožití (ex),1.7849454526
+Praha,2020-2024,muži,102,Počet zemřelých (Dx),6.0
+Praha,2020-2024,muži,102,Počet obyvatel (Px),23.0
+Praha,2020-2024,muži,102,Míra úmrtnosti (mx),0.5575531114
+Praha,2020-2024,muži,102,Pravděpodobnost úmrtí (qx),0.4360051089
+Praha,2020-2024,muži,102,Tabulkový počet dožívajících (lx),221.1275906854
+Praha,2020-2024,muži,102,Tabulkový počet zemřelých (dx),96.4127592585
+Praha,2020-2024,muži,102,Tabulkový počet žijících (Lx),172.9212110562
+Praha,2020-2024,muži,102,Pomocný ukazatel (Tx),375.1313801379
+Praha,2020-2024,muži,102,Naděje dožití (ex),1.6964476435
+Praha,2020-2024,muži,103,Počet zemřelých (Dx),5.0
+Praha,2020-2024,muži,103,Počet obyvatel (Px),11.0
+Praha,2020-2024,muži,103,Míra úmrtnosti (mx),0.591048444
+Praha,2020-2024,muži,103,Pravděpodobnost úmrtí (qx),0.4562233836
+Praha,2020-2024,muži,103,Tabulkový počet dožívajících (lx),124.7148314269
+Praha,2020-2024,muži,103,Tabulkový počet zemřelých (dx),56.897822373
+Praha,2020-2024,muži,103,Tabulkový počet žijících (Lx),96.2659202404
+Praha,2020-2024,muži,103,Pomocný ukazatel (Tx),202.2101690818
+Praha,2020-2024,muži,103,Naděje dožití (ex),1.6213802863
+Praha,2020-2024,muži,104,Počet zemřelých (Dx),3.0
+Praha,2020-2024,muži,104,Počet obyvatel (Px),8.0
+Praha,2020-2024,muži,104,Míra úmrtnosti (mx),0.6238333853
+Praha,2020-2024,muži,104,Pravděpodobnost úmrtí (qx),0.4755129566
+Praha,2020-2024,muži,104,Tabulkový počet dožívajících (lx),67.8170090539
+Praha,2020-2024,muži,104,Tabulkový počet zemřelých (dx),32.24786648
+Praha,2020-2024,muži,104,Tabulkový počet žijících (Lx),51.6930758139
+Praha,2020-2024,muži,104,Pomocný ukazatel (Tx),105.9442488414
+Praha,2020-2024,muži,104,Naděje dožití (ex),1.5622076278
+Praha,2020-2024,muži,105,Počet zemřelých (Dx),1.0
+Praha,2020-2024,muži,105,Počet obyvatel (Px),2.0
+Praha,2020-2024,muži,105,Míra úmrtnosti (mx),0.6556382211
+Praha,2020-2024,muži,105,Pravděpodobnost úmrtí (qx),1.0
+Praha,2020-2024,muži,105,Tabulkový počet dožívajících (lx),35.5691425739
+Praha,2020-2024,muži,105,Tabulkový počet zemřelých (dx),35.5691425739
+Praha,2020-2024,muži,105,Tabulkový počet žijících (Lx),54.2511730275
+Praha,2020-2024,muži,105,Pomocný ukazatel (Tx),54.2511730275
+Praha,2020-2024,muži,105,Naděje dožití (ex),1.5252313973

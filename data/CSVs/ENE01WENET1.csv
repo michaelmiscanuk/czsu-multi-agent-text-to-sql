@@ -1,85 +1,99 @@
-Území;Ukazatel;Roky;value
-Česko;Výroba elektřiny celkem (GWh);2023;77245.787
-Česko;Výroba elektřiny celkem (GWh);2022;84848.14
-Česko;Výroba elektřiny celkem (GWh);2021;85016.0
-Česko;Výroba elektřiny celkem (GWh);2020;81517.0
-Česko;Výroba elektřiny celkem (GWh);2019;87031.0
-Česko;Výroba elektřiny celkem (GWh);2018;88032.0
-Česko;Výroba elektřiny - tepelné elektrárny;2023;39506.288
-Česko;Výroba elektřiny - tepelné elektrárny;2022;47475.553
-Česko;Výroba elektřiny - tepelné elektrárny;2021;47813.0
-Česko;Výroba elektřiny - tepelné elektrárny;2020;45051.0
-Česko;Výroba elektřiny - tepelné elektrárny;2019;50598.0
-Česko;Výroba elektřiny - tepelné elektrárny;2018;52464.0
-Česko;Výroba elektřiny - vodní elektrárny;2023;3416.997
-Česko;Výroba elektřiny - vodní elektrárny;2022;3083.174
-Česko;Výroba elektřiny - vodní elektrárny;2021;3620.0
-Česko;Výroba elektřiny - vodní elektrárny;2020;3437.0
-Česko;Výroba elektřiny - vodní elektrárny;2019;3175.0
-Česko;Výroba elektřiny - vodní elektrárny;2018;2679.0
-Česko;Výroba elektřiny - větrné elektrárny;2023;701.606
-Česko;Výroba elektřiny - větrné elektrárny;2022;641.331
-Česko;Výroba elektřiny - větrné elektrárny;2021;602.0
-Česko;Výroba elektřiny - větrné elektrárny;2020;699.0
-Česko;Výroba elektřiny - větrné elektrárny;2019;700.0
-Česko;Výroba elektřiny - větrné elektrárny;2018;609.0
-Česko;Výroba elektřiny - solární elektrárny;2023;3210.432
-Česko;Výroba elektřiny - solární elektrárny;2022;2626.272
-Česko;Výroba elektřiny - solární elektrárny;2021;2250.0
-Česko;Výroba elektřiny - solární elektrárny;2020;2287.0
-Česko;Výroba elektřiny - solární elektrárny;2019;2312.0
-Česko;Výroba elektřiny - solární elektrárny;2018;2359.0
-Česko;Výroba elektřiny - jaderné elektrárny;2023;30410.464
-Česko;Výroba elektřiny - jaderné elektrárny;2022;31021.81
-Česko;Výroba elektřiny - jaderné elektrárny;2021;30731.0
-Česko;Výroba elektřiny - jaderné elektrárny;2020;30043.0
-Česko;Výroba elektřiny - jaderné elektrárny;2019;30246.0
-Česko;Výroba elektřiny - jaderné elektrárny;2018;29921.0
-Česko;Saldo dovozu (+), vývozu (-) (GWh);2023;-9183.573
-Česko;Saldo dovozu (+), vývozu (-) (GWh);2022;-13528.838
-Česko;Saldo dovozu (+), vývozu (-) (GWh);2021;-11075.0
-Česko;Saldo dovozu (+), vývozu (-) (GWh);2020;-10153.0
-Česko;Saldo dovozu (+), vývozu (-) (GWh);2019;-13097.0
-Česko;Saldo dovozu (+), vývozu (-) (GWh);2018;-13907.0
-Česko;Vlastní spotřeba na výrobu elektrické energie (GWh);2023;6166.061
-Česko;Vlastní spotřeba na výrobu elektrické energie (GWh);2022;6652.745
-Česko;Vlastní spotřeba na výrobu elektrické energie (GWh);2021;5605.0
-Česko;Vlastní spotřeba na výrobu elektrické energie (GWh);2020;5317.0
-Česko;Vlastní spotřeba na výrobu elektrické energie (GWh);2019;5844.0
-Česko;Vlastní spotřeba na výrobu elektrické energie (GWh);2018;6100.0
-Česko;Ztráty v rozvodu (GWh);2023;3012.37
-Česko;Ztráty v rozvodu (GWh);2022;3414.306
-Česko;Ztráty v rozvodu (GWh);2021;3651.0
-Česko;Ztráty v rozvodu (GWh);2020;4117.0
-Česko;Ztráty v rozvodu (GWh);2019;4300.0
-Česko;Ztráty v rozvodu (GWh);2018;4269.0
-Česko;Čistá (netto) spotřeba celkem (GWh);2023;58883.783
-Česko;Čistá (netto) spotřeba celkem (GWh);2022;61252.251
-Česko;Čistá (netto) spotřeba celkem (GWh);2021;64685.0
-Česko;Čistá (netto) spotřeba celkem (GWh);2020;61930.0
-Česko;Čistá (netto) spotřeba celkem (GWh);2019;63790.0
-Česko;Čistá (netto) spotřeba celkem (GWh);2018;63756.0
-Česko;Čistá (netto) spotřeba - velkoodběr;2023;29297.815
-Česko;Čistá (netto) spotřeba - velkoodběr;2022;30349.774
-Česko;Čistá (netto) spotřeba - velkoodběr;2021;31123.0
-Česko;Čistá (netto) spotřeba - velkoodběr;2020;29801.0
-Česko;Čistá (netto) spotřeba - velkoodběr;2019;32158.0
-Česko;Čistá (netto) spotřeba - velkoodběr;2018;32524.0
-Česko;Čistá (netto) spotřeba - maloodběr;2023;22568.716
-Česko;Čistá (netto) spotřeba - maloodběr;2022;23440.453
-Česko;Čistá (netto) spotřeba - maloodběr;2021;25009.0
-Česko;Čistá (netto) spotřeba - maloodběr;2020;23761.0
-Česko;Čistá (netto) spotřeba - maloodběr;2019;23276.0
-Česko;Čistá (netto) spotřeba - maloodběr;2018;23114.0
-Česko;Čistá (netto) spotřeba - maloodběr: domácnosti;2023;15074.098
-Česko;Čistá (netto) spotřeba - maloodběr: domácnosti;2022;15702.198
-Česko;Čistá (netto) spotřeba - maloodběr: domácnosti;2021;17260.0
-Česko;Čistá (netto) spotřeba - maloodběr: domácnosti;2020;15972.0
-Česko;Čistá (netto) spotřeba - maloodběr: domácnosti;2019;15257.0
-Česko;Čistá (netto) spotřeba - maloodběr: domácnosti;2018;15050.0
-Česko;Čistá (netto) spotřeba - maloodběr: podnikatelé;2023;7494.617
-Česko;Čistá (netto) spotřeba - maloodběr: podnikatelé;2022;7738.255
-Česko;Čistá (netto) spotřeba - maloodběr: podnikatelé;2021;7749.0
-Česko;Čistá (netto) spotřeba - maloodběr: podnikatelé;2020;7789.0
-Česko;Čistá (netto) spotřeba - maloodběr: podnikatelé;2019;8019.0
-Česko;Čistá (netto) spotřeba - maloodběr: podnikatelé;2018;8064.0
+Území,Ukazatel,Roky,value
+Česko,Výroba elektřiny celkem (GWh),2024,73881.775
+Česko,Výroba elektřiny celkem (GWh),2023,77245.787
+Česko,Výroba elektřiny celkem (GWh),2022,84848.14
+Česko,Výroba elektřiny celkem (GWh),2021,85016.0
+Česko,Výroba elektřiny celkem (GWh),2020,81517.0
+Česko,Výroba elektřiny celkem (GWh),2019,87031.0
+Česko,Výroba elektřiny celkem (GWh),2018,88032.0
+Česko,Výroba elektřiny - tepelné elektrárny,2024,36291.343
+Česko,Výroba elektřiny - tepelné elektrárny,2023,39506.288
+Česko,Výroba elektřiny - tepelné elektrárny,2022,47475.553
+Česko,Výroba elektřiny - tepelné elektrárny,2021,47813.0
+Česko,Výroba elektřiny - tepelné elektrárny,2020,45051.0
+Česko,Výroba elektřiny - tepelné elektrárny,2019,50598.0
+Česko,Výroba elektřiny - tepelné elektrárny,2018,52464.0
+Česko,Výroba elektřiny - vodní elektrárny,2024,3584.572
+Česko,Výroba elektřiny - vodní elektrárny,2023,3416.997
+Česko,Výroba elektřiny - vodní elektrárny,2022,3083.174
+Česko,Výroba elektřiny - vodní elektrárny,2021,3620.0
+Česko,Výroba elektřiny - vodní elektrárny,2020,3437.0
+Česko,Výroba elektřiny - vodní elektrárny,2019,3175.0
+Česko,Výroba elektřiny - vodní elektrárny,2018,2679.0
+Česko,Výroba elektřiny - větrné elektrárny,2024,716.81
+Česko,Výroba elektřiny - větrné elektrárny,2023,701.606
+Česko,Výroba elektřiny - větrné elektrárny,2022,641.331
+Česko,Výroba elektřiny - větrné elektrárny,2021,602.0
+Česko,Výroba elektřiny - větrné elektrárny,2020,699.0
+Česko,Výroba elektřiny - větrné elektrárny,2019,700.0
+Česko,Výroba elektřiny - větrné elektrárny,2018,609.0
+Česko,Výroba elektřiny - solární elektrárny,2024,3592.654
+Česko,Výroba elektřiny - solární elektrárny,2023,3210.432
+Česko,Výroba elektřiny - solární elektrárny,2022,2626.272
+Česko,Výroba elektřiny - solární elektrárny,2021,2250.0
+Česko,Výroba elektřiny - solární elektrárny,2020,2287.0
+Česko,Výroba elektřiny - solární elektrárny,2019,2312.0
+Česko,Výroba elektřiny - solární elektrárny,2018,2359.0
+Česko,Výroba elektřiny - jaderné elektrárny,2024,29696.397
+Česko,Výroba elektřiny - jaderné elektrárny,2023,30410.464
+Česko,Výroba elektřiny - jaderné elektrárny,2022,31021.81
+Česko,Výroba elektřiny - jaderné elektrárny,2021,30731.0
+Česko,Výroba elektřiny - jaderné elektrárny,2020,30043.0
+Česko,Výroba elektřiny - jaderné elektrárny,2019,30246.0
+Česko,Výroba elektřiny - jaderné elektrárny,2018,29921.0
+Česko,"Saldo dovozu (+), vývozu (-) (GWh)",2024,-6659.431
+Česko,"Saldo dovozu (+), vývozu (-) (GWh)",2023,-9183.573
+Česko,"Saldo dovozu (+), vývozu (-) (GWh)",2022,-13528.838
+Česko,"Saldo dovozu (+), vývozu (-) (GWh)",2021,-11075.0
+Česko,"Saldo dovozu (+), vývozu (-) (GWh)",2020,-10153.0
+Česko,"Saldo dovozu (+), vývozu (-) (GWh)",2019,-13097.0
+Česko,"Saldo dovozu (+), vývozu (-) (GWh)",2018,-13907.0
+Česko,Vlastní spotřeba na výrobu elektrické energie (GWh),2024,4899.356
+Česko,Vlastní spotřeba na výrobu elektrické energie (GWh),2023,6166.061
+Česko,Vlastní spotřeba na výrobu elektrické energie (GWh),2022,6652.745
+Česko,Vlastní spotřeba na výrobu elektrické energie (GWh),2021,5605.0
+Česko,Vlastní spotřeba na výrobu elektrické energie (GWh),2020,5317.0
+Česko,Vlastní spotřeba na výrobu elektrické energie (GWh),2019,5844.0
+Česko,Vlastní spotřeba na výrobu elektrické energie (GWh),2018,6100.0
+Česko,Ztráty v rozvodu (GWh),2024,3152.098
+Česko,Ztráty v rozvodu (GWh),2023,3012.37
+Česko,Ztráty v rozvodu (GWh),2022,3414.306
+Česko,Ztráty v rozvodu (GWh),2021,3651.0
+Česko,Ztráty v rozvodu (GWh),2020,4117.0
+Česko,Ztráty v rozvodu (GWh),2019,4300.0
+Česko,Ztráty v rozvodu (GWh),2018,4269.0
+Česko,Čistá (netto) spotřeba celkem (GWh),2024,59170.891
+Česko,Čistá (netto) spotřeba celkem (GWh),2023,58883.783
+Česko,Čistá (netto) spotřeba celkem (GWh),2022,61252.251
+Česko,Čistá (netto) spotřeba celkem (GWh),2021,64685.0
+Česko,Čistá (netto) spotřeba celkem (GWh),2020,61930.0
+Česko,Čistá (netto) spotřeba celkem (GWh),2019,63790.0
+Česko,Čistá (netto) spotřeba celkem (GWh),2018,63756.0
+Česko,Čistá (netto) spotřeba - velkoodběr,2024,29702.446
+Česko,Čistá (netto) spotřeba - velkoodběr,2023,29297.815
+Česko,Čistá (netto) spotřeba - velkoodběr,2022,30349.774
+Česko,Čistá (netto) spotřeba - velkoodběr,2021,31123.0
+Česko,Čistá (netto) spotřeba - velkoodběr,2020,29801.0
+Česko,Čistá (netto) spotřeba - velkoodběr,2019,32158.0
+Česko,Čistá (netto) spotřeba - velkoodběr,2018,32524.0
+Česko,Čistá (netto) spotřeba - maloodběr,2024,23178.582
+Česko,Čistá (netto) spotřeba - maloodběr,2023,22568.716
+Česko,Čistá (netto) spotřeba - maloodběr,2022,23440.453
+Česko,Čistá (netto) spotřeba - maloodběr,2021,25009.0
+Česko,Čistá (netto) spotřeba - maloodběr,2020,23761.0
+Česko,Čistá (netto) spotřeba - maloodběr,2019,23276.0
+Česko,Čistá (netto) spotřeba - maloodběr,2018,23114.0
+Česko,Čistá (netto) spotřeba - maloodběr: domácnosti,2024,15637.233
+Česko,Čistá (netto) spotřeba - maloodběr: domácnosti,2023,15074.098
+Česko,Čistá (netto) spotřeba - maloodběr: domácnosti,2022,15702.198
+Česko,Čistá (netto) spotřeba - maloodběr: domácnosti,2021,17260.0
+Česko,Čistá (netto) spotřeba - maloodběr: domácnosti,2020,15972.0
+Česko,Čistá (netto) spotřeba - maloodběr: domácnosti,2019,15257.0
+Česko,Čistá (netto) spotřeba - maloodběr: domácnosti,2018,15050.0
+Česko,Čistá (netto) spotřeba - maloodběr: podnikatelé,2024,7541.348
+Česko,Čistá (netto) spotřeba - maloodběr: podnikatelé,2023,7494.617
+Česko,Čistá (netto) spotřeba - maloodběr: podnikatelé,2022,7738.255
+Česko,Čistá (netto) spotřeba - maloodběr: podnikatelé,2021,7749.0
+Česko,Čistá (netto) spotřeba - maloodběr: podnikatelé,2020,7789.0
+Česko,Čistá (netto) spotřeba - maloodběr: podnikatelé,2019,8019.0
+Česko,Čistá (netto) spotřeba - maloodběr: podnikatelé,2018,8064.0

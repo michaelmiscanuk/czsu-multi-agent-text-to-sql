@@ -1,46 +1,51 @@
-Území;Instituce;Ukazatel;Roky;value
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2014;116.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2015;122.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2016;135.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2017;146.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2018;167.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2019;189.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2020;211.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2021;248.0
-Česko;Investiční společnosti a fondy;Počet aktivních jednotek;2022;286.0
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2014;454.0590844098
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2015;483.0916666559
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2016;545.4649025618
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2017;571.0
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2018;617.8526383936
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2019;660.4485206753
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2020;707.4215130371
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2021;812.5067268561
-Česko;Investiční společnosti a fondy;Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.;2022;937.801911539
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2014;454.9668324912
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2015;464.0916666559
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2016;549.8487427513
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2017;552.0
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2018;604.3533372189
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2019;646.4042342224
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2020;674.2714086814
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2021;778.0
-Česko;Investiční společnosti a fondy;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2022;898.5846920182
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2014;357.5737342703
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2015;320.747478626
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2016;427.3729220836
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2017;457.211
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2018;559.5679476706
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2019;650.9308441735
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2020;684.6742366813
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2021;805.629
-Česko;Investiční společnosti a fondy;Mzdy bez ostatních osobních nákladů (mil. Kč);2022;990.2579796191
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2014;65494.4691814861
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2015;57594.1316610362
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2016;64771.286000265
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2017;69023.3997584541
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2018;77157.9462445983
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2019;83916.8961813952
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2020;84619.0208505053
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2021;86292.7377892031
-Česko;Investiční společnosti a fondy;Průměrná hrubá mzda na zaměstnance (Kč);2022;91834.9700752717
+Území,Instituce,Ukazatel,Roky,value
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2014,116.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2015,122.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2016,135.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2017,146.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2018,167.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2019,189.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2020,211.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2021,248.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2022,286.0
+Česko,Investiční společnosti a fondy,Počet aktivních jednotek,2023,329.0
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2014,454.0590844098
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2015,483.0916666559
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2016,545.4649025618
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2017,571.0
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2018,617.8526383936
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2019,660.4485206753
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2020,707.4215130371
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2021,812.5067268561
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2022,937.801911539
+Česko,Investiční společnosti a fondy,Evidenční počet zaměstnanců ve fyzických osobách k 31. 12.,2023,992.4612128489
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2014,454.9668324912
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2015,464.0916666559
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2016,549.8487427513
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2017,552.0
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2018,604.3533372189
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2019,646.4042342224
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2020,674.2714086814
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2021,778.0
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2022,898.5846920182
+Česko,Investiční společnosti a fondy,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2023,989.76902649
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2014,357.5737342703
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2015,320.747478626
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2016,427.3729220836
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2017,457.211
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2018,559.5679476706
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2019,650.9308441735
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2020,684.6742366813
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2021,805.629
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2022,990.2579796191
+Česko,Investiční společnosti a fondy,Mzdy bez ostatních osobních nákladů (mil. Kč),2023,1152.565373144
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2014,65494.4691814861
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2015,57594.1316610362
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2016,64771.286000265
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2017,69023.3997584541
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2018,77157.9462445983
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2019,83916.8961813952
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2020,84619.0208505053
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2021,86292.7377892031
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2022,91834.9700752717
+Česko,Investiční společnosti a fondy,Průměrná hrubá mzda na zaměstnance (Kč),2023,97039.9273548459

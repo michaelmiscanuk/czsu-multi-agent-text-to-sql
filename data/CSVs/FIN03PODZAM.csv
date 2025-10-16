@@ -1,21 +1,25 @@
-Území;Instituce;Ukazatel;Roky;value
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Počet aktivních jednotek;2018;3668.0
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Počet aktivních jednotek;2019;3921.0
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Počet aktivních jednotek;2020;4143.0
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Počet aktivních jednotek;2021;4381.0
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Počet aktivních jednotek;2022;4761.0
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2018;16492.1822544616
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2019;16910.4279905335
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2020;16132.0516765799
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2021;16858.4460483441
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrný evidenční počet zaměstnanců ve fyzických osobách;2022;15759.3101098756
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Mzdy bez ostatních osobních nákladů (mil. Kč);2018;9121.1423062554
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Mzdy bez ostatních osobních nákladů (mil. Kč);2019;10086.3197131929
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Mzdy bez ostatních osobních nákladů (mil. Kč);2020;9857.5768354528
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Mzdy bez ostatních osobních nákladů (mil. Kč);2021;10775.9936820792
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Mzdy bez ostatních osobních nákladů (mil. Kč);2022;10035.9982139136
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrná hrubá mzda na zaměstnance (Kč);2018;46088.2120061656
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrná hrubá mzda na zaměstnance (Kč);2019;49704.6345152592
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrná hrubá mzda na zaměstnance (Kč);2020;50921.2809850043
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrná hrubá mzda na zaměstnance (Kč);2021;53267.0372424273
-Česko;Nebankovní peněžní instituce účtující jako podnikatelé;Průměrná hrubá mzda na zaměstnance (Kč);2022;53069.1495161777
+Území,Instituce,Ukazatel,Roky,value
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Počet aktivních jednotek,2018,3668.0
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Počet aktivních jednotek,2019,3921.0
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Počet aktivních jednotek,2020,4143.0
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Počet aktivních jednotek,2021,4381.0
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Počet aktivních jednotek,2022,4761.0
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Počet aktivních jednotek,2023,5125.0
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2018,16492.1822544616
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2019,16910.4279905335
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2020,16132.0516765799
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2021,16858.4460483441
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2022,15759.3101098756
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrný evidenční počet zaměstnanců ve fyzických osobách,2023,16081.0233731594
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Mzdy bez ostatních osobních nákladů (mil. Kč),2018,9121.1423062554
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Mzdy bez ostatních osobních nákladů (mil. Kč),2019,10086.3197131929
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Mzdy bez ostatních osobních nákladů (mil. Kč),2020,9857.5768354528
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Mzdy bez ostatních osobních nákladů (mil. Kč),2021,10775.9936820792
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Mzdy bez ostatních osobních nákladů (mil. Kč),2022,10035.9982139136
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Mzdy bez ostatních osobních nákladů (mil. Kč),2023,11200.7590506655
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrná hrubá mzda na zaměstnance (Kč),2018,46088.2120061656
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrná hrubá mzda na zaměstnance (Kč),2019,49704.6345152592
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrná hrubá mzda na zaměstnance (Kč),2020,50921.2809850043
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrná hrubá mzda na zaměstnance (Kč),2021,53267.0372424273
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrná hrubá mzda na zaměstnance (Kč),2022,53069.1495161777
+Česko,Nebankovní peněžní instituce účtující jako podnikatelé,Průměrná hrubá mzda na zaměstnance (Kč),2023,58043.3574341653

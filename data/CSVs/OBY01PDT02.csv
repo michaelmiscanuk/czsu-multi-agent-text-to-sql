@@ -1,166 +1,136 @@
-Kumulace čtvrtletí;ČR, kraje;Ukazatel;value
-Q1-Q3 2024;Česko;Živě narození;
-Q1-Q3 2024;Česko;Živě narození mimo manželství;
-Q1-Q3 2024;Česko;Zemřelí;
-Q1-Q3 2024;Česko;Zemřelí do 1 roku;
-Q1-Q3 2024;Česko;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Česko;Přistěhovalí;
-Q1-Q3 2024;Česko;Vystěhovalí;
-Q1-Q3 2024;Česko;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Česko;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Česko;Sňatky;
-Q1-Q3 2024;Česko;Rozvody;
-Q1-Q3 2024;Hlavní město Praha;Živě narození;
-Q1-Q3 2024;Hlavní město Praha;Živě narození mimo manželství;
-Q1-Q3 2024;Hlavní město Praha;Zemřelí;
-Q1-Q3 2024;Hlavní město Praha;Zemřelí do 1 roku;
-Q1-Q3 2024;Hlavní město Praha;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Hlavní město Praha;Přistěhovalí;
-Q1-Q3 2024;Hlavní město Praha;Vystěhovalí;
-Q1-Q3 2024;Hlavní město Praha;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Hlavní město Praha;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Hlavní město Praha;Sňatky;
-Q1-Q3 2024;Hlavní město Praha;Rozvody;
-Q1-Q3 2024;Středočeský kraj;Živě narození;
-Q1-Q3 2024;Středočeský kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Středočeský kraj;Zemřelí;
-Q1-Q3 2024;Středočeský kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Středočeský kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Středočeský kraj;Přistěhovalí;
-Q1-Q3 2024;Středočeský kraj;Vystěhovalí;
-Q1-Q3 2024;Středočeský kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Středočeský kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Středočeský kraj;Sňatky;
-Q1-Q3 2024;Středočeský kraj;Rozvody;
-Q1-Q3 2024;Jihočeský kraj;Živě narození;
-Q1-Q3 2024;Jihočeský kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Jihočeský kraj;Zemřelí;
-Q1-Q3 2024;Jihočeský kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Jihočeský kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Jihočeský kraj;Přistěhovalí;
-Q1-Q3 2024;Jihočeský kraj;Vystěhovalí;
-Q1-Q3 2024;Jihočeský kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Jihočeský kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Jihočeský kraj;Sňatky;
-Q1-Q3 2024;Jihočeský kraj;Rozvody;
-Q1-Q3 2024;Plzeňský kraj;Živě narození;
-Q1-Q3 2024;Plzeňský kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Plzeňský kraj;Zemřelí;
-Q1-Q3 2024;Plzeňský kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Plzeňský kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Plzeňský kraj;Přistěhovalí;
-Q1-Q3 2024;Plzeňský kraj;Vystěhovalí;
-Q1-Q3 2024;Plzeňský kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Plzeňský kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Plzeňský kraj;Sňatky;
-Q1-Q3 2024;Plzeňský kraj;Rozvody;
-Q1-Q3 2024;Karlovarský kraj;Živě narození;
-Q1-Q3 2024;Karlovarský kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Karlovarský kraj;Zemřelí;
-Q1-Q3 2024;Karlovarský kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Karlovarský kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Karlovarský kraj;Přistěhovalí;
-Q1-Q3 2024;Karlovarský kraj;Vystěhovalí;
-Q1-Q3 2024;Karlovarský kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Karlovarský kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Karlovarský kraj;Sňatky;
-Q1-Q3 2024;Karlovarský kraj;Rozvody;
-Q1-Q3 2024;Ústecký kraj;Živě narození;
-Q1-Q3 2024;Ústecký kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Ústecký kraj;Zemřelí;
-Q1-Q3 2024;Ústecký kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Ústecký kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Ústecký kraj;Přistěhovalí;
-Q1-Q3 2024;Ústecký kraj;Vystěhovalí;
-Q1-Q3 2024;Ústecký kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Ústecký kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Ústecký kraj;Sňatky;
-Q1-Q3 2024;Ústecký kraj;Rozvody;
-Q1-Q3 2024;Liberecký kraj;Živě narození;
-Q1-Q3 2024;Liberecký kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Liberecký kraj;Zemřelí;
-Q1-Q3 2024;Liberecký kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Liberecký kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Liberecký kraj;Přistěhovalí;
-Q1-Q3 2024;Liberecký kraj;Vystěhovalí;
-Q1-Q3 2024;Liberecký kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Liberecký kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Liberecký kraj;Sňatky;
-Q1-Q3 2024;Liberecký kraj;Rozvody;
-Q1-Q3 2024;Královéhradecký kraj;Živě narození;
-Q1-Q3 2024;Královéhradecký kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Královéhradecký kraj;Zemřelí;
-Q1-Q3 2024;Královéhradecký kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Královéhradecký kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Královéhradecký kraj;Přistěhovalí;
-Q1-Q3 2024;Královéhradecký kraj;Vystěhovalí;
-Q1-Q3 2024;Královéhradecký kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Královéhradecký kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Královéhradecký kraj;Sňatky;
-Q1-Q3 2024;Královéhradecký kraj;Rozvody;
-Q1-Q3 2024;Pardubický kraj;Živě narození;
-Q1-Q3 2024;Pardubický kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Pardubický kraj;Zemřelí;
-Q1-Q3 2024;Pardubický kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Pardubický kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Pardubický kraj;Přistěhovalí;
-Q1-Q3 2024;Pardubický kraj;Vystěhovalí;
-Q1-Q3 2024;Pardubický kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Pardubický kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Pardubický kraj;Sňatky;
-Q1-Q3 2024;Pardubický kraj;Rozvody;
-Q1-Q3 2024;Kraj Vysočina;Živě narození;
-Q1-Q3 2024;Kraj Vysočina;Živě narození mimo manželství;
-Q1-Q3 2024;Kraj Vysočina;Zemřelí;
-Q1-Q3 2024;Kraj Vysočina;Zemřelí do 1 roku;
-Q1-Q3 2024;Kraj Vysočina;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Kraj Vysočina;Přistěhovalí;
-Q1-Q3 2024;Kraj Vysočina;Vystěhovalí;
-Q1-Q3 2024;Kraj Vysočina;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Kraj Vysočina;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Kraj Vysočina;Sňatky;
-Q1-Q3 2024;Kraj Vysočina;Rozvody;
-Q1-Q3 2024;Jihomoravský kraj;Živě narození;
-Q1-Q3 2024;Jihomoravský kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Jihomoravský kraj;Zemřelí;
-Q1-Q3 2024;Jihomoravský kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Jihomoravský kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Jihomoravský kraj;Přistěhovalí;
-Q1-Q3 2024;Jihomoravský kraj;Vystěhovalí;
-Q1-Q3 2024;Jihomoravský kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Jihomoravský kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Jihomoravský kraj;Sňatky;
-Q1-Q3 2024;Jihomoravský kraj;Rozvody;
-Q1-Q3 2024;Olomoucký kraj;Živě narození;
-Q1-Q3 2024;Olomoucký kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Olomoucký kraj;Zemřelí;
-Q1-Q3 2024;Olomoucký kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Olomoucký kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Olomoucký kraj;Přistěhovalí;
-Q1-Q3 2024;Olomoucký kraj;Vystěhovalí;
-Q1-Q3 2024;Olomoucký kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Olomoucký kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Olomoucký kraj;Sňatky;
-Q1-Q3 2024;Olomoucký kraj;Rozvody;
-Q1-Q3 2024;Zlínský kraj;Živě narození;
-Q1-Q3 2024;Zlínský kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Zlínský kraj;Zemřelí;
-Q1-Q3 2024;Zlínský kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Zlínský kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Zlínský kraj;Přistěhovalí;
-Q1-Q3 2024;Zlínský kraj;Vystěhovalí;
-Q1-Q3 2024;Zlínský kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Zlínský kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Zlínský kraj;Sňatky;
-Q1-Q3 2024;Zlínský kraj;Rozvody;
-Q1-Q3 2024;Moravskoslezský kraj;Živě narození;
-Q1-Q3 2024;Moravskoslezský kraj;Živě narození mimo manželství;
-Q1-Q3 2024;Moravskoslezský kraj;Zemřelí;
-Q1-Q3 2024;Moravskoslezský kraj;Zemřelí do 1 roku;
-Q1-Q3 2024;Moravskoslezský kraj;Přirozený přírůstek/úbytek;
-Q1-Q3 2024;Moravskoslezský kraj;Přistěhovalí;
-Q1-Q3 2024;Moravskoslezský kraj;Vystěhovalí;
-Q1-Q3 2024;Moravskoslezský kraj;Přírůstek/úbytek stěhováním;
-Q1-Q3 2024;Moravskoslezský kraj;Celkový přírůstek/úbytek;
-Q1-Q3 2024;Moravskoslezský kraj;Sňatky;
-Q1-Q3 2024;Moravskoslezský kraj;Rozvody;
+Kumulace čtvrtletí,Pohlaví,"ČR, kraje",Ukazatel,value
+Q1-Q2 2025,Celkem,Česko,Živě narození,37435
+Q1-Q2 2025,Celkem,Česko,Zemřelí,57728
+Q1-Q2 2025,Celkem,Česko,Přirozený přírůstek/úbytek,-20293
+Q1-Q2 2025,Celkem,Česko,Přistěhovalí,49581
+Q1-Q2 2025,Celkem,Česko,Vystěhovalí,56447
+Q1-Q2 2025,Celkem,Česko,Přírůstek/úbytek stěhováním,-6866
+Q1-Q2 2025,Celkem,Česko,Celkový přírůstek/úbytek,-27159
+Q1-Q2 2025,Celkem,Česko,Sňatky,17336
+Q1-Q2 2025,Celkem,Česko,Rozvody,10388
+Q1-Q2 2025,Celkem,Hlavní město Praha,Živě narození,5254
+Q1-Q2 2025,Celkem,Hlavní město Praha,Zemřelí,6135
+Q1-Q2 2025,Celkem,Hlavní město Praha,Přirozený přírůstek/úbytek,-881
+Q1-Q2 2025,Celkem,Hlavní město Praha,Přistěhovalí,29090
+Q1-Q2 2025,Celkem,Hlavní město Praha,Vystěhovalí,29203
+Q1-Q2 2025,Celkem,Hlavní město Praha,Přírůstek/úbytek stěhováním,-113
+Q1-Q2 2025,Celkem,Hlavní město Praha,Celkový přírůstek/úbytek,-994
+Q1-Q2 2025,Celkem,Hlavní město Praha,Sňatky,2512
+Q1-Q2 2025,Celkem,Hlavní město Praha,Rozvody,1173
+Q1-Q2 2025,Celkem,Středočeský kraj,Živě narození,4901
+Q1-Q2 2025,Celkem,Středočeský kraj,Zemřelí,6923
+Q1-Q2 2025,Celkem,Středočeský kraj,Přirozený přírůstek/úbytek,-2022
+Q1-Q2 2025,Celkem,Středočeský kraj,Přistěhovalí,22355
+Q1-Q2 2025,Celkem,Středočeský kraj,Vystěhovalí,18825
+Q1-Q2 2025,Celkem,Středočeský kraj,Přírůstek/úbytek stěhováním,3530
+Q1-Q2 2025,Celkem,Středočeský kraj,Celkový přírůstek/úbytek,1508
+Q1-Q2 2025,Celkem,Středočeský kraj,Sňatky,2267
+Q1-Q2 2025,Celkem,Středočeský kraj,Rozvody,1517
+Q1-Q2 2025,Celkem,Jihočeský kraj,Živě narození,2258
+Q1-Q2 2025,Celkem,Jihočeský kraj,Zemřelí,3623
+Q1-Q2 2025,Celkem,Jihočeský kraj,Přirozený přírůstek/úbytek,-1365
+Q1-Q2 2025,Celkem,Jihočeský kraj,Přistěhovalí,4807
+Q1-Q2 2025,Celkem,Jihočeský kraj,Vystěhovalí,4839
+Q1-Q2 2025,Celkem,Jihočeský kraj,Přírůstek/úbytek stěhováním,-32
+Q1-Q2 2025,Celkem,Jihočeský kraj,Celkový přírůstek/úbytek,-1397
+Q1-Q2 2025,Celkem,Jihočeský kraj,Sňatky,980
+Q1-Q2 2025,Celkem,Jihočeský kraj,Rozvody,642
+Q1-Q2 2025,Celkem,Plzeňský kraj,Živě narození,2005
+Q1-Q2 2025,Celkem,Plzeňský kraj,Zemřelí,3389
+Q1-Q2 2025,Celkem,Plzeňský kraj,Přirozený přírůstek/úbytek,-1384
+Q1-Q2 2025,Celkem,Plzeňský kraj,Přistěhovalí,7216
+Q1-Q2 2025,Celkem,Plzeňský kraj,Vystěhovalí,9203
+Q1-Q2 2025,Celkem,Plzeňský kraj,Přírůstek/úbytek stěhováním,-1987
+Q1-Q2 2025,Celkem,Plzeňský kraj,Celkový přírůstek/úbytek,-3371
+Q1-Q2 2025,Celkem,Plzeňský kraj,Sňatky,959
+Q1-Q2 2025,Celkem,Plzeňský kraj,Rozvody,550
+Q1-Q2 2025,Celkem,Karlovarský kraj,Živě narození,893
+Q1-Q2 2025,Celkem,Karlovarský kraj,Zemřelí,1751
+Q1-Q2 2025,Celkem,Karlovarský kraj,Přirozený přírůstek/úbytek,-858
+Q1-Q2 2025,Celkem,Karlovarský kraj,Přistěhovalí,2982
+Q1-Q2 2025,Celkem,Karlovarský kraj,Vystěhovalí,3670
+Q1-Q2 2025,Celkem,Karlovarský kraj,Přírůstek/úbytek stěhováním,-688
+Q1-Q2 2025,Celkem,Karlovarský kraj,Celkový přírůstek/úbytek,-1546
+Q1-Q2 2025,Celkem,Karlovarský kraj,Sňatky,430
+Q1-Q2 2025,Celkem,Karlovarský kraj,Rozvody,326
+Q1-Q2 2025,Celkem,Ústecký kraj,Živě narození,2646
+Q1-Q2 2025,Celkem,Ústecký kraj,Zemřelí,4845
+Q1-Q2 2025,Celkem,Ústecký kraj,Přirozený přírůstek/úbytek,-2199
+Q1-Q2 2025,Celkem,Ústecký kraj,Přistěhovalí,5342
+Q1-Q2 2025,Celkem,Ústecký kraj,Vystěhovalí,6157
+Q1-Q2 2025,Celkem,Ústecký kraj,Přírůstek/úbytek stěhováním,-815
+Q1-Q2 2025,Celkem,Ústecký kraj,Celkový přírůstek/úbytek,-3014
+Q1-Q2 2025,Celkem,Ústecký kraj,Sňatky,1303
+Q1-Q2 2025,Celkem,Ústecký kraj,Rozvody,854
+Q1-Q2 2025,Celkem,Liberecký kraj,Živě narození,1522
+Q1-Q2 2025,Celkem,Liberecký kraj,Zemřelí,2395
+Q1-Q2 2025,Celkem,Liberecký kraj,Přirozený přírůstek/úbytek,-873
+Q1-Q2 2025,Celkem,Liberecký kraj,Přistěhovalí,3901
+Q1-Q2 2025,Celkem,Liberecký kraj,Vystěhovalí,4718
+Q1-Q2 2025,Celkem,Liberecký kraj,Přírůstek/úbytek stěhováním,-817
+Q1-Q2 2025,Celkem,Liberecký kraj,Celkový přírůstek/úbytek,-1690
+Q1-Q2 2025,Celkem,Liberecký kraj,Sňatky,663
+Q1-Q2 2025,Celkem,Liberecký kraj,Rozvody,477
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Živě narození,1920
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Zemřelí,3085
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Přirozený přírůstek/úbytek,-1165
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Přistěhovalí,4715
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Vystěhovalí,5821
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Přírůstek/úbytek stěhováním,-1106
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Celkový přírůstek/úbytek,-2271
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Sňatky,857
+Q1-Q2 2025,Celkem,Královéhradecký kraj,Rozvody,582
+Q1-Q2 2025,Celkem,Pardubický kraj,Živě narození,1827
+Q1-Q2 2025,Celkem,Pardubický kraj,Zemřelí,2768
+Q1-Q2 2025,Celkem,Pardubický kraj,Přirozený přírůstek/úbytek,-941
+Q1-Q2 2025,Celkem,Pardubický kraj,Přistěhovalí,5489
+Q1-Q2 2025,Celkem,Pardubický kraj,Vystěhovalí,5578
+Q1-Q2 2025,Celkem,Pardubický kraj,Přírůstek/úbytek stěhováním,-89
+Q1-Q2 2025,Celkem,Pardubický kraj,Celkový přírůstek/úbytek,-1030
+Q1-Q2 2025,Celkem,Pardubický kraj,Sňatky,782
+Q1-Q2 2025,Celkem,Pardubický kraj,Rozvody,485
+Q1-Q2 2025,Celkem,Kraj Vysočina,Živě narození,1916
+Q1-Q2 2025,Celkem,Kraj Vysočina,Zemřelí,2775
+Q1-Q2 2025,Celkem,Kraj Vysočina,Přirozený přírůstek/úbytek,-859
+Q1-Q2 2025,Celkem,Kraj Vysočina,Přistěhovalí,4161
+Q1-Q2 2025,Celkem,Kraj Vysočina,Vystěhovalí,5392
+Q1-Q2 2025,Celkem,Kraj Vysočina,Přírůstek/úbytek stěhováním,-1231
+Q1-Q2 2025,Celkem,Kraj Vysočina,Celkový přírůstek/úbytek,-2090
+Q1-Q2 2025,Celkem,Kraj Vysočina,Sňatky,799
+Q1-Q2 2025,Celkem,Kraj Vysočina,Rozvody,429
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Živě narození,4176
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Zemřelí,6397
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Přirozený přírůstek/úbytek,-2221
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Přistěhovalí,11068
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Vystěhovalí,12279
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Přírůstek/úbytek stěhováním,-1211
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Celkový přírůstek/úbytek,-3432
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Sňatky,2126
+Q1-Q2 2025,Celkem,Jihomoravský kraj,Rozvody,1111
+Q1-Q2 2025,Celkem,Olomoucký kraj,Živě narození,2213
+Q1-Q2 2025,Celkem,Olomoucký kraj,Zemřelí,3536
+Q1-Q2 2025,Celkem,Olomoucký kraj,Přirozený přírůstek/úbytek,-1323
+Q1-Q2 2025,Celkem,Olomoucký kraj,Přistěhovalí,4406
+Q1-Q2 2025,Celkem,Olomoucký kraj,Vystěhovalí,4559
+Q1-Q2 2025,Celkem,Olomoucký kraj,Přírůstek/úbytek stěhováním,-153
+Q1-Q2 2025,Celkem,Olomoucký kraj,Celkový přírůstek/úbytek,-1476
+Q1-Q2 2025,Celkem,Olomoucký kraj,Sňatky,1022
+Q1-Q2 2025,Celkem,Olomoucký kraj,Rozvody,621
+Q1-Q2 2025,Celkem,Zlínský kraj,Živě narození,1958
+Q1-Q2 2025,Celkem,Zlínský kraj,Zemřelí,3131
+Q1-Q2 2025,Celkem,Zlínský kraj,Přirozený přírůstek/úbytek,-1173
+Q1-Q2 2025,Celkem,Zlínský kraj,Přistěhovalí,3742
+Q1-Q2 2025,Celkem,Zlínský kraj,Vystěhovalí,4050
+Q1-Q2 2025,Celkem,Zlínský kraj,Přírůstek/úbytek stěhováním,-308
+Q1-Q2 2025,Celkem,Zlínský kraj,Celkový přírůstek/úbytek,-1481
+Q1-Q2 2025,Celkem,Zlínský kraj,Sňatky,831
+Q1-Q2 2025,Celkem,Zlínský kraj,Rozvody,443
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Živě narození,3946
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Zemřelí,6975
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Přirozený přírůstek/úbytek,-3029
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Přistěhovalí,5128
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Vystěhovalí,6974
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Přírůstek/úbytek stěhováním,-1846
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Celkový přírůstek/úbytek,-4875
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Sňatky,1805
+Q1-Q2 2025,Celkem,Moravskoslezský kraj,Rozvody,1178

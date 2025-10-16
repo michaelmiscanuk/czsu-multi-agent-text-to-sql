@@ -1,73 +1,82 @@
-Území;Ukazatel;Roky;value
-Česko;Počet okrsků;1996;14776.0
-Česko;Počet okrsků;1998;14776.0
-Česko;Počet okrsků;2002;14868.0
-Česko;Počet okrsků;2006;14866.0
-Česko;Počet okrsků;2010;14894.0
-Česko;Počet okrsků;2013;14873.0
-Česko;Počet okrsků;2017;14865.0
-Česko;Počet okrsků;2021;14886.0
-Česko;Voliči v seznamu;1996;7990770.0
-Česko;Voliči v seznamu;1998;8116836.0
-Česko;Voliči v seznamu;2002;8264484.0
-Česko;Voliči v seznamu;2006;8333305.0
-Česko;Voliči v seznamu;2010;8415892.0
-Česko;Voliči v seznamu;2013;8424227.0
-Česko;Voliči v seznamu;2017;8374501.0
-Česko;Voliči v seznamu;2021;8275752.0
-Česko;Vydané obálky;1996;6105588.0
-Česko;Vydané obálky;1998;6008926.0
-Česko;Vydané obálky;2002;4793706.0
-Česko;Vydané obálky;2006;5372449.0
-Česko;Vydané obálky;2010;5268098.0
-Česko;Vydané obálky;2013;5010944.0
-Česko;Vydané obálky;2017;5094633.0
-Česko;Vydané obálky;2021;5414637.0
-Česko;Volební účast (%);1996;76.41
-Česko;Volební účast (%);1998;74.03
-Česko;Volební účast (%);2002;58.0
-Česko;Volební účast (%);2006;64.47
-Česko;Volební účast (%);2010;62.6
-Česko;Volební účast (%);2013;59.48
-Česko;Volební účast (%);2017;60.84
-Česko;Volební účast (%);2021;65.43
-Česko;Odevzdané obálky;1996;6096404.0
-Česko;Odevzdané obálky;1998;5994844.0
-Česko;Odevzdané obálky;2002;4789145.0
-Česko;Odevzdané obálky;2006;5368495.0
-Česko;Odevzdané obálky;2010;5263822.0
-Česko;Odevzdané obálky;2013;5007212.0
-Česko;Odevzdané obálky;2017;5091065.0
-Česko;Odevzdané obálky;2021;5411884.0
-Česko;Platné hlasy;1996;6059215.0
-Česko;Platné hlasy;1998;5969505.0
-Česko;Platné hlasy;2002;4768006.0
-Česko;Platné hlasy;2006;5348976.0
-Česko;Platné hlasy;2010;5230859.0
-Česko;Platné hlasy;2013;4969984.0
-Česko;Platné hlasy;2017;5060759.0
-Česko;Platné hlasy;2021;5375090.0
-Česko;Počet kandidátů;1996;3909.0
-Česko;Počet kandidátů;1998;3374.0
-Česko;Počet kandidátů;2002;6068.0
-Česko;Počet kandidátů;2006;4985.0
-Česko;Počet kandidátů;2010;5022.0
-Česko;Počet kandidátů;2013;5899.0
-Česko;Počet kandidátů;2017;7524.0
-Česko;Počet kandidátů;2021;5243.0
-Česko;Počet zvolených mužů;1996;
-Česko;Počet zvolených mužů;1998;
-Česko;Počet zvolených mužů;2002;
-Česko;Počet zvolených mužů;2006;
-Česko;Počet zvolených mužů;2010;
-Česko;Počet zvolených mužů;2013;161.0
-Česko;Počet zvolených mužů;2017;156.0
-Česko;Počet zvolených mužů;2021;150.0
-Česko;Počet zvolených žen;1996;
-Česko;Počet zvolených žen;1998;
-Česko;Počet zvolených žen;2002;
-Česko;Počet zvolených žen;2006;
-Česko;Počet zvolených žen;2010;
-Česko;Počet zvolených žen;2013;39.0
-Česko;Počet zvolených žen;2017;44.0
-Česko;Počet zvolených žen;2021;50.0
+Území,Ukazatel,Roky,value
+Česko,Počet okrsků,1996,14776.0
+Česko,Počet okrsků,1998,14776.0
+Česko,Počet okrsků,2002,14868.0
+Česko,Počet okrsků,2006,14866.0
+Česko,Počet okrsků,2010,14894.0
+Česko,Počet okrsků,2013,14873.0
+Česko,Počet okrsků,2017,14865.0
+Česko,Počet okrsků,2021,14886.0
+Česko,Počet okrsků,2025,14819.0
+Česko,Voliči v seznamu,1996,7990770.0
+Česko,Voliči v seznamu,1998,8116836.0
+Česko,Voliči v seznamu,2002,8264484.0
+Česko,Voliči v seznamu,2006,8333305.0
+Česko,Voliči v seznamu,2010,8415892.0
+Česko,Voliči v seznamu,2013,8424227.0
+Česko,Voliči v seznamu,2017,8374501.0
+Česko,Voliči v seznamu,2021,8275752.0
+Česko,Voliči v seznamu,2025,8253316.0
+Česko,Vydané obálky,1996,6105588.0
+Česko,Vydané obálky,1998,6008926.0
+Česko,Vydané obálky,2002,4793706.0
+Česko,Vydané obálky,2006,5372449.0
+Česko,Vydané obálky,2010,5268098.0
+Česko,Vydané obálky,2013,5010944.0
+Česko,Vydané obálky,2017,5094633.0
+Česko,Vydané obálky,2021,5414637.0
+Česko,Vydané obálky,2025,5690635.0
+Česko,Volební účast (%),1996,76.41
+Česko,Volební účast (%),1998,74.03
+Česko,Volební účast (%),2002,58.0
+Česko,Volební účast (%),2006,64.47
+Česko,Volební účast (%),2010,62.6
+Česko,Volební účast (%),2013,59.48
+Česko,Volební účast (%),2017,60.84
+Česko,Volební účast (%),2021,65.43
+Česko,Volební účast (%),2025,68.95
+Česko,Odevzdané obálky,1996,6096404.0
+Česko,Odevzdané obálky,1998,5994844.0
+Česko,Odevzdané obálky,2002,4789145.0
+Česko,Odevzdané obálky,2006,5368495.0
+Česko,Odevzdané obálky,2010,5263822.0
+Česko,Odevzdané obálky,2013,5007212.0
+Česko,Odevzdané obálky,2017,5091065.0
+Česko,Odevzdané obálky,2021,5411884.0
+Česko,Odevzdané obálky,2025,5685307.0
+Česko,Platné hlasy,1996,6059215.0
+Česko,Platné hlasy,1998,5969505.0
+Česko,Platné hlasy,2002,4768006.0
+Česko,Platné hlasy,2006,5348976.0
+Česko,Platné hlasy,2010,5230859.0
+Česko,Platné hlasy,2013,4969984.0
+Česko,Platné hlasy,2017,5060759.0
+Česko,Platné hlasy,2021,5375090.0
+Česko,Platné hlasy,2025,5621717.0
+Česko,Počet kandidátů,1996,3909.0
+Česko,Počet kandidátů,1998,3374.0
+Česko,Počet kandidátů,2002,6068.0
+Česko,Počet kandidátů,2006,4985.0
+Česko,Počet kandidátů,2010,5022.0
+Česko,Počet kandidátů,2013,5899.0
+Česko,Počet kandidátů,2017,7524.0
+Česko,Počet kandidátů,2021,5243.0
+Česko,Počet kandidátů,2025,4462.0
+Česko,Počet zvolených mužů,1996,
+Česko,Počet zvolených mužů,1998,
+Česko,Počet zvolených mužů,2002,
+Česko,Počet zvolených mužů,2006,
+Česko,Počet zvolených mužů,2010,
+Česko,Počet zvolených mužů,2013,161.0
+Česko,Počet zvolených mužů,2017,156.0
+Česko,Počet zvolených mužů,2021,150.0
+Česko,Počet zvolených mužů,2025,133.0
+Česko,Počet zvolených žen,1996,
+Česko,Počet zvolených žen,1998,
+Česko,Počet zvolených žen,2002,
+Česko,Počet zvolených žen,2006,
+Česko,Počet zvolených žen,2010,
+Česko,Počet zvolených žen,2013,39.0
+Česko,Počet zvolených žen,2017,44.0
+Česko,Počet zvolených žen,2021,50.0
+Česko,Počet zvolených žen,2025,67.0

@@ -1,76 +1,76 @@
-Rok sčítání;Ukazatel;Území;Způsob vytápění;value
-2021;Počet  obydlených bytů;Česká republika;Obydlené byty celkem;4480139
-2021;Počet  obydlených bytů;Česká republika;Ústřední dálkové;1497007
-2021;Počet  obydlených bytů;Česká republika;Ústřední domovní;848838
-2021;Počet  obydlených bytů;Česká republika;Ústřední s vlastním zdrojem (v bytě);1465315
-2021;Počet  obydlených bytů;Česká republika;Lokální topidla (kamna);348104
-2021;Počet  obydlených bytů;Hlavní město Praha;Obydlené byty celkem;627705
-2021;Počet  obydlených bytů;Hlavní město Praha;Ústřední dálkové;303405
-2021;Počet  obydlených bytů;Hlavní město Praha;Ústřední domovní;112037
-2021;Počet  obydlených bytů;Hlavní město Praha;Ústřední s vlastním zdrojem (v bytě);115272
-2021;Počet  obydlených bytů;Hlavní město Praha;Lokální topidla (kamna);59359
-2021;Počet  obydlených bytů;Středočeský kraj;Obydlené byty celkem;561642
-2021;Počet  obydlených bytů;Středočeský kraj;Ústřední dálkové;112147
-2021;Počet  obydlených bytů;Středočeský kraj;Ústřední domovní;112188
-2021;Počet  obydlených bytů;Středočeský kraj;Ústřední s vlastním zdrojem (v bytě);234219
-2021;Počet  obydlených bytů;Středočeský kraj;Lokální topidla (kamna);49459
-2021;Počet  obydlených bytů;Jihočeský kraj;Obydlené byty celkem;265601
-2021;Počet  obydlených bytů;Jihočeský kraj;Ústřední dálkové;84168
-2021;Počet  obydlených bytů;Jihočeský kraj;Ústřední domovní;50101
-2021;Počet  obydlených bytů;Jihočeský kraj;Ústřední s vlastním zdrojem (v bytě);87220
-2021;Počet  obydlených bytů;Jihočeský kraj;Lokální topidla (kamna);22968
-2021;Počet  obydlených bytů;Plzeňský kraj;Obydlené byty celkem;247030
-2021;Počet  obydlených bytů;Plzeňský kraj;Ústřední dálkové;75798
-2021;Počet  obydlených bytů;Plzeňský kraj;Ústřední domovní;47623
-2021;Počet  obydlených bytů;Plzeňský kraj;Ústřední s vlastním zdrojem (v bytě);83958
-2021;Počet  obydlených bytů;Plzeňský kraj;Lokální topidla (kamna);19238
-2021;Počet  obydlených bytů;Karlovarský kraj;Obydlené byty celkem;125299
-2021;Počet  obydlených bytů;Karlovarský kraj;Ústřední dálkové;58153
-2021;Počet  obydlených bytů;Karlovarský kraj;Ústřední domovní;19517
-2021;Počet  obydlených bytů;Karlovarský kraj;Ústřední s vlastním zdrojem (v bytě);30781
-2021;Počet  obydlených bytů;Karlovarský kraj;Lokální topidla (kamna);7080
-2021;Počet  obydlených bytů;Ústecký kraj;Obydlené byty celkem;353285
-2021;Počet  obydlených bytů;Ústecký kraj;Ústřední dálkové;166332
-2021;Počet  obydlených bytů;Ústecký kraj;Ústřední domovní;51552
-2021;Počet  obydlených bytů;Ústecký kraj;Ústřední s vlastním zdrojem (v bytě);87909
-2021;Počet  obydlených bytů;Ústecký kraj;Lokální topidla (kamna);22040
-2021;Počet  obydlených bytů;Liberecký kraj;Obydlené byty celkem;187627
-2021;Počet  obydlených bytů;Liberecký kraj;Ústřední dálkové;45447
-2021;Počet  obydlených bytů;Liberecký kraj;Ústřední domovní;50305
-2021;Počet  obydlených bytů;Liberecký kraj;Ústřední s vlastním zdrojem (v bytě);57364
-2021;Počet  obydlených bytů;Liberecký kraj;Lokální topidla (kamna);17204
-2021;Počet  obydlených bytů;Královéhradecký kraj;Obydlené byty celkem;228569
-2021;Počet  obydlených bytů;Královéhradecký kraj;Ústřední dálkové;63091
-2021;Počet  obydlených bytů;Královéhradecký kraj;Ústřední domovní;40722
-2021;Počet  obydlených bytů;Královéhradecký kraj;Ústřední s vlastním zdrojem (v bytě);79898
-2021;Počet  obydlených bytů;Královéhradecký kraj;Lokální topidla (kamna);25597
-2021;Počet  obydlených bytů;Pardubický kraj;Obydlené byty celkem;209133
-2021;Počet  obydlených bytů;Pardubický kraj;Ústřední dálkové;50601
-2021;Počet  obydlených bytů;Pardubický kraj;Ústřední domovní;39991
-2021;Počet  obydlených bytů;Pardubický kraj;Ústřední s vlastním zdrojem (v bytě);87264
-2021;Počet  obydlených bytů;Pardubický kraj;Lokální topidla (kamna);16696
-2021;Počet  obydlených bytů;Kraj Vysočina;Obydlené byty celkem;195098
-2021;Počet  obydlených bytů;Kraj Vysočina;Ústřední dálkové;39341
-2021;Počet  obydlených bytů;Kraj Vysočina;Ústřední domovní;39421
-2021;Počet  obydlených bytů;Kraj Vysočina;Ústřední s vlastním zdrojem (v bytě);87844
-2021;Počet  obydlených bytů;Kraj Vysočina;Lokální topidla (kamna);15817
-2021;Počet  obydlených bytů;Jihomoravský kraj;Obydlené byty celkem;490005
-2021;Počet  obydlených bytů;Jihomoravský kraj;Ústřední dálkové;129507
-2021;Počet  obydlených bytů;Jihomoravský kraj;Ústřední domovní;94069
-2021;Počet  obydlených bytů;Jihomoravský kraj;Ústřední s vlastním zdrojem (v bytě);196771
-2021;Počet  obydlených bytů;Jihomoravský kraj;Lokální topidla (kamna);38345
-2021;Počet  obydlených bytů;Olomoucký kraj;Obydlené byty celkem;259885
-2021;Počet  obydlených bytů;Olomoucký kraj;Ústřední dálkové;71211
-2021;Počet  obydlených bytů;Olomoucký kraj;Ústřední domovní;52193
-2021;Počet  obydlených bytů;Olomoucký kraj;Ústřední s vlastním zdrojem (v bytě);100340
-2021;Počet  obydlených bytů;Olomoucký kraj;Lokální topidla (kamna);19632
-2021;Počet  obydlených bytů;Zlínský kraj;Obydlené byty celkem;226219
-2021;Počet  obydlených bytů;Zlínský kraj;Ústřední dálkové;57246
-2021;Počet  obydlených bytů;Zlínský kraj;Ústřední domovní;51817
-2021;Počet  obydlených bytů;Zlínský kraj;Ústřední s vlastním zdrojem (v bytě);87776
-2021;Počet  obydlených bytů;Zlínský kraj;Lokální topidla (kamna);15715
-2021;Počet  obydlených bytů;Moravskoslezský kraj;Obydlené byty celkem;503041
-2021;Počet  obydlených bytů;Moravskoslezský kraj;Ústřední dálkové;240560
-2021;Počet  obydlených bytů;Moravskoslezský kraj;Ústřední domovní;87302
-2021;Počet  obydlených bytů;Moravskoslezský kraj;Ústřední s vlastním zdrojem (v bytě);128699
-2021;Počet  obydlených bytů;Moravskoslezský kraj;Lokální topidla (kamna);18954
+Rok sčítání,Ukazatel,Území,Způsob vytápění,value
+2021,Počet  obydlených bytů,Česká republika,Obydlené byty celkem,4480139
+2021,Počet  obydlených bytů,Česká republika,Ústřední dálkové,1497007
+2021,Počet  obydlených bytů,Česká republika,Ústřední domovní,848838
+2021,Počet  obydlených bytů,Česká republika,Ústřední s vlastním zdrojem (v bytě),1465315
+2021,Počet  obydlených bytů,Česká republika,Lokální topidla (kamna),348104
+2021,Počet  obydlených bytů,Hlavní město Praha,Obydlené byty celkem,627705
+2021,Počet  obydlených bytů,Hlavní město Praha,Ústřední dálkové,303405
+2021,Počet  obydlených bytů,Hlavní město Praha,Ústřední domovní,112037
+2021,Počet  obydlených bytů,Hlavní město Praha,Ústřední s vlastním zdrojem (v bytě),115272
+2021,Počet  obydlených bytů,Hlavní město Praha,Lokální topidla (kamna),59359
+2021,Počet  obydlených bytů,Středočeský kraj,Obydlené byty celkem,561642
+2021,Počet  obydlených bytů,Středočeský kraj,Ústřední dálkové,112147
+2021,Počet  obydlených bytů,Středočeský kraj,Ústřední domovní,112188
+2021,Počet  obydlených bytů,Středočeský kraj,Ústřední s vlastním zdrojem (v bytě),234219
+2021,Počet  obydlených bytů,Středočeský kraj,Lokální topidla (kamna),49459
+2021,Počet  obydlených bytů,Jihočeský kraj,Obydlené byty celkem,265601
+2021,Počet  obydlených bytů,Jihočeský kraj,Ústřední dálkové,84168
+2021,Počet  obydlených bytů,Jihočeský kraj,Ústřední domovní,50101
+2021,Počet  obydlených bytů,Jihočeský kraj,Ústřední s vlastním zdrojem (v bytě),87220
+2021,Počet  obydlených bytů,Jihočeský kraj,Lokální topidla (kamna),22968
+2021,Počet  obydlených bytů,Plzeňský kraj,Obydlené byty celkem,247030
+2021,Počet  obydlených bytů,Plzeňský kraj,Ústřední dálkové,75798
+2021,Počet  obydlených bytů,Plzeňský kraj,Ústřední domovní,47623
+2021,Počet  obydlených bytů,Plzeňský kraj,Ústřední s vlastním zdrojem (v bytě),83958
+2021,Počet  obydlených bytů,Plzeňský kraj,Lokální topidla (kamna),19238
+2021,Počet  obydlených bytů,Karlovarský kraj,Obydlené byty celkem,125299
+2021,Počet  obydlených bytů,Karlovarský kraj,Ústřední dálkové,58153
+2021,Počet  obydlených bytů,Karlovarský kraj,Ústřední domovní,19517
+2021,Počet  obydlených bytů,Karlovarský kraj,Ústřední s vlastním zdrojem (v bytě),30781
+2021,Počet  obydlených bytů,Karlovarský kraj,Lokální topidla (kamna),7080
+2021,Počet  obydlených bytů,Ústecký kraj,Obydlené byty celkem,353285
+2021,Počet  obydlených bytů,Ústecký kraj,Ústřední dálkové,166332
+2021,Počet  obydlených bytů,Ústecký kraj,Ústřední domovní,51552
+2021,Počet  obydlených bytů,Ústecký kraj,Ústřední s vlastním zdrojem (v bytě),87909
+2021,Počet  obydlených bytů,Ústecký kraj,Lokální topidla (kamna),22040
+2021,Počet  obydlených bytů,Liberecký kraj,Obydlené byty celkem,187627
+2021,Počet  obydlených bytů,Liberecký kraj,Ústřední dálkové,45447
+2021,Počet  obydlených bytů,Liberecký kraj,Ústřední domovní,50305
+2021,Počet  obydlených bytů,Liberecký kraj,Ústřední s vlastním zdrojem (v bytě),57364
+2021,Počet  obydlených bytů,Liberecký kraj,Lokální topidla (kamna),17204
+2021,Počet  obydlených bytů,Královéhradecký kraj,Obydlené byty celkem,228569
+2021,Počet  obydlených bytů,Královéhradecký kraj,Ústřední dálkové,63091
+2021,Počet  obydlených bytů,Královéhradecký kraj,Ústřední domovní,40722
+2021,Počet  obydlených bytů,Královéhradecký kraj,Ústřední s vlastním zdrojem (v bytě),79898
+2021,Počet  obydlených bytů,Královéhradecký kraj,Lokální topidla (kamna),25597
+2021,Počet  obydlených bytů,Pardubický kraj,Obydlené byty celkem,209133
+2021,Počet  obydlených bytů,Pardubický kraj,Ústřední dálkové,50601
+2021,Počet  obydlených bytů,Pardubický kraj,Ústřední domovní,39991
+2021,Počet  obydlených bytů,Pardubický kraj,Ústřední s vlastním zdrojem (v bytě),87264
+2021,Počet  obydlených bytů,Pardubický kraj,Lokální topidla (kamna),16696
+2021,Počet  obydlených bytů,Kraj Vysočina,Obydlené byty celkem,195098
+2021,Počet  obydlených bytů,Kraj Vysočina,Ústřední dálkové,39341
+2021,Počet  obydlených bytů,Kraj Vysočina,Ústřední domovní,39421
+2021,Počet  obydlených bytů,Kraj Vysočina,Ústřední s vlastním zdrojem (v bytě),87844
+2021,Počet  obydlených bytů,Kraj Vysočina,Lokální topidla (kamna),15817
+2021,Počet  obydlených bytů,Jihomoravský kraj,Obydlené byty celkem,490005
+2021,Počet  obydlených bytů,Jihomoravský kraj,Ústřední dálkové,129507
+2021,Počet  obydlených bytů,Jihomoravský kraj,Ústřední domovní,94069
+2021,Počet  obydlených bytů,Jihomoravský kraj,Ústřední s vlastním zdrojem (v bytě),196771
+2021,Počet  obydlených bytů,Jihomoravský kraj,Lokální topidla (kamna),38345
+2021,Počet  obydlených bytů,Olomoucký kraj,Obydlené byty celkem,259885
+2021,Počet  obydlených bytů,Olomoucký kraj,Ústřední dálkové,71211
+2021,Počet  obydlených bytů,Olomoucký kraj,Ústřední domovní,52193
+2021,Počet  obydlených bytů,Olomoucký kraj,Ústřední s vlastním zdrojem (v bytě),100340
+2021,Počet  obydlených bytů,Olomoucký kraj,Lokální topidla (kamna),19632
+2021,Počet  obydlených bytů,Zlínský kraj,Obydlené byty celkem,226219
+2021,Počet  obydlených bytů,Zlínský kraj,Ústřední dálkové,57246
+2021,Počet  obydlených bytů,Zlínský kraj,Ústřední domovní,51817
+2021,Počet  obydlených bytů,Zlínský kraj,Ústřední s vlastním zdrojem (v bytě),87776
+2021,Počet  obydlených bytů,Zlínský kraj,Lokální topidla (kamna),15715
+2021,Počet  obydlených bytů,Moravskoslezský kraj,Obydlené byty celkem,503041
+2021,Počet  obydlených bytů,Moravskoslezský kraj,Ústřední dálkové,240560
+2021,Počet  obydlených bytů,Moravskoslezský kraj,Ústřední domovní,87302
+2021,Počet  obydlených bytů,Moravskoslezský kraj,Ústřední s vlastním zdrojem (v bytě),128699
+2021,Počet  obydlených bytů,Moravskoslezský kraj,Lokální topidla (kamna),18954
