@@ -140,9 +140,11 @@ def get_chromadb_client(
         )
 
         if not local_path.exists():
-            error_msg = f"Local ChromaDB path not found: {local_path}"
-            print__chromadb_debug(f"❌ [Factory] {error_msg}")
-            raise FileNotFoundError(error_msg)
+            print__chromadb_debug(
+                f"⚠️ [Factory] Local ChromaDB path not found, creating it: {local_path}"
+            )
+            local_path.mkdir(parents=True, exist_ok=True)
+            print__chromadb_debug(f"✅ [Factory] Directory created: {local_path}")
 
         print__chromadb_debug(f"✅ [Factory] Creating PersistentClient...")
         try:

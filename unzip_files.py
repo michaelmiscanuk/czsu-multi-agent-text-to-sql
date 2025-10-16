@@ -14,7 +14,7 @@ except NameError:
 
 # Configuration of paths to unzip
 PATHS_TO_UNZIP = [
-    # BASE_DIR / "metadata" / "czsu_chromadb.zip", # On Cloud
+    # BASE_DIR / "metadata" / "czsu_chromadb.zip",  # On Cloud
     # BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip", # On Cloud
     BASE_DIR / "data" / "czsu_data.zip",
     BASE_DIR / "data" / "CSVs.zip",

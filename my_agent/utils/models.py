@@ -79,26 +79,27 @@ def get_azure_llm_gpt_4o_mini_test():
 
 
 # -------------------------------------------------------------------------------
-# def get_azure_llm_gpt_4o_4_1(temperature=0.0):
-#     """Get an instance of Azure OpenAI LLM with standard configuration.
+def get_azure_llm_gpt_4o_4_1(temperature=0.0):
+    """Get an instance of Azure OpenAI LLM with standard configuration.
 
-#     The returned model instance supports both sync (invoke) and async (ainvoke)
-#     operations for flexibility in different execution contexts.
+    The returned model instance supports both sync (invoke) and async (ainvoke)
+    operations for flexibility in different execution contexts.
 
-#     Args:
-#         temperature (float): Temperature setting for generation randomness
+    Args:
+        temperature (float): Temperature setting for generation randomness
 
-#     Returns:
-#         AzureChatOpenAI: Configured LLM instance with async support
-#     """
-#     return AzureChatOpenAI(
-#         deployment_name='gpt-4.1___test1',
-#         model_name='gpt-4.1',
-#         openai_api_version='2024-05-01-preview',
-#         temperature=temperature,
-#         azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
-#         api_key=os.getenv('AZURE_OPENAI_API_KEY')
-#     )
+    Returns:
+        AzureChatOpenAI: Configured LLM instance with async support
+    """
+    return AzureChatOpenAI(
+        deployment_name="gpt-4.1___test1",
+        model_name="gpt-4.1",
+        openai_api_version="2024-05-01-preview",
+        temperature=temperature,
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    )
+
 
 # def get_azure_llm_gpt_4o_4_1_test():
 #     # Test get_azure_llm_gpt_4o() with a simple message

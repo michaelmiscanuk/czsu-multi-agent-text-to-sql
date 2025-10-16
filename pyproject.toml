@@ -65,6 +65,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "requests>=2.31.0",
     "tqdm==4.67.1",
+    "tenacity>=8.2.0",
     
     # Google Drive download
     "gdown>=5.0.0",

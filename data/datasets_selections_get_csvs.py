@@ -182,6 +182,23 @@ csv_dir = Path("data/CSVs")
 csv_dir.mkdir(parents=True, exist_ok=True)
 
 # ==============================================================================
+# DEBUG FILE SETUP
+# ==============================================================================
+# Single consolidated debug file for all API response errors
+# File is overwritten on each script execution, errors appended during runtime
+from datetime import datetime
+
+debug_file_path = (
+    Path(__file__).parent / "debug_response_datasets_selections_get_csvs.txt"
+)
+
+# Initialize/overwrite debug file at script startup
+with open(debug_file_path, "w", encoding="utf-8") as f:
+    f.write(f"Debug Response Log for datasets_selections_get_csvs.py\n")
+    f.write(f"Started: {datetime.now().isoformat()}\n")
+    f.write("=" * 80 + "\n\n")
+
+# ==============================================================================
 # CONFIGURATION PARAMETERS
 # ==============================================================================
 # Dataset processing configuration
@@ -400,21 +417,24 @@ def fetch_json(url):
                 else:
                     print(f"   Response content preview: {content_preview}...")
 
-                # Try to save the problematic response for manual inspection
+                # Append problematic response to consolidated debug file
                 try:
-                    debug_file = csv_dir / f"debug_response_{url.split('/')[-1]}.txt"
-                    with open(debug_file, "w", encoding="utf-8") as f:
+                    with open(debug_file_path, "a", encoding="utf-8") as f:
+                        f.write(f"\n{'='*80}\n")
+                        f.write(f"ERROR ENTRY: {url.split('/')[-1]}\n")
+                        f.write(f"Timestamp: {datetime.now().isoformat()}\n")
                         f.write(f"URL: {url}\n")
                         f.write(f"Status: {response.status_code}\n")
                         f.write(f"Content-Type: {content_type}\n")
                         f.write(f"Error: {json_err}\n")
-                        f.write(f"\n{'='*80}\n")
-                        f.write(f"Response Content:\n")
-                        f.write(f"{'='*80}\n")
+                        f.write(f"\n{'-'*80}\n")
+                        f.write("Response Content:\n")
+                        f.write(f"{'-'*80}\n")
                         f.write(response.text)
-                    print(f"   💾 Saved problematic response to: {debug_file}")
+                        f.write(f"\n{'='*80}\n\n")
+                    print(f"   💾 Appended error to debug file: {debug_file_path.name}")
                 except Exception as save_err:
-                    print(f"   ❌ Could not save debug file: {save_err}")
+                    print(f"   ❌ Could not append to debug file: {save_err}")
 
             raise  # Re-raise to trigger retry mechanism
 
@@ -439,9 +459,7 @@ def fetch_json(url):
         print(f"❌ All {Config.MAX_RETRIES} retry attempts failed for {url}")
         print(f"   Last error: {e}")
         if Config.RESPONSE_DIAGNOSTICS:
-            print(
-                f"   Check debug file (if saved) for details: data/CSVs/debug_response_{url.split('/')[-1]}.txt"
-            )
+            print(f"   Check debug file for details: {debug_file_path.name}")
         result = None
 
     # Reset counter after completion (success or failure)
