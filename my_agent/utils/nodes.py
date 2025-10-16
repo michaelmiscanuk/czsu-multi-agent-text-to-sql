@@ -592,9 +592,13 @@ import json
 import asyncio
 import logging
 from pathlib import Path
+import gc
+import traceback
 
 from langchain_core.messages import AIMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import AIMessage
+from langchain_core.documents import Document
 
 from dotenv import load_dotenv
 
@@ -631,7 +635,7 @@ SAVE_TO_FILE_TXT_JSONL = 0
 print(f"🔍 Current working directory: {Path.cwd()}")
 
 # Import debug functions from utils
-from api.utils.debug import print__nodes_debug, print__chromadb_debug
+from api.utils.debug import print__nodes_debug, print__analysis_tracing_debug
 
 # PDF chunk functionality imports
 from data.pdf_to_chromadb import CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
@@ -651,7 +655,7 @@ from my_agent.utils.models import (
     get_azure_llm_gpt_4o_mini,
     get_ollama_llm,
 )
-
+from metadata.chromadb_client_factory import should_use_cloud
 from .mcp_server import create_mcp_server
 from .state import DataAnalysisState
 
@@ -1112,7 +1116,6 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
             if messages and isinstance(messages[0], SystemMessage)
             else SystemMessage(content="")
         )
-        from langchain_core.messages import AIMessage
 
         result = AIMessage(
             content="Maximum iterations reached. Proceeding to answer with available data.",
@@ -1483,7 +1486,6 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         try:
             # Simply append one JSON object per line (no loading existing file)
             with json_result_path.open("a", encoding="utf-8") as f:
-                import json
 
                 f.write(json.dumps(result_obj, ensure_ascii=False) + "\n")
             print__nodes_debug(
@@ -1542,7 +1544,6 @@ async def retrieve_similar_selections_hybrid_search_node(
     print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
 
     # Check if ChromaDB directory exists (only when using local ChromaDB)
-    from metadata.chromadb_client_factory import should_use_cloud
 
     use_cloud = should_use_cloud()
 
@@ -1575,7 +1576,6 @@ async def retrieve_similar_selections_hybrid_search_node(
 
     try:
         # Use the same method as the test script to get ChromaDB collection directly
-        import gc
 
         client = get_chromadb_client(
             local_path=CHROMA_DB_PATH, collection_name=CHROMA_COLLECTION_NAME
@@ -1591,7 +1591,6 @@ async def retrieve_similar_selections_hybrid_search_node(
         )
 
         # Convert dict results to Document objects for compatibility
-        from langchain_core.documents import Document
 
         hybrid_docs = []
         for result in hybrid_results:
@@ -1629,7 +1628,6 @@ async def retrieve_similar_selections_hybrid_search_node(
         return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
         logger.error("❌ %s: Error in hybrid search: %s", HYBRID_SEARCH_NODE_ID, e)
-        import traceback
 
         logger.error(
             "📄 %s: Traceback: %s", HYBRID_SEARCH_NODE_ID, traceback.format_exc()
@@ -1700,7 +1698,6 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
         return {"most_similar_selections": most_similar}
     except Exception as e:
         logger.error("❌ %s: Error in reranking: %s", RERANK_NODE_ID, e)
-        import traceback
 
         logger.error("📄 %s: Traceback: %s", RERANK_NODE_ID, traceback.format_exc())
         return {"most_similar_selections": []}
@@ -1833,7 +1830,6 @@ async def retrieve_similar_chunks_hybrid_search_node(
     )
 
     # Check if PDF ChromaDB directory exists (only when using local ChromaDB)
-    from metadata.chromadb_client_factory import should_use_cloud
 
     use_cloud = should_use_cloud()
 
@@ -1854,7 +1850,6 @@ async def retrieve_similar_chunks_hybrid_search_node(
 
     try:
         # Use the PDF ChromaDB collection directly with cloud/local support
-        import gc
 
         client = get_chromadb_client(
             local_path=PDF_CHROMA_DB_PATH, collection_name=PDF_COLLECTION_NAME
@@ -1870,7 +1865,6 @@ async def retrieve_similar_chunks_hybrid_search_node(
         )
 
         # Convert dict results to Document objects for compatibility
-        from langchain_core.documents import Document
 
         hybrid_docs = []
         for result in hybrid_results:
@@ -1910,7 +1904,6 @@ async def retrieve_similar_chunks_hybrid_search_node(
         logger.error(
             "❌ %s: Error in PDF hybrid search: %s", RETRIEVE_CHUNKS_NODE_ID, e
         )
-        import traceback
 
         logger.error(
             "📄 %s: Traceback: %s", RETRIEVE_CHUNKS_NODE_ID, traceback.format_exc()
@@ -1989,7 +1982,6 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
         return {"most_similar_chunks": most_similar}
     except Exception as e:
         logger.error("❌ %s: Error in PDF reranking: %s", RERANK_CHUNKS_NODE_ID, e)
-        import traceback
 
         logger.error(
             "📄 %s: Traceback: %s", RERANK_CHUNKS_NODE_ID, traceback.format_exc()
@@ -2033,13 +2025,21 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     }
 
 
+async def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Synchronization node that waits for both selection and chunk processing to complete."""
+
+    print__analysis_tracing_debug(
+        "90 - SYNC NODE: Both selection and chunk branches completed"
+    )
+    return state  # Pass through state unchanged
+
+
 async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Final cleanup to ensure all ChromaDB resources and large objects are released from memory.
 
     This node runs at the very end of the graph to force garbage collection
     and release memory from ChromaDB clients, embeddings, and intermediate results.
     """
-    import gc
 
     CLEANUP_NODE_ID = 99
     print__nodes_debug(f"🧹 {CLEANUP_NODE_ID}: Enter cleanup_resources_node")
