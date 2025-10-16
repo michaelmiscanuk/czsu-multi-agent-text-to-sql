@@ -110,7 +110,7 @@ This will:
 
 ### Modified Files
 - `my_agent/utils/nodes.py` - Updated to use factory for ChromaDB client creation
-- `metadata/create_and_load_chromadb.py` - Updated to use factory
+- `metadata/create_and_load_chromadb__04.py` - Updated to use factory
 - `data/pdf_to_chromadb.py` - Updated to use factory
 
 ## Benefits

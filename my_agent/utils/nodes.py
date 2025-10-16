@@ -498,7 +498,7 @@ This module integrates with:
 1. my_agent/utils/state.py: DataAnalysisState TypedDict
 2. my_agent/utils/models.py: LLM client getters
 3. my_agent/utils/mcp_server.py: MCP tool creation
-4. metadata/create_and_load_chromadb.py: Hybrid search, cohere_rerank
+4. metadata/create_and_load_chromadb__04.py: Hybrid search, cohere_rerank
 5. data/pdf_to_chromadb.py: PDF hybrid search, pdf_cohere_rerank
 6. metadata/chromadb_client_factory.py: ChromaDB client management
 7. api/utils/debug.py: Debug logging functions
@@ -642,7 +642,7 @@ from data.pdf_to_chromadb import CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
 from data.pdf_to_chromadb import COLLECTION_NAME as PDF_COLLECTION_NAME
 from data.pdf_to_chromadb import cohere_rerank as pdf_cohere_rerank
 from data.pdf_to_chromadb import hybrid_search as pdf_hybrid_search
-from metadata.create_and_load_chromadb import (
+from metadata.create_and_load_chromadb__04 import (
     cohere_rerank,
     hybrid_search,
 )
