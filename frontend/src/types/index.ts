@@ -16,6 +16,7 @@ export interface ChatMessage {
   createdAt: number;
   prompt?: string;
   final_answer?: string;
+  followup_prompts?: string[]; // Add follow-up prompt suggestions
   queries_and_results?: [string, string][];
   datasets_used?: string[];
   top_chunks?: Array<{ 
@@ -41,6 +42,7 @@ export interface AnalyzeRequest {
 export interface AnalyzeResponse {
   prompt: string;
   result: string;
+  followup_prompts?: string[]; // Add follow-up prompt suggestions
   queries_and_results: [string, string][];
   thread_id: string;
   top_selection_codes: string[];

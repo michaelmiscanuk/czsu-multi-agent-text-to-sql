@@ -64,3 +64,4 @@ class ChatMessage(BaseModel):
     startedAt: Optional[int] = None
     isError: Optional[bool] = None
     run_id: Optional[str] = None
+    followup_prompts: Optional[List[str]] = None

@@ -161,7 +161,7 @@ def example_to_state(inputs: dict) -> dict:
         "prompt": inputs["question"],
         "rewritten_prompt": inputs[
             "question"
-        ],  # Use the question directly for the pipeline
+        ],  # For hybrid search, use the question directly
         "messages": [],
         "iteration": 0,
         "queries_and_results": [],
@@ -169,6 +169,7 @@ def example_to_state(inputs: dict) -> dict:
         "hybrid_search_results": [],
         "most_similar_selections": [],
         "top_selection_codes": [],
+        "followup_prompts": [],
     }
 
 

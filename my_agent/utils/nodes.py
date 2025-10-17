@@ -880,6 +880,24 @@ Now process this conversation:
     return {"rewritten_prompt": rewritten_prompt, "messages": [summary, result]}
 
 
+async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
+    """Node: Generate follow-up prompt suggestions based on the rewritten query.
+    This is a placeholder implementation that will be filled in later.
+    Messages list is always [summary, last_message].
+    """
+    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node (placeholder)")
+
+    # TODO: Implement follow-up prompt generation logic here
+    # For now, just return an empty list
+    followup_prompts = []
+
+    print__nodes_debug(
+        f"💡 FOLLOWUP_PROMPTS: Generated {len(followup_prompts)} follow-up prompts"
+    )
+
+    return {"followup_prompts": followup_prompts}
+
+
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """Node: Get schema details for relevant columns. Messages list is always [summary, last_message]."""
     print__nodes_debug(f"💾 {GET_SCHEMA_ID}: Enter get_schema_node")
@@ -1499,7 +1517,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         )
 
     # MINIMAL CHECKPOINT STATE: Return only essential fields for checkpointing
-    # This dramatically reduces database storage from full state to just these 5 fields
+    # This dramatically reduces database storage from full state to just these fields
     minimal_checkpoint_state = {
         "prompt": state.get("prompt", ""),
         "queries_and_results": state.get("queries_and_results", []),
@@ -1508,6 +1526,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         "final_answer": final_answer,  # Now correctly uses the final_answer from state
         # Keep messages for API compatibility but don't store large intermediate state
         "messages": state.get("messages", []),
+        "followup_prompts": state.get("followup_prompts", []),
     }
 
     print__nodes_debug(
@@ -2052,6 +2071,7 @@ async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
         "messages": state.get("messages", []),
         "top_chunks": state.get("top_chunks", []),
         "top_selection_codes": state.get("top_selection_codes", []),
+        "followup_prompts": state.get("followup_prompts", []),
     }
 
     # Force garbage collection multiple times to ensure cleanup

@@ -165,6 +165,7 @@ def example_to_state(inputs: dict) -> dict:
         "hybrid_search_results": [],
         "most_similar_selections": [],
         "top_selection_codes": [],
+        "followup_prompts": [],
     }
 
 

@@ -139,6 +139,7 @@ async def get_thread_metadata_from_single_thread_endpoint(
                     "sql": latest_ai_message.get("sql_query"),
                     "dataset_url": None,  # Not used in current structure
                     "top_chunks": latest_ai_message.get("top_chunks", []),
+                    "followup_prompts": latest_ai_message.get("followup_prompts", []),
                 }
             )
             print__analyze_debug(
@@ -156,6 +157,7 @@ async def get_thread_metadata_from_single_thread_endpoint(
                 "sql": None,
                 "dataset_url": None,
                 "top_chunks": [],
+                "followup_prompts": [],
             }
 
         return metadata
@@ -176,6 +178,7 @@ async def get_thread_metadata_from_single_thread_endpoint(
             "sql": None,
             "dataset_url": None,
             "top_chunks": [],
+            "followup_prompts": [],
         }
 
 
@@ -494,6 +497,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 "datasetUrl": thread_metadata.get("dataset_url", None),
                 "run_id": run_id,
                 "top_chunks": thread_metadata.get("top_chunks", []),
+                "followup_prompts": thread_metadata.get("followup_prompts", []),
             }
 
             # DEBUG: Log what was extracted for metadata from single-thread endpoint

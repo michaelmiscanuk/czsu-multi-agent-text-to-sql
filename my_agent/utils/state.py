@@ -396,3 +396,4 @@ class DataAnalysisState(TypedDict):
         Document
     ]  # List of top N PDF chunks that passed relevance threshold
     final_answer: str  # Explicitly tracked final formatted answer string
+    followup_prompts: List[str]  # List of suggested follow-up questions for the user

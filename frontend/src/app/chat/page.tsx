@@ -621,6 +621,7 @@ export default function ChatPage() {
       createdAt: Date.now(),
       prompt: messageText,
       final_answer: undefined, // Will be filled with assistant response
+      followup_prompts: undefined, // Will be filled with follow-up suggestions
       queries_and_results: [],
       datasets_used: [],
       sql_query: undefined,
@@ -674,6 +675,7 @@ export default function ChatPage() {
         createdAt: userMessage.createdAt, // Keep original timestamp
         prompt: messageText, // Keep the original prompt
         final_answer: data.result,
+        followup_prompts: data.followup_prompts || undefined, // Add follow-up suggestions from API
         queries_and_results: data.queries_and_results || [],
         datasets_used: data.datasets_used || data.top_selection_codes || [], // Fix: use datasets_used first, fallback to top_selection_codes
         sql_query: data.sql || undefined,
@@ -733,6 +735,7 @@ export default function ChatPage() {
               createdAt: Date.now() - 1000,
               prompt: data.prompt,
               final_answer: undefined,
+              followup_prompts: undefined,
               queries_and_results: [],
               datasets_used: [],
               sql_query: undefined,
@@ -787,6 +790,7 @@ export default function ChatPage() {
           createdAt: userMessage.createdAt,
           prompt: messageText,
           final_answer: 'I apologize, but I encountered an issue while processing your request. This might be due to high server load. Please try again, or refresh the page to see if your response was saved.',
+          followup_prompts: undefined,
           queries_and_results: [],
           datasets_used: [],
           sql_query: undefined,

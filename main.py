@@ -372,6 +372,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "prompt": prompt,
             "rewritten_prompt": None,
             "iteration": 0,  # Reset for new question
+            "followup_prompts": [],  # Reset follow-up prompts for new question
         }
     else:
         print__analysis_tracing_debug(
@@ -400,6 +401,8 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "hybrid_search_chunks": [],  # Intermediate hybrid search results for PDF chunks
             "most_similar_chunks": [],  # List of (document, cohere_rerank_score) after reranking PDF chunks
             "top_chunks": [],  # List of top N PDF chunks that passed relevance threshold
+            # Follow-up prompts functionality
+            "followup_prompts": [],  # List of suggested follow-up questions
         }
 
     print__analysis_tracing_debug("58 - GRAPH EXECUTION: Starting LangGraph execution")

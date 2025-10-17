@@ -232,6 +232,15 @@ async def get_thread_messages_with_metadata(
                                 f"🔍 AI ANSWER FOUND: Step {step}: {final_answer[:50]}..."
                             )
 
+                    # Extract follow-up prompts (only for this interaction)
+                    if "followup_prompts" in submit_data:
+                        followup_prompts = submit_data["followup_prompts"]
+                        if followup_prompts:
+                            interaction["followup_prompts"] = followup_prompts
+                            print__chat_all_messages_debug(
+                                f"🔍 FOLLOWUP PROMPTS FOUND: Step {step}: Found {len(followup_prompts)} follow-up prompts"
+                            )
+
                     # Extract queries and results (only for this interaction)
                     if "queries_and_results" in submit_data:
                         queries_and_results = submit_data["queries_and_results"]
@@ -354,6 +363,7 @@ async def get_thread_messages_with_metadata(
                 isLoading=False,
                 startedAt=None,
                 isError=False,
+                followup_prompts=interaction.get("followup_prompts"),
             )
 
             # Extract SQL query from queries_and_results if available
@@ -732,13 +742,13 @@ async def get_all_chat_messages_for_one_thread(
         print__chat_all_messages_one_thread_debug(
             f"🔍 MATCHING RUN_IDS: Found {len(thread_run_ids)} run_ids and {len(chat_messages)} messages"
         )
-        
+
         ai_message_index = 0
         for idx, msg in enumerate(chat_messages):
             print__chat_all_messages_one_thread_debug(
                 f"🔍 Message {idx}: has_prompt={bool(msg.prompt)}, has_final_answer={bool(msg.final_answer)}"
             )
-            
+
             if msg.final_answer and ai_message_index < len(thread_run_ids):
                 msg.run_id = thread_run_ids[ai_message_index]["run_id"]
                 print__chat_all_messages_one_thread_debug(
@@ -750,7 +760,7 @@ async def get_all_chat_messages_for_one_thread(
                     print__chat_all_messages_one_thread_debug(
                         f"⚠️ WARNING: Message {idx} has final_answer but no run_id available (ai_message_index={ai_message_index}, run_ids_count={len(thread_run_ids)})"
                     )
-        
+
         print__chat_all_messages_one_thread_debug(
             f"🔍 MATCHING COMPLETE: Matched {ai_message_index} messages to run_ids"
         )
