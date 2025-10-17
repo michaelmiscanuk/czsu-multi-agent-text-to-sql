@@ -889,7 +889,7 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
 
     # TODO: Implement follow-up prompt generation logic here
     # For now, just return an empty list
-    followup_prompts = []
+    followup_prompts = ["How many people live in Prague?"]
 
     print__nodes_debug(
         f"💡 FOLLOWUP_PROMPTS: Generated {len(followup_prompts)} follow-up prompts"

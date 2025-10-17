@@ -169,6 +169,33 @@ def get_used_selection_codes(
     return used_selection_codes
 
 
+def generate_initial_followup_prompts() -> List[str]:
+    """Generate initial follow-up prompt suggestions for new conversations.
+
+    This function provides starter suggestions before the LangGraph workflow executes.
+    These prompts will be displayed to users when they start a new chat, giving them
+    ideas for questions they can ask about Czech Statistical Office data.
+
+    Returns:
+        List[str]: A list of suggested follow-up prompts for the user
+
+    TODO: Replace dummy prompts with actual intelligent suggestions based on:
+          - Most common user queries from analytics
+          - Recently updated datasets in the system
+          - Trending topics in Czech statistics
+          - User's previous conversation history (if available)
+    """
+    # PLACEHOLDER: Dummy prompts for scaffolding
+    # These will be replaced with dynamic generation logic later
+    dummy_prompts = [
+        "What are the population trends in Prague?",
+        "Show me employment statistics by region",
+        "Compare GDP growth across different years",
+    ]
+
+    return dummy_prompts
+
+
 # ==============================================================================
 # MAIN FUNCTION
 # ==============================================================================
@@ -378,6 +405,12 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         print__analysis_tracing_debug(
             "57 - NEW CONVERSATION: Preparing state for new conversation"
         )
+        # Generate initial follow-up prompts for new conversations
+        initial_followup_prompts = generate_initial_followup_prompts()
+        print__main_debug(
+            f"💡 Generated {len(initial_followup_prompts)} initial follow-up prompts for new conversation"
+        )
+
         # For new conversations, initialize with COMPLETE state including ALL fields from DataAnalysisState
         # CRITICAL FIX: All state fields must be initialized for checkpointing to work properly
         input_state = {
@@ -402,7 +435,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "most_similar_chunks": [],  # List of (document, cohere_rerank_score) after reranking PDF chunks
             "top_chunks": [],  # List of top N PDF chunks that passed relevance threshold
             # Follow-up prompts functionality
-            "followup_prompts": [],  # List of suggested follow-up questions
+            "followup_prompts": initial_followup_prompts,  # Pre-populated with initial suggestions
         }
 
     print__analysis_tracing_debug("58 - GRAPH EXECUTION: Starting LangGraph execution")
