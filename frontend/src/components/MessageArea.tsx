@@ -577,7 +577,7 @@ interface MessageAreaProps {
     onPDFClick: (msgId: string) => void;
     openPDFModalForMsgId: string | null;
     onClosePDFModal: () => void;
-    onNewChat: () => void;
+    onFollowupPromptClick: (prompt: string) => void;
     isLoading: boolean;
     isAnyLoading?: boolean;
     threads?: any[];
@@ -596,7 +596,7 @@ const getPersistedFeedbackData = (): { [key: string]: any } => {
     }
 };
 
-const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal, onPDFClick, openPDFModalForMsgId, onClosePDFModal, onNewChat, isLoading, isAnyLoading, threads, activeThreadId }: MessageAreaProps) => {
+const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal, onPDFClick, openPDFModalForMsgId, onClosePDFModal, onFollowupPromptClick, isLoading, isAnyLoading, threads, activeThreadId }: MessageAreaProps) => {
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     
@@ -1093,17 +1093,34 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                     })
                 )}
                 
-                {/* New Chat Button at bottom of scrollable content */}
-                <div className="flex justify-center py-6">
-                    <button
-                        className="px-4 py-2 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={onNewChat}
-                        title="Start a new chat"
-                        disabled={isAnyLoading}
-                    >
-                        + New Chat
-                    </button>
-                </div>
+                {/* Follow-up Prompts at bottom - only show after the last message */}
+                {(() => {
+                    // Get the latest message with follow-up prompts
+                    const latestMessageWithPrompts = messages
+                        .slice()
+                        .reverse()
+                        .find(msg => msg.followup_prompts && msg.followup_prompts.length > 0);
+                    
+                    const followupPrompts = latestMessageWithPrompts?.followup_prompts || [];
+                    
+                    return followupPrompts.length > 0 && !isAnyLoading ? (
+                        <div className="pt-0 pb-0 flex flex-wrap gap-2 items-center">
+                            {followupPrompts.map((prompt: string, index: number) => (
+                                <button
+                                    key={index}
+                                    onClick={() => onFollowupPromptClick(prompt)}
+                                    disabled={isAnyLoading}
+                                    className="inline-block px-3 py-1 bg-white hover:bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-700 hover:text-gray-900 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    style={{
+                                        fontFamily: 'var(--font-inter)',
+                                    }}
+                                >
+                                    {prompt}
+                                </button>
+                            ))}
+                        </div>
+                    ) : null;
+                })()}
                 
                 <div ref={bottomRef} />
             </div>

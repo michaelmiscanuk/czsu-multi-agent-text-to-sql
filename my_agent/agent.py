@@ -252,7 +252,7 @@ def create_graph(checkpointer=None):
     # --------------------------------------------------------------------------
     print__analysis_tracing_debug("86 - ADDING NODES: Adding all graph nodes")
     graph.add_node("rewrite_query", rewrite_query_node)
-    graph.add_node("followup_prompts", followup_prompts_node)
+    graph.add_node("generate_followup_prompts", followup_prompts_node)
     graph.add_node(
         "retrieve_similar_selections_hybrid_search",
         retrieve_similar_selections_hybrid_search_node,
@@ -278,17 +278,17 @@ def create_graph(checkpointer=None):
     graph.add_node("summarize_messages_reflect", summarize_messages_node)
     graph.add_node("summarize_messages_format", summarize_messages_node)
     print__analysis_tracing_debug(
-        "87 - NODES ADDED: All 19 graph nodes added successfully (including cleanup and followup_prompts)"
+        "87 - NODES ADDED: All 19 graph nodes added successfully (including cleanup and generate_followup_prompts)"
     )
 
     # --------------------------------------------------------------------------
     # Define the graph execution path
     # --------------------------------------------------------------------------
     print__analysis_tracing_debug("88 - ADDING EDGES: Defining graph execution path")
-    # Start: prompt -> rewrite_query -> followup_prompts -> summarize_messages -> retrieve (both selections and chunks in parallel)
+    # Start: prompt -> rewrite_query -> generate_followup_prompts -> summarize_messages -> retrieve (both selections and chunks in parallel)
     graph.add_edge(START, "rewrite_query")
-    graph.add_edge("rewrite_query", "followup_prompts")
-    graph.add_edge("followup_prompts", "summarize_messages_rewrite")
+    graph.add_edge("rewrite_query", "generate_followup_prompts")
+    graph.add_edge("generate_followup_prompts", "summarize_messages_rewrite")
     # After summarize_messages_rewrite, branch to both selection and chunk retrieval (parallel execution)
     graph.add_edge(
         "summarize_messages_rewrite", "retrieve_similar_selections_hybrid_search"

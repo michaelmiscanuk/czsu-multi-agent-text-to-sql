@@ -429,6 +429,14 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                     for msg in all_messages[thread_id]
                 ]
 
+            # Debug: Log followup_prompts in serialized messages
+            for thread_id, messages in all_messages.items():
+                for idx, msg in enumerate(messages):
+                    if msg.get("followup_prompts"):
+                        print__chat_all_messages_debug(
+                            f"🔍 BULK SERIALIZED: Thread {thread_id}, Message {idx} has {len(msg['followup_prompts'])} followup_prompts: {msg['followup_prompts']}"
+                        )
+
             result = {
                 "messages": all_messages,
                 "runIds": all_run_ids,

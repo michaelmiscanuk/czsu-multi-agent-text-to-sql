@@ -599,6 +599,19 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
         sentimentThreads: Object.keys(response.sentiments || {}).length
       });
       
+      // Debug: Check if messages have followup_prompts
+      console.log('[ChatCache] 🔍 DEBUG - Checking followup_prompts in API response:');
+      Object.entries(response.messages || {}).forEach(([threadId, msgs]) => {
+        const msgsWithFollowup = msgs.filter(m => m.followup_prompts && m.followup_prompts.length > 0);
+        if (msgsWithFollowup.length > 0) {
+          console.log(`[ChatCache] 🔍 Thread ${threadId} has ${msgsWithFollowup.length} messages with followup_prompts:`, 
+            msgsWithFollowup.map(m => ({ id: m.id, followup_prompts: m.followup_prompts }))
+          );
+        } else {
+          console.log(`[ChatCache] ⚠️ Thread ${threadId} has NO messages with followup_prompts (checked ${msgs.length} messages)`);
+        }
+      });
+      
       // OPTIMIZATION: Only update state if we have meaningful data
       if (totalMessages > 0 || Object.keys(response.runIds || {}).length > 0) {
         console.log('[ChatCache] 💾 Storing bulk data in cache...');

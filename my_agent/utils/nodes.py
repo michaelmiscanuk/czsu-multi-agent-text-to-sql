@@ -1454,6 +1454,9 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
         "queries_and_results": state.get("queries_and_results", []),
         "top_chunks": state.get("top_chunks", []),
         "top_selection_codes": state.get("top_selection_codes", []),
+        "followup_prompts": state.get(
+            "followup_prompts", []
+        ),  # CRITICAL: Preserve follow-up prompts
     }
 
 

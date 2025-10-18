@@ -563,9 +563,13 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # Use top_selection_codes for dataset reference (use first if available)
     top_selection_codes = result.get("top_selection_codes", [])
     sql_query = queries_and_results[-1][0] if queries_and_results else None
+    followup_prompts = result.get("followup_prompts", [])
 
     print__analysis_tracing_debug(
         f"74 - SELECTION CODES: Processing {len(top_selection_codes)} selection codes"
+    )
+    print__analysis_tracing_debug(
+        f"74a - FOLLOWUP PROMPTS: Extracted {len(followup_prompts)} follow-up prompts from graph result"
     )
     # Filter to only include selection codes actually used in queries
     used_selection_codes = get_used_selection_codes(
@@ -628,13 +632,17 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         "sql": sql_query,
         "datasetUrl": dataset_url,
         "top_chunks": top_chunks_serialized,  # Add serialized PDF chunks for frontend
+        "followup_prompts": followup_prompts,  # Add follow-up prompts from graph state
     }
 
     print__main_debug(
         f"📦 main.py - Serializable result includes {len(top_chunks_serialized)} top_chunks"
     )
+    print__main_debug(
+        f"💡 main.py - Serializable result includes {len(followup_prompts)} followup_prompts"
+    )
     print__analysis_tracing_debug(
-        f"82 - SERIALIZATION COMPLETE: Serializable result includes {len(top_chunks_serialized)} top_chunks"
+        f"82 - SERIALIZATION COMPLETE: Serializable result includes {len(top_chunks_serialized)} top_chunks and {len(followup_prompts)} followup_prompts"
     )
     print__analysis_tracing_debug("83 - MAIN EXIT: main() function returning result")
 

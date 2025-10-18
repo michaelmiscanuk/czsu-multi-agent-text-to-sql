@@ -105,6 +105,13 @@ export default function ChatPage() {
   const [iteration, setIteration] = useState(0);
   const [maxIterations, setMaxIterations] = useState(2); // default fallback
   
+  // Initial follow-up prompts for empty chats (before any messages)
+  const initialFollowupPrompts = [
+    "What are the population trends in Prague?",
+    "Show me employment statistics by region",
+    "Compare GDP growth across different years"
+  ];
+  
   // Combined loading state: local loading OR global context loading OR cross-tab user loading
   // This ensures loading state persists across navigation AND across browser tabs for the same user
   const isAnyLoading = isLoading || cacheLoading || isUserLoading;
@@ -528,12 +535,18 @@ export default function ChatPage() {
     }
   };
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFollowupPromptClick = async (promptText: string) => {
+    console.log('[ChatPage-followup] 🎯 Follow-up prompt clicked:', promptText);
     
-    console.log('🔍 print__analysis_tracing_debug: 01 - FORM SUBMIT: Form submission triggered');
+    // Directly execute the send logic without using the form handler
+    // This avoids the issues with setting state and synthetic events
+    await executeSendMessage(promptText);
+  };
+
+  const executeSendMessage = async (messageText: string) => {
+    console.log('🔍 print__analysis_tracing_debug: 01 - DIRECT SEND: Direct message send triggered');
     
-    if (!currentMessage.trim() || isUIBlocking || !userEmail) return;
+    if (!messageText.trim() || isUIBlocking || !userEmail) return;
     
     console.log('🔍 print__analysis_tracing_debug: 02 - VALIDATION PASSED: Message validation passed');
     
@@ -548,9 +561,9 @@ export default function ChatPage() {
     console.log('[ChatPage-send] ✅ No existing loading state found, proceeding with request for user:', userEmail);
     console.log('🔍 print__analysis_tracing_debug: 04 - LOADING STATE CLEAR: No existing loading state, proceeding');
     
-    const messageText = currentMessage.trim();
+    // Clear the input field and draft
     setCurrentMessage("");
-    localStorage.removeItem('czsu-draft-message'); // Clear saved draft
+    localStorage.removeItem('czsu-draft-message');
     
     console.log('🔍 print__analysis_tracing_debug: 05 - MESSAGE PREPARED: Message text prepared and input cleared');
     
@@ -666,6 +679,8 @@ export default function ChatPage() {
       ]);
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
+      console.log('[ChatPage-send] 🔍 DEBUG - Full API response:', data);
+      console.log('[ChatPage-send] 🔍 DEBUG - followup_prompts in response:', data.followup_prompts);
 
       // Update loading message with response
       const responseMessage: ChatMessage = {
@@ -695,7 +710,7 @@ export default function ChatPage() {
 
       // CRITICAL FIX: Always sync with backend after successful API call
       // This is the key fix - the backend saves the data correctly, but frontend cache gets out of sync
-      console.log('[ChatPage-send] � CRITICAL FIX: Syncing with backend after successful API response');
+      console.log('[ChatPage-send] 💾 CRITICAL FIX: Syncing with backend after successful API response');
       try {
         const freshSession = await getSession();
         if (freshSession?.id_token) {
@@ -723,7 +738,7 @@ export default function ChatPage() {
           updateMessage(currentThreadId, messageId, responseMessage);
         } else {
           // Message lost - add the complete conversation
-          console.log('[ChatPage-send] �️ FALLBACK - Adding complete conversation');
+          console.log('[ChatPage-send] 🏗️ FALLBACK - Adding complete conversation');
           
           // Add user message if missing
           const userMessageExists = messages.find(msg => msg.prompt === data.prompt && msg.user === userEmail);
@@ -810,6 +825,20 @@ export default function ChatPage() {
       // NEW: Clear cross-tab loading state tied to user email
       setUserLoadingState(userEmail, false);
     }
+  };
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log('🔍 print__analysis_tracing_debug: 01 - FORM SUBMIT: Form submission triggered');
+    
+    if (!currentMessage.trim() || isUIBlocking || !userEmail) return;
+    
+    console.log('🔍 print__analysis_tracing_debug: 02 - VALIDATION PASSED: Message validation passed');
+    
+    // Execute the message send with the current message text
+    const messageText = currentMessage.trim();
+    await executeSendMessage(messageText);
   };
 
   // Add keyboard handler for SHIFT+ENTER vs ENTER
@@ -1072,13 +1101,64 @@ export default function ChatPage() {
             onPDFClick={handlePDFButtonClick}
             openPDFModalForMsgId={openPDFModalForMsgId}
             onClosePDFModal={handleClosePDFModal}
-            onNewChat={handleNewChat}
+            onFollowupPromptClick={handleFollowupPromptClick}
             isLoading={isAnyLoading}
             isAnyLoading={isUIBlocking}
             threads={threads}
             activeThreadId={activeThreadId}
           />
         </div>
+        
+        {/* Follow-up Prompts Section - Show initial prompts for new chats only */}
+        {(() => {
+          let followupPrompts: string[] = [];
+          
+          // Only show initial prompts if there are NO messages (new chat)
+          if (messages.length === 0) {
+            followupPrompts = initialFollowupPrompts;
+            console.log('[ChatPage-followup] Using initial prompts for new chat:', followupPrompts);
+          }
+          // If there are messages, followup prompts are handled inside MessageArea
+          
+          console.log('[ChatPage-followup] Final follow-up prompts to display in initial section:', followupPrompts);
+          
+          return followupPrompts.length > 0 ? (
+            <div className="bg-white border-t border-gray-100 py-3">
+              <div className="max-w-4xl mx-auto px-4">
+                <div className="flex flex-col gap-2">
+                  {followupPrompts.map((prompt, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleFollowupPromptClick(prompt)}
+                      disabled={isUIBlocking}
+                      className="group w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-all duration-200 flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{
+                        fontFamily: 'var(--font-inter)',
+                      }}
+                    >
+                      <span className="text-sm text-gray-700 group-hover:text-gray-900 flex-1">
+                        {prompt}
+                      </span>
+                      <svg
+                        className="w-5 h-5 text-gray-400 group-hover:text-gray-600 flex-shrink-0 ml-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7l5 5m0 0l-5 5m5-5H6"
+                        />
+                      </svg>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : null;
+        })()}
         
         {/* Stationary Input Field */}
         <div className="bg-white border-t border-gray-200 shadow-lg">
