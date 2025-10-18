@@ -30,12 +30,14 @@ from typing import List
 import psutil
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
 
 # Load environment variables
 load_dotenv()
 
 from my_agent import create_graph
 from my_agent.utils.nodes import MAX_ITERATIONS
+from my_agent.utils.models import get_azure_llm_gpt_4o_mini
 from checkpointer.error_handling.retry_decorators import (
     retry_on_prepared_statement_error,
     retry_on_ssl_connection_error,
@@ -170,30 +172,87 @@ def get_used_selection_codes(
 
 
 def generate_initial_followup_prompts() -> List[str]:
-    """Generate initial follow-up prompt suggestions for new conversations.
+    """Generate initial follow-up prompt suggestions for new conversations using AI.
 
-    This function provides starter suggestions before the LangGraph workflow executes.
+    This function uses AI to generate starter suggestions before the LangGraph workflow executes.
     These prompts will be displayed to users when they start a new chat, giving them
     ideas for questions they can ask about Czech Statistical Office data.
 
     Returns:
-        List[str]: A list of suggested follow-up prompts for the user
-
-    TODO: Replace dummy prompts with actual intelligent suggestions based on:
-          - Most common user queries from analytics
-          - Recently updated datasets in the system
-          - Trending topics in Czech statistics
-          - User's previous conversation history (if available)
+        List[str]: A list of AI-generated suggested follow-up prompts for the user
     """
-    # PLACEHOLDER: Dummy prompts for scaffolding
-    # These will be replaced with dynamic generation logic later
-    dummy_prompts = [
-        "What are the population trends in Prague?",
-        "Show me employment statistics by region",
-        "Compare GDP growth across different years",
-    ]
+    print__main_debug("🎯 PROMPT GEN: Starting AI-based initial prompt generation")
+    try:
+        # Use the same model as other nodes but with temperature 1.0 for creativity
+        llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
+        print__main_debug("🤖 PROMPT GEN: LLM initialized with temperature=1.0")
 
-    return dummy_prompts
+        system_prompt = """
+You are a prompt generation assistant for a Czech Statistical Office data analysis system.
+
+About our data:
+Summary data on Czechia provides selected data from individual areas with a focus on the real economy, 
+monetary and fiscal indicators. They gather data from the CZSO as well as data from other institutions, 
+such as the Czech National Bank, the Ministry of Finance and others.
+
+Your task: Generate exactly 5 diverse prompts that users might use to get answers or information from this data.
+
+Important guidelines:
+- Prompts don't have to be questions - they can be statements, commands, or other types of intents
+- Be concise and to the point - prompts should be brief
+- Each prompt should be on a new line
+- Don't number the prompts
+- Cover different aspects of the available data (economy, population, finance, etc.)
+- Make them natural and user-friendly
+"""
+
+        human_prompt = "Generate 5 prompts for users to explore Czech statistical data."
+
+        prompt = ChatPromptTemplate.from_messages(
+            [("system", system_prompt), ("human", human_prompt)]
+        )
+        print__main_debug("📝 PROMPT GEN: Prompt template created, invoking LLM")
+
+        # Synchronous invoke since this is called from synchronous context
+        result = llm.invoke(prompt.format_messages())
+        generated_text = result.content.strip()
+        print__main_debug(
+            f"✅ PROMPT GEN: LLM returned {len(generated_text)} characters"
+        )
+
+        # Parse the generated prompts (split by newlines and filter empty lines)
+        prompts = [line.strip() for line in generated_text.split("\n") if line.strip()]
+        print__main_debug(
+            f"📋 PROMPT GEN: Parsed {len(prompts)} prompts from LLM response"
+        )
+
+        # Ensure we have at least some prompts, fallback if needed
+        if len(prompts) < 3:
+            print__main_debug(
+                f"⚠️ PROMPT GEN: Only {len(prompts)} prompts generated, using fallback"
+            )
+            prompts = [
+                "What are the population trends in Prague?",
+                "Show me employment statistics by region",
+                "Compare GDP growth across different years",
+            ]
+
+        final_prompts = prompts[:5]
+        print__main_debug(f"💡 PROMPT GEN: Returning {len(final_prompts)} prompts")
+        for i, p in enumerate(final_prompts, 1):
+            print__main_debug(f"   {i}. {p}")
+
+        return final_prompts  # Return maximum 5 prompts
+
+    except Exception as e:
+        # Fallback to default prompts if AI generation fails
+        print__main_debug(f"❌ PROMPT GEN: Failed to generate AI prompts - {str(e)}")
+        print__main_debug("🔄 PROMPT GEN: Using fallback default prompts")
+        return [
+            "What are the population trends in Prague?",
+            "Show me employment statistics by region",
+            "Compare GDP growth across different years",
+        ]
 
 
 # ==============================================================================
@@ -224,6 +283,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
               processing or API responses.
     """
     print__analysis_tracing_debug("29 - MAIN ENTRY: main() function entry point")
+    print__main_debug("29 - MAIN ENTRY: main() function entry point")
 
     # Handle prompt sourcing - command line args have priority over defaults
     # This allows flexibility in how the application is used

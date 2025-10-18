@@ -22,10 +22,12 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
 # Standard imports
-from fastapi import APIRouter
+from typing import List
+from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
 from api.helpers import traceback_json_response
+from api.dependencies.auth import get_current_user
 
 # Create router for miscellaneous endpoints
 router = APIRouter()
@@ -77,3 +79,26 @@ async def get_placeholder_image(width: int, height: int):
                 "Access-Control-Allow-Origin": "*",
             },
         )
+
+
+@router.get("/initial-followup-prompts", response_model=List[str])
+async def get_initial_followup_prompts(_: str = Depends(get_current_user)):
+    """
+    Generate initial follow-up prompt suggestions for new conversations using AI.
+    
+    This endpoint uses AI to generate starter suggestions that will be displayed 
+    to users when they start a new chat, giving them ideas for questions they can 
+    ask about Czech Statistical Office data.
+    
+    Returns:
+        List[str]: A list of AI-generated suggested follow-up prompts for the user
+    """
+    from main import generate_initial_followup_prompts
+    
+    try:
+        prompts = generate_initial_followup_prompts()
+        return prompts if prompts else []
+    except Exception as e:
+        # Return empty list on error - frontend can use fallback
+        print(f"❌ Error generating initial prompts: {str(e)}")
+        return []

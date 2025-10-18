@@ -105,12 +105,9 @@ export default function ChatPage() {
   const [iteration, setIteration] = useState(0);
   const [maxIterations, setMaxIterations] = useState(2); // default fallback
   
-  // Initial follow-up prompts for empty chats (before any messages)
-  const initialFollowupPrompts = [
-    "What are the population trends in Prague?",
-    "Show me employment statistics by region",
-    "Compare GDP growth across different years"
-  ];
+  // State for initial follow-up prompts (for empty chats)
+  const [initialFollowupPrompts, setInitialFollowupPrompts] = useState<string[]>([]);
+  const [isLoadingInitialPrompts, setIsLoadingInitialPrompts] = useState(false);
   
   // Combined loading state: local loading OR global context loading OR cross-tab user loading
   // This ensures loading state persists across navigation AND across browser tabs for the same user
@@ -354,12 +351,50 @@ export default function ChatPage() {
     }
   }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length, activeThreadId, setUserEmail, resetPagination, loadThreadsWithPagination, setActiveThreadId, hasAttemptedThreadLoad]);
 
+  // Reusable function to fetch initial prompts from backend
+  const fetchInitialPrompts = useCallback(async () => {
+    if (!userEmail || isLoadingInitialPrompts) {
+      return;
+    }
+    
+    console.log('[ChatPage-initialPrompts] 🔄 Fetching initial prompts from backend');
+    setIsLoadingInitialPrompts(true);
+    
+    try {
+      const freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        console.log('[ChatPage-initialPrompts] ⚠ No session available for fetching prompts');
+        return;
+      }
+      
+      const prompts = await authApiFetch<string[]>('/initial-followup-prompts', freshSession.id_token);
+      
+      if (prompts && prompts.length > 0) {
+        console.log('[ChatPage-initialPrompts] ✅ Received', prompts.length, 'initial prompts from backend');
+        setInitialFollowupPrompts(prompts);
+      } else {
+        console.log('[ChatPage-initialPrompts] ⚠ No prompts returned from backend');
+      }
+    } catch (error) {
+      console.error('[ChatPage-initialPrompts] ❌ Error fetching initial prompts:', error);
+    } finally {
+      setIsLoadingInitialPrompts(false);
+    }
+  }, [userEmail, isLoadingInitialPrompts]);
+
   // NEW: Initialize currentMessage from localStorage when user authenticates
   useEffect(() => {
     if (userEmail && status === "authenticated") {
       setCurrentMessage(localStorage.getItem('czsu-draft-message') || '');
     }
   }, [userEmail, status]);
+
+  // NEW: Fetch initial follow-up prompts from backend when user authenticates
+  useEffect(() => {
+    if (userEmail && status === "authenticated" && initialFollowupPrompts.length === 0) {
+      fetchInitialPrompts();
+    }
+  }, [userEmail, status, initialFollowupPrompts.length, fetchInitialPrompts]);
 
   // NEW: Initialize user email in context and check for existing loading state
   useEffect(() => {
@@ -466,6 +501,8 @@ export default function ChatPage() {
     if (existingNewChat) {
       console.log('[ChatPage-newChat] ✅ Found existing New Chat, navigating to:', existingNewChat.thread_id);
       setActiveThreadId(existingNewChat.thread_id);
+      // Refresh prompts for existing new chat
+      await fetchInitialPrompts();
       return;
     }
 
@@ -486,6 +523,9 @@ export default function ChatPage() {
     
     // Initialize with empty messages
     setMessages(newThreadId, []);
+    
+    // Fetch fresh prompts for the new chat
+    await fetchInitialPrompts();
     
     console.log('[ChatPage-newChat] ✅ New chat created:', newThreadId);
   };
