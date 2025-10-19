@@ -109,6 +109,10 @@ export default function ChatPage() {
   const [initialFollowupPrompts, setInitialFollowupPrompts] = useState<string[]>([]);
   const [isLoadingInitialPrompts, setIsLoadingInitialPrompts] = useState(false);
   
+  // Cache key and TTL for initial prompts (1 hour)
+  const PROMPTS_CACHE_KEY = 'czsu-initial-prompts';
+  const PROMPTS_CACHE_TTL = 3600000; // 1 hour in milliseconds
+  
   // Combined loading state: local loading OR global context loading OR cross-tab user loading
   // This ensures loading state persists across navigation AND across browser tabs for the same user
   const isAnyLoading = isLoading || cacheLoading || isUserLoading;
@@ -351,10 +355,31 @@ export default function ChatPage() {
     }
   }, [userEmail, status, clearCacheForUserChange, isDataStale, isPageRefresh, threads.length, activeThreadId, setUserEmail, resetPagination, loadThreadsWithPagination, setActiveThreadId, hasAttemptedThreadLoad]);
 
-  // Reusable function to fetch initial prompts from backend
-  const fetchInitialPrompts = useCallback(async () => {
+  // Reusable function to fetch initial prompts from backend with caching
+  const fetchInitialPrompts = useCallback(async (forceRefresh = false) => {
     if (!userEmail || isLoadingInitialPrompts) {
       return;
+    }
+    
+    // Check cache first (unless force refresh)
+    if (!forceRefresh) {
+      try {
+        const cached = localStorage.getItem(PROMPTS_CACHE_KEY);
+        if (cached) {
+          const { prompts, timestamp } = JSON.parse(cached);
+          const age = Date.now() - timestamp;
+          
+          if (age < PROMPTS_CACHE_TTL && prompts && prompts.length > 0) {
+            console.log('[ChatPage-initialPrompts] ⚡ Using cached prompts (age:', Math.round(age / 1000), 'seconds)');
+            setInitialFollowupPrompts(prompts);
+            return;
+          } else {
+            console.log('[ChatPage-initialPrompts] 🔄 Cache expired or empty, fetching fresh prompts');
+          }
+        }
+      } catch (e) {
+        console.warn('[ChatPage-initialPrompts] ⚠ Error reading cache:', e);
+      }
     }
     
     console.log('[ChatPage-initialPrompts] 🔄 Fetching initial prompts from backend');
@@ -372,6 +397,17 @@ export default function ChatPage() {
       if (prompts && prompts.length > 0) {
         console.log('[ChatPage-initialPrompts] ✅ Received', prompts.length, 'initial prompts from backend');
         setInitialFollowupPrompts(prompts);
+        
+        // Cache the prompts
+        try {
+          localStorage.setItem(PROMPTS_CACHE_KEY, JSON.stringify({
+            prompts,
+            timestamp: Date.now()
+          }));
+          console.log('[ChatPage-initialPrompts] 💾 Cached prompts for future use');
+        } catch (e) {
+          console.warn('[ChatPage-initialPrompts] ⚠ Error caching prompts:', e);
+        }
       } else {
         console.log('[ChatPage-initialPrompts] ⚠ No prompts returned from backend');
       }
@@ -380,7 +416,7 @@ export default function ChatPage() {
     } finally {
       setIsLoadingInitialPrompts(false);
     }
-  }, [userEmail, isLoadingInitialPrompts]);
+  }, [userEmail, isLoadingInitialPrompts, PROMPTS_CACHE_KEY, PROMPTS_CACHE_TTL]);
 
   // NEW: Initialize currentMessage from localStorage when user authenticates
   useEffect(() => {
@@ -389,12 +425,15 @@ export default function ChatPage() {
     }
   }, [userEmail, status]);
 
-  // NEW: Fetch initial follow-up prompts from backend when user authenticates
+  // OPTIMIZED: Pre-fetch initial prompts immediately when user authenticates (runs in parallel with thread loading)
   useEffect(() => {
-    if (userEmail && status === "authenticated" && initialFollowupPrompts.length === 0) {
+    if (userEmail && status === "authenticated") {
+      // Start fetching prompts immediately in the background
+      // This runs in parallel with thread loading, so prompts are ready when user clicks "New Chat"
+      console.log('[ChatPage-initialPrompts] 🚀 Pre-fetching initial prompts in background');
       fetchInitialPrompts();
     }
-  }, [userEmail, status, initialFollowupPrompts.length, fetchInitialPrompts]);
+  }, [userEmail, status, fetchInitialPrompts]);
 
   // NEW: Initialize user email in context and check for existing loading state
   useEffect(() => {
@@ -501,8 +540,10 @@ export default function ChatPage() {
     if (existingNewChat) {
       console.log('[ChatPage-newChat] ✅ Found existing New Chat, navigating to:', existingNewChat.thread_id);
       setActiveThreadId(existingNewChat.thread_id);
-      // Refresh prompts for existing new chat
-      await fetchInitialPrompts();
+      // Prompts are already loaded from pre-fetch, but refresh if cache is old
+      if (initialFollowupPrompts.length === 0) {
+        fetchInitialPrompts();
+      }
       return;
     }
 
@@ -524,8 +565,14 @@ export default function ChatPage() {
     // Initialize with empty messages
     setMessages(newThreadId, []);
     
-    // Fetch fresh prompts for the new chat
-    await fetchInitialPrompts();
+    // Prompts should already be loaded from pre-fetch (runs on page load)
+    // Only fetch if somehow missing
+    if (initialFollowupPrompts.length === 0) {
+      console.log('[ChatPage-newChat] ⚠ Prompts not pre-loaded, fetching now...');
+      fetchInitialPrompts();
+    } else {
+      console.log('[ChatPage-newChat] ✅ Using pre-loaded prompts:', initialFollowupPrompts.length);
+    }
     
     console.log('[ChatPage-newChat] ✅ New chat created:', newThreadId);
   };
