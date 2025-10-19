@@ -204,6 +204,18 @@ Important guidelines:
 - Don't number the prompts
 - Cover different aspects of the available data (economy, population, finance, etc.)
 - Make them natural and user-friendly
+
+Here are some areas the data covers:
+- Population statistics (demographics, marriage and divorce trends, life expectancy, births and deaths by cause)
+- Economic indicators (GDP, inflation, international trade in goods, business births and deaths)
+- Climate and environmental data (extreme weather, emissions, water resources)
+- Labor market and wages (employment, unemployment, earnings by profession)
+- Science, technology and innovation (R&D expenditure, AI use, high-tech trade)
+- Agriculture and forestry (crop harvests, livestock, food consumption)
+- Health and public health (disease prevalence, healthcare capacity, life expectancy)
+- Crime and justice statistics (crime rates, court cases, prison populations)
+- Culture, sports and tourism (museum attendance, Olympic medals, accommodation data)
+- Household consumption and living conditions (spending patterns, ICT use in homes)
 """
 
         human_prompt = "Generate 5 prompts for users to explore Czech statistical data."

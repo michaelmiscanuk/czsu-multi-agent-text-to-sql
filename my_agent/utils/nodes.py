@@ -881,21 +881,76 @@ Now process this conversation:
 
 
 async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Generate follow-up prompt suggestions based on the rewritten query.
-    This is a placeholder implementation that will be filled in later.
+    """Node: Generate follow-up prompt suggestions based on conversation summary.
     Messages list is always [summary, last_message].
     """
-    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node (placeholder)")
+    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node")
 
-    # TODO: Implement follow-up prompt generation logic here
-    # For now, just return an empty list
-    followup_prompts = ["How many people live in Prague?"]
+    messages = state.get("messages", [])
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
+    summary_content = summary.content
 
+    print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Summary content: '{summary_content}'")
+
+    # Use LLM with temperature 1.0 for creative prompt generation
+    llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
+
+    system_prompt = """
+You are a prompt generation assistant for a Czech Statistical Office data analysis system.
+
+About our data:
+Summary data on Czechia provides selected data from individual areas with a focus on the real economy, 
+monetary and fiscal indicators. They gather data from the CZSO as well as data from other institutions, 
+such as the Czech National Bank, the Ministry of Finance and others.
+
+Your task: Generate exactly 5 diverse follow-up prompts based on the conversation summary that users might use to continue exploring the data.
+
+Important guidelines:
+- Prompts don't have to be questions - they can be statements, commands, or other types of intents
+- Be concise and to the point - prompts should be brief
+- Each prompt should be on a new line
+- Don't number the prompts
+- If there's a conversation summary, make prompts relevant to the topics discussed
+- If the summary is empty, generate general prompts covering different aspects (economy, population, finance, etc.)
+- Make them natural and user-friendly
+- Ensure prompts are diverse and explore different angles or related topics
+"""
+
+    human_prompt = "Conversation summary:\n{summary_content}\n\nGenerate 3 diverse most relevant and most interesting follow-up prompts for the user to continue exploring the data."
+    print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Calling LLM to generate prompts")
+
+    prompt = ChatPromptTemplate.from_messages(
+        [("system", system_prompt), ("human", human_prompt)]
+    )
+    result = await llm.ainvoke(
+        prompt.format_messages(summary_content=summary_content or "(empty)")
+    )
+    generated_text = result.content.strip()
     print__nodes_debug(
-        f"💡 FOLLOWUP_PROMPTS: Generated {len(followup_prompts)} follow-up prompts"
+        f"💡 FOLLOWUP_PROMPTS: LLM returned {len(generated_text)} characters"
     )
 
-    return {"followup_prompts": followup_prompts}
+    # Parse the generated prompts (split by newlines and filter empty lines)
+    followup_prompts = [
+        line.strip() for line in generated_text.split("\n") if line.strip()
+    ]
+    print__nodes_debug(
+        f"💡 FOLLOWUP_PROMPTS: Parsed {len(followup_prompts)} prompts from LLM response"
+    )
+
+    # Return maximum 3 prompts
+    final_prompts = followup_prompts[:3]
+    print__nodes_debug(
+        f"💡 FOLLOWUP_PROMPTS: Returning {len(final_prompts)} follow-up prompts"
+    )
+    for i, p in enumerate(final_prompts, 1):
+        print__nodes_debug(f"💡 FOLLOWUP_PROMPTS:   {i}. {p}")
+
+    return {"followup_prompts": final_prompts}
 
 
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
