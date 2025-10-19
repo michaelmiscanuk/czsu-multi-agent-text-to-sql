@@ -1276,6 +1276,7 @@ export default function ChatPage() {
             openPDFModalForMsgId={openPDFModalForMsgId}
             onClosePDFModal={handleClosePDFModal}
             onFollowupPromptClick={handleFollowupPromptClick}
+            onRerunPrompt={executeSendMessage}
             isLoading={isAnyLoading}
             isAnyLoading={isUIBlocking}
             threads={threads}
