@@ -39,6 +39,11 @@ class AnalyzeRequest(BaseModel):
     thread_id: str = Field(
         ..., min_length=1, max_length=100, description="The thread ID"
     )
+    run_id: Optional[str] = Field(
+        None,
+        min_length=1,
+        description="Optional run ID (UUID format) - generated if not provided",
+    )
 
     @field_validator("prompt")
     @classmethod
@@ -53,6 +58,20 @@ class AnalyzeRequest(BaseModel):
         if not v or not v.strip():
             raise ValueError("Thread ID cannot be empty or only whitespace")
         return v.strip()
+
+    @field_validator("run_id")
+    @classmethod
+    def validate_run_id(cls, v):
+        if v is not None:
+            if not v or not v.strip():
+                raise ValueError("Run ID cannot be empty")
+            # Basic UUID format validation
+            try:
+                uuid.UUID(v.strip())
+            except ValueError:
+                raise ValueError("Run ID must be a valid UUID format")
+            return v.strip()
+        return v
 
 
 class FeedbackRequest(BaseModel):

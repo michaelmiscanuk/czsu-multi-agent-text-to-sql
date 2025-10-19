@@ -94,6 +94,7 @@ from api.routes.feedback import router as feedback_router
 from api.routes.health import router as health_router
 from api.routes.messages import router as messages_router
 from api.routes.misc import router as misc_router
+from api.routes.stop import router as stop_router
 from checkpointer.checkpointer.factory import (
     initialize_checkpointer,
     cleanup_checkpointer,
@@ -423,5 +424,6 @@ app.include_router(messages_router, tags=["messages"])
 app.include_router(bulk_router, tags=["bulk"])
 app.include_router(debug_router, tags=["debug"])
 app.include_router(misc_router, tags=["misc"])
+app.include_router(stop_router, tags=["execution"])
 
 print__memory_monitoring("[SUCCESS] All route routers registered successfully")

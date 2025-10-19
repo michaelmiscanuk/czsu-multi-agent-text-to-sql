@@ -51,6 +51,13 @@ from api.utils.debug import (
 # Import memory utilities
 from api.utils.memory import log_memory_usage
 
+# Import cancellation utilities
+from api.utils.cancellation import (
+    register_execution,
+    unregister_execution,
+    is_cancelled,
+)
+
 # Import database connection functions
 sys.path.insert(0, str(BASE_DIR))
 # NEW: Import for calling the single-thread endpoint
@@ -249,8 +256,16 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 )
                 print__analyze_debug("🔍 About to create thread run entry")
                 print__feedback_flow("🔄 Creating thread run entry")
+
+                # Use run_id from request if provided, otherwise generate new one
+                run_id = request.run_id if request.run_id else None
+                if run_id:
+                    print__analyze_debug(f"🔍 Using run_id from request: {run_id}")
+                else:
+                    print__analyze_debug("🔍 No run_id in request, will be generated")
+
                 run_id = await create_thread_run_entry(
-                    user_email, request.thread_id, request.prompt
+                    user_email, request.thread_id, request.prompt, run_id=run_id
                 )
                 print__analysis_tracing_debug(
                     f"11 - THREAD RUN SUCCESS: Thread run entry created with run_id {run_id}"
@@ -261,18 +276,57 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 )
 
                 print__analysis_tracing_debug(
+                    f"11.5 - REGISTER CANCELLATION: Registering execution for cancellation tracking"
+                )
+                # Register this execution for potential cancellation
+                register_execution(request.thread_id, run_id)
+
+                print__analysis_tracing_debug(
                     "12 - ANALYSIS MAIN START: Starting analysis_main function"
                 )
                 print__analyze_debug("🔍 About to start analysis_main")
                 print__feedback_flow("🚀 Starting analysis")
+
+                # Create a cancellable version of analysis_main
+                async def cancellable_analysis():
+                    """Wrapper that checks for cancellation periodically."""
+                    # Start the analysis
+                    task = asyncio.create_task(
+                        analysis_main(
+                            request.prompt,
+                            thread_id=request.thread_id,
+                            checkpointer=checkpointer,
+                            run_id=run_id,
+                        )
+                    )
+
+                    # Poll for cancellation every 0.5 seconds
+                    while not task.done():
+                        if is_cancelled(request.thread_id, run_id):
+                            print__analyze_debug(
+                                f"🛑 Cancellation detected for run_id: {run_id}"
+                            )
+                            task.cancel()
+                            try:
+                                await task
+                            except asyncio.CancelledError:
+                                pass
+                            raise asyncio.CancelledError("Execution cancelled by user")
+
+                        try:
+                            await asyncio.wait_for(asyncio.shield(task), timeout=0.5)
+                        except asyncio.TimeoutError:
+                            continue
+                        except asyncio.CancelledError:
+                            # Task was cancelled
+                            raise
+
+                    # Task completed normally
+                    return await task
+
                 # 4 minute timeout for platform stability
                 result = await asyncio.wait_for(
-                    analysis_main(
-                        request.prompt,
-                        thread_id=request.thread_id,
-                        checkpointer=checkpointer,
-                        run_id=run_id,
-                    ),
+                    cancellable_analysis(),
                     timeout=240,  # 4 minutes timeout
                 )
 
@@ -281,6 +335,9 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                 )
                 print__analyze_debug("🔍 Analysis completed successfully")
                 print__feedback_flow("✅ Analysis completed successfully")
+
+                # Unregister execution after successful completion
+                unregister_execution(request.thread_id, run_id)
 
             except Exception as analysis_error:
                 print__analysis_tracing_debug(
@@ -545,13 +602,33 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             print__analyze_debug(f"🔍 ANALYZE ENDPOINT - SUCCESSFUL EXIT")
             return response_data
 
+    except asyncio.CancelledError:
+        error_msg = "Analysis was cancelled by user"
+        print__analysis_tracing_debug(
+            "26 - CANCELLED ERROR: Analysis was cancelled by user"
+        )
+        print__analyze_debug(f"🛑 CANCELLED: {error_msg}")
+        print__feedback_flow(f"🛑 {error_msg}")
+
+        # Unregister execution on cancellation
+        if run_id:
+            unregister_execution(request.thread_id, run_id)
+
+        raise HTTPException(
+            status_code=499, detail=error_msg
+        )  # 499 Client Closed Request
+
     except asyncio.TimeoutError:
         error_msg = "Analysis timed out after 8 minutes"
         print__analysis_tracing_debug(
-            "26 - TIMEOUT ERROR: Analysis timed out after 8 minutes"
+            "27 - TIMEOUT ERROR: Analysis timed out after 8 minutes"
         )
         print__analyze_debug(f"🚨 TIMEOUT ERROR: {error_msg}")
         print__feedback_flow(f"🚨 {error_msg}")
+
+        # Unregister execution on timeout
+        if run_id:
+            unregister_execution(request.thread_id, run_id)
 
         resp = traceback_json_response(asyncio.TimeoutError(), run_id=run_id)
         if resp:
@@ -561,11 +638,16 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
 
     except HTTPException as http_exc:
         print__analysis_tracing_debug(
-            f"27 - HTTP EXCEPTION: HTTP exception {http_exc.status_code}"
+            f"28 - HTTP EXCEPTION: HTTP exception {http_exc.status_code}"
         )
         print__analyze_debug(
             f"🚨 HTTP EXCEPTION: {http_exc.status_code} - {http_exc.detail}"
         )
+
+        # Unregister execution on HTTP exception
+        if run_id:
+            unregister_execution(request.thread_id, run_id)
+
         resp = traceback_json_response(http_exc, run_id=run_id)
         if resp:
             return resp
@@ -575,11 +657,16 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     except Exception as e:
         error_msg = f"Analysis failed: {str(e)}"
         print__analysis_tracing_debug(
-            f"28 - UNEXPECTED EXCEPTION: Unexpected exception - {type(e).__name__}"
+            f"29 - UNEXPECTED EXCEPTION: Unexpected exception - {type(e).__name__}"
         )
         print__analyze_debug(f"🚨 UNEXPECTED EXCEPTION: {type(e).__name__}: {str(e)}")
         print__analyze_debug(f"🚨 Exception traceback: {traceback.format_exc()}")
         print__feedback_flow(f"🚨 {error_msg}")
+
+        # Unregister execution on unexpected exception
+        if run_id:
+            unregister_execution(request.thread_id, run_id)
+
         resp = traceback_json_response(e, run_id=run_id)
         if resp:
             return resp

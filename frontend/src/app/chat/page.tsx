@@ -109,6 +109,9 @@ export default function ChatPage() {
   const [initialFollowupPrompts, setInitialFollowupPrompts] = useState<string[]>([]);
   const [isLoadingInitialPrompts, setIsLoadingInitialPrompts] = useState(false);
   
+  // State for tracking current execution for cancellation
+  const [currentRunId, setCurrentRunId] = useState<string | null>(null);
+  
   // Cache key and TTL for initial prompts (1 hour)
   const PROMPTS_CACHE_KEY = 'czsu-initial-prompts';
   const PROMPTS_CACHE_TTL = 3600000; // 1 hour in milliseconds
@@ -738,6 +741,11 @@ export default function ChatPage() {
     // Store the message ID for later update
     const messageId = userMessage.id;
     
+    // Generate run_id on frontend so we can track it immediately for cancellation
+    const generatedRunId = uuidv4();
+    setCurrentRunId(generatedRunId);
+    console.log('[ChatPage-send] 🔍 Generated run_id for tracking:', generatedRunId);
+    
     try {
       // Get fresh session for authentication
       const freshSession = await getSession();
@@ -751,7 +759,8 @@ export default function ChatPage() {
         method: 'POST',
         body: JSON.stringify({
           prompt: messageText,
-          thread_id: currentThreadId
+          thread_id: currentThreadId,
+          run_id: generatedRunId  // Pass the generated run_id to backend
         }),
       });
       
@@ -768,6 +777,11 @@ export default function ChatPage() {
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
       console.log('[ChatPage-send] 🔍 DEBUG - Full API response:', data);
       console.log('[ChatPage-send] 🔍 DEBUG - followup_prompts in response:', data.followup_prompts);
+
+      // Verify the run_id matches what we sent
+      if (data.run_id !== generatedRunId) {
+        console.warn('[ChatPage-send] ⚠️ Run ID mismatch! Sent:', generatedRunId, 'Received:', data.run_id);
+      }
 
       // Update loading message with response
       const responseMessage: ChatMessage = {
@@ -860,6 +874,9 @@ export default function ChatPage() {
       // CRITICAL FIX: Clear loading state for any user 
       setUserLoadingState(userEmail, false);
       
+      // Clear the run_id after successful completion
+      setCurrentRunId(null);
+      
       // IMPORTANT: Mark this response as successfully processed to prevent recovery interference
       console.log('[ChatPage-send] ✅ API response processed successfully - recovery mechanisms should not interfere');
       
@@ -911,6 +928,9 @@ export default function ChatPage() {
       
       // NEW: Clear cross-tab loading state tied to user email
       setUserLoadingState(userEmail, false);
+      
+      // Clear run_id on completion or error
+      setCurrentRunId(null);
     }
   };
 
@@ -940,6 +960,73 @@ export default function ChatPage() {
       }
     }
     // SHIFT+ENTER will naturally create a new line due to default textarea behavior
+  };
+
+  // Handle stopping execution
+  const handleStopExecution = async () => {
+    console.log('[ChatPage-stop] 🔍 Stop button clicked!');
+    console.log('[ChatPage-stop] 🔍 currentRunId:', currentRunId);
+    console.log('[ChatPage-stop] 🔍 activeThreadId:', activeThreadId);
+    console.log('[ChatPage-stop] 🔍 userEmail:', userEmail);
+    
+    if (!currentRunId || !activeThreadId || !userEmail) {
+      console.log('[ChatPage-stop] ⚠ Missing required data for stop request');
+      console.log('[ChatPage-stop] ⚠ currentRunId:', currentRunId);
+      console.log('[ChatPage-stop] ⚠ activeThreadId:', activeThreadId);
+      console.log('[ChatPage-stop] ⚠ userEmail:', userEmail);
+      return;
+    }
+
+    console.log('[ChatPage-stop] 🛑 Stopping execution for run_id:', currentRunId);
+    
+    // OPTIMIZATION: Update UI IMMEDIATELY before API call for instant feedback
+    const runIdToCancel = currentRunId;
+    const threadIdToCancel = activeThreadId;
+    
+    // Clear loading states immediately
+    setIsLoading(false);
+    setLoading(false);
+    setUserLoadingState(userEmail, false);
+    setCurrentRunId(null);
+
+    // Update the loading message immediately to show it was cancelled
+    const loadingMessages = messages.filter(msg => msg.isLoading);
+    if (loadingMessages.length > 0) {
+      const loadingMessage = loadingMessages[loadingMessages.length - 1];
+      updateMessage(threadIdToCancel, loadingMessage.id, {
+        ...loadingMessage,
+        isLoading: false,
+        isError: true,
+        error: 'Execution cancelled by user',
+        final_answer: 'Analysis was cancelled. Please try again if needed.',
+      });
+    }
+
+    // Send the stop request in the background (don't await)
+    // This allows the UI to update instantly while the cancellation happens asynchronously
+    (async () => {
+      try {
+        const freshSession = await getSession();
+        if (!freshSession?.id_token) {
+          console.error('[ChatPage-stop] ❌ No authentication token available');
+          return;
+        }
+
+        // Call the stop endpoint
+        await authApiFetch(`/stop-execution`, freshSession.id_token, {
+          method: 'POST',
+          body: JSON.stringify({
+            thread_id: threadIdToCancel,
+            run_id: runIdToCancel,
+          }),
+        });
+
+        console.log('[ChatPage-stop] ✅ Stop request sent successfully');
+      } catch (error) {
+        console.error('[ChatPage-stop] ❌ Error stopping execution:', error);
+        // Note: UI already updated, so we just log the error
+      }
+    })();
   };
 
   // Auto-scroll when new messages arrive
@@ -1271,20 +1358,31 @@ export default function ChatPage() {
                 target.style.height = Math.min(target.scrollHeight, 200) + 'px';
               }}
             />
-            <button
-              type="submit"
-              className="px-6 py-3 light-blue-theme rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 mt-1"
-              disabled={isAnyLoading || !currentMessage.trim()}
-            >
-              {isAnyLoading ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin"></div>
-                  Sending...
-                </span>
-              ) : (
-                <span>Send</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="submit"
+                className="px-6 py-3 light-blue-theme rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 mt-1 flex items-center justify-center min-w-[80px]"
+                disabled={isAnyLoading || !currentMessage.trim()}
+              >
+                {isAnyLoading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <span>Send</span>
+                )}
+              </button>
+              {isAnyLoading && (
+                <button
+                  type="button"
+                  onClick={handleStopExecution}
+                  className="px-4 py-3 light-blue-theme rounded-xl font-semibold transition-all duration-200 mt-1 flex items-center justify-center"
+                  title="Stop execution"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="6" y="6" width="12" height="12" rx="1" />
+                  </svg>
+                </button>
               )}
-            </button>
+            </div>
           </form>
         </div>
       </div>

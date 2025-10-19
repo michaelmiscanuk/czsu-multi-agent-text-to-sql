@@ -10,12 +10,15 @@ for the CZSU Multi-Agent Text-to-SQL application.
 # This must be the very first thing that happens to fix psycopg compatibility
 import sys
 import os
+
 if sys.platform == "win32":
     import asyncio
+
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 # Load environment variables early
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Routes module initialization
@@ -28,16 +31,18 @@ from .analysis import router as analysis_router
 from .bulk import router as bulk_router
 from .debug import router as debug_router
 from .misc import router as misc_router
+from .stop import router as stop_router
 
 # Export all routers for easy import
 __all__ = [
-    'health_router',
-    'chat_router', 
-    'catalog_router',
-    'messages_router',
-    'feedback_router',
-    'analysis_router',
-    'bulk_router',
-    'debug_router',
-    'misc_router'
-] 
+    "health_router",
+    "chat_router",
+    "catalog_router",
+    "messages_router",
+    "feedback_router",
+    "analysis_router",
+    "bulk_router",
+    "debug_router",
+    "misc_router",
+    "stop_router",
+]

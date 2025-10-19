@@ -37,6 +37,7 @@ export interface ChatMessage {
 export interface AnalyzeRequest {
   prompt: string;
   thread_id: string;
+  run_id?: string; // Optional run_id for tracking execution
 }
 
 export interface AnalyzeResponse {
