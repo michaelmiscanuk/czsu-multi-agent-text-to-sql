@@ -36,7 +36,7 @@ router = APIRouter()
 
 @router.get("/placeholder/{width}/{height}")
 async def get_placeholder_image(width: int, height: int):
-    """Generate a placeholder image with specified dimensions."""
+    """Generate a placeholder image with specified dimensions. """
     try:
         # Validate dimensions
         width = max(1, min(width, 2000))  # Limit between 1 and 2000 pixels

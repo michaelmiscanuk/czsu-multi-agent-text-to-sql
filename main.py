@@ -362,8 +362,8 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     This async function serves as the central coordinator for the data analysis process.
     It handles prompt acquisition from different sources (function parameter,
     command line, or default), initializes tracing for observability, and
-    executes the LangGraph workflow. A thread ID is generated to allow
-    tracking of each analysis run independently.
+    executes the LangGraph workflow.
+    A thread ID is generated to allow tracking of each analysis run independently.
 
     Args:
         prompt (str, optional): The analysis prompt to process. If None and script is run
