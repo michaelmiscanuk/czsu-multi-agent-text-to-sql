@@ -907,10 +907,10 @@ Summary data on Czechia provides selected data from individual areas with a focu
 monetary and fiscal indicators. They gather data from the CZSO as well as data from other institutions, 
 such as the Czech National Bank, the Ministry of Finance and others.
 
-Your task: Generate exactly 5 diverse follow-up prompts based on the conversation summary that users might use to continue exploring the data.
+Your task: Generate exactly 3 diverse interesting and useful follow-up prompts based on the conversation summary that users might use to continue exploring the data.
 
 Important guidelines:
-- Prompts don't have to be questions - they can be statements, commands, or other types of intents
+- Prompts don't have to be questions - they can be statements, commands, or other types of intents, but structured in a way that can be directly provided to LLM.
 - Be concise and to the point - prompts should be brief
 - Each prompt should be on a new line
 - Don't number the prompts
