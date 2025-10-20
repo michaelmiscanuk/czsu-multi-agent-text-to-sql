@@ -370,16 +370,26 @@ export default function ChatPage() {
         return;
       }
       
+      console.log('[ChatPage-initialPrompts] 🌐 Making API call to /initial-followup-prompts');
       const prompts = await authApiFetch<string[]>('/initial-followup-prompts', freshSession.id_token);
+      console.log('[ChatPage-initialPrompts] 📡 API response received:', prompts);
       
       if (prompts && prompts.length > 0) {
         console.log('[ChatPage-initialPrompts] ✅ Received', prompts.length, 'initial prompts from backend');
+        console.log('[ChatPage-initialPrompts] 📝 Prompts:', prompts);
         setInitialFollowupPrompts(prompts);
       } else {
-        console.log('[ChatPage-initialPrompts] ⚠ No prompts returned from backend');
+        console.log('[ChatPage-initialPrompts] ⚠ No prompts returned from backend (empty array)');
+        setInitialFollowupPrompts([]);
       }
     } catch (error) {
       console.error('[ChatPage-initialPrompts] ❌ Error fetching initial prompts:', error);
+      console.error('[ChatPage-initialPrompts] ❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      // Don't set prompts on error - let UI show empty state
+      setInitialFollowupPrompts([]);
     } finally {
       setIsLoadingInitialPrompts(false);
     }
@@ -1119,14 +1129,16 @@ export default function ChatPage() {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
           <span className="font-bold text-lg text-blue-700">Chats</span>
-          <button
-            className="px-3 py-1.5 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleNewChat}
-            title="New chat"
-            disabled={isUIBlocking || !userEmail}
-          >
-            + New Chat
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="px-3 py-1.5 rounded-full light-blue-theme text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleNewChat}
+              title="New chat"
+              disabled={isUIBlocking || !userEmail}
+            >
+              + New Chat
+            </button>
+          </div>
         </div>
         
         {/* Sidebar Chat List with Scroll */}

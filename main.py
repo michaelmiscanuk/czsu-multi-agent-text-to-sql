@@ -172,99 +172,183 @@ def get_used_selection_codes(
 
 
 def generate_initial_followup_prompts() -> List[str]:
-    """Generate initial follow-up prompt suggestions for new conversations using AI.
+    """Generate initial follow-up prompt suggestions for new conversations using dynamic templates.
 
-    This function uses AI to generate starter suggestions before the LangGraph workflow executes.
-    These prompts will be displayed to users when they start a new chat, giving them
-    ideas for questions they can ask about Czech Statistical Office data.
+    This function generates diverse starter suggestions using pre-defined templates
+    filled with random selections to ensure variety. These prompts will be displayed
+    to users when they start a new chat, giving them ideas for questions they can ask
+    about Czech Statistical Office data.
 
     Returns:
-        List[str]: A list of AI-generated suggested follow-up prompts for the user
+        List[str]: A list of dynamically generated suggested follow-up prompts for the user
     """
-    print__main_debug("🎯 PROMPT GEN: Starting AI-based initial prompt generation")
-    try:
-        # Use the same model as other nodes but with temperature 1.0 for creativity
-        llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
-        print__main_debug("🤖 PROMPT GEN: LLM initialized with temperature=1.0")
+    print__main_debug(
+        "🎯 PROMPT GEN: Starting dynamic template-based prompt generation"
+    )
 
-        system_prompt = """
-You are a prompt generation assistant for a Czech Statistical Office data analysis system.
+    # Generate dynamic prompts based on current timestamp to ensure variety
+    import random
+    import time
 
-About our data:
-Summary data on Czechia provides selected data from individual areas with a focus on the real economy, 
-monetary and fiscal indicators. They gather data from the CZSO as well as data from other institutions, 
-such as the Czech National Bank, the Ministry of Finance and others.
+    # Use timestamp as seed for pseudo-randomness
+    seed = int(time.time() * 1000) % 1000000
+    random.seed(seed)
 
-Your task: Generate exactly 5 diverse  interesting and useful prompts that users might use to get answers or information from this data.
+    # Pool of diverse prompt templates
+    prompt_templates = [
+        "What are the population trends in {region}?",
+        "Show me employment statistics by {category}.",
+        "Compare {metric} growth across different years.",
+        "What are the latest statistics on {topic}?",
+        "How has {indicator} changed in recent {period}?",
+        "What are the {type} rates in {location}?",
+        "Show me data about {subject} from {source}.",
+        "What trends can you see in {area} statistics?",
+        "Compare {metric} between {group1} and {group2}.",
+        "What are the current {indicator} figures for {region}?",
+        "Tell me about {topic} in {location}.",
+        "Show me {subject} statistics for {period}.",
+        "What is the {indicator} situation in {region}?",
+        "Compare {metric} across {group1} and {group2}.",
+        "What are the trends in {area} data?",
+    ]
 
-Important guidelines:
-- Prompts don't have to be questions - they can be statements, commands, or other types of intents, but structured in a way that can be directly provided to LLM.
-- Be concise and to the point - prompts should be brief
-- Each prompt should be on a new line
-- Don't number the prompts
-- Cover different aspects of the available data (economy, population, finance, etc.)
-- Make them natural and user-friendly
+    # Fill in the templates with random selections
+    regions = [
+        "Prague",
+        "Czech Republic",
+        "major cities",
+        "different regions",
+        "Brno",
+    ]
+    categories = [
+        "region",
+        "industry",
+        "age group",
+        "education level",
+        "sector",
+    ]
+    metrics = [
+        "GDP",
+        "employment",
+        "population",
+        "export",
+        "import",
+        "wage",
+    ]
+    topics = [
+        "crime rates",
+        "healthcare spending",
+        "education levels",
+        "housing prices",
+        "migration",
+        "birth rates",
+    ]
+    periods = [
+        "years",
+        "quarters",
+        "months",
+        "decades",
+        "recent years",
+    ]
+    types = [
+        "unemployment",
+        "inflation",
+        "birth",
+        "migration",
+        "divorce",
+    ]
+    locations = [
+        "Prague",
+        "Brno",
+        "Czech Republic",
+        "major regions",
+    ]
+    subjects = [
+        "agricultural production",
+        "industrial output",
+        "tourism numbers",
+        "energy consumption",
+        "trade balance",
+    ]
+    sources = [
+        "government reports",
+        "statistical surveys",
+        "economic indicators",
+        "census data",
+        "official statistics",
+    ]
+    areas = [
+        "labor market",
+        "demographic",
+        "economic",
+        "environmental",
+        "social",
+        "health",
+    ]
+    indicators = [
+        "unemployment",
+        "inflation",
+        "GDP growth",
+        "population",
+        "wage growth",
+        "export growth",
+    ]
+    group1_group2 = [
+        ("urban and rural areas", "rural areas"),
+        ("men and women", "women"),
+        ("young and old", "older population"),
+        ("public and private sector", "private companies"),
+        ("domestic and foreign", "foreign companies"),
+        ("large and small enterprises", "small businesses"),
+    ]
 
-Here are some areas the data covers:
-- Population statistics (demographics, marriage and divorce trends, life expectancy, births and deaths by cause)
-- Economic indicators (GDP, inflation, international trade in goods, business births and deaths)
-- Climate and environmental data (extreme weather, emissions, water resources)
-- Labor market and wages (employment, unemployment, earnings by profession)
-- Science, technology and innovation (R&D expenditure, AI use, high-tech trade)
-- Agriculture and forestry (crop harvests, livestock, food consumption)
-- Health and public health (disease prevalence, healthcare capacity, life expectancy)
-- Crime and justice statistics (crime rates, court cases, prison populations)
-- Culture, sports and tourism (museum attendance, Olympic medals, accommodation data)
-- Household consumption and living conditions (spending patterns, ICT use in homes)
-"""
+    # Generate 5 unique prompts
+    generated_prompts = []
+    used_templates = set()
 
-        human_prompt = "Generate 5 prompts for users to explore Czech statistical data."
+    while len(generated_prompts) < 5:
+        template = random.choice(prompt_templates)
+        if template in used_templates:
+            continue
+        used_templates.add(template)
 
-        prompt = ChatPromptTemplate.from_messages(
-            [("system", system_prompt), ("human", human_prompt)]
-        )
-        print__main_debug("📝 PROMPT GEN: Prompt template created, invoking LLM")
+        # Fill in template variables
+        prompt = template
+        if "{region}" in prompt:
+            prompt = prompt.replace("{region}", random.choice(regions))
+        if "{category}" in prompt:
+            prompt = prompt.replace("{category}", random.choice(categories))
+        if "{metric}" in prompt:
+            prompt = prompt.replace("{metric}", random.choice(metrics))
+        if "{topic}" in prompt:
+            prompt = prompt.replace("{topic}", random.choice(topics))
+        if "{period}" in prompt:
+            prompt = prompt.replace("{period}", random.choice(periods))
+        if "{type}" in prompt:
+            prompt = prompt.replace("{type}", random.choice(types))
+        if "{location}" in prompt:
+            prompt = prompt.replace("{location}", random.choice(locations))
+        if "{subject}" in prompt:
+            prompt = prompt.replace("{subject}", random.choice(subjects))
+        if "{source}" in prompt:
+            prompt = prompt.replace("{source}", random.choice(sources))
+        if "{area}" in prompt:
+            prompt = prompt.replace("{area}", random.choice(areas))
+        if "{indicator}" in prompt:
+            prompt = prompt.replace("{indicator}", random.choice(indicators))
+        if "{group1} and {group2}" in prompt:
+            g1, g2 = random.choice(group1_group2)
+            prompt = prompt.replace("{group1}", g1).replace("{group2}", g2)
 
-        # Synchronous invoke since this is called from synchronous context
-        result = llm.invoke(prompt.format_messages())
-        generated_text = result.content.strip()
-        print__main_debug(
-            f"✅ PROMPT GEN: LLM returned {len(generated_text)} characters"
-        )
+        generated_prompts.append(prompt)
 
-        # Parse the generated prompts (split by newlines and filter empty lines)
-        prompts = [line.strip() for line in generated_text.split("\n") if line.strip()]
-        print__main_debug(
-            f"📋 PROMPT GEN: Parsed {len(prompts)} prompts from LLM response"
-        )
+    final_prompts = generated_prompts
+    print__main_debug(f"🎲 Generated {len(final_prompts)} dynamic prompts")
+    for i, p in enumerate(final_prompts, 1):
+        print__main_debug(f"   {i}. {p}")
 
-        # Ensure we have at least some prompts, fallback if needed
-        if len(prompts) < 3:
-            print__main_debug(
-                f"⚠️ PROMPT GEN: Only {len(prompts)} prompts generated, using fallback"
-            )
-            prompts = [
-                "What are the population trends in Prague?",
-                "Show me employment statistics by region",
-                "Compare GDP growth across different years",
-            ]
-
-        final_prompts = prompts[:5]
-        print__main_debug(f"💡 PROMPT GEN: Returning {len(final_prompts)} prompts")
-        for i, p in enumerate(final_prompts, 1):
-            print__main_debug(f"   {i}. {p}")
-
-        return final_prompts  # Return maximum 5 prompts
-
-    except Exception as e:
-        # Fallback to default prompts if AI generation fails
-        print__main_debug(f"❌ PROMPT GEN: Failed to generate AI prompts - {str(e)}")
-        print__main_debug("🔄 PROMPT GEN: Using fallback default prompts")
-        return [
-            "What are the population trends in Prague?",
-            "Show me employment statistics by region",
-            "Compare GDP growth across different years",
-        ]
+    return final_prompts
 
 
 # ==============================================================================
