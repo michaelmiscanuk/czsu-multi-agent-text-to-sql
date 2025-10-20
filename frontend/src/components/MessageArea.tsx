@@ -907,47 +907,125 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                 {(message.final_answer || message.isLoading) && (
                                     <div className="flex justify-start">
                                         <div className="flex flex-col max-w-2xl w-full">
-                                            {/* Message Content */}
-                                            <div
-                                                className={`transition-all duration-200 rounded-2xl px-6 py-4 w-full select-text shadow-lg group
-                                                    ${message.isError
-                                                        ? 'bg-red-50 border border-red-200 text-red-800 hover:shadow-xl hover:border-red-300'
-                                                        : 'bg-white border border-blue-100 text-gray-800 hover:shadow-xl hover:border-blue-200'}
-                                                `}
-                                                style={{ 
-                                                    fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
-                                                    fontSize: '0.97rem', 
-                                                    lineHeight: 1.6, 
-                                                    wordBreak: 'break-word', 
-                                                    whiteSpace: 'pre-line' 
-                                                }}
-                                            >
-                                                {(() => {
-                                                    if (message.isLoading && !message.final_answer) {
-                                                        return (
-                                                            <div className="flex items-center space-x-3">
-                                                                <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
-                                                                <span className="text-gray-600">Analyzing your request...</span>
-                                                            </div>
-                                                        );
-                                                    } else if (message.final_answer) {
-                                                        return (
-                                                            <MarkdownText 
-                                                                content={message.final_answer}
-                                                                style={{ 
-                                                                    fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
-                                                                    fontSize: '0.97rem', 
-                                                                    lineHeight: 1.6, 
-                                                                    wordBreak: 'break-word' 
-                                                                }}
-                                                            />
-                                                        );
-                                                    } else {
-                                                        return (
-                                                            <span className="text-gray-400 text-xs italic">Waiting for response...</span>
-                                                        );
-                                                    }
-                                                })()}
+                                            {/* Message Content with Copy Button */}
+                                            <div className="relative">
+                                                <div
+                                                    className={`transition-all duration-200 rounded-2xl px-6 py-4 w-full select-text shadow-lg group
+                                                        ${message.isError
+                                                            ? 'bg-red-50 border border-red-200 text-red-800 hover:shadow-xl hover:border-red-300'
+                                                            : 'bg-white border border-blue-100 text-gray-800 hover:shadow-xl hover:border-blue-200'}
+                                                    `}
+                                                    style={{ 
+                                                        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                        fontSize: '0.97rem', 
+                                                        lineHeight: 1.6, 
+                                                        wordBreak: 'break-word', 
+                                                        whiteSpace: 'pre-line' 
+                                                    }}
+                                                    id={`message-content-${message.id}`}
+                                                >
+                                                    {/* Copy button - visible on hover or always on mobile */}
+                                                    {!message.isLoading && message.final_answer && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                try {
+                                                                    // Get the message content element
+                                                                    const messageElement = document.getElementById(`message-content-${message.id}`);
+                                                                    if (!messageElement) return;
+                                                                    
+                                                                    // Create a temporary container to convert markdown to HTML
+                                                                    const tempDiv = document.createElement('div');
+                                                                    tempDiv.innerHTML = messageElement.innerHTML;
+                                                                    
+                                                                    // Remove the copy button from the clone
+                                                                    const copyButton = tempDiv.querySelector('button');
+                                                                    if (copyButton) {
+                                                                        copyButton.remove();
+                                                                    }
+                                                                    
+                                                                    // Get HTML content for rich text copy
+                                                                    const htmlContent = tempDiv.innerHTML;
+                                                                    
+                                                                    // Get plain text as fallback
+                                                                    const plainText = message.final_answer;
+                                                                    
+                                                                    // Copy both HTML and plain text to clipboard
+                                                                    // This allows pasting formatted text into Word and plain text into text editors
+                                                                    const clipboardItem = new ClipboardItem({
+                                                                        'text/html': new Blob([htmlContent], { type: 'text/html' }),
+                                                                        'text/plain': new Blob([plainText], { type: 'text/plain' })
+                                                                    });
+                                                                    
+                                                                    await navigator.clipboard.write([clipboardItem]);
+                                                                    
+                                                                    // Visual feedback
+                                                                    const button = document.getElementById(`copy-button-${message.id}`);
+                                                                    if (button) {
+                                                                        const svg = button.querySelector('svg');
+                                                                        const path = svg?.querySelector('path');
+                                                                        if (path) {
+                                                                            // Store original path
+                                                                            const originalPath = path.getAttribute('d');
+                                                                            const originalColor = svg?.getAttribute('stroke');
+                                                                            
+                                                                            // Replace with checkmark path
+                                                                            path.setAttribute('d', 'M5 13l4 4L19 7');
+                                                                            svg?.setAttribute('stroke', '#10b981');
+                                                                            
+                                                                            setTimeout(() => {
+                                                                                // Restore original copy icon
+                                                                                if (originalPath) {
+                                                                                    path.setAttribute('d', originalPath);
+                                                                                }
+                                                                                if (originalColor) {
+                                                                                    svg?.setAttribute('stroke', originalColor);
+                                                                                } else {
+                                                                                    svg?.setAttribute('stroke', 'currentColor');
+                                                                                }
+                                                                            }, 2000);
+                                                                        }
+                                                                    }
+                                                                } catch (err) {
+                                                                    console.error('Failed to copy text:', err);
+                                                                }
+                                                            }}
+                                                            id={`copy-button-${message.id}`}
+                                                            className="absolute top-3 right-3 p-1.5 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 transition-all duration-150 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                                            title="Copy formatted text"
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                            </svg>
+                                                        </button>
+                                                    )}
+                                                    
+                                                    {(() => {
+                                                        if (message.isLoading && !message.final_answer) {
+                                                            return (
+                                                                <div className="flex items-center space-x-3">
+                                                                    <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+                                                                    <span className="text-gray-600">Analyzing your request...</span>
+                                                                </div>
+                                                            );
+                                                        } else if (message.final_answer) {
+                                                            return (
+                                                                <MarkdownText 
+                                                                    content={message.final_answer}
+                                                                    style={{ 
+                                                                        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                                        fontSize: '0.97rem', 
+                                                                        lineHeight: 1.6, 
+                                                                        wordBreak: 'break-word' 
+                                                                    }}
+                                                                />
+                                                            );
+                                                        } else {
+                                                            return (
+                                                                <span className="text-gray-400 text-xs italic">Waiting for response...</span>
+                                                            );
+                                                        }
+                                                    })()}
+                                                </div>
                                             </div>
 
                                             {/* Dataset used and SQL button for AI answers */}
