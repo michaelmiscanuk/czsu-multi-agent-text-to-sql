@@ -26,7 +26,7 @@ const Header = () => {
         <Link 
           href={isAuthenticated ? "/chat" : "/"}
           className="font-extrabold text-[#181C3A] text-2xl tracking-tight hover:text-blue-600 transition-colors duration-200 cursor-pointer"
-          style={{fontFamily: 'var(--font-inter)'}}
+          style={{fontFamily: 'var(--font-family)'}}
           title={isAuthenticated ? "Go to CHAT" : "Go to HOME"}
         >
           CZSU - Multi-Agent Text-to-SQL
@@ -45,7 +45,7 @@ const Header = () => {
                   ? 'text-[#181C3A] font-extrabold bg-gray-100 shadow-sm '
                   : 'text-[#181C3A]/80 hover:text-gray-400 hover:bg-gray-50 ')
               }
-              style={{fontFamily: 'var(--font-inter)'}} 
+              style={{fontFamily: 'var(--font-family)'}} 
               href={item.href}
             >
               {item.label.charAt(0) + item.label.slice(1).toLowerCase()}

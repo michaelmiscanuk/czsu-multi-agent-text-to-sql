@@ -41,7 +41,7 @@ const MarkdownText: React.FC<MarkdownTextProps> = ({ content, className, style }
     // Base text styling that matches the message container
     const baseTextStyle = {
         ...style,
-        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)',
+        fontFamily: 'var(--font-family)',
         fontSize: '0.97rem',
         lineHeight: 1.6,
         wordBreak: 'break-word' as const,
@@ -878,7 +878,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                             <div
                                                 className="transition-all duration-200 rounded-2xl px-6 py-4 flex-1 select-text shadow-lg group light-blue-theme font-semibold hover:shadow-xl"
                                                 style={{ 
-                                                    fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                    fontFamily: 'var(--font-family)', 
                                                     fontSize: '0.97rem', 
                                                     lineHeight: 1.6, 
                                                     wordBreak: 'break-word', 
@@ -916,7 +916,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                             : 'bg-white border border-blue-100 text-gray-800 hover:shadow-xl hover:border-blue-200'}
                                                     `}
                                                     style={{ 
-                                                        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                        fontFamily: 'var(--font-family)', 
                                                         fontSize: '0.97rem', 
                                                         lineHeight: 1.6, 
                                                         wordBreak: 'break-word', 
@@ -1012,7 +1012,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                                                 <MarkdownText 
                                                                     content={message.final_answer}
                                                                     style={{ 
-                                                                        fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)', 
+                                                                        fontFamily: 'var(--font-family)', 
                                                                         fontSize: '0.97rem', 
                                                                         lineHeight: 1.6, 
                                                                         wordBreak: 'break-word' 
@@ -1030,7 +1030,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
 
                                             {/* Dataset used and SQL button for AI answers */}
                                             {!message.isLoading && (message.datasets_used?.length || message.sql_query || message.top_chunks?.length) && (
-                                        <div className="mt-3 flex items-center flex-wrap gap-3" style={{ fontFamily: 'var(--font-inter, Inter, system-ui, sans-serif)' }}>
+                                        <div className="mt-3 flex items-center flex-wrap gap-3" style={{ fontFamily: 'var(--font-family)' }}>
                                             {/* Show datasets */}
                                             {message.datasets_used && message.datasets_used.length > 0 && (
                                                 <div className="flex items-center space-x-2 flex-wrap">
@@ -1203,7 +1203,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                                     disabled={isAnyLoading}
                                     className="inline-block px-3 py-1 bg-white hover:bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-700 hover:text-gray-900 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                                     style={{
-                                        fontFamily: 'var(--font-inter)',
+                                        fontFamily: 'var(--font-family)',
                                     }}
                                 >
                                     {prompt}

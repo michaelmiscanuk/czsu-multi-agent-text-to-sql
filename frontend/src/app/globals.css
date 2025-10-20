@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
 :root {
+  /* Centralized font configuration - change this to switch fonts globally */
+  /* --font-family: var(--font-inter, Inter, system-ui, sans-serif); */
+  --font-family: 'Roboto', system-ui, sans-serif;
+  
   --background: #F8FAFC;
   --foreground: #181C3A;
   
-  /* Table font configuration - adjustable */
-  --table-font-family: var(--font-inter, Inter, system-ui, sans-serif);
+  /* Table font configuration - now uses centralized font */
+  --table-font-family: var(--font-family);
   --table-font-size: 0.97rem;
   --table-line-height: 1.6;
   --table-header-font-size: 0.875rem;
@@ -16,7 +20,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-family);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,11 +33,11 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-family);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-family);
   font-weight: 900;
   letter-spacing: -0.025em;
   color: #181C3A;
@@ -45,7 +49,7 @@ strong, b {
 
 p, li, span, div, td, th, label, input, button {
   color: #181C3A;
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  font-family: var(--font-family);
 }
 
 .main-content {

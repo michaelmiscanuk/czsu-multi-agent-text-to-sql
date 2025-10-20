@@ -1175,7 +1175,7 @@ export default function ChatPage() {
                             ? 'font-extrabold light-blue-theme '
                             : 'text-[#181C3A]/80 hover:text-gray-300 hover:bg-gray-100 ')
                         }
-                        style={{fontFamily: 'var(--font-inter)'}}
+                        style={{fontFamily: 'var(--font-family)'}}
                         onClick={() => setActiveThreadId(s.thread_id)}
                         onDoubleClick={() => { setEditingTitleId(s.thread_id); setNewTitle(s.title || ''); }}
                         title={`${s.full_prompt || s.title || 'New Chat'}${s.full_prompt && s.full_prompt.length === 50 ? '...' : ''}`}
@@ -1273,7 +1273,7 @@ export default function ChatPage() {
                       disabled={isUIBlocking}
                       className="group w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl transition-all duration-200 flex items-center justify-between disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{
-                        fontFamily: 'var(--font-inter)',
+                        fontFamily: 'var(--font-family)',
                       }}
                     >
                       <span className="text-sm text-gray-700 group-hover:text-gray-900 flex-1">
