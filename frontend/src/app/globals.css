@@ -1,14 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  /* Centralized font configuration - change this to switch fonts globally */
-  /* --font-family: var(--font-inter, Inter, system-ui, sans-serif); */
-  --font-family: 'Roboto', system-ui, sans-serif;
+  /* Font configuration - change this single variable to switch fonts globally */
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   
   --background: #F8FAFC;
   --foreground: #181C3A;
   
-  /* Table font configuration - now uses centralized font */
+  /* Table font configuration - uses the same font as the rest of the app */
   --table-font-family: var(--font-family);
   --table-font-size: 0.97rem;
   --table-line-height: 1.6;
