@@ -355,7 +355,7 @@ except ImportError:
 PARSE_WITH_LLAMAPARSE = 0  # Set to 1 to parse PDF with LlamaParse and save to txt file
 # Set to 0 to skip parsing (use existing txt file)
 
-CHUNK_AND_STORE = 0  # Set to 1 to chunk text and create/update ChromaDB
+CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
 # Set to 0 to skip chunking (use existing ChromaDB)
 
 DO_TESTING = 1  # Set to 1 to test search on existing ChromaDB
@@ -390,9 +390,9 @@ PDF_FILENAMES = [
     # "801_PDFsam_32019824.pdf",
     # "666_PDFsam_66632019824.pdf",
     # "32019824.pdf",
-    "1_PDFsam_32019824.pdf",
-    "501_PDFsam_32019824.pdf",
-    # "661_PDFsam_32019824.pdf"
+    # "1_PDFsam_32019824.pdf",
+    # "501_PDFsam_32019824.pdf",
+    "661_PDFsam_32019824.pdf"
 ]
 
 COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
@@ -413,7 +413,8 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 # TEST_QUERY = "Kolik hektarů zahrad (gardens) se nachází v Praze?"
 # TEST_QUERY = "Kolik je osobnich automobilu ve Varsave?"
 # TEST_QUERY = "How many passenger cars there in Warsaw (total, not per 1000 inhabitants)?"
-TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
+# TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
+TEST_QUERY = "Japan Imports for 2023"
 
 # Azure OpenAI Settings
 AZURE_EMBEDDING_DEPLOYMENT = (
@@ -445,7 +446,7 @@ CONTENT_SEPARATORS = {
 MAX_TOKENS = 8190  # Token limit for Azure OpenAI
 MIN_CHUNK_SIZE = 100  # Minimum chunk size to avoid very small chunks
 MAX_CHUNK_SIZE = 4000  # Optimized chunk size for better semantic boundaries
-CHUNK_OVERLAP = 100  # Overlap for better context preservation
+CHUNK_OVERLAP = 0  # Overlap for better context preservation
 
 # Search Settings
 HYBRID_SEARCH_RESULTS = 20  # Number of results from hybrid search
@@ -625,12 +626,16 @@ def smart_text_chunking(
     """
     Separator-based text chunking optimized for LlamaParse formatted content.
     PRIMARY STRATEGY: Extract content between separator pairs as chunks.
-    SECONDARY STRATEGY: Split large chunks using sentence boundaries and ceiling division.
+    SECONDARY STRATEGY: For content exceeding MAX_CHUNK_SIZE, apply sentence-boundary chunking with ceiling division.
     NEVER splits mid-word or mid-sentence - only at complete sentence boundaries.
+
+    All content types ([C]...[/C], [T]...[/T], [I]...[/I], [X]...[/X]) are treated equally:
+    - If ≤ MAX_CHUNK_SIZE: kept as single semantic unit
+    - If > MAX_CHUNK_SIZE: split intelligently using sentence boundaries and ceiling division
 
     Args:
         text: Text to chunk (LlamaParse formatted content)
-        max_chunk_size: Maximum characters per chunk
+        max_chunk_size: Maximum characters per chunk (default: 4000)
         overlap: Character overlap between chunks (used for sentence-based overlap)
 
     Returns:
@@ -642,15 +647,20 @@ def smart_text_chunking(
 
     # PRIMARY STRATEGY: Extract content between separator pairs
     # Define separator pairs using ONLY original separators
+    # Format: (start_sep, end_sep, content_type)
     separator_pairs = [
         # Table content
-        (CONTENT_SEPARATORS["table_start"], CONTENT_SEPARATORS["table_end"]),
-        # Column content
-        (CONTENT_SEPARATORS["column_start"], CONTENT_SEPARATORS["column_end"]),
+        (CONTENT_SEPARATORS["table_start"], CONTENT_SEPARATORS["table_end"], "table"),
+        # Column content - SPECIAL: Keep as single unit for semantic coherence
+        (
+            CONTENT_SEPARATORS["column_start"],
+            CONTENT_SEPARATORS["column_end"],
+            "column",
+        ),
         # Image content
-        (CONTENT_SEPARATORS["image_start"], CONTENT_SEPARATORS["image_end"]),
+        (CONTENT_SEPARATORS["image_start"], CONTENT_SEPARATORS["image_end"], "image"),
         # Text content
-        (CONTENT_SEPARATORS["text_start"], CONTENT_SEPARATORS["text_end"]),
+        (CONTENT_SEPARATORS["text_start"], CONTENT_SEPARATORS["text_end"], "text"),
     ]
 
     print__chromadb_debug(
@@ -658,21 +668,21 @@ def smart_text_chunking(
     )
 
     # Extract all content between separator pairs
-    for start_sep, end_sep in separator_pairs:
+    for start_sep, end_sep, content_type in separator_pairs:
         # Create regex pattern to find content between separators
         # Use re.DOTALL to match newlines
         pattern = re.escape(start_sep) + r"(.*?)" + re.escape(end_sep)
         matches = re.findall(pattern, text, re.DOTALL)
 
         print__chromadb_debug(
-            f"🔍 Looking for {start_sep} ... {end_sep} pairs: found {len(matches)} matches"
+            f"🔍 Looking for {start_sep} ... {end_sep} pairs ({content_type}): found {len(matches)} matches"
         )
 
         for i, match in enumerate(matches):
             content = match.strip()
             if content and len(content) >= MIN_CHUNK_SIZE:
                 print__chromadb_debug(
-                    f"📦 Found {start_sep[1:-1]} content #{i+1}: {len(content)} chars"
+                    f"📦 Found {content_type} content #{i+1}: {len(content)} chars"
                 )
 
                 # Content fits within chunk size limit
@@ -684,9 +694,10 @@ def smart_text_chunking(
                         else f"✅ Added chunk: {content}"
                     )
                 else:
-                    # Content exceeds size limit - split using sentence boundaries
+                    # Content exceeds size limit - split using sentence boundaries with ceiling division
+                    # This applies to ALL content types (column, table, image, text) equally
                     print__chromadb_debug(
-                        f"🔄 Content too large ({len(content)} > {max_chunk_size}), splitting at sentence boundaries"
+                        f"🔄 {content_type.capitalize()} content too large ({len(content)} > {max_chunk_size}), splitting at sentence boundaries"
                     )
                     large_chunks = _split_large_separator_content(
                         content, max_chunk_size, overlap
@@ -697,12 +708,12 @@ def smart_text_chunking(
                     )
             else:
                 print__chromadb_debug(
-                    f"⚠️ Skipping {start_sep[1:-1]} content #{i+1}: too small ({len(content)} < {MIN_CHUNK_SIZE})"
+                    f"⚠️ Skipping {content_type} content #{i+1}: too small ({len(content)} < {MIN_CHUNK_SIZE})"
                 )
 
     # Handle any remaining content not captured by separators (fallback)
     remaining_text = text
-    for start_sep, end_sep in separator_pairs:
+    for start_sep, end_sep, _ in separator_pairs:
         pattern = re.escape(start_sep) + r".*?" + re.escape(end_sep)
         remaining_text = re.sub(pattern, "", remaining_text, flags=re.DOTALL)
 
@@ -735,13 +746,16 @@ def _split_large_separator_content(
     Split large content by calculating optimal number of chunks and finding sentence boundaries.
     Uses ceiling division to determine chunk count, then distributes sentences evenly.
     NEVER splits mid-word or mid-sentence - only at complete sentence boundaries.
+
+    This function is applied equally to ALL content types (column, table, image, text) when they
+    exceed MAX_CHUNK_SIZE, ensuring consistent handling while preserving sentence integrity.
     """
+    import math
+
     if len(content) <= max_size:
         return [content]
 
     # Calculate how many chunks we need using ceiling division
-    import math
-
     num_chunks_needed = math.ceil(len(content) / max_size)
 
     print__chromadb_debug(
@@ -2694,15 +2708,37 @@ def main():
                     f"📂 Using existing ChromaDB collection: {COLLECTION_NAME}"
                 )
 
-            # Check for existing documents
-            existing = collection.get(include=["metadatas"], limit=10000)
-            existing_hashes = set()
-            if existing and "metadatas" in existing and existing["metadatas"]:
-                for metadata in existing["metadatas"]:
-                    if isinstance(metadata, dict) and metadata is not None:
-                        doc_hash = metadata.get("doc_hash")
-                        if doc_hash:
-                            existing_hashes.add(doc_hash)
+            # Check for existing documents (use count() to get total, then paginate if needed)
+            try:
+                total_count = collection.count()
+                print__chromadb_debug(
+                    f"📊 Collection has {total_count} total documents"
+                )
+
+                existing_hashes = set()
+                # ChromaDB has a limit of 300 items per GET request, so we need to paginate
+                BATCH_SIZE = 300
+                offset = 0
+
+                while offset < total_count:
+                    existing = collection.get(
+                        include=["metadatas"], limit=BATCH_SIZE, offset=offset
+                    )
+
+                    if existing and "metadatas" in existing and existing["metadatas"]:
+                        for metadata in existing["metadatas"]:
+                            if isinstance(metadata, dict) and metadata is not None:
+                                doc_hash = metadata.get("doc_hash")
+                                if doc_hash:
+                                    existing_hashes.add(doc_hash)
+
+                    offset += BATCH_SIZE
+
+            except Exception as e:
+                print__chromadb_debug(
+                    f"⚠️ Warning: Could not retrieve existing documents: {e}"
+                )
+                existing_hashes = set()
 
             print__chromadb_debug(
                 f"Found {len(existing_hashes)} existing documents in ChromaDB"
@@ -2864,10 +2900,10 @@ def main():
                     print(f"📏 Length: {result['char_count']} characters")
                     print("📝 Content Preview:")
                     print("-" * 80)
-                    # Show first 200 characters for detailed view
-                    content = result["text"][:200]
-                    if len(result["text"]) > 200:
-                        content += "..."
+                    # Show first 60000 characters for detailed view
+                    content = result["text"][:60000]
+                    # if len(result["text"]) > 60000:
+                    #     content += "..."
                     print(content)
                     print("-" * 80)
 
