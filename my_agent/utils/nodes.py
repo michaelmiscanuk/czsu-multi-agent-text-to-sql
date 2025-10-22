@@ -669,7 +669,7 @@ MAX_ITERATIONS = int(
     os.environ.get("MAX_ITERATIONS", "1")
 )  # Configurable via environment variable, default 2
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
-ROUTE_DECISION_ID = 11  # ID for routing decision function
+POST_RETRIEVAL_SYNC_ID = 11  # ID for post-retrieval synchronization function
 REFLECT_NODE_ID = 12
 INCREMENT_ITERATION_ID = 13
 CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
@@ -2102,7 +2102,7 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     }
 
 
-async def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
+async def post_retrieval_sync_node(state: DataAnalysisState) -> DataAnalysisState:
     """Synchronization node that waits for both selection and chunk processing to complete."""
 
     print__analysis_tracing_debug(
