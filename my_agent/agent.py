@@ -266,6 +266,7 @@ def create_graph(checkpointer=None):
     )
     graph.add_node("rerank_chunks", rerank_chunks_node)
     graph.add_node("relevant_chunks", relevant_chunks_node)
+    graph.add_node("post_retrieval_sync", post_retrieval_sync_node)
     graph.add_node("get_schema", get_schema_node)
     graph.add_node("query_gen", query_node)
     graph.add_node("reflect", reflect_node)
@@ -301,9 +302,6 @@ def create_graph(checkpointer=None):
     # PDF chunk path: retrieve -> rerank -> relevant (runs in parallel)
     graph.add_edge("retrieve_similar_chunks_hybrid_search", "rerank_chunks")
     graph.add_edge("rerank_chunks", "relevant_chunks")
-
-    # Add the synchronization node that both branches feed into
-    graph.add_node("post_retrieval_sync", post_retrieval_sync_node)
 
     # Both branches feed into the synchronization node
     graph.add_edge("relevant_selections", "post_retrieval_sync")
