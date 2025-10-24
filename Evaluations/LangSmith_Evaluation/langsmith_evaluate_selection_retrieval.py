@@ -1,6 +1,6 @@
 """
 This script runs an evaluation of the complete selection retrieval functionality using the full pipeline.
-It evaluates the two-node sequence: retrieve_similar_selections_hybrid_search_node -> rerank_node
+It evaluates the two-node sequence: retrieve_similar_selections_hybrid_search_node -> rerank_table_descriptions_node
 and checks if the correct selection code is retrieved after reranking.
 
 This tests the complete pipeline:
@@ -58,7 +58,7 @@ from langsmith import aevaluate
 
 from my_agent.utils.nodes import (
     relevant_selections_node,
-    rerank_node,
+    rerank_table_descriptions_node,
     retrieve_similar_selections_hybrid_search_node,
 )
 from my_agent.utils.state import DataAnalysisState
@@ -181,7 +181,7 @@ async def retry_node_sequence(inputs, max_attempts=6, wait_seconds=10):
 
     This function tests the full pipeline:
     1. retrieve_similar_selections_hybrid_search_node: Gets initial candidates via hybrid search
-    2. rerank_node: Reranks candidates using Cohere model
+    2. rerank_table_descriptions_node: Reranks candidates using Cohere model
 
     Args:
         inputs: Dataset inputs containing the question
@@ -216,7 +216,7 @@ async def retry_node_sequence(inputs, max_attempts=6, wait_seconds=10):
 
         # Execute rerank with hybrid results
         rerank_input = {**state, **hybrid_output}
-        final_output = await rerank_node(rerank_input)
+        final_output = await rerank_table_descriptions_node(rerank_input)
 
         # Check if we got final results
         most_similar = final_output.get("most_similar_selections", [])

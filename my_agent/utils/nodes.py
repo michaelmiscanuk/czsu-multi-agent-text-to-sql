@@ -104,7 +104,7 @@ summarize_messages_node:
 
 Stage 2: Database Selection Retrieval
 -------------------------------------
-Nodes: retrieve_similar_selections_hybrid_search_node, rerank_node, relevant_selections_node
+Nodes: retrieve_similar_selections_hybrid_search_node, rerank_table_descriptions_node, relevant_selections_node
 
 retrieve_similar_selections_hybrid_search_node:
 - Input: rewritten_prompt, n_results (default: 20)
@@ -118,7 +118,7 @@ retrieve_similar_selections_hybrid_search_node:
   * Memory cleanup: Explicitly closes client and runs gc.collect()
   * Sets chromadb_missing flag if directory not found
 
-rerank_node:
+rerank_table_descriptions_node:
 - Input: hybrid_search_results, rewritten_prompt, n_results (default: 20)
 - Output: most_similar_selections (List[Tuple[str, float]])
 - Purpose: Rerank with Cohere multilingual model for better relevance
@@ -334,7 +334,7 @@ Debug IDs (for tracing):
 - RETRIEVE_NODE_ID = 20
 - RELEVANT_NODE_ID = 21
 - HYBRID_SEARCH_NODE_ID = 22
-- RERANK_NODE_ID = 23
+- RERANK_TABLE_DESCRIPTIONS_NODE_ID = 23
 - RETRIEVE_CHUNKS_NODE_ID = 24
 - RERANK_CHUNKS_NODE_ID = 25
 - RELEVANT_CHUNKS_NODE_ID = 26
@@ -616,7 +616,7 @@ SHOULD_CONTINUE_ID = 9
 RETRIEVE_NODE_ID = 20
 RELEVANT_NODE_ID = 21
 HYBRID_SEARCH_NODE_ID = 22
-RERANK_NODE_ID = 23
+RERANK_TABLE_DESCRIPTIONS_NODE_ID = 23
 # New PDF chunk node IDs
 RETRIEVE_CHUNKS_NODE_ID = 24
 RERANK_CHUNKS_NODE_ID = 25
@@ -1993,7 +1993,7 @@ async def retrieve_similar_selections_hybrid_search_node(
         return {"hybrid_search_results": []}
 
 
-async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
+async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that reranks dataset selection hybrid search results using Cohere.
 
     This node applies Cohere's multilingual rerank model to improve the quality of dataset selection
@@ -2018,27 +2018,35 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
     """
 
     print__nodes_debug(
-        f"🔥🔥🔥 🔄 {RERANK_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥"
+        f"🔥🔥🔥 🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥"
     )
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Enter rerank_node")
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Enter rerank_table_descriptions_node"
+    )
 
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_results", [])
     n_results = state.get("n_results", 20)
 
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Query: {query}")
+    print__nodes_debug(f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Query: {query}")
     print__nodes_debug(
-        f"🔄 {RERANK_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
     )
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Requested n_results: {n_results}")
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Requested n_results: {n_results}"
+    )
 
     # Check if we have hybrid search results to rerank
     if not hybrid_results:
-        print__nodes_debug(f"📄 {RERANK_NODE_ID}: No hybrid search results to rerank")
+        print__nodes_debug(
+            f"📄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: No hybrid search results to rerank"
+        )
         return {"most_similar_selections": []}
 
     # Debug: Show input to rerank
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Input hybrid results for reranking:")
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Input hybrid results for reranking:"
+    )
     for i, doc in enumerate(hybrid_results[:10], 1):  # Show first 10
         selection = doc.metadata.get("selection") if doc.metadata else "N/A"
         content_preview = (
@@ -2047,16 +2055,16 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
             else "N/A"
         )
         print__nodes_debug(
-            f"🔄 {RERANK_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
+            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
         )
 
     try:
         print__nodes_debug(
-            f"🔄 {RERANK_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
+            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
         )
         reranked = cohere_rerank(query, hybrid_results, top_n=n_results)
         print__nodes_debug(
-            f"📊 {RERANK_NODE_ID}: Cohere returned {len(reranked)} reranked results"
+            f"📊 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Cohere returned {len(reranked)} reranked results"
         )
 
         most_similar = []
@@ -2067,18 +2075,24 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
             # Debug: Show detailed rerank results
             if i <= 10:  # Show top 10 results
                 print__nodes_debug(
-                    f"🎯🎯🎯 🎯 {RERANK_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}"
+                    f"🎯🎯🎯 🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}"
                 )
 
         print__nodes_debug(
-            f"🎯🎯🎯 🎯🎯🎯 {RERANK_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
+            f"🎯🎯🎯 🎯🎯🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
         )
 
         return {"most_similar_selections": most_similar}
     except Exception as e:
-        logger.error("❌ %s: Error in reranking: %s", RERANK_NODE_ID, e)
+        logger.error(
+            "❌ %s: Error in reranking: %s", RERANK_TABLE_DESCRIPTIONS_NODE_ID, e
+        )
 
-        logger.error("📄 %s: Traceback: %s", RERANK_NODE_ID, traceback.format_exc())
+        logger.error(
+            "📄 %s: Traceback: %s",
+            RERANK_TABLE_DESCRIPTIONS_NODE_ID,
+            traceback.format_exc(),
+        )
         return {"most_similar_selections": []}
 
 

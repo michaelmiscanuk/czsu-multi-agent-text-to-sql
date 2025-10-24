@@ -33,7 +33,7 @@ summarize_messages_rewrite splits into TWO parallel branches:
 
 Branch A (Database Selections):
   → retrieve_similar_selections_hybrid_search
-  → rerank (Cohere reranking)
+  → rerank_table_descriptions (Cohere reranking)
   → relevant_selections (top-k filtering)
 
 Branch B (PDF Documentation):
@@ -94,7 +94,7 @@ Node Summary:
 =======================
 Preprocessing: rewrite_query
 Retrieval: retrieve_similar_selections_hybrid_search, retrieve_similar_chunks_hybrid_search
-Reranking: rerank, rerank_chunks
+Reranking: rerank_table_descriptions, rerank_chunks
 Filtering: relevant_selections, relevant_chunks
 Routing: post_retrieval_sync (inline function)
 Query: get_schema, query_gen
@@ -181,7 +181,7 @@ from my_agent.utils.nodes import (
     relevant_chunks_node,
     relevant_selections_node,
     rerank_chunks_node,
-    rerank_node,
+    rerank_table_descriptions_node,
     retrieve_similar_chunks_hybrid_search_node,
     retrieve_similar_selections_hybrid_search_node,
     rewrite_query_node,
@@ -258,7 +258,7 @@ def create_graph(checkpointer=None):
         "retrieve_similar_selections_hybrid_search",
         retrieve_similar_selections_hybrid_search_node,
     )
-    graph.add_node("rerank", rerank_node)
+    graph.add_node("rerank_table_descriptions", rerank_table_descriptions_node)
     graph.add_node("relevant_selections", relevant_selections_node)
     graph.add_node(
         "retrieve_similar_chunks_hybrid_search",
@@ -295,11 +295,13 @@ def create_graph(checkpointer=None):
         "summarize_messages_rewrite", "retrieve_similar_chunks_hybrid_search"
     )
 
-    # Selection path: retrieve -> rerank -> relevant
-    graph.add_edge("retrieve_similar_selections_hybrid_search", "rerank")
-    graph.add_edge("rerank", "relevant_selections")
+    # Selection path: retrieve -> rerank_table_descriptions -> relevant table descriptions
+    graph.add_edge(
+        "retrieve_similar_selections_hybrid_search", "rerank_table_descriptions"
+    )
+    graph.add_edge("rerank_table_descriptions", "relevant_selections")
 
-    # PDF chunk path: retrieve -> rerank -> relevant (runs in parallel)
+    # PDF chunk path: retrieve -> rerank_chunks -> relevant (runs in parallel)
     graph.add_edge("retrieve_similar_chunks_hybrid_search", "rerank_chunks")
     graph.add_edge("rerank_chunks", "relevant_chunks")
 
