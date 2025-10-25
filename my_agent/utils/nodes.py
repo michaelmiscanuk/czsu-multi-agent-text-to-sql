@@ -355,7 +355,7 @@ Paths:
 Retrieval Configuration:
 - Database selections:
   * SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS: 20
-  * SIMILARITY_THRESHOLD: 0.0005 (Cohere score)
+  * SQL_RELEVANCE_THRESHOLD: 0.0005 (Cohere score)
   * Top selection codes: 3
 - PDF chunks:
   * PDF_HYBRID_SEARCH_DEFAULT_RESULTS: 15
@@ -683,6 +683,7 @@ PDF_HYBRID_SEARCH_DEFAULT_RESULTS = (
 PDF_N_TOP_CHUNKS = (
     5  # Number of top chunks to keep in top_chunks state and show in debug
 )
+SQL_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for SQL selections
 PDF_RELEVANCE_THRESHOLD = 0.01  # Minimum relevance score for PDF chunks
 
 # Database Selections Processing Configuration
@@ -2100,7 +2101,7 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
     """LangGraph node that filters reranked selections by relevance threshold and selects top 3.
 
     This node implements quality control by filtering dataset selections based on Cohere relevance
-    scores. Only selections exceeding SIMILARITY_THRESHOLD (0.0005) are retained, with a maximum
+    scores. Only selections exceeding SQL_RELEVANCE_THRESHOLD (0.0005) are retained, with a maximum
     of 3 selections to prevent information overload and maintain schema size for SQL generation.
 
     If no selections pass the threshold, the node sets a special final_answer indicating no relevant
@@ -2113,14 +2114,13 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
         DataAnalysisState: Updated state with top_selection_codes (max 3), cleared intermediate results.
 
     Key Steps:
-        1. Apply SIMILARITY_THRESHOLD (0.0005) filter
+        1. Apply SQL_RELEVANCE_THRESHOLD (0.0005) filter
         2. Select up to 3 top selections
         3. Clear intermediate hybrid search state
         4. Set special final_answer if no selections pass
         5. Return filtered selection codes
     """
     print__nodes_debug(f"🎯 {RELEVANT_NODE_ID}: Enter relevant_selections_node")
-    SIMILARITY_THRESHOLD = 0.0005  # Minimum Cohere rerank score required
 
     most_similar = state.get("most_similar_selections", [])
 
@@ -2128,7 +2128,7 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
     top_selection_codes = [
         sel
         for sel, score in most_similar
-        if sel is not None and score is not None and score >= SIMILARITY_THRESHOLD
+        if sel is not None and score is not None and score >= SQL_RELEVANCE_THRESHOLD
     ][:3]
     print__nodes_debug(
         f"🎯 {RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}"
