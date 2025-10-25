@@ -22,7 +22,7 @@ This directory contains evaluation scripts for testing different components of t
 **Purpose**: Tests the complete pipeline (hybrid search + rerank)
 
 **What it evaluates**:
-- Full two-node sequence: `retrieve_similar_selections_hybrid_search_node` → `rerank_node`
+- Full two-node sequence: `retrieve_similar_selections_hybrid_search_node` → `rerank_table_descriptions_node`
 - Hybrid search followed by Cohere rerank model
 - Returns selection codes with rerank scores
 
@@ -53,7 +53,7 @@ python Evaluations/LangSmith_Evaluation/langsmith_evaluate_selection_retrieval.p
 
 | Aspect | Hybrid Search Only | Full Pipeline |
 |--------|-------------------|---------------|
-| **Nodes tested** | `retrieve_similar_selections_hybrid_search_node` | `retrieve_similar_selections_hybrid_search_node` + `rerank_node` |
+| **Nodes tested** | `retrieve_similar_selections_hybrid_search_node` | `retrieve_similar_selections_hybrid_search_node` + `rerank_table_descriptions_node` |
 | **Output format** | Document objects with metadata | (selection_code, score) tuples |
 | **Scoring method** | Hybrid search ranking | Cohere rerank scores |
 | **Debug focus** | Retrieval effectiveness | End-to-end pipeline performance |

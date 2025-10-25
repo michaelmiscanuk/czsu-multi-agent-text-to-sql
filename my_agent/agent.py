@@ -33,7 +33,7 @@ summarize_messages_rewrite splits into TWO parallel branches:
 
 Branch A (Database Selections):
   → retrieve_similar_selections_hybrid_search
-  → rerank (Cohere reranking)
+  → rerank_table_descriptions (Cohere reranking)
   → relevant_selections (top-k filtering)
 
 Branch B (PDF Documentation):
@@ -45,7 +45,7 @@ Both branches use hybrid search (semantic + BM25) with configurable weighting.
 
 Phase 3: Synchronization & Conditional Routing
 ----------------------------------------------
-[relevant_selections, relevant_chunks] → route_decision
+[relevant_selections, relevant_chunks] → post_retrieval_sync
 
 Routing logic (handled by my_agent.utils.routers.route_after_sync):
 - IF top_selection_codes found → get_schema (proceed with database queries)
@@ -94,9 +94,9 @@ Node Summary:
 =======================
 Preprocessing: rewrite_query
 Retrieval: retrieve_similar_selections_hybrid_search, retrieve_similar_chunks_hybrid_search
-Reranking: rerank, rerank_chunks
+Reranking: rerank_table_descriptions, rerank_chunks
 Filtering: relevant_selections, relevant_chunks
-Routing: route_decision (inline function)
+Routing: post_retrieval_sync (inline function)
 Query: get_schema, query_gen
 Reflection: reflect
 Formatting: format_answer, generate_followup_prompts, submit_final_answer
@@ -181,11 +181,11 @@ from my_agent.utils.nodes import (
     relevant_chunks_node,
     relevant_selections_node,
     rerank_chunks_node,
-    rerank_node,
+    rerank_table_descriptions_node,
     retrieve_similar_chunks_hybrid_search_node,
     retrieve_similar_selections_hybrid_search_node,
     rewrite_query_node,
-    route_decision_node,
+    post_retrieval_sync_node,
     save_node,
     submit_final_answer_node,
     summarize_messages_node,
@@ -258,7 +258,7 @@ def create_graph(checkpointer=None):
         "retrieve_similar_selections_hybrid_search",
         retrieve_similar_selections_hybrid_search_node,
     )
-    graph.add_node("rerank", rerank_node)
+    graph.add_node("rerank_table_descriptions", rerank_table_descriptions_node)
     graph.add_node("relevant_selections", relevant_selections_node)
     graph.add_node(
         "retrieve_similar_chunks_hybrid_search",
@@ -266,6 +266,7 @@ def create_graph(checkpointer=None):
     )
     graph.add_node("rerank_chunks", rerank_chunks_node)
     graph.add_node("relevant_chunks", relevant_chunks_node)
+    graph.add_node("post_retrieval_sync", post_retrieval_sync_node)
     graph.add_node("get_schema", get_schema_node)
     graph.add_node("query_gen", query_node)
     graph.add_node("reflect", reflect_node)
@@ -294,23 +295,22 @@ def create_graph(checkpointer=None):
         "summarize_messages_rewrite", "retrieve_similar_chunks_hybrid_search"
     )
 
-    # Selection path: retrieve -> rerank -> relevant
-    graph.add_edge("retrieve_similar_selections_hybrid_search", "rerank")
-    graph.add_edge("rerank", "relevant_selections")
+    # Selection path: retrieve -> rerank_table_descriptions -> relevant table descriptions
+    graph.add_edge(
+        "retrieve_similar_selections_hybrid_search", "rerank_table_descriptions"
+    )
+    graph.add_edge("rerank_table_descriptions", "relevant_selections")
 
-    # PDF chunk path: retrieve -> rerank -> relevant (runs in parallel)
+    # PDF chunk path: retrieve -> rerank_chunks -> relevant (runs in parallel)
     graph.add_edge("retrieve_similar_chunks_hybrid_search", "rerank_chunks")
     graph.add_edge("rerank_chunks", "relevant_chunks")
 
-    # Add the synchronization node that both branches feed into
-    graph.add_node("route_decision", route_decision_node)
-
     # Both branches feed into the synchronization node
-    graph.add_edge("relevant_selections", "route_decision")
-    graph.add_edge("relevant_chunks", "route_decision")
+    graph.add_edge("relevant_selections", "post_retrieval_sync")
+    graph.add_edge("relevant_chunks", "post_retrieval_sync")
 
     graph.add_conditional_edges(
-        "route_decision",
+        "post_retrieval_sync",
         route_after_sync,
         {"get_schema": "get_schema", "format_answer": "format_answer", END: END},
     )

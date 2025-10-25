@@ -104,7 +104,7 @@ summarize_messages_node:
 
 Stage 2: Database Selection Retrieval
 -------------------------------------
-Nodes: retrieve_similar_selections_hybrid_search_node, rerank_node, relevant_selections_node
+Nodes: retrieve_similar_selections_hybrid_search_node, rerank_table_descriptions_node, relevant_selections_node
 
 retrieve_similar_selections_hybrid_search_node:
 - Input: rewritten_prompt, n_results (default: 20)
@@ -118,7 +118,7 @@ retrieve_similar_selections_hybrid_search_node:
   * Memory cleanup: Explicitly closes client and runs gc.collect()
   * Sets chromadb_missing flag if directory not found
 
-rerank_node:
+rerank_table_descriptions_node:
 - Input: hybrid_search_results, rewritten_prompt, n_results (default: 20)
 - Output: most_similar_selections (List[Tuple[str, float]])
 - Purpose: Rerank with Cohere multilingual model for better relevance
@@ -334,7 +334,7 @@ Debug IDs (for tracing):
 - RETRIEVE_NODE_ID = 20
 - RELEVANT_NODE_ID = 21
 - HYBRID_SEARCH_NODE_ID = 22
-- RERANK_NODE_ID = 23
+- RERANK_TABLE_DESCRIPTIONS_NODE_ID = 23
 - RETRIEVE_CHUNKS_NODE_ID = 24
 - RERANK_CHUNKS_NODE_ID = 25
 - RELEVANT_CHUNKS_NODE_ID = 26
@@ -354,7 +354,7 @@ Paths:
 
 Retrieval Configuration:
 - Database selections:
-  * Default n_results: 20
+  * SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS: 20
   * SIMILARITY_THRESHOLD: 0.0005 (Cohere score)
   * Top selection codes: 3
 - PDF chunks:
@@ -616,7 +616,7 @@ SHOULD_CONTINUE_ID = 9
 RETRIEVE_NODE_ID = 20
 RELEVANT_NODE_ID = 21
 HYBRID_SEARCH_NODE_ID = 22
-RERANK_NODE_ID = 23
+RERANK_TABLE_DESCRIPTIONS_NODE_ID = 23
 # New PDF chunk node IDs
 RETRIEVE_CHUNKS_NODE_ID = 24
 RERANK_CHUNKS_NODE_ID = 25
@@ -669,7 +669,7 @@ MAX_ITERATIONS = int(
     os.environ.get("MAX_ITERATIONS", "1")
 )  # Configurable via environment variable, default 2
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
-ROUTE_DECISION_ID = 11  # ID for routing decision function
+POST_RETRIEVAL_SYNC_ID = 11  # ID for post-retrieval synchronization function
 REFLECT_NODE_ID = 12
 INCREMENT_ITERATION_ID = 13
 CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
@@ -685,12 +685,48 @@ PDF_N_TOP_CHUNKS = (
 )
 PDF_RELEVANCE_THRESHOLD = 0.01  # Minimum relevance score for PDF chunks
 
+# Database Selections Processing Configuration
+SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
+    20  # Number of selections to retrieve from hybrid search
+)
+
 
 # ==============================================================================
 # HELPER FUNCTIONS
 # ==============================================================================
 async def load_schema(state=None):
-    """Load the schema metadata from the SQLite database based on top_selection_codes in state."""
+    """Helper function that loads database schema metadata for selected datasets from SQLite.
+
+    This function retrieves extended schema descriptions from the selection_descriptions.db database
+    for the dataset selection codes identified by the retrieval process. The schema includes table
+    names, column names, data types, distinct categorical values, and metadata descriptions that are
+    essential for accurate SQL query generation.
+
+    The function handles missing or invalid selection codes gracefully by returning appropriate
+    error messages, ensuring the SQL generation node always receives usable schema context.
+
+    Args:
+        state (dict, optional): State dictionary containing 'top_selection_codes' list.
+                               If None or empty, returns fallback message.
+
+    Returns:
+        str: Concatenated schema descriptions separated by '**************' delimiter.
+             Each schema includes dataset identifier and extended description.
+             Returns error message if database access fails or codes are invalid.
+
+    Key Steps:
+        1. Extract top_selection_codes from state
+        2. Connect to selection_descriptions.db SQLite database
+        3. Query extended_description for each selection code
+        4. Format schemas with dataset identifier prefix
+        5. Join multiple schemas with delimiter
+        6. Return concatenated schema string or error message
+
+    Database Schema:
+        - Table: selection_descriptions
+        - Key columns: selection_code (TEXT), extended_description (TEXT)
+        - Location: metadata/llm_selection_descriptions/selection_descriptions.db
+    """
     if state and state.get("top_selection_codes"):
         selection_codes = state["top_selection_codes"]
         db_path = (
@@ -729,7 +765,42 @@ async def load_schema(state=None):
 
 
 async def translate_to_english(text):
-    """Translate text to English using Azure Translator API."""
+    """Helper function that translates text to English using Azure Translator API.
+
+    This function provides language translation for PDF chunk retrieval, where queries may be in
+    Czech but PDF documentation is in English. It uses Azure Cognitive Services Translator API
+    with asynchronous execution to avoid blocking the event loop.
+
+    The function runs the synchronous HTTP request in a thread pool executor to maintain async
+    compatibility while using the requests library. It generates a unique trace ID for each
+    request to support debugging and monitoring.
+
+    Args:
+        text (str): Text to translate (any language supported by Azure Translator).
+
+    Returns:
+        str: Translated text in English.
+
+    Key Steps:
+        1. Load Azure Translator credentials from environment
+        2. Construct translation endpoint URL with API version and target language
+        3. Build HTTP headers with subscription key, region, and trace ID
+        4. Create request body with input text
+        5. Execute POST request in thread pool (async-safe)
+        6. Parse JSON response and extract translated text
+        7. Return English translation
+
+    Environment Variables Required:
+        - TRANSLATOR_TEXT_SUBSCRIPTION_KEY: Azure Translator API key
+        - TRANSLATOR_TEXT_REGION: Azure region (e.g., 'westeurope')
+        - TRANSLATOR_TEXT_ENDPOINT: API endpoint URL
+
+    API Details:
+        - Endpoint: /translate?api-version=3.0&to=en
+        - Method: POST
+        - Content-Type: application/json
+        - Headers: Ocp-Apim-Subscription-Key, Ocp-Apim-Subscription-Region, X-ClientTraceId
+    """
     load_dotenv()
     subscription_key = os.environ["TRANSLATOR_TEXT_SUBSCRIPTION_KEY"]
     region = os.environ["TRANSLATOR_TEXT_REGION"]
@@ -761,8 +832,31 @@ async def translate_to_english(text):
 # NODE FUNCTIONS
 # ==============================================================================
 async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Rewrite the user's prompt using an LLM, using only the summary and the current prompt.
-    The messages list is always set to [summary, rewritten_message].
+    """LangGraph node that rewrites user prompts for optimal vector search and standalone context.
+
+    This node converts conversational questions into standalone, search-optimized queries by resolving
+    pronouns, detecting topic changes, expanding brief questions, and adding relevant context terms.
+    It uses Azure GPT-4o to maintain the original language while improving searchability.
+
+    The rewriting process handles:
+    - Pronoun resolution using conversation summary
+    - Topic corrections ("but I meant...")
+    - Brief question expansion ("hotels" → detailed query)
+    - Vector search optimization with synonyms
+    - Escape handling for f-string safety
+
+    Args:
+        state (DataAnalysisState): Workflow state containing prompt and message history.
+
+    Returns:
+        DataAnalysisState: Updated state with 'rewritten_prompt' and messages [summary, rewritten_message].
+
+    Key Steps:
+        1. Extract original prompt and conversation summary
+        2. Call Azure GPT-4o with rewriting instructions
+        3. Generate standalone, search-optimized query
+        4. Escape curly braces for f-string safety
+        5. Return rewritten prompt and updated messages
     """
     print__nodes_debug("🧠 REWRITE: Enter rewrite_query_node (simplified)")
 
@@ -881,8 +975,27 @@ Now process this conversation:
 
 
 async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Generate follow-up prompt suggestions based on conversation summary.
-    Messages list is always [summary, last_message].
+    """LangGraph node that generates follow-up prompt suggestions for continued data exploration.
+
+    This node uses Azure GPT-4o-mini with high temperature (1.0) to generate 3 diverse, interesting
+    follow-up prompts based on the conversation summary. Prompts are context-aware and help users
+    discover related insights about Czech Statistical Office data.
+
+    The generated prompts cover different aspects like economy, population, finance, etc., and are
+    designed to be directly usable as natural language queries for the system.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing conversation summary.
+
+    Returns:
+        DataAnalysisState: Updated state with 'followup_prompts' containing list of 3 prompt strings.
+
+    Key Steps:
+        1. Extract conversation summary from messages
+        2. Call Azure GPT-4o-mini with creative temperature (1.0)
+        3. Generate 3 diverse, relevant prompts
+        4. Parse and validate prompt list
+        5. Return maximum 3 prompts
     """
     print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node")
 
@@ -954,7 +1067,24 @@ Important guidelines:
 
 
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Get schema details for relevant columns. Messages list is always [summary, last_message]."""
+    """LangGraph node that retrieves database schema for relevant dataset selections.
+
+    This node loads schema information for the top dataset selections identified by the retrieval
+    process. The schema includes table names, column names, data types, and distinct values for
+    categorical dimensions, which are essential for SQL query generation.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing top_selection_codes and messages.
+
+    Returns:
+        DataAnalysisState: Updated state with messages [summary, schema_details_message].
+
+    Key Steps:
+        1. Extract top_selection_codes from state
+        2. Load schema using load_schema helper function
+        3. Create AIMessage with schema details
+        4. Return updated messages preserving summary
+    """
     print__nodes_debug(f"💾 {GET_SCHEMA_ID}: Enter get_schema_node")
 
     top_selection_codes = state.get("top_selection_codes")
@@ -972,7 +1102,31 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
 
 
 async def query_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Generate SQL query based on question and schema. Messages list is always [summary, last_message]."""
+    """LangGraph node that generates and executes SQLite queries using MCP tools and Azure GPT-4o.
+
+    This node is the core SQL generation component, translating natural language questions into
+    executable SQLite queries. It uses comprehensive prompting with schema details, conversation
+    context, and bilingual (Czech/English) support. The node handles Czech diacritics, aggregations,
+    and complex filtering while avoiding common pitfalls like CELKEM (total) row inclusion.
+
+    The node integrates with MCP (Model Context Protocol) server to execute queries via sqlite_query
+    tool, capturing both successful results and errors for downstream processing.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing prompt, schema, messages, and iteration info.
+
+    Returns:
+        DataAnalysisState: Updated state with messages, queries_and_results, iteration, and rewritten_prompt.
+
+    Key Steps:
+        1. Extract query context (prompt, schema, conversation summary)
+        2. Load schema for selected datasets
+        3. Build comprehensive SQL generation prompt
+        4. Call Azure GPT-4o to generate SQLite query
+        5. Execute query using MCP sqlite_query tool
+        6. Capture results or error messages
+        7. Update state with query-result pairs
+    """
     print__nodes_debug(f"🧠 {QUERY_GEN_ID}: Enter query_node")
 
     current_iteration = state.get("iteration", 0)
@@ -1161,8 +1315,29 @@ IMPORTANT notes about SQL query generation:
 
 
 async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Reflect on the current state and provide feedback for next query or decide to answer.
-    Messages list is always [summary, last_message].
+    """LangGraph node that analyzes query results and decides whether to improve or answer.
+
+    This is the agentic reflection component that implements self-correction and iterative improvement.
+    It analyzes executed queries and their results, determines if sufficient data exists to answer the
+    user's question, and provides specific feedback for query improvement if needed.
+
+    The node enforces iteration limits (MAX_ITERATIONS) and uses Azure GPT-4o-mini to make decisions.
+    It returns either "answer" (proceed to formatting) or "improve" (generate better query) along with
+    detailed feedback for the query generation node.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing queries_and_results, messages, and iteration count.
+
+    Returns:
+        DataAnalysisState: Updated state with reflection_decision, messages, and incremented iteration.
+
+    Key Steps:
+        1. Check iteration limit and force answer if exceeded
+        2. Extract recent queries (last 5) to prevent token overflow
+        3. Call Azure GPT-4o-mini with reflection prompt
+        4. Parse decision ("answer" or "improve")
+        5. Increment iteration counter if improving
+        6. Return decision and feedback message
     """
     print__nodes_debug(f"💭 {REFLECT_NODE_ID}: Enter reflect_node")
 
@@ -1310,7 +1485,34 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
 
 
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Format the query result into a natural language answer. Messages list is always [summary, last_message]."""
+    """LangGraph node that formats SQL results and PDF chunks into natural language answers.
+
+    This node synthesizes data from multiple sources (SQL query results and PDF document chunks)
+    into a coherent, bilingual answer. It uses Azure GPT-4o-mini to generate markdown-formatted
+    responses that match the user's query language (Czech/English) and follow strict data-only rules.
+
+    The node handles:
+    - Multi-source data synthesis (SQL + PDF)
+    - Source attribution and clear separation
+    - Markdown formatting with tables and lists
+    - Number formatting without separators
+    - Language matching (Czech/English)
+    - Preservation of PDF chunks for frontend display
+
+    Args:
+        state (DataAnalysisState): Workflow state containing queries_and_results, top_chunks, and prompt.
+
+    Returns:
+        DataAnalysisState: Updated state with final_answer, messages, and preserved top_chunks.
+
+    Key Steps:
+        1. Extract SQL results and PDF chunks from state
+        2. Build separate context sections for SQL and PDF data
+        3. Call Azure GPT-4o-mini with synthesis prompt
+        4. Generate markdown-formatted answer
+        5. Preserve PDF chunks for frontend
+        6. Return final_answer and updated messages
+    """
     print__nodes_debug(f"🎨 {FORMAT_ANSWER_ID}: Enter format_answer_node")
 
     queries_and_results = state.get("queries_and_results", [])
@@ -1474,7 +1676,18 @@ Bad: "The query shows X is 1,234,567"
 
 
 async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Increment the iteration counter and return updated state."""
+    """LangGraph node that increments the iteration counter for loop control.
+
+    This simple utility node increments the iteration counter to track the number of query-reflect
+    cycles executed. It's used in the improvement loop to enforce MAX_ITERATIONS limit and prevent
+    infinite loops.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing iteration count.
+
+    Returns:
+        DataAnalysisState: Updated state with incremented iteration counter.
+    """
     print__nodes_debug(f"🔄 {INCREMENT_ITERATION_ID}: Enter increment_iteration_node")
 
     current_iteration = state.get("iteration", 0)
@@ -1482,7 +1695,26 @@ async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisStat
 
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Submit the final answer to the user and ensure final_answer is preserved."""
+    """LangGraph node that prepares and preserves final answer for user delivery.
+
+    This node ensures the final_answer field is properly preserved along with all essential state
+    fields needed for the frontend API response. It acts as a state validation checkpoint before
+    saving and cleanup operations.
+
+    The node explicitly preserves:
+    - final_answer (primary response)
+    - messages (conversation history)
+    - queries_and_results (SQL execution history)
+    - top_chunks (PDF document excerpts)
+    - top_selection_codes (relevant datasets)
+    - followup_prompts (suggestions for continued exploration)
+
+    Args:
+        state (DataAnalysisState): Workflow state containing final_answer and supporting data.
+
+    Returns:
+        DataAnalysisState: Validated state with all essential fields explicitly preserved.
+    """
     print__nodes_debug(f"📤 {SUBMIT_FINAL_ID}: Enter submit_final_answer_node")
 
     # Ensure final_answer is properly preserved in the state
@@ -1516,7 +1748,31 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
 
 
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Save the result and create minimal checkpoint with only essential fields."""
+    """LangGraph node that saves results to files and creates minimal database checkpoint.
+
+    This node performs dual persistence:
+    1. File persistence: Appends results to analysis_results.txt (human-readable) and
+       analysis_results.jsonl (machine-readable) for historical analysis
+    2. Database checkpoint: Creates minimal state snapshot with only 7 essential fields
+       to dramatically reduce PostgreSQL storage requirements
+
+    The minimal checkpoint approach reduces state size from potentially megabytes (full state
+    with embeddings, intermediate results) to kilobytes (essential fields only), solving
+    memory and storage issues in production.
+
+    Args:
+        state (DataAnalysisState): Complete workflow state with all intermediate data.
+
+    Returns:
+        DataAnalysisState: Minimal checkpoint state with only essential fields for database storage.
+
+    Key Steps:
+        1. Extract final_answer, prompt, and queries_and_results
+        2. Save to text file (if enabled)
+        3. Append to JSONL file (if enabled)
+        4. Create minimal checkpoint with 7 essential fields
+        5. Return minimal state for database persistence
+    """
     print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Enter save_node")
 
     prompt = state["prompt"]
@@ -1609,13 +1865,38 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
 async def retrieve_similar_selections_hybrid_search_node(
     state: DataAnalysisState,
 ) -> DataAnalysisState:
-    """Node: Perform hybrid search on ChromaDB to retrieve initial candidate documents. Returns hybrid search results as Document objects."""
+    """LangGraph node that performs hybrid search on ChromaDB to retrieve similar dataset selections.
+
+    This node executes a hybrid search combining semantic similarity and BM25 keyword matching
+    to find the most relevant dataset selections from the ChromaDB vector database. It supports
+    both local and cloud ChromaDB configurations and includes memory cleanup to prevent resource leaks.
+
+    The search query is extracted from the state (preferring 'rewritten_prompt' over 'prompt').
+    Results are converted to Document objects for downstream processing in the LangGraph workflow.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and configuration parameters.
+
+    Returns:
+        DataAnalysisState: Updated state with 'hybrid_search_results' containing a list of Document objects
+                          representing the retrieved dataset selections. May also include 'chromadb_missing'
+                          flag if local ChromaDB is unavailable.
+
+    Key Steps:
+        1. Extract query and n_results from state (default: SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS)
+        2. Check ChromaDB availability (local directory or cloud)
+        3. Initialize ChromaDB client and collection
+        4. Perform hybrid search using hybrid_search function
+        5. Convert results to Document objects with metadata
+        6. Clean up ChromaDB resources and force garbage collection
+        7. Return results or empty list on error
+    """
     print__nodes_debug(
         f"🔍 {HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node"
     )
 
     query = state.get("rewritten_prompt") or state["prompt"]
-    n_results = state.get("n_results", 20)
+    n_results = state.get("n_results", SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS)
 
     print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Query: {query}")
     print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
@@ -1712,31 +1993,60 @@ async def retrieve_similar_selections_hybrid_search_node(
         return {"hybrid_search_results": []}
 
 
-async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Rerank hybrid search results using Cohere rerank model. Returns selection codes and Cohere rerank scores."""
+async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph node that reranks dataset selection hybrid search results using Cohere.
+
+    This node applies Cohere's multilingual rerank model to improve the quality of dataset selection
+    retrieval. It takes hybrid search results (semantic + BM25) and reorders them based on semantic
+    relevance to the query, returning selection codes with Cohere relevance scores.
+
+    Cohere reranking significantly improves precision by understanding query semantics beyond simple
+    keyword matching, especially important for Czech language queries and domain-specific terminology.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and hybrid_search_results.
+
+    Returns:
+        DataAnalysisState: Updated state with most_similar_selections as list of (selection_code, score) tuples.
+
+    Key Steps:
+        1. Extract query and hybrid search results
+        2. Call cohere_rerank with documents and query
+        3. Extract selection codes and relevance scores
+        4. Return ranked list of (code, score) pairs
+        5. Log top results for debugging
+    """
 
     print__nodes_debug(
-        f"🔥🔥🔥 🔄 {RERANK_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥"
+        f"🔥🔥🔥 🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥"
     )
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Enter rerank_node")
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Enter rerank_table_descriptions_node"
+    )
 
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_results", [])
     n_results = state.get("n_results", 20)
 
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Query: {query}")
+    print__nodes_debug(f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Query: {query}")
     print__nodes_debug(
-        f"🔄 {RERANK_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
     )
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Requested n_results: {n_results}")
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Requested n_results: {n_results}"
+    )
 
     # Check if we have hybrid search results to rerank
     if not hybrid_results:
-        print__nodes_debug(f"📄 {RERANK_NODE_ID}: No hybrid search results to rerank")
+        print__nodes_debug(
+            f"📄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: No hybrid search results to rerank"
+        )
         return {"most_similar_selections": []}
 
     # Debug: Show input to rerank
-    print__nodes_debug(f"🔄 {RERANK_NODE_ID}: Input hybrid results for reranking:")
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Input hybrid results for reranking:"
+    )
     for i, doc in enumerate(hybrid_results[:10], 1):  # Show first 10
         selection = doc.metadata.get("selection") if doc.metadata else "N/A"
         content_preview = (
@@ -1745,16 +2055,16 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
             else "N/A"
         )
         print__nodes_debug(
-            f"🔄 {RERANK_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
+            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
         )
 
     try:
         print__nodes_debug(
-            f"🔄 {RERANK_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
+            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
         )
         reranked = cohere_rerank(query, hybrid_results, top_n=n_results)
         print__nodes_debug(
-            f"📊 {RERANK_NODE_ID}: Cohere returned {len(reranked)} reranked results"
+            f"📊 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Cohere returned {len(reranked)} reranked results"
         )
 
         most_similar = []
@@ -1765,23 +2075,50 @@ async def rerank_node(state: DataAnalysisState) -> DataAnalysisState:
             # Debug: Show detailed rerank results
             if i <= 10:  # Show top 10 results
                 print__nodes_debug(
-                    f"🎯🎯🎯 🎯 {RERANK_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}"
+                    f"🎯🎯🎯 🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}"
                 )
 
         print__nodes_debug(
-            f"🎯🎯🎯 🎯🎯🎯 {RERANK_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
+            f"🎯🎯🎯 🎯🎯🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
         )
 
         return {"most_similar_selections": most_similar}
     except Exception as e:
-        logger.error("❌ %s: Error in reranking: %s", RERANK_NODE_ID, e)
+        logger.error(
+            "❌ %s: Error in reranking: %s", RERANK_TABLE_DESCRIPTIONS_NODE_ID, e
+        )
 
-        logger.error("📄 %s: Traceback: %s", RERANK_NODE_ID, traceback.format_exc())
+        logger.error(
+            "📄 %s: Traceback: %s",
+            RERANK_TABLE_DESCRIPTIONS_NODE_ID,
+            traceback.format_exc(),
+        )
         return {"most_similar_selections": []}
 
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Select the top 3 reranked selections if their Cohere relevance score exceeds the threshold (0.005)."""
+    """LangGraph node that filters reranked selections by relevance threshold and selects top 3.
+
+    This node implements quality control by filtering dataset selections based on Cohere relevance
+    scores. Only selections exceeding SIMILARITY_THRESHOLD (0.0005) are retained, with a maximum
+    of 3 selections to prevent information overload and maintain schema size for SQL generation.
+
+    If no selections pass the threshold, the node sets a special final_answer indicating no relevant
+    data was found, allowing the workflow to skip SQL generation and proceed directly to answer formatting.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing most_similar_selections with scores.
+
+    Returns:
+        DataAnalysisState: Updated state with top_selection_codes (max 3), cleared intermediate results.
+
+    Key Steps:
+        1. Apply SIMILARITY_THRESHOLD (0.0005) filter
+        2. Select up to 3 top selections
+        3. Clear intermediate hybrid search state
+        4. Set special final_answer if no selections pass
+        5. Return filtered selection codes
+    """
     print__nodes_debug(f"🎯 {RELEVANT_NODE_ID}: Enter relevant_selections_node")
     SIMILARITY_THRESHOLD = 0.0005  # Minimum Cohere rerank score required
 
@@ -1814,7 +2151,31 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
 
 
 async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Summarize the conversation so far, always setting messages to [summary, last_message]."""
+    """LangGraph node that maintains bounded conversation memory through cumulative summarization.
+
+    This node implements memory management by compressing conversation history into a concise summary.
+    It uses Azure GPT-4o-mini to update an existing summary with the latest message, maintaining
+    bounded context size while preserving important conversation details.
+
+    The summarization strategy prevents token overflow in long conversations while ensuring that
+    context-dependent queries (pronouns, references) can still be resolved in query rewriting.
+
+    The node always maintains a 2-message structure: [summary (SystemMessage), last_message],
+    which is the canonical message format throughout the workflow.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing messages list.
+
+    Returns:
+        DataAnalysisState: Updated state with messages as [new_summary, last_message].
+
+    Key Steps:
+        1. Extract previous summary and last message
+        2. Skip if both are empty
+        3. Call Azure GPT-4o-mini to generate updated summary
+        4. Create new SystemMessage with summary
+        5. Return 2-message structure [summary, last_message]
+    """
     print__nodes_debug("📝 SUMMARY: Enter summarize_messages_node")
 
     messages = state.get("messages", [])
@@ -1879,7 +2240,36 @@ Do not include any meta-commentary or formatting, just the summary text."""
 async def retrieve_similar_chunks_hybrid_search_node(
     state: DataAnalysisState,
 ) -> DataAnalysisState:
-    """Node: Perform hybrid search on PDF ChromaDB to retrieve initial candidate document chunks. Returns hybrid search results as Document objects."""
+    """LangGraph node that performs hybrid search on PDF ChromaDB to retrieve similar document chunks.
+
+    This node executes a hybrid search combining semantic similarity and BM25 keyword matching
+    to find the most relevant PDF document chunks from the ChromaDB vector database. It first
+    translates the query to English for better search performance, then supports both local and
+    cloud ChromaDB configurations with memory cleanup to prevent resource leaks.
+
+    The search query is extracted from the state (preferring 'rewritten_prompt' over 'prompt'),
+    translated to English, and used to retrieve relevant PDF chunks. Results are converted to
+    Document objects for downstream processing in the LangGraph workflow.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and configuration parameters.
+
+    Returns:
+        DataAnalysisState: Updated state with 'hybrid_search_chunks' containing a list of Document objects
+                          representing the retrieved PDF chunks. Returns empty list if PDF functionality
+                          is unavailable or ChromaDB is not accessible.
+
+    Key Steps:
+        1. Check if PDF functionality is available
+        2. Extract and translate query to English using Azure Translator
+        3. Extract n_results from state (default: PDF_HYBRID_SEARCH_DEFAULT_RESULTS)
+        4. Check PDF ChromaDB availability (local directory or cloud)
+        5. Initialize PDF ChromaDB client and collection
+        6. Perform hybrid search using pdf_hybrid_search function
+        7. Convert results to Document objects with metadata
+        8. Clean up ChromaDB resources and force garbage collection
+        9. Return results or empty list on error
+    """
     print__nodes_debug(
         f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Enter retrieve_similar_chunks_hybrid_search_node"
     )
@@ -1989,7 +2379,29 @@ async def retrieve_similar_chunks_hybrid_search_node(
 
 
 async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Rerank PDF chunk hybrid search results using Cohere rerank model. Returns document-score pairs."""
+    """LangGraph node that reranks PDF chunk hybrid search results using Cohere.
+
+    This node applies Cohere's multilingual rerank model to improve the quality of PDF chunk
+    retrieval. It takes hybrid search results (semantic + BM25) from PDF documents and reorders
+    them based on semantic relevance to the query, returning document objects with Cohere scores.
+
+    PDF chunks are typically English text from documentation, so the reranking helps bridge the
+    language gap when queries are in Czech by understanding cross-lingual semantic similarity.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and hybrid_search_chunks.
+
+    Returns:
+        DataAnalysisState: Updated state with most_similar_chunks as list of (Document, score) tuples.
+
+    Key Steps:
+        1. Check PDF functionality availability
+        2. Extract query and hybrid search chunks
+        3. Call pdf_cohere_rerank with documents and query
+        4. Extract documents and relevance scores
+        5. Return ranked list of (document, score) pairs
+        6. Log top results for debugging
+    """
     print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Enter rerank_chunks_node")
 
     if not PDF_FUNCTIONALITY_AVAILABLE:
@@ -2067,7 +2479,29 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 
 
 async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Select PDF chunks that exceed the relevance threshold (0.01)."""
+    """LangGraph node that filters reranked PDF chunks by relevance threshold.
+
+    This node implements quality control for PDF document retrieval by filtering chunks based on
+    Cohere relevance scores. Only chunks exceeding PDF_RELEVANCE_THRESHOLD are retained for
+    inclusion in the final answer synthesis.
+
+    Unlike dataset selections (which have a max of 3), PDF chunks don't have an explicit limit
+    beyond the threshold filter, though upstream configuration (PDF_N_TOP_CHUNKS) controls the
+    maximum number of chunks retrieved.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing most_similar_chunks with scores.
+
+    Returns:
+        DataAnalysisState: Updated state with top_chunks (filtered Documents), cleared intermediate results.
+
+    Key Steps:
+        1. Apply PDF_RELEVANCE_THRESHOLD filter
+        2. Extract Document objects from (doc, score) tuples
+        3. Clear intermediate hybrid search state
+        4. Log chunks that passed threshold
+        5. Return filtered PDF chunks
+    """
     print__nodes_debug(f"🎯 {RELEVANT_CHUNKS_NODE_ID}: Enter relevant_chunks_node")
     SIMILARITY_THRESHOLD = PDF_RELEVANCE_THRESHOLD  # Threshold for PDF chunk relevance
 
@@ -2102,8 +2536,22 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     }
 
 
-async def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Synchronization node that waits for both selection and chunk processing to complete."""
+async def post_retrieval_sync_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph synchronization node that waits for parallel retrieval branches to complete.
+
+    This node serves as a barrier/join point in the LangGraph workflow, ensuring both parallel
+    retrieval paths (database selections and PDF chunks) have completed before proceeding to
+    SQL generation and answer formatting.
+
+    The node is a pass-through that returns state unchanged but provides a synchronization point
+    for the graph execution engine to coordinate parallel branches.
+
+    Args:
+        state (DataAnalysisState): Workflow state after parallel retrieval completion.
+
+    Returns:
+        DataAnalysisState: Unchanged state (pass-through for synchronization).
+    """
 
     print__analysis_tracing_debug(
         "90 - SYNC NODE: Both selection and chunk branches completed"
@@ -2112,10 +2560,28 @@ async def route_decision_node(state: DataAnalysisState) -> DataAnalysisState:
 
 
 async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
-    """Node: Final cleanup to ensure all ChromaDB resources and large objects are released from memory.
+    """LangGraph node that performs aggressive memory cleanup and garbage collection.
 
-    This node runs at the very end of the graph to force garbage collection
-    and release memory from ChromaDB clients, embeddings, and intermediate results.
+    This node runs at the very end of the graph execution to force garbage collection and release
+    memory from ChromaDB clients, embeddings, and large intermediate data structures. It solves
+    memory leak issues in production deployments by explicitly clearing references and running
+    multiple GC passes to handle circular references.
+
+    The node returns a minimal state copy containing only essential fields needed for the API
+    response, discarding all intermediate processing artifacts.
+
+    Args:
+        state (DataAnalysisState): Complete workflow state with all processing artifacts.
+
+    Returns:
+        DataAnalysisState: Minimal state copy with only essential fields for API response.
+
+    Key Steps:
+        1. Create state copy with only essential response fields
+        2. Run first garbage collection pass
+        3. Run second GC pass to catch circular references
+        4. Log collection statistics
+        5. Return minimal state for API delivery
     """
 
     CLEANUP_NODE_ID = 99
