@@ -432,6 +432,8 @@ CONTENT_SEPARATORS = {
     "table_end": "[/T]",
     "column_start": "[C]",
     "column_end": "[/C]",
+    "row_start": "[R]",
+    "row_end": "[/R]",
     "image_start": "[I]",
     "image_end": "[/I]",
     "text_start": "[X]",
@@ -656,6 +658,12 @@ def smart_text_chunking(
             CONTENT_SEPARATORS["column_start"],
             CONTENT_SEPARATORS["column_end"],
             "column",
+        ),
+        # Row content - Rows within tables
+        (
+            CONTENT_SEPARATORS["row_start"],
+            CONTENT_SEPARATORS["row_end"],
+            "row",
         ),
         # Image content
         (CONTENT_SEPARATORS["image_start"], CONTENT_SEPARATORS["image_end"], "image"),
@@ -1342,6 +1350,8 @@ def clean_separator_artifacts(text: str, remove_completely: bool = True) -> str:
             CONTENT_SEPARATORS["table_end"],
             CONTENT_SEPARATORS["column_start"],
             CONTENT_SEPARATORS["column_end"],
+            CONTENT_SEPARATORS["row_start"],
+            CONTENT_SEPARATORS["row_end"],
             CONTENT_SEPARATORS["image_start"],
             CONTENT_SEPARATORS["image_end"],
             CONTENT_SEPARATORS["text_start"],
@@ -1377,7 +1387,7 @@ def extract_content_by_type(text: str) -> Dict[str, List[str]]:
     Returns:
         Dictionary with content types as keys and content lists as values
     """
-    content_types = {"tables": [], "columns": [], "images": [], "text": []}
+    content_types = {"tables": [], "columns": [], "rows": [], "images": [], "text": []}
 
     # Extract tables
     table_pattern = (
@@ -1395,6 +1405,13 @@ def extract_content_by_type(text: str) -> Dict[str, List[str]]:
     columns = re.findall(column_pattern, text, re.DOTALL)
     content_types["columns"] = [column.strip() for column in columns]
 
+    # Extract rows
+    row_pattern = (
+        f"{CONTENT_SEPARATORS['row_start']}(.*?){CONTENT_SEPARATORS['row_end']}"
+    )
+    rows = re.findall(row_pattern, text, re.DOTALL)
+    content_types["rows"] = [row.strip() for row in rows]
+
     # Extract images
     image_pattern = (
         f"{CONTENT_SEPARATORS['image_start']}(.*?){CONTENT_SEPARATORS['image_end']}"
@@ -1410,7 +1427,7 @@ def extract_content_by_type(text: str) -> Dict[str, List[str]]:
     content_types["text"] = [text_content.strip() for text_content in texts]
 
     print__chromadb_debug(
-        f"📊 Extracted content: {len(content_types['tables'])} tables, {len(content_types['columns'])} columns, {len(content_types['images'])} images, {len(content_types['text'])} text sections"
+        f"📊 Extracted content: {len(content_types['tables'])} tables, {len(content_types['columns'])} columns, {len(content_types['rows'])} rows, {len(content_types['images'])} images, {len(content_types['text'])} text sections"
     )
 
     return content_types
