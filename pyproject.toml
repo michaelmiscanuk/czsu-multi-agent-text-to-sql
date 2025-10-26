@@ -85,6 +85,7 @@ dependencies = [
     
     # MCP server
     "mcp==1.9.2",
+    "fastmcp>=2.0.0",  # FastMCP for remote MCP client connections
     
     # Async utilities
     "aiofiles==24.1.0",
