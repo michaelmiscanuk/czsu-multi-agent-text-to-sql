@@ -253,7 +253,7 @@ def create_graph(checkpointer=None):
     # --------------------------------------------------------------------------
 
     graph.add_node("rewrite_query", rewrite_query_node)
-    graph.add_node("generate_followup_prompts", followup_prompts_node)
+    graph.add_node("summarize_messages_rewrite", summarize_messages_node)
     graph.add_node(
         "retrieve_similar_selections_hybrid_search",
         retrieve_similar_selections_hybrid_search_node,
@@ -269,15 +269,15 @@ def create_graph(checkpointer=None):
     graph.add_node("post_retrieval_sync", post_retrieval_sync_node)
     graph.add_node("get_schema", get_schema_node)
     graph.add_node("query_gen", query_node)
+    graph.add_node("summarize_messages_query", summarize_messages_node)
     graph.add_node("reflect", reflect_node)
+    graph.add_node("summarize_messages_reflect", summarize_messages_node)
     graph.add_node("format_answer", format_answer_node)
+    graph.add_node("summarize_messages_format", summarize_messages_node)
+    graph.add_node("generate_followup_prompts", followup_prompts_node)
     graph.add_node("submit_final_answer", submit_final_answer_node)
     graph.add_node("save", save_node)
     graph.add_node("cleanup_resources", cleanup_resources_node)
-    graph.add_node("summarize_messages_rewrite", summarize_messages_node)
-    graph.add_node("summarize_messages_query", summarize_messages_node)
-    graph.add_node("summarize_messages_reflect", summarize_messages_node)
-    graph.add_node("summarize_messages_format", summarize_messages_node)
 
     # --------------------------------------------------------------------------
     # EDGES: Define the graph execution path
