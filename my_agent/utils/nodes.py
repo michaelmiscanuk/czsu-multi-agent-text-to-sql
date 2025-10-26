@@ -654,6 +654,7 @@ from my_agent.utils.models import (
     get_azure_llm_gpt_4o,
     get_azure_llm_gpt_4o_mini,
     get_ollama_llm,
+    get_azure_llm_gpt_4o_4_1,
 )
 from metadata.chromadb_client_factory import should_use_cloud
 from .mcp_server import create_mcp_server
@@ -1147,7 +1148,7 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         recent_queries = [q for q, r in existing_queries[-3:]]
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
-    llm = get_azure_llm_gpt_4o(temperature=0.0)
+    llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
     # llm = get_ollama_llm("qwen:7b")
     tools = await create_mcp_server()
     sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
@@ -1240,7 +1241,7 @@ IMPORTANT notes about SQL query generation:
 - Column to Aggregate or extract numeric values is always called "value"! Never use different one or assume how it's called.
 - Do NOT modify the database.
 - Always examine the ALL Schema to see how the data are laid out - column names and their concrete dimensional values. 
-- If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name.
+- If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name. Then use it to generate correct query and use tool to get results.
 - Be careful about how you ALIAS (AS Clause) the Column names to make sense of the data - based on what you use in where or group by clause.
 - ALWAYS INCLUDE COLUMN "metric" or "ukazatel" if present - WHEN DOING GROUP BY - it will provide additional information about meaning of 'value' column in the result.
 
@@ -1283,6 +1284,13 @@ IMPORTANT notes about SQL query generation:
 
     try:
         tool_result = await sqlite_tool.ainvoke({"query": query})
+        # Extract text from TextContent if MCP returns that format
+        if (
+            isinstance(tool_result, list)
+            and len(tool_result) > 0
+            and hasattr(tool_result[0], "text")
+        ):
+            tool_result = tool_result[0].text
         if isinstance(tool_result, Exception):
             error_msg = f"Error executing query: {str(tool_result)}"
             print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
