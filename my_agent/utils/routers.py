@@ -103,7 +103,7 @@ def route_after_query(
 
 def route_after_reflect(
     state: DataAnalysisState,
-) -> Literal["query_gen", "format_answer"]:
+) -> Literal["generate_query", "format_answer"]:
     """Route after reflection based on reflection decision.
 
     Analyzes the reflection node's decision to either continue
@@ -113,7 +113,7 @@ def route_after_reflect(
         state: Current workflow state
 
     Returns:
-        "query_gen" to generate a better query, or "format_answer" to finalize
+        "generate_query" to generate a better query, or "format_answer" to finalize
     """
     decision = state.get("reflection_decision", "improve")
     print__analysis_tracing_debug(
@@ -128,4 +128,4 @@ def route_after_reflect(
         print__analysis_tracing_debug(
             "104 - IMPROVE ROUTE: Reflection says improve needed, going back to query generation"
         )
-        return "query_gen"
+        return "generate_query"

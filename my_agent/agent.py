@@ -54,7 +54,7 @@ Routing logic (handled by my_agent.utils.routers.route_after_sync):
 
 Phase 4: Query Loop (Optional Reflection)
 -----------------------------------------
-get_schema → query_gen → summarize_messages_query
+get_schema → generate_query → summarize_messages_query
 
 Conditional routing based on iteration count (handled by my_agent.utils.routers.route_after_query):
 - IF iteration < MAX_ITERATIONS → reflect
@@ -64,7 +64,7 @@ Reflection cycle (optional):
 reflect → summarize_messages_reflect
 
 Reflection decision (handled by my_agent.utils.routers.route_after_reflect):
-- IF decision == "improve" → query_gen (loop back for better query)
+- IF decision == "improve" → generate_query (loop back for better query)
 - ELIF decision == "answer" → format_answer (sufficient data collected)
 
 Phase 5: Answer Finalization
@@ -97,7 +97,7 @@ Retrieval: retrieve_similar_selections_hybrid_search, retrieve_similar_chunks_hy
 Reranking: rerank_table_descriptions, rerank_chunks
 Filtering: relevant_selections, relevant_chunks
 Routing: post_retrieval_sync (inline function)
-Query: get_schema, query_gen
+Query: get_schema, generate_query
 Reflection: reflect
 Formatting: format_answer, generate_followup_prompts, submit_final_answer
 Persistence: save, cleanup_resources
@@ -175,8 +175,8 @@ from my_agent.utils.nodes import (
     cleanup_resources_node,
     followup_prompts_node,
     format_answer_node,
+    generate_query_node,
     get_schema_node,
-    query_node,
     reflect_node,
     relevant_chunks_node,
     relevant_selections_node,
@@ -268,7 +268,7 @@ def create_graph(checkpointer=None):
     graph.add_node("relevant_chunks", relevant_chunks_node)
     graph.add_node("post_retrieval_sync", post_retrieval_sync_node)
     graph.add_node("get_schema", get_schema_node)
-    graph.add_node("query_gen", query_node)
+    graph.add_node("generate_query", generate_query_node)
     graph.add_node("summarize_messages_query", summarize_messages_node)
     graph.add_node("reflect", reflect_node)
     graph.add_node("summarize_messages_reflect", summarize_messages_node)
@@ -315,11 +315,11 @@ def create_graph(checkpointer=None):
         {"get_schema": "get_schema", "format_answer": "format_answer", END: END},
     )
 
-    # get_schema -> query_gen (no summarize_messages_schema)
-    graph.add_edge("get_schema", "query_gen")
+    # get_schema -> generate_query (no summarize_messages_schema)
+    graph.add_edge("get_schema", "generate_query")
 
-    # query_gen -> summarize_messages -> reflect/format_answer
-    graph.add_edge("query_gen", "summarize_messages_query")
+    # generate_query -> summarize_messages -> reflect/format_answer
+    graph.add_edge("generate_query", "summarize_messages_query")
 
     graph.add_conditional_edges(
         "summarize_messages_query",
@@ -327,13 +327,13 @@ def create_graph(checkpointer=None):
         {"reflect": "reflect", "format_answer": "format_answer"},
     )
 
-    # reflect -> summarize_messages -> query_gen/format_answer
+    # reflect -> summarize_messages -> generate_query/format_answer
     graph.add_edge("reflect", "summarize_messages_reflect")
 
     graph.add_conditional_edges(
         "summarize_messages_reflect",
         route_after_reflect,
-        {"query_gen": "query_gen", "format_answer": "format_answer"},
+        {"generate_query": "generate_query", "format_answer": "format_answer"},
     )
 
     # format_answer -> summarize_messages -> generate_followup_prompts -> submit_final_answer

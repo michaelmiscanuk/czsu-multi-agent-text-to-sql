@@ -15,7 +15,7 @@ Node functions are organized into 6 processing stages:
 1. Query Preprocessing (rewrite_query_node, summarize_messages_node)
 2. Parallel Retrieval - Database Selections (retrieve, rerank, relevant)
 3. Parallel Retrieval - PDF Chunks (retrieve, rerank, relevant)
-4. SQL Generation & Execution (get_schema, query_node)
+4. SQL Generation & Execution (get_schema, generate_query_node)
 5. Reflection & Improvement (reflect_node)
 6. Answer Finalization (format_answer, submit_final_answer, save, cleanup)
 
@@ -175,7 +175,7 @@ relevant_chunks_node:
 
 Stage 4: SQL Generation & Execution
 -----------------------------------
-Nodes: get_schema_node, query_node
+Nodes: get_schema_node, generate_query_node
 Helper: load_schema()
 
 get_schema_node:
@@ -198,7 +198,7 @@ load_schema() helper:
   * Joins multiple schemas with separator
   * Returns "No schema found" if code missing
 
-query_node:
+generate_query_node:
 - Input: messages (with schema), rewritten_prompt, top_selection_codes, iteration, queries_and_results
 - Output: Updated queries_and_results, messages, iteration
 - LLM: Azure GPT-4o (temp=0.0)
@@ -328,7 +328,7 @@ Constants & Configuration:
 
 Debug IDs (for tracing):
 - GET_SCHEMA_ID = 3
-- QUERY_GEN_ID = 4
+- GENERATE_QUERY_ID = 4
 - SUBMIT_FINAL_ID = 7
 - SAVE_RESULT_ID = 8
 - RETRIEVE_NODE_ID = 20
@@ -472,9 +472,9 @@ Three debug functions with unique IDs:
 
 Example usage:
 ```python
-print__nodes_debug(f"🧠 {QUERY_GEN_ID}: Generated query: {query}")
-print__nodes_debug(f"✅ {QUERY_GEN_ID}: Successfully executed query")
-print__nodes_debug(f"❌ {QUERY_GEN_ID}: Error: {error_msg}")
+print__nodes_debug(f"🧠 {GENERATE_QUERY_ID}: Generated query: {query}")
+print__nodes_debug(f"✅ {GENERATE_QUERY_ID}: Successfully executed query")
+print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: Error: {error_msg}")
 ```
 
 Emoji conventions:
@@ -510,12 +510,12 @@ Nodes are called automatically by LangGraph based on graph structure:
 ```python
 # Define in agent.py
 graph.add_node("rewrite_query", rewrite_query_node)
-graph.add_node("query_gen", query_node)
+graph.add_node("generate_query", generate_query_node)
 # ... etc
 
 # Graph executes nodes based on edges
 graph.add_edge("rewrite_query", "summarize_messages_rewrite")
-graph.add_edge("query_gen", "reflect")
+graph.add_edge("generate_query", "reflect")
 
 # Nodes receive state and return updates
 result = await rewrite_query_node(state)
@@ -607,7 +607,7 @@ from dotenv import load_dotenv
 # ==============================================================================
 # Static IDs for easier debug‑tracking
 GET_SCHEMA_ID = 3
-QUERY_GEN_ID = 4
+GENERATE_QUERY_ID = 4
 CHECK_QUERY_ID = 5
 EXECUTE_QUERY_ID = 6
 SUBMIT_FINAL_ID = 7
@@ -1102,7 +1102,7 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     return {"messages": [summary, msg]}
 
 
-async def query_node(state: DataAnalysisState) -> DataAnalysisState:
+async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that generates and executes SQLite queries using MCP tools and Azure GPT-4o.
 
     This node is the core SQL generation component, translating natural language questions into
@@ -1128,7 +1128,7 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
         6. Capture results or error messages
         7. Update state with query-result pairs
     """
-    print__nodes_debug(f"🧠 {QUERY_GEN_ID}: Enter query_node")
+    print__nodes_debug(f"🧠 {GENERATE_QUERY_ID}: Enter generate_query_node")
 
     current_iteration = state.get("iteration", 0)
     existing_queries = state.get("queries_and_results", [])
@@ -1139,13 +1139,13 @@ async def query_node(state: DataAnalysisState) -> DataAnalysisState:
 
     # Log current state for debugging
     print__nodes_debug(
-        f"🔄 {QUERY_GEN_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries)}"
+        f"🔄 {GENERATE_QUERY_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries)}"
     )
 
     # Check for potential query loops by examining recent queries
     if len(existing_queries) >= 3:
         recent_queries = [q for q, r in existing_queries[-3:]]
-        print__nodes_debug(f"🔄 {QUERY_GEN_ID}: Recent queries: {recent_queries}")
+        print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
     llm = get_azure_llm_gpt_4o(temperature=0.0)
     # llm = get_ollama_llm("qwen:7b")
@@ -1279,32 +1279,32 @@ IMPORTANT notes about SQL query generation:
     result = await llm.ainvoke(prompt_template.format_messages(**template_vars))
     query = result.content.strip()
 
-    print__nodes_debug(f"⚡ {QUERY_GEN_ID}: Generated query: {query}")
+    print__nodes_debug(f"⚡ {GENERATE_QUERY_ID}: Generated query: {query}")
 
     try:
         tool_result = await sqlite_tool.ainvoke({"query": query})
         if isinstance(tool_result, Exception):
             error_msg = f"Error executing query: {str(tool_result)}"
-            print__nodes_debug(f"❌ {QUERY_GEN_ID}: {error_msg}")
+            print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
             new_queries = [(query, f"Error: {str(tool_result)}")]
             last_message = AIMessage(content=error_msg)
         else:
             print__nodes_debug(
-                f"✅ {QUERY_GEN_ID}: Successfully executed query: {query}"
+                f"✅ {GENERATE_QUERY_ID}: Successfully executed query: {query}"
             )
-            print__nodes_debug(f"📊 {QUERY_GEN_ID}: Query result: {tool_result}")
+            print__nodes_debug(f"📊 {GENERATE_QUERY_ID}: Query result: {tool_result}")
             new_queries = [(query, tool_result)]
             # Format the last message to include both query and result
             formatted_content = f"Query:\n{query}\n\nResult:\n{tool_result}"
             last_message = AIMessage(content=formatted_content, id="query_result")
     except Exception as e:
         error_msg = f"Error executing query: {str(e)}"
-        logger.error("❌ %s: %s", QUERY_GEN_ID, error_msg)
+        logger.error("❌ %s: %s", GENERATE_QUERY_ID, error_msg)
         new_queries = [(query, f"Error: {str(e)}")]
         last_message = AIMessage(content=error_msg)
 
     print__nodes_debug(
-        f"🔄 {QUERY_GEN_ID}: Current state of queries_and_results: {new_queries}"
+        f"🔄 {GENERATE_QUERY_ID}: Current state of queries_and_results: {new_queries}"
     )
 
     return {
