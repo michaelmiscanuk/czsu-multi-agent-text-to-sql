@@ -5,7 +5,7 @@ a SQLite query tool for data analysis. It supports two modes:
 
 1. Remote MCP Server Mode (Primary):
    - Connects to a remote FastMCP server (e.g., deployed on FastMCP Cloud)
-   - Uses FastMCP Client with HTTP transport
+   - Uses FastMCP Client with SSE transport
    - Configured via MCP_SERVER_URL environment variable
 
 2. Local SQLite Fallback Mode (Secondary):
@@ -70,7 +70,7 @@ class SQLiteQueryTool(BaseTool):
                 f"{SQLITE_TOOL_ID}: Using REMOTE FastMCP server at: {MCP_SERVER_URL}"
             )
 
-            # Create FastMCP client with HTTP transport
+            # Create FastMCP client with SSE transport
             client = Client(MCP_SERVER_URL)
 
             # Connect and execute query

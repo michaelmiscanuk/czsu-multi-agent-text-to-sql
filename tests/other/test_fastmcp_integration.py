@@ -16,7 +16,7 @@ async def test_mcp_connection():
     """Test connection to FastMCP server."""
 
     # Configuration
-    server_url = "http://localhost:8100/mcp"  # Important: /mcp path is required!
+    server_url = "http://localhost:8100/sse"  # Important: /sse path is required for SSE transport!
 
     print("=" * 60)
     print("🧪 Testing FastMCP Server Connection")
@@ -88,11 +88,8 @@ if __name__ == "__main__":
     print("FastMCP Integration Test")
     print()
     print("Prerequisites:")
-    print("- MCP server must be running on http://localhost:8100/mcp")
+    print("- MCP server must be running on http://localhost:8100/sse")
     print("- Start it with: cd czsu_mcp_server_sqlite && python main.py")
-    print()
-
-    input("Press Enter to start tests (make sure server is running)...")
     print()
 
     asyncio.run(test_mcp_connection())
