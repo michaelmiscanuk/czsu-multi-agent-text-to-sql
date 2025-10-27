@@ -594,6 +594,7 @@ import logging
 from pathlib import Path
 import gc
 import traceback
+import re
 
 from langchain_core.messages import AIMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -1284,17 +1285,15 @@ IMPORTANT notes about SQL query generation:
 
     try:
         tool_result = await sqlite_tool.ainvoke({"query": query})
-        # Extract and parse text from TextContent if MCP returns that format
-        if (
-            isinstance(tool_result, list)
-            and len(tool_result) > 0
-            and hasattr(tool_result[0], "text")
-        ):
-            json_str = tool_result[0].text
-            try:
-                tool_result = json.loads(json_str)
-            except json.JSONDecodeError:
-                tool_result = json_str  # fallback to string if not JSON
+        
+        # Extract text from TextContent wrapper if present using regex
+        result_str = str(tool_result)
+        # Pattern matches: [TextContent(type='text', text='...', annotations=None)]
+        match = re.match(r"^\[TextContent\(type='text', text='(.+)', annotations=None\)\]$", result_str, re.DOTALL)
+        if match:
+            # Extract the text content from the regex group
+            tool_result = match.group(1)
+        
         if isinstance(tool_result, Exception):
             error_msg = f"Error executing query: {str(tool_result)}"
             print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
