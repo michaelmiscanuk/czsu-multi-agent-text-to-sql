@@ -686,7 +686,7 @@ PDF_N_TOP_CHUNKS = (
     5  # Number of top chunks to keep in top_chunks state and show in debug
 )
 SQL_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for SQL selections
-PDF_RELEVANCE_THRESHOLD = 0.01  # Minimum relevance score for PDF chunks
+PDF_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for PDF chunks
 
 # Database Selections Processing Configuration
 SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
@@ -1285,15 +1285,19 @@ IMPORTANT notes about SQL query generation:
 
     try:
         tool_result = await sqlite_tool.ainvoke({"query": query})
-        
+
         # Extract text from TextContent wrapper if present using regex
         result_str = str(tool_result)
         # Pattern matches: [TextContent(type='text', text='...', annotations=None)]
-        match = re.match(r"^\[TextContent\(type='text', text='(.+)', annotations=None\)\]$", result_str, re.DOTALL)
+        match = re.match(
+            r"^\[TextContent\(type='text', text='(.+)', annotations=None\)\]$",
+            result_str,
+            re.DOTALL,
+        )
         if match:
             # Extract the text content from the regex group
             tool_result = match.group(1)
-        
+
         if isinstance(tool_result, Exception):
             error_msg = f"Error executing query: {str(tool_result)}"
             print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
