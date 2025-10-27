@@ -67,6 +67,16 @@ async def test_mcp_connection():
             print(f"   Result: {result.data if hasattr(result, 'data') else result}")
             print()
 
+            # Test specific PRU01BT6 query
+            print("6. Testing specific PRU01BT6 query...")
+            pru_query = "SELECT `Měsíce`, `CZ-NACE`, `value` FROM PRU01BT6 WHERE `Území` = 'Česko' AND `Ukazatel` = 'Index průmyslové produkce' AND `Očištění` = 'Očištěno o kalendářní vlivy, není očištěno o sezónní vlivy' AND `Typ indexu` = 'Bazický index (2021 = 100)' AND `CZ-NACE` = 'Výroba a rozvod elektřiny, plynu, tepla a klimatizovaného vzduchu' ORDER BY `Měsíce` DESC LIMIT 10;"
+            print(f"   Query: {pru_query}")
+
+            result = await client.call_tool("sqlite_query", {"query": pru_query})
+            print(f"✓ Query executed successfully!")
+            print(f"   Result: {result.data if hasattr(result, 'data') else result}")
+            print()
+
         print("=" * 60)
         print("✅ All tests passed!")
         print("=" * 60)
