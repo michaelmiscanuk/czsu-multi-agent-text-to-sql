@@ -551,11 +551,21 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         )
         # For continuing conversations, pass only the fields that need to be updated
         # The checkpointer will merge this with the existing state
+        # CRITICAL FIX: Also reset rewritten_prompt and queries to prevent double execution
         input_state = {
             "prompt": prompt,
-            "rewritten_prompt": None,
+            "rewritten_prompt": None,  # Critical: reset to force fresh rewrite
             "iteration": 0,  # Reset for new question
+            "queries_and_results": [],  # Critical: reset queries to prevent using old ones
             "followup_prompts": [],  # Reset follow-up prompts for new question
+            "final_answer": "",  # Reset final answer
+            # Reset retrieval results to force fresh search
+            "hybrid_search_results": [],
+            "most_similar_selections": [],
+            "top_selection_codes": [],
+            "hybrid_search_chunks": [],
+            "most_similar_chunks": [],
+            "top_chunks": [],
         }
     else:
         print__analysis_tracing_debug(
@@ -595,9 +605,14 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         }
 
     print__analysis_tracing_debug("58 - GRAPH EXECUTION: Starting LangGraph execution")
+    print__main_debug(f"🚀 About to call graph.ainvoke() with thread_id={thread_id}, run_id={run_id}")
+    print__main_debug(f"🚀 Input state keys: {list(input_state.keys())}")
+    
     # Execute the graph with checkpoint configuration and run_id for LangSmith tracing
     # Checkpoints allow resuming execution if interrupted and maintaining conversation memory
     result = await graph.ainvoke(input_state, config=config)
+    
+    print__main_debug(f"✅ graph.ainvoke() completed for thread_id={thread_id}, run_id={run_id}")
 
     print__analysis_tracing_debug(
         "59 - GRAPH EXECUTION COMPLETE: LangGraph execution completed"
