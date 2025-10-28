@@ -1,0 +1,129 @@
+
+
+Lesnictví
+*Forestry*
+
+## 14-11 Vybrané ukazatele lesnictví podle krajů v roce 2023
+*14-11 Selected forestry indicators by Region in 2023*
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Czech Republic total, forest land was 2681764 ha, afforestation/reforestation was 35222 ha, roundwood removals coniferous was 16599540 cubic meters, roundwood removals non-coniferous was 1893316 cubic meters, salvage felling was 11033836 cubic meters, clearing total was 47301 ha, and thinning total was 54678 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Hl. m. Praha a/and Středočeský region, forest land was 305600 ha, afforestation/reforestation was 3963 ha, roundwood removals coniferous was 1844321 cubic meters, roundwood removals non-coniferous was 199565 cubic meters, salvage felling was 1060488 cubic meters, clearing total was 5979 ha, and thinning total was 7570 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Jihočeský region, forest land was 381294 ha, afforestation/reforestation was 3766 ha, roundwood removals coniferous was 2331358 cubic meters, roundwood removals non-coniferous was 140717 cubic meters, salvage felling was 931675 cubic meters, clearing total was 5398 ha, and thinning total was 8790 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Plzeňský region, forest land was 309303 ha, afforestation/reforestation was 3480 ha, roundwood removals coniferous was 2110556 cubic meters, roundwood removals non-coniferous was 78538 cubic meters, salvage felling was 1369356 cubic meters, clearing total was 4878 ha, and thinning total was 6824 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Karlovarský region, forest land was 145271 ha, afforestation/reforestation was 953 ha, roundwood removals coniferous was 1084794 cubic meters, roundwood removals non-coniferous was 43613 cubic meters, salvage felling was 461879 cubic meters, clearing total was 1945 ha, and thinning total was 3810 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Ústecký region, forest land was 164750 ha, afforestation/reforestation was 1823 ha, roundwood removals coniferous was 620341 cubic meters, roundwood removals non-coniferous was 113237 cubic meters, salvage felling was 490203 cubic meters, clearing total was 1953 ha, and thinning total was 2776 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Liberecký region, forest land was 141574 ha, afforestation/reforestation was 1110 ha, roundwood removals coniferous was 706158 cubic meters, roundwood removals non-coniferous was 79162 cubic meters, salvage felling was 341210 cubic meters, clearing total was 2197 ha, and thinning total was 3294 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Královéhradecký region, forest land was 148747 ha, afforestation/reforestation was 1207 ha, roundwood removals coniferous was 887810 cubic meters, roundwood removals non-coniferous was 92185 cubic meters, salvage felling was 589139 cubic meters, clearing total was 3318 ha, and thinning total was 2764 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Pardubický region, forest land was 135021 ha, afforestation/reforestation was 1610 ha, roundwood removals coniferous was 1016248 cubic meters, roundwood removals non-coniferous was 96849 cubic meters, salvage felling was 645640 cubic meters, clearing total was 2704 ha, and thinning total was 4084 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Vysočina region, forest land was 207931 ha, afforestation/reforestation was 8044 ha, roundwood removals coniferous was 2112056 cubic meters, roundwood removals non-coniferous was 64154 cubic meters, salvage felling was 1786455 cubic meters, clearing total was 4070 ha, and thinning total was 3076 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Jihomoravský region, forest land was 201880 ha, afforestation/reforestation was 4464 ha, roundwood removals coniferous was 1024559 cubic meters, roundwood removals non-coniferous was 339801 cubic meters, salvage felling was 1015480 cubic meters, clearing total was 3838 ha, and thinning total was 2955 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Olomoucký region, forest land was 186618 ha, afforestation/reforestation was 1968 ha, roundwood removals coniferous was 1012920 cubic meters, roundwood removals non-coniferous was 244933 cubic meters, salvage felling was 893154 cubic meters, clearing total was 3989 ha, and thinning total was 2886 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Zlínský region, forest land was 158996 ha, afforestation/reforestation was 1269 ha, roundwood removals coniferous was 815024 cubic meters, roundwood removals non-coniferous was 277070 cubic meters, salvage felling was 612303 cubic meters, clearing total was 2977 ha, and thinning total was 3287 ha.[/R]
+
+[R]In table 'Selected forestry indicators by Region in 2023', for Moravskoslezský region, forest land was 194777 ha, afforestation/reforestation was 1566 ha, roundwood removals coniferous was 1033395 cubic meters, roundwood removals non-coniferous was 123492 cubic meters, salvage felling was 836854 cubic meters, clearing total was 4055 ha, and thinning total was 2563 ha.[/R]
+
+## 14-12 Základní údaje o honitbách
+*14-12 Basic data on hunting grounds*
+
+[C]In table 'Basic data on hunting grounds', for 2005, area of hunting grounds total was 6839654 ha, agricultural land was 3887698 ha, forest land was 2569877 ha, water body areas was 94177 ha, other land was 287902 ha, number of hunting grounds was 5729, and persons permanently executing hunting rights on hunting grounds was 95093.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2009, area of hunting grounds total was 6861933 ha, agricultural land was 3899258 ha, forest land was 2575642 ha, water body areas was 95542 ha, other land was 291491 ha, number of hunting grounds was 5753, and persons permanently executing hunting rights on hunting grounds was 94713.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2010, area of hunting grounds total was 6864932 ha, agricultural land was 3897803 ha, forest land was 2578148 ha, water body areas was 95579 ha, other land was 293402 ha, number of hunting grounds was 5747, and persons permanently executing hunting rights on hunting grounds was 94343.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2011, area of hunting grounds total was 6868908 ha, agricultural land was 3900628 ha, forest land was 2577894 ha, water body areas was 96408 ha, other land was 293978 ha, number of hunting grounds was 5760, and persons permanently executing hunting rights on hunting grounds was 93858.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2012, area of hunting grounds total was 6866527 ha, agricultural land was 3900872 ha, forest land was 2575933 ha, water body areas was 96803 ha, other land was 292919 ha, number of hunting grounds was 5765, and persons permanently executing hunting rights on hunting grounds was 93020.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2013, area of hunting grounds total was 6873096 ha, agricultural land was 3899211 ha, forest land was 2580975 ha, water body areas was 98530 ha, other land was 294380 ha, number of hunting grounds was 5789, and persons permanently executing hunting rights on hunting grounds was 93498.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2014, area of hunting grounds total was 6874450 ha, agricultural land was 3898067 ha, forest land was 2584015 ha, water body areas was 98705 ha, other land was 293663 ha, number of hunting grounds was 5792, and persons permanently executing hunting rights on hunting grounds was 92247.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2015, area of hunting grounds total was 6879559 ha, agricultural land was 3899969 ha, forest land was 2584411 ha, water body areas was 98912 ha, other land was 296267 ha, number of hunting grounds was 5804, and persons permanently executing hunting rights on hunting grounds was 92014.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2016, area of hunting grounds total was 6887969 ha, agricultural land was 3900660 ha, forest land was 2593427 ha, water body areas was 99052 ha, other land was 294830 ha, number of hunting grounds was 5815, and persons permanently executing hunting rights on hunting grounds was 91604.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2017, area of hunting grounds total was 6890552 ha, agricultural land was 3903929 ha, forest land was 2591759 ha, water body areas was 99287 ha, other land was 295577 ha, number of hunting grounds was 5793, and persons permanently executing hunting rights on hunting grounds was 90940.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2018, area of hunting grounds total was 6885764 ha, agricultural land was 3900763 ha, forest land was 2590320 ha, water body areas was 99372 ha, other land was 295309 ha, number of hunting grounds was 5784, and persons permanently executing hunting rights on hunting grounds was 90723.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2019, area of hunting grounds total was 6879260 ha, agricultural land was 3897896 ha, forest land was 2586305 ha, water body areas was 99694 ha, other land was 295365 ha, number of hunting grounds was 5782, and persons permanently executing hunting rights on hunting grounds was 90033.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2020, area of hunting grounds total was 6884619 ha, agricultural land was 3901426 ha, forest land was 2588125 ha, water body areas was 99638 ha, other land was 295430 ha, number of hunting grounds was 5786, and persons permanently executing hunting rights on hunting grounds was 88876.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2021, area of hunting grounds total was 6887798 ha, agricultural land was 3901721 ha, forest land was 2590517 ha, water body areas was 99680 ha, other land was 295880 ha, number of hunting grounds was 5787, and persons permanently executing hunting rights on hunting grounds was 88793.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2022, area of hunting grounds total was 6891273 ha, agricultural land was 3903353 ha, forest land was 2591940 ha, water body areas was 100592 ha, other land was 295388 ha, number of hunting grounds was 5782, and persons permanently executing hunting rights on hunting grounds was 88489.[/C]
+
+[C]In table 'Basic data on hunting grounds', for 2023, area of hunting grounds total was 6873641 ha, agricultural land was 3895003 ha, forest land was 2585556 ha, water body areas was 100417 ha, other land was 292665 ha, number of hunting grounds was 5765, and persons permanently executing hunting rights on hunting grounds was 88337.[/C]
+
+ČSÚ     Statistická ročenka České republiky 2024 / Statistical Yearbook of the Czech Republic, 2024     453
+[P]
+
+Stavebnictví
+Construction
+
+## 17-13 Vydaná stavební povolení a orientační hodnota staveb
+## 17-13 Building permits granted and the approximate value of constructions
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Building permits granted total', the total was 80478 permits in 2015, 85988 permits in 2020, 90962 permits in 2021, 86049 permits in 2022, and 77398 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Buildings', the total was 45675 permits in 2015, 48835 permits in 2020, 52601 permits in 2021, 49084 permits in 2022, and 43870 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Residential', the total was 28886 permits in 2015, 31747 permits in 2020, 33995 permits in 2021, 31969 permits in 2022, and 26014 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'New construction', the total was 12926 permits in 2015, 17493 permits in 2020, 18745 permits in 2021, 17275 permits in 2022, and 11972 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Modifications to completed buildings', the total was 15960 permits in 2015, 14254 permits in 2020, 15250 permits in 2021, 14694 permits in 2022, and 14042 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Non-residential', the total was 16789 permits in 2015, 17088 permits in 2020, 18606 permits in 2021, 17115 permits in 2022, and 17856 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'New construction', the total was 5893 permits in 2015, 7508 permits in 2020, 8787 permits in 2021, 8097 permits in 2022, and 8032 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Modifications to completed buildings', the total was 10896 permits in 2015, 9580 permits in 2020, 9819 permits in 2021, 9018 permits in 2022, and 9824 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Civil engineering works', the total was 34803 permits in 2015, 37153 permits in 2020, 38361 permits in 2021, 36965 permits in 2022, and 33528 permits in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Approximate value of constructions total', the total was 254691 million CZK in 2015, 389752 million CZK in 2020, 521373 million CZK in 2021, 515091 million CZK in 2022, and 601666 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Buildings', the total was 160223 million CZK in 2015, 251839 million CZK in 2020, 322597 million CZK in 2021, 342179 million CZK in 2022, and 371292 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Residential', the total was 81568 million CZK in 2015, 129498 million CZK in 2020, 172919 million CZK in 2021, 186179 million CZK in 2022, and 174962 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'New construction', the total was 60232 million CZK in 2015, 99971 million CZK in 2020, 141890 million CZK in 2021, 150302 million CZK in 2022, and 137143 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Modifications to completed buildings', the total was 21336 million CZK in 2015, 29527 million CZK in 2020, 31029 million CZK in 2021, 35877 million CZK in 2022, and 37819 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Non-residential', the total was 78655 million CZK in 2015, 122341 million CZK in 2020, 149678 million CZK in 2021, 156000 million CZK in 2022, and 196330 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'New construction', the total was 37410 million CZK in 2015, 64978 million CZK in 2020, 82936 million CZK in 2021, 93030 million CZK in 2022, and 106182 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Modifications to completed buildings', the total was 41245 million CZK in 2015, 57363 million CZK in 2020, 66742 million CZK in 2021, 62970 million CZK in 2022, and 90148 million CZK in 2023.[/R]
+
+[R]In table 'Building permits granted and the approximate value of constructions', under 'Civil engineering works', the total was 137913 million CZK in 2020, 198776 million CZK in 2021, 172912 million CZK in 2022, and 230374 million CZK in 2023.[/R]
+
+524        Statistická ročenka České republiky 2024 / Statistical Yearbook of the Czech Republic, 2024
+[P]
+
+Průmysl
+Industry
+
+[I]In chart 'Industrial production index by economic activity – year-on-year', the industry total index was 105.2% in 2015, 102.8% in 2016, 107.1% in 2017, 103.0% in 2018, 100.4% in 2019, 93.4% in 2020, 107.8% in 2021, 101.8% in 2022, and 99.4% in 2023. Mining and quarrying showed 97.4% in 2015, 92.8% in 2016, 97.4% in 2017, 99.1% in 2018, 94.2% in 2019, 81.8% in 2020, 108.1% in 2021, 102.1% in 2022, and 83.4% in 2023. Manufacturing was 105.6% in 2015, 103.2% in 2016, 107.7% in 2017, 103.2% in 2018, 100.7% in 2019, 94.0% in 2020, 107.8% in 2021, 101.7% in 2022, and 100.1% in 2023. Electricity, gas, steam and air conditioning supply showed 97.4% in 2015, 102.8% in 2016, 106.8% in 2017, 103.0% in 2018, 100.4% in 2019, 93.4% in 2020, 107.8% in 2021, 96.8% in 2022, and 88.9% in 2023.[/I]
+
+[I]In chart 'Industrial production index by economic activity – fixed-based index', the industry total index was 88.9% in 2015, 91.4% in 2016, 97.9% in 2017, 100.9% in 2018, 101.3% in 2019, 94.6% in 2020, 102.0% in 2021, 103.8% in 2022, and 103.2% in 2023. Mining and quarrying showed 135.8% in 2015, 126.1% in 2016, 122.8% in 2017, 121.7% in 2018, 114.6% in 2019, 93.8% in 2020, 101.4% in 2021, 103.5% in 2022, and 86.4% in 2023. Manufacturing was 88.9% in 2015, 91.8% in 2016, 98.9% in 2017, 102.1% in 2018, 102.8% in 2019, 96.6% in 2020, 104.2% in 2021, 106.0% in 2022, and 106.1% in 2023. Electricity, gas, steam and air conditioning supply showed 96.7% in 2015, 99.4% in 2016, 106.2% in 2017, 109.4% in 2018, 109.9% in 2019, 102.6% in 2020, 110.6% in 2021, 107.1% in 2022, and 95.2% in 2023.[/I]
+
+[I]In chart 'Basic indicators of industry by economic activity in 2022', for employed persons, the total was 1403 thousand persons, with mining and quarrying representing 4.0% (1.4%), manufacturing 91.7%, electricity, gas, steam and air conditioning supply 2.9%, and water supply, sewerage, waste management and remediation activities 1.4%. For outputs including trade margin, the total was 7847090 million CZK, with mining and quarrying representing 0.9%, manufacturing 70.9%, electricity, gas, steam and air conditioning supply 26.1%, and water supply activities 2.1%. For value added, the total was 1639378 million CZK, with mining and quarrying representing 2.0%, manufacturing 76.5%, electricity, gas, steam and air conditioning supply 18.3%, and water supply activities 3.2%.[/I]
+
+ČSÚ     Statistická ročenka České republiky 2024 / Statistical Yearbook of the Czech Republic, 2024     461

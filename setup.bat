@@ -35,6 +35,7 @@ echo }
 
 echo Setting up frontend...
 cd frontend
+@REM npm install --force
 npm install
 npm run build
 cd ..

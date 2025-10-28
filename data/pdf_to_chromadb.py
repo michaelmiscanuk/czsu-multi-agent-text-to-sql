@@ -27,14 +27,14 @@ Key Features:
    - Content type separation using custom markers
 
 2. Intelligent Separator-Based Chunking:
-   - Primary strategy: Extract content between separator pairs ([C]...[/C], [T]...[/T])
+   - Primary strategy: Extract content between separator pairs ([R]...[/R], [T]...[/T], [C]...[/C])
    - Secondary strategy: Sentence-boundary chunking with ceiling division for oversized content
    - NEVER splits mid-word or mid-sentence - only at complete sentence boundaries
    - Uses ceiling division to calculate optimal chunk count, then distributes sentences evenly
    - Token-aware processing (8190 token limit compliance)
    - Content type preservation and intelligent merging
    - Quality validation with numerical data preservation checks
-   - Configurable chunk sizes (MIN: 100, MAX: 5000 chars, 0 overlap)
+   - Configurable chunk sizes (MIN: 100, MAX: 4000 chars, 0 overlap)
    - Smart handling of ungrouped content with sentence preservation
 
 3. Robust ChromaDB Document Management:
@@ -64,7 +64,8 @@ Key Features:
 
 6. Content Type Intelligence & Preservation:
    - Table content extraction with context preservation
-   - Column-based data organization and processing  
+   - Row-based data organization with time-series condensation
+   - Intelligent year detection (in columns, rows, or absent)
    - Image/chart content description handling with trend analysis
    - Regular text section management with language preservation
    - Mixed content type processing and intelligent categorization
@@ -80,8 +81,9 @@ Key Features:
 Content Separator System:
 =========================
 Custom marker system for precise content organization:
-- [T]...[/T]: Table content with detailed cell descriptions
-- [C]...[/C]: Column content within tables (primary chunking unit)
+- [T]...[/T]: Table content with detailed row descriptions
+- [R]...[/R]: Row content within tables (primary chunking unit for time-series data)
+- [C]...[/C]: Column content within tables (alternative chunking unit)
 - [X]...[/X]: Regular text content (preserved in original language)
 - [I]...[/I]: Image and chart descriptions with trend analysis
 - [P]: Page separators between document sections
@@ -149,7 +151,7 @@ Core Processing:
 - CHUNK_OVERLAP: 0 (disabled for separator-based chunking)
 
 Search Configuration:
-- HYBRID_SEARCH_RESULTS: 20 (initial result pool size)
+- HYBRID_SEARCH_RESULTS: 40 (initial result pool size)
 - SEMANTIC_WEIGHT: 0.85 (semantic search importance)
 - BM25_WEIGHT: 0.15 (keyword search importance)
 - FINAL_RESULTS_COUNT: 2 (final filtered results)
@@ -217,7 +219,7 @@ Expected Output:
 ===============
 File Structure:
 - {pdf_name}_llamaparse_parsed.txt (parsed content with separators)
-- pdf_chromadb_llamaparse/ (ChromaDB collection directory)
+- pdf_chromadb_llamaparse_v2/ (ChromaDB collection directory)
   ├── chroma.sqlite3 (metadata database)
   └── collection_data/ (vector storage)
 
@@ -355,7 +357,7 @@ except ImportError:
 PARSE_WITH_LLAMAPARSE = 0  # Set to 1 to parse PDF with LlamaParse and save to txt file
 # Set to 0 to skip parsing (use existing txt file)
 
-CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
+CHUNK_AND_STORE = 0  # Set to 1 to chunk text and create/update ChromaDB
 # Set to 0 to skip chunking (use existing ChromaDB)
 
 DO_TESTING = 1  # Set to 1 to test search on existing ChromaDB
@@ -392,7 +394,8 @@ PDF_FILENAMES = [
     # "32019824.pdf",
     # "1_PDFsam_32019824.pdf",
     # "501_PDFsam_32019824.pdf",
-    "661_PDFsam_32019824.pdf"
+    # "661_PDFsam_32019824.pdf",
+    # "453_461_524.pdf"
 ]
 
 COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
@@ -414,7 +417,9 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 # TEST_QUERY = "Kolik je osobnich automobilu ve Varsave?"
 # TEST_QUERY = "How many passenger cars there in Warsaw (total, not per 1000 inhabitants)?"
 # TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
-TEST_QUERY = "Japan Imports for 2023"
+# TEST_QUERY = "Japan Imports for 2023"
+# TEST_QUERY = "Dej mi data poctu stavebnich povoleni bytu za posledni roky k dispozici."
+TEST_QUERY = "Give me the data on the number of building permits for apartments in recent years available."
 
 # Azure OpenAI Settings
 AZURE_EMBEDDING_DEPLOYMENT = (
@@ -424,7 +429,6 @@ AZURE_EMBEDDING_DEPLOYMENT = (
 
 # LlamaParse Settings (only needed if using llamaparse method)
 LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
-# LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY2", "")  # Read from .env file
 
 # Content Separators - unique strings unlikely to appear in normal text
 CONTENT_SEPARATORS = {
@@ -451,10 +455,10 @@ MAX_CHUNK_SIZE = 4000  # Optimized chunk size for better semantic boundaries
 CHUNK_OVERLAP = 0  # Overlap for better context preservation
 
 # Search Settings
-HYBRID_SEARCH_RESULTS = 20  # Number of results from hybrid search
+HYBRID_SEARCH_RESULTS = 40  # Number of results from hybrid search
 SEMANTIC_WEIGHT = 0.85  # Weight for semantic search (0.0-1.0)
 BM25_WEIGHT = 0.15  # Weight for BM25 search (0.0-1.0)
-FINAL_RESULTS_COUNT = 2  # Number of final results to return
+FINAL_RESULTS_COUNT = 10  # Number of final results to return
 
 # =====================================================================
 # PATH CONFIGURATION - AUTOMATICALLY SET
@@ -463,7 +467,7 @@ FINAL_RESULTS_COUNT = 2  # Number of final results to return
 # PARSED_TEXT_PATH = SCRIPT_DIR / PARSED_TEXT_FILENAME  # Full path to parsed text file
 
 # ChromaDB storage location
-CHROMA_DB_PATH = SCRIPT_DIR / "pdf_chromadb_llamaparse"
+CHROMA_DB_PATH = SCRIPT_DIR / "pdf_chromadb_llamaparse_v2"
 
 
 # ==============================================================================
@@ -515,79 +519,52 @@ def get_llamaparse_instructions() -> str:
         Comprehensive instruction string for LlamaParse processing
     """
     return f"""
-🚨🚨🚨 SUPER CRITICAL: EXTRACT EVERY SINGLE CELL VALUE FROM EVERY TABLE! 🚨🚨🚨
-DO NOT MISS ANY DATA! PROCESS ALL COLUMNS! EXTRACT ALL VALUES!
+🚨 CRITICAL: NO MARKDOWN TABLES! ONLY DESCRIPTIVE SENTENCES! 🚨
+🚨 EXTRACT EVERY VALUE - NO MISSING DATA! 🚨
 
-BASIC REQUIREMENTS:
-- Describe tables/charts in English, preserve Czech text as-is
-- Format numbers without separators: "49621" not "49,621"
-- Use EXACT separators: Tables {CONTENT_SEPARATORS['table_start']}...{CONTENT_SEPARATORS['table_end']}, 
-  Columns {CONTENT_SEPARATORS['column_start']}...{CONTENT_SEPARATORS['column_end']}, 
-  Images {CONTENT_SEPARATORS['image_start']}...{CONTENT_SEPARATORS['image_end']}, 
-  Text {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
 
-=== 🚨 TABLE PROCESSING (EXTRACT ALL VALUES!) 🚨 ===
+MOST IMPORTANT RULES:
+- NEVER create markdown tables with pipes (|...|) - ONLY complete sentences
+- Numbers without separators: "49621" not "49,621"
+- Use Separators: {CONTENT_SEPARATORS['row_start']}...{CONTENT_SEPARATORS['row_end']}, {CONTENT_SEPARATORS['column_start']}...{CONTENT_SEPARATORS['column_end']}, {CONTENT_SEPARATORS['image_start']}...{CONTENT_SEPARATORS['image_end']}, {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
 
-COLUMN PROCESSING RULES:
-- PHYSICAL COLUMN = visual column position (1,2,3,4...) - count left to right
-- Skip Column 1 (row labels), process ALL data columns (2,3,4,5,6,7,8,9...)
-- Each physical column gets ONE {CONTENT_SEPARATORS['column_start']}...{CONTENT_SEPARATORS['column_end']} pair
-- Write descriptive sentence for EACH cell: table title + row + column + value + units + unit in words in parenthesis + footnotes
+=== TABLE PROCESSING ===
 
-MANDATORY WORKFLOW:
-1. {CONTENT_SEPARATORS['table_start']}
-2. For EACH physical column (2,3,4,5,6,7,8,9...):
-   a. {CONTENT_SEPARATORS['column_start']}
-   b. Write sentences for ALL values in that column, go each value one by one and Each value one on its own line
-   c. {CONTENT_SEPARATORS['column_end']}
-3. {CONTENT_SEPARATORS['table_end']}
+STEP 1: Identify if years are in columns/rows/absent
 
-FOOTNOTE INTEGRATION:
-- Find footnote markers (1), 2), a), *, etc. in headers
-- Include complete footnote text in EVERY affected cell description
-- Pattern: "In table '[NAME]', [measurement] in [entity] ([footnote text]) for [time] was [value] [units]"
+STEP 2: Convert to sentences (NO MARKDOWN!)
 
-TABLE EXAMPLE:
-{CONTENT_SEPARATORS['table_start']}
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education", the total number of teachers (includes preparatory stage) for 2010/11 was 132330 FTE.
-In the table titled "Teachers in regional education", the total number of teachers (includes preparatory stage) for 2011/12 was 131668 FTE.
-[Continue for all years]
-{CONTENT_SEPARATORS['column_end']}
-{CONTENT_SEPARATORS['column_start']}
-In the table titled "Teachers in regional education", the number of teachers in nursery schools for 2010/11 was 25737 FTE.
-[Continue for all years and ALL remaining columns]
-{CONTENT_SEPARATORS['column_end']}
-{CONTENT_SEPARATORS['table_end']}
+A) YEARS IN COLUMNS: One sentence per row with all years
+Pattern: {CONTENT_SEPARATORS['row_start']}In table '[English name]', under '[hierarchy]', the [metric] was [val1] [units] in [yr1], [val2] [units] in [yr2]...{CONTENT_SEPARATORS['row_end']}
+Example: {CONTENT_SEPARATORS['row_start']}In table 'Building permits granted', under 'Approximate value total', the total was 254891 million CZK in 2015, 389752 million CZK in 2020...{CONTENT_SEPARATORS['row_end']}
 
-=== 🚨 CHART PROCESSING (NO LISTS!) 🚨 ===
+B) YEARS IN ROWS: One sentence per year with all columns
+Pattern: {CONTENT_SEPARATORS['column_start']}In table '[English name]', for [year], [metric1] was [val1] [units], [metric2] was [val2] [units]...{CONTENT_SEPARATORS['column_end']}
 
-CHART RULES:
-- NO bullet points, NO lists, NO markdown - ONLY complete sentences
-- Write ONE sentence per data point (bar, pie slice, line point, point). Dont skip any values
-- Include  in each sentence: chart title + category + value + units + unit in words in parenthesis + footnotes
-- Always include overall trend analysis sentence at end for each chart
+C) NO YEARS: One sentence per row with all columns
+Pattern: {CONTENT_SEPARATORS['row_start']}In table '[English name]', for [row_label], [metric1] was [val1] [units], [metric2] was [val2] [units]...{CONTENT_SEPARATORS['row_end']}
 
-CHART WORKFLOW:
-1. {CONTENT_SEPARATORS['image_start']}
-2. Write sentence for each data point with full context
-3. Always add trend analysis sentence
-4. {CONTENT_SEPARATORS['image_end']}
+=== CHART/IMAGE PROCESSING ===
 
-CHART EXAMPLE:
-{CONTENT_SEPARATORS['image_start']}
-In the chart titled "R&D Expenditure Total", the total R&D expenditure in Czech Republic for 2015 was 88.7 billion CZK.
-[DO SAME FOR EACH VALUE in the chart]
-Overall trend analysis: R&D expenditure showed consistent growth from 2015 to 2023.
-{CONTENT_SEPARATORS['image_end']}
+🚨 DO NOT write chart title/subtitle as separate line - put it INSIDE {CONTENT_SEPARATORS['image_start']}...{CONTENT_SEPARATORS['image_end']} block! 🚨
+Pattern: {CONTENT_SEPARATORS['image_start']}In chart '[FULL_TITLE + SUBTITLE in English]', [category] was [val1] in [yr1], [val2] in [yr2]... Trend: [analysis].{CONTENT_SEPARATORS['image_end']}
 
-=== TEXT PROCESSING ===
+Example: {CONTENT_SEPARATORS['image_start']}In chart 'Basic indicators of industry by economic activity in 2022', for employed persons, the total was 1403 thousand persons, with mining representing 4.0%, manufacturing 91.7%, electricity/gas supply 2.9%, and water supply 1.4%.{CONTENT_SEPARATORS['image_end']}
 
-TEXT RULES:
-- Preserve original Czech text exactly as written
-- Wrap with Each paragraph in {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
+=== TEXT ===
 
-Process with extreme attention to extracting ALL data for optimal semantic search performance.
+Wrap normal text in paragraphs: {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
+
+OTHER RULES:
+- SKIP all Czech text completely EVERYWHERE IN THE PDF - use ONLY English text. 
+- Always place the unit right after the value: “254891 million CZK in 2015”.
+- Never say 'first/second chart'; only use the chart title.
+- When English labels are available anywhere (e.g., an Indicator column), always use those; ignore Czech completely.
+- List all available years in ascending order; do not skip any year or value present in the table.
+- Long time series: if >12 years, split into 2-3 sentences within the same [R] block.
+- Do not mention colors or visual styles.
+
+🚨 NEVER CREATE MARKDOWN TABLES - ONLY SENTENCES WITH SEPARATORS! 🚨
 """
 
 
@@ -631,7 +608,7 @@ def smart_text_chunking(
     SECONDARY STRATEGY: For content exceeding MAX_CHUNK_SIZE, apply sentence-boundary chunking with ceiling division.
     NEVER splits mid-word or mid-sentence - only at complete sentence boundaries.
 
-    All content types ([C]...[/C], [T]...[/T], [I]...[/I], [X]...[/X]) are treated equally:
+    All content types ([R]...[/R], [C]...[/C], [T]...[/T], [I]...[/I], [X]...[/X]) are treated equally:
     - If ≤ MAX_CHUNK_SIZE: kept as single semantic unit
     - If > MAX_CHUNK_SIZE: split intelligently using sentence boundaries and ceiling division
 
@@ -2705,12 +2682,11 @@ def main():
             chunks_data = process_parsed_text_to_chunks(all_pages_data)
             print__chromadb_debug(f"Created {len(chunks_data)} chunks for processing")
 
-            # Initialize ChromaDB with cloud/local support
-            from metadata.chromadb_client_factory import get_chromadb_client
+            # Initialize ChromaDB with local PersistentClient (not using cloud)
+            import chromadb
 
-            client = get_chromadb_client(
-                local_path=CHROMA_DB_PATH, collection_name=COLLECTION_NAME
-            )
+            client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+            print__chromadb_debug(f"📂 Using local ChromaDB at: {CHROMA_DB_PATH}")
 
             try:
                 collection = client.create_collection(
@@ -2858,12 +2834,11 @@ def main():
         print(f"\n🔍 OPERATION 3: Testing search functionality")
 
         try:
-            # Load ChromaDB collection with cloud/local support
-            from metadata.chromadb_client_factory import get_chromadb_client
+            # Load ChromaDB collection using local PersistentClient (not using cloud)
+            import chromadb
 
-            client = get_chromadb_client(
-                local_path=CHROMA_DB_PATH, collection_name=COLLECTION_NAME
-            )
+            client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
+            print__chromadb_debug(f"📂 Using local ChromaDB at: {CHROMA_DB_PATH}")
             collection = client.get_collection(name=COLLECTION_NAME)
             print(f"✅ Successfully loaded collection: {COLLECTION_NAME}")
 

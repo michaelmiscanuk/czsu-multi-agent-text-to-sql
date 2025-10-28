@@ -46,8 +46,9 @@ except NameError:
 
 # Configuration of local ChromaDB paths to migrate to cloud
 LOCAL_CHROMADB_PATHS = [
-    BASE_DIR / "metadata" / "czsu_chromadb",
+    # BASE_DIR / "metadata" / "czsu_chromadb",
     # BASE_DIR / "data" / "pdf_chromadb_llamaparse",
+    BASE_DIR / "data" / "pdf_chromadb_llamaparse_v2",
     # Add more paths here if needed:
 ]
 
@@ -185,7 +186,7 @@ def copy_collection(
             pass
 
         # Create new cloud collection with same metadata
-        print(f"   ☁️  Creating cloud collection...")
+        print(f"   ☁️  Creating cloud collection named: '{collection_name}'...")
         cloud_collection = cloud_client.create_collection(
             name=collection_name, metadata=local_metadata
         )
@@ -372,6 +373,22 @@ def main():
         sys.exit(1)
 
     print(f"\n📊 Will process {len(valid_paths)} local ChromaDB location(s)")
+
+    # Preview collections that will be migrated
+    print(f"\n📋 Previewing collections to be migrated:")
+    for path in valid_paths:
+        try:
+            local_client = get_local_client(path)
+            collection_names = list_local_collections(local_client)
+            print(f"   From {path.name}:")
+            if collection_names:
+                for name in collection_names:
+                    print(f"     - {name} (will overwrite in cloud)")
+            else:
+                print(f"     (no collections found)")
+        except Exception as e:
+            print(f"   From {path.name}: Error reading collections - {str(e)}")
+    print()
 
     # Get user confirmation
     response = input(
