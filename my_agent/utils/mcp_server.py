@@ -25,6 +25,7 @@ from typing import List
 
 from langchain.tools import BaseTool
 from langchain_core.tools import ToolException
+from pydantic import BaseModel, Field
 
 # Get base directory
 try:
@@ -43,7 +44,15 @@ SQLITE_TOOL_ID = 21  # Static ID for SQLiteQueryTool
 
 # MCP Server Configuration
 MCP_SERVER_URL = os.getenv("MCP_SERVER_URL", "").strip()
-USE_LOCAL_SQLITE_FALLBACK = int(os.getenv("USE_LOCAL_SQLITE_FALLBACK", "1"))
+USE_LOCAL_SQLITE_FALLBACK = int(
+    os.getenv("USE_LOCAL_SQLITE_FALLBACK", "1").split("#")[0].strip()
+)
+
+
+class SQLiteQueryInput(BaseModel):
+    """Input schema for SQLite query tool."""
+
+    query: str = Field(description="SQL query to execute against the SQLite database")
 
 
 class SQLiteQueryTool(BaseTool):
@@ -55,7 +64,10 @@ class SQLiteQueryTool(BaseTool):
     """
 
     name: str = "sqlite_query"
-    description: str = "Execute SQL query on the SQLite database"
+    description: str = (
+        "Execute SQL query on the SQLite database. Input should be a valid SQL query string."
+    )
+    args_schema: type[BaseModel] = SQLiteQueryInput
 
     # Class variable to track which mode is being used
     _using_remote_mcp: bool = False

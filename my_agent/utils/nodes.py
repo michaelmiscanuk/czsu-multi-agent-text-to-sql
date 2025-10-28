@@ -38,10 +38,13 @@ Key Features:
    - Cohere reranking for both sources
    - Configurable result counts and thresholds
 
-3. Schema Loading & SQL Generation:
+3. Schema Loading & Agentic SQL Generation:
    - Dynamic schema retrieval from SQLite metadata DB
    - Schema truncation for token efficiency
-   - MCP (Model Context Protocol) tool integration
+   - MCP (Model Context Protocol) tool integration with remote/local fallback
+   - Agentic tool calling pattern: LLM autonomously decides when to execute queries
+   - LLM can call sqlite_query tool multiple times (up to MAX_TOOL_ITERATIONS)
+   - Iterative data gathering: LLM examines results and decides if more queries needed
    - Comprehensive SQL generation prompts with bilingual support
    - Czech character and diacritics handling
    - JOIN optimization and aggregation guidance
@@ -596,10 +599,10 @@ import gc
 import traceback
 import re
 
-from langchain_core.messages import AIMessage, SystemMessage
+from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.messages import AIMessage
 from langchain_core.documents import Document
+from langchain_core.tools import tool
 
 from dotenv import load_dotenv
 
@@ -661,6 +664,16 @@ from metadata.chromadb_client_factory import should_use_cloud
 from .mcp_server import create_mcp_server
 from .state import DataAnalysisState
 
+
+# ==============================================================================
+# HELPER TOOLS
+# ==============================================================================
+@tool
+def finish_gathering():
+    """Call this tool when you have gathered sufficient data to answer the user's question."""
+    return "Data gathering finished."
+
+
 # Set up logger
 logger = logging.getLogger(__name__)
 
@@ -670,6 +683,12 @@ PDF_FUNCTIONALITY_AVAILABLE = True
 MAX_ITERATIONS = int(
     os.environ.get("MAX_ITERATIONS", "1")
 )  # Configurable via environment variable, default 2
+
+# Maximum number of tool calls the LLM can make in generate_query_node (agentic pattern)
+MAX_TOOL_ITERATIONS = int(
+    os.environ.get("MAX_TOOL_ITERATIONS", "5")
+)  # Default: LLM can call sqlite_query tool up to 5 times
+
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 POST_RETRIEVAL_SYNC_ID = 11  # ID for post-retrieval synchronization function
 REFLECT_NODE_ID = 12
@@ -680,10 +699,10 @@ EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
 
 # PDF Chunk Processing Configuration
 PDF_HYBRID_SEARCH_DEFAULT_RESULTS = (
-    30  # Number of chunks to retrieve from PDF hybrid search
+    20  # Number of chunks to retrieve from PDF hybrid search
 )
 PDF_N_TOP_CHUNKS = (
-    10  # Number of top chunks to keep in top_chunks state and show in debug
+    5  # Number of top chunks to keep in top_chunks state and show in debug
 )
 SQL_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for SQL selections
 PDF_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for PDF chunks
@@ -1105,15 +1124,20 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
 
 
 async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that generates and executes SQLite queries using MCP tools and Azure GPT-4o.
+    """LangGraph node that generates and executes SQLite queries using agentic tool calling pattern.
 
-    This node is the core SQL generation component, translating natural language questions into
-    executable SQLite queries. It uses comprehensive prompting with schema details, conversation
-    context, and bilingual (Czech/English) support. The node handles Czech diacritics, aggregations,
-    and complex filtering while avoiding common pitfalls like CELKEM (total) row inclusion.
+    This node implements an agentic workflow where the LLM autonomously decides when to execute
+    SQL queries and when it has gathered sufficient data. The LLM can call the sqlite_query tool
+    multiple times (up to MAX_TOOL_ITERATIONS) to iteratively gather information.
 
-    The node integrates with MCP (Model Context Protocol) server to execute queries via sqlite_query
-    tool, capturing both successful results and errors for downstream processing.
+    The node uses Azure GPT-4o with tool binding, allowing the LLM to:
+    - Generate SQL queries based on user questions
+    - Execute queries using the MCP (Model Context Protocol) sqlite_query tool
+    - Examine results and decide if more queries are needed
+    - Iteratively refine data collection until sufficient information is gathered
+
+    The MCP tool automatically handles remote/local server fallback, providing robust query execution
+    with comprehensive error handling and logging.
 
     Args:
         state (DataAnalysisState): Workflow state containing prompt, schema, messages, and iteration info.
@@ -1122,47 +1146,64 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         DataAnalysisState: Updated state with messages, queries_and_results, iteration, and rewritten_prompt.
 
     Key Steps:
-        1. Extract query context (prompt, schema, conversation summary)
-        2. Load schema for selected datasets
-        3. Build comprehensive SQL generation prompt
-        4. Call Azure GPT-4o to generate SQLite query
-        5. Execute query using MCP sqlite_query tool
-        6. Capture results or error messages
-        7. Update state with query-result pairs
+        1. Extract state variables (iteration, queries, messages, prompts, selection codes)
+        2. Log debug information and check for query loops
+        3. Set up LLM and MCP tools
+        4. Extract conversation summary and last message
+        5. Load schema for selected datasets
+        6. Build SQL generation prompt with system and human messages
+        7. Bind tool to LLM and initialize conversation
+        8. Enter agentic loop: LLM generates queries and calls tool iteratively
+        9. Capture all queries and results in queries_and_results list
+        10. Update state with query-result pairs and return
     """
     print__nodes_debug(f"🧠 {GENERATE_QUERY_ID}: Enter generate_query_node")
 
+    # Extract state variables
     current_iteration = state.get("iteration", 0)
-    existing_queries = state.get("queries_and_results", [])
+    existing_queries_and_results = state.get("queries_and_results", [])
     messages = state.get("messages", [])
     rewritten_prompt = state.get("rewritten_prompt")
-    prompt = state["prompt"]
-    top_selection_codes = state.get("top_selection_codes")
+    original_prompt = state["prompt"]
+    selected_codes = state.get("top_selection_codes")
 
-    # Log current state for debugging
+    # Log debug information and check for potential query loops
     print__nodes_debug(
-        f"🔄 {GENERATE_QUERY_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries)}"
+        f"🔄 {GENERATE_QUERY_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries_and_results)}"
     )
 
     # Check for potential query loops by examining recent queries
-    if len(existing_queries) >= 3:
-        recent_queries = [q for q, r in existing_queries[-3:]]
+    if len(existing_queries_and_results) >= 3:
+        recent_queries = [query for query, _ in existing_queries_and_results[-3:]]
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
+    # Set up LLM and MCP tools
     llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
-    # llm = get_ollama_llm("qwen:7b")
     tools = await create_mcp_server()
-    sqlite_tool = next(tool for tool in tools if tool.name == "sqlite_query")
+    sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
+    if not sqlite_tool:
+        error_msg = "sqlite_query tool not found in MCP server"
+        print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
+        return {
+            "messages": messages,
+            "queries_and_results": existing_queries_and_results
+            + [("ERROR", error_msg)],
+            "iteration": current_iteration,
+        }
 
-    summary = (
+    # Add finish gathering tool
+    tools.append(finish_gathering)
+
+    # Extract conversation summary and last message
+    summary_message = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
         else SystemMessage(content="")
     )
     last_message = messages[1] if len(messages) > 1 else None
 
-    # Skip last message if it's schema details to avoid duplication
-    # (schema is already included separately in the prompt)
+    # Skip last message if it's schema details to avoid duplication in prompt
+    last_message_content = ""
     if (
         last_message
         and hasattr(last_message, "id")
@@ -1172,20 +1213,24 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     else:
         last_message_content = last_message.content if last_message else ""
 
-    # Load schema before building the prompt
-    schema = await load_schema({"top_selection_codes": top_selection_codes})
+    # Load schema for selected datasets
+    schema_data = await load_schema({"top_selection_codes": selected_codes})
 
-    system_prompt = """
+    # Build SQL generation prompt with system and human messages
+    system_prompt = f"""
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
-Your task is to translate the user's natural-language question into a SQLite SQL query and execute it using the sqlite_query tool.
+Your task is to translate the user's natural-language question into SQLite SQL queries using the sqlite_query tool.
 
-To accomplish this, follow these steps:
+=== TOOL USAGE - CRITICAL INSTRUCTIONS ===
+- You have access to the sqlite_query tool that executes SQLITE SQL queries on the database
+- You can call this tool up to {MAX_TOOL_ITERATIONS} times to gather all necessary information
+- You can use some preparatory queries first to examine data structure and understand what information is available
+- After each tool call, you'll see the results and can decide if you need more data
+- IMPORTANT: When you have sufficient information to answer the user's question, call the finish_gathering tool with no arguments. Do not generate any text response. The data you gathered will be used later to format the final answer.
+- Use the tool iteratively to refine your understanding and gather comprehensive data
+- If the last message contains reflection feedback indicating that more queries are needed to answer the question, you MUST call the sqlite_query tool to gather additional data. Do not provide an answer based on existing summary data when reflection feedback requests more queries.
 
-=== OUTPUT - MOST IMPORTANT AND CRITICAL RULE FOR IT TO WORK!!!!!!!! ===
-- Return ONLY the final SQLite SQL QUERY that should be executed, with nothing else around it. 
-- Do NOT wrap it in code fences, like ``` ``` and do NOT add explanations, only the SQLite query.
-- Do NOT add any other text or comments, only the SQLite query.
-- REMEMBER, only SQLite SQL QUERY is allowed to be returned, nothing else, or tool called with it will fail.
+- Do not ask the user for additional information; provide the best answer possible based on available data.
 
 1. Read and analyze the provided inputs:
 - User prompt (can be in Czech or English)
@@ -1193,7 +1238,7 @@ To accomplish this, follow these steps:
     layout can be non standard, but you have a lot of information there.
 - Read the previous summary of the conversation
 - Read the last message in the conversation
-- Read any feedback from the reflection agent, often in the last message.
+- Read any feedback from the reflection agent, often in the last message and take it into account.
 
 2. Process the prompt by:
 - Identifying key terms in either language
@@ -1201,29 +1246,40 @@ To accomplish this, follow these steps:
 - Handling Czech diacritics and special characters
 - Converting concepts between languages
 
-3. Construct an appropriate SQLite SQL query by:
-- Choosing the correct dataset and its schema
+3. Construct appropriate SQLite SQL queries by:
+- You are provided with the schemas of the 3 most relevant datasets; choose and use any of these datasets to construct your queries
 - Using exact column names from the schema provided (can be Czech or English), always use backticks around column names, like `Druh vlastnictví` = "Bytové družstvo";
 - Matching user prompt terms to correct dimension values provided as a distinct list of values
 - Ensuring proper string matching for Czech characters
-- Generating a NEW SQLite QUERY THAT PROVIDES ADDITIONAL INFORMATION that is not already present in the previously executed queries
+- Each query should provide NEW information that is not already present in previously executed queries
 
-4. Use the sqlite_query tool to execute the query.
+4. Iteratively use the sqlite_query tool:
+- Call the tool with each SQL query you construct
+- Examine the results after each execution
+- Determine if additional queries are needed to fully answer the question
+- Continue calling the tool until you have comprehensive data
+- When satisfied with the information gathered, provide your final response summarizing the findings
 
 6. Numeric outputs must be plain digits with NO thousands separators.
 
 7. Be mindful about technical statistical terms - for example if someone asks about momentum, results should be some kind of rate of change.
 
-Important Schema Details for one dataset:
-- "dimensions" key contains several other keys, which are columns in the table
-- Each of those columns under "dimensions" key contains "values" key with list of distinct values in that column
-- If there is a column of type "metric / ukazatel", it means that it is a column that contains names of metrics, not values - it can be used in WHERE clause for filtering
+Important Schema Details for the provided datasets:
+- Each dataset block starts with "Dataset: [CODE]" where CODE is the table name (e.g., ZAM06AT1)
+- Each dataset includes:
+  -- A description of what the dataset focuses on (employment, job applicants, self-employed persons, etc.)
+  -- A list of columns with Czech names (e.g., "Ukazatel", "Pohlaví", "Roky", "Věkové skupiny")
+  -- For each column, the available distinct values are explicitly listed in quotes - use them exactly as written - you must match user queries to these exact values
+  -- Hierarchical organization explanation showing how data is structured (geographic, temporal, demographic dimensions)
 - Column "value" is always the column that contains the numeric values for the metrics, it can be used in aggregations, like sum, etc. - but don't aggregate without thinking if it makes sense, always read full record, often it is not necessary to aggregate when record contains 'celkem' or 'total' in one of the columns.
+- Columns like "Ukazatel" or similar contain metric names and can be used in WHERE clauses for filtering
 
 HERE IS THE MOST IMPORTANT PART:
-- Always read carefully all distinct values of dimensions, and do some thinking to choose the best ones to fit our question
-- Use LIKE or regex when filtering the dimensional values, if it is necessary for our question
-- For example, if user asks about "female", but dimensional values are "start_period_female" and "end_period_female", just filter for '%female%', if it makes sense
+- Always read carefully all available values for each column in the relevant datasets
+- Choose the dataset that best matches the user's question based on the description and available data
+- Use LIKE '%term%' when the user's term is a substring of available values
+- For age groups, regions, or other categorical data, find the closest matching available values
+- If user asks for "total" or "all", look for "Celkem" values in the data
 
 IMPORTANT notes about TOTAL records (CELKEM): 
 - The dataset contains statistical records that include TOTAL ROWS for certain dimension values.
@@ -1234,7 +1290,6 @@ IMPORTANT notes about TOTAL records (CELKEM):
 - Always calculate using only the relevant data and separate pieces (excluding the rows with TOTALS (CELKEM)), ensuring accuracy in statistical results.
 
 IMPORTANT notes about SQL query generation:
-- Return ONLY the SQL expression that answers the question.
 - Limit the output to at most 10 rows using LIMIT unless the user specifies otherwise - but first think if you don't need to group it somehow so it returns reasonable 10 rows.
 - Select only the necessary columns, never all columns.
 - Use appropriate SQL aggregation functions when needed (e.g., SUM, AVG) 
@@ -1244,89 +1299,277 @@ IMPORTANT notes about SQL query generation:
 - Always examine the ALL Schema to see how the data are laid out - column names and their concrete dimensional values. 
 - If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name. Then use it to generate correct query and use tool to get results.
 - Be careful about how you ALIAS (AS Clause) the Column names to make sense of the data - based on what you use in where or group by clause.
-- ALWAYS INCLUDE COLUMN "metric" or "ukazatel" if present - WHEN DOING GROUP BY - it will provide additional information about meaning of 'value' column in the result.
+- ALWAYS INCLUDE COLUMN "metric" or "ukazatel" columns in SELECT and GROUP BY clauses if present - it will provide additional information about meaning of 'value' column in the result.
 
-=== OUTPUT - MOST IMPORTANT AND CRITICAL RULE FOR IT TO WORK!!!!!!!! ===
-- Return ONLY the final SQLite SQL QUERY that should be executed, with nothing else around it. 
-- Do NOT wrap it in code fences, like ``` ``` and do NOT add explanations, only the SQLite query.
-- Do NOT add any other text or comments, only the SQLite query.
-- REMEMBER, only SQLite SQL QUERY is allowed to be returned, nothing else, or tool called with it will fail.
+=== VERIFICATION AND COMPLETION ===
+- After executing queries, review the results to ensure they answer the user's question
+- If the results are incomplete or unclear, execute additional queries to gather more information
+- When you have sufficient data, STOP immediately without generating any text response
+- Simply do not make any more tool calls - the system will automatically format your gathered data into an answer
+
+=== EXAMPLE DATASET AND SAMPLE QUERIES ===
+Below is an example of how dataset schemas are provided and how to construct effective SQL queries:
+
+EXAMPLE DATASET DESCRIPTION:
+************************
+Dataset: ZAM06AT1.
+This dataset focuses on the employment rate by age group. The data is collected at the yearly level and covers various territory types, including the state, NUTS2 regions, and individual regions within the Czech Republic. The dataset includes the following columns: "Ukazatel", "Pohlaví", "Roky", "ČR, Reg. soudržnosti, Kraje", and "Věkové skupiny".
+
+For "Ukazatel", the available value is "Míra zaměstnanosti (%)".
+
+For "Pohlaví", the available value is "Celkem".
+
+For "Roky", the available value is "2023".
+
+For "ČR, Reg. soudržnosti, Kraje", the available values are "Česko", "Praha", "Střední Čechy".
+
+For "Věkové skupiny", the available values are "15 až 19", "20 až 24".
+
+The data is organized hierarchically, with "ČR, Reg. soudržnosti, Kraje" representing the geographic dimension, "Roky" representing the temporal dimension, and "Věkové skupiny" representing the demographic dimension. The metric "Ukazatel" provides the employment rate as a percentage, and "Pohlaví" specifies the gender category, which in this dataset is aggregated as "Celkem".
+************************
+
+EXAMPLE DATA ROWS:
+"Ukazatel","Pohlaví","Roky","ČR, Reg. soudržnosti, Kraje","Věkové skupiny","value"
+"Míra zaměstnanosti (%)","Celkem","2024","Česko","15 až 19","5.0298978485"
+"Míra zaměstnanosti (%)","Celkem","2024","Praha","15 až 19","5.4763366729"
+"Míra zaměstnanosti (%)","Celkem","2024","Praha","20 až 24","45.029916104"
+
+EXAMPLE SQL QUERIES FOR THIS DATASET:
+Below are practical query examples showcasing different SQL techniques:
+
+1. Simple WHERE filtering - Getting total for Czech Republic:
+   SELECT `Ukazatel`, `Věkové skupiny`, `value` 
+   FROM ZAM06AT1 
+   WHERE `ČR, Reg. soudržnosti, Kraje` = "Česko" 
+   LIMIT 10;
+   -- Note: "Česko" represents the total for Czech Republic. When such total rows exist,
+   -- you don't need to sum over individual regions to avoid double counting.
+   -- Always include Ukazatel to provide context about what the value represents.
+
+2. Filtering specific age group:
+   SELECT `Ukazatel`, `ČR, Reg. soudržnosti, Kraje`, `Věkové skupiny`, `value` 
+   FROM ZAM06AT1 
+   WHERE `Věkové skupiny` = "20 až 24" 
+   LIMIT 10;
+
+3. Using LIKE for partial matching:
+   SELECT `Ukazatel`, `ČR, Reg. soudržnosti, Kraje`, `Věkové skupiny`, `value` 
+   FROM ZAM06AT1 
+   WHERE `ČR, Reg. soudržnosti, Kraje` LIKE "%Praha%" 
+   LIMIT 10;
+
+4. Multiple WHERE conditions with AND:
+   SELECT `Ukazatel`, `ČR, Reg. soudržnosti, Kraje`, `Věkové skupiny`, `value` 
+   FROM ZAM06AT1 
+   WHERE `Věkové skupiny` = "25 až 29" 
+   AND `ČR, Reg. soudržnosti, Kraje` = "Praha";
+
+5. Using IN clause for multiple age groups:
+   SELECT `Ukazatel`, `ČR, Reg. soudržnosti, Kraje`, `Věkové skupiny`, `value` 
+   FROM ZAM06AT1 
+   WHERE `Věkové skupiny` IN ("20 až 24", "25 až 29") 
+   AND `ČR, Reg. soudržnosti, Kraje` = "Česko";
+
+6. GROUP BY with SUM (use with caution - avoid when totals exist and user asks about totals):
+   SELECT `Ukazatel`, `Věkové skupiny`, SUM(`value`) as total_employment_rate 
+   FROM ZAM06AT1 
+   WHERE `ČR, Reg. soudržnosti, Kraje` NOT LIKE "%Česko%" 
+   AND `ČR, Reg. soudržnosti, Kraje` NOT LIKE "%soudržnosti%" 
+   GROUP BY `Ukazatel`, `Věkové skupiny` 
+   LIMIT 10;
+   -- Note: We exclude "Česko" and cohesion regions (soudržnosti) to avoid totals.
+   -- When using GROUP BY, always include Ukazatel in both SELECT and GROUP BY.
+
+7. Ordering results by value:
+   SELECT `Ukazatel`, `ČR, Reg. soudržnosti, Kraje`, `Věkové skupiny`, `value` 
+   FROM ZAM06AT1 
+   WHERE `Věkové skupiny` = "20 až 24" 
+   ORDER BY `value` DESC 
+   LIMIT 10;
+
+8. Finding average employment rate by age group:
+   SELECT `Ukazatel`, `Věkové skupiny`, AVG(`value`) as avg_employment_rate 
+   FROM ZAM06AT1 
+   WHERE `ČR, Reg. soudržnosti, Kraje` LIKE "%kraj" 
+   GROUP BY `Ukazatel`, `Věkové skupiny` 
+   ORDER BY avg_employment_rate DESC;
+   -- Note: Using "kraj" suffix to filter only individual regions, excluding totals.
+   -- Including Ukazatel in GROUP BY ensures the metric name is preserved in results.
+
+Remember: Always examine the schema to understand:
+- What columns contain categorical dimensions vs. metrics
+- What values are available for filtering
+- Whether total/aggregate rows ("Celkem", "Česko") exist that should be used instead of summing
+- How to properly match user queries to exact column values
 
 """
-    # Build human prompt conditionally to avoid empty "Last message:" section
+    # Build human prompt conditionally to avoid empty sections
     human_prompt_parts = [
-        "User question: {user_question}",
-        "Schema: {schema}",
-        "Summary of conversation:\n{summary_content}",
+        "\n**************\nUser question: {user_question}",
+        "\n**************\nSchemas:\n{schema}",
+        "\n**************\nSummary of conversation:\n{summary_content}",
     ]
 
     if last_message_content:
-        human_prompt_parts.append("Last message:\n{last_message_content}")
+        human_prompt_parts.append(
+            "\n**************\nLast message:\n{last_message_content}"
+        )
 
     human_prompt = "\n".join(human_prompt_parts)
 
-    # Create template variables dict
+    # Prepare template variables
     template_vars = {
-        "user_question": rewritten_prompt or prompt,
-        "schema": schema,
-        "summary_content": summary.content,
+        "user_question": rewritten_prompt or original_prompt,
+        "schema": schema_data,
+        "summary_content": summary_message.content,
     }
 
     if last_message_content:
         template_vars["last_message_content"] = last_message_content
 
+    # Bind tool to LLM and initialize conversation
+    llm_with_tools = llm.bind_tools(tools)
+
+    # Build initial messages for the conversation
     prompt_template = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
-    result = await llm.ainvoke(prompt_template.format_messages(**template_vars))
-    query = result.content.strip()
+    initial_messages = prompt_template.format_messages(**template_vars)
 
-    print__nodes_debug(f"⚡ {GENERATE_QUERY_ID}: Generated query: {query}")
-
-    try:
-        tool_result = await sqlite_tool.ainvoke({"query": query})
-
-        # Extract text from TextContent wrapper if present using regex
-        result_str = str(tool_result)
-        # Pattern matches: [TextContent(type='text', text='...', annotations=None)]
-        match = re.match(
-            r"^\[TextContent\(type='text', text='(.+)', annotations=None\)\]$",
-            result_str,
-            re.DOTALL,
-        )
-        if match:
-            # Extract the text content from the regex group
-            tool_result = match.group(1)
-
-        if isinstance(tool_result, Exception):
-            error_msg = f"Error executing query: {str(tool_result)}"
-            print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
-            new_queries = [(query, f"Error: {str(tool_result)}")]
-            last_message = AIMessage(content=error_msg)
-        else:
-            print__nodes_debug(
-                f"✅ {GENERATE_QUERY_ID}: Successfully executed query: {query}"
-            )
-            print__nodes_debug(f"📊 {GENERATE_QUERY_ID}: Query result: {tool_result}")
-            new_queries = [(query, tool_result)]
-            # Format the last message to include both query and result
-            formatted_content = f"Query:\n{query}\n\nResult:\n{tool_result}"
-            last_message = AIMessage(content=formatted_content, id="query_result")
-    except Exception as e:
-        error_msg = f"Error executing query: {str(e)}"
-        logger.error("❌ %s: %s", GENERATE_QUERY_ID, error_msg)
-        new_queries = [(query, f"Error: {str(e)}")]
-        last_message = AIMessage(content=error_msg)
+    # Enter agentic loop: LLM generates queries and calls tool iteratively
+    conversation_messages = list(initial_messages)
+    new_queries_and_results = []
+    tool_call_count = 0
+    finished = False
 
     print__nodes_debug(
-        f"🔄 {GENERATE_QUERY_ID}: Current state of queries_and_results: {new_queries}"
+        f"🔄 {GENERATE_QUERY_ID}: Starting agentic loop (max iterations: {MAX_TOOL_ITERATIONS})"
     )
 
+    while tool_call_count < MAX_TOOL_ITERATIONS:
+        tool_call_count += 1
+        print__nodes_debug(
+            f"🔄 {GENERATE_QUERY_ID}: Tool iteration {tool_call_count}/{MAX_TOOL_ITERATIONS}"
+        )
+
+        # Invoke LLM (may return tool calls or signal completion)
+        llm_response = await llm_with_tools.ainvoke(conversation_messages)
+
+        # Check if LLM wants to use tools
+        if not llm_response.tool_calls:
+            # No more tool calls - LLM decided it has enough data
+            print__nodes_debug(
+                f"✅ {GENERATE_QUERY_ID}: LLM finished gathering data (no more tool calls)"
+            )
+            break
+
+        # LLM wants to call tools - add its message to conversation
+        conversation_messages.append(llm_response)
+        print__nodes_debug(
+            f"🔧 {GENERATE_QUERY_ID}: LLM requested {len(llm_response.tool_calls)} tool call(s)"
+        )
+
+        # Execute each tool call
+        for tool_call in llm_response.tool_calls:
+            tool_name = tool_call.get("name", "unknown")
+            tool_args = tool_call.get("args", {})
+            tool_call_id = tool_call.get("id", str(uuid.uuid4()))
+
+            print__nodes_debug(
+                f"🔧 {GENERATE_QUERY_ID}: Executing tool '{tool_name}' with call_id: {tool_call_id}"
+            )
+
+            if tool_name == "finish_gathering":
+                # Execute finish tool
+                tool_result = await finish_gathering.ainvoke({})
+                result_text = str(tool_result)
+                tool_message = ToolMessage(
+                    content=result_text, tool_call_id=tool_call_id
+                )
+                conversation_messages.append(tool_message)
+                finished = True
+                break
+            elif "query" in tool_args:
+                sql_query = tool_args["query"]
+                print__nodes_debug(f"⚡ {GENERATE_QUERY_ID}: SQL Query: {sql_query}")
+
+                # Execute the query using MCP tool
+                try:
+                    tool_result = await sqlite_tool.ainvoke({"query": sql_query})
+
+                    # Extract text from potential wrapper formats
+                    result_text = str(tool_result)
+                    # Handle TextContent wrapper if present
+                    text_content_match = re.match(
+                        r"^\[TextContent\(type='text', text='(.+)', annotations=None\)\]$",
+                        result_text,
+                        re.DOTALL,
+                    )
+                    if text_content_match:
+                        result_text = text_content_match.group(1)
+
+                    print__nodes_debug(
+                        f"✅ {GENERATE_QUERY_ID}: Query executed successfully"
+                    )
+                    print__nodes_debug(f"📊 {GENERATE_QUERY_ID}: Result: {result_text}")
+
+                    # Store query and result
+                    new_queries_and_results.append((sql_query, result_text))
+
+                    # Create tool message with result
+                    tool_message = ToolMessage(
+                        content=result_text, tool_call_id=tool_call_id
+                    )
+                    conversation_messages.append(tool_message)
+
+                except Exception as e:
+                    error_msg = f"Error executing query: {str(e)}"
+                    print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
+                    logger.error("❌ %s: %s", GENERATE_QUERY_ID, error_msg)
+
+                    # Store error as result
+                    new_queries_and_results.append((sql_query, f"Error: {str(e)}"))
+
+                    # Send error back to LLM
+                    tool_message = ToolMessage(
+                        content=error_msg, tool_call_id=tool_call_id
+                    )
+                    conversation_messages.append(tool_message)
+            else:
+                # Tool call without required query parameter
+                error_msg = "Tool call missing 'query' parameter"
+                print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
+                # Log error but don't append to results or conversation to avoid confusion
+
+        if finished:
+            break
+
+        # Continue loop so LLM can see results and decide if more queries are needed
+
+    else:
+        print__nodes_debug(
+            f"⚠️ {GENERATE_QUERY_ID}: Max tool iterations ({MAX_TOOL_ITERATIONS}) reached"
+        )
+
+    # Create completion message
+    completion_message = AIMessage(
+        content=f"Data gathering complete. {len(new_queries_and_results)} queries executed.",
+        id="query_result",
+    )
+
+    print__nodes_debug(
+        f"🔄 {GENERATE_QUERY_ID}: Agentic loop complete. Total queries executed: {len(new_queries_and_results)}"
+    )
+    print__nodes_debug(
+        f"🔄 {GENERATE_QUERY_ID}: Current state of queries_and_results: {new_queries_and_results}"
+    )
+
+    # Update state with new queries and results
     return {
         "rewritten_prompt": rewritten_prompt,
-        "messages": [summary, last_message],
+        "messages": [summary_message, completion_message],
         "iteration": current_iteration,
-        "queries_and_results": new_queries,
+        "queries_and_results": new_queries_and_results,
     }
 
 
@@ -1425,7 +1668,10 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
 
     system_prompt = """
 You are a data analysis reflection agent.
-Your task is to analyze the current state and provide detailed feedback to guide the next query.
+Your task is to analyze the current state and provide detailed feedback to guide the next query generation.
+
+NOTE: The query generation agent uses an agentic tool calling pattern, where it can execute multiple SQL queries 
+iteratively. Your feedback will help it understand what additional information is needed.
 
 You must also decide if there is now enough information to answer the user's question.
 
@@ -1449,13 +1695,14 @@ Guidelines:
   - For trend analysis, ensure we have data across all relevant time periods.
   - For distribution questions, ensure we have complete coverage of all categories.
   - If you see repetitive or very similar queries, strongly consider answering with current data.
+  - Remember that the query agent can execute multiple queries, so you can request comprehensive data gathering.
 
 Your response should be detailed and specific, helping guide the next query. 
 But it also must be to the point and not too long, max 400 words.
 
 MOST IMPORTANT: 
 If improvement will be needed - Imagine it is a chatbot and you are now playing a role of a HUMAN giving instructions to the LLM about 
-how to improve the SQL QUERY - so phrase it like instructions.
+what additional information to gather using SQL queries - so phrase it like instructions.
 
 REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: improve' on its own line.
 """

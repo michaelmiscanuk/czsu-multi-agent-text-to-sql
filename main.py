@@ -29,7 +29,7 @@ from typing import List
 
 import psutil
 from dotenv import load_dotenv
-from langchain_core.messages import AIMessage, SystemMessage
+from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 
 # Load environment variables
@@ -583,9 +583,8 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             # Basic conversation fields
             "prompt": prompt,
             "rewritten_prompt": None,
-            "messages": [
-                SystemMessage(content=""),
-            ],  # Initialize with only SystemMessage for new conversations
+            # Initialize messages with the prompt as a HumanMessage for LangSmith Input visibility
+            "messages": [HumanMessage(content=prompt)],
             "iteration": 0,
             "queries_and_results": [],
             "chromadb_missing": False,
