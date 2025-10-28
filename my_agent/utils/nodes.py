@@ -680,10 +680,10 @@ EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
 
 # PDF Chunk Processing Configuration
 PDF_HYBRID_SEARCH_DEFAULT_RESULTS = (
-    15  # Number of chunks to retrieve from PDF hybrid search
+    30  # Number of chunks to retrieve from PDF hybrid search
 )
 PDF_N_TOP_CHUNKS = (
-    5  # Number of top chunks to keep in top_chunks state and show in debug
+    10  # Number of top chunks to keep in top_chunks state and show in debug
 )
 SQL_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for SQL selections
 PDF_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for PDF chunks
