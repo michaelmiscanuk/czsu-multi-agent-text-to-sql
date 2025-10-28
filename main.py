@@ -585,8 +585,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             "rewritten_prompt": None,
             "messages": [
                 SystemMessage(content=""),
-                AIMessage(content=""),
-            ],  # Initialize for new conversation
+            ],  # Initialize with only SystemMessage for new conversations
             "iteration": 0,
             "queries_and_results": [],
             "chromadb_missing": False,
@@ -605,14 +604,18 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         }
 
     print__analysis_tracing_debug("58 - GRAPH EXECUTION: Starting LangGraph execution")
-    print__main_debug(f"🚀 About to call graph.ainvoke() with thread_id={thread_id}, run_id={run_id}")
+    print__main_debug(
+        f"🚀 About to call graph.ainvoke() with thread_id={thread_id}, run_id={run_id}"
+    )
     print__main_debug(f"🚀 Input state keys: {list(input_state.keys())}")
-    
+
     # Execute the graph with checkpoint configuration and run_id for LangSmith tracing
     # Checkpoints allow resuming execution if interrupted and maintaining conversation memory
     result = await graph.ainvoke(input_state, config=config)
-    
-    print__main_debug(f"✅ graph.ainvoke() completed for thread_id={thread_id}, run_id={run_id}")
+
+    print__main_debug(
+        f"✅ graph.ainvoke() completed for thread_id={thread_id}, run_id={run_id}"
+    )
 
     print__analysis_tracing_debug(
         "59 - GRAPH EXECUTION COMPLETE: LangGraph execution completed"
