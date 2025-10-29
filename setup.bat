@@ -35,8 +35,10 @@ echo }
 
 echo Setting up frontend...
 cd frontend
+npm install -g yarn
+yarn install
 @REM npm install --force
-npm install
+@REM npm install
 npm run build
 cd ..
 

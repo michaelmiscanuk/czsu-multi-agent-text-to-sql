@@ -20,7 +20,7 @@ wheels/
 pdf_chromadb_llamaparse.zip
 
 data/czsu_data.db
-data/CSVs
+data/CSVs/*
 data/pdf_chromadb/
 metadata/czsu_chromadb/
 metadata/schemas/
