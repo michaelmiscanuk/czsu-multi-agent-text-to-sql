@@ -1017,20 +1017,35 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         DataAnalysisState: Updated state with messages, queries_and_results, iteration, and rewritten_prompt.
 
     Key Steps:
-        1. Extract state variables (iteration, queries, messages, prompts, selection codes)
-        2. Log debug information and check for query loops
-        3. Set up LLM and MCP tools
-        4. Extract conversation summary and last message
-        5. Load schema for selected datasets
-        6. Build SQL generation prompt with system and human messages
-        7. Bind tool to LLM and initialize conversation
-        8. Enter agentic loop: LLM generates queries and calls tool iteratively
-        9. Capture all queries and results in queries_and_results list
-        10. Update state with query-result pairs and return
+        1. Extract state variables (current_iteration, existing_queries_and_results, messages, rewritten_prompt, original_prompt, selected_codes)
+        2. Check for potential query loops by examining recent queries
+        3. Set up LLM and MCP tools (get Azure GPT-4o model, create MCP server, find sqlite_tool, add finish_gathering tool)
+        4. Extract conversation summary and last message (get summary_message, last_message, determine last_message_content)
+        5. Load schema for selected datasets using load_schema helper
+        6. Build SQL generation prompt with system and human messages (define system_prompt, build human_prompt_parts, prepare template_vars)
+        7. Bind tools to LLM and initialize conversation (bind tools, create prompt_template, format initial_messages, set conversation_messages)
+        8. Enter agentic loop while tool_call_count < MAX_TOOL_ITERATIONS (invoke LLM, check for tool calls, execute tools, append results)
+        9. After loop: Create completion message and return updated state with messages, iteration, and queries_and_results
+
+    System Prompt Key Points:
+    - Bilingual Data Query Specialist proficient in Czech and English, expert in SQL with SQLite dialect
+    - Task: Translate natural-language questions into SQLite queries using sqlite_query tool
+    - Tool usage: Access to sqlite_query tool, can call up to MAX_TOOL_ITERATIONS times, use preparatory queries, call finish_gathering when sufficient data gathered
+    - Process prompt: Read user prompt, schemas, summary, last message; identify key terms, match to schema, handle Czech diacritics, convert concepts
+    - Construct queries: Use provided schemas, exact column names with backticks, match to distinct values, ensure proper string matching for Czech characters
+    - Iterative tool use: Call tool with queries, examine results, decide if more data needed, continue until comprehensive data obtained
+    - Numeric outputs: Plain digits with no thousands separators
+    - Technical terms: Mindful of statistical terms like momentum as rate of change
+    - Schema details: Dataset blocks with descriptions, columns, distinct values, hierarchical organization; "value" column contains numeric metrics
+    - TOTAL records (CELKEM): Ignore in calculations to avoid double counting, exclude totals when summing or aggregating
+    - SQL generation: Limit to 10 rows, select necessary columns, use aggregations carefully, include metric columns in SELECT/GROUP BY, do not modify database, use PRAGMA for schema if unsure, alias columns appropriately
+    - Verification: Review results, execute additional queries if incomplete, stop when sufficient data gathered without further tool calls
+    - Examples: Dataset descriptions, sample queries for various SQL techniques
     """
+
     print__nodes_debug(f"🧠 {GENERATE_QUERY_ID}: Enter generate_query_node")
 
-    # Extract state variables
+    # Key Step 1: Extract state variables (current_iteration, existing_queries_and_results, messages, rewritten_prompt, original_prompt, selected_codes)
     current_iteration = state.get("iteration", 0)
     existing_queries_and_results = state.get("queries_and_results", [])
     messages = state.get("messages", [])
@@ -1038,17 +1053,15 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     original_prompt = state["prompt"]
     selected_codes = state.get("top_selection_codes")
 
-    # Log debug information and check for potential query loops
     print__nodes_debug(
         f"🔄 {GENERATE_QUERY_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries_and_results)}"
     )
-
-    # Check for potential query loops by examining recent queries
+    # Key Step 2: Check for potential query loops by examining recent queries
     if len(existing_queries_and_results) >= 3:
         recent_queries = [query for query, _ in existing_queries_and_results[-3:]]
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
-    # Set up LLM and MCP tools
+    # Key Step 3: Set up LLM and MCP tools (get Azure GPT-4o model, create MCP server, find sqlite_tool, add finish_gathering tool)
     llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
     tools = await create_mcp_server()
     sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
@@ -1065,7 +1078,7 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     # Add finish gathering tool
     tools.append(finish_gathering)
 
-    # Extract conversation summary and last message
+    # Key Step 4: Extract conversation summary and last message (get summary_message, last_message, determine last_message_content)
     summary_message = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
@@ -1084,10 +1097,10 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     else:
         last_message_content = last_message.content if last_message else ""
 
-    # Load schema for selected datasets
+    # Key Step 5: Load schema for selected datasets using load_schema helper
     schema_data = await load_schema({"top_selection_codes": selected_codes})
 
-    # Build SQL generation prompt with system and human messages
+    # Key Step 6: Build SQL generation prompt with system and human messages (define system_prompt, build human_prompt_parts, prepare template_vars)
     system_prompt = f"""
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
 Your task is to translate the user's natural-language question into SQLite SQL queries using the sqlite_query tool.
@@ -1298,7 +1311,7 @@ Remember: Always examine the schema to understand:
     if last_message_content:
         template_vars["last_message_content"] = last_message_content
 
-    # Bind tool to LLM and initialize conversation
+    # Key Step 7: Bind tools to LLM and initialize conversation (bind tools, create prompt_template, format initial_messages, set conversation_messages)
     llm_with_tools = llm.bind_tools(tools)
 
     # Build initial messages for the conversation
@@ -1317,6 +1330,7 @@ Remember: Always examine the schema to understand:
         f"🔄 {GENERATE_QUERY_ID}: Starting agentic loop (max iterations: {MAX_TOOL_ITERATIONS})"
     )
 
+    # Key Step 8: Enter agentic loop while tool_call_count < MAX_TOOL_ITERATIONS (invoke LLM, check for tool calls, execute tools, append results)
     while tool_call_count < MAX_TOOL_ITERATIONS:
         tool_call_count += 1
         print__nodes_debug(
@@ -1422,6 +1436,7 @@ Remember: Always examine the schema to understand:
             f"⚠️ {GENERATE_QUERY_ID}: Max tool iterations ({MAX_TOOL_ITERATIONS}) reached"
         )
 
+    # Key Step 9: After loop: Create completion message and return updated state with messages, iteration, and queries_and_results
     # Create completion message
     completion_message = AIMessage(
         content=f"Data gathering complete. {len(new_queries_and_results)} queries executed.",
@@ -1711,8 +1726,9 @@ You are a bilingual (Czech/English) data analyst. Respond strictly using provide
    - IMPORTANT: Your response MUST be in this language: {detected_language}
    - IMPORTANT: Translate ALL content to {detected_language}, including data labels, column names, table headers, and any Czech terms in the data
    - Synthesize all data (SQL + PDF) into one comprehensive answer
+   - Provide as much as possible of the RELEVANT details from SQL and PDF data that are relevant to the user's prompt.
    - Compare values when relevant
-   - Highlight patterns if asked
+   - Highlight patterns and trends if applicable
    - Note contradictions if found
    - Never hallucinate, always check the meaning of the data and if you are not sure about the answer or if the answer is not in the results, just say so.
    - Be careful not to say that something was 0 when you got no results from SQL.
