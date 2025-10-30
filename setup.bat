@@ -1,20 +1,20 @@
 @echo off
 
+@echo off
+
 if not exist ".venv" (
     echo Creating new virtual environment...
     uv venv --python 3.11.9
     echo Installing backend dependencies for the first time...
+    echo Installing/Updating backend packages...
+    uv pip install --python .venv .
+    uv pip install --python .venv .[dev]
 ) else (
     echo Virtual environment already exists, checking for updates...
+    echo Updating backend packages...
+    uv pip install --python .venv . --upgrade
+    uv pip install --python .venv .[dev] --upgrade
 )
-
-echo Activating venv...
-call .venv\Scripts\activate
-
-echo Installing/Updating backend packages...
-uv pip install .
-uv pip install .[dev]
-pip install -e .
 
 python unzip_files.py
 
@@ -35,10 +35,9 @@ echo }
 
 echo Setting up frontend...
 cd frontend
-npm install -g yarn
-yarn install
-@REM npm install --force
-@REM npm install
+
+@REM npm set registry https://registry.npmmirror.com/
+npm install --verbose --force
 npm run build
 cd ..
 

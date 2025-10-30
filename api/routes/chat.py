@@ -594,57 +594,8 @@ async def delete_chat_checkpoints(thread_id: str, user=Depends(get_current_user)
     )
 
     try:
-        # Get a healthy checkpointer
-        print__delete_chat_debug("🔧 DEBUG: Getting healthy checkpointer...")
-        checkpointer = await get_global_checkpointer()
-        print__delete_chat_debug(
-            f"🔧 DEBUG: Checkpointer type: {type(checkpointer).__name__}"
-        )
-
-        # Check if we have a PostgreSQL checkpointer (not InMemorySaver)
-        print__delete_chat_debug(
-            "🔧 DEBUG: Checking if checkpointer has 'conn' attribute..."
-        )
-        if not hasattr(checkpointer, "conn"):
-            print__delete_chat_debug(
-                "⚠️ No PostgreSQL checkpointer available - nothing to delete"
-            )
-            return {
-                "message": "No PostgreSQL checkpointer available - nothing to delete"
-            }
-
-        print__delete_chat_debug("🔧 DEBUG: Checkpointer has 'conn' attribute")
-        print__delete_chat_debug(
-            f"🔧 DEBUG: checkpointer.conn type: {type(checkpointer.conn).__name__}"
-        )
-
-        # Access the connection through the conn attribute
-        conn_obj = checkpointer.conn
-        print__delete_chat_debug(
-            f"🔧 DEBUG: Connection object set, type: {type(conn_obj).__name__}"
-        )
-
-        # FIXED: Handle both connection pool and single connection cases
-        if hasattr(conn_obj, "connection") and callable(
-            getattr(conn_obj, "connection", None)
-        ):
-            # It's a connection pool - use pool.connection()
-            print__delete_chat_debug("🔧 DEBUG: Using connection pool pattern...")
-            async with conn_obj.connection() as conn:
-                print__delete_chat_debug(
-                    f"🔧 DEBUG: Successfully got connection from pool, type: {type(conn).__name__}"
-                )
-                result_data = await perform_deletion_operations(
-                    conn, user_email, thread_id
-                )
-                return result_data
-        else:
-            # It's a single connection - use it directly
-            print__delete_chat_debug("🔧 DEBUG: Using single connection pattern...")
-            conn = conn_obj
-            print__delete_chat_debug(
-                f"🔧 DEBUG: Using direct connection, type: {type(conn).__name__}"
-            )
+        # Use the same connection method as get_user_chat_threads for consistency
+        async with get_direct_connection() as conn:
             result_data = await perform_deletion_operations(conn, user_email, thread_id)
             return result_data
 

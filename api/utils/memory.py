@@ -702,6 +702,8 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
                     print__api_postgresql(
                         f"✅ Deleted {deleted_counts[table]} records from {table} for thread_id: {thread_id}"
                     )
+                    # Explicit commit for safety
+                    await conn.commit()
 
         except Exception as table_error:
             print__api_postgresql(f"⚠ Error deleting from table {table}: {table_error}")
@@ -739,6 +741,8 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
             )
 
             deleted_counts["users_threads_runs"] = users_threads_runs_deleted
+            # Explicit commit for safety
+            await conn.commit()
 
     except Exception as e:
         print__api_postgresql(f"❌ Error deleting from users_threads_runs: {e}")

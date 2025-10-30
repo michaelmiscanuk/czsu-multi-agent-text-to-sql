@@ -23,7 +23,9 @@
    uvicorn api.main:app --host 0.0.0.0 --port 8000 --log-level info --reload
    ```
    
-   If there is some problem with libraries, delete .venv folder and run commands above
+   If there is some problem with libraries, delete folders:  
+   (.venv, czsu_multi_agent_text_to_sql.egg-info, __pycache__)
+   Run commands above.
    
 3. **Frontend Setup (from frontend folder)**
    Run the following commands:
@@ -33,8 +35,8 @@
    npm run dev
    ```
 
-   If there isome problem with libraries, delete these items in frontend folder
-   node_modules folder, .next folder and package-lock file
+   If there isome problem with libraries, delete these items in frontend folder:
+   (node_modules folder, .next folder and package-lock file)
    Run commands above.
    
    If more problems, try again deleting same folders as above and try with China Registry:
