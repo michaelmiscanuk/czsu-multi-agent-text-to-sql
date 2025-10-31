@@ -1754,6 +1754,8 @@ You are a bilingual (Czech/English) data analyst. Respond strictly using provide
 Example regarding numeric output:
 Good: "X is 1234567 while Y is 7654321"
 Bad: "The query shows X is 1,234,567"
+
+
 """
 
     # Build the formatted prompt with separate sections for SQL and PDF data
@@ -1781,7 +1783,9 @@ Bad: "The query shows X is 1,234,567"
     else:
         instruction = "No data context available to answer the question."
 
+    language_stress = f"   - IMPORTANT: Translate ALL content to {detected_language}, including data labels, column names, table headers, and any Czech terms in the data"
     formatted_prompt_parts.append(instruction)
+    formatted_prompt_parts.append(language_stress)
     formatted_prompt = "\n\n".join(formatted_prompt_parts)
 
     # Prepare template variables
