@@ -365,6 +365,35 @@ wheels = [
 ]
 
 [[package]]
+name = "azure-core"
+version = "1.36.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0a/c4/d4ff3bc3ddf155156460bff340bbe9533f99fac54ddea165f35a8619f162/azure_core-1.36.0.tar.gz", hash = "sha256:22e5605e6d0bf1d229726af56d9e92bc37b6e726b141a18be0b4d424131741b7", size = 351139 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b1/3c/b90d5afc2e47c4a45f4bba00f9c3193b0417fad5ad3bb07869f9d12832aa/azure_core-1.36.0-py3-none-any.whl", hash = "sha256:fee9923a3a753e94a259563429f3644aaf05c486d45b1215d098115102d91d3b", size = 213302 },
+]
+
+[[package]]
+name = "azure-identity"
+version = "1.25.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "azure-core" },
+    { name = "cryptography" },
+    { name = "msal" },
+    { name = "msal-extensions" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/06/8d/1a6c41c28a37eab26dc85ab6c86992c700cd3f4a597d9ed174b0e9c69489/azure_identity-1.25.1.tar.gz", hash = "sha256:87ca8328883de6036443e1c37b40e8dc8fb74898240f61071e09d2e369361456", size = 279826 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/7b/5652771e24fff12da9dde4c20ecf4682e606b104f26419d139758cc935a6/azure_identity-1.25.1-py3-none-any.whl", hash = "sha256:e9edd720af03dff020223cd269fa3a61e8f345ea75443858273bcb44844ab651", size = 191317 },
+]
+
+[[package]]
 name = "babel"
 version = "2.17.0"
 source = { registry = "https://pypi.org/simple" }
@@ -826,6 +855,8 @@ dependencies = [
     { name = "langgraph-checkpoint-postgres" },
     { name = "langsmith" },
     { name = "libsql-client" },
+    { name = "llama-index-llms-azure-openai" },
+    { name = "llama-index-llms-openai" },
     { name = "llama-parse" },
     { name = "markupsafe" },
     { name = "mcp" },
@@ -904,12 +935,14 @@ requires-dist = [
     { name = "langgraph-checkpoint-postgres", specifier = "==2.0.21" },
     { name = "langsmith", specifier = "==0.3.34" },
     { name = "libsql-client", specifier = ">=0.3.1" },
+    { name = "llama-index-llms-azure-openai", specifier = ">=0.4.0" },
+    { name = "llama-index-llms-openai", specifier = "==0.6.6" },
     { name = "llama-parse", specifier = ">=0.4.0" },
     { name = "markupsafe", specifier = "==3.0.2" },
     { name = "mcp", specifier = "==1.9.2" },
     { name = "notebook", marker = "extra == 'dev'", specifier = ">=6.5.0" },
     { name = "numpy", specifier = ">=1.25.2" },
-    { name = "openai", specifier = "==1.82.1" },
+    { name = "openai", specifier = ">=1.108.1,<2" },
     { name = "openpyxl", specifier = "==3.1.5" },
     { name = "orjson", specifier = ">=3.9.10" },
     { name = "pandas", specifier = ">=2.1.3" },
@@ -2391,7 +2424,7 @@ wheels = [
 
 [[package]]
 name = "llama-index-core"
-version = "0.14.4"
+version = "0.14.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -2422,9 +2455,9 @@ dependencies = [
     { name = "typing-inspect" },
     { name = "wrapt" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2c/34/31511748951f0b72b2f34e0e1f6f7f1e6d34985da73f8c16e00743c4502e/llama_index_core-0.14.4.tar.gz", hash = "sha256:b47cba91d5bbbc6c73ab44b754aede84cda85c1c29ee36642f2182f0086a59d5", size = 11577858 }
+sdist = { url = "https://files.pythonhosted.org/packages/53/a8/11f128ad6e1918ae56aecf4f99619ef16acba31a7dfdad47f9801dc7ab0b/llama_index_core-0.14.7.tar.gz", hash = "sha256:ceacf30131b84c72e4881748ef428f5392ab484adf1c0e7e0f1048b2b98eb70e", size = 11578585 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e0/3f/e7dbbbe86c33467d86b9bed3d70fa78c272c783b69939811c94686a4852e/llama_index_core-0.14.4-py3-none-any.whl", hash = "sha256:18aa386e0172ad6f8e855b50e36510d28d0f70f3350e7712f56cda39160697b2", size = 11919049 },
+    { url = "https://files.pythonhosted.org/packages/80/0a/5e9b9b1b10b58df1f6c219872b19ffd41cc49bdad58b1c24a2c971883c11/llama_index_core-0.14.7-py3-none-any.whl", hash = "sha256:568591a27dd171f9d5299155920bfef6bac9e7fa59df200404877a57b7973765", size = 11919918 },
 ]
 
 [[package]]
@@ -2438,6 +2471,34 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/70/e5/a3628da5d716d6bbc2c0a8d39b629dff81b33d5625c5b934e1456370064f/llama_index_instrumentation-0.4.1.tar.gz", hash = "sha256:a79d0dd2baba34f05ff4354d63a99b212322635b8afa6cc96ed00a7e11ebfdc3", size = 45788 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3a/7a/c414f4dc9a7dd90d050c387489436bab2d678a566b704ede2f5b62f82ad7/llama_index_instrumentation-0.4.1-py3-none-any.whl", hash = "sha256:0d3ac926d0db3d39c0ec34ee72da5322d61e06b87fe956407e4a1e7a2708b936", size = 15063 },
+]
+
+[[package]]
+name = "llama-index-llms-azure-openai"
+version = "0.4.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "azure-identity" },
+    { name = "httpx" },
+    { name = "llama-index-core" },
+    { name = "llama-index-llms-openai" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/bc/3d/870ab1bc1c97253f64ba635f5d140286da1e6e0b471171392eedb28ae604/llama_index_llms_azure_openai-0.4.2.tar.gz", hash = "sha256:e8e5e42bc53d598c3e8853c9417b87db0d0b83bd14c3eccf13368e7592bdfc8c", size = 7057 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d9/fd/2841f980ccfa2173bee4e5a59d447eec6c63c22b70da53f7390dc661387d/llama_index_llms_azure_openai-0.4.2-py3-none-any.whl", hash = "sha256:a3ca073df8c45f51c8b683fe98b5a622c7f6f25d71813fdafaac2779efd136a0", size = 7261 },
+]
+
+[[package]]
+name = "llama-index-llms-openai"
+version = "0.6.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "llama-index-core" },
+    { name = "openai" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/71/ed/3bd46b0244bd55d84f8fe6761a7bd18adb1b3210564a5f734d87995b9709/llama_index_llms_openai-0.6.6.tar.gz", hash = "sha256:cbf2b7c3da17a715dd658aca84e1075e5dcd355058bcc60f5269d92280b49b5e", size = 25513 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5a/19/5cdf3b4b77752326cd77a17f3bdd1e9565550815d5124e2be025f99ca04e/llama_index_llms_openai-0.6.6-py3-none-any.whl", hash = "sha256:6a5d77a580a0e4ed03ce422d2bb3ba2a5b60ec07cac01ec0bd9fb7e0d6c153d3", size = 26516 },
 ]
 
 [[package]]
@@ -2692,6 +2753,32 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e0/47/dd32fa426cc72114383ac549964eecb20ecfd886d1e5ccf5340b55b02f57/mpmath-1.3.0.tar.gz", hash = "sha256:7a28eb2a9774d00c7bc92411c19a89209d5da7c4c9a9e227be8330a23a25b91f", size = 508106 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/43/e3/7d92a15f894aa0c9c4b49b8ee9ac9850d6e63b03c9c32c0367a13ae62209/mpmath-1.3.0-py3-none-any.whl", hash = "sha256:a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c", size = 536198 },
+]
+
+[[package]]
+name = "msal"
+version = "1.34.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+    { name = "pyjwt", extra = ["crypto"] },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cf/0e/c857c46d653e104019a84f22d4494f2119b4fe9f896c92b4b864b3b045cc/msal-1.34.0.tar.gz", hash = "sha256:76ba83b716ea5a6d75b0279c0ac353a0e05b820ca1f6682c0eb7f45190c43c2f", size = 153961 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c2/dc/18d48843499e278538890dc709e9ee3dea8375f8be8e82682851df1b48b5/msal-1.34.0-py3-none-any.whl", hash = "sha256:f669b1644e4950115da7a176441b0e13ec2975c29528d8b9e81316023676d6e1", size = 116987 },
+]
+
+[[package]]
+name = "msal-extensions"
+version = "1.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "msal" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/01/99/5d239b6156eddf761a636bded1118414d161bd6b7b37a9335549ed159396/msal_extensions-1.3.1.tar.gz", hash = "sha256:c5b0fd10f65ef62b5f1d62f4251d51cbcaf003fcedae8c91b040a488614be1a4", size = 23315 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5e/75/bd9b7bb966668920f06b200e84454c8f3566b102183bc55c5473d96cb2b9/msal_extensions-1.3.1-py3-none-any.whl", hash = "sha256:96d3de4d034504e969ac5e85bae8106c8373b5c6568e4c8fa7af2eca9dbe6bca", size = 20583 },
 ]
 
 [[package]]
@@ -3022,7 +3109,7 @@ wheels = [
 
 [[package]]
 name = "openai"
-version = "1.82.1"
+version = "1.109.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -3034,9 +3121,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/5e/53/fd5318cd79202744711c120f008d9bd987eacc063b15910a820bc9b9f40e/openai-1.82.1.tar.gz", hash = "sha256:ffc529680018e0417acac85f926f92aa0bbcbc26e82e2621087303c66bc7f95d", size = 461322 }
+sdist = { url = "https://files.pythonhosted.org/packages/c6/a1/a303104dc55fc546a3f6914c842d3da471c64eec92043aef8f652eb6c524/openai-1.109.1.tar.gz", hash = "sha256:d173ed8dbca665892a6db099b4a2dfac624f94d20a93f46eb0b56aae940ed869", size = 564133 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/d9/7ec61c010f0d0b0bc57dab8b8dff398f84230d269e8bfa068ad542ff050c/openai-1.82.1-py3-none-any.whl", hash = "sha256:334eb5006edf59aa464c9e932b9d137468d810b2659e5daea9b3a8c39d052395", size = 720466 },
+    { url = "https://files.pythonhosted.org/packages/1d/2a/7dd3d207ec669cacc1f186fd856a0f61dbc255d24f6fdc1a6715d6051b0f/openai-1.109.1-py3-none-any.whl", hash = "sha256:6bcaf57086cf59159b8e27447e4e7dd019db5d29a438072fbd49c290c7e65315", size = 948627 },
 ]
 
 [[package]]

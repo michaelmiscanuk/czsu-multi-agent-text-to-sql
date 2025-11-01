@@ -41,7 +41,7 @@ dependencies = [
     "langchain-anthropic>=0.1.0",
     
     # OpenAI and Azure OpenAI
-    "openai==1.82.1",
+    "openai>=1.108.1,<2",
     
     # ChromaDB for vector search
     "chromadb>=0.4.18",
@@ -110,6 +110,10 @@ dependencies = [
     
     # Type checking
     "typing_extensions",
+    
+    # LlamaIndex OpenAI integration
+    "llama-index-llms-openai==0.6.6",
+    "llama-index-llms-azure-openai>=0.4.0",
 ]
 
 [project.optional-dependencies]

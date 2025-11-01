@@ -2,7 +2,7 @@ module_description = r"""PDF to ChromaDB Document Processing and Search System
 
 This module provides a comprehensive pipeline for processing complex PDF documents (especially 
 government/statistical reports with tables), extracting structured content using LlamaParse, 
-applying separator-based intelligent chunking, generating embeddings, storing in ChromaDB, 
+applying markdown-based intelligent chunking, generating embeddings, storing in ChromaDB, 
 and performing advanced hybrid search with multilingual support and Cohere reranking.
 
 Designed for Czech government statistical reports with complex table structures, but adaptable 
@@ -11,31 +11,31 @@ to any PDF document processing workflow requiring high-quality semantic search c
 Architecture Overview:
 =====================
 Three independent, configurable operations:
-1. PDF Parsing & Content Extraction (LlamaParse integration)
-2. Intelligent Chunking & ChromaDB Storage (Separator-based strategy) 
+1. PDF Parsing & Content Extraction (LlamaParse integration with markdown output)
+2. Intelligent Chunking & ChromaDB Storage (Markdown structural chunking strategy) 
 3. Hybrid Search & Testing (Semantic + BM25 + Cohere reranking)
 
 Key Features:
 ============
 1. Advanced PDF Processing & Parsing:
    - LlamaParse integration with custom parsing instructions
-   - Specialized table processing (column-by-column extraction)
+   - Specialized table processing with MARKDOWN TABLE output (pipe-delimited format)
    - Complex layout handling (hierarchical tables, charts, mixed content)
    - Progress monitoring with job status tracking
    - Parallel processing support for multiple PDFs
    - Automatic retry logic and timeout handling
-   - Content type separation using custom markers
+   - Natural markdown format output for seamless chunking
 
-2. Intelligent Separator-Based Chunking:
-   - Primary strategy: Extract content between separator pairs ([R]...[/R], [T]...[/T], [C]...[/C])
-   - Secondary strategy: Sentence-boundary chunking with ceiling division for oversized content
-   - NEVER splits mid-word or mid-sentence - only at complete sentence boundaries
-   - Uses ceiling division to calculate optimal chunk count, then distributes sentences evenly
+2. Intelligent Markdown-Based Structural Chunking:
+   - Primary strategy: Parse markdown structure (tables, headers, paragraphs)
+   - Markdown table detection using pipe (|) delimiters
+   - Header-based section splitting (# ## ### markdown headers)
+   - Preserves complete tables and text sections without splitting
    - Token-aware processing (8190 token limit compliance)
-   - Content type preservation and intelligent merging
+   - Content type preservation (tables vs text vs headers)
    - Quality validation with numerical data preservation checks
    - Configurable chunk sizes (MIN: 100, MAX: 4000 chars, 0 overlap)
-   - Smart handling of ungrouped content with sentence preservation
+   - Smart handling of complex document structures
 
 3. Robust ChromaDB Document Management:
    - Persistent vector storage with cosine similarity indexing
@@ -63,31 +63,34 @@ Key Features:
    - Configurable result thresholds and filtering
 
 6. Content Type Intelligence & Preservation:
-   - Table content extraction with context preservation
-   - Row-based data organization with time-series condensation
-   - Intelligent year detection (in columns, rows, or absent)
-   - Image/chart content description handling with trend analysis
+   - Markdown table content extraction with structure preservation
+   - Header-based text organization and sectioning
+   - Chart and image descriptions in natural language paragraphs
    - Regular text section management with language preservation
    - Mixed content type processing and intelligent categorization
    - Context-rich chunk generation for optimal semantic search
 
 7. Multilingual & Localization Support:
    - Czech language processing with diacritics normalization
-   - Preservation of original Czech text content
+   - English output for better LLM processing
    - English descriptions for tables and charts
    - Bilingual search term expansion for better matching
    - Cultural context preservation (Czech place names, terms)
 
-Content Separator System:
-=========================
-Custom marker system for precise content organization:
-- [T]...[/T]: Table content with detailed row descriptions
-- [R]...[/R]: Row content within tables (primary chunking unit for time-series data)
-- [C]...[/C]: Column content within tables (alternative chunking unit)
-- [X]...[/X]: Regular text content (preserved in original language)
-- [I]...[/I]: Image and chart descriptions with trend analysis
-- [P]: Page separators between document sections
-- [.P]: Page break markers for layout preservation
+Markdown Format System:
+========================
+LlamaParse outputs standard markdown with:
+- Markdown tables using pipe (|) delimiters:
+  | Header1 | Header2 | Header3 |
+  | ------- | ------- | ------- |
+  | Data1   | Data2   | Data3   |
+- Headers using # ## ### for section titles
+- Paragraphs for regular text and chart descriptions
+- Bullet points and numbered lists for structured content
+- Page separators: --- Page {page_number} ---
+
+The custom_structural_chunking() function parses this markdown structure
+to create intelligent chunks that preserve tables and maintain context.
 
 Advanced Processing Flow:
 ========================
@@ -100,20 +103,19 @@ Advanced Processing Flow:
 
 2. PDF Parsing & Content Extraction (Operation 1):
    - Processes multiple PDFs in parallel using ThreadPoolExecutor
-   - Applies comprehensive LlamaParse instructions for table preservation
+   - Applies comprehensive LlamaParse instructions for markdown table output
    - Monitors parsing progress with real-time status updates
    - Implements timeout handling and error recovery
-   - Saves parsed text with separator markers to .txt files
-   - Validates content structure and separator usage
+   - Saves parsed markdown text to .txt files
+   - Validates content structure and markdown formatting
    - Provides detailed parsing statistics and quality metrics
 
 3. Intelligent Content Chunking:
-   - Applies separator-based primary chunking strategy
-   - Extracts content between separator pairs using regex patterns
-   - Handles oversized content with sentence-boundary chunking using ceiling division
-   - Calculates optimal number of chunks needed and distributes sentences evenly
-   - NEVER cuts mid-word or mid-sentence - preserves complete sentence integrity
-   - Removes separator artifacts from final chunks
+   - Applies markdown structural chunking strategy via custom_structural_chunking()
+   - Detects markdown tables by pipe (|) delimiters
+   - Splits content by headers (# ## ###) and structural elements
+   - Preserves complete tables and text sections without mid-content splits
+   - Token-aware processing ensures chunks stay within limits
    - Validates chunk quality with comprehensive metrics
    - Tracks numerical data preservation for statistical content
 
@@ -302,6 +304,8 @@ import numpy as np
 import tiktoken
 import tqdm as tqdm_module
 from langchain_core.documents import Document
+from llama_index.core.node_parser import MarkdownElementNodeParser
+from llama_index.core import Settings
 
 # Add this import after the other imports
 try:
@@ -347,6 +351,13 @@ except ImportError:
     )
     get_azure_embedding_model = None
 
+# Import LLM function from models.py
+try:
+    from my_agent.utils.models import get_azure_llm_gpt_4o
+except ImportError:
+    print("Warning: Could not import get_azure_llm_gpt_4o from models.py")
+    get_azure_llm_gpt_4o = None
+
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
@@ -354,10 +365,10 @@ except ImportError:
 # MAIN CONFIGURATION - MODIFY THESE SETTINGS
 # =====================================================================
 # Processing Mode - Three independent operations
-PARSE_WITH_LLAMAPARSE = 0  # Set to 1 to parse PDF with LlamaParse and save to txt file
+PARSE_WITH_LLAMAPARSE = 1  # Set to 1 to parse PDF with LlamaParse and save to txt file
 # Set to 0 to skip parsing (use existing txt file)
 
-CHUNK_AND_STORE = 0  # Set to 1 to chunk text and create/update ChromaDB
+CHUNK_AND_STORE = 1  # Set to 1 to chunk text and create/update ChromaDB
 # Set to 0 to skip chunking (use existing ChromaDB)
 
 DO_TESTING = 1  # Set to 1 to test search on existing ChromaDB
@@ -396,7 +407,7 @@ PDF_FILENAMES = [
     # "501_PDFsam_32019824.pdf",
     # "661_PDFsam_32019824.pdf",
     # "453_461_524.pdf",
-    "96_97.pdf"
+    "96_97_141.pdf"
 ]
 
 COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
@@ -420,31 +431,20 @@ COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
 # TEST_QUERY = "Kolik pracovniku ve vyzkumu je z Akademie Ved?"
 # TEST_QUERY = "Japan Imports for 2023"
 # TEST_QUERY = "Dej mi data poctu stavebnich povoleni bytu za posledni roky k dispozici."
-TEST_QUERY = "Give me the data on the number of building permits for apartments in recent years available."
+# TEST_QUERY = "Give me the data on the number of building permits for apartments in recent years available."
+TEST_QUERY = "Jaky je prutok reky Metuje?"
 
 # Azure OpenAI Settings
 AZURE_EMBEDDING_DEPLOYMENT = (
     "text-embedding-3-large__test1"  # Azure deployment name (3072 dimensions)
 )
+AZURE_LLM_DEPLOYMENT = (
+    "gpt-4"  # Azure deployment name for LLM (used by MarkdownElementNodeParser)
+)
 
 
 # LlamaParse Settings (only needed if using llamaparse method)
 LLAMAPARSE_API_KEY = os.environ.get("LLAMAPARSE_API_KEY", "")  # Read from .env file
-
-# Content Separators - unique strings unlikely to appear in normal text
-CONTENT_SEPARATORS = {
-    "table_start": "[T]",
-    "table_end": "[/T]",
-    "column_start": "[C]",
-    "column_end": "[/C]",
-    "row_start": "[R]",
-    "row_end": "[/R]",
-    "image_start": "[I]",
-    "image_end": "[/I]",
-    "text_start": "[X]",
-    "text_end": "[/X]",
-    "page_separator": "[P]",
-}
 
 # =====================================================================
 # TUNING HYPERPARAMETERS
@@ -516,45 +516,66 @@ def get_llamaparse_instructions() -> str:
     Generate comprehensive LlamaParse instructions for consistent parsing across all methods.
     Centralizes instructions to avoid duplication and ensure consistency.
 
+    Instructions specifically request MARKDOWN TABLES (pipe-delimited) to work with
+    the custom_structural_chunking function that parses markdown table syntax.
+
     Returns:
         Comprehensive instruction string for LlamaParse processing
     """
     return f"""
-🚨 CRITICAL: NO MARKDOWN TABLES! ONLY DESCRIPTIVE SENTENCES! 🚨
+🚨 CRITICAL: OUTPUT NATURAL MARKDOWN FORMAT! 🚨
 🚨 EXTRACT EVERY VALUE - NO MISSING DATA! 🚨
 
 
 MOST IMPORTANT RULES:
-- NEVER create markdown tables with pipes (|...|) - ONLY complete sentences
+- Output tables as MARKDOWN TABLES using pipe-delimited format: | Header1 | Header2 |
+- Use standard markdown formatting for all other content
 - Numbers without separators: "49621" not "49,621"
-- Use Separators: {CONTENT_SEPARATORS['row_start']}...{CONTENT_SEPARATORS['row_end']}, {CONTENT_SEPARATORS['column_start']}...{CONTENT_SEPARATORS['column_end']}, {CONTENT_SEPARATORS['image_start']}...{CONTENT_SEPARATORS['image_end']}, {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
+- Keep all original data intact - do not summarize or omit any values
 
 === TABLE PROCESSING ===
 
-STEP 1: Identify if years are in columns/rows/absent
+STEP 1: Identify tables and output them as MARKDOWN TABLES
+- Convert all tables to markdown table format using pipes (|) and hyphens (-)
+- Example format:
+  | Header1 | Header2 | Header3 |
+  | ------- | ------- | ------- |
+  | Data1   | Data2   | Data3   |
+  | Data4   | Data5   | Data6   |
+- Preserve all numerical data exactly as shown
+- Include all years, categories, and values present in the original table
+- Do not convert to sentences - keep tabular structure in markdown
 
-STEP 2: Convert to sentences (NO MARKDOWN!)
+STEP 2: For complex multi-year tables
+- Use markdown table format with proper headers and data rows
+- Ensure all temporal data (years, months, quarters) are preserved
+- Maintain hierarchical relationships between rows and columns
+- Add additional header rows if needed for complex hierarchies
 
-A) YEARS IN COLUMNS: One sentence per row with all years
-Pattern: {CONTENT_SEPARATORS['row_start']}In table '[English name]', under '[hierarchy]', the [metric] was [val1] [units] in [yr1], [val2] [units] in [yr2]...{CONTENT_SEPARATORS['row_end']}
-Example: {CONTENT_SEPARATORS['row_start']}In table 'Building permits granted', under 'Approximate value total', the total was 254891 million CZK in 2015, 389752 million CZK in 2020...{CONTENT_SEPARATORS['row_end']}
-
-B) YEARS IN ROWS: One sentence per year with all columns
-Pattern: {CONTENT_SEPARATORS['column_start']}In table '[English name]', for [year], [metric1] was [val1] [units], [metric2] was [val2] [units]...{CONTENT_SEPARATORS['column_end']}
-
-C) NO YEARS: One sentence per row with all columns
-Pattern: {CONTENT_SEPARATORS['row_start']}In table '[English name]', for [row_label], [metric1] was [val1] [units], [metric2] was [val2] [units]...{CONTENT_SEPARATORS['row_end']}
+STEP 3: MULTI-PAGE TABLE HANDLING
+- When tables span multiple pages, consolidate them into single complete markdown tables
+- Identify table fragments that belong together by matching headers, column structures, and content continuity
+- Merge table parts across page breaks to create unified tables
+- Preserve all data from each page segment without duplication or omission
+- Maintain proper markdown table structure in the consolidated result
+- If table headers appear on the first page but data continues on subsequent pages, include the header only once at the beginning
+- Ensure numerical sequences and data relationships are preserved across page boundaries
 
 === CHART/IMAGE PROCESSING ===
 
-🚨 DO NOT write chart title/subtitle as separate line - put it INSIDE {CONTENT_SEPARATORS['image_start']}...{CONTENT_SEPARATORS['image_end']} block! 🚨
-Pattern: {CONTENT_SEPARATORS['image_start']}In chart '[FULL_TITLE + SUBTITLE in English]', [category] was [val1] in [yr1], [val2] in [yr2]... Trend: [analysis].{CONTENT_SEPARATORS['image_end']}
+🚨 CRITICAL: READ ACTUAL VALUES FROM CHART AXES - DO NOT MAKE UP LINEAR PROGRESSIONS! 🚨
 
-Example: {CONTENT_SEPARATORS['image_start']}In chart 'Basic indicators of industry by economic activity in 2022', for employed persons, the total was 1403 thousand persons, with mining representing 4.0%, manufacturing 91.7%, electricity/gas supply 2.9%, and water supply 1.4%.{CONTENT_SEPARATORS['image_end']}
+- Look at Y-axis scale and read where each data point actually falls
+- Use natural language description (NOT markdown tables)
+- Example: "At 5 years: ~35-40%, at 10 years: ~45-50%"
+- ❌ FORBIDDEN: Do NOT create fake linear data like "Year 0: 0%, Year 1: 4%, Year 2: 8%"
 
-=== TEXT ===
+=== TEXT PROCESSING ===
 
-Wrap normal text in paragraphs: {CONTENT_SEPARATORS['text_start']}...{CONTENT_SEPARATORS['text_end']}
+- Output normal text in standard markdown format
+- Use headers (# ## ###) for section titles
+- Use bullet points and numbered lists where appropriate
+- Preserve all important information and context
 
 OTHER RULES:
 - SKIP all Czech text completely EVERYWHERE IN THE PDF - use ONLY English text. 
@@ -562,10 +583,10 @@ OTHER RULES:
 - Never say 'first/second chart'; only use the chart title.
 - When English labels are available anywhere (e.g., an Indicator column), always use those; ignore Czech completely.
 - List all available years in ascending order; do not skip any year or value present in the table.
-- Long time series: if >12 years, split into 2-3 sentences within the same [R] block.
+- For long time series (>12 years), keep all data in the table but you can add a brief summary paragraph after the table.
 - Do not mention colors or visual styles.
 
-🚨 NEVER CREATE MARKDOWN TABLES - ONLY SENTENCES WITH SEPARATORS! 🚨
+🚨 OUTPUT EVERYTHING IN STANDARD MARKDOWN FORMAT WITH MARKDOWN TABLES! 🚨
 """
 
 
@@ -598,312 +619,6 @@ def split_text_by_tokens(text: str, max_tokens: int = MAX_TOKENS) -> List[str]:
         chunk_text = encoding.decode(chunk_tokens)
         chunks.append(chunk_text)
     return chunks
-
-
-def smart_text_chunking(
-    text: str, max_chunk_size: int = MAX_CHUNK_SIZE, overlap: int = CHUNK_OVERLAP
-) -> List[str]:
-    """
-    Separator-based text chunking optimized for LlamaParse formatted content.
-    PRIMARY STRATEGY: Extract content between separator pairs as chunks.
-    SECONDARY STRATEGY: For content exceeding MAX_CHUNK_SIZE, apply sentence-boundary chunking with ceiling division.
-    NEVER splits mid-word or mid-sentence - only at complete sentence boundaries.
-
-    All content types ([R]...[/R], [C]...[/C], [T]...[/T], [I]...[/I], [X]...[/X]) are treated equally:
-    - If ≤ MAX_CHUNK_SIZE: kept as single semantic unit
-    - If > MAX_CHUNK_SIZE: split intelligently using sentence boundaries and ceiling division
-
-    Args:
-        text: Text to chunk (LlamaParse formatted content)
-        max_chunk_size: Maximum characters per chunk (default: 4000)
-        overlap: Character overlap between chunks (used for sentence-based overlap)
-
-    Returns:
-        List of text chunks based on separator boundaries and sentence completion
-    """
-    import re
-
-    chunks = []
-
-    # PRIMARY STRATEGY: Extract content between separator pairs
-    # Define separator pairs using ONLY original separators
-    # Format: (start_sep, end_sep, content_type)
-    separator_pairs = [
-        # Table content
-        (CONTENT_SEPARATORS["table_start"], CONTENT_SEPARATORS["table_end"], "table"),
-        # Column content - SPECIAL: Keep as single unit for semantic coherence
-        (
-            CONTENT_SEPARATORS["column_start"],
-            CONTENT_SEPARATORS["column_end"],
-            "column",
-        ),
-        # Row content - Rows within tables
-        (
-            CONTENT_SEPARATORS["row_start"],
-            CONTENT_SEPARATORS["row_end"],
-            "row",
-        ),
-        # Image content
-        (CONTENT_SEPARATORS["image_start"], CONTENT_SEPARATORS["image_end"], "image"),
-        # Text content
-        (CONTENT_SEPARATORS["text_start"], CONTENT_SEPARATORS["text_end"], "text"),
-    ]
-
-    print__chromadb_debug(
-        f"📝 Starting separator-based chunking on {len(text)} characters"
-    )
-
-    # Extract all content between separator pairs
-    for start_sep, end_sep, content_type in separator_pairs:
-        # Create regex pattern to find content between separators
-        # Use re.DOTALL to match newlines
-        pattern = re.escape(start_sep) + r"(.*?)" + re.escape(end_sep)
-        matches = re.findall(pattern, text, re.DOTALL)
-
-        print__chromadb_debug(
-            f"🔍 Looking for {start_sep} ... {end_sep} pairs ({content_type}): found {len(matches)} matches"
-        )
-
-        for i, match in enumerate(matches):
-            content = match.strip()
-            if content and len(content) >= MIN_CHUNK_SIZE:
-                print__chromadb_debug(
-                    f"📦 Found {content_type} content #{i+1}: {len(content)} chars"
-                )
-
-                # Content fits within chunk size limit
-                if len(content) <= max_chunk_size:
-                    chunks.append(content)
-                    print__chromadb_debug(
-                        f"✅ Added chunk: {content[:100]}..."
-                        if len(content) > 100
-                        else f"✅ Added chunk: {content}"
-                    )
-                else:
-                    # Content exceeds size limit - split using sentence boundaries with ceiling division
-                    # This applies to ALL content types (column, table, image, text) equally
-                    print__chromadb_debug(
-                        f"🔄 {content_type.capitalize()} content too large ({len(content)} > {max_chunk_size}), splitting at sentence boundaries"
-                    )
-                    large_chunks = _split_large_separator_content(
-                        content, max_chunk_size, overlap
-                    )
-                    chunks.extend(large_chunks)
-                    print__chromadb_debug(
-                        f"➕ Added {len(large_chunks)} sentence-boundary chunks"
-                    )
-            else:
-                print__chromadb_debug(
-                    f"⚠️ Skipping {content_type} content #{i+1}: too small ({len(content)} < {MIN_CHUNK_SIZE})"
-                )
-
-    # Handle any remaining content not captured by separators (fallback)
-    remaining_text = text
-    for start_sep, end_sep, _ in separator_pairs:
-        pattern = re.escape(start_sep) + r".*?" + re.escape(end_sep)
-        remaining_text = re.sub(pattern, "", remaining_text, flags=re.DOTALL)
-
-    # Clean up remaining text and check if there's anything significant
-    remaining_text = remaining_text.strip()
-    # Remove page separators and other noise
-    remaining_text = remaining_text.replace(CONTENT_SEPARATORS["page_separator"], "")
-    remaining_text = re.sub(r"\n+", "\n", remaining_text).strip()
-
-    if remaining_text and len(remaining_text) >= MIN_CHUNK_SIZE:
-        print__chromadb_debug(
-            f"📄 Found ungrouped content: {len(remaining_text)} chars"
-        )
-        if len(remaining_text) <= max_chunk_size:
-            chunks.append(remaining_text)
-        else:
-            fallback_chunks = _split_large_separator_content(
-                remaining_text, max_chunk_size, overlap
-            )
-            chunks.extend(fallback_chunks)
-
-    print__chromadb_debug(f"✅ Separator-based chunking created {len(chunks)} chunks")
-    return chunks
-
-
-def _split_large_separator_content(
-    content: str, max_size: int, overlap: int
-) -> List[str]:
-    """
-    Split large content by calculating optimal number of chunks and finding sentence boundaries.
-    Uses ceiling division to determine chunk count, then distributes sentences evenly.
-    NEVER splits mid-word or mid-sentence - only at complete sentence boundaries.
-
-    This function is applied equally to ALL content types (column, table, image, text) when they
-    exceed MAX_CHUNK_SIZE, ensuring consistent handling while preserving sentence integrity.
-    """
-    import math
-
-    if len(content) <= max_size:
-        return [content]
-
-    # Calculate how many chunks we need using ceiling division
-    num_chunks_needed = math.ceil(len(content) / max_size)
-
-    print__chromadb_debug(
-        f"📏 Content {len(content)} chars needs {num_chunks_needed} chunks (max {max_size})"
-    )
-
-    # Split into sentences first
-    sentences = _extract_sentences(content)
-
-    if len(sentences) <= 1:
-        # If we can't find sentence boundaries, return as single chunk
-        # This prevents mid-word splitting
-        print__chromadb_debug(
-            f"⚠️ No sentence boundaries found, keeping as single chunk"
-        )
-        return [content]
-
-    # Distribute sentences across chunks
-    chunks = _distribute_sentences_across_chunks(
-        sentences, num_chunks_needed, max_size, overlap
-    )
-
-    print__chromadb_debug(
-        f"✅ Split into {len(chunks)} chunks using sentence boundaries"
-    )
-    return chunks
-
-
-def _extract_sentences(text: str) -> List[str]:
-    """
-    Extract sentences from text using LlamaParse-specific patterns.
-    Returns list of complete sentences.
-    """
-    # Multiple sentence boundary patterns for LlamaParse format
-    sentence_patterns = [
-        r"(?<=\.)\s+(?=[A-Z][a-z])",  # Period + space + capital+lowercase
-        r"(?<=\!)\s+(?=[A-Z][a-z])",  # Exclamation + space + capital+lowercase
-        r"(?<=\?)\s+(?=[A-Z][a-z])",  # Question + space + capital+lowercase
-    ]
-
-    # Try each pattern to find sentence boundaries
-    sentences = [text]  # Start with whole text
-    for pattern in sentence_patterns:
-        new_sentences = []
-        for sentence in sentences:
-            new_sentences.extend(re.split(pattern, sentence))
-        sentences = new_sentences
-
-    # Clean up sentences and remove empty ones
-    sentences = [s.strip() for s in sentences if s.strip()]
-
-    print__chromadb_debug(
-        f"📝 Extracted {len(sentences)} sentences from {len(text)} chars"
-    )
-    return sentences
-
-
-def _distribute_sentences_across_chunks(
-    sentences: List[str], num_chunks: int, max_size: int, overlap: int
-) -> List[str]:
-    """
-    Distribute sentences across the calculated number of chunks.
-    Ensures complete sentences and handles overlap properly.
-    """
-    if len(sentences) <= num_chunks:
-        # If we have fewer sentences than chunks needed, each sentence becomes a chunk
-        return [s for s in sentences if len(s.strip()) >= MIN_CHUNK_SIZE]
-
-    chunks = []
-    sentences_per_chunk = len(sentences) // num_chunks
-    remainder = len(sentences) % num_chunks
-
-    start_idx = 0
-
-    for chunk_idx in range(num_chunks):
-        # Calculate how many sentences for this chunk
-        chunk_sentence_count = sentences_per_chunk + (1 if chunk_idx < remainder else 0)
-        end_idx = start_idx + chunk_sentence_count
-
-        # Get sentences for this chunk
-        chunk_sentences = sentences[start_idx:end_idx]
-        chunk_text = " ".join(chunk_sentences)
-
-        # If chunk is too large, try to reduce by moving last sentence to next chunk
-        while len(chunk_text) > max_size and len(chunk_sentences) > 1:
-            chunk_sentences = chunk_sentences[:-1]
-            chunk_text = " ".join(chunk_sentences)
-            end_idx -= 1
-
-        # Add overlap from previous chunk if needed
-        if overlap > 0 and chunks and chunk_text:
-            overlap_text = _get_sentence_overlap(chunks[-1], overlap)
-            if overlap_text:
-                chunk_text = overlap_text + " " + chunk_text
-
-        if chunk_text and len(chunk_text.strip()) >= MIN_CHUNK_SIZE:
-            chunks.append(chunk_text.strip())
-            print__chromadb_debug(
-                f"📄 Chunk {chunk_idx + 1}: {len(chunk_text)} chars, {len(chunk_sentences)} sentences"
-            )
-
-        start_idx = end_idx
-
-    return chunks
-
-
-def _get_sentence_overlap(previous_chunk: str, overlap_chars: int) -> str:
-    """
-    Extract overlap from previous chunk, ensuring it ends at sentence boundary.
-    """
-    if len(previous_chunk) <= overlap_chars:
-        return previous_chunk
-
-    # Get the last overlap_chars characters
-    overlap_text = previous_chunk[-overlap_chars:]
-
-    # Find the last complete sentence in the overlap
-    sentences = _extract_sentences(overlap_text)
-
-    if sentences:
-        # Return complete sentences that fit in overlap
-        return " ".join(sentences)
-    else:
-        # If no complete sentences found, try to find sentence ending
-        # Look for the first sentence boundary in the overlap
-        for i in range(len(overlap_text)):
-            if overlap_text[i] in ".!?" and i < len(overlap_text) - 1:
-                if overlap_text[i + 1] == " " and len(overlap_text) > i + 2:
-                    if overlap_text[i + 2].isupper():
-                        return overlap_text[i + 2 :].strip()
-
-        # No sentence boundary found, return empty to avoid partial sentences
-        return ""
-
-
-def _get_sentence_overlap(previous_chunk: str, overlap_chars: int) -> str:
-    """
-    Extract overlap from previous chunk, ensuring it ends at sentence boundary.
-    """
-    if len(previous_chunk) <= overlap_chars:
-        return previous_chunk
-
-    # Get the last overlap_chars characters
-    overlap_text = previous_chunk[-overlap_chars:]
-
-    # Find the last complete sentence in the overlap
-    sentences = _extract_sentences(overlap_text)
-
-    if sentences:
-        # Return complete sentences that fit in overlap
-        return " ".join(sentences)
-    else:
-        # If no complete sentences found, try to find sentence ending
-        # Look for the first sentence boundary in the overlap
-        for i in range(len(overlap_text)):
-            if overlap_text[i] in ".!?" and i < len(overlap_text) - 1:
-                if overlap_text[i + 1] == " " and len(overlap_text) > i + 2:
-                    if overlap_text[i + 2].isupper():
-                        return overlap_text[i + 2 :].strip()
-
-        # No sentence boundary found, return empty to avoid partial sentences
-        return ""
 
 
 def normalize_czech_text(text: str) -> str:
@@ -1146,42 +861,6 @@ def print_numerical_debug_report(
 # ==============================================================================
 # FILE I/O FUNCTIONS
 # ==============================================================================
-def save_parsed_text_to_file(text: str, file_path: str) -> None:
-    """
-    Save parsed text to a file and provide content analysis.
-
-    Args:
-        text: The parsed text content with separators
-        file_path: Path where to save the text file
-    """
-    try:
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(text)
-
-        # Analyze content structure
-        content_types = extract_content_by_type(text)
-
-        print__chromadb_debug(f"💾 Successfully saved parsed text to: {file_path}")
-        print(f"✅ Parsed text saved to: {file_path}")
-        print(f"📊 Content analysis:")
-        print(f"   📋 Tables: {len(content_types['tables'])}")
-        print(f"   🖼️  Images/Graphs: {len(content_types['images'])}")
-        print(f"   📝 Text sections: {len(content_types['text'])}")
-
-        # Check for proper separator usage
-        separator_count = text.count(CONTENT_SEPARATORS["page_separator"])
-        print(f"   📄 Pages: {separator_count + 1}")
-
-        if any(content_types.values()):
-            print(f"✅ Content properly separated with custom markers")
-        else:
-            print(f"⚠️  No content separators found - check LlamaParse instructions")
-
-    except Exception as e:
-        print__chromadb_debug(f"❌ Error saving parsed text: {str(e)}")
-        raise
-
-
 def load_parsed_text_from_file(file_path: str) -> str:
     """
     Load parsed text from a file.
@@ -1206,209 +885,27 @@ def load_parsed_text_from_file(file_path: str) -> str:
         raise
 
 
-def create_documents_from_text(
-    text: str, source_file: str, parsing_method: str
-) -> List[Dict[str, Any]]:
+def load_parsed_text_from_file(file_path: str) -> str:
     """
-    Create document-like structure from parsed text for chunking.
-    Optimized for LlamaParse output with content separators and page boundaries.
+    Load parsed text from a file.
 
     Args:
-        text: The parsed text content (from .txt file)
-        source_file: Original source filename
-        parsing_method: Method used for parsing (llamaparse, pymupdf, etc.)
+        file_path: Path to the parsed text file
 
     Returns:
-        List of document-like dictionaries representing sections/pages
+        The parsed text content
     """
-    print__chromadb_debug(
-        f"🏗️ Creating document structure from parsed text ({len(text)} characters)"
-    )
-    print__chromadb_debug(f"📄 Source: {source_file}, Method: {parsing_method}")
-
-    # Analyze content structure before splitting
-    content_analysis = extract_content_by_type(text)
-    print__chromadb_debug(
-        f"📊 Content analysis: {len(content_analysis['tables'])} tables, {len(content_analysis['columns'])} columns, {len(content_analysis['images'])} images, {len(content_analysis['text'])} text sections"
-    )
-
-    pages = []
-
-    # Split by our custom page separator first (LlamaParse)
-    if CONTENT_SEPARATORS["page_separator"] in text:
-        print__chromadb_debug(f"📄 Found LlamaParse page separators")
-        page_texts = text.split(CONTENT_SEPARATORS["page_separator"])
-    # Fallback separators for other methods
-    elif "\n---\n" in text:
-        print__chromadb_debug(f"📄 Found standard page separators (---)")
-        page_texts = text.split("\n---\n")
-    elif "\n=================\n" in text:
-        print__chromadb_debug(f"📄 Found extended page separators (=================)")
-        page_texts = text.split("\n=================\n")
-    else:
-        # If no clear separators, treat as one large document
-        print__chromadb_debug(
-            f"📄 No page separators found, treating as single document"
-        )
-        page_texts = [text]
-
-    print__chromadb_debug(f"✂️ Split text into {len(page_texts)} sections")
-
-    for page_num, page_text in enumerate(page_texts, 1):
-        if page_text.strip():  # Only add non-empty pages
-            # Keep original text with separators intact for chunking process
-            cleaned_text = page_text.strip()
-
-            # Analyze this section's content using original separators
-            section_has_tables = CONTENT_SEPARATORS["table_start"] in cleaned_text
-            section_has_columns = CONTENT_SEPARATORS["column_start"] in cleaned_text
-            section_has_images = CONTENT_SEPARATORS["image_start"] in cleaned_text
-
-            page_data = {
-                "text": cleaned_text,
-                "page_number": page_num,
-                "char_count": len(cleaned_text),
-                "word_count": len(cleaned_text.split()),
-                "source_file": source_file,
-                "parsing_method": parsing_method,
-                "has_tables": section_has_tables,
-                "has_columns": section_has_columns,
-                "has_images": section_has_images,
-            }
-            pages.append(page_data)
-
-            print__chromadb_debug(
-                f"📄 Section {page_num}: {len(cleaned_text)} chars, tables: {section_has_tables}, columns: {section_has_columns}, images: {section_has_images}"
-            )
-
-    print__chromadb_debug(f"✅ Created {len(pages)} document sections from parsed text")
-
-    # Summary statistics
-    total_chars = sum(p["char_count"] for p in pages)
-    sections_with_tables = sum(1 for p in pages if p["has_tables"])
-    sections_with_columns = sum(1 for p in pages if p["has_columns"])
-    sections_with_images = sum(1 for p in pages if p["has_images"])
-
-    print__chromadb_debug(f"📊 Document summary:")
-    print__chromadb_debug(f"📊   - Total characters: {total_chars}")
-    print__chromadb_debug(
-        f"📊   - Sections with tables: {sections_with_tables}/{len(pages)}"
-    )
-    print__chromadb_debug(
-        f"📊   - Sections with columns: {sections_with_columns}/{len(pages)}"
-    )
-    print__chromadb_debug(
-        f"📊   - Sections with images: {sections_with_images}/{len(pages)}"
-    )
-    print__chromadb_debug(
-        f"📊   - Average section size: {total_chars/len(pages):.0f} characters"
-    )
-
-    return pages
-
-
-def clean_separator_artifacts(text: str, remove_completely: bool = True) -> str:
-    """
-    Intelligently clean text of separator artifacts while preserving content structure.
-
-    Args:
-        text: Text that may contain content separators
-        remove_completely: If True, completely removes separators. If False, replaces with content type markers.
-
-    Returns:
-        Cleaned text with separators removed or replaced
-    """
-    cleaned_text = text
-
-    if remove_completely:
-        # Completely remove separator markers for final chunks
-        separators_to_remove = [
-            # Original separators only
-            CONTENT_SEPARATORS["table_start"],
-            CONTENT_SEPARATORS["table_end"],
-            CONTENT_SEPARATORS["column_start"],
-            CONTENT_SEPARATORS["column_end"],
-            CONTENT_SEPARATORS["row_start"],
-            CONTENT_SEPARATORS["row_end"],
-            CONTENT_SEPARATORS["image_start"],
-            CONTENT_SEPARATORS["image_end"],
-            CONTENT_SEPARATORS["text_start"],
-            CONTENT_SEPARATORS["text_end"],
-            CONTENT_SEPARATORS["page_separator"],
-            # Also remove the page break marker
-            "[.P]",
-        ]
-
-        for separator in separators_to_remove:
-            cleaned_text = cleaned_text.replace(separator, " ")
-    # When remove_completely=False, don't modify the text at all
-    # Keep original separators for chunking process
-
-    # Clean up excessive whitespace while preserving paragraph breaks
-    import re
-
-    cleaned_text = re.sub(r"\n\n\n+", "\n\n", cleaned_text)
-    cleaned_text = re.sub(r"^\s+", "", cleaned_text, flags=re.MULTILINE)
-    cleaned_text = re.sub(r"\s+", " ", cleaned_text)  # Normalize multiple spaces
-
-    return cleaned_text.strip()
-
-
-def extract_content_by_type(text: str) -> Dict[str, List[str]]:
-    """
-    Extract different content types from parsed text based on separators.
-    Useful for debugging and content analysis.
-
-    Args:
-        text: The parsed text with content separators
-
-    Returns:
-        Dictionary with content types as keys and content lists as values
-    """
-    content_types = {"tables": [], "columns": [], "rows": [], "images": [], "text": []}
-
-    # Extract tables
-    table_pattern = (
-        f"{CONTENT_SEPARATORS['table_start']}(.*?){CONTENT_SEPARATORS['table_end']}"
-    )
-    # Note: re is already imported at the top of the file
-
-    tables = re.findall(table_pattern, text, re.DOTALL)
-    content_types["tables"] = [table.strip() for table in tables]
-
-    # Extract columns
-    column_pattern = (
-        f"{CONTENT_SEPARATORS['column_start']}(.*?){CONTENT_SEPARATORS['column_end']}"
-    )
-    columns = re.findall(column_pattern, text, re.DOTALL)
-    content_types["columns"] = [column.strip() for column in columns]
-
-    # Extract rows
-    row_pattern = (
-        f"{CONTENT_SEPARATORS['row_start']}(.*?){CONTENT_SEPARATORS['row_end']}"
-    )
-    rows = re.findall(row_pattern, text, re.DOTALL)
-    content_types["rows"] = [row.strip() for row in rows]
-
-    # Extract images
-    image_pattern = (
-        f"{CONTENT_SEPARATORS['image_start']}(.*?){CONTENT_SEPARATORS['image_end']}"
-    )
-    images = re.findall(image_pattern, text, re.DOTALL)
-    content_types["images"] = [image.strip() for image in images]
-
-    # Extract text
-    text_pattern = (
-        f"{CONTENT_SEPARATORS['text_start']}(.*?){CONTENT_SEPARATORS['text_end']}"
-    )
-    texts = re.findall(text_pattern, text, re.DOTALL)
-    content_types["text"] = [text_content.strip() for text_content in texts]
-
-    print__chromadb_debug(
-        f"📊 Extracted content: {len(content_types['tables'])} tables, {len(content_types['columns'])} columns, {len(content_types['rows'])} rows, {len(content_types['images'])} images, {len(content_types['text'])} text sections"
-    )
-
-    return content_types
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            text = f.read()
+        print__chromadb_debug(f"Successfully loaded parsed text from {file_path}")
+        return text
+    except FileNotFoundError:
+        print__chromadb_debug(f"Parsed text file not found: {file_path}")
+        raise
+    except Exception as e:
+        print__chromadb_debug(f"Error loading parsed text: {str(e)}")
+        raise
 
 
 # ==============================================================================
@@ -1471,15 +968,17 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
             parser = LlamaParse(
                 api_key=api_key,
                 result_type="markdown",
-                system_prompt="You are an expert document parser specializing in converting complex tabular and chart data into chunking-friendly formats for semantic search systems and you are also an expert in describing graphs and charts in details. But also You are able to parse back normal text as is.",
+                system_prompt="🚨 CRITICAL: When you see charts/graphs, READ THE ACTUAL VALUES from the Y-axis scale where data points fall. DO NOT create linear progressions (0,2,4,6...) or fake data. Look at the visual and extract real values.",
                 user_prompt=comprehensive_instructions,
-                page_separator=CONTENT_SEPARATORS["page_separator"],
+                page_separator="\n\n--- Page {page_number} ---\n\n",
                 verbose=True,
-                parse_mode="parse_page_with_lvm",
+                parse_mode="parse_page_with_lvm",  # Use vision model for accurate chart reading
                 vendor_multimodal_model_name="anthropic-sonnet-4.0",
+                continuous_mode=True,  # Enable multi-page table merging (beta feature)
+                preserve_layout_alignment_across_pages=True,  # Keep text alignment across pages
             )
             print__chromadb_debug(
-                "🔧 Using newer LlamaParse parameter system (system_prompt + user_prompt)"
+                "🔧 Using newer LlamaParse parameter system with multi-page table support (parse_document_with_llm + continuous_mode)"
             )
 
         except TypeError as e:
@@ -1491,7 +990,7 @@ def extract_text_with_llamaparse(pdf_path: str) -> List[Dict[str, Any]]:
                 api_key=api_key,
                 result_type="markdown",
                 parsing_instruction=comprehensive_instructions,
-                page_separator=CONTENT_SEPARATORS["page_separator"],
+                page_separator="\n\n--- Page {page_number} ---\n\n",
                 verbose=True,
                 parse_mode="parse_page_with_layout_agent",
             )
@@ -1684,7 +1183,7 @@ def extract_text_with_llamaparse_async_monitoring(
             data = {
                 "parsing_instruction": parsing_instructions,
                 "result_type": "markdown",
-                "page_separator": CONTENT_SEPARATORS["page_separator"],
+                "page_separator": "\n\n--- Page {page_number} ---\n\n",
                 "verbose": "true",
             }
 
@@ -1803,7 +1302,7 @@ def extract_text_with_llamaparse_async_monitoring(
             # Try to extract from pages if available
             pages = result_data.get("pages", [])
             if pages:
-                text_content = CONTENT_SEPARATORS["page_separator"].join(
+                text_content = "\n\n--- Page {page_number} ---\n\n".join(
                     [page.get("md", page.get("text", "")) for page in pages]
                 )
             else:
@@ -1814,8 +1313,8 @@ def extract_text_with_llamaparse_async_monitoring(
         print(f"📊 Processing retrieved content...")
 
         # Split content by pages if available
-        if CONTENT_SEPARATORS["page_separator"] in text_content:
-            page_texts = text_content.split(CONTENT_SEPARATORS["page_separator"])
+        if "\n\n--- Page {page_number} ---\n\n" in text_content:
+            page_texts = text_content.split("\n\n--- Page {page_number} ---\n\n")
         else:
             page_texts = [text_content]
 
@@ -1841,7 +1340,7 @@ def extract_text_with_llamaparse_async_monitoring(
 
         # Save combined text to file
         if combined_text_parts:
-            combined_text = CONTENT_SEPARATORS["page_separator"].join(
+            combined_text = "\n\n--- Page {page_number} ---\n\n".join(
                 combined_text_parts
             )
             # Generate parsed text filename dynamically
@@ -1879,8 +1378,7 @@ def process_parsed_text_to_chunks(
 ) -> List[Dict[str, Any]]:
     """
     Process parsed text (from LlamaParse or other parsers) into chunks suitable for embedding.
-    Handles both page-based data and continuous text from parsed files.
-    Uses semantic-aware chunking that preserves LlamaParse sentence structure.
+    Uses MarkdownElementNodeParser for intelligent chunking that preserves table structure.
 
     Args:
         pages_data: List of page/section data from parsed text
@@ -1888,88 +1386,115 @@ def process_parsed_text_to_chunks(
     Returns:
         List of chunk dictionaries with text and metadata
     """
+    from llama_index.core import Document as LlamaDocument
+
     all_chunks = []
     chunk_id = 0
 
-    print__chromadb_debug(f"Processing {len(pages_data)} sections/pages for chunking")
+    print__chromadb_debug(
+        f"Processing {len(pages_data)} sections/pages for MarkdownElementNodeParser chunking"
+    )
+
+    # Combine all pages into a single markdown document for better chunking
+    combined_markdown = ""
+    source_files = set()
+    page_numbers = []
 
     for page_data in pages_data:
         text = page_data["text"]
         page_num = page_data.get("page_number", 1)
-        parsing_method = page_data.get("parsing_method", "unknown")
+        source_file = page_data.get("source_file", "unknown")
 
-        print__chromadb_debug(f"Processing section {page_num}: {len(text)} characters")
+        # Add page separator if not the first page
+        if combined_markdown:
+            combined_markdown += f"\n\n--- Page {page_num} ---\n\n"
 
-        # Use semantic-aware chunking that respects LlamaParse structure
-        page_chunks = smart_text_chunking(text)
-
-        print__chromadb_debug(
-            f"Section {page_num} split into {len(page_chunks)} chunks"
-        )
-
-        for chunk_idx, chunk_text in enumerate(page_chunks):
-            # Clean separator artifacts from chunk text (completely remove them)
-            cleaned_chunk_text = clean_separator_artifacts(
-                chunk_text, remove_completely=True
-            )
-
-            # Check token count and split only if absolutely necessary
-            token_count = num_tokens_from_string(cleaned_chunk_text)
-
-            if token_count <= MAX_TOKENS:
-                # Chunk is within token limits, use as-is
-                chunk_data = {
-                    "id": chunk_id,
-                    "text": cleaned_chunk_text,
-                    "page_number": page_num,
-                    "chunk_index": chunk_idx,
-                    "token_chunk_index": 0,
-                    "total_page_chunks": len(page_chunks),
-                    "total_token_chunks": 1,
-                    "char_count": len(cleaned_chunk_text),
-                    "token_count": token_count,
-                    "source_file": page_data["source_file"],
-                    "parsing_method": parsing_method,
-                    "doc_hash": get_document_hash(cleaned_chunk_text),
-                }
-
-                all_chunks.append(chunk_data)
-                chunk_id += 1
-            else:
-                # Only split by tokens if chunk exceeds token limit
-                print__chromadb_debug(
-                    f"Chunk {chunk_id} exceeds token limit ({token_count} > {MAX_TOKENS}), splitting..."
-                )
-                token_chunks = split_text_by_tokens(cleaned_chunk_text)
-
-                for token_chunk_idx, token_chunk in enumerate(token_chunks):
-                    # Clean each token chunk as well (completely remove separators)
-                    cleaned_token_chunk = clean_separator_artifacts(
-                        token_chunk, remove_completely=True
-                    )
-                    token_count = num_tokens_from_string(cleaned_token_chunk)
-
-                    chunk_data = {
-                        "id": chunk_id,
-                        "text": cleaned_token_chunk,
-                        "page_number": page_num,
-                        "chunk_index": chunk_idx,
-                        "token_chunk_index": token_chunk_idx,
-                        "total_page_chunks": len(page_chunks),
-                        "total_token_chunks": len(token_chunks),
-                        "char_count": len(cleaned_token_chunk),
-                        "token_count": token_count,
-                        "source_file": page_data["source_file"],
-                        "parsing_method": parsing_method,
-                        "doc_hash": get_document_hash(cleaned_token_chunk),
-                    }
-
-                    all_chunks.append(chunk_data)
-                    chunk_id += 1
+        combined_markdown += text
+        source_files.add(source_file)
+        page_numbers.append(page_num)
 
     print__chromadb_debug(
-        f"Created {len(all_chunks)} chunks from {len(pages_data)} sections"
+        f"Combined {len(pages_data)} pages into single markdown document ({len(combined_markdown)} characters)"
     )
+
+    # Use LlamaIndex's built-in MarkdownElementNodeParser for intelligent chunking
+    # This parser keeps tables with their headers and creates semantic chunks
+    print__chromadb_debug(
+        "Using MarkdownElementNodeParser for intelligent semantic chunking"
+    )
+
+    # Configure Azure OpenAI LLM for MarkdownElementNodeParser
+    # This prevents the parser from defaulting to OpenAI and causing API key errors
+    if get_azure_llm_gpt_4o is not None:
+        llm = get_azure_llm_gpt_4o(temperature=0.0)
+    else:
+        # Fallback if import failed
+        from llama_index.llms.azure_openai import AzureOpenAI
+
+        llm = AzureOpenAI(
+            deployment_name=AZURE_LLM_DEPLOYMENT,
+            model="gpt-4",
+            api_version=os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-01"),
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        )
+    Settings.llm = llm
+
+    # Create a single Document from the combined markdown
+    from llama_index.core import Document as LlamaDocument
+    from llama_index.core.node_parser import MarkdownElementNodeParser
+
+    document = LlamaDocument(text=combined_markdown)
+
+    # Initialize MarkdownElementNodeParser - it intelligently preserves table structure
+    parser = MarkdownElementNodeParser(
+        num_workers=1,  # Single worker for consistent chunking
+        show_progress=False,  # Don't show progress bar
+    )
+
+    # Parse the document into nodes
+    nodes = parser.get_nodes_from_documents([document])
+
+    print__chromadb_debug(
+        f"MarkdownElementNodeParser created {len(nodes)} intelligent nodes"
+    )
+
+    # Convert nodes to our chunk format
+    all_chunks = []
+    chunk_id = 0
+
+    for node in nodes:
+        # Extract text content from LlamaIndex node
+        text_content = node.get_content() if hasattr(node, "get_content") else node.text
+
+        # Skip empty nodes
+        if not text_content or not text_content.strip():
+            continue
+
+        # Calculate token count
+        token_count = num_tokens_from_string(text_content)
+
+        # Create chunk data structure
+        chunk_data = {
+            "id": chunk_id,
+            "text": text_content,
+            "page_number": (
+                page_numbers[0] if page_numbers else 1
+            ),  # Use first page as reference
+            "chunk_index": chunk_id,
+            "token_chunk_index": 0,
+            "total_page_chunks": len(nodes),
+            "total_token_chunks": 1,
+            "char_count": len(text_content),
+            "token_count": token_count,
+            "source_file": list(source_files)[0] if source_files else "unknown",
+            "parsing_method": "llamaparse",
+            "doc_hash": get_document_hash(text_content),
+        }
+        all_chunks.append(chunk_data)
+        chunk_id += 1
+
+    print__chromadb_debug(f"Converted {len(all_chunks)} nodes to chunks")
 
     # Log chunking statistics
     if all_chunks:
@@ -2037,9 +1562,105 @@ def process_pdf_pages_to_chunks(
     return process_parsed_text_to_chunks(pages_data)
 
 
-# ==============================================================================
-# CHROMADB OPERATIONS
-# ==============================================================================
+def save_parsed_text_to_file(text: str, file_path: str) -> None:
+    """
+    Save parsed text to a file.
+
+    Args:
+        text: The parsed text content
+        file_path: Path where to save the text file
+    """
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(text)
+
+        print__chromadb_debug(f"💾 Successfully saved parsed text to: {file_path}")
+        print(f"✅ Parsed text saved to: {file_path}")
+        print(f"📊 Content length: {len(text):,} characters")
+
+    except Exception as e:
+        print__chromadb_debug(f"❌ Error saving parsed text: {str(e)}")
+        raise
+
+
+def create_documents_from_text(
+    text: str, source_file: str, parsing_method: str
+) -> List[Dict[str, Any]]:
+    """
+    Create document-like structure from parsed text for chunking.
+    Simplified version for MarkdownElementNodeParser that doesn't use CONTENT_SEPARATORS.
+
+    Args:
+        text: The parsed text content (from .txt file)
+        source_file: Original source filename
+        parsing_method: Method used for parsing (llamaparse, pymupdf, etc.)
+
+    Returns:
+        List of document-like dictionaries representing sections/pages
+    """
+    print__chromadb_debug(
+        f"🏗️ Creating document structure from parsed text ({len(text)} characters)"
+    )
+    print__chromadb_debug(f"📄 Source: {source_file}, Method: {parsing_method}")
+
+    pages = []
+
+    # Split by page separator (LlamaParse default)
+    page_separator = "\n\n--- Page {page_number} ---\n\n"
+    if page_separator in text:
+        print__chromadb_debug(f"📄 Found LlamaParse page separators")
+        page_texts = text.split(page_separator)
+    else:
+        # Fallback separators for other methods
+        if "\n---\n" in text:
+            print__chromadb_debug(f"📄 Found standard page separators (---)")
+            page_texts = text.split("\n---\n")
+        elif "\n=================\n" in text:
+            print__chromadb_debug(
+                f"📄 Found extended page separators (=================)"
+            )
+            page_texts = text.split("\n=================\n")
+        else:
+            # If no clear separators, treat as one large document
+            print__chromadb_debug(
+                f"� No page separators found, treating as single document"
+            )
+            page_texts = [text]
+
+    print__chromadb_debug(f"✂️ Split text into {len(page_texts)} sections")
+
+    for page_num, page_text in enumerate(page_texts, 1):
+        if page_text.strip():  # Only add non-empty pages
+            # Keep original text intact for MarkdownElementNodeParser
+            cleaned_text = page_text.strip()
+
+            page_data = {
+                "text": cleaned_text,
+                "page_number": page_num,
+                "char_count": len(cleaned_text),
+                "word_count": len(cleaned_text.split()),
+                "source_file": source_file,
+                "parsing_method": parsing_method,
+            }
+            pages.append(page_data)
+
+            print__chromadb_debug(
+                f"📄 Section {page_num}: {len(cleaned_text)} chars, {len(cleaned_text.split())} words"
+            )
+
+    print__chromadb_debug(f"✅ Created {len(pages)} document sections from parsed text")
+
+    # Summary statistics
+    total_chars = sum(p["char_count"] for p in pages)
+    print__chromadb_debug(f"📊 Document summary:")
+    print__chromadb_debug(f"📊   - Total characters: {total_chars}")
+    print__chromadb_debug(
+        f"📊   - Average section size: {total_chars/len(pages):.0f} characters"
+    )
+
+    return pages
+
+
 def process_pdf_to_chromadb(
     pdf_path: str,
     collection_name: str = COLLECTION_NAME,
@@ -2230,49 +1851,17 @@ def hybrid_search(
     collection, query_text: str, n_results: int = HYBRID_SEARCH_RESULTS
 ) -> List[Dict]:
     """
-    Hybrid search combining semantic and BM25 approaches.
+    Advanced hybrid search combining semantic and BM25 approaches with RRF fusion.
+    Implements best practices: BM25 pruning, RRF fusion, and proper score normalization.
     """
-    print__chromadb_debug(f"Hybrid search for query: '{query_text}'")
+    print__chromadb_debug(f"Advanced hybrid search for query: '{query_text}'")
 
     try:
         # Normalize query
         normalized_query = normalize_czech_text(query_text)
 
-        # Semantic search
-        semantic_results = []
-        try:
-            embedding_client = get_azure_embedding_model()
-            semantic_raw = similarity_search_chromadb(
-                collection=collection,
-                embedding_client=embedding_client,
-                query=normalized_query,
-                k=n_results,
-            )
-
-            for i, (doc, meta, distance) in enumerate(
-                zip(
-                    semantic_raw["documents"][0],
-                    semantic_raw["metadatas"][0],
-                    semantic_raw["distances"][0],
-                )
-            ):
-                similarity_score = max(0, 1 - (distance / 2))
-                semantic_results.append(
-                    {
-                        "id": f"semantic_{i}",
-                        "document": doc,
-                        "metadata": meta,
-                        "semantic_score": similarity_score,
-                        "source": "semantic",
-                    }
-                )
-
-        except Exception as e:
-            print__chromadb_debug(f"Semantic search failed: {e}")
-            semantic_results = []
-
-        # BM25 search
-        bm25_results = []
+        # Step 1: BM25 search for candidate pruning (get more candidates)
+        bm25_candidates = []
         try:
             all_data = collection.get(include=["documents", "metadatas"])
 
@@ -2289,11 +1878,15 @@ def hybrid_search(
                     tokenized_query = normalized_query.split()
                     bm25_scores = bm25.get_scores(tokenized_query)
 
-                    top_indices = np.argsort(bm25_scores)[::-1][:n_results]
+                    # Get top candidates (more than final results for better fusion)
+                    top_k_bm25 = min(len(documents), n_results * 3)  # Get 3x candidates
+                    top_indices = np.argsort(bm25_scores)[::-1][:top_k_bm25]
 
                     for i, idx in enumerate(top_indices):
-                        if bm25_scores[idx] > 0:
-                            bm25_results.append(
+                        if (
+                            bm25_scores[idx] > 0
+                        ):  # Only include documents with BM25 score > 0
+                            bm25_candidates.append(
                                 {
                                     "id": f"bm25_{i}",
                                     "document": documents[idx],
@@ -2301,78 +1894,369 @@ def hybrid_search(
                                         metadatas[idx] if idx < len(metadatas) else {}
                                     ),
                                     "bm25_score": float(bm25_scores[idx]),
+                                    "bm25_rank": i + 1,
                                     "source": "bm25",
                                 }
                             )
 
         except Exception as e:
             print__chromadb_debug(f"BM25 search failed: {e}")
-            bm25_results = []
+            bm25_candidates = []
 
-        # Combine results with semantic focus
-        combined_results = {}
+        # Step 2: Semantic search on BM25 candidates (if available) or all documents
+        semantic_results = []
+        try:
+            embedding_client = get_azure_embedding_model()
 
-        # Process semantic results (primary)
+            if bm25_candidates:
+                # Search only within BM25 candidates for efficiency
+                candidate_docs = [cand["document"] for cand in bm25_candidates]
+                candidate_metadatas = [cand["metadata"] for cand in bm25_candidates]
+
+                # Create temporary collection-like structure for candidates
+                candidate_embeddings = []
+                for doc in candidate_docs:
+                    response = embedding_client.embeddings.create(
+                        input=[doc], model=AZURE_EMBEDDING_DEPLOYMENT
+                    )
+                    candidate_embeddings.append(response.data[0].embedding)
+
+                # Compute similarities with query
+                query_embedding = (
+                    embedding_client.embeddings.create(
+                        input=[normalized_query], model=AZURE_EMBEDDING_DEPLOYMENT
+                    )
+                    .data[0]
+                    .embedding
+                )
+
+                similarities = []
+                for emb in candidate_embeddings:
+                    # Cosine similarity
+                    dot_product = np.dot(query_embedding, emb)
+                    norm_query = np.linalg.norm(query_embedding)
+                    norm_emb = np.linalg.norm(emb)
+                    similarity = (
+                        dot_product / (norm_query * norm_emb)
+                        if norm_query * norm_emb > 0
+                        else 0
+                    )
+                    similarities.append(max(0, similarity))  # Ensure non-negative
+
+                # Sort by similarity
+                sorted_indices = np.argsort(similarities)[::-1]
+
+                for rank, idx in enumerate(sorted_indices):
+                    semantic_results.append(
+                        {
+                            "id": f"semantic_{rank}",
+                            "document": candidate_docs[idx],
+                            "metadata": candidate_metadatas[idx],
+                            "semantic_score": float(similarities[idx]),
+                            "semantic_rank": rank + 1,
+                            "source": "semantic",
+                        }
+                    )
+            else:
+                # Fallback to full semantic search if no BM25 candidates
+                semantic_raw = similarity_search_chromadb(
+                    collection=collection,
+                    embedding_client=embedding_client,
+                    query=normalized_query,
+                    k=n_results,
+                )
+
+                for i, (doc, meta, distance) in enumerate(
+                    zip(
+                        semantic_raw["documents"][0],
+                        semantic_raw["metadatas"][0],
+                        semantic_raw["distances"][0],
+                    )
+                ):
+                    similarity_score = max(
+                        0, 1 - (distance / 2)
+                    )  # Convert distance to similarity
+                    semantic_results.append(
+                        {
+                            "id": f"semantic_{i}",
+                            "document": doc,
+                            "metadata": meta,
+                            "semantic_score": similarity_score,
+                            "semantic_rank": i + 1,
+                            "source": "semantic",
+                        }
+                    )
+
+        except Exception as e:
+            print__chromadb_debug(f"Semantic search failed: {e}")
+            semantic_results = []
+
+        # Step 3: Reciprocal Rank Fusion (RRF)
+        # RRF combines rankings from different sources using reciprocal ranks
+        # Formula: RRF score = Σ(1/(k + r_i)) for each retrieval method i
+        # where k is a constant (typically 60), r_i is the rank from method i
+
+        k = 60  # Standard RRF constant
+        fused_results = {}
+
+        # Process semantic results
         for result in semantic_results:
             doc_id = result["metadata"].get("chunk_id", result["document"][:50])
-            if doc_id not in combined_results:
-                combined_results[doc_id] = result.copy()
-                combined_results[doc_id]["bm25_score"] = 0.0
+            if doc_id not in fused_results:
+                fused_results[doc_id] = result.copy()
+                fused_results[doc_id]["rrf_score"] = 0.0
+                fused_results[doc_id]["methods_used"] = []
 
-        # Process BM25 results (secondary)
-        for result in bm25_results:
+            # Add semantic RRF contribution
+            semantic_rrf = 1.0 / (k + result["semantic_rank"])
+            fused_results[doc_id]["rrf_score"] += semantic_rrf
+            fused_results[doc_id]["methods_used"].append("semantic")
+            fused_results[doc_id]["semantic_score"] = result["semantic_score"]
+            fused_results[doc_id]["semantic_rank"] = result["semantic_rank"]
+
+        # Process BM25 results
+        for result in bm25_candidates:
             doc_id = result["metadata"].get("chunk_id", result["document"][:50])
-            if doc_id in combined_results:
-                combined_results[doc_id]["bm25_score"] = result["bm25_score"]
-                combined_results[doc_id]["source"] = "hybrid"
-            else:
-                combined_results[doc_id] = result.copy()
-                combined_results[doc_id]["semantic_score"] = 0.0
+            if doc_id not in fused_results:
+                fused_results[doc_id] = result.copy()
+                fused_results[doc_id]["rrf_score"] = 0.0
+                fused_results[doc_id]["methods_used"] = []
 
-        # Calculate final scores with semantic focus
-        final_results = []
-        max_semantic = max(
-            (r.get("semantic_score", 0) for r in combined_results.values()), default=1
+            # Add BM25 RRF contribution
+            bm25_rrf = 1.0 / (k + result["bm25_rank"])
+            fused_results[doc_id]["rrf_score"] += bm25_rrf
+            fused_results[doc_id]["methods_used"].append("bm25")
+            fused_results[doc_id]["bm25_score"] = result["bm25_score"]
+            fused_results[doc_id]["bm25_rank"] = result["bm25_rank"]
+
+        # Convert to final results list
+        final_results = list(fused_results.values())
+
+        # Sort by RRF score (higher is better)
+        final_results.sort(key=lambda x: x["rrf_score"], reverse=True)
+
+        # Add final ranking and normalize scores for display
+        for i, result in enumerate(final_results):
+            result["final_rank"] = i + 1
+            result["score"] = result["rrf_score"]  # Keep RRF score as final score
+
+            # Ensure all expected fields exist
+            if "semantic_score" not in result:
+                result["semantic_score"] = 0.0
+            if "bm25_score" not in result:
+                result["bm25_score"] = 0.0
+            if "source" not in result:
+                result["source"] = "hybrid"
+
+        print__chromadb_debug(
+            f"RRF fusion completed: {len(final_results)} results from {len(semantic_results)} semantic + {len(bm25_candidates)} BM25 candidates"
         )
-        max_bm25 = max(
-            (r.get("bm25_score", 0) for r in combined_results.values()), default=1
-        )
-
-        semantic_weight = SEMANTIC_WEIGHT
-        bm25_weight = BM25_WEIGHT
-
-        for doc_id, result in combined_results.items():
-            semantic_score = (
-                result.get("semantic_score", 0.0) / max_semantic
-                if max_semantic > 0
-                else 0.0
-            )
-            bm25_score = (
-                result.get("bm25_score", 0.0) / max_bm25 if max_bm25 > 0 else 0.0
-            )
-
-            final_score = (semantic_weight * semantic_score) + (
-                bm25_weight * bm25_score
-            )
-
-            result["score"] = final_score
-            result["semantic_score"] = semantic_score
-            result["bm25_score"] = bm25_score
-
-            final_results.append(result)
-
-        # Sort by final score
-        final_results.sort(key=lambda x: x["score"], reverse=True)
 
         return final_results[:n_results]
 
     except Exception as e:
-        print__chromadb_debug(f"Hybrid search failed: {e}")
+        print__chromadb_debug(f"Advanced hybrid search failed: {e}")
         return []
 
 
+def format_table_for_reranking(text: str) -> str:
+    """
+    Format tabular data as YAML for better Cohere reranking performance.
+    Converts markdown tables to structured YAML format that Cohere can better understand.
+    """
+    import re
+
+    # Check if text contains markdown tables
+    if not re.search(r"^\|.*\|.*\|", text, re.MULTILINE):
+        return text  # Return original text if no tables found
+
+    try:
+        # Split text into sections (tables and non-table content)
+        lines = text.split("\n")
+        formatted_sections = []
+        current_table = []
+        in_table = False
+
+        for line in lines:
+            if line.strip().startswith("|") and "|" in line:
+                # Table row
+                if not in_table:
+                    # Start new table
+                    if current_table:
+                        formatted_sections.append("\n".join(current_table))
+                        current_table = []
+                    in_table = True
+                current_table.append(line)
+            else:
+                # Non-table content
+                if in_table:
+                    # End current table and format it
+                    if current_table:
+                        yaml_table = convert_markdown_table_to_yaml(current_table)
+                        formatted_sections.append(yaml_table)
+                        current_table = []
+                    in_table = False
+                formatted_sections.append(line)
+
+        # Handle remaining table content
+        if current_table:
+            yaml_table = convert_markdown_table_to_yaml(current_table)
+            formatted_sections.append(yaml_table)
+
+        return "\n".join(formatted_sections)
+
+    except Exception as e:
+        print__chromadb_debug(f"Table formatting failed: {e}")
+        return text  # Return original text on error
+
+
+def convert_markdown_table_to_yaml(table_lines: List[str]) -> str:
+    """
+    Convert markdown table lines to YAML format for better reranking.
+    """
+    if not table_lines:
+        return ""
+
+    try:
+        # Parse table structure
+        header_line = None
+        data_lines = []
+
+        for line in table_lines:
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith("|") and not header_line:
+                header_line = line
+            elif line.startswith("|") and header_line:
+                data_lines.append(line)
+
+        if not header_line or not data_lines:
+            return "\n".join(table_lines)  # Return original if parsing fails
+
+        # Extract headers
+        headers = [col.strip() for col in header_line.split("|")[1:-1]]
+
+        # Extract data rows
+        table_data = []
+        for data_line in data_lines:
+            cols = [col.strip() for col in data_line.split("|")[1:-1]]
+            if len(cols) == len(headers):
+                row_dict = {}
+                for header, value in zip(headers, cols):
+                    # Clean up header names for YAML
+                    clean_header = (
+                        re.sub(r"[^\w\s-]", "", header)
+                        .strip()
+                        .lower()
+                        .replace(" ", "_")
+                    )
+                    row_dict[clean_header] = value
+                table_data.append(row_dict)
+
+        # Format as YAML
+        yaml_output = ["table_data:"]
+        for i, row in enumerate(table_data):
+            yaml_output.append(f"  row_{i+1}:")
+            for key, value in row.items():
+                # Escape special characters and format for YAML
+                clean_value = value.replace('"', '\\"').replace("\n", " ")
+                yaml_output.append(f'    {key}: "{clean_value}"')
+
+        return "\n".join(yaml_output)
+
+    except Exception as e:
+        print__chromadb_debug(f"Markdown to YAML conversion failed: {e}")
+        return "\n".join(table_lines)  # Return original on error
+
+
+def preprocess_query_for_reranking(query: str) -> str:
+    """
+    Preprocess query for better Cohere reranking performance.
+    - Truncate to 256 tokens
+    - Normalize Czech text
+    - Remove unnecessary punctuation
+    """
+    try:
+        # Normalize Czech text
+        processed_query = normalize_czech_text(query)
+
+        # Tokenize and truncate to 256 tokens (Cohere recommendation)
+        encoding = tiktoken.get_encoding("cl100k_base")
+        tokens = encoding.encode(processed_query)
+
+        if len(tokens) > 256:
+            tokens = tokens[:256]
+            processed_query = encoding.decode(tokens)
+
+        # Clean up punctuation while preserving Czech characters
+        processed_query = re.sub(
+            r"[^\w\sáčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]", " ", processed_query
+        )
+        processed_query = re.sub(r"\s+", " ", processed_query).strip()
+
+        return processed_query
+
+    except Exception as e:
+        print__chromadb_debug(f"Query preprocessing failed: {e}")
+        return query  # Return original on error
+
+
+def chunk_document_for_reranking(text: str, max_chunk_length: int = 1000) -> List[str]:
+    """
+    Chunk long documents for better reranking performance.
+    Cohere performs better with smaller, focused chunks.
+    """
+    if len(text) <= max_chunk_length:
+        return [text]
+
+    try:
+        # Split by sentences first
+        sentences = re.split(r"(?<=[.!?])\s+", text.strip())
+
+        chunks = []
+        current_chunk = ""
+
+        for sentence in sentences:
+            if len(current_chunk) + len(sentence) <= max_chunk_length:
+                current_chunk += sentence + " "
+            else:
+                if current_chunk:
+                    chunks.append(current_chunk.strip())
+                current_chunk = sentence + " "
+
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+
+        # If still too long, split by words
+        if any(len(chunk) > max_chunk_length for chunk in chunks):
+            final_chunks = []
+            for chunk in chunks:
+                if len(chunk) > max_chunk_length:
+                    words = chunk.split()
+                    temp_chunk = ""
+                    for word in words:
+                        if len(temp_chunk) + len(word) + 1 <= max_chunk_length:
+                            temp_chunk += word + " "
+                        else:
+                            if temp_chunk:
+                                final_chunks.append(temp_chunk.strip())
+                            temp_chunk = word + " "
+                    if temp_chunk:
+                        final_chunks.append(temp_chunk.strip())
+                else:
+                    final_chunks.append(chunk)
+            chunks = final_chunks
+
+        return chunks if chunks else [text]
+
+    except Exception as e:
+        print__chromadb_debug(f"Document chunking failed: {e}")
+        return [text]  # Return original on error
+
+
 def cohere_rerank(query, docs, top_n):
-    """Rerank documents using Cohere's rerank model."""
+    """Rerank documents using Cohere's rerank model with optimizations for tabular data."""
     cohere_api_key = os.environ.get("COHERE_API_KEY", "")
     if not cohere_api_key:
         print__chromadb_debug("Warning: COHERE_API_KEY not found. Skipping reranking.")
@@ -2382,13 +2266,44 @@ def cohere_rerank(query, docs, top_n):
         ]
 
     co = cohere.Client(cohere_api_key)
-    texts = [doc.page_content for doc in docs]
-    docs_for_cohere = [{"text": t} for t in texts]
+
+    # Preprocess query
+    processed_query = preprocess_query_for_reranking(query)
+    print__chromadb_debug(f"Preprocessed query for reranking: '{processed_query}'")
+
+    # Process documents with table formatting and chunking
+    processed_docs = []
+    for doc in docs:
+        content = doc.page_content
+
+        # Format tables as YAML for better understanding
+        formatted_content = format_table_for_reranking(content)
+
+        # Chunk long documents
+        chunks = chunk_document_for_reranking(formatted_content)
+
+        # Use the first chunk (or combine small chunks)
+        if len(chunks) == 1:
+            processed_content = chunks[0]
+        else:
+            # Combine first few chunks if they're small
+            combined = ""
+            for chunk in chunks[:3]:  # Take up to 3 chunks
+                if len(combined) + len(chunk) <= 2000:  # Reasonable limit
+                    combined += chunk + "\n\n"
+                else:
+                    break
+            processed_content = combined.strip() or chunks[0]
+
+        processed_docs.append(processed_content)
+
+    # Prepare for Cohere
+    docs_for_cohere = [{"text": content} for content in processed_docs]
 
     try:
         rerank_response = co.rerank(
             model="rerank-multilingual-v3.0",
-            query=query,
+            query=processed_query,
             documents=docs_for_cohere,
             top_n=top_n,
         )
@@ -2508,7 +2423,7 @@ def process_single_pdf(pdf_filename: str) -> Tuple[str, bool, str]:
                 for page_data in pages_data:
                     combined_text_parts.append(page_data["text"])
 
-                combined_text = CONTENT_SEPARATORS["page_separator"].join(
+                combined_text = "\n\n--- Page {page_number} ---\n\n".join(
                     combined_text_parts
                 )
                 save_parsed_text_to_file(combined_text, str(parsed_text_path))

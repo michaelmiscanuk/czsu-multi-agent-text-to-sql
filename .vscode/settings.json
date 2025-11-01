@@ -4,5 +4,6 @@
     "python.analysis.extraPaths": [
         "${workspaceFolder}"
     ],
-    "python.envFile": "${workspaceFolder}/.env"
+    "python.envFile": "${workspaceFolder}/.env",
+    "python-envs.pythonProjects": []
 }
