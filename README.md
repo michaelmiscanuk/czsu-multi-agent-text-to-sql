@@ -1,3 +1,9 @@
+# CZSU Multi-Agent Text-to-SQL Application (CZSU Data Explorer and Chatbot)
+
+This is a full-stack application prototype that enables natural language querying of Czech Statistics Office (CZSU) data through an AI-powered chatbot. The system features a Python/FastAPI backend, React frontend, and an agentic flow using LangGraph for intelligent question answering over statistical data. The AI component is evaluated using LangSmith.
+
+The application allows users to ask questions in natural language about CZSU data selections, which include various metrics and dimensions. It includes comprehensive data and metadata preparation scripts, backend API endpoints, and a web interface for interacting with the chatbot.
+
 # Setup Instructions
 
 ## Windows
@@ -48,41 +54,9 @@
 
 ---
 
-## Unix/Linux/macOS
+## Deployment
 
-### Option 1: Automated Setup
-- To set up all backend and frontend dependencies, run `./setup.sh` from the root folder.
-- To start the backend, run `./start_backend.sh` from the root folder.
-- To start the frontend, run `./start_frontend.sh` from the `frontend` folder.
-
-### Option 2: Manual Setup
-1. **Environment Variables**
-   - Create a `.env` file in the root directory based on `.env_example`.
-   - Create a `.env` file in the `frontend` folder based on `.env_example`.
-2. **Backend Setup (from root folder)**
-   Run the following commands in your shell:
-   ```
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install --upgrade pip
-   pip install .
-   pip install .[dev]
-   uvicorn api.main:app --reload --reload-exclude .venv
-   ```
-   
-   If there is some problem with libraries, delete .venv folder and run commands above
-   
-3. **Frontend Setup (from frontend folder)**
-   Run the following commands:
-   ```
-   npm install
-   npm run build
-   npm run dev
-   ```
-
-   If there isome problem with libraries, delete these items in frontend folder
-   node_modules folder, .next folder and package-lock file
-   Run commands above.
+For deployment to platforms like Railway, the `railway.toml` file contains the necessary configuration for setting up the application in a Linux environment. Ensure your environment variables are configured as per the `.env_example` files, and the deployment service will handle the build and startup processes automatically.
 ---
 
 ## Running Notebooks
