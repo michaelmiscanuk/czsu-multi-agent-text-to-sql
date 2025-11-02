@@ -29,7 +29,7 @@ const Header = () => {
           style={{fontFamily: 'var(--font-family)'}}
           title={isAuthenticated ? "Go to CHAT" : "Go to HOME"}
         >
-          CZSU - Multi-Agent Text-to-SQL
+          CZSU Data Explorer and Chatbot
         </Link>
       </div>
 

@@ -12,7 +12,7 @@ iterative improvement, and answer synthesis.
 Architecture Overview:
 =====================
 Node functions are organized into 6 processing stages:
-1. Query Preprocessing (rewrite_query_node, summarize_messages_node)
+1. Query Preprocessing (rewrite_prompt_node, summarize_messages_node)
 2. Parallel Retrieval - Database Selections (retrieve, rerank, relevant)
 3. Parallel Retrieval - PDF Chunks (retrieve, rerank, relevant)
 4. SQL Generation & Execution (get_schema, generate_query_node)
@@ -78,9 +78,9 @@ Processing Stages & Nodes:
 
 Stage 1: Query Preprocessing
 ----------------------------
-Nodes: rewrite_query_node, summarize_messages_node
+Nodes: rewrite_prompt_node, summarize_messages_node
 
-rewrite_query_node:
+rewrite_prompt_node:
 - Input: state["prompt"], state["messages"] (summary + last message)
 - Output: rewritten_prompt, updated messages
 - LLM: Azure GPT-4o (temp=0.0)
@@ -512,16 +512,16 @@ Nodes are called automatically by LangGraph based on graph structure:
 
 ```python
 # Define in agent.py
-graph.add_node("rewrite_query", rewrite_query_node)
+graph.add_node("rewrite_prompt", rewrite_prompt_node)
 graph.add_node("generate_query", generate_query_node)
 # ... etc
 
 # Graph executes nodes based on edges
-graph.add_edge("rewrite_query", "summarize_messages_rewrite")
+graph.add_edge("rewrite_prompt", "summarize_messages_rewrite")
 graph.add_edge("generate_query", "reflect")
 
 # Nodes receive state and return updates
-result = await rewrite_query_node(state)
+result = await rewrite_prompt_node(state)
 # Returns: {"rewritten_prompt": "...", "messages": [...]}
 ```
 
@@ -588,11 +588,8 @@ including schema loading, query generation, execution, and result formatting.
 # IMPORTS
 # ==============================================================================
 import os
-import sqlite3
-import requests
 import uuid
 import json
-import asyncio
 import logging
 from pathlib import Path
 import gc
@@ -604,7 +601,6 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from langchain_core.tools import tool
 
-from dotenv import load_dotenv
 
 # ==============================================================================
 # CONSTANTS & CONFIGURATION
@@ -655,12 +651,10 @@ from metadata.create_and_load_chromadb__04 import (
 )
 from metadata.chromadb_client_factory import (
     get_chromadb_client,
-    get_chromadb_collection,
 )
 from my_agent.utils.models import (
     get_azure_llm_gpt_4o,
     get_azure_llm_gpt_4o_mini,
-    get_ollama_llm,
     get_azure_llm_gpt_4o_4_1,
 )
 from metadata.chromadb_client_factory import should_use_cloud
@@ -724,7 +718,7 @@ SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
 # ==============================================================================
 # NODE FUNCTIONS
 # ==============================================================================
-async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
+async def rewrite_prompt_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that rewrites user prompts for optimal vector search and standalone context.
 
     This node converts conversational questions into standalone, search-optimized queries by resolving
@@ -751,7 +745,7 @@ async def rewrite_query_node(state: DataAnalysisState) -> DataAnalysisState:
         4. Escape curly braces for f-string safety
         5. Return rewritten prompt and updated messages
     """
-    print__nodes_debug("🧠 REWRITE: Enter rewrite_query_node (simplified)")
+    print__nodes_debug("🧠 REWRITE: Enter rewrite_prompt_node (simplified)")
 
     prompt_text = state["prompt"]
     print(f"🧠 REWRITE: Original prompt: {prompt_text}")
@@ -862,7 +856,7 @@ Now process this conversation:
     rewritten_prompt_escaped = rewritten_prompt.replace("{", "{{").replace("}", "}}")
     print__nodes_debug(f"🚀 REWRITE: Rewritten prompt: {rewritten_prompt_escaped}")
     if not hasattr(result, "id") or not result.id:
-        result.id = "rewrite_query"
+        result.id = "rewrite_prompt"
 
     return {"rewritten_prompt": rewritten_prompt, "messages": [summary, result]}
 
@@ -927,7 +921,7 @@ Important guidelines:
 """
 
     human_prompt = "Conversation summary:\n{summary_content}\n\nGenerate 3 diverse most relevant and most interesting follow-up prompts for the user to continue exploring the data."
-    print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Calling LLM to generate prompts")
+    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Calling LLM to generate prompts")
 
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]

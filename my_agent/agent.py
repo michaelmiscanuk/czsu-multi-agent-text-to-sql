@@ -21,7 +21,7 @@ Graph Structure & Execution Flow:
 
 Phase 1: Query Preprocessing
 ----------------------------
-START → rewrite_query → summarize_messages_rewrite
+START → rewrite_prompt → summarize_messages_rewrite
 
 - Converts conversational questions into standalone search queries
 - Summarizes conversation history to manage token limits
@@ -92,7 +92,7 @@ Uses DataAnalysisState TypedDict with key fields:
 
 Node Summary:
 =======================
-Preprocessing: rewrite_query
+Preprocessing: rewrite_prompt
 Retrieval: retrieve_similar_selections_hybrid_search, retrieve_similar_chunks_hybrid_search
 Reranking: rerank_table_descriptions, rerank_chunks
 Filtering: relevant_selections, relevant_chunks
@@ -184,7 +184,7 @@ from my_agent.utils.nodes import (
     rerank_table_descriptions_node,
     retrieve_similar_chunks_hybrid_search_node,
     retrieve_similar_selections_hybrid_search_node,
-    rewrite_query_node,
+    rewrite_prompt_node,
     post_retrieval_sync_node,
     save_node,
     submit_final_answer_node,
@@ -252,7 +252,7 @@ def create_graph(checkpointer=None):
     # ADD NODES: each node is handling a specific step in the process
     # --------------------------------------------------------------------------
 
-    graph.add_node("rewrite_query", rewrite_query_node)
+    graph.add_node("rewrite_prompt", rewrite_prompt_node)
     graph.add_node("summarize_messages_rewrite", summarize_messages_node)
     graph.add_node(
         "retrieve_similar_selections_hybrid_search",
@@ -283,9 +283,9 @@ def create_graph(checkpointer=None):
     # EDGES: Define the graph execution path
     # --------------------------------------------------------------------------
 
-    # Start: prompt -> rewrite_query -> summarize_messages -> retrieve (both selections and chunks in parallel)
-    graph.add_edge(START, "rewrite_query")
-    graph.add_edge("rewrite_query", "summarize_messages_rewrite")
+    # Start: prompt -> rewrite_prompt -> summarize_messages -> retrieve (both selections and chunks in parallel)
+    graph.add_edge(START, "rewrite_prompt")
+    graph.add_edge("rewrite_prompt", "summarize_messages_rewrite")
 
     # After summarize_messages_rewrite, branch to both selection and chunk retrieval (parallel execution)
     graph.add_edge(

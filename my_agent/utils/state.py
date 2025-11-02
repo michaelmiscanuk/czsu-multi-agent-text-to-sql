@@ -160,7 +160,7 @@ Initial State:
 }
 ```
 
-After rewrite_query:
+After rewrite_prompt:
 -------------------
 ```python
 {
