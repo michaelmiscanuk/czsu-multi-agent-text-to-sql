@@ -641,10 +641,10 @@ from api.utils.debug import print__nodes_debug, print__analysis_tracing_debug
 from .helpers import load_schema, translate_to_english, detect_language
 
 # PDF chunk functionality imports
-from data.pdf_to_chromadb import CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
-from data.pdf_to_chromadb import COLLECTION_NAME as PDF_COLLECTION_NAME
-from data.pdf_to_chromadb import cohere_rerank as pdf_cohere_rerank
-from data.pdf_to_chromadb import hybrid_search as pdf_hybrid_search
+from data.pdf_to_chromadb__llamaparse_custom_separators import CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
+from data.pdf_to_chromadb__llamaparse_custom_separators import COLLECTION_NAME as PDF_COLLECTION_NAME
+from data.pdf_to_chromadb__llamaparse_custom_separators import cohere_rerank as pdf_cohere_rerank
+from data.pdf_to_chromadb__llamaparse_custom_separators import hybrid_search as pdf_hybrid_search
 from metadata.create_and_load_chromadb__04 import (
     cohere_rerank,
     hybrid_search,

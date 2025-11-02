@@ -77,8 +77,10 @@ dependencies = [
     "openpyxl==3.1.5",
     "pyjstat==2.4.0",
     
-    # PDF Processing - LlamaParse only
+    # PDF Processing
     "llama-parse>=0.4.0",  # Premium LLM-based parser (requires API key)
+    "azure-ai-documentintelligence>=1.0.0",  # Azure Document Intelligence SDK
+    "isodate>=0.6.1",  # ISO 8601 date parsing (required by azure-ai-documentintelligence)
     
     # JSON/serialization
     "orjson>=3.9.10",
