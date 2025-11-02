@@ -689,7 +689,6 @@ MAX_TOOL_ITERATIONS = int(
 FORMAT_ANSWER_ID = 10  # Add to CONSTANTS section
 POST_RETRIEVAL_SYNC_ID = 11  # ID for post-retrieval synchronization function
 REFLECT_NODE_ID = 12
-INCREMENT_ITERATION_ID = 13
 CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
 CHROMA_COLLECTION_NAME = "czsu_selections_chromadb"
 EMBEDDING_DEPLOYMENT = "text-embedding-3-large__test1"
@@ -877,6 +876,13 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
     Returns:
         DataAnalysisState: Updated state with 'followup_prompts' containing list of 3 prompt strings.
 
+    System Prompt Key Points:
+    - Prompt generation assistant for Czech Statistical Office data analysis system
+    - Task: Generate exactly 3 diverse, interesting, and useful follow-up prompts based on conversation summary
+    - Data context: Summary data on Czechia focusing on real economy, monetary and fiscal indicators from CZSO and other institutions
+    - Guidelines: Prompts can be questions/statements/commands, concise and brief, each on new line, no numbering, context-aware, natural and user-friendly, diverse exploration of different angles
+    - Output format: Exactly 3 prompts, one per line, no numbering, diverse coverage of economy/population/finance aspects when summary is empty
+
     Key Steps:
         1. Extract conversation summary from messages
         2. Call Azure GPT-4o-mini with creative temperature (1.0)
@@ -886,6 +892,7 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
     """
     print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node")
 
+    # Key Step 1: Extract conversation summary from messages
     messages = state.get("messages", [])
     summary = (
         messages[0]
@@ -896,7 +903,7 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
 
     print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Summary content: '{summary_content}'")
 
-    # Use LLM with temperature 1.0 for creative prompt generation
+    # Key Step 2: Call Azure GPT-4o-mini with creative temperature (1.0)
     llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
 
     system_prompt = """
@@ -923,6 +930,7 @@ Important guidelines:
     human_prompt = "Conversation summary:\n{summary_content}\n\nGenerate 3 diverse most relevant and most interesting follow-up prompts for the user to continue exploring the data."
     print__nodes_debug("💡 FOLLOWUP_PROMPTS: Calling LLM to generate prompts")
 
+    # Key Step 3: Generate 3 diverse, relevant prompts
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
@@ -934,7 +942,7 @@ Important guidelines:
         f"💡 FOLLOWUP_PROMPTS: LLM returned {len(generated_text)} characters"
     )
 
-    # Parse the generated prompts (split by newlines and filter empty lines)
+    # Key Step 4: Parse and validate prompt list
     followup_prompts = [
         line.strip() for line in generated_text.split("\n") if line.strip()
     ]
@@ -942,7 +950,7 @@ Important guidelines:
         f"💡 FOLLOWUP_PROMPTS: Parsed {len(followup_prompts)} prompts from LLM response"
     )
 
-    # Return maximum 3 prompts
+    # Key Step 5: Return maximum 3 prompts
     final_prompts = followup_prompts[:3]
     print__nodes_debug(
         f"💡 FOLLOWUP_PROMPTS: Returning {len(final_prompts)} follow-up prompts"
@@ -1010,17 +1018,6 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     Returns:
         DataAnalysisState: Updated state with messages, queries_and_results, iteration, and rewritten_prompt.
 
-    Key Steps:
-        1. Extract state variables (current_iteration, existing_queries_and_results, messages, rewritten_prompt, original_prompt, selected_codes)
-        2. Check for potential query loops by examining recent queries
-        3. Set up LLM and MCP tools (get Azure GPT-4o model, create MCP server, find sqlite_tool, add finish_gathering tool)
-        4. Extract conversation summary and last message (get summary_message, last_message, determine last_message_content)
-        5. Load schema for selected datasets using load_schema helper
-        6. Build SQL generation prompt with system and human messages (define system_prompt, build human_prompt_parts, prepare template_vars)
-        7. Bind tools to LLM and initialize conversation (bind tools, create prompt_template, format initial_messages, set conversation_messages)
-        8. Enter agentic loop while tool_call_count < MAX_TOOL_ITERATIONS (invoke LLM, check for tool calls, execute tools, append results)
-        9. After loop: Create completion message and return updated state with messages, iteration, and queries_and_results
-
     System Prompt Key Points:
     - Bilingual Data Query Specialist proficient in Czech and English, expert in SQL with SQLite dialect
     - Task: Translate natural-language questions into SQLite queries using sqlite_query tool
@@ -1035,11 +1032,23 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     - SQL generation: Limit to 10 rows, select necessary columns, use aggregations carefully, include metric columns in SELECT/GROUP BY, do not modify database, use PRAGMA for schema if unsure, alias columns appropriately
     - Verification: Review results, execute additional queries if incomplete, stop when sufficient data gathered without further tool calls
     - Examples: Dataset descriptions, sample queries for various SQL techniques
+    Key Steps:
+        1. Extract state variables and log current iteration
+        2. Check for potential query loops (if 3+ existing queries)
+        3. Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
+        4. Extract conversation context (summary_message, last_message, skip schema details if present)
+        5. Load schema data for selected dataset codes
+        6. Build comprehensive SQL generation prompt (system prompt with instructions, human prompt with context)
+        7. Bind tools to LLM, create prompt template, format initial messages, initialize conversation state
+        8. Run agentic loop: invoke LLM, process tool calls (sqlite_query or finish_gathering), store results, check if finished
+        9. Create completion message and return updated state (messages, queries_and_results, iteration)
+
+
     """
 
     print__nodes_debug(f"🧠 {GENERATE_QUERY_ID}: Enter generate_query_node")
 
-    # Key Step 1: Extract state variables (current_iteration, existing_queries_and_results, messages, rewritten_prompt, original_prompt, selected_codes)
+    # Key Step 1: Extract state variables and log current iteration
     current_iteration = state.get("iteration", 0)
     existing_queries_and_results = state.get("queries_and_results", [])
     messages = state.get("messages", [])
@@ -1050,12 +1059,13 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     print__nodes_debug(
         f"🔄 {GENERATE_QUERY_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries_and_results)}"
     )
-    # Key Step 2: Check for potential query loops by examining recent queries
+    
+    # Key Step 2: Check for potential query loops (if 3+ existing queries)
     if len(existing_queries_and_results) >= 3:
         recent_queries = [query for query, _ in existing_queries_and_results[-3:]]
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
-    # Key Step 3: Set up LLM and MCP tools (get Azure GPT-4o model, create MCP server, find sqlite_tool, add finish_gathering tool)
+    # Key Step 3: Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
     llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
     tools = await create_mcp_server()
     sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
@@ -1072,7 +1082,7 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     # Add finish gathering tool
     tools.append(finish_gathering)
 
-    # Key Step 4: Extract conversation summary and last message (get summary_message, last_message, determine last_message_content)
+    # Key Step 4: Extract conversation context (summary_message, last_message, skip schema details if present)
     summary_message = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
@@ -1091,10 +1101,10 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     else:
         last_message_content = last_message.content if last_message else ""
 
-    # Key Step 5: Load schema for selected datasets using load_schema helper
+    # Key Step 5: Load schema data for selected dataset codes
     schema_data = await load_schema({"top_selection_codes": selected_codes})
 
-    # Key Step 6: Build SQL generation prompt with system and human messages (define system_prompt, build human_prompt_parts, prepare template_vars)
+    # Key Step 6: Build comprehensive SQL generation prompt (system prompt with instructions, human prompt with context)
     system_prompt = f"""
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
 Your task is to translate the user's natural-language question into SQLite SQL queries using the sqlite_query tool.
@@ -1305,7 +1315,7 @@ Remember: Always examine the schema to understand:
     if last_message_content:
         template_vars["last_message_content"] = last_message_content
 
-    # Key Step 7: Bind tools to LLM and initialize conversation (bind tools, create prompt_template, format initial_messages, set conversation_messages)
+    # Key Step 7: Bind tools to LLM, create prompt template, format initial messages, initialize conversation state
     llm_with_tools = llm.bind_tools(tools)
 
     # Build initial messages for the conversation
@@ -1324,7 +1334,7 @@ Remember: Always examine the schema to understand:
         f"🔄 {GENERATE_QUERY_ID}: Starting agentic loop (max iterations: {MAX_TOOL_ITERATIONS})"
     )
 
-    # Key Step 8: Enter agentic loop while tool_call_count < MAX_TOOL_ITERATIONS (invoke LLM, check for tool calls, execute tools, append results)
+    # Key Step 8: Run agentic loop: invoke LLM, process tool calls (sqlite_query or finish_gathering), store results, check if finished
     while tool_call_count < MAX_TOOL_ITERATIONS:
         tool_call_count += 1
         print__nodes_debug(
@@ -1430,7 +1440,7 @@ Remember: Always examine the schema to understand:
             f"⚠️ {GENERATE_QUERY_ID}: Max tool iterations ({MAX_TOOL_ITERATIONS}) reached"
         )
 
-    # Key Step 9: After loop: Create completion message and return updated state with messages, iteration, and queries_and_results
+    # Key Step 9: Create completion message and return updated state (messages, queries_and_results, iteration)
     # Create completion message
     completion_message = AIMessage(
         content=f"Data gathering complete. {len(new_queries_and_results)} queries executed.",
@@ -1470,13 +1480,23 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     Returns:
         DataAnalysisState: Updated state with reflection_decision, messages, and incremented iteration.
 
+    System Prompt Key Points:
+    - Data analysis reflection agent that analyzes current state and provides feedback to guide query generation
+    - Task: Analyze executed queries and results, determine if sufficient data exists to answer user's question, provide specific feedback for improvement if needed
+    - Decision making: Return "DECISION: answer" if sufficient data gathered, "DECISION: improve" if more queries needed
+    - Process: Review original question and conversation summary, analyze all queries and results, provide detailed feedback on missing information and SQL query suggestions
+    - Guidelines: Ensure complete coverage for comparisons/trends/distributions, avoid repetitive queries, request comprehensive data gathering when needed
+    - Response style: Detailed and specific feedback (max 400 words), phrase improvement instructions as human-to-LLM guidance
+    - Agentic pattern: Works with query generation agent that can execute multiple SQL queries iteratively
+
     Key Steps:
-        1. Check iteration limit and force answer if exceeded
-        2. Extract recent queries (last 5) to prevent token overflow
-        3. Call Azure GPT-4o-mini with reflection prompt
-        4. Parse decision ("answer" or "improve")
-        5. Increment iteration counter if improving
-        6. Return decision and feedback message
+        1. Extract state and check iteration limit (force answer if MAX_ITERATIONS reached)
+        2. Extract conversation context (summary, last_message) and limit queries for reflection (last 5 only)
+        3. Build reflection prompt with system instructions and current query results
+        4. Call Azure GPT-4o-mini to analyze and provide feedback
+        5. Parse decision from response ("answer" or "improve")
+        6. Increment iteration counter if decision is "improve"
+        7. Return updated state with decision, feedback message, and iteration count
     """
     print__nodes_debug(f"💭 {REFLECT_NODE_ID}: Enter reflect_node")
 
@@ -1492,7 +1512,7 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
         f"🧠 {REFLECT_NODE_ID}: Current iteration: {current_iteration}, Total queries: {total_queries}"
     )
 
-    # Force answer if we've hit iteration limit or have too many queries
+    # Key Step 1: Extract state and check iteration limit (force answer if MAX_ITERATIONS reached)
     if current_iteration >= MAX_ITERATIONS:
         print__nodes_debug(
             f"🔄 {REFLECT_NODE_ID}: Forcing answer due to iteration limit ({current_iteration} >= {MAX_ITERATIONS})"
@@ -1523,6 +1543,7 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     last_message = messages[1] if len(messages) > 1 else None
     last_message_content = last_message.content if last_message else ""
 
+    # Key Step 2: Extract conversation context (summary, last_message) and limit queries for reflection (last 5 only)
     # Limit the queries_results_text to prevent token overflow
     # Only include the last few queries to prevent token overflow
     max_queries_for_reflection = 5  # Show only last 5 queries in reflection
@@ -1546,6 +1567,7 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
         f"🧠 {REFLECT_NODE_ID}: Processing {len(recent_queries)} queries for reflection (total: {len(queries_and_results)})"
     )
 
+    # Key Step 3: Build reflection prompt with system instructions and current query results
     system_prompt = """
 You are a data analysis reflection agent.
 Your task is to analyze the current state and provide detailed feedback to guide the next query generation.
@@ -1604,12 +1626,15 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
         )
     )
     content = result.content if hasattr(result, "content") else str(result)
+    
+    # Key Step 4: Call Azure GPT-4o-mini to analyze and provide feedback
+    # Key Step 5: Parse decision from response ("answer" or "improve")
     if "DECISION: answer" in content:
         reflection_decision = "answer"
         print__nodes_debug(f"✅ {REFLECT_NODE_ID}: Decision: answer")
     else:
         reflection_decision = "improve"
-        # Increment iteration when deciding to improve
+        # Key Step 6: Increment iteration counter if decision is "improve"
         current_iteration += 1
         print__nodes_debug(
             f"🔄 {REFLECT_NODE_ID}: Decision: improve (iteration will be: {current_iteration})"
@@ -1620,6 +1645,7 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
 
     new_messages = [summary, result] if last_message else [summary]
 
+    # Key Step 7: Return updated state with decision, feedback message, and iteration count
     return {
         "messages": new_messages,
         "reflection_decision": reflection_decision,
@@ -1648,22 +1674,31 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     Returns:
         DataAnalysisState: Updated state with final_answer, messages, and preserved top_chunks.
 
+    System Prompt Key Points:
+    - Bilingual (Czech/English) data analyst that responds strictly using provided SQL results and PDF document context
+    - Data rules: Use ONLY provided data, read query details to match user questions, understand 'value' column meanings, never format numbers, use PDF context to enrich answers
+    - Response rules: Respond in detected language, translate all content including data labels/headers, synthesize SQL+PDF data comprehensively, provide relevant details, compare values, highlight patterns/trends, note contradictions, never hallucinate
+    - Style rules: No query/results references, no filler phrases, logical structure, structured output instead of long sentences, organize complementary SQL+PDF data
+    - Output format: Markdown with bullet points/lists/tables/headings, plain digits for numbers, clear PDF source attribution
+
     Key Steps:
-        1. Extract SQL results and PDF chunks from state
-        2. Build separate context sections for SQL and PDF data
-        3. Call Azure GPT-4o-mini with synthesis prompt
-        4. Generate markdown-formatted answer
-        5. Preserve PDF chunks for frontend
-        6. Return final_answer and updated messages
+        1. Extract data from state (queries_and_results, top_chunks, prompt) and detect language
+        2. Build separate context sections (SQL queries/results text, PDF chunks text with sources)
+        3. Build comprehensive system prompt with data/response/style/format rules
+        4. Call Azure GPT-4o-mini to synthesize answer from all data sources
+        5. Extract generated markdown answer and update message state
+        6. Return final_answer with preserved top_chunks for frontend display
     """
     print__nodes_debug(f"🎨 {FORMAT_ANSWER_ID}: Enter format_answer_node")
 
+    # Key Step 1: Extract SQL results and PDF chunks from state
     queries_and_results = state.get("queries_and_results", [])
     top_chunks = state.get("top_chunks", [])
     rewritten_prompt = state.get("rewritten_prompt")
     prompt = state["prompt"]
     messages = state.get("messages", [])
 
+    # Key Step 1: Extract data from state (queries_and_results, top_chunks, prompt) and detect language
     # Detect the language of the original prompt
     detected_language = await detect_language(prompt)
     print__nodes_debug(f"🌍 {FORMAT_ANSWER_ID}: Detected language: {detected_language}")
@@ -1677,6 +1712,7 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
 
     llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
 
+    # Key Step 2: Build separate context sections (SQL queries/results text, PDF chunks text with sources)
     # Prepare SQL queries and results context
     queries_results_text = "\n\n".join(
         f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}"
@@ -1794,9 +1830,12 @@ Bad: "The query shows X is 1,234,567"
     chain = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", formatted_prompt)]
     )
+    # Key Step 3: Build comprehensive system prompt with data/response/style/format rules (already built above)
+    # Key Step 4: Call Azure GPT-4o-mini to synthesize answer from all data sources
     result = await llm.ainvoke(chain.format_messages(**template_vars))
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
 
+    # Key Step 5: Extract generated markdown answer and update message state
     # Extract the final answer content
     final_answer_content = result.content if hasattr(result, "content") else str(result)
     # FIX: Escape curly braces in final_answer_content to prevent f-string parsing errors
@@ -1821,30 +1860,12 @@ Bad: "The query shows X is 1,234,567"
         f"📄 {FORMAT_ANSWER_ID}: Preserving {len(top_chunks)} PDF chunks for frontend"
     )
 
+    # Key Step 6: Return final_answer with preserved top_chunks for frontend display
     return {
         "messages": [summary, result],
         "final_answer": final_answer_content,
         "top_chunks": top_chunks,  # Preserve chunks for frontend instead of clearing them
     }
-
-
-async def increment_iteration_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that increments the iteration counter for loop control.
-
-    This simple utility node increments the iteration counter to track the number of query-reflect
-    cycles executed. It's used in the improvement loop to enforce MAX_ITERATIONS limit and prevent
-    infinite loops.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing iteration count.
-
-    Returns:
-        DataAnalysisState: Updated state with incremented iteration counter.
-    """
-    print__nodes_debug(f"🔄 {INCREMENT_ITERATION_ID}: Enter increment_iteration_node")
-
-    current_iteration = state.get("iteration", 0)
-    return {"iteration": current_iteration + 1}
 
 
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
@@ -1920,14 +1941,15 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         DataAnalysisState: Minimal checkpoint state with only essential fields for database storage.
 
     Key Steps:
-        1. Extract final_answer, prompt, and queries_and_results
-        2. Save to text file (if enabled)
-        3. Append to JSONL file (if enabled)
-        4. Create minimal checkpoint with 7 essential fields
-        5. Return minimal state for database persistence
+        1. Extract final_answer, prompt, and queries_and_results from state
+        2. Save formatted results to analysis_results.txt file (if SAVE_TO_FILE_TXT_JSONL enabled)
+        3. Append JSON object to analysis_results.jsonl file (if SAVE_TO_FILE_TXT_JSONL enabled)
+        4. Create minimal_checkpoint_state with 7 essential fields (prompt, queries_and_results, most_similar_selections, most_similar_chunks, final_answer, messages, followup_prompts)
+        5. Return minimal checkpoint state for database persistence to reduce storage
     """
     print__nodes_debug(f"💾 {SAVE_RESULT_ID}: Enter save_node")
 
+    # Key Step 1: Extract final_answer, prompt, and queries_and_results from state
     prompt = state["prompt"]
     queries_and_results = state.get("queries_and_results", [])
 
@@ -1952,6 +1974,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         ],
     }
 
+    # Key Step 2: Save formatted results to analysis_results.txt file (if SAVE_TO_FILE_TXT_JSONL enabled)
     if SAVE_TO_FILE_TXT_JSONL:
         # Stream write to text file (no memory issues)
         with result_path.open("a", encoding="utf-8") as f:
@@ -1965,6 +1988,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
                 "----------------------------------------------------------------------------\n"
             )
 
+        # Key Step 3: Append JSON object to analysis_results.jsonl file (if SAVE_TO_FILE_TXT_JSONL enabled)
         # Append to a JSONL (JSON Lines) file for memory efficiency
         json_result_path = BASE_DIR / "analysis_results.jsonl"
 
@@ -1983,6 +2007,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
             f"💾 {SAVE_RESULT_ID}: File saving disabled (SAVE_TO_FILE_TXT_JSONL = {SAVE_TO_FILE_TXT_JSONL})"
         )
 
+    # Key Step 4: Create minimal_checkpoint_state with 7 essential fields (prompt, queries_and_results, most_similar_selections, most_similar_chunks, final_answer, messages, followup_prompts)
     # MINIMAL CHECKPOINT STATE: Return only essential fields for checkpointing
     # This dramatically reduces database storage from full state to just these fields
     minimal_checkpoint_state = {
@@ -2012,6 +2037,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
         f"💾 {SAVE_RESULT_ID}: Final answer being stored: '{final_answer_debug}'..."
     )
 
+    # Key Step 5: Return minimal checkpoint state for database persistence to reduce storage
     return minimal_checkpoint_state
 
 
@@ -2036,24 +2062,26 @@ async def retrieve_similar_selections_hybrid_search_node(
                           flag if local ChromaDB is unavailable.
 
     Key Steps:
-        1. Extract query and n_results from state (default: SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS)
-        2. Check ChromaDB availability (local directory or cloud)
-        3. Initialize ChromaDB client and collection
-        4. Perform hybrid search using hybrid_search function
-        5. Convert results to Document objects with metadata
-        6. Clean up ChromaDB resources and force garbage collection
-        7. Return results or empty list on error
+        1. Extract query (prefer rewritten_prompt) and n_results from state
+        2. Check ChromaDB availability: local directory exists (local mode) or cloud mode enabled
+        3. Initialize ChromaDB client and get collection using chromadb_client_factory
+        4. Perform hybrid search (semantic + BM25) using hybrid_search function
+        5. Convert dict results to Document objects with page_content and metadata
+        6. Clean up ChromaDB resources (clear references, explicit delete, gc.collect())
+        7. Return hybrid_search_results list or empty list on error
     """
     print__nodes_debug(
         f"🔍 {HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node"
     )
 
+    # Key Step 1: Extract query (prefer rewritten_prompt) and n_results from state
     query = state.get("rewritten_prompt") or state["prompt"]
     n_results = state.get("n_results", SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS)
 
     print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Query: {query}")
     print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
 
+    # Key Step 2: Check ChromaDB availability: local directory exists (local mode) or cloud mode enabled
     # Check if ChromaDB directory exists (only when using local ChromaDB)
 
     use_cloud = should_use_cloud()
@@ -2086,6 +2114,7 @@ async def retrieve_similar_selections_hybrid_search_node(
         )
 
     try:
+        # Key Step 3: Initialize ChromaDB client and get collection using chromadb_client_factory
         # Use the same method as the test script to get ChromaDB collection directly
 
         client = get_chromadb_client(
@@ -2096,11 +2125,13 @@ async def retrieve_similar_selections_hybrid_search_node(
             f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized"
         )
 
+        # Key Step 4: Perform hybrid search (semantic + BM25) using hybrid_search function
         hybrid_results = hybrid_search(collection, query, n_results=n_results)
         print__nodes_debug(
             f"📊 {HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results"
         )
 
+        # Key Step 5: Convert dict results to Document objects with page_content and metadata
         # Convert dict results to Document objects for compatibility
 
         hybrid_docs = []
@@ -2127,6 +2158,7 @@ async def retrieve_similar_selections_hybrid_search_node(
             f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}"
         )
 
+        # Key Step 6: Clean up ChromaDB resources (clear references, explicit delete, gc.collect())
         # MEMORY CLEANUP: Explicitly close ChromaDB resources
         print__nodes_debug(
             f"🧹 {HYBRID_SEARCH_NODE_ID}: Cleaning up ChromaDB client resources"
@@ -2136,6 +2168,7 @@ async def retrieve_similar_selections_hybrid_search_node(
         gc.collect()  # Force garbage collection to release memory
         print__nodes_debug(f"✅ {HYBRID_SEARCH_NODE_ID}: ChromaDB resources released")
 
+        # Key Step 7: Return hybrid_search_results list or empty list on error
         return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
         logger.error("❌ %s: Error in hybrid search: %s", HYBRID_SEARCH_NODE_ID, e)
@@ -2163,11 +2196,11 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         DataAnalysisState: Updated state with most_similar_selections as list of (selection_code, score) tuples.
 
     Key Steps:
-        1. Extract query and hybrid search results
-        2. Call cohere_rerank with documents and query
-        3. Extract selection codes and relevance scores
-        4. Return ranked list of (code, score) pairs
-        5. Log top results for debugging
+        1. Extract query (prefer rewritten_prompt) and hybrid_search_results from state
+        2. Check if hybrid search results exist; return empty list if none
+        3. Call cohere_rerank with documents and query to reorder by semantic relevance
+        4. Extract selection codes and relevance scores from reranked results
+        5. Return most_similar_selections as list of (selection_code, score) tuples
     """
 
     print__nodes_debug(
@@ -2177,6 +2210,7 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Enter rerank_table_descriptions_node"
     )
 
+    # Key Step 1: Extract query (prefer rewritten_prompt) and hybrid_search_results from state
     query = state.get("rewritten_prompt") or state["prompt"]
     hybrid_results = state.get("hybrid_search_results", [])
     n_results = state.get("n_results", 20)
@@ -2189,6 +2223,7 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Requested n_results: {n_results}"
     )
 
+    # Key Step 2: Check if hybrid search results exist; return empty list if none
     # Check if we have hybrid search results to rerank
     if not hybrid_results:
         print__nodes_debug(
@@ -2212,6 +2247,7 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         )
 
     try:
+        # Key Step 3: Call cohere_rerank with documents and query to reorder by semantic relevance
         print__nodes_debug(
             f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
         )
@@ -2220,6 +2256,7 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
             f"📊 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Cohere returned {len(reranked)} reranked results"
         )
 
+        # Key Step 4: Extract selection codes and relevance scores from reranked results
         most_similar = []
         for i, (doc, res) in enumerate(reranked, 1):
             selection_code = doc.metadata.get("selection") if doc.metadata else None
@@ -2235,6 +2272,7 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
             f"🎯🎯🎯 🎯🎯🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
         )
 
+        # Key Step 5: Return most_similar_selections as list of (selection_code, score) tuples
         return {"most_similar_selections": most_similar}
     except Exception as e:
         logger.error(
@@ -2266,16 +2304,18 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
         DataAnalysisState: Updated state with top_selection_codes (max 3), cleared intermediate results.
 
     Key Steps:
-        1. Apply SQL_RELEVANCE_THRESHOLD (0.0005) filter
-        2. Select up to 3 top selections
-        3. Clear intermediate hybrid search state
-        4. Set special final_answer if no selections pass
-        5. Return filtered selection codes
+        1. Extract most_similar_selections list from state
+        2. Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
+        3. Prepare result dict with top_selection_codes and clear intermediate state
+        4. Set special final_answer "No Relevant Selections Found" if no selections pass threshold
+        5. Return filtered selection codes and cleaned state
     """
     print__nodes_debug(f"🎯 {RELEVANT_NODE_ID}: Enter relevant_selections_node")
 
+    # Key Step 1: Extract most_similar_selections list from state
     most_similar = state.get("most_similar_selections", [])
 
+    # Key Step 2: Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
     # Select up to 3 top selections above threshold
     top_selection_codes = [
         sel
@@ -2286,12 +2326,14 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
         f"🎯 {RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}"
     )
 
+    # Key Step 3: Prepare result dict with top_selection_codes and clear intermediate state
     result = {
         "top_selection_codes": top_selection_codes,
         "hybrid_search_results": [],
         "most_similar_selections": [],
     }
 
+    # Key Step 4: Set special final_answer "No Relevant Selections Found" if no selections pass threshold
     # If no selections pass the threshold, set final_answer for frontend
     if not top_selection_codes:
         print__nodes_debug(
@@ -2299,6 +2341,7 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
         )
         result["final_answer"] = "No Relevant Selections Found"
 
+    # Key Step 5: Return filtered selection codes and cleaned state
     return result
 
 
@@ -2321,15 +2364,23 @@ async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState
     Returns:
         DataAnalysisState: Updated state with messages as [new_summary, last_message].
 
+    System Prompt Key Points:
+    - Conversation summarization agent for data analysis conversations between user and AI assistant
+    - Task: Maintain concise, cumulative summary by updating previous summary with latest message content
+    - Process: Receive previous summary and latest message, incorporate new information/decisions/context
+    - Output requirements: Summary suitable for LLM context in future queries, concise but complete, no meta-commentary or formatting, just summary text
+    - Memory management: Prevents token overflow while preserving context for pronoun/reference resolution
+
     Key Steps:
-        1. Extract previous summary and last message
-        2. Skip if both are empty
-        3. Call Azure GPT-4o-mini to generate updated summary
-        4. Create new SystemMessage with summary
-        5. Return 2-message structure [summary, last_message]
+        1. Extract previous summary (SystemMessage) and last message from state
+        2. Skip summarization if both previous summary and last message are empty
+        3. Call Azure GPT-4o-mini (temp=0.0) to generate updated cumulative summary
+        4. Create new SystemMessage containing the updated summary
+        5. Return 2-message structure [summary_msg, last_message] for bounded memory
     """
     print__nodes_debug("📝 SUMMARY: Enter summarize_messages_node")
 
+    # Key Step 1: Extract previous summary (SystemMessage) and last message from state
     messages = state.get("messages", [])
     summary = (
         messages[0]
@@ -2343,6 +2394,7 @@ async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState
     print__nodes_debug(f"📝 SUMMARY: prev_summary: '{prev_summary}'")
     print__nodes_debug(f"📝 SUMMARY: last_message_content: '{last_message_content}'")
 
+    # Key Step 2: Skip summarization if both previous summary and last message are empty
     if not prev_summary and not last_message_content:
         print__nodes_debug(
             "📝 SUMMARY: Skipping summarization (no previous summary or last message)."
@@ -2368,6 +2420,7 @@ Do not include any meta-commentary or formatting, just the summary text."""
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
+    # Key Step 3: Call Azure GPT-4o-mini (temp=0.0) to generate updated cumulative summary
     result = await llm.ainvoke(
         prompt.format_messages(
             prev_summary=prev_summary, last_message_content=last_message_content
@@ -2376,6 +2429,7 @@ Do not include any meta-commentary or formatting, just the summary text."""
     new_summary = result.content.strip()
     print__nodes_debug(f"📝 SUMMARY: Updated summary: {new_summary}")
 
+    # Key Step 4: Create new SystemMessage containing the updated summary
     summary_msg = SystemMessage(content=new_summary)
     new_messages = [summary_msg, last_message] if last_message else [summary_msg]
 
@@ -2383,6 +2437,7 @@ Do not include any meta-commentary or formatting, just the summary text."""
         f"📝 SUMMARY: New messages: {[getattr(m, 'content', None) for m in new_messages]}"
     )
 
+    # Key Step 5: Return 2-message structure [summary_msg, last_message] for bounded memory
     return {"messages": new_messages}
 
 
@@ -2729,16 +2784,17 @@ async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
         DataAnalysisState: Minimal state copy with only essential fields for API response.
 
     Key Steps:
-        1. Create state copy with only essential response fields
-        2. Run first garbage collection pass
-        3. Run second GC pass to catch circular references
-        4. Log collection statistics
-        5. Return minimal state for API delivery
+        1. Create state_copy with only essential response fields (prompt, final_answer, queries_and_results, messages, top_chunks, top_selection_codes, followup_prompts)
+        2. Run first gc.collect() pass to release unreferenced objects
+        3. Run second gc.collect() pass to catch circular references
+        4. Log garbage collection statistics for monitoring
+        5. Return minimal state_copy for API delivery with large intermediate data discarded
     """
 
     CLEANUP_NODE_ID = 99
     print__nodes_debug(f"🧹 {CLEANUP_NODE_ID}: Enter cleanup_resources_node")
 
+    # Key Step 1: Create state_copy with only essential response fields (prompt, final_answer, queries_and_results, messages, top_chunks, top_selection_codes, followup_prompts)
     # Clear large intermediate data structures that are no longer needed
     state_copy = {
         "prompt": state.get("prompt", ""),
@@ -2750,6 +2806,7 @@ async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
         "followup_prompts": state.get("followup_prompts", []),
     }
 
+    # Key Step 2: Run first gc.collect() pass to release unreferenced objects
     # Force garbage collection multiple times to ensure cleanup
     print__nodes_debug(f"🧹 {CLEANUP_NODE_ID}: Running aggressive garbage collection")
     collected = gc.collect()
@@ -2757,12 +2814,15 @@ async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
         f"✅ {CLEANUP_NODE_ID}: First GC pass collected {collected} objects"
     )
 
+    # Key Step 3: Run second gc.collect() pass to catch circular references
     # Run GC again to catch circular references
     collected = gc.collect()
     print__nodes_debug(
         f"✅ {CLEANUP_NODE_ID}: Second GC pass collected {collected} objects"
     )
 
+    # Key Step 4: Log garbage collection statistics for monitoring
+    # Key Step 5: Return minimal state_copy for API delivery with large intermediate data discarded
     print__nodes_debug(
         f"✅ {CLEANUP_NODE_ID}: Cleanup complete, memory should be released"
     )
