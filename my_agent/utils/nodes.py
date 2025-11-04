@@ -500,7 +500,7 @@ Integration Points:
 This module integrates with:
 1. my_agent/utils/state.py: DataAnalysisState TypedDict
 2. my_agent/utils/models.py: LLM client getters
-3. my_agent/utils/mcp_server.py: MCP tool creation
+3. my_agent/utils/tools.py: SQLite query tool with MCP cloud/local fallback
 4. metadata/create_and_load_chromadb__04.py: Hybrid search, cohere_rerank
 5. data/pdf_to_chromadb.py: PDF hybrid search, pdf_cohere_rerank
 6. metadata/chromadb_client_factory.py: ChromaDB client management
@@ -638,13 +638,24 @@ print(f"🔍 Current working directory: {Path.cwd()}")
 from api.utils.debug import print__nodes_debug, print__analysis_tracing_debug
 
 # Import helper functions
-from .helpers import load_schema, translate_to_english, detect_language
+from my_agent.utils.helpers import load_schema, translate_to_english, detect_language
+
+# Import tools
+from my_agent.utils.tools import finish_gathering, get_sqlite_tools
 
 # PDF chunk functionality imports
-from data.pdf_to_chromadb__llamaparse_custom_separators import CHROMA_DB_PATH as PDF_CHROMA_DB_PATH
-from data.pdf_to_chromadb__llamaparse_custom_separators import COLLECTION_NAME as PDF_COLLECTION_NAME
-from data.pdf_to_chromadb__llamaparse_custom_separators import cohere_rerank as pdf_cohere_rerank
-from data.pdf_to_chromadb__llamaparse_custom_separators import hybrid_search as pdf_hybrid_search
+from data.pdf_to_chromadb__llamaparse_custom_separators import (
+    CHROMA_DB_PATH as PDF_CHROMA_DB_PATH,
+)
+from data.pdf_to_chromadb__llamaparse_custom_separators import (
+    COLLECTION_NAME as PDF_COLLECTION_NAME,
+)
+from data.pdf_to_chromadb__llamaparse_custom_separators import (
+    cohere_rerank as pdf_cohere_rerank,
+)
+from data.pdf_to_chromadb__llamaparse_custom_separators import (
+    hybrid_search as pdf_hybrid_search,
+)
 from metadata.create_and_load_chromadb__04 import (
     cohere_rerank,
     hybrid_search,
@@ -658,17 +669,7 @@ from my_agent.utils.models import (
     get_azure_llm_gpt_4o_4_1,
 )
 from metadata.chromadb_client_factory import should_use_cloud
-from .mcp_server import create_mcp_server
 from .state import DataAnalysisState
-
-
-# ==============================================================================
-# HELPER TOOLS
-# ==============================================================================
-@tool
-def finish_gathering():
-    """Call this tool when you have gathered sufficient data to answer the user's question."""
-    return "Data gathering finished."
 
 
 # Set up logger
@@ -707,11 +708,6 @@ PDF_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for PDF chunks
 SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
     20  # Number of selections to retrieve from hybrid search
 )
-
-
-# ==============================================================================
-# HELPER FUNCTIONS
-# ==============================================================================
 
 
 # ==============================================================================
@@ -1059,7 +1055,7 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     print__nodes_debug(
         f"🔄 {GENERATE_QUERY_ID}: Iteration {current_iteration}, existing queries count: {len(existing_queries_and_results)}"
     )
-    
+
     # Key Step 2: Check for potential query loops (if 3+ existing queries)
     if len(existing_queries_and_results) >= 3:
         recent_queries = [query for query, _ in existing_queries_and_results[-3:]]
@@ -1067,10 +1063,10 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
 
     # Key Step 3: Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
     llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
-    tools = await create_mcp_server()
+    tools = await get_sqlite_tools()
     sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
     if not sqlite_tool:
-        error_msg = "sqlite_query tool not found in MCP server"
+        error_msg = "sqlite_query tool not found"
         print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
         return {
             "messages": messages,
@@ -1626,7 +1622,7 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
         )
     )
     content = result.content if hasattr(result, "content") else str(result)
-    
+
     # Key Step 4: Call Azure GPT-4o-mini to analyze and provide feedback
     # Key Step 5: Parse decision from response ("answer" or "improve")
     if "DECISION: answer" in content:
