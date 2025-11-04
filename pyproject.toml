@@ -87,8 +87,9 @@ dependencies = [
     "PyYAML==6.0.2",
     
     # MCP server
-    "mcp==1.9.2",
+    "mcp>=1.20.0",  # Updated for langchain-mcp-adapters compatibility
     "fastmcp>=2.0.0",  # FastMCP for remote MCP client connections
+    "langchain-mcp-adapters>=0.1.0",  # Official LangChain MCP adapters
     
     # Async utilities
     "aiofiles==24.1.0",
@@ -134,6 +135,7 @@ dev = [
 
     # Testing
     "pytest",
+    "pytest-asyncio",
     "httpx"
 ]
 
@@ -147,3 +149,7 @@ include = ["api*", "tests*", "my_agent*", "data*", "metadata*", "checkpointer*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.py", "*.txt", "*.md", "*.json", "*.yaml", "*.yml", "*.toml", "*.cfg", "*.ini"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
