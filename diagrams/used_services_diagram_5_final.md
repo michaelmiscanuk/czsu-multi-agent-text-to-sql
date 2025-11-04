@@ -1,4 +1,6 @@
-﻿```mermaid
+# Architecture Diagram - Version 5 (Final)
+
+```mermaid
 graph LR
     %% Frontend Layer
     subgraph Frontend["🌐 Frontend Layer"]
@@ -8,49 +10,53 @@ graph LR
     %% Backend Layer
     subgraph Backend["⚙️ Backend Layer"]
         BE["<div style='font-size:40px'>🚀</div><div style='font-size:10px'>Railway<br/>FastAPI</div>"]
-        MCP["<div style='font-size:40px'>⚡</div><div style='font-size:10px'>FastMCP<br/>Server</div>"]
+        MCP["<div style='font-size:40px'>⚡</div><div style='font-size:10px'>MCP Server<br/>(FastMCP or Local SQLite)</div>"]
     end
 
     %% AI Components
     subgraph AI["🤖 AI Components"]
-        LG["<div style='font-size:40px'>�</div><div style='font-size:10px'>LangGraph</div>"]
-        LS["<div style='font-size:40px'>📊</div><div style='font-size:10px'>LangSmith</div>"]
-        AzureLLM["<div style='font-size:40px'>☁️</div><div style='font-size:10px'>Azure<br/>LLM</div>"]
-        AzureAI["<div style='font-size:40px'>🌐</div><div style='font-size:10px'>Azure AI<br/>Language</div>"]
+        LG["<div style='font-size:40px'>🤖</div><div style='font-size:10px'>LangGraph<br/>Agent Workflow</div>"]
+        LS["<div style='font-size:40px'>📊</div><div style='font-size:10px'>LangSmith<br/>Tracing & Evaluation</div>"]
+        AzureOAI["<div style='font-size:40px'>☁️</div><div style='font-size:10px'>Azure OpenAI<br/>GPT-4 + Embeddings</div>"]
+        AzureTrans["<div style='font-size:40px'>🌐</div><div style='font-size:10px'>Azure AI Translator<br/>Translation + Detection</div>"]
+        Cohere["<div style='font-size:40px'>🎯</div><div style='font-size:10px'>Cohere<br/>Reranking</div>"]
     end
 
     %% Data Storage
     subgraph Data["💾 Data Storage"]
-        Chroma["<div style='font-size:40px'>📚</div><div style='font-size:10px'>ChromaDB</div>"]
+        Chroma["<div style='font-size:40px'>📚</div><div style='font-size:10px'>ChromaDB<br/>Vector DB</div>"]
         Supabase["<div style='font-size:40px'>🗄️</div><div style='font-size:10px'>Supabase<br/>PostgreSQL</div>"]
         Turso["<div style='font-size:40px'>🗃️</div><div style='font-size:10px'>Turso<br/>SQLite</div>"]
     end
 
     %% External Services
     subgraph External["🔌 External Services"]
-        Google["<div style='font-size:40px'>🔐</div><div style='font-size:10px'>Google<br/>OAuth</div>"]
+        Google["<div style='font-size:40px'>🔐</div><div style='font-size:10px'>Google<br/>OAuth 2.0</div>"]
         CZSU["<div style='font-size:40px'>📄</div><div style='font-size:10px'>CZSU<br/>API</div>"]
-        LlamaParse["<div style='font-size:40px'>📑</div><div style='font-size:10px'>LlamaParse</div>"]
+        LlamaParse["<div style='font-size:40px'>📑</div><div style='font-size:10px'>LlamaParse<br/>PDF Parsing</div>"]
     end
 
     %% Data Flow Connections
     FE -->|"API Calls"| BE
     BE -->|"AI Processing"| LG
-    LG -->|"Tracing"| LS
-    LG -->|"LLM Inference"| AzureLLM
-    LG -->|"Language Services"| AzureAI
+    LG -->|"Tracing & Evaluation"| LS
+    LG -->|"LLM + Embeddings"| AzureOAI
+    LG -->|"Translation + Detection"| AzureTrans
     LG -->|"Checkpointing"| Supabase
-    LG -->|"Vector Search"| Chroma
-    BE -->|"MCP Integration"| MCP
+    LG -->|"Hybrid Search"| Chroma
+    LG -->|"Rerank Results"| Cohere
+    LG -->|"SQL Queries"| MCP
+    MCP -->|"Data Access"| Turso
 
-    %% Data Ingestion
+    %% Data Ingestion & Embedding
     CZSU -->|"SQL Metadata"| Chroma
     CZSU -->|"SQL Data"| Turso
     LlamaParse -->|"Parsed PDFs"| Chroma
+    AzureOAI -->|"Vector Embeddings"| Chroma
 
     %% Authentication
-    FE -->|"OAuth"| Google
-    BE -->|"OAuth"| Google
+    FE -->|"OAuth Flow"| Google
+    BE -->|"OAuth Verify"| Google
 
     %% Styling for subgraphs
     classDef frontendStyle fill:#e1f5ff,stroke:#01579b,stroke-width:3px,color:#000
@@ -65,3 +71,4 @@ graph LR
     class Data dataStyle
     class External externalStyle
 ```
+
