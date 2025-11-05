@@ -1,4 +1,4 @@
-# Architecture Diagram - Version 6 (Final)
+# Architecture Diagram - Version 6
 
 ```mermaid
 graph LR
@@ -17,14 +17,14 @@ graph LR
     subgraph AI["🤖 AI Components"]
         LG["<div style='font-size:40px'>🤖</div><div style='font-size:10px'>LangGraph<br/>Agent Workflow</div>"]
         LS["<div style='font-size:40px'>📊</div><div style='font-size:10px'>LangSmith<br/>Tracing & Evaluation</div>"]
-        AzureOAI["<div style='font-size:40px'>☁️</div><div style='font-size:10px'>Azure OpenAI<br/>GPT-4 + Embeddings</div>"]
-        AzureTrans["<div style='font-size:40px'>🌐</div><div style='font-size:10px'>Azure AI Translator<br/>Translation + Detection</div>"]
+        AzureOAI["<div style='font-size:40px'>☁️</div><div style='font-size:10px'>Azure OpenAI<br/>Chat + Embedding Models</div>"]
+        AzureTrans["<div style='font-size:40px'>🌐</div><div style='font-size:10px'>Azure AI Services<br/>Language Translation + Detection</div>"]
         Cohere["<div style='font-size:40px'>🎯</div><div style='font-size:10px'>Cohere<br/>Reranking</div>"]
     end
 
     %% Data Storage
     subgraph Data["💾 Data Storage"]
-        Chroma["<div style='font-size:40px'>📚</div><div style='font-size:10px'>ChromaDB<br/>Vector DB</div>"]
+        Chroma["<div style='font-size:40px'>📚</div><div style='font-size:10px'>Chroma Cloud<br/>Vector DB</div>"]
         Supabase["<div style='font-size:40px'>🗄️</div><div style='font-size:10px'>Supabase<br/>PostgreSQL</div>"]
         Turso["<div style='font-size:40px'>🗃️</div><div style='font-size:10px'>Turso<br/>SQLite</div>"]
     end
