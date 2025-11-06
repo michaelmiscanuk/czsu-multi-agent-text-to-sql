@@ -1,7 +1,7 @@
 # Python/data ignores
 .env
 .env_w
-DOCS/
+/DOCS/
 __pycache__/
 *.py[cod]
 *.py[oc]
