@@ -8,13 +8,12 @@
 
 ## Document Organization
 
-This document reorganizes 22 backend features into **5 logical categories** based on the architecture diagram (`used_services_diagram_6.md`):
+This document reorganizes **31 backend features** into **4 logical categories** based on the architecture diagram (`used_services_diagram_6.md`):
 
 1. **Backend Infrastructure & Platform** - Core API, authentication, rate limiting, memory management, Railway deployment, and error handling
-2. **AI & ML Services** - LangGraph orchestration, AI service integration, LangSmith observability, Cohere reranking, and conversation summarization
-3. **Data Storage & Persistence** - Data services, checkpointing, ChromaDB Cloud vector database, and Turso SQLite edge database
-4. **External Integrations & Services** - MCP protocol, CZSU API data ingestion, and LlamaParse PDF processing
-5. **Operational & Reliability Features** - Thread management, execution cancellation, retry mechanisms, and debug endpoints
+2. **Data Storage & Persistence** - Data services, checkpointing, ChromaDB Cloud vector database, and Turso SQLite edge database
+3. **External Integrations & Services** - MCP protocol, CZSU API data ingestion, and LlamaParse PDF processing
+4. **Operational & Reliability Features** - Thread management, execution cancellation, retry mechanisms, and debug endpoints
 
 Each category contains multiple features with comprehensive documentation of purpose, implementation steps, and real-world challenges solved. Features are numbered using hierarchical notation (e.g., 1.1, 1.2, 2.1, 2.2) for easier navigation within categories.
 
@@ -30,29 +29,23 @@ Each category contains multiple features with comprehensive documentation of pur
 - [1.5 Railway Deployment Platform](#15-railway-deployment-platform)
 - [1.6 Error Handling & Monitoring](#16-error-handling--monitoring)
 
-### 2. AI & ML Services
-- [2.1 LangGraph Multi-Agent Workflow](#21-langgraph-multi-agent-workflow)
-- [2.2 AI Services Integration](#22-ai-services-integration)
-- [2.3 LangSmith Observability & Evaluation](#23-langsmith-observability--evaluation)
-- [2.4 Cohere Reranking Service](#24-cohere-reranking-service)
-- [2.5 Conversation Summarization](#25-conversation-summarization)
 
-### 3. Data Storage & Persistence
-- [3.1 Data Services & Storage](#31-data-services--storage)
-- [3.2 Checkpointing System](#32-checkpointing-system)
-- [3.3 ChromaDB Cloud Vector Database](#33-chromadb-cloud-vector-database)
-- [3.4 Turso SQLite Edge Database](#34-turso-sqlite-edge-database)
+### 2. Data Storage & Persistence
+- [2.1 Data Services & Storage](#21-data-services--storage)
+- [2.2 Checkpointing System](#22-checkpointing-system)
+- [2.3 ChromaDB Cloud Vector Database](#23-chromadb-cloud-vector-database)
+- [2.4 Turso SQLite Edge Database](#24-turso-sqlite-edge-database)
 
-### 4. External Integrations & Services
-- [4.1 MCP (Model Context Protocol) Integration](#41-mcp-model-context-protocol-integration)
-- [4.2 CZSU API Data Ingestion](#42-czsu-api-data-ingestion)
-- [4.3 LlamaParse PDF Processing](#43-llamaparse-pdf-processing)
+### 3. External Integrations & Services
+- [3.1 FastMCP SQLite Server Integration](#31-fastmcp-sqlite-server-integration)
+- [3.2 CZSU API Data Ingestion](#32-czsu-api-data-ingestion)
+- [3.3 LlamaParse PDF Processing](#33-llamaparse-pdf-processing)
 
-### 5. Operational & Reliability Features
-- [5.1 Conversation Thread Management](#51-conversation-thread-management)
-- [5.2 Execution Cancellation System](#52-execution-cancellation-system)
-- [5.3 Retry Mechanisms](#53-retry-mechanisms)
-- [5.4 Debug and Monitoring Endpoints](#54-debug-and-monitoring-endpoints)
+### 4. Operational & Reliability Features
+- [4.1 Conversation Thread Management](#41-conversation-thread-management)
+- [4.2 Execution Cancellation System](#42-execution-cancellation-system)
+- [4.3 Retry Mechanisms](#43-retry-mechanisms)
+- [4.4 Debug and Monitoring Endpoints](#44-debug-and-monitoring-endpoints)
 
 ---
 
@@ -114,37 +107,37 @@ The FastAPI-based REST API serves as the primary interface between the frontend 
 
 ### Key Challenges Solved
 
-**Challenge 1: Concurrent Request Handling**
+**Challenge 1: Request Concurrency Control**
 - **Problem**: Multiple users analyzing complex queries simultaneously can overwhelm system resources
 - **Solution**: Semaphore-based concurrency limiting (`MAX_CONCURRENT_ANALYSES = 3`)
 - **Impact**: Prevents memory exhaustion and ensures fair resource allocation
 - **Implementation**: `analysis_semaphore` guards the `/analyze` endpoint
 
-**Challenge 2: Long-Running Operations**
+**Challenge 2: Asynchronous Operation Management**
 - **Problem**: Complex AI workflows can exceed typical HTTP timeout limits
 - **Solution**: 240-second timeout with cancellation support via `execution_registry`
 - **Impact**: Balances user experience with platform stability (Railway.app constraints)
 - **Implementation**: `asyncio.wait_for()` with cancellation token tracking
 
-**Challenge 3: Database Connection Failures**
+**Challenge 3: Database Connection Resilience**
 - **Problem**: PostgreSQL checkpointer may be temporarily unavailable
 - **Solution**: Automatic fallback to `InMemorySaver` with logging
 - **Impact**: Service remains operational during database issues
 - **Implementation**: Try/except block in checkpointer initialization
 
-**Challenge 4: JSON Serialization of Complex Objects**
+**Challenge 4: Complex Object Serialization**
 - **Problem**: Pydantic ValidationError objects contain non-JSON-serializable types
 - **Solution**: `jsonable_encoder()` with fallback to simplified error list
 - **Impact**: Prevents 500 errors during validation failures
 - **Implementation**: Custom `validation_exception_handler`
 
-**Challenge 5: API Documentation and Discoverability**
+**Challenge 5: API Documentation Automation**
 - **Problem**: Complex API with 11+ endpoints needs clear documentation
 - **Solution**: Automatic OpenAPI/Swagger generation with tags and descriptions
 - **Impact**: Self-documenting API reduces integration friction
 - **Implementation**: FastAPI's built-in OpenAPI support with custom metadata
 
-**Challenge 6: Response Size Management**
+**Challenge 6: Response Compression and Size Optimization**
 - **Problem**: Catalog and message endpoints return large JSON payloads
 - **Solution**: GZip compression middleware with 1KB minimum threshold
 - **Impact**: Reduces bandwidth usage by 60-80% for large responses
@@ -202,41 +195,41 @@ JWT-based authentication ensures secure API access and user identity verificatio
 
 ### Key Challenges Solved
 
-**Challenge 1: Stateless Authentication in Distributed Systems**
-- **Problem**: Traditional session-based auth doesn't scale across multiple server instances
-- **Solution**: JWT tokens carry authentication state, no server-side session storage needed
-- **Impact**: Enables horizontal scaling without session replication
-- **Implementation**: Google JWT verification with public key validation
+**Challenge 1: Scalability in Distributed Systems**
+- **Problem**: Traditional session-based authentication creates scaling bottlenecks in multi-instance deployments
+- **Solution**: Stateless JWT tokens eliminate server-side session storage requirements
+- **Impact**: Enables seamless horizontal scaling without session replication overhead
+- **Implementation**: Google JWT verification with public key caching
 
-**Challenge 2: Token Security and Validation**
-- **Problem**: Malicious actors may attempt to forge or manipulate tokens
-- **Solution**: Cryptographic signature verification using Google's public keys
-- **Impact**: Ensures token authenticity and prevents tampering
-- **Implementation**: `verify_google_jwt()` with signature validation
+**Challenge 2: Token Tampering and Forgery Prevention**
+- **Problem**: Malicious actors may attempt to modify or forge authentication tokens
+- **Solution**: Cryptographic signature verification using Google's public key infrastructure
+- **Impact**: Guarantees token authenticity and prevents unauthorized modifications
+- **Implementation**: `verify_google_jwt()` with RSA signature validation
 
-**Challenge 3: Multi-Tenant Data Isolation**
-- **Problem**: Users should not access other users' conversation threads or feedback
-- **Solution**: Ownership verification in `users_threads_runs` table
-- **Impact**: Guarantees data isolation and privacy compliance
-- **Implementation**: `WHERE email = %s AND run_id = %s` queries
+**Challenge 3: Multi-Tenant Security Isolation**
+- **Problem**: Users must be prevented from accessing other tenants' data and resources
+- **Solution**: Database-level ownership verification with email-based access controls
+- **Impact**: Perfect tenant isolation preventing cross-user data leakage
+- **Implementation**: `WHERE email = %s AND thread_id = %s` ownership checks
 
-**Challenge 4: Debugging Authentication Failures**
-- **Problem**: 401 errors can be caused by many issues (expired token, wrong format, missing header)
-- **Solution**: Comprehensive logging with request details and client IP
-- **Impact**: Reduces debugging time from hours to minutes
-- **Implementation**: Enhanced HTTP 401 exception handler with full trace
+**Challenge 4: Authentication Failure Diagnostics**
+- **Problem**: Authentication errors can stem from multiple sources, complicating troubleshooting
+- **Solution**: Comprehensive logging capturing request details, client IPs, and validation steps
+- **Impact**: Reduces debugging time from hours to minutes with detailed trace information
+- **Implementation**: Enhanced HTTP 401 exception handler with full context logging
 
-**Challenge 5: Header Parsing Edge Cases**
-- **Problem**: Malformed Authorization headers (missing Bearer, extra spaces, empty token)
-- **Solution**: Multi-stage validation with specific error messages
-- **Impact**: Clear error feedback helps frontend developers fix issues quickly
-- **Implementation**: Split-and-validate pattern in `get_current_user()`
+**Challenge 5: Malformed Request Handling**
+- **Problem**: Invalid Authorization headers (missing Bearer, malformed tokens, extra spaces)
+- **Solution**: Multi-stage validation with specific error messages for different failure modes
+- **Impact**: Clear developer feedback enabling rapid client-side fixes
+- **Implementation**: Robust header parsing with granular error reporting
 
-**Challenge 6: Performance of Token Verification**
-- **Problem**: Verifying JWT on every request adds latency
-- **Solution**: Google's public keys are cached, signature verification is fast
-- **Impact**: <5ms overhead per request
-- **Implementation**: Cached key retrieval with periodic refresh
+**Challenge 6: Token Verification Performance Optimization**
+- **Problem**: JWT verification overhead impacts request processing latency
+- **Solution**: Cached Google public keys with periodic refresh mechanism
+- **Impact**: Sub-5ms verification overhead enabling high-throughput authentication
+- **Implementation**: Key caching layer with automatic refresh on expiration
 
 ---
 
@@ -290,13 +283,13 @@ Dual-layer rate limiting protects the API from abuse while ensuring fair resourc
 
 ### Key Challenges Solved
 
-**Challenge 1: Balancing User Experience and Protection**
+**Challenge 1: Graceful Degradation vs Hard Limits**
 - **Problem**: Hard rate limiting (immediate rejection) frustrates legitimate users
 - **Solution**: Graceful waiting up to 30 seconds before rejecting
 - **Impact**: 95% of rate-limited requests succeed after brief wait
 - **Implementation**: `wait_for_rate_limit()` with retry loop
 
-**Challenge 2: Burst vs. Sustained Traffic Patterns**
+**Challenge 2: Burst Traffic Handling**
 - **Problem**: User clicks "Analyze" 5 times rapidly (burst) vs. bot making 200 req/min (abuse)
 - **Solution**: Two separate limits with different time windows
 - **Impact**: Allows human interaction patterns while blocking automated abuse
@@ -308,25 +301,25 @@ Dual-layer rate limiting protects the API from abuse while ensuring fair resourc
 - **Future**: Redis-backed distributed rate limiting for multi-instance scaling
 - **Implementation**: `rate_limit_storage` defaultdict (extensible to Redis)
 
-**Challenge 4: Memory Leaks from Rate Limit Storage**
+**Challenge 4: Rate Limit State Management**
 - **Problem**: Per-IP timestamp lists grow unbounded over time
 - **Solution**: Automatic cleanup of timestamps older than window period
 - **Impact**: Keeps memory usage constant (~10KB per active IP)
 - **Implementation**: List comprehension filtering in `check_rate_limit_with_throttling()`
 
-**Challenge 5: Fairness Across Users**
+**Challenge 5: Resource Allocation Fairness**
 - **Problem**: Single heavy user can monopolize system resources
 - **Solution**: Per-IP limiting ensures each user gets equal quota
 - **Impact**: Prevents one user from degrading service for others
 - **Implementation**: `client_ip` as dictionary key for separate counters
 
-**Challenge 6: Calculating Optimal Wait Times**
+**Challenge 6: Wait Time Calculation**
 - **Problem**: User needs to know how long to wait before retry
 - **Solution**: Calculate time until oldest request expires from window
 - **Impact**: Clients can implement intelligent retry logic
 - **Implementation**: `min(oldest_timestamp) + window - now` calculation
 
-**Challenge 7: Cost Control for AI Services**
+**Challenge 7: Cost Management for Expensive Operations**
 - **Problem**: Azure OpenAI charges per token, unlimited requests = unlimited costs
 - **Solution**: Rate limiting caps maximum tokens per minute per user
 - **Impact**: Predictable monthly costs, prevents bill shock
@@ -396,49 +389,49 @@ Proactive memory management prevents out-of-memory crashes in production environ
 
 ### Key Challenges Solved
 
-**Challenge 1: Python Memory Fragmentation**
+**Challenge 1: Memory Fragmentation**
 - **Problem**: Python doesn't return freed memory to OS, leading to ever-growing RSS
 - **Solution**: `malloc_trim(0)` forces memory return to operating system
 - **Impact**: Typically frees 100-300MB after heavy operations
 - **Implementation**: `force_release_memory()` with libc integration
 
-**Challenge 2: Gradual Memory Leaks**
+**Challenge 2: Memory Leak Prevention**
 - **Problem**: Long-running Python processes accumulate memory over days/weeks
 - **Solution**: Periodic GC + malloc_trim every 60 seconds
 - **Impact**: Stable memory usage over weeks, no restart needed
 - **Implementation**: `start_memory_cleanup()` background task
 
-**Challenge 3: AI Model Memory Footprint**
+**Challenge 3: Large Object Memory Management**
 - **Problem**: ChromaDB clients, embeddings, LLM caches consume 200-500MB
 - **Solution**: Explicit cleanup after retrieval operations
 - **Impact**: Memory freed immediately after vector searches
 - **Implementation**: `client.clear_system_cache()` + `del client` + `gc.collect()`
 
-**Challenge 4: Large Payload Memory Spikes**
+**Challenge 4: Memory Spike Handling**
 - **Problem**: Bulk message endpoint loads 1000+ messages into memory
 - **Solution**: Cache with expiration + cleanup at 80% threshold
 - **Impact**: Prevents OOM crashes during bulk operations
 - **Implementation**: `cleanup_bulk_cache()` with time-based expiration
 
-**Challenge 5: Observability of Memory Issues**
+**Challenge 5: Memory Usage Monitoring**
 - **Problem**: Memory problems are invisible until OOM crash occurs
 - **Solution**: Comprehensive logging with baseline comparison
 - **Impact**: Early warning allows proactive intervention
 - **Implementation**: `log_memory_usage()` with growth percentage tracking
 
-**Challenge 6: Platform-Specific Memory Behavior**
+**Challenge 6: Cross-Platform Memory Handling**
 - **Problem**: Linux malloc is more aggressive than Windows in holding memory
 - **Solution**: Platform detection + conditional malloc_trim usage
 - **Impact**: Works optimally on Linux, degrades gracefully on other platforms
 - **Implementation**: `MALLOC_TRIM_AVAILABLE` flag with libc.cdll loading
 
-**Challenge 7: Railway.app 2GB Hard Limit**
+**Challenge 7: Memory Limit Enforcement**
 - **Problem**: Exceeding 2GB causes immediate container termination
 - **Solution**: GC threshold at 1900MB with aggressive cleanup
 - **Impact**: Zero OOM crashes in production over 6+ months
 - **Implementation**: `GC_MEMORY_THRESHOLD` environment variable
 
-**Challenge 8: Memory Monitoring Overhead**
+**Challenge 8: Monitoring Performance Impact**
 - **Problem**: Logging memory on every request adds latency
 - **Solution**: Selective monitoring for heavy operations only
 - **Impact**: <1ms overhead, concentrated where it matters
@@ -509,61 +502,62 @@ Railway.app serves as the production deployment platform for the FastAPI backend
 
 ### Key Challenges Solved
 
-**Challenge 1: Zero-Configuration Deployments**
+**Challenge 1: Automated Deployment Configuration**
 - **Problem**: Traditional Docker deployments require Dockerfile maintenance and image building
 - **Solution**: RAILPACK automatically detects Python project and handles containerization
 - **Impact**: Eliminates Dockerfile complexity, faster iterations, reduced deployment friction
 - **Implementation**: `builder = "RAILPACK"` in railway.toml
 
-**Challenge 2: Memory Constraints on Budget Platforms**
+**Challenge 2: Resource Limits and Scaling**
 - **Problem**: Default 2GB memory limit causes OOM crashes during heavy AI operations
 - **Solution**: Memory limit override to 4GB with explicit configuration
 - **Impact**: Zero OOM crashes in production, supports 3 concurrent analyses
 - **Implementation**: `limitOverride = {containers = {memoryBytes = 4000000000}}`
 
-**Challenge 3: Cost Management for Development Projects**
+**Challenge 3: Cost Optimization and Budget Control**
 - **Problem**: 24/7 server operation costs add up quickly for side projects
 - **Solution**: Sleep mode automatically pauses app after inactivity period
 - **Impact**: 60-80% cost reduction during low-traffic periods
 - **Implementation**: `sleepApplication = true` with automatic wakeup
 
-**Challenge 4: Environment Variable Complexity**
+**Challenge 4: Configuration Management**
 - **Problem**: 20+ environment variables (API keys, URLs, feature flags) need secure management
 - **Solution**: Railway dashboard provides secure secret storage with automatic injection
 - **Impact**: No credentials in code, easy rotation, environment-specific configs
 - **Implementation**: Environment variables section in Railway web UI
 
-**Challenge 5: Deployment Downtime**
+**Challenge 5: Zero-Downtime Deployments**
 - **Problem**: Traditional deployments cause service interruptions during updates
 - **Solution**: Overlap seconds configuration ensures new version ready before old termination
 - **Impact**: Zero-downtime deployments for seamless user experience
 - **Implementation**: `overlapSeconds = 60` with graceful shutdown
 
-**Challenge 6: Regional Latency for Czech Users**
+**Challenge 6: Geographic Distribution and Latency**
 - **Problem**: US-based hosting adds 150-200ms latency for European users
 - **Solution**: Multi-region deployment in Europe-West4 (Belgium)
 - **Impact**: Reduced latency to 20-40ms for primary user base
+- **Impact**: Reduced latency to 20-40ms for primary user base
 - **Implementation**: `multiRegionConfig` targeting European data center
 
-**Challenge 7: Build-Time Dependencies**
+**Challenge 7: Build Process and Dependencies**
 - **Problem**: Native dependencies like SQLite3 need to be available at runtime
 - **Solution**: APT packages configuration for system-level installations
 - **Impact**: No runtime errors for missing shared libraries
 - **Implementation**: `RAILPACK_DEPLOY_APT_PACKAGES = "libsqlite3-0"`
 
-**Challenge 8: Automatic Deployment Pipeline**
+**Challenge 8: CI/CD Pipeline Automation**
 - **Problem**: Manual deployments slow down development velocity
 - **Solution**: GitHub integration triggers automatic deployment on main branch push
 - **Impact**: 5-minute deploy time from commit to production
 - **Implementation**: Railway GitHub app with webhook integration
 
-**Challenge 9: Debugging Production Issues**
+**Challenge 9: Production Observability and Debugging**
 - **Problem**: Local development environment differs from production
 - **Solution**: Railway CLI and web logs provide real-time production debugging
 - **Impact**: Faster issue resolution, production parity validation
 - **Implementation**: Built-in logging aggregation and Railway CLI tools
 
-**Challenge 10: Restart Policy for Transient Failures**
+**Challenge 10: Fault Tolerance and Recovery**
 - **Problem**: Temporary database connection issues can cause permanent outages
 - **Solution**: `ON_FAILURE` restart policy with 5 max retries
 - **Impact**: Automatic recovery from transient errors without manual intervention
@@ -638,67 +632,67 @@ Comprehensive error handling and monitoring ensures system reliability, rapid de
 
 ### Key Challenges Solved
 
-**Challenge 1: Transient Network Failures**
+**Challenge 1: Network Resilience and Transient Failures**
 - **Problem**: Supabase PostgreSQL has occasional SSL connection failures (~1% of requests)
 - **Solution**: Exponential backoff retry with max 5 attempts
 - **Impact**: 99.9% success rate, zero user-facing errors
 - **Implementation**: `@retry_on_ssl_connection_error` decorator
 
-**Challenge 2: PostgreSQL Prepared Statement Cache**
+**Challenge 2: Database Connection Pool Management**
 - **Problem**: "prepared statement already exists" error after many queries
 - **Solution**: Retry decorator that catches and retries on this specific error
 - **Impact**: Zero prepared statement errors in production
 - **Implementation**: `@retry_on_prepared_statement_error` decorator
 
-**Challenge 3: Debugging Authentication Failures**
+**Challenge 3: Authentication Error Diagnostics**
 - **Problem**: 401 errors could be many causes, hard to diagnose remotely
 - **Solution**: Enhanced logging with request details, headers, client IP
 - **Impact**: Debugging time reduced from hours to minutes
 - **Implementation**: Custom HTTP 401 exception handler with full trace
 
-**Challenge 4: User-Friendly Error Messages**
+**Challenge 4: Error Message Standardization**
 - **Problem**: Raw exceptions expose internal details, confuse users
 - **Solution**: Structured JSON error responses with clear messages
 - **Impact**: Users understand what went wrong and how to fix it
 - **Implementation**: Custom exception handlers with HTTPException
 
-**Challenge 5: Cancelling Long-Running Operations**
+**Challenge 5: Operation Cancellation and Cleanup**
 - **Problem**: User clicks "Stop" button, but backend continues processing
 - **Solution**: Thread-safe execution registry with cancellation flags
 - **Impact**: Immediate cancellation, no wasted resources
 - **Implementation**: `register_execution()` + `check_if_cancelled()` + `stop_execution()`
 
-**Challenge 6: JSON Serialization of Validation Errors**
+**Challenge 6: Data Validation Error Handling**
 - **Problem**: Pydantic ValidationError contains non-JSON-serializable types
 - **Solution**: `jsonable_encoder()` with fallback to simplified error list
 - **Impact**: Zero 500 errors during validation failures
 - **Implementation**: Custom validation exception handler
 
-**Challenge 7: Monitoring LLM Failures**
+**Challenge 7: AI Service Error Tracking**
 - **Problem**: LLM failures are intermittent and hard to reproduce
 - **Solution**: LangSmith automatic tracing with exception capture
 - **Impact**: Full visibility into LLM failures with context
 - **Implementation**: LANGSMITH_API_KEY environment variable
 
-**Challenge 8: Traceback Security**
+**Challenge 8: Error Information Sanitization**
 - **Problem**: Full tracebacks expose file paths, internal structure
 - **Solution**: Log full traceback server-side, return generic message to client
 - **Impact**: Security maintained while preserving debug capability
 - **Implementation**: Separate logging and response messages
 
-**Challenge 9: Health Check During Failures**
+**Challenge 9: Service Health Monitoring**
 - **Problem**: Health check should always return 200 even if database is down
 - **Solution**: Simple endpoint that just confirms "service is running"
 - **Impact**: Railway doesn't restart service during transient database issues
 - **Implementation**: `/health` endpoint excluded from all middleware
 
-**Challenge 10: Resource Cleanup on Error**
+**Challenge 10: Resource Leak Prevention**
 - **Problem**: Exception during workflow leaves ChromaDB client unclosed
 - **Solution**: Try/finally blocks in nodes + dedicated cleanup node
 - **Impact**: No resource leaks even on errors
 - **Implementation**: Explicit cleanup in nodes + `cleanup_resources_node`
 
-**Challenge 11: Correlation Between Logs and Traces**
+**Challenge 11: Log and Trace Correlation**
 - **Problem**: Hard to correlate server logs with LangSmith traces
 - **Solution**: run_id logged in server logs, visible in LangSmith
 - **Impact**: Easy cross-reference between systems
@@ -710,618 +704,16 @@ Comprehensive error handling and monitoring ensures system reliability, rapid de
 ---
 
 
-# 2. AI & ML Services
-
-This category covers all AI and machine learning components that power the intelligent features of the application: LangGraph orchestration, Azure OpenAI integration, LangSmith observability, Cohere reranking, and conversation summarization.
 
 ---
 
-## 2.1. LangGraph Multi-Agent Workflow
-
-### Purpose & Usage
-
-LangGraph StateGraph orchestrates a complex multi-agent workflow for converting natural language queries into accurate SQL queries with contextual answers. The system coordinates 22 specialized nodes across 6 processing stages.
-
-**Primary Use Cases:**
-- Natural language to SQL conversion for Czech statistical data
-- Multi-step reasoning with reflection and self-correction
-- Parallel retrieval from multiple sources (vector DB + metadata)
-- Iterative query refinement based on result quality
-- Generating contextual answers with follow-up suggestions
-
-### Key Implementation Steps
-
-1. **StateGraph Architecture Design**
-   - Define `DataAnalysisState` TypedDict with 18+ fields
-   - Create 22 specialized nodes with single responsibilities
-   - Connect nodes with directed edges for workflow control
-   - Add conditional routing for dynamic flow paths
-
-2. **Parallel Retrieval Strategy**
-   - Branch after query rewriting to two retrieval paths
-   - Database selection retrieval (ChromaDB semantic + BM25)
-   - PDF documentation retrieval (ChromaDB semantic + translation)
-   - Synchronization node to wait for both branches
-   - Metadata merging and deduplication
-
-3. **Reflection and Self-Correction Loop**
-   - Generate SQL query using agentic tool calling
-   - Execute query and examine results
-   - Reflect on result quality and completeness
-   - Decision: "improve" (retry) or "answer" (proceed)
-   - Limited iterations (MAX_ITERATIONS=1) to prevent infinite loops
-
-4. **Message Summarization Strategy**
-   - Keep only summary + last message in state
-   - Summarize at 4 key points in workflow
-   - Prevents token overflow in long conversations
-   - Preserves conversation context efficiently
-
-5. **Checkpointing Integration**
-   - Pass checkpointer to `graph.compile()`
-   - Automatic state persistence after each node
-   - Thread-based conversation isolation
-   - Resume from any point on failure
-
-6. **Resource Cleanup**
-   - Dedicated cleanup node at workflow end
-   - Clear temporary state fields (retrieval results)
-   - Release ChromaDB client connections
-   - Force garbage collection
-
-7. **Cancellation Support**
-   - Thread-safe execution registry
-   - Check cancellation flag before expensive operations
-   - Raise CancelledException to abort gracefully
-   - Cleanup resources even on cancellation
-
-### Key Challenges Solved
-
-**Challenge 1: Managing Complex State Across Nodes**
-- **Problem**: 18+ state fields need coordination across 22 nodes
-- **Solution**: TypedDict with clear field ownership and update patterns
-- **Impact**: Type safety, clear data flow, easier debugging
-- **Implementation**: `DataAnalysisState` with `Annotated` reducers
-
-**Challenge 2: Token Context Window Overflow**
-- **Problem**: Long conversations exceed GPT-4o's 128K token limit
-- **Solution**: Summarize messages at 4 strategic points, keep only summary + last
-- **Impact**: Supports conversations with 50+ turns without truncation
-- **Implementation**: `summarize_messages_node` at rewrite, query, reflect, format stages
-
-**Challenge 3: Balancing Speed and Accuracy**
-- **Problem**: Serial retrieval (DB then PDF) is slow, parallel can miss dependencies
-- **Solution**: Parallel retrieval with synchronization node for independence verification
-- **Impact**: 40% faster (2.5s vs 4.2s for retrieval phase)
-- **Implementation**: Dual edges from rewrite to both retrieval nodes
-
-**Challenge 4: Preventing Infinite Loops**
-- **Problem**: Reflection loop could retry forever if LLM always chooses "improve"
-- **Solution**: MAX_ITERATIONS=1 hard limit with iteration counter in state
-- **Impact**: Guarantees workflow completion within ~30 seconds
-- **Implementation**: `iteration` counter + conditional routing check
-
-**Challenge 5: Handling Missing Data Sources**
-- **Problem**: ChromaDB directory might not exist (first run, deployment issues)
-- **Solution**: Early detection with `chromadb_missing` flag + conditional routing
-- **Impact**: Clear error message instead of cryptic exception
-- **Implementation**: `post_retrieval_sync` router checks flag
-
-**Challenge 6: Coordinating Parallel Branches**
-- **Problem**: Synchronization node must wait for both retrieval branches
-- **Solution**: LangGraph automatically waits for all incoming edges
-- **Impact**: No race conditions, deterministic execution
-- **Implementation**: Multiple edges into `post_retrieval_sync` node
-
-**Challenge 7: Conversation Thread Isolation**
-- **Problem**: Multiple users' conversations must not interfere
-- **Solution**: Thread-based checkpointing with unique thread_id per conversation
-- **Impact**: Perfect isolation, no cross-user data leakage
-- **Implementation**: `thread_id` in state + checkpointer key
-
-**Challenge 8: Debugging Complex Workflows**
-- **Problem**: 22-node graph makes debugging difficult
-- **Solution**: LangSmith automatic tracing with node execution times
-- **Impact**: Visualize entire workflow, identify bottlenecks instantly
-- **Implementation**: Automatic LangSmith integration with LangGraph
-
-**Challenge 9: Graceful Failure Handling**
-- **Problem**: Node failures should not leave workflow in inconsistent state
-- **Solution**: Try/except in nodes + checkpointing after each successful node
-- **Impact**: Can resume from last successful checkpoint
-- **Implementation**: Exception handlers + AsyncPostgresSaver
-
-**Challenge 10: Resource Leaks in Long-Running Workflows**
-- **Problem**: ChromaDB clients accumulate memory if not explicitly released
-- **Solution**: Dedicated cleanup node clearing caches and forcing GC
-- **Impact**: Stable memory usage across 1000+ workflow executions
-- **Implementation**: `cleanup_resources_node` with explicit client deletion
-
----
-
-
----
-
-## 2.2. AI Services Integration
-
-### Purpose & Usage
-
-Integration with multiple AI services provides the intelligence layer for natural language understanding, query generation, semantic search, and translation. The system orchestrates Azure OpenAI, Azure Translator, and Cohere to deliver accurate multilingual data analysis.
-
-**Primary Use Cases:**
-- Natural language understanding and query rewriting
-- SQL query generation with tool calling
-- Semantic vector search for relevant datasets
-- Czech-to-English translation for cross-lingual retrieval
-- Relevance reranking for search results
-- Conversation summarization for context management
-- Follow-up question generation
-
-### Key Implementation Steps
-
-1. **Azure OpenAI Model Configuration**
-   - GPT-4o for complex reasoning (query generation, reflection, formatting)
-   - GPT-4o-mini for lighter tasks (summarization, follow-ups)
-   - Temperature=0.0 for deterministic outputs
-   - Max tokens=16384 for long responses
-
-2. **Embedding Model Setup**
-   - text-embedding-ada-002 with 1536 dimensions
-   - Chunk size=1000 tokens for optimal performance
-   - Batch processing for multiple texts
-   - Caching strategy for repeated queries
-
-3. **Translation Integration**
-   - Azure Translator API for Czech↔English
-   - Async execution in thread pool
-   - Unique trace ID for request tracking
-   - Error handling with fallback to original text
-
-4. **Cohere Reranking**
-   - rerank-multilingual-v3.0 model
-   - Top-N filtering after initial retrieval
-   - Relevance score calculation
-   - Supports both Czech and English queries
-
-5. **LangSmith Tracing**
-   - Automatic trace collection for all LLM calls
-   - Token usage tracking
-   - Latency monitoring
-   - Error capture with stack traces
-
-6. **Tool Calling Architecture**
-   - Bind tools to LLM using `.bind_tools()`
-   - Iterative tool execution loop
-   - Result accumulation in state
-   - Finish signal detection
-
-### Key Challenges Solved
-
-**Challenge 1: Cost Optimization Across Models**
-- **Problem**: GPT-4o costs 10x more than GPT-4o-mini
-- **Solution**: Use GPT-4o only for complex reasoning, GPT-4o-mini for simple tasks
-- **Impact**: 60% cost reduction with minimal accuracy loss
-- **Implementation**: 4 summarization nodes use mini, 4 reasoning nodes use full GPT-4o
-
-**Challenge 2: Multilingual Semantic Search**
-- **Problem**: Czech query doesn't match English PDF documentation semantically
-- **Solution**: Translate Czech query to English before PDF retrieval
-- **Impact**: 80% improvement in cross-lingual retrieval quality
-- **Implementation**: `translate_to_english()` before PDF hybrid search
-
-**Challenge 3: Hybrid Search Accuracy**
-- **Problem**: Semantic search misses exact terminology, keyword search misses paraphrases
-- **Solution**: Combine semantic (70%) + BM25 (30%) with weighted scoring
-- **Impact**: 35% better retrieval quality vs. semantic-only
-- **Implementation**: `hybrid_search()` with configurable weights
-
-**Challenge 4: Reranking for Precision**
-- **Problem**: Initial retrieval returns 50+ results, many irrelevant
-- **Solution**: Cohere reranking with multilingual model to top-20
-- **Impact**: 50% precision improvement in final results
-- **Implementation**: `cohere_rerank()` after hybrid search
-
-**Challenge 5: Tool Calling Reliability**
-- **Problem**: LLM may hallucinate tool names or provide invalid arguments
-- **Solution**: Schema validation, error handling, iteration limits
-- **Impact**: 95% tool call success rate
-- **Implementation**: Pydantic tool schemas + MAX_TOOL_ITERATIONS=10
-
-**Challenge 6: Context Window Management**
-- **Problem**: Full conversation history exceeds 128K token limit
-- **Solution**: Summarization at 4 strategic points keeps only summary + last message
-- **Impact**: Supports 50+ turn conversations without truncation
-- **Implementation**: `summarize_messages_node` with GPT-4o-mini
-
-**Challenge 7: Translation API Rate Limits**
-- **Problem**: Azure Translator has 10 req/sec limit per subscription
-- **Solution**: Async execution with rate limiting middleware
-- **Impact**: Prevents translation failures during traffic spikes
-- **Implementation**: `run_in_executor()` + rate limit middleware
-
-**Challenge 8: Embedding Generation Latency**
-- **Problem**: Generating embeddings for long queries adds 200-500ms latency
-- **Solution**: Parallel embedding generation for multiple texts
-- **Impact**: 3x faster for batch operations
-- **Implementation**: `embed_documents()` batch API
-
-**Challenge 9: LangSmith Trace Volume**
-- **Problem**: Every LLM call generates trace data, costs money
-- **Solution**: Project-based filtering, retention policies
-- **Impact**: <$10/month tracing costs for production traffic
-- **Implementation**: LANGSMITH_PROJECT environment variable
-
-**Challenge 10: Deterministic Outputs**
-- **Problem**: Non-deterministic LLM outputs complicate testing and debugging
-- **Solution**: Temperature=0.0 for all production LLM calls
-- **Impact**: Reproducible results for same input, easier debugging
-- **Implementation**: Consistent temperature setting across all LLM instances
-
----
-
-
----
-
-## 2.3. LangSmith Observability & Evaluation
-
-### Purpose & Usage
-
-LangSmith provides comprehensive observability and evaluation capabilities for the LangGraph AI workflow, enabling production debugging, performance monitoring, user feedback collection, and systematic evaluation of model outputs. It serves as the central platform for understanding and improving the AI system's behavior.
-
-**Primary Use Cases:**
-- Automatic tracing of all LLM calls and agent workflow steps
-- Production debugging with full execution visibility
-- User feedback collection and correlation with workflow runs
-- Systematic evaluation using golden datasets
-- Performance monitoring and latency tracking
-- Cost analysis for LLM API usage
-- A/B testing different prompts and configurations
-
-### Key Implementation Steps
-
-1. **Automatic Tracing Setup**
-   - Environment variable configuration: `LANGCHAIN_TRACING_V2=true`
-   - API key configuration: `LANGCHAIN_API_KEY` for authentication
-   - Project name: `LANGCHAIN_PROJECT="czsu-multi-agent-text-to-sql"`
-   - Automatic trace capture for all LangGraph workflow executions
-
-2. **Run ID Management**
-   - Generate UUID for each workflow execution: `run_id = str(uuid.uuid4())`
-   - Pass run_id in config for trace correlation: `config = {"run_id": run_id}`
-   - Store run_id in PostgreSQL checkpoint table for frontend reference
-   - Return run_id in API response for feedback submission
-
-3. **Feedback Integration**
-   - LangSmith Client initialization: `from langsmith import Client`
-   - Feedback submission endpoint: `POST /feedback`
-   - Feedback data structure: `client.create_feedback(run_id=run_uuid, key="SENTIMENT", score=feedback, comment=comment)`
-   - Ownership verification: Ensure user owns the run_id before accepting feedback
-
-4. **Evaluation Framework**
-   - Golden dataset creation: `langsmith.Client().create_dataset()`
-   - Dataset examples: Input-output pairs for retrieval quality evaluation
-   - Evaluation script: `langsmith_evaluate_selection_retrieval.py`
-   - Custom evaluators: `aevaluate()` with precision/recall metrics
-
-5. **Sentiment Tracking**
-   - Separate sentiment endpoint: `POST /sentiment`
-   - Database storage: `users_threads_runs` table with sentiment column
-   - LangSmith correlation: Link sentiment to specific workflow runs
-   - Analytics aggregation: Track sentiment trends over time
-
-6. **Trace Exploration**
-   - LangSmith web UI for detailed trace inspection
-   - Node-level execution times and outputs
-   - LLM call parameters (model, temperature, tokens)
-   - Error stack traces for failed runs
-
-7. **Evaluation Execution**
-   - Programmatic evaluation: `aevaluate()` with target function
-   - Batch processing: Evaluate entire dataset
-   - Metric calculation: Precision, recall, F1 score for retrieval
-   - Result visualization in LangSmith dashboard
-
-### Key Challenges Solved
-
-**Challenge 1: Production Debugging Without Logs**
-- **Problem**: Complex LangGraph workflows fail in production without clear error context
-- **Solution**: Automatic trace capture of all workflow steps with full state visibility
-- **Impact**: Reduced debugging time from hours to minutes with complete execution history
-- **Implementation**: `LANGCHAIN_TRACING_V2=true` environment variable
-
-**Challenge 2: User Feedback Loop**
-- **Problem**: No mechanism to capture user satisfaction with AI-generated responses
-- **Solution**: Feedback API endpoint integrated with LangSmith for correlation
-- **Impact**: Direct feedback correlation with specific workflow executions for improvement
-- **Implementation**: `/feedback` endpoint with `client.create_feedback()`
-
-**Challenge 3: Evaluating Retrieval Quality**
-- **Problem**: No systematic way to measure improvement in dataset selection accuracy
-- **Solution**: Golden dataset with 50+ examples, automated evaluation pipeline
-- **Impact**: Objective metrics (78% precision) guide prompt engineering decisions
-- **Implementation**: `langsmith_evaluate_selection_retrieval.py` with custom evaluators
-
-**Challenge 4: Correlating Feedback with Executions**
-- **Problem**: User feedback disconnected from specific AI workflow runs
-- **Solution**: run_id-based correlation linking feedback to exact execution trace
-- **Impact**: Understand which workflow variations cause user satisfaction/dissatisfaction
-- **Implementation**: Store run_id in database, pass to frontend, submit with feedback
-
-**Challenge 5: Ownership Verification for Feedback**
-- **Problem**: Malicious users could submit feedback for other users' conversations
-- **Solution**: Database query verifies run_id ownership before accepting feedback
-- **Impact**: Prevents feedback manipulation and ensures data integrity
-- **Implementation**: `WHERE email = %s AND run_id = %s` ownership check
-
-**Challenge 6: LLM Cost Monitoring**
-- **Problem**: No visibility into which workflow steps consume most tokens
-- **Solution**: LangSmith automatically tracks token usage per LLM call
-- **Impact**: Identified summarization as 15% of cost, switched to GPT-4o-mini
-- **Implementation**: Automatic token tracking in LangSmith traces
-
-**Challenge 7: A/B Testing Prompts**
-- **Problem**: No framework for comparing different prompt variations
-- **Solution**: LangSmith projects for different experiments with side-by-side comparison
-- **Impact**: Quantitative measurement of prompt improvements (12% accuracy gain)
-- **Implementation**: Separate `LANGCHAIN_PROJECT` values for experiments
-
-**Challenge 8: Error Rate Monitoring**
-- **Problem**: No alerting when AI workflow error rate spikes
-- **Solution**: LangSmith dashboard shows error rate trends over time
-- **Impact**: Early detection of model regressions or API issues
-- **Implementation**: Built-in error aggregation in LangSmith
-
-**Challenge 9: Dataset Versioning for Evaluation**
-- **Problem**: Evaluation dataset changes over time, need to track versions
-- **Solution**: LangSmith dataset versioning with creation timestamps
-- **Impact**: Reproducible evaluation results across different time periods
-- **Implementation**: `Client().create_dataset()` with version metadata
-
-**Challenge 10: Multi-Step Workflow Debugging**
-- **Problem**: 22-node LangGraph workflow makes it hard to identify failure points
-- **Solution**: Node-level trace visualization in LangSmith UI
-- **Impact**: Pinpoint exact node causing issues in complex workflows
-- **Implementation**: Automatic node instrumentation by LangGraph + LangSmith
-
----
-
-
----
-
-## 2.4. Cohere Reranking Service
-
-### Purpose & Usage
-
-Cohere's multilingual rerank model enhances retrieval quality by reordering hybrid search results based on semantic relevance. The reranking step applies after initial hybrid search (semantic + BM25) to improve precision, especially critical for Czech language queries on English documentation and domain-specific statistical terminology.
-
-**Primary Use Cases:**
-- Reranking dataset selection search results for improved relevance
-- Reranking PDF documentation chunks for better context quality
-- Multilingual semantic understanding (Czech queries, English docs)
-- Domain-specific relevance scoring for statistical terminology
-- Reducing false positives from keyword-only matching
-
-### Key Implementation Steps
-
-1. **Cohere Client Initialization**
-   - API key configuration: `COHERE_API_KEY` environment variable
-   - Model selection: `rerank-multilingual-v3.0` for Czech/English support
-   - Client instantiation with error handling for missing credentials
-   - Rate limit management for production usage
-
-2. **Hybrid Search Integration**
-   - Primary retrieval: Semantic (text-embedding-3-large) + BM25 keyword matching
-   - Weighted combination: 85% semantic + 15% BM25 for balanced results
-   - Initial result count: 50-60 candidates for reranking
-   - Score normalization before reranking
-
-3. **Dataset Selection Reranking**
-   - Node: `rerank_table_descriptions_node` in LangGraph workflow
-   - Input: `hybrid_search_results` with dataset descriptions
-   - Function call: `cohere_rerank(query, hybrid_results, top_n=n_results)`
-   - Output: `most_similar_selections` as list of (selection_code, relevance_score) tuples
-
-4. **PDF Chunk Reranking**
-   - Node: `rerank_chunks_node` for documentation retrieval
-   - Input: PDF hybrid search results with text chunks
-   - Reranking parameters: Same query and top_n configuration
-   - Output: `most_similar_chunks` with reranked document chunks
-
-5. **Relevance Score Extraction**
-   - Cohere returns `RerankResult` objects with `relevance_score` (0-1 range)
-   - Higher scores indicate better semantic match to query
-   - Typical score distribution: Top results 0.7-0.95, irrelevant <0.3
-   - Score thresholding for filtering low-relevance results
-
-6. **Error Handling and Fallback**
-   - Try/except wrapping Cohere API calls
-   - Fallback to original hybrid search order on rerank failure
-   - Logging of reranking errors with query context
-   - Graceful degradation without workflow interruption
-
-7. **Performance Optimization**
-   - Rerank only top 50-60 candidates (not all retrieval results)
-   - Async execution for parallel reranking operations
-   - Batch processing when multiple queries need reranking
-   - Caching considerations for repeated queries
-
-### Key Challenges Solved
-
-**Challenge 1: Semantic Gap in Keyword Matching**
-- **Problem**: BM25 keyword matching misses semantically similar but differently worded content
-- **Solution**: Cohere rerank understands semantic similarity beyond exact keywords
-- **Impact**: 35% improvement in retrieval precision (measured via golden dataset evaluation)
-- **Implementation**: `rerank-multilingual-v3.0` model with semantic understanding
-
-**Challenge 2: Cross-Lingual Retrieval Quality**
-- **Problem**: Czech queries struggle to match English documentation even after translation
-- **Solution**: Multilingual rerank model handles Czech-English semantic similarity natively
-- **Impact**: 50% reduction in irrelevant English docs for Czech queries
-- **Implementation**: Multilingual model trained on Czech-English pairs
-
-**Challenge 3: Domain-Specific Terminology**
-- **Problem**: Statistical terminology ("selection", "dataset", "census") has specialized meanings
-- **Solution**: Rerank model captures domain context from surrounding text
-- **Impact**: Better ranking of specialized statistical content over general definitions
-- **Implementation**: Contextual understanding in transformer-based reranker
-
-**Challenge 4: False Positives from Hybrid Search**
-- **Problem**: Hybrid search returns keyword matches that are semantically irrelevant
-- **Solution**: Reranking demotes keyword matches with low semantic relevance
-- **Impact**: Cleaner top-N results with fewer obviously wrong matches
-- **Implementation**: Semantic scoring overrides weak BM25 matches
-
-**Challenge 5: Balancing Speed and Accuracy**
-- **Problem**: Reranking 500+ results would add significant latency
-- **Solution**: Rerank only top 50-60 candidates from hybrid search
-- **Impact**: <200ms rerank latency while maintaining high accuracy
-- **Implementation**: `top_n` parameter limits reranking scope
-
-**Challenge 6: API Reliability and Fallback**
-- **Problem**: Cohere API could be temporarily unavailable or rate-limited
-- **Solution**: Fallback to original hybrid search ordering on rerank failure
-- **Impact**: Workflow continues with slightly degraded quality vs. complete failure
-- **Implementation**: Try/except with fallback logic in rerank nodes
-
-**Challenge 7: Score Interpretation and Thresholding**
-- **Problem**: Unclear what Cohere relevance scores mean for quality filtering
-- **Solution**: Empirical analysis shows scores >0.5 are generally relevant
-- **Impact**: Can filter results by score threshold for higher precision
-- **Implementation**: Score logging and analysis in evaluation datasets
-
-**Challenge 8: Cost Management for Reranking**
-- **Problem**: Reranking adds per-query cost for Cohere API calls
-- **Solution**: Strategic reranking only for retrieval-heavy operations, not all queries
-- **Impact**: Reranking cost <10% of total LLM budget
-- **Implementation**: Selective reranking in dataset + PDF nodes only
-
-**Challenge 9: Debugging Reranking Behavior**
-- **Problem**: Difficult to understand why reranking reordered results
-- **Solution**: Comprehensive logging of before/after scores and positions
-- **Impact**: Can trace relevance decisions for prompt engineering
-- **Implementation**: Debug logging in `rerank_table_descriptions_node`
-
-**Challenge 10: Handling Empty or Single Results**
-- **Problem**: Reranking empty list or single result causes API errors
-- **Solution**: Early return check for empty/insufficient hybrid results
-- **Impact**: Prevents unnecessary API calls and error states
-- **Implementation**: `if not hybrid_results: return {"most_similar_selections": []}`
-
----
-
-
----
-
-## 2.5. Conversation Summarization
-
-### Purpose & Usage
-
-Intelligent conversation summarization system maintains context window limits while preserving essential information across long conversations. The system uses LLM-based compression to keep only summary + last message.
-
-**Primary Use Cases:**
-- Preventing token overflow in GPT-4o (128K limit)
-- Supporting 50+ turn conversations without truncation
-- Reducing LLM API costs by minimizing redundant context
-- Maintaining conversation coherence across long sessions
-- Enabling complex multi-step analyses without context loss
-
-### Key Implementation Steps
-
-1. **Strategic Summarization Points**
-   - After query rewriting (before retrieval)
-   - After SQL generation (before reflection)
-   - After reflection decision (before retry or formatting)
-   - After answer formatting (before follow-ups)
-   - Total: 4 summarization nodes in StateGraph
-
-2. **Summarization Algorithm**
-   - Extract all messages from state except last message
-   - Join message contents with newline separators
-   - Send to GPT-4o-mini with summarization prompt
-   - Generate concise summary (typically 200-500 tokens)
-   - Replace all messages with [SystemMessage(summary), last_message]
-
-3. **Additive Reducer Pattern**
-   - State uses `Annotated[List[BaseMessage], add_messages]`
-   - New messages append to existing list
-   - Summarization node replaces entire list
-   - LangGraph handles message deduplication
-
-4. **Token Optimization**
-   - Use GPT-4o-mini for all summarization (cheaper)
-   - Temperature=0.0 for deterministic summaries
-   - Max 1000 tokens for summary generation
-   - Preserves key facts, discards verbose explanations
-
-5. **Summary Prompt Engineering**
-   - "Summarize the conversation so far, preserving key facts..."
-   - Emphasis on preserving: datasets mentioned, queries asked, issues found
-   - Remove: intermediate reasoning, verbose explanations, duplicate info
-   - Format: Concise bullet points or prose
-
-### Key Challenges Solved
-
-**Challenge 1: Token Overflow in Long Conversations**
-- **Problem**: 50-turn conversations exceed GPT-4o's 128K token context window
-- **Solution**: Periodic summarization keeps context under 10K tokens
-- **Impact**: Supports unlimited conversation length without truncation
-- **Implementation**: 4 strategic summarization points in workflow
-
-**Challenge 2: Context Coherence**
-- **Problem**: Aggressive summarization loses important details for later steps
-- **Solution**: Always keep last message untouched, summary preserves key facts
-- **Impact**: No loss of immediate context, sufficient history for reasoning
-- **Implementation**: `messages = [SystemMessage(summary), last_message]` pattern
-
-**Challenge 3: When to Summarize**
-- **Problem**: Too early loses context, too late causes overflow
-- **Solution**: Summarize before expensive operations (retrieval, generation, reflection)
-- **Impact**: Optimal balance between context and token usage
-- **Implementation**: Place summarization nodes strategically in graph
-
-**Challenge 4: Summarization Quality**
-- **Problem**: Poor summaries lose critical information (datasets, constraints)
-- **Solution**: Carefully engineered prompt emphasizing preservation of key facts
-- **Impact**: 95% information retention in summaries (measured via human eval)
-- **Implementation**: Detailed system prompt in `summarize_messages_node`
-
-**Challenge 5: Cost Optimization**
-- **Problem**: Frequent summarization adds API costs
-- **Solution**: Use GPT-4o-mini (20x cheaper) for all summarization
-- **Impact**: Summarization costs <5% of total LLM budget
-- **Implementation**: `get_azure_chat_openai_gpt4o_mini()` for summarization
-
-**Challenge 6: State Management Complexity**
-- **Problem**: Replacing messages list risks losing state consistency
-- **Solution**: Use LangGraph's `add_messages` reducer with proper deduplication
-- **Impact**: Clean state updates, no duplicate messages
-- **Implementation**: `Annotated[List[BaseMessage], add_messages]` type
-
-**Challenge 7: Debugging Summarized Conversations**
-- **Problem**: Hard to trace errors when original context is summarized away
-- **Solution**: LangSmith traces preserve full conversation history
-- **Impact**: Complete audit trail even after summarization
-- **Implementation**: Automatic LangSmith integration captures all messages
-
-**Challenge 8: Multi-Step Reasoning**
-- **Problem**: Complex analyses need full context from previous steps
-- **Solution**: Summary includes reasoning patterns and intermediate conclusions
-- **Impact**: Maintains reasoning chain across 10+ steps
-- **Implementation**: Prompt emphasizes preserving reasoning patterns
-
----
-
-
----
-
-
-# 3. Data Storage & Persistence
+# 2. Data Storage & Persistence
 
 This category includes all data storage and persistence mechanisms: vector databases, relational databases, checkpointing systems, and cloud storage integrations.
 
 ---
 
-## 3.1. Data Services & Storage
+## 2.1. Data Services & Storage
 
 ### Purpose & Usage
 
@@ -1367,7 +759,7 @@ Multi-layered data architecture combining vector databases, relational databases
    - Format with delimiters for multi-dataset queries
    - Include CELKEM row handling instructions
 
-6. **MCP Integration for Remote SQLite**
+6. **FastMCP SQLite Server**: Standalone MCP server, dual database backends, streamable-http transport, FastMCP Cloud deployment
    - Turso-backed SQLite in cloud
    - Fallback to local SQLite file
    - Consistent query interface
@@ -1375,67 +767,67 @@ Multi-layered data architecture combining vector databases, relational databases
 
 ### Key Challenges Solved
 
-**Challenge 1: Vector Search at Scale**
+**Challenge 1: Scalable Vector Search**
 - **Problem**: Searching 600+ dataset descriptions requires efficient indexing
 - **Solution**: ChromaDB with HNSW indexing for O(log n) search complexity
 - **Impact**: <100ms search latency vs. 5+ seconds for brute force
 - **Implementation**: Persistent ChromaDB client with pre-built index
 
-**Challenge 2: Semantic vs. Keyword Trade-off**
+**Challenge 2: Hybrid Search Optimization**
 - **Problem**: Semantic search misses exact codes (e.g., "453_461_524"), keyword misses synonyms
 - **Solution**: Hybrid search combining both with weighted scoring
 - **Impact**: 35% better retrieval quality than either method alone
 - **Implementation**: `hybrid_search()` with configurable weights
 
-**Challenge 3: SQLite Concurrency Limitations**
+**Challenge 3: Database Concurrency Control**
 - **Problem**: SQLite locks entire database on write, blocks all readers
 - **Solution**: Read-only mode + separate connection per query
 - **Impact**: 10x read throughput improvement
 - **Implementation**: `mode=ro` connection string parameter
 
-**Challenge 4: Large Metadata Descriptions**
+**Challenge 4: Metadata Storage Efficiency**
 - **Problem**: Extended descriptions are 1000-5000 tokens each, slow to load
 - **Solution**: Indexed selection_code column + WHERE clause filtering
 - **Impact**: 20x faster than full table scan (5ms vs 100ms)
 - **Implementation**: PRIMARY KEY on selection_code
 
-**Challenge 5: Conversation State Persistence**
+**Challenge 5: State Persistence and Recovery**
 - **Problem**: In-memory state lost on server restart or crash
 - **Solution**: PostgreSQL checkpointing with AsyncPostgresSaver
 - **Impact**: Zero conversation loss, seamless resume after failures
 - **Implementation**: LangGraph checkpointer with three-table schema
 
-**Challenge 6: Connection Pool Exhaustion**
+**Challenge 6: Connection Pool Management**
 - **Problem**: High traffic exhausts PostgreSQL connection limit (100 default)
 - **Solution**: Connection pooling with min=2, max=10 per instance
 - **Impact**: Supports 50+ concurrent users without connection errors
 - **Implementation**: `AsyncConnectionPool` with configurable limits
 
-**Challenge 7: ChromaDB Client Memory Leaks**
+**Challenge 7: Client Resource Management**
 - **Problem**: ChromaDB clients accumulate 200-500MB if not cleaned up
 - **Solution**: Explicit `clear_system_cache()` + `del client` after retrieval
 - **Impact**: Stable memory usage across thousands of queries
 - **Implementation**: Cleanup in retrieval nodes + dedicated cleanup node
 
-**Challenge 8: Distributed ChromaDB Access**
+**Challenge 8: Distributed Data Access**
 - **Problem**: Local ChromaDB directory not accessible in multi-instance deployments
 - **Solution**: Cloud-backed ChromaDB with environment variable toggle
 - **Impact**: Seamless scaling to multiple Railway instances
 - **Implementation**: `CHROMA_USE_CLOUD` flag with CloudClient fallback
 
-**Challenge 9: PostgreSQL SSL Connection Errors**
+**Challenge 9: Database Connection Reliability**
 - **Problem**: Supabase PostgreSQL requires SSL, intermittent connection failures
 - **Solution**: Retry decorator with exponential backoff (max 5 retries)
 - **Impact**: 99.9% connection success rate
 - **Implementation**: `@retry_on_ssl_connection_error` decorator
 
-**Challenge 10: Prepared Statement Caching Issues**
+**Challenge 10: Query Performance Optimization**
 - **Problem**: PostgreSQL prepared statement cache fills up, causes errors
 - **Solution**: Retry decorator specifically for prepared statement errors
 - **Impact**: Zero prepared statement errors in production
 - **Implementation**: `@retry_on_prepared_statement_error` decorator
 
-**Challenge 11: Schema Loading Performance**
+**Challenge 11: Schema Query Optimization**
 - **Problem**: Loading 3 schemas sequentially takes 30-50ms
 - **Solution**: Single query with IN clause for all selection_codes
 - **Impact**: 10x faster schema loading (5ms vs 50ms)
@@ -1446,7 +838,7 @@ Multi-layered data architecture combining vector databases, relational databases
 
 ---
 
-## 3.2. Checkpointing System
+## 2.2. Checkpointing System
 
 ### Purpose & Usage
 
@@ -1499,67 +891,67 @@ PostgreSQL-backed checkpointing system provides persistent conversation state st
 
 ### Key Challenges Solved
 
-**Challenge 1: State Persistence Across Restarts**
+**Challenge 1: State Persistence and Recovery**
 - **Problem**: In-memory state lost on server crash or deployment
 - **Solution**: PostgreSQL-backed checkpointing with automatic saves after each node
 - **Impact**: Zero conversation loss, seamless user experience
 - **Implementation**: AsyncPostgresSaver with three-table schema
 
-**Challenge 2: Connection Pool Management**
+**Challenge 2: Connection Pool Optimization**
 - **Problem**: Opening new connection per request is slow (50-100ms) and exhausts limits
 - **Solution**: Connection pooling with warm connections (min=2) and max limit (10)
 - **Impact**: <5ms connection acquisition time, supports 50+ concurrent users
 - **Implementation**: `AsyncConnectionPool` with tuned parameters
 
-**Challenge 3: Stale Connection Detection**
+**Challenge 3: Connection Health Monitoring**
 - **Problem**: Idle connections may be closed by database, causing "server closed connection" errors
 - **Solution**: Max idle time (5 minutes) forces connection refresh
 - **Impact**: Zero stale connection errors in production
 - **Implementation**: `max_idle=300` parameter
 
-**Challenge 4: Database Unavailability**
+**Challenge 4: Database Resilience and Failover**
 - **Problem**: PostgreSQL may be down during startup or maintenance
 - **Solution**: Automatic fallback to InMemorySaver with warning log
 - **Impact**: Service remains operational, conversations not persisted during outage
 - **Implementation**: Try/except in checkpointer initialization
 
-**Challenge 5: SSL Connection Failures**
+**Challenge 5: Secure Connection Reliability**
 - **Problem**: Supabase requires SSL, intermittent "SSL SYSCALL error" on connect
 - **Solution**: Retry decorator with exponential backoff (max 5 retries)
 - **Impact**: 99.9% connection success rate
 - **Implementation**: `@retry_on_ssl_connection_error` with 1/2/4/8/16 second delays
 
-**Challenge 6: Prepared Statement Cache Overflow**
+**Challenge 6: Query Cache Management**
 - **Problem**: PostgreSQL prepared_statements cache fills up after many queries
 - **Solution**: Retry decorator specifically for "prepared statement already exists" errors
 - **Impact**: Zero prepared statement errors in production
 - **Implementation**: `@retry_on_prepared_statement_error` with max 5 retries
 
-**Challenge 7: Thread Isolation Verification**
+**Challenge 7: Multi-Tenant Data Isolation**
 - **Problem**: Users must not access other users' threads for security
 - **Solution**: users_threads_runs table with email + thread_id queries
 - **Impact**: Perfect multi-tenant isolation, no cross-user data leakage
 - **Implementation**: `WHERE email = %s AND thread_id = %s` ownership checks
 
-**Challenge 8: Run ID Tracking for Feedback**
+**Challenge 8: Execution Tracking and Auditing**
 - **Problem**: Feedback submission needs to verify user owns the run_id
 - **Solution**: users_threads_runs table stores email + run_id mapping
 - **Impact**: Prevents unauthorized feedback submission
 - **Implementation**: `WHERE run_id = %s AND email = %s` query before feedback
 
-**Challenge 9: Checkpoint Deserialization Performance**
+**Challenge 9: State Serialization Performance**
 - **Problem**: Deserializing large state objects (50KB+) adds latency
 - **Solution**: BYTEA column with efficient binary serialization
 - **Impact**: <10ms deserialization time for typical states
 - **Implementation**: PostgreSQL BYTEA with pickle/jsonpickle
 
-**Challenge 10: Database Connection String Security**
+**Challenge 10: Credential Management**
 - **Problem**: Connection strings contain credentials, shouldn't be in code
 - **Solution**: Environment variables with Supabase-specific parameter extraction
 - **Impact**: Zero credential leaks, secure deployment
 - **Implementation**: `get_connection_string()` from environment
 
-**Challenge 11: Connection Lifetime Management**
+**Challenge 11: Connection Lifecycle Management**
 - **Problem**: Long-lived connections may accumulate memory or become unstable
 - **Solution**: Max lifetime (1 hour) forces periodic connection refresh
 - **Impact**: Stable long-running service without connection issues
@@ -1570,7 +962,7 @@ PostgreSQL-backed checkpointing system provides persistent conversation state st
 
 ---
 
-## 3.3. ChromaDB Cloud Vector Database
+## 2.3. ChromaDB Cloud Vector Database
 
 ### Purpose & Usage
 
@@ -1635,61 +1027,61 @@ ChromaDB serves as the vector database for storing and retrieving embedded repre
 
 ### Key Challenges Solved
 
-**Challenge 1: Cloud vs Local Deployment Flexibility**
+**Challenge 1: Deployment Environment Management**
 - **Problem**: Development needs local storage, production needs cloud for multi-instance scaling
 - **Solution**: Environment-driven client factory switching between CloudClient and PersistentClient
 - **Impact**: Same code runs in dev and production with zero changes
 - **Implementation**: `should_use_cloud()` checks `CHROMA_USE_CLOUD` environment variable
 
-**Challenge 2: Semantic Search Limitations**
+**Challenge 2: Semantic Search Accuracy**
 - **Problem**: Pure semantic search misses exact keyword matches (codes, IDs)
 - **Solution**: Hybrid search combining semantic (85%) with BM25 keyword (15%)
 - **Impact**: 35% better retrieval quality balancing semantic and exact matching
 - **Implementation**: `hybrid_search()` with weighted score combination
 
-**Challenge 3: Cross-Lingual Semantic Search**
+**Challenge 3: Multilingual Vector Search**
 - **Problem**: Czech queries need to match English PDF documentation semantically
 - **Solution**: High-quality multilingual embeddings (text-embedding-3-large)
 - **Impact**: Effective retrieval across Czech-English language barrier
 - **Implementation**: Azure OpenAI text-embedding-3-large with 1536 dimensions
 
-**Challenge 4: Missing Collection Handling**
+**Challenge 4: Collection Lifecycle Management**
 - **Problem**: First deployment or data refresh causes missing ChromaDB directories
 - **Solution**: `chromadb_missing` flag in state + conditional routing in workflow
 - **Impact**: Graceful error messages instead of cryptic exceptions
 - **Implementation**: Directory existence check before client initialization
 
-**Challenge 5: Memory Leaks from ChromaDB Clients**
+**Challenge 5: Client Resource Management**
 - **Problem**: ChromaDB clients accumulate memory if not explicitly released
 - **Solution**: Explicit cleanup with `clear_system_cache()`, `del`, and `gc.collect()`
 - **Impact**: Stable memory usage over 1000+ queries without restarts
 - **Implementation**: `cleanup_resources_node` in LangGraph workflow
 
-**Challenge 6: Vector Search Performance**
+**Challenge 6: Vector Indexing Performance**
 - **Problem**: Searching 1000+ embeddings needs to be fast (<200ms)
 - **Solution**: ChromaDB's optimized HNSW indexing for approximate nearest neighbors
 - **Impact**: Sub-100ms semantic search even with large collections
 - **Implementation**: Automatic HNSW indexing in ChromaDB
 
-**Challenge 7: Credential Management for Cloud**
+**Challenge 7: Cloud Authentication Management**
 - **Problem**: Cloud API keys need secure storage and injection
 - **Solution**: Environment variables for all cloud credentials
 - **Impact**: No hardcoded secrets, easy credential rotation
 - **Implementation**: `CHROMA_API_KEY`, `CHROMA_API_TENANT`, `CHROMA_API_DATABASE` env vars
 
-**Challenge 8: Local Development Without Cloud Access**
+**Challenge 8: Development Environment Parity**
 - **Problem**: Developers need to test without Chroma Cloud subscription
 - **Solution**: PersistentClient mode uses local directory storage
 - **Impact**: Full feature parity in local development environment
 - **Implementation**: `CHROMA_USE_CLOUD=false` for local mode
 
-**Challenge 9: Collection Migration**
+**Challenge 9: Data Migration and Synchronization**
 - **Problem**: Need to migrate existing local collections to cloud
 - **Solution**: Migration script copying documents + embeddings + metadata
 - **Impact**: Seamless transition from local to cloud without data loss
 - **Implementation**: `chromadb_local_to_cloud__05.py` migration tool
 
-**Challenge 10: Embedding Consistency**
+**Challenge 10: Embedding Model Consistency**
 - **Problem**: Different embedding models produce incompatible vectors
 - **Solution**: Standardize on text-embedding-3-large for all collections
 - **Impact**: Consistent 1536-dimensional vectors enable collection reuse
@@ -1700,7 +1092,7 @@ ChromaDB serves as the vector database for storing and retrieving embedded repre
 
 ---
 
-## 3.4. Turso SQLite Edge Database
+## 2.4. Turso SQLite Edge Database
 
 ### Purpose & Usage
 
@@ -1761,49 +1153,49 @@ Turso provides cloud-hosted SQLite databases with global edge replication, servi
 
 ### Key Challenges Solved
 
-**Challenge 1: SQLite Scalability Limitations**
+**Challenge 1: Database Scalability Constraints**
 - **Problem**: Traditional SQLite doesn't support concurrent writes or cloud hosting
 - **Solution**: Turso's libSQL extends SQLite with replication and edge hosting
 - **Impact**: SQLite simplicity with cloud database scalability
 - **Implementation**: libSQL protocol for cloud-native SQLite
 
-**Challenge 2: Global Latency for Database Reads**
+**Challenge 2: Edge Data Distribution**
 - **Problem**: Single-region database causes high latency for global users
 - **Solution**: Turso edge replication automatically serves reads from nearest region
 - **Impact**: <50ms read latency from anywhere in the world
 - **Implementation**: Automatic edge replication in Turso infrastructure
 
-**Challenge 3: LLM Tool Integration**
+**Challenge 3: AI-Native Database Integration**
 - **Problem**: LLMs need structured way to query databases without direct SQL access
 - **Solution**: MCP protocol exposes `sqlite_query` tool with schema context
 - **Impact**: LLM can generate and execute queries safely with validation
 - **Implementation**: FastMCP server wrapping Turso connection
 
-**Challenge 4: Development/Production Parity**
+**Challenge 4: Environment Consistency**
 - **Problem**: Developers need local database without Turso subscription
 - **Solution**: Automatic fallback to local SQLite when MCP_SERVER_URL not set
 - **Impact**: Zero config changes between dev and prod environments
 - **Implementation**: Conditional client initialization in `tools.py`
 
-**Challenge 5: Database Migration from Local to Cloud**
+**Challenge 5: Cloud Migration Strategy**
 - **Problem**: Need to upload 50MB+ SQLite database to Turso
 - **Solution**: Turso CLI and REST API upload endpoints for bulk transfer
 - **Impact**: One-command migration preserving all data and schema
 - **Implementation**: `turso db import` command with local file path
 
-**Challenge 6: Query Security and Injection**
+**Challenge 6: Query Security and Validation**
 - **Problem**: LLM-generated SQL could contain injection attempts or dangerous commands
 - **Solution**: Query validation, read-only mode, whitelist of allowed operations
 - **Impact**: Safe execution of LLM-generated queries without data corruption risk
 - **Implementation**: MCP tool validation layer before execution
 
-**Challenge 7: Connection Reliability**
+**Challenge 7: Network Resilience**
 - **Problem**: Network issues can cause query failures in cloud database
 - **Solution**: Retry decorator with exponential backoff for transient errors
 - **Impact**: 99.9% query success rate despite network variability
 - **Implementation**: `@retry_on_ssl_connection_error` decorator
 
-**Challenge 8: Cost Optimization**
+**Challenge 8: Cost Management**
 - **Problem**: Per-row pricing models expensive for analytical queries
 - **Solution**: Turso's fixed pricing regardless of query volume
 - **Impact**: Predictable monthly costs for high-query-volume application
@@ -1827,137 +1219,167 @@ Turso provides cloud-hosted SQLite databases with global edge replication, servi
 ---
 
 
-# 4. External Integrations & Services
+# 3. External Integrations & Services
 
 This category encompasses integrations with external services and APIs: Model Context Protocol, CZSU API for data ingestion, and LlamaParse for PDF processing.
 
 ---
 
-## 4.1. MCP (Model Context Protocol) Integration
+## 3.1. FastMCP SQLite Server Integration
 
 ### Purpose & Usage
 
-Model Context Protocol integration enables remote tool execution with automatic fallback to local tools. The system provides a flexible, resilient architecture for SQL query execution against Czech statistical data.
+FastMCP SQLite Server provides a standalone MCP (Model Context Protocol) server that exposes SQLite database query capabilities through a single `sqlite_query` tool. The server supports dual database backends (SQLite Cloud and Turso) and is designed for seamless integration with LangChain MCP adapters, enabling AI agents to execute SQL queries against Czech statistical data.
 
 **Primary Use Cases:**
-- Remote SQL query execution via MCP server (Turso-backed)
+- Remote SQL query execution via standalone MCP server (SQLite Cloud/Turso-backed)
 - Local SQLite fallback when MCP server unavailable
-- Tool discovery and schema validation
-- Secure tool execution with input validation
-- Agentic tool calling in LangGraph workflow
+- Tool discovery and schema validation through MCP protocol
+- Secure read-only database access for AI workflows
+- LangChain-compatible tool integration with streamable-http transport
+- FastMCP Cloud deployment with zero configuration hosting
 
 ### Key Implementation Steps
 
-1. **Dual-Mode Tool Architecture**
-   - Try MCP server connection first
-   - List available tools via MCP protocol
-   - Fall back to local SQLite tools if connection fails
-   - Consistent tool interface regardless of source
+1. **Standalone FastMCP Server Architecture**
+   - Complete separation from main application (no shared imports)
+   - FastMCP 2.0 framework with FastAPI/Uvicorn backend
+   - Single `sqlite_query` tool exposing database capabilities
+   - Environment-based configuration (PORT, DATABASE_TYPE, connection strings)
+   - Dual database backend support: SQLite Cloud (default) and Turso (libSQL)
 
-2. **MCP Client Initialization**
-   - MultiServerMCPClient with async support
-   - Server configuration from environment variables
-   - SSE (Server-Sent Events) transport for real-time communication
-   - Automatic connection management
+2. **Transport Configuration**
+   - Default "streamable-http" transport for LangChain MCP Adapters compatibility
+   - Legacy SSE transport support for backward compatibility
+   - Automatic transport detection based on client requirements
+   - Optimized for MultiServerMCPClient integration
 
-3. **Tool Schema Extraction**
-   - Convert MCP tool schemas to LangChain Tool format
-   - Preserve input schemas and descriptions
-   - Maintain tool names and parameters
-   - Validate schema completeness
+3. **Database Backend Management**
+   - SQLite Cloud connection with `sqlitecloud` package
+   - Turso connection with `libsql` package and URL/auth token parsing
+   - Connection pooling and thread-safe query execution
+   - Async database operations using `asyncio.to_thread()`
+   - Automatic connection testing and health validation
 
-4. **Remote Tool Execution**
-   - Call MCP server with tool name and arguments
-   - Handle async execution with proper await
-   - Parse and validate results
-   - Error handling for connection failures
+4. **Tool Schema and Execution**
+   - Single `@mcp.tool()` decorated async function: `sqlite_query`
+   - Pydantic-style parameter validation with query string input
+   - Result formatting: JSON for multi-row results, string for single values
+   - Read-only operations only (prevents data modification)
+   - Context-aware logging with query execution details
 
-5. **Local SQLite Fallback**
-   - Native Python SQLite3 connection
-   - Same query interface as remote tools
-   - No external dependencies
-   - Immediate fallback on MCP failure
+5. **Deployment and Hosting**
+   - FastMCP Cloud ready with automatic deployment detection
+   - Local development with `uv` package manager and virtual environment
+   - Environment variable configuration with `.env` file support
+   - Health check endpoint (`/health`) with database connectivity testing
+   - MCP info endpoint (`/mcp-info`) for debugging and compatibility verification
 
-6. **LangGraph Integration**
-   - Bind tools to LLM using `.bind_tools()`
-   - Iterative tool calling loop
-   - Result accumulation in state
-   - Finish signal detection
+6. **LangChain Integration**
+   - Optimized for `langchain-mcp-adapters` library compatibility
+   - Streamable-http transport for reliable client connections
+   - Tool schema conversion to LangChain Tool format
+   - Automatic tool discovery and parameter validation
+   - Error handling with graceful fallback to local tools
 
 ### Key Challenges Solved
 
-**Challenge 1: Remote Tool Availability**
-- **Problem**: MCP server may be down or unreachable during deployment
-- **Solution**: Automatic fallback to local SQLite tools
-- **Impact**: Zero downtime for query execution, seamless user experience
-- **Implementation**: Try/except in `get_sqlite_tools()` with fallback
+**Challenge 1: Standalone Server Architecture**
+- **Problem**: MCP server needs to be completely independent of main application for deployment flexibility
+- **Solution**: Zero imports from parent project, self-contained with pyproject.toml dependencies
+- **Impact**: Deployable as separate service on FastMCP Cloud or any hosting platform
+- **Implementation**: Separate repository structure with no shared code dependencies
 
-**Challenge 2: Tool Schema Consistency**
-- **Problem**: MCP tools and local tools must have identical interfaces
-- **Solution**: Standardized LangChain Tool wrapper with consistent schemas
-- **Impact**: LLM can use either tool source without code changes
-- **Implementation**: Unified tool creation in `create_tool_from_mcp_schema()`
+**Challenge 2: Dual Database Backend Support**
+- **Problem**: Need to support both SQLite Cloud and Turso databases with different connection patterns
+- **Solution**: Abstracted connection factory with DATABASE_TYPE environment variable
+- **Impact**: Flexible deployment options, easy migration between database providers
+- **Implementation**: `get_db_connection()` function with conditional logic for SQLite Cloud vs Turso
 
-**Challenge 3: MCP Connection Timeout**
-- **Problem**: Waiting for MCP server connection adds latency to every request
-- **Solution**: Short timeout (5 seconds) with immediate fallback
-- **Impact**: <100ms overhead for connection attempt
-- **Implementation**: Timeout parameter in MCP client initialization
+**Challenge 3: Transport Protocol Compatibility**
+- **Problem**: LangChain MCP adapters require "streamable-http" transport, legacy SSE transport for backward compatibility
+- **Solution**: Environment-configurable transport with "streamable-http" as default
+- **Impact**: Seamless integration with langchain-mcp-adapters library
+- **Implementation**: `TRANSPORT` environment variable with streamable-http/SSE options
 
-**Challenge 4: Tool Discovery**
-- **Problem**: LLM needs to know what tools are available and their parameters
-- **Solution**: Automatic tool listing via MCP protocol with schema extraction
-- **Impact**: Dynamic tool discovery without hardcoded schemas
-- **Implementation**: `client.list_tools()` with schema parsing
+**Challenge 4: FastMCP Framework Integration**
+- **Problem**: FastMCP 2.0 has specific patterns for tool definition and server setup
+- **Solution**: Proper `@mcp.tool()` decorator usage with async function signatures
+- **Impact**: Native MCP protocol compliance with automatic schema generation
+- **Implementation**: FastMCP server instance with tool registration and custom routes
 
-**Challenge 5: Async Tool Execution**
-- **Problem**: Tool calls must not block event loop during execution
-- **Solution**: Full async/await support in tool execution path
-- **Impact**: Concurrent tool calls, no blocking
-- **Implementation**: `async def` for tool functions
+**Challenge 5: Single Tool Design**
+- **Problem**: MCP server exposes only one tool (sqlite_query) but needs comprehensive database access
+- **Solution**: Generic SQL query tool with read-only enforcement and flexible result formatting
+- **Impact**: Complete database access through single, well-defined interface
+- **Implementation**: `@mcp.tool()` decorated `sqlite_query` function with parameter validation
 
-**Challenge 6: Tool Result Parsing**
-- **Problem**: MCP returns structured results, LLM needs text
-- **Solution**: Convert MCP ContentItem objects to string representation
-- **Impact**: Clean text results for LLM consumption
-- **Implementation**: Result parsing in tool execution
+**Challenge 6: Result Format Standardization**
+- **Problem**: SQL results vary (single values, rows, columns) but need consistent LangChain compatibility
+- **Solution**: Smart formatting: strings for single values, JSON for multi-row results
+- **Impact**: Predictable output format for LLM consumption and parsing
+- **Implementation**: Conditional result processing in `sqlite_query` function
 
-**Challenge 7: Turso SQLite Cloud Access**
-- **Problem**: Local SQLite file not accessible in distributed deployment
-- **Solution**: MCP server with Turso backend provides cloud SQLite access
-- **Impact**: Scalable to multiple Railway instances
-- **Implementation**: MCP server environment variables for Turso connection
+**Challenge 7: Async Database Operations**
+- **Problem**: Database connections are synchronous but MCP server runs in async context
+- **Solution**: `asyncio.to_thread()` for database operations with proper connection management
+- **Impact**: Non-blocking database queries in async server environment
+- **Implementation**: Thread pool execution for SQLite operations
 
-**Challenge 8: Tool Call Validation**
-- **Problem**: LLM may provide invalid SQL queries or malformed arguments
-- **Solution**: Schema validation in tool execution + error handling
-- **Impact**: Clear error messages instead of crashes
-- **Implementation**: Pydantic schemas with validation
+**Challenge 8: Connection Management**
+- **Problem**: SQLite Cloud vs Turso have different connection patterns and cleanup requirements
+- **Solution**: Database-type-specific connection handling with proper resource cleanup
+- **Impact**: Reliable connections across different SQLite providers
+- **Implementation**: Separate connection functions with appropriate cleanup logic
 
-**Challenge 9: Security of SQL Execution**
-- **Problem**: LLM-generated SQL could be malicious or destructive
-- **Solution**: Read-only SQLite connection, no write permissions
-- **Impact**: Zero risk of data modification or deletion
-- **Implementation**: `mode=ro` in SQLite connection string
+**Challenge 9: Environment Configuration**
+- **Problem**: Multiple environment variables needed for different deployment scenarios
+- **Solution**: Comprehensive env var support with sensible defaults and validation
+- **Impact**: Flexible configuration for local development, FastMCP Cloud, and custom deployments
+- **Implementation**: `os.getenv()` with fallback values and connection string parsing
 
-**Challenge 10: Observability of Tool Calls**
-- **Problem**: Hard to debug tool call failures without visibility
-- **Solution**: LangSmith automatic tracing of tool inputs/outputs
-- **Impact**: Full visibility into tool usage and failures
-- **Implementation**: Automatic LangSmith integration with LangGraph
+**Challenge 10: Health Monitoring Integration**
+- **Problem**: Need to verify database connectivity for monitoring and deployment platforms
+- **Solution**: Custom `/health` endpoint with database connection testing
+- **Impact**: Automatic health checks for FastMCP Cloud and external monitoring
+- **Implementation**: `@mcp.custom_route("/health")` with database connectivity validation
 
-**Challenge 11: MCP Protocol Version Compatibility**
-- **Problem**: MCP protocol evolves, client/server versions may mismatch
-- **Solution**: Version checking in MCP client initialization
-- **Impact**: Clear error messages on version mismatch
-- **Implementation**: Protocol version validation in MCP client
+**Challenge 11: Deployment Platform Compatibility**
+- **Problem**: FastMCP Cloud has specific requirements for entry points and dependency detection
+- **Solution**: `main.py:mcp` entry point with pyproject.toml dependency specification
+- **Impact**: Zero-configuration deployment on FastMCP Cloud platform
+- **Implementation**: Module-level `mcp` object export with proper FastMCP initialization
+
+**Challenge 12: Development Workflow**
+- **Problem**: Local development needs virtual environment setup and dependency management
+- **Solution**: Automated setup script with uv package manager and VS Code configuration
+- **Impact**: Consistent development environment across team members
+- **Implementation**: `setup.bat` with virtual environment creation and IDE integration
+
+**Challenge 13: Error Handling and Diagnostics**
+- **Problem**: Database connection failures need clear error messages and debugging information
+- **Solution**: Comprehensive error handling with specific error types and `/mcp-info` endpoint
+- **Impact**: Easy troubleshooting of deployment and connection issues
+- **Implementation**: Try/except blocks with informative error messages and debug endpoints
+
+**Challenge 14: Package Management**
+- **Problem**: Different database backends require different packages (sqlitecloud vs libsql)
+- **Solution**: Optional dependencies in pyproject.toml with conditional imports
+- **Impact**: Minimal dependency footprint, install only what's needed
+- **Implementation**: `[project.optional-dependencies]` with database-specific packages
+
+**Challenge 15: LangChain Integration Compatibility**
+- **Problem**: LangChain MCP adapters expect specific server behavior and response formats
+- **Solution**: Optimized configuration and transport settings for LangChain compatibility
+- **Impact**: Seamless integration with LangChain workflows and tool calling
+- **Implementation**: Streamable-http transport and proper tool schema exposure
 
 ---
 
 
 ---
 
-## 4.2. CZSU API Data Ingestion
+## 3.2. CZSU API Data Ingestion
 
 ### Purpose & Usage
 
@@ -2018,61 +1440,61 @@ The CZSU (Czech Statistical Office) API integration provides systematic data ext
 
 ### Key Challenges Solved
 
-**Challenge 1: JSON-stat Format Complexity**
+**Challenge 1: Data Format Standardization**
 - **Problem**: JSON-stat structure different from traditional JSON, difficult to parse
 - **Solution**: Specialized parsing logic understanding dimensions, categories, values
 - **Impact**: Successful conversion of 500+ datasets to usable CSV/SQLite format
 - **Implementation**: Custom parser in `datasets_selections_get_csvs_01.py`
 
-**Challenge 2: API Reliability and Transient Failures**
+**Challenge 2: API Resilience and Fault Tolerance**
 - **Problem**: CZSU API occasionally returns 5xx errors or timeouts
 - **Solution**: Tenacity retry decorator with exponential backoff (5 attempts max)
 - **Impact**: 99% success rate despite API instability, automatic recovery
 - **Implementation**: `@retry()` decorator with exponential wait strategy
 
-**Challenge 3: Malformed JSON Responses**
+**Challenge 3: Data Quality Validation**
 - **Problem**: API sometimes returns JSON with trailing commas (invalid JSON)
 - **Solution**: Automatic JSON cleanup removing trailing commas before parsing
 - **Impact**: Successful parsing of otherwise invalid responses
 - **Implementation**: Regex-based cleanup in response handler
 
-**Challenge 4: Progress Visibility for Long Operations**
+**Challenge 4: Progress Monitoring and User Feedback**
 - **Problem**: Dataset extraction takes 30+ minutes, no feedback to user
 - **Solution**: Dual-level progress bars (dataset + selection levels)
 - **Impact**: Clear visibility into extraction progress and ETA
 - **Implementation**: tqdm progress bars for nested loops
 
-**Challenge 5: Partial Failure Handling**
+**Challenge 5: Fault Tolerance and Graceful Degradation**
 - **Problem**: Single selection failure shouldn't abort entire dataset extraction
 - **Solution**: Per-selection error handling with continue-on-error logic
 - **Impact**: Extract 95%+ of data even with some selection failures
 - **Implementation**: Try/except per selection with error accumulation
 
-**Challenge 6: Large Response Handling**
+**Challenge 6: Data Volume Management**
 - **Problem**: Some selections return 100MB+ JSON-stat responses
 - **Solution**: Streaming response processing and chunked parsing
 - **Impact**: Successful processing of large datasets without memory overflow
 - **Implementation**: Response streaming with incremental parsing
 
-**Challenge 7: Rate Limiting Compliance**
+**Challenge 7: API Rate Limiting Management**
 - **Problem**: Too many rapid requests can trigger API throttling
 - **Solution**: Configurable delay between requests (1-2 second default)
 - **Impact**: Zero throttling incidents during large-scale extraction
 - **Implementation**: `time.sleep()` between selection downloads
 
-**Challenge 8: Debug Information for Failures**
+**Challenge 8: Error Logging and Diagnostic Tracing**
 - **Problem**: Failed requests provide no context for troubleshooting
 - **Solution**: Debug file generation with full response body
 - **Impact**: Fast diagnosis of API changes or data format issues
 - **Implementation**: `RESPONSE_DIAGNOSTICS` flag with file output
 
-**Challenge 9: Metadata Extraction for Search**
+**Challenge 9: Data Enrichment and Metadata Processing**
 - **Problem**: Raw CSV files not searchable, need metadata indexing
 - **Solution**: Parallel metadata extraction to ChromaDB during conversion
 - **Impact**: Semantic search over dataset descriptions enables AI querying
 - **Implementation**: Metadata extraction + ChromaDB indexing pipeline
 
-**Challenge 10: Dataset Updates and Refresh**
+**Challenge 10: Incremental Data Loading**
 - **Problem**: CZSU data updates monthly, need incremental refresh strategy
 - **Solution**: Timestamp tracking and conditional download of changed datasets
 - **Impact**: Faster refresh cycles (5 min vs 30 min for full re-download)
@@ -2083,7 +1505,7 @@ The CZSU (Czech Statistical Office) API integration provides systematic data ext
 
 ---
 
-## 4.3. LlamaParse PDF Processing
+## 3.3. LlamaParse PDF Processing
 
 ### Purpose & Usage
 
@@ -2146,61 +1568,61 @@ LlamaParse provides advanced PDF parsing capabilities specifically optimized for
 
 ### Key Challenges Solved
 
-**Challenge 1: Complex Table Extraction**
+**Challenge 1: Table Structure Recognition**
 - **Problem**: Standard PDF parsers destroy table structure, mixing cells randomly
 - **Solution**: LlamaParse custom instructions preserve table layout in YAML format
 - **Impact**: 90% table preservation accuracy vs 30% with standard parsers
 - **Implementation**: Custom parsing instructions with YAML table format
 
-**Challenge 2: Multi-Column Layout Handling**
+**Challenge 2: Multi-Column Document Processing**
 - **Problem**: Statistical PDFs use multi-column layouts confusing text order
 - **Solution**: LlamaParse reading order detection respects columns
 - **Impact**: Coherent text extraction preserving document flow
 - **Implementation**: Built-in multi-column handling in LlamaParse
 
-**Challenge 3: Czech Diacritics and Special Characters**
+**Challenge 3: Character Encoding and Unicode Handling**
 - **Problem**: Many PDF parsers corrupt Czech characters (á, č, ř, ž)
 - **Solution**: LlamaParse UTF-8 native processing preserves all characters
 - **Impact**: Perfect Czech text extraction without character corruption
 - **Implementation**: Unicode-aware parsing in LlamaParse engine
 
-**Challenge 4: Table Format for LLM Understanding**
+**Challenge 4: Data Format Standardization for LLMs**
 - **Problem**: Markdown tables difficult for LLMs to parse and reason about
 - **Solution**: YAML format in code blocks provides structured, parseable representation
 - **Impact**: LLMs can extract specific table values with 95% accuracy
 - **Implementation**: Custom instruction: "Convert tables to yaml code blocks"
 
-**Challenge 5: Parsing Progress Visibility**
+**Challenge 5: Progress Monitoring and User Feedback**
 - **Problem**: Large PDFs take 5-10 minutes to parse, no feedback
 - **Solution**: Enhanced monitoring polls status every 2 seconds with progress updates
 - **Impact**: Clear user feedback during long-running operations
 - **Implementation**: `LLAMAPARSE_ENHANCED_MONITORING` with status polling
 
-**Challenge 6: Cost Management for PDF Parsing**
+**Challenge 6: Cost Optimization and Resource Management**
 - **Problem**: LlamaParse charges per page, costs add up for large documents
 - **Solution**: Parse only once, save to text file for reuse in testing
 - **Impact**: 95% cost reduction by avoiding re-parsing during development
 - **Implementation**: Check for existing `_llamaparse_parsed.txt` before parsing
 
-**Challenge 7: Semantic Chunking Boundaries**
+**Challenge 7: Semantic Chunking and Content Segmentation**
 - **Problem**: Fixed-size chunking splits tables and disrupts context
 - **Solution**: `MarkdownElementNodeParser` chunks at semantic boundaries
 - **Impact**: Coherent chunks preserving table integrity and context
 - **Implementation**: LlamaIndex element-aware node parser
 
-**Challenge 8: Parsing Error Recovery**
+**Challenge 8: Error Recovery and Fault Tolerance**
 - **Problem**: PDF parsing can fail due to corrupted files or API issues
 - **Solution**: Retry logic with exponential backoff and error reporting
 - **Impact**: 99% parsing success rate despite occasional failures
 - **Implementation**: Try/except with retry decorator
 
-**Challenge 9: Alternative Parser Fallback**
+**Challenge 9: Fallback Systems and Redundancy**
 - **Problem**: LlamaParse requires API key and subscription
 - **Solution**: Azure Document Intelligence alternative with different instructions
 - **Impact**: Fallback option for users without LlamaParse subscription
 - **Implementation**: `pdf_to_chromadb__azure_doc_intelligence.py` alternative script
 
-**Challenge 10: Integration with Retrieval Pipeline**
+**Challenge 10: RAG Workflow Integration**
 - **Problem**: Parsed PDFs need to be queryable alongside metadata
 - **Solution**: Separate ChromaDB collection with hybrid search integration
 - **Impact**: Unified retrieval across metadata and documentation sources
@@ -2211,7 +1633,7 @@ LlamaParse provides advanced PDF parsing capabilities specifically optimized for
 ## Feature Count Summary
 
 - **22 Major Feature Areas** with comprehensive documentation
-- **8 Feature Categories**: Core Infrastructure, AI/ML Services, Data Storage, Integration, Operational, Platform, Data Ingestion, Document Processing
+- **4 Feature Categories**: Backend Infrastructure & Platform, Data Storage & Persistence, External Integrations & Services, Operational & Reliability Features
 - **41 Key Challenge Categories** solved with specific implementations
 - **150+ Challenge-Solution Pairs** across all features
 - **Production-Tested** on Railway.app with 4GB memory allocation
@@ -2220,39 +1642,31 @@ LlamaParse provides advanced PDF parsing capabilities specifically optimized for
 
 ### Challenge Breakdown by Category
 
-#### Core Backend Challenges (Features 1-5)
+#### Core Backend Challenges (Features 1-6)
 1. **API Architecture**: Concurrent handling, long operations, fallback, serialization, documentation, compression
 2. **Authentication**: Stateless JWT, token security, multi-tenant isolation, debugging, header parsing, performance
 3. **Rate Limiting**: User experience balance, burst vs sustained, distributed limiting, memory cleanup, fairness, wait calculation, cost control
 4. **Memory Management**: Fragmentation, leaks, AI footprint, payload spikes, observability, platform-specific, hard limits, monitoring overhead
-5. **LangGraph Workflow**: State management, token overflow, speed-accuracy balance, infinite loops, missing data, parallel coordination, isolation, debugging, failure handling, resource leaks
+5. **Railway Deployment Platform**: Zero-config deployment, memory constraints, cost management, environment complexity, deployment downtime, regional latency, build dependencies, automatic pipeline, production debugging, restart policy
+6. **Error Handling & Monitoring**: Exception propagation, traceback exposure, user-friendly messaging, environment distinction, correlation IDs, automatic retry, structured logging, error aggregation, status tracking
 
-#### AI & ML Service Challenges (Features 6, 17, 18)
-6. **AI Services**: Cost optimization, multilingual search, hybrid accuracy, reranking precision, tool reliability, context management, translation limits, embedding latency
-7. **LangSmith Observability**: Production debugging, feedback loop, retrieval evaluation, correlation, ownership, cost monitoring, A/B testing, error rate, dataset versioning, multi-step debugging
-8. **Cohere Reranking**: Semantic gap, cross-lingual quality, domain terminology, false positives, speed-accuracy, API reliability, score interpretation, cost management, debugging, empty results
+#### Data Storage Challenges (Features 2-5)
+2. **Data Services**: Multi-source integration, dual collection, normalization, schema evolution, bulk operations, text extraction, environment handling, query safety, data versioning
+3. **Checkpointing**: State size, recovery reliability, connection pool, schema migration, performance, configuration, global state, cleanup, pool testing, integrity
+4. **ChromaDB Cloud**: Cloud/local flexibility, semantic limitations, cross-lingual search, missing collections, memory leaks, vector performance, credential management, local development, migration, embedding consistency
+5. **Turso Edge Database**: SQLite scalability, global latency, LLM integration, dev/prod parity, migration, query security, connection reliability, cost optimization, schema evolution, observability
 
-#### Data Storage Challenges (Features 7-8, 19-20)
-7. **Data Services**: Multi-source integration, dual collection, normalization, schema evolution, bulk operations, text extraction, environment handling, query safety, data versioning
-8. **Checkpointing**: State size, recovery reliability, connection pool, schema migration, performance, configuration, global state, cleanup, pool testing, integrity
-10. **ChromaDB Cloud**: Cloud/local flexibility, semantic limitations, cross-lingual search, missing collections, memory leaks, vector performance, credential management, local development, migration, embedding consistency
-11. **Turso Edge Database**: SQLite scalability, global latency, LLM integration, dev/prod parity, migration, query security, connection reliability, cost optimization, schema evolution, observability
+#### Integration & Data Ingestion Challenges (Features 6-8)
+6. **MCP Integration**: Local execution, remote resilience, tool schema, async client, execution timeout, graceful degradation, platform compatibility, tool discovery, parameter validation, retry
+7. **CZSU API**: JSON-stat complexity, API reliability, malformed JSON, progress visibility, partial failures, large responses, rate compliance, debug info, metadata extraction, incremental refresh
+8. **LlamaParse PDF**: Table extraction, multi-column layout, Czech diacritics, table format for LLMs, progress visibility, cost management, semantic chunking, error recovery, alternative fallback, retrieval integration
 
-#### Integration & Data Ingestion Challenges (Features 10, 21, 22)
-10. **MCP Integration**: Local execution, remote resilience, tool schema, async client, execution timeout, graceful degradation, platform compatibility, tool discovery, parameter validation, retry
-12. **CZSU API**: JSON-stat complexity, API reliability, malformed JSON, progress visibility, partial failures, large responses, rate compliance, debug info, metadata extraction, incremental refresh
-13. **LlamaParse PDF**: Table extraction, multi-column layout, Czech diacritics, table format for LLMs, progress visibility, cost management, semantic chunking, error recovery, alternative fallback, retrieval integration
-
-#### Operational & Monitoring Challenges (Features 9, 11-15)
-9. **Error Handling**: Exception propagation, traceback exposure, user-friendly messaging, environment distinction, correlation IDs, automatic retry, structured logging, error aggregation, status tracking
-11. **Conversation Management**: Thread pagination, bulk loading optimization, ownership security, cache invalidation
-12. **Execution Cancellation**: Real-time cancellation, multi-user isolation, graceful cleanup
-13. **Retry Mechanisms**: SSL recovery, prepared statement management, exponential backoff
-14. **Summarization**: Context window limits, information preservation, cost efficiency
-15. **Debug Endpoints**: Debug visibility, health monitoring, runtime configuration
-
-#### Platform & Deployment Challenges (Feature 16)
-16. **Railway Platform**: Zero-config deployment, memory constraints, cost management, environment complexity, deployment downtime, regional latency, build dependencies, automatic pipeline, production debugging, restart policy
+#### Operational & Monitoring Challenges (Features 9-13)
+9. **Conversation Management**: Thread pagination, bulk loading optimization, ownership security, cache invalidation
+10. **Execution Cancellation**: Real-time cancellation, multi-user isolation, graceful cleanup
+11. **Retry Mechanisms**: SSL recovery, prepared statement management, exponential backoff
+12. **Summarization**: Context window limits, information preservation, cost efficiency
+13. **Debug Endpoints**: Debug visibility, health monitoring, runtime configuration
 
 ---
 
@@ -2377,13 +1791,13 @@ All features are battle-tested in production, serving real users analyzing Czech
 ---
 
 
-# 5. Operational & Reliability Features
+# 4. Operational & Reliability Features
 
 This category covers operational features that ensure reliability, observability, and maintainability: thread management, cancellation support, retry mechanisms, and debug endpoints.
 
 ---
 
-## 5.1. Conversation Thread Management
+## 4.1. Conversation Thread Management
 
 ### Purpose & Usage
 
@@ -2500,7 +1914,7 @@ Comprehensive conversation thread management system provides paginated access to
 
 ---
 
-## 5.2. Execution Cancellation System
+## 4.2. Execution Cancellation System
 
 ### Purpose & Usage
 
@@ -2594,7 +2008,7 @@ Real-time execution cancellation system allows users to stop long-running analys
 
 ---
 
-## 5.3. Retry Mechanisms with Exponential Backoff
+## 4.3. Retry Mechanisms with Exponential Backoff
 
 ### Purpose & Usage
 
@@ -2713,7 +2127,7 @@ Sophisticated retry system with exponential backoff handles transient failures i
 
 ---
 
-## 5.4. Debug and Monitoring Endpoints
+## 4.4. Debug and Monitoring Endpoints
 
 ### Purpose & Usage
 
@@ -2826,60 +2240,65 @@ Comprehensive debug and monitoring infrastructure provides real-time visibility 
 
 ## Summary
 
-This backend system solves complex challenges across **15 major feature areas**:
+This backend system solves complex challenges across **31 major features** organized into **4 logical categories**:
 
-### Core Architecture Challenges
-1. **Scalability**: Modular REST API with connection pooling supports 50+ concurrent users
-2. **Reliability**: Multi-layered error handling with retries ensures 99.9% uptime
-3. **Security**: JWT authentication with ownership verification prevents unauthorized access
-4. **Performance**: Dual-layer rate limiting with graceful throttling prevents abuse
+### Core Infrastructure & Platform (6 features)
+1. **RESTful API Architecture**: Concurrent handling, long operations, fallback, serialization, documentation, compression
+2. **Authentication & Authorization**: Stateless JWT, token security, multi-tenant isolation, debugging, header parsing, performance
+3. **Rate Limiting & Throttling**: User experience balance, burst vs sustained, distributed limiting, memory cleanup, fairness, wait calculation, cost control
+4. **Memory Management**: Fragmentation, leaks, AI footprint, payload spikes, observability, platform-specific, hard limits, monitoring overhead
+5. **Railway Deployment Platform**: Zero-config deployment, memory constraints, cost management, environment complexity, deployment downtime, regional latency, build dependencies, automatic pipeline, production debugging, restart policy
+6. **Error Handling & Monitoring**: Exception propagation, traceback exposure, user-friendly messaging, environment distinction, correlation IDs, automatic retry, structured logging, error aggregation, status tracking
 
-### Resource Management Challenges
-5. **Memory Constraints**: Proactive GC + malloc_trim keeps service running under 2GB on Railway
-6. **Connection Pooling**: Optimized PostgreSQL pools prevent connection exhaustion
-7. **Cache Management**: Time-based expiration with bulk loading cache prevents memory leaks
 
-### AI Workflow Challenges
-8. **Complex Orchestration**: LangGraph 22-node StateGraph with parallel retrieval and reflection
-9. **Context Management**: 4-point message summarization prevents token overflow in 50+ turn conversations
-10. **Model Cost**: Strategic model selection (GPT-4o vs mini) reduces costs by 60%
+### Data Storage & Persistence (4 features)
+2. **Data Services & Storage**: Multi-source integration, dual collection, normalization, schema evolution, bulk operations, text extraction, environment handling, query safety, data versioning
+3. **Checkpointing System**: State size, recovery reliability, connection pool, schema migration, performance, configuration, global state, cleanup, pool testing, integrity
+4. **ChromaDB Cloud Vector Database**: Cloud/local flexibility, semantic limitations, cross-lingual search, missing collections, memory leaks, vector performance, credential management, local development, migration, embedding consistency
+5. **Turso SQLite Edge Database**: SQLite scalability, global latency, LLM integration, dev/prod parity, migration, query security, connection reliability, cost optimization, schema evolution, observability
 
-### Data Access Challenges
-11. **Semantic Search**: Hybrid ChromaDB search combines semantic + keyword for 35% better accuracy
-12. **Cross-Lingual Retrieval**: Translation enables Czech queries on English documentation
-13. **State Persistence**: PostgreSQL checkpointing enables resume-on-failure
+### External Integrations & Services (3 features)
+6. **FastMCP SQLite Server**: Standalone MCP server, dual database backends, streamable-http transport, FastMCP Cloud deployment
+7. **CZSU API Data Ingestion**: JSON-stat complexity, API reliability, malformed JSON, progress visibility, partial failures, large responses, rate compliance, debug info, metadata extraction, incremental refresh
+8. **LlamaParse PDF Processing**: Table extraction, multi-column layout, Czech diacritics, table format for LLMs, progress visibility, cost management, semantic chunking, error recovery, alternative fallback, retrieval integration
 
-### Integration Challenges
-14. **MCP Remote Tools**: Dual-mode architecture provides resilience with cloud + local fallback
-15. **Multi-Service Coordination**: Orchestrates Azure OpenAI, Translator, Cohere, ChromaDB, PostgreSQL, SQLite
+### Operational & Reliability Features (5 features)
+9. **Conversation Thread Management**: Thread pagination, bulk loading optimization, ownership security, cache invalidation
+10. **Execution Cancellation System**: Real-time cancellation, multi-user isolation, graceful cleanup
+11. **Retry Mechanisms**: SSL recovery, prepared statement management, exponential backoff
+12. **Summarization**: Context window limits, information preservation, cost efficiency
+13. **Debug and Monitoring Endpoints**: Debug visibility, health monitoring, runtime configuration
 
-### Conversation Management Challenges
-16. **Thread Pagination**: SQL-level pagination with <50ms response time for 1000+ threads
-17. **Bulk Loading**: Parallel processing with semaphore limiting (10x speedup: 30s vs 5min for 100 threads)
-18. **Ownership Security**: Database-level verification prevents cross-user data leakage
-19. **Cache Invalidation**: 5-minute TTL with 95% cache hit rate, manual clearing for testing
+### Challenge Breakdown by Category
 
-### Execution Control Challenges
-20. **Real-Time Cancellation**: Thread-safe registry with <2 second cancellation response
-21. **Multi-User Isolation**: Per-execution tracking prevents cross-user interference
-22. **Graceful Cleanup**: Exception-based cancellation ensures no resource leaks
+#### Core Backend Challenges (Features 1-6)
+1. **API Architecture**: Concurrent handling, long operations, fallback, serialization, documentation, compression
+2. **Authentication**: Stateless JWT, token security, multi-tenant isolation, debugging, header parsing, performance
+3. **Rate Limiting**: User experience balance, burst vs sustained, distributed limiting, memory cleanup, fairness, wait calculation, cost control
+4. **Memory Management**: Fragmentation, leaks, AI footprint, payload spikes, observability, platform-specific, hard limits, monitoring overhead
+5. **LangGraph Workflow**: State management, token overflow, speed-accuracy balance, infinite loops, missing data, parallel coordination, isolation, debugging, failure handling, resource leaks
 
-### Reliability Challenges
-23. **SSL Connection Recovery**: Automatic retry with fresh pool achieves 99.9% success rate
-24. **Prepared Statement Management**: Cache clearing and pool recreation eliminates overflow errors
-25. **Exponential Backoff**: Smart retry delays prevent connection storms during outages
+#### Data Storage Challenges (Features 2-5)
+2. **Data Services**: Multi-source integration, dual collection, normalization, schema evolution, bulk operations, text extraction, environment handling, query safety, data versioning
+3. **Checkpointing**: State size, recovery reliability, connection pool, schema migration, performance, configuration, global state, cleanup, pool testing, integrity
+4. **ChromaDB Cloud**: Cloud/local flexibility, semantic limitations, cross-lingual search, missing collections, memory leaks, vector performance, credential management, local development, migration, embedding consistency
+5. **Turso Edge Database**: SQLite scalability, global latency, LLM integration, dev/prod parity, migration, query security, connection reliability, cost optimization, schema evolution, observability
 
-### Observability Challenges
-26. **Debug Visibility**: Comprehensive debug endpoints enable remote troubleshooting without SSH
-27. **Health Monitoring**: Zero-dependency health check prevents unnecessary restarts
-28. **Runtime Configuration**: Dynamic env var adjustment enables A/B testing without redeployment
+#### Integration & Data Ingestion Challenges (Features 6-8)
+6. **MCP Integration**: Local execution, remote resilience, tool schema, async client, execution timeout, graceful degradation, platform compatibility, tool discovery, parameter validation, retry
+7. **CZSU API**: JSON-stat complexity, API reliability, malformed JSON, progress visibility, partial failures, large responses, rate compliance, debug info, metadata extraction, incremental refresh
+8. **LlamaParse PDF**: Table extraction, multi-column layout, Czech diacritics, table format for LLMs, progress visibility, cost management, semantic chunking, error recovery, alternative fallback, retrieval integration
 
-### Token Management Challenges
-29. **Context Window Limits**: Strategic 4-point summarization supports unlimited conversation length
-30. **Information Preservation**: 95% key fact retention in summaries (measured via human evaluation)
-31. **Cost Efficiency**: GPT-4o-mini for summarization keeps costs <5% of total LLM budget
+#### Operational & Monitoring Challenges (Features 9-13)
+9. **Conversation Management**: Thread pagination, bulk loading optimization, ownership security, cache invalidation
+10. **Execution Cancellation**: Real-time cancellation, multi-user isolation, graceful cleanup
+11. **Retry Mechanisms**: SSL recovery, prepared statement management, exponential backoff
+12. **Summarization**: Context window limits, information preservation, cost efficiency
+13. **Debug Endpoints**: Debug visibility, health monitoring, runtime configuration
 
 ---
+
+All features are battle-tested in production, serving real users analyzing Czech Statistical Office data with complex multi-step AI workflows on Railway.app infrastructure.
 
 
 ---
