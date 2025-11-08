@@ -215,13 +215,77 @@ async def lifespan(app: FastAPI):
 # Create the FastAPI application
 app = FastAPI(
     title="CZSU Multi-Agent Text-to-SQL API",
-    description="API for CZSU Multi-Agent Text-to-SQL application",
+    description="""Multi-agent system for converting natural language queries to SQL and retrieving data from the Czech Statistical Office (CZSU) database.
+    
+## Features
+- 🤖 AI-powered natural language to SQL conversion
+- 💬 Multi-threaded conversation management
+- 📊 Statistical data catalog browsing
+- 👍 User feedback and sentiment tracking
+- 🔍 Query execution and result retrieval
+
+## Authentication
+All endpoints (except `/health` and `/docs`) require Bearer token authentication.
+    """,
     version="1.0.0",
     lifespan=lifespan,
+    contact={
+        "name": "API Support",
+        "email": "support@example.com",
+    },
+    license_info={
+        "name": "MIT",
+    },
+    servers=[
+        {"url": "http://localhost:8000", "description": "Development server"},
+        {
+            "url": "https://www.multiagent-texttosql-prototype.online/api",
+            "description": "Production server",
+        },
+    ],
     responses={
-        200: {"model": dict, "description": "Success"},
-        422: {"model": dict, "description": "Validation Error"},
-        500: {"model": dict, "description": "Internal Server Error"},
+        401: {
+            "description": "Unauthorized - Invalid or missing authentication token",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "User email not found in token"}
+                }
+            },
+        },
+        422: {
+            "description": "Validation Error - Invalid request parameters",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Validation error",
+                        "errors": [
+                            {
+                                "loc": ["body", "prompt"],
+                                "msg": "field required",
+                                "type": "value_error.missing",
+                            }
+                        ],
+                    }
+                }
+            },
+        },
+        429: {
+            "description": "Rate Limit Exceeded - Too many requests",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "Rate limit exceeded. Please wait 5.0s before retrying.",
+                        "retry_after": 5,
+                    }
+                }
+            },
+        },
+        500: {
+            "description": "Internal Server Error",
+            "content": {
+                "application/json": {"example": {"detail": "Internal server error"}}
+            },
+        },
     },
 )
 
@@ -414,16 +478,16 @@ async def general_exception_handler(request: Request, exc: Exception):
 # Register all route routers
 print__memory_monitoring("[ROUTES] Registering route routers...")
 
-app.include_router(root_router, tags=["root"])
-app.include_router(health_router, tags=["health"])
-app.include_router(catalog_router, tags=["catalog"])
-app.include_router(analysis_router, tags=["analysis"])
-app.include_router(feedback_router, tags=["feedback"])
-app.include_router(chat_router, tags=["chat"])
-app.include_router(messages_router, tags=["messages"])
-app.include_router(bulk_router, tags=["bulk"])
-app.include_router(debug_router, tags=["debug"])
-app.include_router(misc_router, tags=["misc"])
-app.include_router(stop_router, tags=["execution"])
+app.include_router(root_router, tags=["Root"])
+app.include_router(health_router, tags=["Health & Monitoring"])
+app.include_router(catalog_router, tags=["Data Catalog"])
+app.include_router(analysis_router, tags=["Query Analysis"], prefix="/api")
+app.include_router(feedback_router, tags=["Feedback & Sentiment"], prefix="/api")
+app.include_router(chat_router, tags=["Chat & Threads"], prefix="/api")
+app.include_router(messages_router, tags=["Messages"], prefix="/api")
+app.include_router(bulk_router, tags=["Bulk Operations"], prefix="/api")
+app.include_router(debug_router, tags=["Debug & Admin"], prefix="/api")
+app.include_router(misc_router, tags=["Utilities"], prefix="/api")
+app.include_router(stop_router, tags=["Execution Control"], prefix="/api")
 
 print__memory_monitoring("[SUCCESS] All route routers registered successfully")

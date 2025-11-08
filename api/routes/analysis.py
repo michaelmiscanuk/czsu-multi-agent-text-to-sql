@@ -189,7 +189,38 @@ async def get_thread_metadata_from_single_thread_endpoint(
         }
 
 
-@router.post("/analyze")
+@router.post(
+    "/analyze",
+    summary="Analyze natural language query",
+    description="""
+    **Convert a natural language query to SQL and execute it against the CZSU database.**
+    
+    This endpoint uses a multi-agent system to:
+    1. Parse the user's natural language query
+    2. Identify relevant CZSU datasets
+    3. Generate appropriate SQL queries
+    4. Execute queries and return results
+    5. Format a natural language answer
+    
+    **Rate Limiting:** Subject to per-IP rate limits. See 429 responses for retry information.
+    
+    **Concurrency:** Limited to {MAX_CONCURRENT_ANALYSES} concurrent requests to prevent resource exhaustion.
+    """,
+    response_description="Streaming response with query results and metadata",
+    responses={
+        200: {
+            "description": "Successful analysis with streaming response",
+            "content": {
+                "text/event-stream": {
+                    "example": "data: {'status': 'processing', 'message': 'Analyzing query...'}\n\n"
+                }
+            },
+        },
+        401: {"description": "Authentication failed - Invalid or missing token"},
+        429: {"description": "Rate limit exceeded - Too many requests"},
+        500: {"description": "Internal error during query processing"},
+    },
+)
 async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     """Analyze request with simplified memory monitoring."""
 

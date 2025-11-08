@@ -26,11 +26,50 @@ router = APIRouter()
 print__catalog_debug("Catalog router initialized successfully")
 
 
-@router.get("/catalog")
+@router.get(
+    "/catalog",
+    summary="Search CZSU data catalog",
+    description="""
+    **Browse and search the CZSU (Czech Statistical Office) data catalog.**
+    
+    Returns a paginated list of available statistical datasets with descriptions.
+    Use the `q` parameter to filter by selection code or description text.
+    
+    **Examples:**
+    - `/catalog?page=1&page_size=20` - Get first 20 datasets
+    - `/catalog?q=population` - Search for population-related datasets
+    - `/catalog?q=2023&page=2` - Search for 2023 data, page 2
+    """,
+    response_description="Paginated catalog results with selection codes and descriptions",
+    responses={
+        200: {
+            "description": "Successfully retrieved catalog data",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "results": [
+                            {
+                                "selection_code": "POP2020",
+                                "extended_description": "Population statistics for 2020",
+                            }
+                        ],
+                        "total": 150,
+                        "page": 1,
+                        "page_size": 10,
+                    }
+                }
+            },
+        }
+    },
+)
 def get_catalog(
-    page: int = Query(1, ge=1),
-    q: Optional[str] = None,
-    page_size: int = Query(10, ge=1, le=10000),
+    page: int = Query(1, ge=1, description="Page number (1-indexed)"),
+    q: Optional[str] = Query(
+        None, description="Search query to filter by selection code or description"
+    ),
+    page_size: int = Query(
+        10, ge=1, le=10000, description="Number of results per page"
+    ),
     user=Depends(get_current_user),
 ):
     print__catalog_debug(

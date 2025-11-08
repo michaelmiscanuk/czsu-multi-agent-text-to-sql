@@ -447,7 +447,25 @@ async def get_thread_sentiments(thread_id: str, user=Depends(get_current_user)):
         ) from e
 
 
-@router.get("/chat-threads")
+@router.get(
+    "/chat-threads",
+    summary="Get user's chat threads",
+    description="""
+    **Retrieve a paginated list of chat threads for the authenticated user.**
+    
+    Threads are ordered by most recent activity first. Each thread includes:
+    - Thread ID for referencing in other endpoints
+    - Latest timestamp of activity
+    - Number of query runs in the thread
+    - Title derived from the first query
+    - Full first prompt for context
+    
+    **Pagination:** Use `page` and `limit` parameters to control results.
+    """,
+    response_model=PaginatedChatThreadsResponse,
+    response_description="Paginated list of chat threads with metadata",
+    responses={200: {"description": "Successfully retrieved chat threads"}},
+)
 async def get_chat_threads(
     page: int = Query(1, ge=1, description="Page number (1-indexed)"),
     limit: int = Query(10, ge=1, le=50, description="Number of threads per page"),

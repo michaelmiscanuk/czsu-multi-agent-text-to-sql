@@ -55,7 +55,34 @@ from checkpointer.database.connection import get_direct_connection
 router = APIRouter()
 
 
-@router.post("/feedback")
+@router.post(
+    "/feedback",
+    summary="Submit user feedback",
+    description="""
+    **Submit feedback for a specific query execution run.**
+    
+    Feedback is logged to LangSmith for quality tracking and model improvement.
+    You can provide a binary rating (thumbs up/down) and/or a text comment.
+    
+    **At least one of `feedback` or `comment` must be provided.**
+    """,
+    response_description="Confirmation of feedback submission",
+    responses={
+        200: {
+            "description": "Feedback successfully submitted",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "message": "Feedback submitted successfully",
+                        "run_id": "550e8400-e29b-41d4-a716-446655440000",
+                    }
+                }
+            },
+        },
+        400: {"description": "Invalid request - Missing both feedback and comment"},
+        404: {"description": "Run ID not found in LangSmith"},
+    },
+)
 async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_user)):
     """Submit feedback for a specific run_id to LangSmith."""
 

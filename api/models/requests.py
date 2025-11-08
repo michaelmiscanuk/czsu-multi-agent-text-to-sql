@@ -33,17 +33,44 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class AnalyzeRequest(BaseModel):
+    """Request model for analyzing natural language queries.
+
+    This model represents a user's natural language question that will be
+    converted to SQL and executed against the CZSU database.
+    """
+
     prompt: str = Field(
-        ..., min_length=1, max_length=10000, description="The prompt to analyze"
+        ...,
+        min_length=1,
+        max_length=10000,
+        description="Natural language query to analyze and convert to SQL",
+        examples=["What was the population of Prague in 2020?"],
     )
     thread_id: str = Field(
-        ..., min_length=1, max_length=100, description="The thread ID"
+        ...,
+        min_length=1,
+        max_length=100,
+        description="Unique identifier for the conversation thread",
+        examples=["thread_abc123"],
     )
     run_id: Optional[str] = Field(
         None,
         min_length=1,
-        description="Optional run ID (UUID format) - generated if not provided",
+        description="Optional run ID in UUID format. Auto-generated if not provided.",
+        examples=["550e8400-e29b-41d4-a716-446655440000"],
     )
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "prompt": "Show me unemployment rates for 2023",
+                    "thread_id": "thread_12345",
+                    "run_id": "550e8400-e29b-41d4-a716-446655440000",
+                }
+            ]
+        }
+    }
 
     @field_validator("prompt")
     @classmethod
@@ -75,16 +102,43 @@ class AnalyzeRequest(BaseModel):
 
 
 class FeedbackRequest(BaseModel):
-    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
+    """Request model for submitting user feedback on query results.
+
+    Allows users to rate AI responses and optionally provide text comments.
+    Feedback is tracked in LangSmith for quality monitoring.
+    """
+
+    run_id: str = Field(
+        ...,
+        min_length=1,
+        description="UUID of the analysis run to provide feedback for",
+        examples=["550e8400-e29b-41d4-a716-446655440000"],
+    )
     feedback: Optional[int] = Field(
         None,
         ge=0,
         le=1,
-        description="Feedback score: 1 for thumbs up, 0 for thumbs down",
+        description="Binary feedback score: 1 = positive (👍), 0 = negative (👎)",
+        examples=[1],
     )
     comment: Optional[str] = Field(
-        None, max_length=1000, description="Optional comment"
+        None,
+        max_length=1000,
+        description="Optional text comment explaining the feedback",
+        examples=["The query results were accurate and helpful."],
     )
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "run_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "feedback": 1,
+                    "comment": "Great results!",
+                }
+            ]
+        }
+    }
 
     @field_validator("run_id")
     @classmethod
@@ -109,11 +163,30 @@ class FeedbackRequest(BaseModel):
 
 
 class SentimentRequest(BaseModel):
-    run_id: str = Field(..., min_length=1, description="The run ID (UUID format)")
+    """Request model for tracking user sentiment on query responses.
+
+    Simpler alternative to FeedbackRequest for quick positive/negative tracking.
+    """
+
+    run_id: str = Field(
+        ...,
+        min_length=1,
+        description="UUID of the analysis run to track sentiment for",
+        examples=["550e8400-e29b-41d4-a716-446655440000"],
+    )
     sentiment: Optional[bool] = Field(
         None,
-        description="Sentiment: true for positive, false for negative, null to clear",
+        description="Sentiment value: true = positive, false = negative, null = clear/remove sentiment",
+        examples=[True],
     )
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {"run_id": "550e8400-e29b-41d4-a716-446655440000", "sentiment": True}
+            ]
+        }
+    }
 
     @field_validator("run_id")
     @classmethod
