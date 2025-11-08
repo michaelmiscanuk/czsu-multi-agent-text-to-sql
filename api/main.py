@@ -215,7 +215,7 @@ async def lifespan(app: FastAPI):
 # Create the FastAPI application
 app = FastAPI(
     title="CZSU Multi-Agent Text-to-SQL API",
-    description="""Multi-agent system for converting natural language queries to SQL and retrieving data from the Czech Statistical Office (CZSU) database.
+    description="""Multi-agent system for converting natural language queries to SQL and retrieving data from the Czech Statistical Office (CZSU) and complex PDF containing statistical summaries of Czech Economy using an AI chatbot.
     
 ## Features
 - 🤖 AI-powered natural language to SQL conversion
@@ -231,10 +231,7 @@ All endpoints (except `/health` and `/docs`) require Bearer token authentication
     lifespan=lifespan,
     contact={
         "name": "API Support",
-        "email": "support@example.com",
-    },
-    license_info={
-        "name": "MIT",
+        "email": "michael.miscanuk@google.com",
     },
     servers=[
         {"url": "http://localhost:8000", "description": "Development server"},

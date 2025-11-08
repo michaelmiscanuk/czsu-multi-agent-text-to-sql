@@ -4,7 +4,16 @@ export default function Home() {
       <div className="flex flex-1 flex-col items-center justify-center text-center p-12">
         <h1 className="text-3xl font-bold mb-4">Welcome to the CZSU Data Explorer and Chatbot</h1>
         <p className="text-xl text-gray-700 max-w-2xl">
-          This application contains data from the Czech Statistical Office (CZSU).<br />
+          This application contains data from the{' '}
+          <a 
+            href="https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            Czech Statistical Office (CZSU)
+          </a>
+          .<br />
           You can chat with the data using natural language, explore the catalog, and filter or search tables interactively.
         </p>
         <div className="flex gap-8 mt-8">

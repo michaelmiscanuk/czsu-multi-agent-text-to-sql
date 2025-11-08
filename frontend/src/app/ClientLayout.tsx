@@ -7,7 +7,7 @@ import AuthGuard from "@/components/AuthGuard";
 import { ChatCacheProvider } from '@/contexts/ChatCacheContext';
 
 // Public routes that don't require authentication
-const PUBLIC_ROUTES = ["/", "/contacts", "/login"];
+const PUBLIC_ROUTES = ["/", "/contacts", "/login", "/terms-of-use"];
 
 // Routes that should allow navigation but protect content behind login
 const PROTECTED_ROUTES = ["/chat", "/catalog", "/data"];
@@ -43,7 +43,20 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         </main>
         {!shouldHideFooter && (
           <footer className="w-full text-center text-gray-400 text-sm py-4 mt-4">
-            &copy; {new Date().getFullYear()} Michael Miscanuk. Data from the Czech Statistical Office (CZSU).
+            &copy; {new Date().getFullYear()} Michael Miscanuk. All rights reserved. Data from the{' '}
+            <a 
+              href="https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-gray-600 underline"
+            >
+              Czech Statistical Office (CZSU)
+            </a>
+            .
+            {' | '}
+            <a href="/terms-of-use" className="text-gray-400 hover:text-gray-600 underline">
+              Terms of Use
+            </a>
           </footer>
         )}
       </div>
