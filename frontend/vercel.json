@@ -1,5 +1,4 @@
 {
-  "nodeVersion": "18",
   "rewrites": [
     {
       "source": "/api/analyze",
@@ -69,10 +68,5 @@
       "source": "/api/((?!auth).*)",
       "destination": "https://czsu-multi-agent-backend-production.up.railway.app/$1"
     }
-  ],
-  "functions": {
-    "src/app/docs/page.tsx": {
-      "maxDuration": 10
-    }
-  }
+  ]
 }
