@@ -359,7 +359,7 @@ const DataTableView: React.FC<DataTableViewProps> = ({
           {tableLoading ? (
             <div className="text-center py-8">Loading table...</div>
           ) : columns.length === 0 ? (
-            <div className="text-center py-8">No data found for this table.</div>
+            <div className="text-center py-8">Choose a table.</div>
           ) : (
             <div className="overflow-x-auto rounded shadow border border-gray-200 bg-white">
               <table className="min-w-full table-content-font">
