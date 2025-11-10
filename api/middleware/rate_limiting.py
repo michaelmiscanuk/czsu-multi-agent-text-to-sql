@@ -1,3 +1,5 @@
+"""Rate limiting middleware for FastAPI application."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -59,21 +61,28 @@ async def throttling_middleware(request: Request, call_next):
         if not await wait_for_rate_limit(client_ip):
             # Only reject if we can't wait (wait time too long or max attempts exceeded)
             rate_info = check_rate_limit_with_throttling(client_ip)
+            error_msg = (
+                f"Rate limit exceeded for IP: {client_ip} after waiting. "
+                f"Burst: {rate_info['burst_count']}/{rate_info['burst_limit']}, "
+                f"Window: {rate_info['window_count']}/{rate_info['window_limit']}"
+            )
             log_comprehensive_error(
                 "rate_limit_exceeded_after_wait",
-                Exception(
-                    f"Rate limit exceeded for IP: {client_ip} after waiting. Burst: {rate_info['burst_count']}/{rate_info['burst_limit']}, Window: {rate_info['window_count']}/{rate_info['window_limit']}"
-                ),
+                Exception(error_msg),
                 request,
             )
+            response_content = {
+                "detail": (
+                    f"Rate limit exceeded. Please wait "
+                    f"{rate_info['suggested_wait']:.1f}s before retrying."
+                ),
+                "retry_after": max(rate_info["suggested_wait"], 1),
+                "burst_usage": f"{rate_info['burst_count']}/{rate_info['burst_limit']}",
+                "window_usage": f"{rate_info['window_count']}/{rate_info['window_limit']}",
+            }
             return JSONResponse(
                 status_code=429,
-                content={
-                    "detail": f"Rate limit exceeded. Please wait {rate_info['suggested_wait']:.1f}s before retrying.",
-                    "retry_after": max(rate_info["suggested_wait"], 1),
-                    "burst_usage": f"{rate_info['burst_count']}/{rate_info['burst_limit']}",
-                    "window_usage": f"{rate_info['window_count']}/{rate_info['window_limit']}",
-                },
+                content=response_content,
                 headers={"Retry-After": str(max(int(rate_info["suggested_wait"]), 1))},
             )
 

@@ -1,3 +1,5 @@
+"""API configuration settings and constants."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -40,9 +42,9 @@ INMEMORY_FALLBACK_ENABLED = os.environ.get("InMemorySaver_fallback", "1") == "1"
 # MOVED TO memory.py: GC_MEMORY_THRESHOLD = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))  # 1900MB for 2GB memory allocation
 
 # MEMORY LEAK PREVENTION: Simplified global tracking
-_app_startup_time = None
-_memory_baseline = None  # RSS memory at startup
-_request_count = 0  # Track total requests processed
+_APP_STARTUP_TIME = None
+_MEMORY_BASELINE = None  # RSS memory at startup
+_REQUEST_COUNT = 0  # Track total requests processed
 
 # Tracemalloc-based memory profiler configuration
 # MOVED TO memory.py: MEMORY_PROFILER_ENABLED = os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
@@ -79,4 +81,4 @@ BULK_CACHE_TIMEOUT = 120  # Cache timeout in seconds
 GOOGLE_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
 
 # Global counter for tracking JWT 'kid' missing events to reduce log spam
-_jwt_kid_missing_count = 0
+_JWT_KID_MISSING_COUNT = 0

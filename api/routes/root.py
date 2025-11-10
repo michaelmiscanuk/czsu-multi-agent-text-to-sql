@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+"""Root route for the CZSU multi-agent text-to-SQL API."""
+
 from datetime import datetime
+from fastapi import APIRouter
 
 router = APIRouter()
 

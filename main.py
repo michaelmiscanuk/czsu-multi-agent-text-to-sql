@@ -29,29 +29,26 @@ from typing import List
 
 import psutil
 from dotenv import load_dotenv
-from langchain_core.messages import AIMessage, SystemMessage, HumanMessage
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.messages import HumanMessage
 
 # Load environment variables
 load_dotenv()
 
 from my_agent import create_graph
 from my_agent.utils.nodes import MAX_ITERATIONS
-from my_agent.utils.models import get_azure_llm_gpt_4o_mini
 from checkpointer.error_handling.retry_decorators import (
     retry_on_prepared_statement_error,
     retry_on_ssl_connection_error,
 )
 from checkpointer.checkpointer.factory import get_global_checkpointer
-from my_agent.utils.state import DataAnalysisState
 
-# Robust BASE_DIR logic for project root
+# Robust base_dir logic for project root
 try:
-    BASE_DIR = Path(__file__).resolve().parents[0]
+    base_dir = Path(__file__).resolve().parents[0]
 except NameError:
-    BASE_DIR = Path(os.getcwd()).parents[0]
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
+    base_dir = Path(os.getcwd()).parents[0]
+if str(base_dir) not in sys.path:
+    sys.path.insert(0, str(base_dir))
 
 # Import debug functions from utils
 from api.utils.debug import (
@@ -674,7 +671,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             f"66 - RESULT SIZE: Result object size: {result_size:.1f}KB"
         )
     except:
-        print__memory_debug(f"🔍 MEMORY: Could not determine result size")
+        print__memory_debug("🔍 MEMORY: Could not determine result size")
 
     print__analysis_tracing_debug(
         "68 - FINAL CLEANUP: Starting final cleanup and monitoring"
@@ -707,7 +704,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
                 f"⚠️ MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!"
             )
             print__memory_debug(
-                f"💡 MEMORY: Consider investigating LangGraph nodes for memory leaks"
+                "💡 MEMORY: Consider investigating LangGraph nodes for memory leaks"
             )
             print__analysis_tracing_debug(
                 f"71 - HIGH MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!"

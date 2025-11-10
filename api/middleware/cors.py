@@ -1,3 +1,5 @@
+"""CORS and compression middleware setup for FastAPI application."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os

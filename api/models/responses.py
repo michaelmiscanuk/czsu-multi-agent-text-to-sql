@@ -1,3 +1,5 @@
+"""Response models for the CZSU multi-agent text-to-SQL API."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os

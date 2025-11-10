@@ -1,3 +1,9 @@
+"""FastAPI application for the CZSU multi-agent text-to-SQL system.
+
+This module provides the main FastAPI application with routes for analysis,
+chat, catalog, and other functionality for the Czech Statistical Office data system.
+"""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -35,15 +41,15 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse, ORJSONResponse
+from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Import configuration and globals
 from api.config.settings import (
-    _app_startup_time,
-    _memory_baseline,
-    _request_count,
+    _APP_STARTUP_TIME,
+    _MEMORY_BASELINE,
+    _REQUEST_COUNT,
     throttle_semaphores,
 )
 
@@ -54,7 +60,7 @@ MEMORY_PROFILER_INTERVAL = int(os.environ.get("MEMORY_PROFILER_INTERVAL", "30"))
 MEMORY_PROFILER_TOP_STATS = int(os.environ.get("MEMORY_PROFILER_TOP_STATS", "10"))
 
 # Import authentication
-from api.dependencies.auth import get_current_user
+# from api.dependencies.auth import get_current_user
 
 # Import debug functions
 from api.utils.debug import (
@@ -106,14 +112,14 @@ from api.routes.root import router as root_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    global _app_startup_time, _memory_baseline
-    _app_startup_time = datetime.now()
+    global _APP_STARTUP_TIME, _MEMORY_BASELINE
+    _APP_STARTUP_TIME = datetime.now()
 
     print__startup_debug("🚀 FastAPI application starting up...")
     from api.utils.memory import print__memory_monitoring
 
     print__memory_monitoring(
-        f"Application startup initiated at {_app_startup_time.isoformat()}"
+        f"Application startup initiated at {_APP_STARTUP_TIME.isoformat()}"
     )
     log_memory_usage("app_startup")
 
@@ -129,12 +135,12 @@ async def lifespan(app: FastAPI):
     await initialize_checkpointer()
 
     # Set memory baseline after initialization
-    if _memory_baseline is None:
+    if _MEMORY_BASELINE is None:
         try:
             process = psutil.Process()
-            _memory_baseline = process.memory_info().rss / 1024 / 1024
+            _MEMORY_BASELINE = process.memory_info().rss / 1024 / 1024
             print__memory_monitoring(
-                f"Memory baseline established: {_memory_baseline:.1f}MB RSS"
+                f"Memory baseline established: {_MEMORY_BASELINE:.1f}MB RSS"
             )
         except:
             pass
@@ -171,7 +177,7 @@ async def lifespan(app: FastAPI):
     # Shutdown
     print__startup_debug("🛑 FastAPI application shutting down...")
     print__memory_monitoring(
-        f"Application ran for {datetime.now() - _app_startup_time}"
+        f"Application ran for {datetime.now() - _APP_STARTUP_TIME}"
     )
 
     if MEMORY_PROFILER_ENABLED:
@@ -191,13 +197,13 @@ async def lifespan(app: FastAPI):
         )
 
     # Log final memory statistics
-    if _memory_baseline:
+    if _MEMORY_BASELINE:
         try:
             process = psutil.Process()
             final_memory = process.memory_info().rss / 1024 / 1024
-            total_growth = final_memory - _memory_baseline
+            total_growth = final_memory - _MEMORY_BASELINE
             print__memory_monitoring(
-                f"Final memory stats: Started={_memory_baseline:.1f}MB, "
+                f"Final memory stats: Started={_MEMORY_BASELINE:.1f}MB, "
                 f"Final={final_memory:.1f}MB, Growth={total_growth:.1f}MB"
             )
             if (
@@ -350,9 +356,9 @@ async def throttling_middleware(request: Request, call_next):
 @app.middleware("http")
 async def simplified_memory_monitoring_middleware(request: Request, call_next):
     """Simplified memory monitoring middleware."""
-    global _request_count
+    global _REQUEST_COUNT
 
-    _request_count += 1
+    _REQUEST_COUNT += 1
 
     # Only check memory for heavy operations
     request_path = request.url.path
