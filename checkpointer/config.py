@@ -22,8 +22,8 @@ from api.utils.debug import print__checkpointers_debug
 # - check_postgres_env_vars() function
 DEFAULT_MAX_RETRIES = 2  # Standard retry attempts for most operations
 CHECKPOINTER_CREATION_MAX_RETRIES = 2  # Retry attempts for checkpointer creation
-CONNECT_TIMEOUT = 90  # Initial connection timeout for cloud databases - increased for concurrent operations
-TCP_USER_TIMEOUT = 240000  # TCP-level timeout (240 seconds in milliseconds) - increased for concurrent operations
+CONNECT_TIMEOUT = 90  # Initial connection timeout for cloud DBs - concurrent ops
+TCP_USER_TIMEOUT = 240000  # TCP timeout (240s ms) - concurrent ops
 KEEPALIVES_IDLE = (
     300  # 5 minutes before first keepalive - reduced for better connection health
 )
@@ -33,7 +33,7 @@ DEFAULT_POOL_MIN_SIZE = 5  # Increased minimum pool size for higher concurrency
 DEFAULT_POOL_MAX_SIZE = (
     25  # Increased maximum pool size to support more concurrent connections
 )
-DEFAULT_POOL_TIMEOUT = 180  # Pool connection timeout - significantly increased for concurrent testing (2 minutes)
+DEFAULT_POOL_TIMEOUT = 180  # Pool timeout - increased for concurrent testing (2 min)
 DEFAULT_MAX_IDLE = (
     600  # 10 minutes idle timeout - increased for long-running operations
 )
@@ -50,9 +50,9 @@ DEBUG_CHECKPOINT_LOG_INTERVAL = 5  # Log every Nth checkpoint
 T = TypeVar("T")
 
 try:
-    BASE_DIR = Path(__file__).resolve().parents[1]
+    base_dir = Path(__file__).resolve().parents[1]
 except NameError:
-    BASE_DIR = Path(os.getcwd()).parents[0]
+    base_dir = Path(os.getcwd()).parents[0]
 
 
 def get_db_config():
@@ -94,7 +94,8 @@ def get_db_config():
         "dbname": os.environ.get("dbname"),
     }
     print__checkpointers_debug(
-        f"213 - DB CONFIG RESULT: Configuration retrieved - host: {config['host']}, port: {config['port']}, dbname: {config['dbname']}, user: {config['user']}"
+        f"213 - DB CONFIG RESULT: Configuration retrieved - host: {config['host']}, "
+        f"port: {config['port']}, dbname: {config['dbname']}, user: {config['user']}"
     )
     return config
 
@@ -143,8 +144,8 @@ def check_postgres_env_vars():
             f"219 - ENV VARS MISSING: Missing required environment variables: {missing_vars}"
         )
         return False
-    else:
-        print__checkpointers_debug(
-            "220 - ENV VARS COMPLETE: All required PostgreSQL environment variables are set"
-        )
-        return True
+
+    print__checkpointers_debug(
+        "220 - ENV VARS COMPLETE: All required PostgreSQL environment variables are set"
+    )
+    return True
