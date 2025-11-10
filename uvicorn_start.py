@@ -4,7 +4,6 @@ Uvicorn start script - uses modular FastAPI app from api.main
 """
 
 from api.main import app
-import os
 import sys
 
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports

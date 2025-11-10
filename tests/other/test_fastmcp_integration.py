@@ -81,10 +81,10 @@ async def test_mcp_connection():
         print("✅ All tests passed!")
         print("=" * 60)
 
-    except Exception as e:
+    except Exception as exc:
         print()
         print("=" * 60)
-        print(f"❌ Test failed: {str(e)}")
+        print(f"❌ Test failed: {str(exc)}")
         print("=" * 60)
         print()
         print("Make sure:")

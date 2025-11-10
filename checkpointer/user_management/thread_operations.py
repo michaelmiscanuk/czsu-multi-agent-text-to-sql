@@ -3,6 +3,7 @@
 This module handles user thread operations and management
 for the PostgreSQL checkpointer system.
 """
+
 from __future__ import annotations
 
 import traceback
@@ -11,8 +12,14 @@ from typing import List, Dict, Any
 
 from api.utils.debug import print__checkpointers_debug
 from checkpointer.database.connection import get_direct_connection
-from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error
-from checkpointer.config import DEFAULT_MAX_RETRIES, THREAD_TITLE_MAX_LENGTH, THREAD_TITLE_SUFFIX_LENGTH
+from checkpointer.error_handling.retry_decorators import (
+    retry_on_prepared_statement_error,
+)
+from checkpointer.config import (
+    DEFAULT_MAX_RETRIES,
+    THREAD_TITLE_MAX_LENGTH,
+    THREAD_TITLE_SUFFIX_LENGTH,
+)
 
 
 # This file will contain:
@@ -58,9 +65,9 @@ async def create_thread_run_entry(
             f"289 - CREATE THREAD ENTRY SUCCESS: Thread run entry created successfully: {run_id}"
         )
         return run_id
-    except Exception as e:
+    except Exception as exc:
         print__checkpointers_debug(
-            f"290 - CREATE THREAD ENTRY ERROR: Failed to create thread run entry: {e}"
+            f"290 - CREATE THREAD ENTRY ERROR: Failed to create thread run entry: {exc}"
         )
         # Return the run_id even if database storage fails
         if not run_id:
@@ -136,8 +143,10 @@ async def get_user_chat_threads(
                 )
                 return threads
 
-    except Exception as e:
-        print__checkpointers_debug(f"Failed to get chat threads for user {email}: {e}")
+    except Exception as exc:
+        print__checkpointers_debug(
+            f"Failed to get chat threads for user {email}: {exc}"
+        )
         # Return empty list instead of raising exception to prevent API crashes
         print__checkpointers_debug("Returning empty threads list due to error")
         return []
@@ -163,9 +172,9 @@ async def get_user_chat_threads_count(email: str) -> int:
 
             return total_count or 0
 
-    except Exception as e:
+    except Exception as exc:
         print__checkpointers_debug(
-            f"Failed to get chat threads count for user {email}: {e}"
+            f"Failed to get chat threads count for user {email}: {exc}"
         )
         # Return 0 instead of raising exception to prevent API crashes
         print__checkpointers_debug("Returning 0 thread count due to error")
@@ -225,9 +234,9 @@ async def delete_user_thread_entries(email: str, thread_id: str) -> Dict[str, An
                 "user_email": email,
             }
 
-    except Exception as e:
+    except Exception as exc:
         print__checkpointers_debug(
-            f"Failed to delete thread entries for user {email}, thread {thread_id}: {e}"
+            f"Failed to delete thread entries for user {email}, thread {thread_id}: {exc}"
         )
         print__checkpointers_debug(f"Full traceback: {traceback.format_exc()}")
         raise

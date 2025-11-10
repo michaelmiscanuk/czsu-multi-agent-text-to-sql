@@ -22,8 +22,10 @@ def extract_script_suffix(script_path: Optional[str] = None) -> str:
 
     The suffix is the part after the double underscore (__) in the script name.
     For example:
-    - pdf_to_chromadb__llamaparse_MarkdownElementNodeParser.py -> llamaparse_MarkdownElementNodeParser
-    - pdf_to_chromadb__azure_doc_intelligence.py -> azure_doc_intelligence
+    - pdf_to_chromadb__llamaparse_MarkdownElementNodeParser.py
+      -> llamaparse_MarkdownElementNodeParser
+    - pdf_to_chromadb__azure_doc_intelligence.py
+      -> azure_doc_intelligence
     - pdf_to_chromadb__pymupdf.py -> pymupdf
 
     Args:
@@ -109,8 +111,8 @@ def save_parsed_text_to_file(
     output_path = output_dir / output_filename
 
     try:
-        with open(output_path, "w", encoding="utf-8") as f:
-            f.write(text)
+        with open(output_path, "w", encoding="utf-8") as file_handle:
+            file_handle.write(text)
 
         print(f"✅ Parsed text saved to: {output_path}")
         print(f"📊 Content length: {len(text):,} characters")
@@ -128,9 +130,9 @@ def save_parsed_text_to_file(
 
         return output_path
 
-    except Exception as e:
-        print(f"❌ Error saving parsed text: {str(e)}")
-        raise IOError(f"Failed to save parsed text to {output_path}: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Error saving parsed text: {str(exc)}")
+        raise IOError(f"Failed to save parsed text to {output_path}: {str(exc)}")
 
 
 def load_parsed_text_from_file(
@@ -185,8 +187,8 @@ def load_parsed_text_from_file(
     input_path = input_dir / input_filename
 
     try:
-        with open(input_path, "r", encoding="utf-8") as f:
-            text = f.read()
+        with open(input_path, "r", encoding="utf-8") as file_handle:
+            text = file_handle.read()
 
         print(f"✅ Loaded parsed text from: {input_path}")
         print(f"📊 Content length: {len(text):,} characters")
@@ -208,8 +210,8 @@ def load_parsed_text_from_file(
         error_msg = f"Parsed text file not found: {input_path}"
         print(f"❌ {error_msg}")
         raise FileNotFoundError(error_msg)
-    except Exception as e:
-        error_msg = f"Error loading parsed text from {input_path}: {str(e)}"
+    except Exception as exc:
+        error_msg = f"Error loading parsed text from {input_path}: {str(exc)}"
         print(f"❌ {error_msg}")
         raise IOError(error_msg)
 
@@ -225,12 +227,12 @@ def save_parsed_text_to_file_legacy(text: str, file_path: str) -> None:
         file_path: Full path where to save the text file
     """
     try:
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(text)
+        with open(file_path, "w", encoding="utf-8") as file_handle:
+            file_handle.write(text)
         print(f"✅ Parsed text saved to: {file_path}")
         print(f"📊 Content length: {len(text):,} characters")
-    except Exception as e:
-        print(f"❌ Error saving parsed text: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Error saving parsed text: {str(exc)}")
         raise
 
 
@@ -246,13 +248,13 @@ def load_parsed_text_from_file_legacy(file_path: str) -> str:
         The parsed text content
     """
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            text = f.read()
+        with open(file_path, "r", encoding="utf-8") as file_handle:
+            text = file_handle.read()
         print(f"✅ Loaded parsed text from: {file_path}")
         return text
     except FileNotFoundError:
         print(f"❌ Parsed text file not found: {file_path}")
         raise
-    except Exception as e:
-        print(f"❌ Error loading parsed text: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Error loading parsed text: {str(exc)}")
         raise

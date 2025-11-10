@@ -244,8 +244,8 @@ async def check_server_connectivity(
             else:
                 print(f"❌ Server responded with status {response.status_code}")
                 return False
-    except Exception as e:
-        print(f"❌ Cannot connect to server: {e}")
+    except Exception as exc:
+        print(f"❌ Cannot connect to server: {exc}")
         return False
 
 
@@ -408,12 +408,12 @@ async def make_request_with_traceback_capture(
                 "server_tracebacks": log_capture.get_captured_tracebacks(),
                 "success": True,
             }
-        except Exception as e:
+        except Exception as exc:
             return {
                 "response": None,
                 "server_logs": log_capture.get_captured_logs(),
                 "server_tracebacks": log_capture.get_captured_tracebacks(),
-                "client_exception": e,
+                "client_exception": exc,
                 "success": False,
             }
 
@@ -431,12 +431,12 @@ def make_request_with_traceback_capture_sync(
                 "server_tracebacks": log_capture.get_captured_tracebacks(),
                 "success": True,
             }
-        except Exception as e:
+        except Exception as exc:
             return {
                 "response": None,
                 "server_logs": log_capture.get_captured_logs(),
                 "server_tracebacks": log_capture.get_captured_tracebacks(),
-                "client_exception": e,
+                "client_exception": exc,
                 "success": False,
             }
 
@@ -575,11 +575,11 @@ def _clean_traceback(traceback_text: str) -> str:
 
 def _write_report_to_file(file_path: Path, content_lines: List[str], report_type: str):
     try:
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write("\n".join(content_lines))
+        with open(file_path, "w", encoding="utf-8") as file_handle:
+            file_handle.write("\n".join(content_lines))
         return True
-    except Exception as e:
-        print(f"❌ Failed to save {report_type.lower()} report: {e}")
+    except Exception as exc:
+        print(f"❌ Failed to save {report_type.lower()} report: {exc}")
         return False
 
 

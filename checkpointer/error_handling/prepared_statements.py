@@ -3,6 +3,7 @@
 This module handles prepared statement conflicts and cleanup operations
 that can occur in PostgreSQL connections with connection pooling.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -156,10 +157,10 @@ async def clear_prepared_statements():
                                 print__checkpointers_debug(
                                     f"228 - STATEMENT CLEARED {i}: Successfully cleared prepared statement: {stmt_name}"
                                 )
-                        except Exception as e:
+                        except Exception as exc:
                             if i <= 3:
                                 print__checkpointers_debug(
-                                    f"229 - STATEMENT ERROR {i}: Could not clear prepared statement {stmt_name}: {e}"
+                                    f"229 - STATEMENT ERROR {i}: Could not clear prepared statement {stmt_name}: {exc}"
                                 )
 
                     if len(prepared_statements) > 3:
@@ -175,8 +176,8 @@ async def clear_prepared_statements():
                         "231 - NO STATEMENTS: No prepared statements to clear"
                     )
 
-    except Exception as e:
+    except Exception as exc:
         print__checkpointers_debug(
-            f"232 - CLEANUP ERROR: Error clearing prepared statements (non-fatal): {e}"
+            f"232 - CLEANUP ERROR: Error clearing prepared statements (non-fatal): {exc}"
         )
         # Don't raise - this is a cleanup operation and shouldn't block checkpointer creation

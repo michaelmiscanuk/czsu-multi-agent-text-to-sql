@@ -1,8 +1,8 @@
+"""Unzip utility script for CZSU multi-agent project."""
+
 import os
 import shutil
-import sys
 import zipfile
-import requests
 import gdown
 from pathlib import Path
 
@@ -44,12 +44,11 @@ def download_from_gdrive(gdrive_url: str, destination_path: Path) -> bool:
         if destination_path.exists():
             print("✅ Downloaded successfully")
             return True
-        else:
-            print("❌ Download failed")
-            return False
+        print("❌ Download failed")
+        return False
 
-    except Exception as e:
-        print(f"❌ Download failed: {e}")
+    except Exception as exc:
+        print(f"❌ Download failed: {exc}")
         return False
 
 
@@ -105,11 +104,12 @@ def unzip_path(path_to_unzip: Path):
         with zipfile.ZipFile(path_to_unzip, "r") as zipf:
             zipf.extractall(target_path.parent)
         print(f"Successfully unzipped: {path_to_unzip}")
-    except Exception as e:
-        print(f"Error extracting {path_to_unzip}: {e}")
+    except Exception as exc:
+        print(f"Error extracting {path_to_unzip}: {exc}")
 
 
 def main():
+    """Main function to download and unzip files."""
     print(f"Base directory: {BASE_DIR}")
 
     # Step 1: Download from Google Drive
@@ -119,7 +119,7 @@ def main():
 
     # success = download_from_gdrive(gdrive_url, destination_path)
     # if not success:
-    #     print("❌ Download failed. Cannot proceed with unzipping.")
+    #     print("❌ Download failed. Cannot proceed.")
     #     return
 
     # Step 2: Unzip all files

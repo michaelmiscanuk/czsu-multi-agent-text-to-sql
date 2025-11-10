@@ -564,11 +564,13 @@ async def make_debug_request(
                     expected_status=expected_status,
                 )
 
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
+        error_message = (
+            str(exc) if str(exc).strip() else f"{type(exc).__name__}: {repr(exc)}"
+        )
         if not error_message or error_message.isspace():
-            error_message = f"Empty error from {type(e).__name__}"
+            error_message = f"Empty error from {type(exc).__name__}"
 
         print(f"❌ Test {test_id} - Error: {error_message}")
         error_obj = Exception(error_message)
@@ -815,8 +817,8 @@ async def main():
         print(f"\n🏁 OVERALL RESULT: {'✅ PASSED' if test_passed else '❌ FAILED'}")
         return test_passed
 
-    except Exception as e:
-        print(f"❌ Test execution failed: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Test execution failed: {str(exc)}")
         test_context = {
             "Server URL": SERVER_BASE_URL,
             "Request Timeout": f"{REQUEST_TIMEOUT}s",
@@ -825,7 +827,7 @@ async def main():
             "Error During": "Test execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         return False
 
@@ -839,8 +841,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n⛔ Test interrupted by user")
         sys.exit(1)
-    except Exception as e:
-        print(f"\n💥 Fatal error: {str(e)}")
+    except Exception as exc:
+        print(f"\n💥 Fatal error: {str(exc)}")
         test_context = {
             "Server URL": SERVER_BASE_URL,
             "Request Timeout": f"{REQUEST_TIMEOUT}s",
@@ -849,6 +851,6 @@ if __name__ == "__main__":
             "Error During": "Direct script execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         sys.exit(1)

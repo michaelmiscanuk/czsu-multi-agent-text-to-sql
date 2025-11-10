@@ -105,8 +105,8 @@ def test_client_creation():
 
         return True
 
-    except Exception as e:
-        print(f"❌ Error creating client: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Error creating client: {str(exc)}")
         import traceback
 
         traceback.print_exc()
@@ -163,8 +163,8 @@ def test_collection_access():
 
         return True
 
-    except Exception as e:
-        print(f"❌ Error accessing collection: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Error accessing collection: {str(exc)}")
         import traceback
 
         traceback.print_exc()

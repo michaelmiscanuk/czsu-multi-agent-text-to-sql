@@ -81,15 +81,10 @@ from api.utils.debug import (
 # This table contains information about wages and salaries across different industries. It includes data on average wages categorized by economic sectors or industries.
 
 # Available columns:
-
 # industry (odvětví): distinct values include manufacturing, IT, construction, healthcare, education, etc.
-
 # average_wage (průměrná mzda): numerical values representing monthly or annual averages
-
 # year: distinct values may include 2020, 2021, 2022, etc.
-
 # measurement_unit: e.g., CZK, EUR, USD per month/year
-
 # The table allows comparison of wage levels across different economic sectors.
 # """
 DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"

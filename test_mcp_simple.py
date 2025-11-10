@@ -76,8 +76,8 @@ async def test_cloud_mcp():
         print("\n✅ CLOUD MCP: PASS")
         return True
 
-    except (ImportError, AttributeError, RuntimeError, ConnectionError) as e:
-        print(f"\n❌ CLOUD MCP: FAIL - {e}")
+    except (ImportError, AttributeError, RuntimeError, ConnectionError) as exc:
+        print(f"\n❌ CLOUD MCP: FAIL - {exc}")
         return False
 
 
@@ -123,8 +123,8 @@ async def test_local_sqlite():
         print("\n✅ LOCAL SQLITE: PASS")
         return True
 
-    except (ImportError, AttributeError, RuntimeError, ConnectionError) as e:
-        print(f"\n❌ LOCAL SQLITE: FAIL - {e}")
+    except (ImportError, AttributeError, RuntimeError, ConnectionError) as exc:
+        print(f"\n❌ LOCAL SQLITE: FAIL - {exc}")
         return False
 
 

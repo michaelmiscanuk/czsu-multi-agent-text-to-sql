@@ -3,13 +3,16 @@
 This module handles user feedback and sentiment tracking
 for the PostgreSQL checkpointer system.
 """
+
 from __future__ import annotations
 
 from typing import Dict
 
 from api.utils.debug import print__checkpointers_debug
 from checkpointer.database.connection import get_direct_connection
-from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error
+from checkpointer.error_handling.retry_decorators import (
+    retry_on_prepared_statement_error,
+)
 from checkpointer.config import DEFAULT_MAX_RETRIES
 
 
@@ -34,8 +37,8 @@ async def update_thread_run_sentiment(run_id: str, sentiment: bool) -> bool:
                 updated = cur.rowcount
         print__checkpointers_debug(f"Updated sentiment for {updated} entries")
         return int(updated) > 0
-    except Exception as e:
-        print__checkpointers_debug(f"Failed to update sentiment: {e}")
+    except Exception as exc:
+        print__checkpointers_debug(f"Failed to update sentiment: {exc}")
         return False
 
 
@@ -58,6 +61,6 @@ async def get_thread_run_sentiments(email: str, thread_id: str) -> Dict[str, boo
         sentiments = {row[0]: row[1] for row in rows}
         print__checkpointers_debug(f"Retrieved {len(sentiments)} sentiments")
         return sentiments
-    except Exception as e:
-        print__checkpointers_debug(f"Failed to get sentiments: {e}")
+    except Exception as exc:
+        print__checkpointers_debug(f"Failed to get sentiments: {exc}")
         return {}

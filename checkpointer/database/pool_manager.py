@@ -88,9 +88,9 @@ async def cleanup_all_pools():
                 print__checkpointers_debug(
                     "CLEANUP: Connection pool closed successfully"
                 )
-        except Exception as e:
+        except Exception as exc:
             print__checkpointers_debug(
-                f"CLEANUP ERROR: Error during global checkpointer cleanup: {e}"
+                f"CLEANUP ERROR: Error during global checkpointer cleanup: {exc}"
             )
         finally:
             _GLOBAL_CHECKPOINTER = None
@@ -158,8 +158,10 @@ async def force_close_modern_pools():
 
         print__checkpointers_debug("FORCE CLOSE COMPLETE: Pool force close completed")
 
-    except Exception as e:
-        print__checkpointers_debug(f"FORCE CLOSE ERROR: Error during force close: {e}")
+    except Exception as exc:
+        print__checkpointers_debug(
+            f"FORCE CLOSE ERROR: Error during force close: {exc}"
+        )
         # Don't re-raise - this is a cleanup function
 
 
@@ -208,11 +210,11 @@ async def modern_psycopg_pool():
                 "POOL CONTEXT: Pool will be automatically closed by context manager"
             )
 
-    except ImportError as e:
+    except ImportError as exc:
         print__checkpointers_debug(
-            f"POOL CONTEXT ERROR: psycopg_pool not available: {e}"
+            f"POOL CONTEXT ERROR: psycopg_pool not available: {exc}"
         )
         raise Exception("psycopg_pool is required for connection pool approach")
-    except Exception as e:
-        print__checkpointers_debug(f"POOL CONTEXT ERROR: Failed to create pool: {e}")
+    except Exception as exc:
+        print__checkpointers_debug(f"POOL CONTEXT ERROR: Failed to create pool: {exc}")
         raise

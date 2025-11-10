@@ -186,8 +186,8 @@ async def check_server_connectivity():
                     f"❌ Server responded with status {response.status_code}"
                 )
                 return False
-    except Exception as e:
-        print_test_status(f"❌ Cannot connect to server: {e}")
+    except Exception as exc:
+        print_test_status(f"❌ Cannot connect to server: {exc}")
         print_test_status(f"   Make sure uvicorn is running at {SERVER_BASE_URL}")
         return False
 
@@ -272,9 +272,11 @@ async def test_get_thread_sentiments(
                 response_time,
             )
 
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        results.add_error(f"/chat/{TEST_THREAD_ID}/sentiments", "GET", e, response_time)
+        results.add_error(
+            f"/chat/{TEST_THREAD_ID}/sentiments", "GET", exc, response_time
+        )
 
 
 async def test_get_chat_threads(client: httpx.AsyncClient, results: ChatTestResults):

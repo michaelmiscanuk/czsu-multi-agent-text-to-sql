@@ -1,6 +1,10 @@
+"""SQLite to CSV Export Utility
+
+Exports all tables from a SQLite database into separate CSV files.
+"""
+
 import os
 import sqlite3
-
 import pandas as pd
 
 
@@ -40,16 +44,16 @@ def export_all_sqlite_to_csvs(db_path: str = None, output_folder: str = None) ->
                 df.to_csv(csv_path, sep=";", index=False, encoding="utf-8")
                 print(f"Exported table {table} to {csv_path}")
                 exported_count += 1
-            except Exception as e:
-                print(f"Error exporting table {table}: {str(e)}")
+            except Exception as exc:
+                print(f"Error exporting table {table}: {str(exc)}")
 
         conn.close()
-        print(f"\nExport completed:")
+        print("\nExport completed:")
         print(f"Database: {db_path}")
         print(f"Output folder: {output_folder}")
         print(f"Total tables exported: {exported_count}")
-    except Exception as e:
-        print(f"Error occurred: {str(e)}")
+    except Exception as exc:
+        print(f"Error occurred: {str(exc)}")
 
 
 # Example usage

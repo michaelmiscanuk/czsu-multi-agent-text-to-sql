@@ -71,8 +71,8 @@ async def test_ssl_fixes():
         print("🎉 All SSL fixes validated successfully!")
         return True
 
-    except Exception as e:
-        print(f"❌ SSL fix test failed: {e}")
+    except Exception as exc:
+        print(f"❌ SSL fix test failed: {exc}")
         import traceback
 
         traceback.print_exc()

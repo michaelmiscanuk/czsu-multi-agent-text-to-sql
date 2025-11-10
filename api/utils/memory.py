@@ -32,7 +32,8 @@ import signal
 import time
 import tracemalloc
 import traceback
-from collections import defaultdict
+
+# from collections import defaultdict  # unused
 from datetime import datetime
 from typing import Optional
 
@@ -179,7 +180,7 @@ def check_memory_and_gc():
                 print__memory_monitoring(f"📊 Current cache entries: {thread_count}")
                 if thread_count > 20:
                     print__memory_monitoring(
-                        f"💡 SCALING TIP: Consider implementing pagination for chat threads"
+                        "💡 SCALING TIP: Consider implementing pagination for chat threads"
                     )
 
         return rss_mb
@@ -593,24 +594,24 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
     # Import debug function
     from api.utils.debug import print__api_postgresql
 
-    print__api_postgresql(f"🔧 DEBUG: Starting deletion operations...")
+    print__api_postgresql("🔧 DEBUG: Starting deletion operations...")
 
-    print__api_postgresql(f"🔧 DEBUG: Setting autocommit...")
+    print__api_postgresql("🔧 DEBUG: Setting autocommit...")
     await conn.set_autocommit(True)
-    print__api_postgresql(f"🔧 DEBUG: Autocommit set successfully")
+    print__api_postgresql("🔧 DEBUG: Autocommit set successfully")
 
     # 🔒 SECURITY CHECK: Verify user owns this thread before deleting
     print__api_postgresql(
         f"🔒 Verifying thread ownership for deletion - user: {user_email}, thread: {thread_id}"
     )
 
-    print__api_postgresql(f"🔧 DEBUG: Creating cursor for ownership check...")
+    print__api_postgresql("🔧 DEBUG: Creating cursor for ownership check...")
     async with conn.cursor() as cur:
-        print__api_postgresql(f"🔧 DEBUG: Cursor created, executing ownership query...")
+        print__api_postgresql("🔧 DEBUG: Cursor created, executing ownership query...")
         # Fix: Use correct psycopg approach with fetchone() instead of fetchval()
         await cur.execute(
             """
-            SELECT COUNT(*) FROM users_threads_runs 
+            SELECT COUNT(*) FROM users_threads_runs
             WHERE email = %s AND thread_id = %s
         """,
             (user_email, thread_id),
@@ -650,7 +651,7 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
             print__api_postgresql(f"🔧 DEBUG: Processing table {table}...")
             # First check if the table exists
             print__api_postgresql(
-                f"🔧 DEBUG: Creating cursor for table existence check..."
+                "🔧 DEBUG: Creating cursor for table existence check..."
             )
             async with conn.cursor() as cur:
                 print__api_postgresql(
@@ -660,7 +661,7 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
                 await cur.execute(
                     """
                     SELECT EXISTS (
-                        SELECT FROM information_schema.tables 
+                        SELECT FROM information_schema.tables
                         WHERE table_name = %s
                     )
                 """,
@@ -725,11 +726,11 @@ async def perform_deletion_operations(conn, user_email: str, thread_id: str):
         )
         async with conn.cursor() as cur:
             print__api_postgresql(
-                f"🔧 DEBUG: Executing DELETE query for users_threads_runs..."
+                "🔧 DEBUG: Executing DELETE query for users_threads_runs..."
             )
             await cur.execute(
                 """
-                DELETE FROM users_threads_runs 
+                DELETE FROM users_threads_runs
                 WHERE email = %s AND thread_id = %s
             """,
                 (user_email, thread_id),

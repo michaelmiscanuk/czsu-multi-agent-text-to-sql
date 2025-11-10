@@ -53,6 +53,9 @@ if sys.platform == "win32":
 # Load environment variables
 load_dotenv()
 
+# Parent directory for uvicorn execution
+parent_dir = BASE_DIR
+
 # Test configuration
 STARTUP_TIMEOUT = 30
 REQUIRED_ENV_VARS = {"host", "port", "dbname", "user", "password"}
@@ -218,10 +221,14 @@ async def test_environment_variables(results: StartupTestResults) -> bool:
         )
         return True
 
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
         results.add_error(
-            "env_check", "environment", "Environment Variables Check", e, response_time
+            "env_check",
+            "environment",
+            "Environment Variables Check",
+            exc,
+            response_time,
         )
         return False
 
@@ -261,11 +268,11 @@ async def test_critical_imports(results: StartupTestResults) -> bool:
         )
         return True
 
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        print(f"❌ Import failed: {e}")
+        print(f"❌ Import failed: {exc}")
         results.add_error(
-            "imports", "imports", "Critical Imports Check", e, response_time
+            "imports", "imports", "Critical Imports Check", exc, response_time
         )
         return False
 
@@ -313,11 +320,15 @@ async def test_database_connection(results: StartupTestResults) -> bool:
             response_time,
         )
         return False
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        print(f"❌ Database connection failed: {e}")
+        print(f"❌ Database connection failed: {exc}")
         results.add_error(
-            "db_connection", "database", "Direct Database Connection", e, response_time
+            "db_connection",
+            "database",
+            "Direct Database Connection",
+            exc,
+            response_time,
         )
         return False
 
@@ -354,14 +365,14 @@ async def test_checkpointer_initialization(results: StartupTestResults) -> bool:
             response_time,
         )
         return False
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        print(f"❌ Checkpointer initialization failed: {e}")
+        print(f"❌ Checkpointer initialization failed: {exc}")
         results.add_error(
             "checkpointer_init",
             "checkpointer",
             "PostgreSQL Checkpointer Initialization",
-            e,
+            exc,
             response_time,
         )
         return False
@@ -563,9 +574,9 @@ async def test_uvicorn_startup(results: StartupTestResults) -> bool:
 
             return False
 
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        print(f"❌ Uvicorn startup test failed: {e}")
+        print(f"❌ Uvicorn startup test failed: {exc}")
 
         # Ensure process cleanup on exception
         if process:
@@ -583,7 +594,7 @@ async def test_uvicorn_startup(results: StartupTestResults) -> bool:
             "uvicorn_startup",
             "startup_exception",
             "Uvicorn Server Startup Process",
-            e,
+            exc,
             response_time,
         )
 
@@ -593,8 +604,8 @@ async def test_uvicorn_startup(results: StartupTestResults) -> bool:
             latest_error["response_data"][
                 "traceback"
             ] = f"""Uvicorn Startup Exception
-Exception: {str(e)}
-Exception Type: {type(e).__name__}
+Exception: {str(exc)}
+Exception Type: {type(exc).__name__}
 
 Startup Context:
 {traceback.format_exc()}
@@ -763,9 +774,9 @@ async def _test_server_connectivity(elapsed, detailed_logs):
     except httpx.TimeoutException:
         detailed_logs.append(f"[{elapsed:.1f}s] Health check timeout")
         return {"success": False, "should_continue": True, "error": "Request timeout"}
-    except Exception as e:
-        detailed_logs.append(f"[{elapsed:.1f}s] Health check error: {str(e)}")
-        return {"success": False, "should_continue": False, "error": str(e)}
+    except Exception as exc:
+        detailed_logs.append(f"[{elapsed:.1f}s] Health check error: {str(exc)}")
+        return {"success": False, "should_continue": False, "error": str(exc)}
 
 
 async def _run_endpoint_validation(detailed_logs):
@@ -799,10 +810,10 @@ async def _run_endpoint_validation(detailed_logs):
                         ),
                     }
 
-                except Exception as e:
+                except Exception as exc:
                     validation_results[endpoint["path"]] = {
                         "success": False,
-                        "error": str(e),
+                        "error": str(exc),
                     }
 
             # Setup debug environment for enhanced testing
@@ -846,8 +857,8 @@ async def _run_endpoint_validation(detailed_logs):
                 "details": validation_results,
             }
 
-    except Exception as e:
-        return {"success": False, "error": f"Validation exception: {str(e)}"}
+    except Exception as exc:
+        return {"success": False, "error": f"Validation exception: {str(exc)}"}
 
 
 async def _cleanup_uvicorn_process(process, detailed_logs):
@@ -1163,8 +1174,8 @@ async def main():
 
         return test_passed
 
-    except Exception as e:
-        print(f"❌ Test execution failed: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Test execution failed: {str(exc)}")
         test_context = {
             "Test Cases": len(TEST_CASES),
             "Timeout": f"{STARTUP_TIMEOUT}s",
@@ -1172,7 +1183,7 @@ async def main():
             "Error During": "Startup test execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         return False
 
@@ -1184,8 +1195,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n⛔ Test interrupted by user")
         sys.exit(1)
-    except Exception as e:
-        print(f"\n💥 Fatal error: {str(e)}")
+    except Exception as exc:
+        print(f"\n💥 Fatal error: {str(exc)}")
         test_context = {
             "Test Cases": len(TEST_CASES),
             "Timeout": f"{STARTUP_TIMEOUT}s",
@@ -1193,6 +1204,6 @@ if __name__ == "__main__":
             "Error During": "Direct script execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         sys.exit(1)

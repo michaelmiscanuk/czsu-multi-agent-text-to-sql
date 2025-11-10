@@ -85,16 +85,16 @@ def test_sync_connection():
                     )
                     table_count = cur.fetchone()[0]
                     print(f"📋 Public tables count: {table_count}")
-                except Exception as e:
-                    print(f"⚠️  Could not count tables: {e}")
+                except Exception as exc:
+                    print(f"⚠️  Could not count tables: {exc}")
 
                 return True
 
     except ImportError:
         print("❌ psycopg library not found. Install with: pip install psycopg[binary]")
         return False
-    except Exception as e:
-        print(f"❌ Synchronous connection failed: {e}")
+    except Exception as exc:
+        print(f"❌ Synchronous connection failed: {exc}")
         return False
 
 
@@ -154,8 +154,8 @@ async def test_async_connection():
                     "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';"
                 )
                 print(f"📋 Public tables count: {table_count}")
-            except Exception as e:
-                print(f"⚠️  Could not count tables: {e}")
+            except Exception as exc:
+                print(f"⚠️  Could not count tables: {exc}")
 
             return True
 
@@ -165,8 +165,8 @@ async def test_async_connection():
     except ImportError:
         print("❌ asyncpg library not found. Install with: pip install asyncpg")
         return False
-    except Exception as e:
-        print(f"❌ Asynchronous connection failed: {e}")
+    except Exception as exc:
+        print(f"❌ Asynchronous connection failed: {exc}")
         return False
 
 
@@ -241,16 +241,16 @@ async def test_psycopg_async():
                     print(f"📋 Public tables count: {table_count[0]}")
                 except asyncio.TimeoutError:
                     print("⚠️  Table count query timed out")
-                except Exception as e:
-                    print(f"⚠️  Could not count tables: {e}")
+                except Exception as exc:
+                    print(f"⚠️  Could not count tables: {exc}")
 
                 return True
 
     except asyncio.TimeoutError:
         print("❌ Psycopg async operation timed out")
         return False
-    except Exception as e:
-        print(f"❌ Psycopg asynchronous connection failed: {e}")
+    except Exception as exc:
+        print(f"❌ Psycopg asynchronous connection failed: {exc}")
         return False
 
 
@@ -289,8 +289,8 @@ def test_connection_pool():
                 timeout=10.0,  # 10 second timeout for pool operations
             )
             print("✅ Connection pool created successfully!")
-        except Exception as e:
-            print(f"❌ Failed to create connection pool: {e}")
+        except Exception as exc:
+            print(f"❌ Failed to create connection pool: {exc}")
             return False
 
         try:
@@ -319,8 +319,8 @@ def test_connection_pool():
 
                     return True
 
-        except Exception as e:
-            print(f"❌ Pool connection test failed: {e}")
+        except Exception as exc:
+            print(f"❌ Pool connection test failed: {exc}")
             return False
         finally:
             print("🔄 Closing connection pool...")
@@ -332,8 +332,8 @@ def test_connection_pool():
             "❌ psycopg_pool library not found. Install with: pip install psycopg-pool"
         )
         return False
-    except Exception as e:
-        print(f"❌ Connection pool test failed: {e}")
+    except Exception as exc:
+        print(f"❌ Connection pool test failed: {exc}")
         return False
 
 
@@ -391,5 +391,5 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\n⚠️  Tests interrupted by user")
-    except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
+    except Exception as exc:
+        print(f"\n❌ Unexpected error: {exc}")

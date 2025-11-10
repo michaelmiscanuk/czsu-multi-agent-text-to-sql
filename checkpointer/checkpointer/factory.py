@@ -87,11 +87,13 @@ async def check_pool_health_and_recreate():
                     raise health_error
         else:
             return False
-    except Exception as e:
+    except Exception as exc:
         # Pool is unhealthy, recreate it
         from api.utils.debug import print__checkpointers_debug
 
-        print__checkpointers_debug(f"POOL HEALTH CHECK FAILED: {e}, recreating pool...")
+        print__checkpointers_debug(
+            f"POOL HEALTH CHECK FAILED: {exc}, recreating pool..."
+        )
         await force_close_modern_pools()
         # Clear the global state before recreation
         _GLOBAL_CHECKPOINTER = None
@@ -120,9 +122,9 @@ async def create_async_postgres_saver():
         try:
             if hasattr(_GLOBAL_CHECKPOINTER, "pool"):
                 await _GLOBAL_CHECKPOINTER.pool.close()
-        except Exception as e:
+        except Exception as exc:
             print__checkpointers_debug(
-                f"236 - CLEANUP ERROR: Error during state cleanup: {e}"
+                f"236 - CLEANUP ERROR: Error during state cleanup: {exc}"
             )
         finally:
             _GLOBAL_CHECKPOINTER = None
@@ -251,9 +253,9 @@ async def close_async_postgres_saver():
                 print__checkpointers_debug(
                     "263 - POOL CLOSED: AsyncPostgresSaver pool closed"
                 )
-        except Exception as e:
+        except Exception as exc:
             print__checkpointers_debug(
-                f"264 - CLOSE ERROR: Error closing AsyncPostgresSaver pool: {e}"
+                f"264 - CLOSE ERROR: Error closing AsyncPostgresSaver pool: {exc}"
             )
         finally:
             _GLOBAL_CHECKPOINTER = None
@@ -328,9 +330,9 @@ async def initialize_checkpointer():
                 "✅ CHECKPOINTER INIT: PostgreSQL checkpointer initialized successfully using official AsyncPostgresSaver"
             )
 
-        except Exception as e:
+        except Exception as exc:
             print__checkpointers_debug(
-                f"❌ CHECKPOINTER INIT: PostgreSQL checkpointer initialization failed: {e}"
+                f"❌ CHECKPOINTER INIT: PostgreSQL checkpointer initialization failed: {exc}"
             )
             print__checkpointers_debug(
                 "🔄 CHECKPOINTER INIT: Falling back to InMemorySaver..."
@@ -364,9 +366,9 @@ async def cleanup_checkpointer():
                 # For other types (like MemorySaver), no special cleanup needed
                 _GLOBAL_CHECKPOINTER = None
 
-        except Exception as e:
+        except Exception as exc:
             print__checkpointers_debug(
-                f"⚠️ CHECKPOINTER CLEANUP: Error during checkpointer cleanup: {e}"
+                f"⚠️ CHECKPOINTER CLEANUP: Error during checkpointer cleanup: {exc}"
             )
         finally:
             _GLOBAL_CHECKPOINTER = None

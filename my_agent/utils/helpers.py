@@ -1,3 +1,9 @@
+"""Helper functions for my_agent module.
+
+This module provides utility functions for schema loading, language translation,
+and other operations needed by the agent.
+"""
+
 # ==============================================================================
 # IMPORTS
 # ==============================================================================
@@ -82,10 +88,10 @@ async def load_schema(state=None):
                     schemas.append(f"Dataset: {selection_code}.\n" + row[0])
                 else:
                     schemas.append(
-                        f"No schema found for selection_code {selection_code}."
+                        f"No schema found for selection_code " f"{selection_code}."
                     )
-        except Exception as e:
-            schemas.append(f"Error loading schema from DB: {e}")
+        except Exception as exc:
+            schemas.append(f"Error loading schema from DB: {exc}")
         finally:
             if "conn" in locals():
                 conn.close()

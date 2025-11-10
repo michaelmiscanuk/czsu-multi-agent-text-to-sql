@@ -1,12 +1,13 @@
-# CHANGE here which type of agent is used. Specify agent type here.
-agent_type = "basic1"  # Options: "basic1_multiple_queries", "basic2",
+"""Agent selection and public API for my_agent package."""
+
+AGENT_TYPE = "basic1"  # Options: "basic1_multiple_queries", "basic2",
 
 # Import based on selected agent type
-if agent_type == "basic1":
+if AGENT_TYPE == "basic1":
     from .agent import create_graph
 else:
     raise ValueError(
-        f"Unknown agent type: {agent_type}. Valid options are: 'basic_reflection', 'initial'"
+        f"Unknown agent type: {AGENT_TYPE}. Valid options are: 'basic_reflection', 'initial'"
     )
 
 # __all__ controls what gets exported when using wildcard imports (from my_agent import *)

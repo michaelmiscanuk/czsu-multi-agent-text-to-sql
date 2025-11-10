@@ -1,4 +1,10 @@
-module_description = r"""Czech Statistical Office (CZSU) Data Extraction and CSV Generation
+"""Czech Statistical Office (CZSU) Data Extraction and CSV Generation
+
+This module provides functionality to extract statistical data from the Czech Statistical Office (CZSU)
+public API and convert it to CSV format for local analysis and processing.
+"""
+
+MODULE_DESCRIPTION = r"""Czech Statistical Office (CZSU) Data Extraction and CSV Generation
 
 This module provides functionality to extract statistical data from the Czech Statistical Office (CZSU)
 public API and convert it to CSV format for local analysis and processing.
@@ -143,10 +149,6 @@ Error Handling:
 - Debug file generation for troubleshooting malformed responses
 - Graceful handling of all retry failures without script crashes"""
 
-# ==============================================================================
-# IMPORTS
-# ==============================================================================
-# Standard library imports
 import requests
 import pandas as pd
 from pyjstat import pyjstat
@@ -155,8 +157,6 @@ import time
 from pathlib import Path
 from tqdm import tqdm
 import json
-
-# Retry logic imports
 from tenacity import (
     RetryError,
     retry,

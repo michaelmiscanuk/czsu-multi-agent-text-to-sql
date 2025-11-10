@@ -99,17 +99,17 @@ def retry_on_ssl_connection_error(max_retries: int = DEFAULT_MAX_RETRIES):
                         f"SSL_RETRY SUCCESS: {func.__name__} succeeded on attempt {attempt + 1}"
                     )
                     return result
-                except Exception as e:
-                    last_error = e
+                except Exception as exc:
+                    last_error = exc
                     print__checkpointers_debug(
-                        f"SSL_RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(e)}"
+                        f"SSL_RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(exc)}"
                     )
 
                     # Add full traceback for SSL debugging
                     full_traceback = traceback.format_exc()
                     print__checkpointers_debug(f"SSL_RETRY TRACEBACK: {full_traceback}")
 
-                    if is_ssl_connection_error(e):
+                    if is_ssl_connection_error(exc):
                         print__checkpointers_debug(
                             f"SSL_CONNECTION ERROR: Detected SSL connection error in {func.__name__}"
                         )
@@ -229,10 +229,10 @@ def retry_on_prepared_statement_error(max_retries: int = DEFAULT_MAX_RETRIES):
                         f"204 - RETRY SUCCESS: {func.__name__} succeeded on attempt {attempt + 1}"
                     )
                     return result
-                except Exception as e:
-                    last_error = e
+                except Exception as exc:
+                    last_error = exc
                     print__checkpointers_debug(
-                        f"205 - RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(e)}"
+                        f"205 - RETRY ERROR: {func.__name__} failed on attempt {attempt + 1}: {str(exc)}"
                     )
 
                     # Add full traceback for debugging
@@ -241,7 +241,7 @@ def retry_on_prepared_statement_error(max_retries: int = DEFAULT_MAX_RETRIES):
                         f"205.1 - RETRY TRACEBACK: {full_traceback}"
                     )
 
-                    if is_prepared_statement_error(e):
+                    if is_prepared_statement_error(exc):
                         print__checkpointers_debug(
                             f"206 - PREPARED STATEMENT ERROR: Detected prepared statement error in {func.__name__}"
                         )

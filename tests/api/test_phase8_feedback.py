@@ -90,8 +90,8 @@ async def create_test_run_ids_in_db(user_email: str, count: int = 4) -> list[str
                     f"✅ Created {len(test_run_ids)} test run_ids in database for user: {user_email}"
                 )
 
-    except Exception as e:
-        print(f"⚠️ Failed to create test run_ids: {e}")
+    except Exception as exc:
+        print(f"⚠️ Failed to create test run_ids: {exc}")
         # If database setup fails, fall back to random UUIDs (tests will show ownership failures)
         test_run_ids = [str(uuid.uuid4()) for _ in range(count)]
         print(f"🔄 Using random UUIDs instead (tests will show ownership validation)")
@@ -114,8 +114,8 @@ async def cleanup_test_run_ids_from_db(run_ids: list[str]):
                     )
                 await conn.commit()
                 print(f"🧹 Cleaned up {len(run_ids)} test run_ids from database")
-    except Exception as e:
-        print(f"⚠️ Failed to cleanup test run_ids: {e}")
+    except Exception as exc:
+        print(f"⚠️ Failed to cleanup test run_ids: {exc}")
 
 
 # Helper function to generate valid and invalid UUIDs for testing
@@ -605,11 +605,13 @@ async def make_feedback_request(
                 expected_status=expected_status,
             )
 
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
+        error_message = (
+            str(exc) if str(exc).strip() else f"{type(exc).__name__}: {repr(exc)}"
+        )
         if not error_message or error_message.isspace():
-            error_message = f"Unknown error of type {type(e).__name__}"
+            error_message = f"Unknown error of type {type(exc).__name__}"
 
         print(f"❌ Test {test_id} - Error: {error_message}")
         error_obj = Exception(error_message)
@@ -713,14 +715,14 @@ async def test_authentication_failures():
                         error_obj,
                         response_time,
                     )
-            except Exception as e:
+            except Exception as exc:
                 response_time = time.time() - start_time
-                print(f"❌ Auth test {i} - Error: {e}")
+                print(f"❌ Auth test {i} - Error: {exc}")
                 results.add_error(
                     f"auth_{i}",
                     test_case["endpoint"],
                     test_case["description"],
-                    e,
+                    exc,
                     response_time,
                 )
 
@@ -881,8 +883,8 @@ async def main():
 
         return test_passed
 
-    except Exception as e:
-        print(f"❌ Test execution failed: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Test execution failed: {str(exc)}")
         test_context = {
             "Server URL": SERVER_BASE_URL,
             "Request Timeout": f"{REQUEST_TIMEOUT}s",
@@ -892,7 +894,7 @@ async def main():
             "Error During": "Test execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         return False
 
@@ -904,8 +906,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n[STOP] Test interrupted by user")
         sys.exit(1)
-    except Exception as e:
-        print(f"\n[ERROR] Fatal error: {str(e)}")
+    except Exception as exc:
+        print(f"\n[ERROR] Fatal error: {str(exc)}")
         test_context = {
             "Server URL": SERVER_BASE_URL,
             "Request Timeout": f"{REQUEST_TIMEOUT}s",
@@ -914,6 +916,6 @@ if __name__ == "__main__":
             "Error During": "Direct script execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         sys.exit(1)

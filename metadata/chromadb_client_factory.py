@@ -116,8 +116,8 @@ def get_chromadb_client(
             if collection_name:
                 print__chromadb_debug(f"   Target collection: {collection_name}")
             return client
-        except Exception as e:
-            print__chromadb_debug(f"❌ [Factory] Failed to create CloudClient: {e}")
+        except Exception as exc:
+            print__chromadb_debug(f"❌ [Factory] Failed to create CloudClient: {exc}")
             raise
 
     else:
@@ -155,9 +155,9 @@ def get_chromadb_client(
             if collection_name:
                 print__chromadb_debug(f"   Target collection: {collection_name}")
             return client
-        except Exception as e:
+        except Exception as exc:
             print__chromadb_debug(
-                f"❌ [Factory] Failed to create PersistentClient: {e}"
+                f"❌ [Factory] Failed to create PersistentClient: {exc}"
             )
             raise
 
@@ -197,9 +197,9 @@ def get_chromadb_collection(
         )
         print__chromadb_debug(f"   Collection type: {type(collection).__name__}")
         return collection
-    except Exception as e:
+    except Exception as exc:
         print__chromadb_debug(
-            f"❌ [Factory] Failed to retrieve collection '{collection_name}': {e}"
+            f"❌ [Factory] Failed to retrieve collection '{collection_name}': {exc}"
         )
         raise
 

@@ -1,9 +1,8 @@
+"""Zip utility script for CZSU multi-agent project."""
+
 import os
-import sys
 import zipfile
 from pathlib import Path
-import requests
-import json
 from typing import Optional
 
 # Get the base directory
@@ -50,10 +49,11 @@ def zip_path(path_to_zip: Path):
                         # Calculate relative path for the file in the zip
                         rel_path = file_path.relative_to(abs_path.parent)
                         zipf.write(file_path, rel_path)
-    except (OSError, RuntimeError) as e:
+    except (OSError, RuntimeError) as exc:
         # Fallback to DEFLATE with maximum compression if LZMA fails
         print(
-            f"LZMA compression failed ({e}), falling back to DEFLATE with max compression..."
+            f"LZMA compression failed ({exc}), "
+            f"falling back to DEFLATE with max compression..."
         )
         with zipfile.ZipFile(
             zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9
@@ -164,8 +164,8 @@ def upload_to_gdrive(file_path: Path, gdrive_folder_link: str) -> bool:
 
             print(f"Opening Google Drive folder in browser...")
             webbrowser.open(gdrive_folder_link)
-        except Exception as e:
-            print(f"Could not open browser automatically: {e}")
+        except Exception as exc:
+            print(f"Could not open browser automatically: {exc}")
             print(f"Please manually open: {gdrive_folder_link}")
 
         # Try to open the desktop folder
@@ -174,14 +174,14 @@ def upload_to_gdrive(file_path: Path, gdrive_folder_link: str) -> bool:
 
             print(f"Opening desktop upload folder...")
             subprocess.run(["explorer", str(upload_folder)], check=False)
-        except Exception as e:
-            print(f"Could not open folder automatically: {e}")
+        except Exception as exc:
+            print(f"Could not open folder automatically: {exc}")
             print(f"Please manually navigate to: {upload_folder}")
 
         return True
 
-    except Exception as e:
-        print(f"\n✗ Error preparing file: {e}")
+    except Exception as exc:
+        print(f"\n✗ Error preparing file: {exc}")
         print(f"Manual upload required:")
         print(f"File: {file_path}")
         print(f"Google Drive folder: {gdrive_folder_link}")
@@ -213,7 +213,11 @@ def print_progress_bar(
 def upload_pdf_chromadb_to_gdrive():
     """Prepare the pdf_chromadb_llamaparse.zip file for Google Drive upload."""
     pdf_chromadb_zip = BASE_DIR / "data" / "pdf_chromadb_llamaparse.zip"
-    gdrive_folder_link = "https://drive.google.com/drive/folders/1TZWxURgYoYHgKMji4OV333ftEDCyJRgD?usp=sharing"
+    # Google Drive shared folder link
+    gdrive_folder_link = (
+        "https://drive.google.com/drive/folders/"
+        "1TZWxURgYoYHgKMji4OV333ftEDCyJRgD?usp=sharing"
+    )
 
     print(f"\n{'='*50}")
     print("PREPARING FOR GOOGLE DRIVE UPLOAD")
@@ -232,6 +236,7 @@ def upload_pdf_chromadb_to_gdrive():
 
 
 def main():
+    """Main function to zip files and upload to Google Drive."""
     print(f"Base directory: {BASE_DIR}")
     print("Starting zip process with improved compression...")
 

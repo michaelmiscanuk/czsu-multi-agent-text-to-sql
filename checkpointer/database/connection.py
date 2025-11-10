@@ -177,8 +177,8 @@ async def check_connection_health(connection):
             await cur.execute("SELECT 1")
             result = await cur.fetchone()
             return result is not None and result[0] == 1
-    except Exception as e:
-        print__checkpointers_debug(f"Connection health check failed: {e}")
+    except Exception as exc:
+        print__checkpointers_debug(f"Connection health check failed: {exc}")
         return False
 
 

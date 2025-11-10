@@ -46,10 +46,10 @@ try:
         libc = None
         MALLOC_TRIM_AVAILABLE = False
         print(f"🪟 Non-Linux platform ({sys.platform}) - malloc_trim not available")
-except (OSError, AttributeError) as e:
+except (OSError, AttributeError) as exc:
     libc = None
     MALLOC_TRIM_AVAILABLE = False
-    print(f"❌ Failed to load libc: {e}")
+    print(f"❌ Failed to load libc: {exc}")
 
 
 def force_release_memory():
@@ -86,9 +86,9 @@ def force_release_memory():
             "malloc_trim_used": malloc_trim_used,
         }
 
-    except Exception as e:
-        print(f"❌ Memory cleanup error: {e}")
-        return {"error": str(e), "freed_mb": 0}
+    except Exception as exc:
+        print(f"❌ Memory cleanup error: {exc}")
+        return {"error": str(exc), "freed_mb": 0}
 
 
 async def memory_cleanup_loop():

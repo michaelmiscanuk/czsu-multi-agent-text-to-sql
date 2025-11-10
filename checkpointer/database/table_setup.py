@@ -214,9 +214,9 @@ async def setup_users_threads_runs_table():
                 "273 - CUSTOM TABLE SUCCESS: users_threads_runs table and indexes created successfully"
             )
 
-    except Exception as e:
+    except Exception as exc:
         print__checkpointers_debug(
-            f"274 - CUSTOM TABLE ERROR: Failed to setup users_threads_runs table: {e}"
+            f"274 - CUSTOM TABLE ERROR: Failed to setup users_threads_runs table: {exc}"
         )
         raise
 

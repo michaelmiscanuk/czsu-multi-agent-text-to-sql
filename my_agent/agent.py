@@ -1,4 +1,4 @@
-module_description = r"""LangGraph Workflow Definition for Multi-Agent Text-to-SQL Analysis
+"""LangGraph Workflow Definition for Multi-Agent Text-to-SQL Analysis.
 
 This module defines the LangGraph StateGraph structure and execution flow for a multi-agent
 text-to-SQL analysis system. It orchestrates the complete workflow from natural language
@@ -287,7 +287,8 @@ def create_graph(checkpointer=None):
     graph.add_edge(START, "rewrite_prompt")
     graph.add_edge("rewrite_prompt", "summarize_messages_rewrite")
 
-    # After summarize_messages_rewrite, branch to both selection and chunk retrieval (parallel execution)
+    # After summarize_messages_rewrite, branch to both
+    # selection and chunk retrieval (parallel execution)
     graph.add_edge(
         "summarize_messages_rewrite", "retrieve_similar_selections_hybrid_search"
     )
@@ -363,7 +364,8 @@ def create_graph(checkpointer=None):
         )
     else:
         print__analysis_tracing_debug(
-            f"110 - CHECKPOINTER PROVIDED: Using provided checkpointer ({type(checkpointer).__name__})"
+            "110 - CHECKPOINTER PROVIDED: "
+            f"Using provided checkpointer ({type(checkpointer).__name__})"
         )
 
     # --------------------------------------------------------------------------

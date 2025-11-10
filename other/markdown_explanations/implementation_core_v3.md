@@ -1,5 +1,55 @@
 # Implementation
 
+## SUMMARY
+
+### 1. High-Level System Architecture
+**Overview of System Layers and Services:** Presentation Layer (Vercel Next.js UI) • Application Layer (Railway FastAPI) • **AI Orchestration Layer** (**LangGraph StateGraph** + Azure OpenAI) • **Data Persistence Layer** (**Polyglot Persistence**: Supabase PostgreSQL, Turso SQLite, Chroma Cloud) • Integration & Identity Services (Google OAuth, CZSU API, **LlamaParse**, **Cohere**) • Observability & Experimentation (**LangSmith**, diagnostics)
+
+**Technology Stack and Rationale:** **Next.js 15 + React 19** (server + client rendering) • **FastAPI + Uvicorn** (async ASGI) • **LangGraph** (graph-based agents) • **Azure OpenAI** (GPT-4o, GPT-4o-mini, text-embedding-3-large) + **Cohere Rerank** • **Polyglot Databases** (PostgreSQL, SQLite, Vector DB) • **Vercel + Railway** (independent deployment) • **NextAuth** (Google OAuth 2.0)
+
+**Data Flow and Key Architectural Decisions:** User Query Ingestion (/api/analyze) • **Agentic Pipeline Phases** (**Rewrite → Retrieval → SQL → Synthesis**) • **Hybrid Retrieval Strategy** (Chroma + **Cohere Rerank** + Metadata SQL) • **Model Context Protocol (MCP)** SQL Execution • **Stateful Conversation Checkpointing** • **Bilingual Response Pipeline** (Czech ↔ English)
+
+**System Diagram:** Request Routing & Hosting Separation • **Agent Workflow Orchestration** • Data Access Zones (defense-in-depth) • Document Ingestion & Embedding Flow • **Feedback and Observability Loop**
+
+### 2. Backend
+**Backend Architecture and Technologies:** **FastAPI Application Container** • Uvicorn Event Loop & Windows Policy • Modular Routing Packages • Configuration & **Lifespan Management**
+
+**Agent Workflow and Orchestration:** **LangGraph** orchestration • Prompt rewriting • Dual retrieval • **MCP SQL execution** • **Reflection loops** • Answer formatting • Deterministic pipeline • Explicit retry & cancellation control
+
+**API Design and Endpoint Purposes:** **POST /analyze** (analysis endpoint) • Chat Threads & Messages (/chat-threads, /chat/{thread_id}) • GET /catalog (catalog navigation) • Data Explorer (/data-tables, /data-table) • **POST /feedback, /sentiment** (feedback collection) • Operational & Debug Endpoints (/health, /debug/*, **/stop-execution**)
+
+**Data Management and Persistence:** **LangGraph Checkpointer** (Supabase PostgreSQL, **AsyncPostgresSaver**, **connection pooling**, retry logic) • Lifecycle Coordination with Fallbacks (graceful degradation, in-memory fallback) • Schema-Aware State Objects (**DataAnalysisState**) • **ChromaDB Vector Store** • **Turso SQLite Analytics**
+
+**External Service Integration:** **Azure OpenAI Deployments** (GPT-4o, GPT-4o-mini, embeddings) • **Azure AI Translator & Language Detection** • **Cohere Rerank API** • Google OAuth Verification • **CZSU API Ingestion Jobs** • **LlamaParse PDF Processing**
+
+**Error Handling, Authentication, Middleware:** Global exception handlers • **Throttling middleware** • Memory-monitoring middleware • CORS • GZip compression • **JWT verification**
+
+**Performance Optimizations:** **Semaphore-based throttling** • Retry-friendly **rate limiting** • **Gzip compression** • **Memory cleanup tasks**
+
+### 3. Frontend
+**Frontend Architecture and Technologies:** **Next.js 15 App Router** (server/client separation) • **React 19 Client Components** • **TypeScript Strict Mode** • **TailwindCSS** (utility-first) • **NextAuth Session Management**
+
+**Main Pages and Features:** **Chat Interface** (/chat: thread sidebar, message area, input bar, feedback panels) • Catalog Browser (/catalog) • Data Explorer (/data: autocomplete, filtering, sorting) • Login Screen (/login: Google OAuth) • Thread Management Sidebar (infinite scroll) • **Feedback & Sentiment Controls**
+
+**State Management and Component Architecture:** **ChatCacheContext Provider** • **localStorage 48-Hour Cache** • **Cross-Tab Sync** (storage events) • **Optimistic UI Updates** • **Infinite Scroll Pagination** (IntersectionObserver) • Component Composition Pattern
+
+**API Integration:** Centralized apiFetch & authApiFetch • Token injection • Timeout control • Automatic retry on 401
+
+**Authentication Flow:** NextAuth OAuth flows • JWT callbacks • Session callbacks • Token refresh
+
+**Advanced Features:** Markdown rendering • Dataset badge navigation • SQL/PDF modals • Progress indicators • Diacritics normalization • **Progressive enhancement**
+
+### 4. Deployment
+**Deployment Strategies and Platforms:** **Vercel Edge Hosting** (frontend CDN, automatic builds) • **Railway Managed Containers** (backend buildpacks, automated rollouts) • **API Proxying** (17 Vercel rewrite rules) • **Multi-Region Deployment** (europe-west4) • **Blue-Green Deployments** (zero-downtime) • **Automatic SSL/TLS Provisioning** (Let's Encrypt)
+
+**Build and Runtime Configuration:** Vercel auto-detection (Next.js) • **Railway RAILPACK** (uv, Python deps, Uvicorn) • Reproducible environments
+
+**Database and External Service Setup:** **Supabase PostgreSQL** (managed, **connection pooling**, automated backups, point-in-time recovery) • **AsyncPostgresSaver Connection Pool** (min/max sizes, **keepalive pings**, **retry decorators**) • **Turso SQLite Cloud** (edge replicas, HTTP API, branching, per-read pricing) • **Chroma Cloud Vector Database** (multi-tenant, auto-scaling) • **Azure OpenAI Service Endpoints** (regional, rate limits, compliance) • **Environment Secrets Management** (encrypted, runtime injection) • **LangSmith Cloud Integration** (trace ingestion, evaluation datasets)
+
+**Monitoring and Debugging:** Health endpoints (database, memory, rate-limits) • Debug routes (checkpoints, run IDs, pool status) • Platform dashboards (Vercel, Railway)
+
+**Performance Optimization:** **Gzip compression** • 48-hour browser caching • **Connection pooling** • **Semaphore throttling** • **Memory cleanup tasks**
+
 ## 1. High-Level System Architecture
 
 ### Overview of System Layers and Services

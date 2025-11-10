@@ -1,4 +1,9 @@
-module_description = r"""CSV to SQLite Database Converter
+"""CSV to SQLite Database Converter
+
+This module provides functionality to convert multiple CSV files from a directory
+into a single SQLite database, with each CSV file becoming a separate table.
+"""
+MODULE_DESCRIPTION = r"""CSV to SQLite Database Converter
 
 This module provides functionality to convert multiple CSV files from a directory
 into a single SQLite database, with each CSV file becoming a separate table.
@@ -99,10 +104,6 @@ Error Handling:
 
 import os
 import sqlite3
-
-# ==============================================================================
-# IMPORTS
-# ==============================================================================
 import pandas as pd
 
 
@@ -199,7 +200,7 @@ def import_all_csv_to_sqlite(folder_path: str = None) -> None:
         conn.close()
 
         # --- Final Status Reporting ---
-        print(f"\nImport completed:")
+      print("\nImport completed:")
         print(f"Database location: {db_path}")
         print(f"Total files imported: {imported_count}")
 

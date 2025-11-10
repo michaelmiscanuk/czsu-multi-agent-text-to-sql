@@ -83,7 +83,7 @@ async def create_test_run_ids_in_db(user_email: str, count: int = 2) -> list[str
     try:
         async with get_direct_connection() as conn:
             async with conn.cursor() as cur:
-                for i in range(count):
+                for _ in range(count):
                     run_id = str(uuid.uuid4())
                     thread_id = str(uuid.uuid4())
 
@@ -104,11 +104,11 @@ async def create_test_run_ids_in_db(user_email: str, count: int = 2) -> list[str
                     f"✅ Created {len(test_run_ids)} test run_ids in database for user: {user_email}"
                 )
 
-    except Exception as e:
-        print(f"⚠️ Failed to create test run_ids: {e}")
+    except Exception as exc:
+        print(f"⚠️ Failed to create test run_ids: {exc}")
         # Fall back to dummy UUIDs
         test_run_ids = [str(uuid.uuid4()) for _ in range(count)]
-        print(f"🔄 Using dummy UUIDs instead (tests will show ownership validation)")
+        print("🔄 Using dummy UUIDs instead (tests will show ownership validation)")
 
     return test_run_ids
 
@@ -127,8 +127,8 @@ async def cleanup_test_run_ids_from_db(run_ids: list[str]):
                     )
                 await conn.commit()
                 print(f"🧹 Cleaned up {len(run_ids)} test run_ids from database")
-    except Exception as e:
-        print(f"⚠️ Failed to cleanup test run_ids: {e}")
+    except Exception as exc:
+        print(f"⚠️ Failed to cleanup test run_ids: {exc}")
 
 
 def get_test_cases(test_run_ids: list[str] = None):
@@ -494,9 +494,9 @@ async def make_main_request(
                         response.status_code,
                         success=True,
                     )
-                except Exception as e:
-                    print(f"❌ Validation failed: {e}")
-                    error_obj = Exception(f"Response validation failed: {e}")
+                except Exception as exc:
+                    print(f"❌ Validation failed: {exc}")
+                    error_obj = Exception(f"Response validation failed: {exc}")
                     error_obj.server_tracebacks = error_info["server_tracebacks"]
                     results.add_error(
                         test_id,
@@ -527,11 +527,13 @@ async def make_main_request(
                 expected_status=expected_status,
             )
 
-    except Exception as e:
+    except Exception as exc:
         response_time = time.time() - start_time
-        error_message = str(e) if str(e).strip() else f"{type(e).__name__}: {repr(e)}"
+        error_message = (
+            str(exc) if str(exc).strip() else f"{type(exc).__name__}: {repr(exc)}"
+        )
         if not error_message or error_message.isspace():
-            error_message = f"Unknown error of type {type(e).__name__}"
+            error_message = f"Unknown error of type {type(exc).__name__}"
 
         print(f"❌ Test {test_id} - Error: {error_message}")
         error_obj = Exception(error_message)
@@ -582,23 +584,23 @@ async def test_application_startup():
         print("✅ Application startup validation passed")
         return True
 
-    except ImportError as e:
+    except ImportError as exc:
         # Handle missing optional dependencies gracefully
         if (
-            "cohere" in str(e)
-            or "openai" in str(e)
-            or any(dep in str(e) for dep in ["azure", "anthropic"])
+            "cohere" in str(exc)
+            or "openai" in str(exc)
+            or any(dep in str(exc) for dep in ["azure", "anthropic"])
         ):
-            print(f"⚠️ Optional dependency missing: {e}")
+            print(f"⚠️ Optional dependency missing: {exc}")
             print(
                 "✅ Application startup validation passed (with optional dependencies missing)"
             )
             return True
         else:
-            print(f"❌ Application startup validation failed: {e}")
+            print(f"❌ Application startup validation failed: {excxc}")
             return False
-    except Exception as e:
-        print(f"❌ Application startup validation failed: {e}")
+    except Exception as exc:
+        print(f"❌ Application startup validation failed: {exc}")
         return False
 
 
@@ -641,8 +643,8 @@ async def test_middleware_functionality():
             print("✅ Middleware functionality validation passed")
             return True
 
-    except Exception as e:
-        print(f"❌ Middleware functionality validation failed: {e}")
+    except Exception as exc:
+        print(f"❌ Middleware functionality validation failed: {exc}")
         return False
 
 
@@ -871,8 +873,8 @@ async def main():
 
         return test_passed
 
-    except Exception as e:
-        print(f"❌ Test execution failed: {str(e)}")
+    except Exception as exc:
+        print(f"❌ Test execution failed: {str(exc)}")
         test_context = {
             "Server URL": SERVER_BASE_URL,
             "Request Timeout": f"{REQUEST_TIMEOUT}s",
@@ -881,7 +883,7 @@ async def main():
             "Error During": "Test execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         return False
 
@@ -893,8 +895,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n[STOP] Test interrupted by user")
         sys.exit(1)
-    except Exception as e:
-        print(f"\n[ERROR] Fatal error: {str(e)}")
+    except Exception as exc:
+        print(f"\n[ERROR] Fatal error: {str(exc)}")
         test_context = {
             "Server URL": SERVER_BASE_URL,
             "Request Timeout": f"{REQUEST_TIMEOUT}s",
@@ -903,6 +905,6 @@ if __name__ == "__main__":
             "Error During": "Direct script execution",
         }
         save_traceback_report(
-            report_type="exception", exception=e, test_context=test_context
+            report_type="exception", exception=exc, test_context=test_context
         )
         sys.exit(1)

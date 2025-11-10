@@ -25,7 +25,8 @@ import asyncio
 
 # Standard imports
 import time
-from collections import defaultdict
+
+# # from collections import defaultdict  # unused  # unused
 
 # Import rate limiting globals from api.config.settings
 from api.config.settings import (

@@ -66,8 +66,8 @@ try:
     from api.routes.misc import router as misc_router
 
     print("✅ Successfully imported miscellaneous route functions")
-except Exception as e:
-    print(f"❌ Failed to import miscellaneous route functions: {e}")
+except Exception as exc:
+    print(f"❌ Failed to import miscellaneous route functions: {exc}")
     print(f"❌ BASE_DIR: {BASE_DIR}")
     print(f"❌ sys.path: {sys.path}")
     print(f"❌ Full traceback:\n{traceback.format_exc()}")
@@ -232,8 +232,10 @@ def test_phase8_misc_imports():
         print_test_status("✅ Phase 8.9 miscellaneous routes imports test PASSED")
         return True
 
-    except Exception as e:
-        print_test_status(f"❌ Phase 8.9 miscellaneous routes imports test FAILED: {e}")
+    except Exception as exc:
+        print_test_status(
+            f"❌ Phase 8.9 miscellaneous routes imports test FAILED: {exc}"
+        )
         print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
         return False
 
@@ -286,8 +288,8 @@ async def test_get_placeholder_image_function():
         print_test_status("✅ get_placeholder_image function test PASSED")
         return True
 
-    except Exception as e:
-        print_test_status(f"❌ get_placeholder_image function test FAILED: {e}")
+    except Exception as exc:
+        print_test_status(f"❌ get_placeholder_image function test FAILED: {exc}")
         print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
         return False
 
@@ -340,8 +342,8 @@ async def test_placeholder_image_dimensions():
         print_test_status("✅ Placeholder image dimensions test PASSED")
         return True
 
-    except Exception as e:
-        print_test_status(f"❌ Placeholder image dimensions test FAILED: {e}")
+    except Exception as exc:
+        print_test_status(f"❌ Placeholder image dimensions test FAILED: {exc}")
         print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
         return False
 
@@ -387,8 +389,8 @@ def test_misc_router_structure():
         print_test_status("✅ Miscellaneous router structure test PASSED")
         return True
 
-    except Exception as e:
-        print_test_status(f"❌ Miscellaneous router structure test FAILED: {e}")
+    except Exception as exc:
+        print_test_status(f"❌ Miscellaneous router structure test FAILED: {exc}")
         print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
         return False
 
@@ -445,8 +447,8 @@ def test_misc_dependencies():
         print_test_status("✅ Miscellaneous dependencies test PASSED")
         return True
 
-    except Exception as e:
-        print_test_status(f"❌ Miscellaneous dependencies test FAILED: {e}")
+    except Exception as exc:
+        print_test_status(f"❌ Miscellaneous dependencies test FAILED: {exc}")
         print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
         return False
 
@@ -485,8 +487,8 @@ def test_frontend_compatibility():
         print_test_status("✅ Frontend compatibility test PASSED")
         return True
 
-    except Exception as e:
-        print_test_status(f"❌ Frontend compatibility test FAILED: {e}")
+    except Exception as exc:
+        print_test_status(f"❌ Frontend compatibility test FAILED: {exc}")
         print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
         return False
 
@@ -538,8 +540,8 @@ async def test_placeholder_image_error_handling():
         print_test_status("✅ Placeholder image error handling test PASSED")
         return True
 
-    except Exception as e:
-        print_test_status(f"❌ Placeholder image error handling test FAILED: {e}")
+    except Exception as exc:
+        print_test_status(f"❌ Placeholder image error handling test FAILED: {exc}")
         print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
         return False
 
@@ -620,11 +622,11 @@ async def main():
                     response_time=response_time,
                 )
 
-        except Exception as e:
+        except Exception as exc:
             end_time = datetime.now()
             response_time = (end_time - start_time).total_seconds()
 
-            print_test_status(f"❌ Test {test_name} crashed: {e}")
+            print_test_status(f"❌ Test {test_name} crashed: {exc}")
             print_test_status(f"❌ Full traceback:\n{traceback.format_exc()}")
 
             # Track crashed test
@@ -632,7 +634,7 @@ async def main():
                 test_id=f"misc_test_{i}",
                 endpoint="/placeholder",
                 description=description,
-                error=e,
+                error=exc,
                 response_time=response_time,
             )
 
