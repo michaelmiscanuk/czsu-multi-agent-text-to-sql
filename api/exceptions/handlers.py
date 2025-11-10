@@ -1,3 +1,5 @@
+"""FastAPI exception handlers for error processing and response formatting."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -41,7 +43,7 @@ from api.utils.debug import (
 # ============================================================
 
 
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(_request: Request, exc: RequestValidationError):
     """Handle Pydantic validation errors with proper 422 status code."""
     print__debug(f"Validation error: {exc.errors()}")
     return JSONResponse(
@@ -89,13 +91,13 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
-async def value_error_handler(request: Request, exc: ValueError):
+async def value_error_handler(_request: Request, exc: ValueError):
     """Handle ValueError exceptions as 400 Bad Request."""
     print__debug(f"ValueError: {str(exc)}")
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
-async def general_exception_handler(request: Request, exc: Exception):
+async def general_exception_handler(_request: Request, exc: Exception):
     """Handle unexpected exceptions."""
     print__debug(f"Unexpected error: {type(exc).__name__}: {str(exc)}")
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})

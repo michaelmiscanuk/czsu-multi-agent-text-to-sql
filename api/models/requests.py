@@ -1,3 +1,5 @@
+"""Request models for the CZSU multi-agent text-to-SQL API."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -89,14 +91,15 @@ class AnalyzeRequest(BaseModel):
     @field_validator("run_id")
     @classmethod
     def validate_run_id(cls, v):
+        """Validate that run_id is a valid UUID string if provided."""
         if v is not None:
             if not v or not v.strip():
                 raise ValueError("Run ID cannot be empty")
             # Basic UUID format validation
             try:
                 uuid.UUID(v.strip())
-            except ValueError:
-                raise ValueError("Run ID must be a valid UUID format")
+            except ValueError as exc:
+                raise ValueError("Run ID must be a valid UUID format") from exc
             return v.strip()
         return v
 
@@ -143,20 +146,20 @@ class FeedbackRequest(BaseModel):
     @field_validator("run_id")
     @classmethod
     def validate_run_id(cls, v):
+        """Validate that run_id is a non-empty valid UUID string."""
         if not v or not v.strip():
             raise ValueError("Run ID cannot be empty")
-        # Basic UUID format validation
-        import uuid
 
         try:
             uuid.UUID(v.strip())
-        except ValueError:
-            raise ValueError("Run ID must be a valid UUID format")
+        except ValueError as exc:
+            raise ValueError("Run ID must be a valid UUID format") from exc
         return v.strip()
 
     @field_validator("comment")
     @classmethod
     def validate_comment(cls, v):
+        """Convert empty comment strings to None."""
         if v is not None and len(v.strip()) == 0:
             return None  # Convert empty string to None
         return v
@@ -176,7 +179,10 @@ class SentimentRequest(BaseModel):
     )
     sentiment: Optional[bool] = Field(
         None,
-        description="Sentiment value: true = positive, false = negative, null = clear/remove sentiment",
+        description=(
+            "Sentiment value: true = positive, false = negative, "
+            "null = clear/remove sentiment"
+        ),
         examples=[True],
     )
 
@@ -191,13 +197,12 @@ class SentimentRequest(BaseModel):
     @field_validator("run_id")
     @classmethod
     def validate_run_id(cls, v):
+        """Validate that run_id is a non-empty valid UUID string."""
         if not v or not v.strip():
             raise ValueError("Run ID cannot be empty")
-        # Basic UUID format validation
-        import uuid
 
         try:
             uuid.UUID(v.strip())
-        except ValueError:
-            raise ValueError("Run ID must be a valid UUID format")
+        except ValueError as exc:
+            raise ValueError("Run ID must be a valid UUID format") from exc
         return v.strip()

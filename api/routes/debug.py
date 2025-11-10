@@ -1,3 +1,5 @@
+"""Debug routes for the CZSU multi-agent text-to-SQL API."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -167,7 +169,7 @@ async def get_pool_status():
                     start_time = time.time()
 
                     # Test a basic operation to verify the checkpointer is working
-                    result = await GLOBAL_CHECKPOINTER.aget_tuple(test_config)
+                    _result = await GLOBAL_CHECKPOINTER.aget_tuple(test_config)
                     latency = time.time() - start_time
 
                     status.update(
@@ -190,7 +192,10 @@ async def get_pool_status():
                 status.update(
                     {
                         "checkpointer_status": "non_postgres_type",
-                        "note": f"Using {type(GLOBAL_CHECKPOINTER).__name__} instead of AsyncPostgresSaver",
+                        "note": (
+                            f"Using {type(GLOBAL_CHECKPOINTER).__name__} "
+                            "instead of AsyncPostgresSaver"
+                        ),
                     }
                 )
         else:
@@ -328,7 +333,7 @@ async def clear_bulk_cache(user=Depends(get_current_user)):
         rss_mb = process.memory_info().rss / 1024 / 1024
         gc_memory_threshold = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))
         memory_status = "normal" if rss_mb < (gc_memory_threshold * 0.8) else "high"
-    except:
+    except Exception:
         rss_mb = 0
         memory_status = "unknown"
 
@@ -423,7 +428,9 @@ async def reset_debug_environment(
         print__debug(f"🔧 Reset {var_name}={original_value}")
 
     return {
-        "message": f"Reset {len(reset_vars)} environment variables to original .env values",
+        "message": (
+            f"Reset {len(reset_vars)} environment variables " "to original .env values"
+        ),
         "variables": reset_vars,
         "timestamp": datetime.now().isoformat(),
     }

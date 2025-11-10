@@ -1,3 +1,5 @@
+"""Memory monitoring middleware for FastAPI application."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -25,7 +27,7 @@ except NameError:
 from fastapi import Request
 
 # Import globals from config
-from api.config.settings import _request_count
+from api.config.settings import _REQUEST_COUNT
 
 # Import memory functions from utils
 from api.utils.memory import log_memory_usage
@@ -37,9 +39,9 @@ from api.utils.memory import log_memory_usage
 
 async def simplified_memory_monitoring_middleware(request: Request, call_next):
     """Simplified memory monitoring middleware."""
-    global _request_count
+    global _REQUEST_COUNT
 
-    _request_count += 1
+    _REQUEST_COUNT += 1
 
     # Only check memory for heavy operations
     request_path = request.url.path

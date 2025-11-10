@@ -1,3 +1,5 @@
+"""FastAPI authentication dependencies for JWT token verification."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -37,8 +39,18 @@ from api.utils.memory import log_comprehensive_error
 # ============================================================
 # AUTHENTICATION DEPENDENCIES
 # ============================================================
-# Enhanced dependency for JWT authentication with better error handling
 def get_current_user(authorization: str = Header(None)):
+    """Extract and verify JWT token from Authorization header.
+
+    Args:
+        authorization: The Authorization header value containing the JWT token
+
+    Returns:
+        dict: The decoded JWT payload containing user information
+
+    Raises:
+        HTTPException: If authentication fails or token is invalid
+    """
     try:
         # Add debug prints using the user's enabled environment variables
         print__token_debug(
@@ -88,7 +100,7 @@ def get_current_user(authorization: str = Header(None)):
             f"🔍 AUTH TOKEN: Token extracted successfully (length: {len(token)})"
         )
         print__token_debug(
-            f"🔍 AUTH TRACE: Token validation starting with verify_google_jwt"
+            "🔍 AUTH TRACE: Token validation starting with verify_google_jwt"
         )
 
         # Call JWT verification with debug tracing
@@ -117,7 +129,7 @@ def get_current_user(authorization: str = Header(None)):
         print__token_debug(
             f"❌ AUTH EXCEPTION: Unexpected authentication error - {type(e).__name__}: {str(e)}"
         )
-        print__token_debug(f"❌ AUTH TRACE: Unexpected exception in authentication")
+        print__token_debug("❌ AUTH TRACE: Unexpected exception in authentication")
         print__token_debug(f"❌ AUTH TRACE: Full traceback:\n{traceback.format_exc()}")
 
         print__token_debug(f"Authentication error: {e}")

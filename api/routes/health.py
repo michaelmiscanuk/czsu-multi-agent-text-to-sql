@@ -1,3 +1,5 @@
+"""Health check routes for the CZSU multi-agent text-to-SQL API."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -38,7 +40,6 @@ from api.config.settings import (
     RATE_LIMIT_REQUESTS,
     RATE_LIMIT_WINDOW,
     _bulk_loading_cache,
-    _request_count,
     rate_limit_storage,
     start_time,
 )
@@ -154,7 +155,7 @@ async def database_health_check():
 
                 # Test basic read operation
                 start_time_local = time.time()
-                result = await GLOBAL_CHECKPOINTER.aget_tuple(test_config)
+                _result = await GLOBAL_CHECKPOINTER.aget_tuple(test_config)
                 read_latency = time.time() - start_time_local
 
                 health_status.update(
@@ -238,7 +239,6 @@ async def memory_health_check():
             "memory_threshold_mb": gc_memory_threshold,
             "memory_usage_percent": round((rss_mb / gc_memory_threshold) * 100, 1),
             "over_threshold": rss_mb > gc_memory_threshold,
-            "total_requests_processed": _request_count,
             "cache_info": cache_info,
             "scaling_info": {
                 "estimated_memory_per_thread_mb": round(memory_per_thread, 1),
@@ -289,9 +289,6 @@ async def rate_limit_health_check():
 async def prepared_statements_health_check():
     """Health check for prepared statements and database connection status."""
     try:
-        from checkpointer.error_handling.prepared_statements import (
-            clear_prepared_statements,
-        )
         from checkpointer.checkpointer.factory import get_global_checkpointer
 
         # Check if we can get a checkpointer
@@ -310,7 +307,10 @@ async def prepared_statements_health_check():
 
             config = get_db_config()
             # Create connection string without prepared statement parameters
-            connection_string = f"postgresql://{config['user']}:{config['password']}@{config['host']}:{config['port']}/{config['dbname']}?sslmode=require"
+            connection_string = (
+                f"postgresql://{config['user']}:{config['password']}@"
+                f"{config['host']}:{config['port']}/{config['dbname']}?sslmode=require"
+            )
 
             # Get connection kwargs for disabling prepared statements
             connection_kwargs = get_connection_kwargs()

@@ -1,3 +1,5 @@
+"""JWT authentication utilities for Google OAuth token verification."""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
@@ -22,17 +24,15 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
 import time
-import traceback
 
 # Standard imports
 import jwt
 import requests
 from fastapi import HTTPException
 from jwt.algorithms import RSAAlgorithm
-from jwt.exceptions import ImmatureSignatureError
 
 # Import constants from api.config.settings
-from api.config.settings import GOOGLE_JWK_URL, _jwt_kid_missing_count
+from api.config.settings import GOOGLE_JWK_URL, _JWT_KID_MISSING_COUNT
 
 # Import debug utilities
 from api.utils.debug import print__token_debug
@@ -42,7 +42,7 @@ from api.utils.debug import print__token_debug
 # AUTHENTICATION - JWT VERIFICATION
 # ============================================================
 def verify_google_jwt(token: str):
-    global _jwt_kid_missing_count
+    global _JWT_KID_MISSING_COUNT
 
     try:
         # SYSTEM TIME CHECK: Warn if system time appears to be incorrect
@@ -72,7 +72,7 @@ def verify_google_jwt(token: str):
             raise HTTPException(status_code=401, detail="Invalid JWT token format")
 
         # Additional basic validation - each part should be non-empty and base64-like
-        for i, part in enumerate(token_parts):
+        for _, part in enumerate(token_parts):
             if (
                 not part or len(part) < 4
             ):  # Base64 encoded parts should be at least 4 chars
@@ -177,10 +177,10 @@ def verify_google_jwt(token: str):
         # NEW: Check if this is a NextAuth.js id_token (missing 'kid' field)
         if "kid" not in unverified_header:
             # Reduce log noise - only log this every 10th occurrence
-            _jwt_kid_missing_count += 1
-            if _jwt_kid_missing_count % 10 == 1:  # Log 1st, 11th, 21st, etc.
+            _JWT_KID_MISSING_COUNT += 1
+            if _JWT_KID_MISSING_COUNT % 10 == 1:  # Log 1st, 11th, 21st, etc.
                 print__token_debug(
-                    f"JWT token missing 'kid' field (#{_jwt_kid_missing_count}) - attempting NextAuth.js id_token verification"
+                    f"JWT token missing 'kid' field (#{_JWT_KID_MISSING_COUNT}) - attempting NextAuth.js id_token verification"
                 )
 
             # NEXTAUTH.JS SUPPORT: Verify id_token directly using Google's tokeninfo endpoint
@@ -247,7 +247,7 @@ def verify_google_jwt(token: str):
         # ORIGINAL FLOW: Standard Google JWT token with 'kid' field (for direct Google API calls)
         try:
             # Get Google public keys for JWKS verification
-            jwks = requests.get(GOOGLE_JWK_URL).json()
+            jwks = requests.get(GOOGLE_JWK_URL, timeout=10).json()
         except requests.RequestException as e:
             print__token_debug(f"Failed to fetch Google JWKS: {e}")
             raise HTTPException(
