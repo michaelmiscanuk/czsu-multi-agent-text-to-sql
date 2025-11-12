@@ -1,0 +1,1256 @@
+openapi: 3.0.3
+info:
+  title: CZSU Multi-Agent Text-to-SQL API
+  description: |
+    Multi-agent system for converting natural language queries to SQL and retrieving data from the Czech Statistical Office (CZSU) and complex PDF containing statistical summaries of Czech Economy using an AI chatbot.
+
+    ## Features
+    - 🤖 AI-powered natural language to SQL conversion
+    - 💬 Multi-threaded conversation management
+    - 📊 Statistical data catalog browsing
+    - 👍 User feedback and sentiment tracking
+    - 🔍 Query execution and result retrieval
+
+    ## Authentication
+    All endpoints (except `/health` and `/docs`) require Bearer token authentication.
+  version: "1.0.0"
+  contact:
+    name: API Support
+    email: michael.miscanuk@google.com
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://www.multiagent-texttosql-prototype.online/api
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /:
+    get:
+      tags:
+        - Root
+      summary: API Root Information
+      description: |
+        Welcome to CZSU Multi-Agent Text-to-SQL API
+        This endpoint provides comprehensive information about available API endpoints,
+        their purposes, and how to interact with the system.
+      responses:
+        '200':
+          description: API information and endpoint overview
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "CZSU Multi-Agent Text-to-SQL API"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  description:
+                    type: string
+                  status:
+                    type: string
+                    example: "operational"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  documentation:
+                    type: object
+                  core_endpoints:
+                    type: object
+                  data_endpoints:
+                    type: object
+                  system_endpoints:
+                    type: object
+                  feedback_endpoints:
+                    type: object
+                  utility_endpoints:
+                    type: object
+                  getting_started:
+                    type: object
+                  features:
+                    type: array
+                    items:
+                      type: string
+                  support:
+                    type: object
+
+  /health:
+    get:
+      tags:
+        - Health & Monitoring
+      summary: Health Check
+      description: Enhanced health check with memory monitoring and database verification.
+      responses:
+        '200':
+          description: System health information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded]
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptime_seconds:
+                    type: number
+                  memory:
+                    type: object
+                    properties:
+                      rss_mb:
+                        type: number
+                      vms_mb:
+                        type: number
+                      percent:
+                        type: number
+                  database:
+                    type: object
+                    properties:
+                      healthy:
+                        type: boolean
+                      checkpointer_type:
+                        type: string
+                      error:
+                        type: string
+                  version:
+                    type: string
+                  garbage_collector:
+                    type: object
+                    properties:
+                      objects_collected:
+                        type: integer
+                      gc_run:
+                        type: boolean
+        '503':
+          description: Service degraded or unavailable
+
+  /health/database:
+    get:
+      tags:
+        - Health & Monitoring
+      summary: Database Health Check
+      description: Detailed database health check.
+      responses:
+        '200':
+          description: Database health information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                  checkpointer_available:
+                    type: boolean
+                  checkpointer_type:
+                    type: string
+                  database_connection:
+                    type: string
+                  read_latency_ms:
+                    type: number
+                  read_test:
+                    type: string
+        '503':
+          description: Database connection error
+
+  /health/memory:
+    get:
+      tags:
+        - Health & Monitoring
+      summary: Memory Health Check
+      description: Enhanced memory-specific health check with cache information.
+      responses:
+        '200':
+          description: Memory health information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  memory_rss_mb:
+                    type: number
+                  memory_threshold_mb:
+                    type: number
+                  memory_usage_percent:
+                    type: number
+                  over_threshold:
+                    type: boolean
+                  cache_info:
+                    type: object
+                  scaling_info:
+                    type: object
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /health/rate-limits:
+    get:
+      tags:
+        - Health & Monitoring
+      summary: Rate Limits Health Check
+      description: Rate limiting health check.
+      responses:
+        '200':
+          description: Rate limiting status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  total_tracked_clients:
+                    type: integer
+                  active_clients:
+                    type: integer
+                  rate_limit_window:
+                    type: integer
+                  rate_limit_requests:
+                    type: integer
+                  rate_limit_burst:
+                    type: integer
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /health/prepared-statements:
+    get:
+      tags:
+        - Health & Monitoring
+      summary: Prepared Statements Health Check
+      description: Health check for prepared statements and database connection status.
+      responses:
+        '200':
+          description: Prepared statements status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  checkpointer_status:
+                    type: string
+                  prepared_statements_count:
+                    type: integer
+                  prepared_statement_names:
+                    type: string
+                  connection_kwargs:
+                    type: object
+                  timestamp:
+                    type: string
+                    format: date-time
+        '503':
+          description: Database connection issues
+
+  /catalog:
+    get:
+      tags:
+        - Data Catalog
+      summary: Search CZSU data catalog
+      description: |
+        **Browse and search the CZSU (Czech Statistical Office) data catalog.**
+        
+        Returns a paginated list of available statistical datasets with descriptions.
+        Use the `q` parameter to filter by selection code or description text.
+        
+        **Examples:**
+        - `/catalog?page=1&page_size=20` - Get first 20 datasets
+        - `/catalog?q=population` - Search for population-related datasets
+        - `/catalog?q=2023&page=2` - Search for 2023 data, page 2
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number (1-indexed)
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Search query to filter by selection code or description
+        - name: page_size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10000
+            default: 10
+          description: Number of results per page
+      responses:
+        '200':
+          description: Successfully retrieved catalog data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        selection_code:
+                          type: string
+                        extended_description:
+                          type: string
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  page_size:
+                    type: integer
+
+  /data-tables:
+    get:
+      tags:
+        - Data Catalog
+      summary: Get available data tables
+      description: Get list of available CZSU data tables with optional filtering.
+      parameters:
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Optional search query to filter table names
+      responses:
+        '200':
+          description: List of available data tables
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tables:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        selection_code:
+                          type: string
+                        short_description:
+                          type: string
+
+  /data-table:
+    get:
+      tags:
+        - Data Catalog
+      summary: Get data table contents
+      description: Get the contents of a specific CZSU data table.
+      parameters:
+        - name: table
+          in: query
+          schema:
+            type: string
+          description: Name of the table to retrieve
+      responses:
+        '200':
+          description: Table data with columns and rows
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  columns:
+                    type: array
+                    items:
+                      type: string
+                  rows:
+                    type: array
+                    items:
+                      type: array
+
+  /analyze:
+    post:
+      tags:
+        - Query Analysis
+      summary: Analyze natural language query
+      description: |
+        **Convert a natural language query to SQL and execute it against the CZSU database.**
+        
+        This endpoint uses a multi-agent system to:
+        1. Parse the user's natural language query
+        2. Identify relevant CZSU datasets
+        3. Generate appropriate SQL queries
+        4. Execute queries and return results
+        5. Format a natural language answer
+        
+        **Rate Limiting:** Subject to per-IP rate limits. See 429 responses for retry information.
+        
+        **Concurrency:** Limited to prevent resource exhaustion.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyzeRequest'
+      responses:
+        '200':
+          description: Successful analysis with streaming response
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '401':
+          description: Authentication failed - Invalid or missing token
+        '429':
+          description: Rate limit exceeded - Too many requests
+        '500':
+          description: Internal error during query processing
+
+  /feedback:
+    post:
+      tags:
+        - Feedback & Sentiment
+      summary: Submit user feedback
+      description: |
+        **Submit feedback for a specific query execution run.**
+        
+        Feedback is logged to LangSmith for quality tracking and model improvement.
+        You can provide a binary rating (thumbs up/down) and/or a text comment.
+        
+        **At least one of `feedback` or `comment` must be provided.**
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeedbackRequest'
+      responses:
+        '200':
+          description: Feedback successfully submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  run_id:
+                    type: string
+                  feedback:
+                    type: integer
+                  comment:
+                    type: string
+        '400':
+          description: Invalid request - Missing both feedback and comment
+        '404':
+          description: Run ID not found in LangSmith
+
+  /sentiment:
+    post:
+      tags:
+        - Feedback & Sentiment
+      summary: Update sentiment
+      description: Update sentiment for a specific run_id.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SentimentRequest'
+      responses:
+        '200':
+          description: Sentiment updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  run_id:
+                    type: string
+                  sentiment:
+                    type: boolean
+        '404':
+          description: Run ID not found or access denied
+
+  /chat-threads:
+    get:
+      tags:
+        - Chat & Threads
+      summary: Get user's chat threads
+      description: |
+        **Retrieve a paginated list of chat threads for the authenticated user.**
+        
+        Threads are ordered by most recent activity first. Each thread includes:
+        - Thread ID for referencing in other endpoints
+        - Latest timestamp of activity
+        - Number of query runs in the thread
+        - Title derived from the first query
+        - Full first prompt for context
+        
+        **Pagination:** Use `page` and `limit` parameters to control results.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number (1-indexed)
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          description: Number of threads per page
+      responses:
+        '200':
+          description: Successfully retrieved chat threads
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedChatThreadsResponse'
+
+  /chat/{thread_id}:
+    delete:
+      tags:
+        - Chat & Threads
+      summary: Delete chat thread
+      description: Delete all PostgreSQL checkpoint records and thread entries for a specific thread_id.
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Thread ID to delete
+      responses:
+        '200':
+          description: Thread deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  thread_id:
+                    type: string
+                  user_email:
+                    type: string
+                  warning:
+                    type: string
+
+  /chat/all-messages-for-one-thread/{thread_id}:
+    get:
+      tags:
+        - Chat & Threads
+      summary: Get all messages for one thread
+      description: Get all chat messages for a specific thread, packaged in a dictionary with metadata.
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Thread ID to retrieve messages for
+      responses:
+        '200':
+          description: Thread messages retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatMessage'
+                  runIds:
+                    type: object
+                  sentiments:
+                    type: object
+
+  /chat/{thread_id}/sentiments:
+    get:
+      tags:
+        - Chat & Threads
+      summary: Get thread sentiments
+      description: Get sentiment values for all messages in a thread.
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Thread ID to get sentiments for
+      responses:
+        '200':
+          description: Sentiments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: boolean
+
+  /chat/{thread_id}/messages:
+    get:
+      tags:
+        - Messages
+      summary: Get chat messages
+      description: Load conversation messages from PostgreSQL checkpoint history that preserves original user messages.
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Thread ID to retrieve messages for
+      responses:
+        '200':
+          description: Messages retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChatMessage'
+
+  /chat/{thread_id}/run-ids:
+    get:
+      tags:
+        - Messages
+      summary: Get message run IDs
+      description: Get run_ids for messages in a thread to enable feedback submission.
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Thread ID to get run IDs for
+      responses:
+        '200':
+          description: Run IDs retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  run_ids:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        run_id:
+                          type: string
+                        prompt:
+                          type: string
+                        timestamp:
+                          type: string
+
+  /chat/all-messages-for-all-threads:
+    get:
+      tags:
+        - Bulk Operations
+      summary: Get all messages for all threads
+      description: Get all chat messages for the authenticated user using bulk loading with improved caching.
+      responses:
+        '200':
+          description: All messages retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChatMessage'
+                  runIds:
+                    type: object
+                  sentiments:
+                    type: object
+
+  /debug/chat/{thread_id}/checkpoints:
+    get:
+      tags:
+        - Debug & Admin
+      summary: Debug checkpoints
+      description: Debug endpoint to inspect raw checkpoint data for a thread.
+      parameters:
+        - name: thread_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Thread ID to inspect checkpoints for
+      responses:
+        '200':
+          description: Checkpoint data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  thread_id:
+                    type: string
+                  total_checkpoints:
+                    type: integer
+                  checkpoints:
+                    type: array
+
+  /debug/pool-status:
+    get:
+      tags:
+        - Debug & Admin
+      summary: Debug pool status
+      description: Debug endpoint to check pool status - updated for official AsyncPostgresSaver.
+      responses:
+        '200':
+          description: Pool status information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timestamp:
+                    type: string
+                    format: date-time
+                  global_checkpointer_exists:
+                    type: boolean
+                  checkpointer_type:
+                    type: string
+                  asyncpostgressaver_status:
+                    type: string
+                  test_latency_ms:
+                    type: number
+                  connection_test:
+                    type: string
+
+  /debug/run-id/{run_id}:
+    get:
+      tags:
+        - Debug & Admin
+      summary: Debug run ID
+      description: Debug endpoint to check if a run_id exists in the database.
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Run ID to check
+      responses:
+        '200':
+          description: Run ID information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  run_id:
+                    type: string
+                  is_valid_uuid_format:
+                    type: boolean
+                  exists_in_database:
+                    type: boolean
+                  user_owns_run_id:
+                    type: boolean
+                  database_details:
+                    type: object
+
+  /admin/clear-cache:
+    post:
+      tags:
+        - Debug & Admin
+      summary: Clear bulk cache
+      description: Clear the bulk loading cache (admin endpoint).
+      responses:
+        '200':
+          description: Cache cleared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  cache_entries_cleared:
+                    type: integer
+                  current_memory_mb:
+                    type: number
+                  memory_status:
+                    type: string
+                  cleared_by:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /admin/clear-prepared-statements:
+    post:
+      tags:
+        - Debug & Admin
+      summary: Clear prepared statements
+      description: Clear prepared statements in the database to free memory.
+      responses:
+        '200':
+          description: Prepared statements cleared
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /debug/set-env:
+    post:
+      tags:
+        - Debug & Admin
+      summary: Set debug environment variables
+      description: Dynamically set environment variables for debug control.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        '200':
+          description: Environment variables set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  variables:
+                    type: object
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /debug/reset-env:
+    post:
+      tags:
+        - Debug & Admin
+      summary: Reset debug environment variables
+      description: Reset specific environment variables to their original .env values.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+      responses:
+        '200':
+          description: Environment variables reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  variables:
+                    type: object
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /placeholder/{width}/{height}:
+    get:
+      tags:
+        - Utilities
+      summary: Generate placeholder image
+      description: Generate a placeholder image with specified dimensions.
+      parameters:
+        - name: width
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 2000
+          description: Image width in pixels
+        - name: height
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 2000
+          description: Image height in pixels
+      responses:
+        '200':
+          description: SVG placeholder image
+          content:
+            image/svg+xml:
+              schema:
+                type: string
+
+  /initial-followup-prompts:
+    get:
+      tags:
+        - Utilities
+      summary: Get initial follow-up prompts
+      description: Generate initial follow-up prompt suggestions for new conversations using AI.
+      responses:
+        '200':
+          description: List of suggested prompts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /stop-execution:
+    post:
+      tags:
+        - Execution Control
+      summary: Stop execution
+      description: |
+        Stop a running analysis execution.
+        
+        This endpoint allows users to cancel their own running analyses.
+        The cancellation is tracked by thread_id and run_id to ensure
+        multi-user safety - each user can only stop their own executions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopExecutionRequest'
+      responses:
+        '200':
+          description: Execution stop requested
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+                  thread_id:
+                    type: string
+                  run_id:
+                    type: string
+
+components:
+  schemas:
+    AnalyzeRequest:
+      type: object
+      required:
+        - prompt
+        - thread_id
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 10000
+          description: Natural language query to analyze and convert to SQL
+          example: "What was the population of Prague in 2020?"
+        thread_id:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Unique identifier for the conversation thread
+          example: "thread_abc123"
+        run_id:
+          type: string
+          description: Optional run ID in UUID format. Auto-generated if not provided.
+          example: "550e8400-e29b-41d4-a716-446655440000"
+      example:
+        prompt: "Show me unemployment rates for 2023"
+        thread_id: "thread_12345"
+        run_id: "550e8400-e29b-41d4-a716-446655440000"
+
+    FeedbackRequest:
+      type: object
+      required:
+        - run_id
+      properties:
+        run_id:
+          type: string
+          description: UUID of the analysis run to provide feedback for
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        feedback:
+          type: integer
+          minimum: 0
+          maximum: 1
+          description: Binary feedback score - 1 = positive (👍), 0 = negative (👎)
+          example: 1
+        comment:
+          type: string
+          maxLength: 1000
+          description: Optional text comment explaining the feedback
+          example: "The query results were accurate and helpful."
+      example:
+        run_id: "550e8400-e29b-41d4-a716-446655440000"
+        feedback: 1
+        comment: "Great results!"
+
+    SentimentRequest:
+      type: object
+      required:
+        - run_id
+      properties:
+        run_id:
+          type: string
+          description: UUID of the analysis run to track sentiment for
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        sentiment:
+          type: boolean
+          description: Sentiment value - true = positive, false = negative, null = clear/remove sentiment
+          example: true
+      example:
+        run_id: "550e8400-e29b-41d4-a716-446655440000"
+        sentiment: true
+
+    StopExecutionRequest:
+      type: object
+      required:
+        - thread_id
+        - run_id
+      properties:
+        thread_id:
+          type: string
+          description: Thread ID of the execution to stop
+          example: "thread_abc123"
+        run_id:
+          type: string
+          description: Run ID of the execution to stop
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    ChatThreadResponse:
+      type: object
+      required:
+        - thread_id
+        - latest_timestamp
+        - run_count
+        - title
+        - full_prompt
+      properties:
+        thread_id:
+          type: string
+          description: Unique identifier for the conversation thread
+          example: "thread_abc123"
+        latest_timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the most recent message in ISO 8601 format
+        run_count:
+          type: integer
+          description: Total number of query runs in this thread
+          example: 5
+        title:
+          type: string
+          description: Thread title derived from the first user prompt
+          example: "Population Statistics Query"
+        full_prompt:
+          type: string
+          description: Complete text of the first prompt for tooltip display
+          example: "What was the total population of Prague in 2020?"
+
+    PaginatedChatThreadsResponse:
+      type: object
+      required:
+        - threads
+        - total_count
+        - page
+        - limit
+        - has_more
+      properties:
+        threads:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatThreadResponse'
+          description: List of chat thread summaries for the current page
+        total_count:
+          type: integer
+          description: Total number of threads across all pages
+          example: 42
+        page:
+          type: integer
+          description: Current page number (1-indexed)
+          example: 1
+        limit:
+          type: integer
+          description: Maximum number of threads per page
+          example: 10
+        has_more:
+          type: boolean
+          description: Whether more pages of results are available
+          example: true
+
+    ChatMessage:
+      type: object
+      required:
+        - id
+        - threadId
+        - user
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Unique message identifier
+          example: "msg_123"
+        threadId:
+          type: string
+          description: Thread ID this message belongs to
+          example: "thread_abc123"
+        user:
+          type: string
+          description: Email address of the user who created the message
+          example: "user@example.com"
+        createdAt:
+          type: integer
+          description: Unix timestamp (milliseconds) when message was created
+          example: 1705320600000
+        prompt:
+          type: string
+          description: User's natural language query
+          example: "What was the population in 2020?"
+        final_answer:
+          type: string
+          description: AI-generated answer to the user's query
+        queries_and_results:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+          description: List of [query_text, result_text] pairs from database execution
+        datasets_used:
+          type: array
+          items:
+            type: string
+          description: Names of CZSU datasets referenced in the query
+          example: ["population_data", "census_2020"]
+        top_chunks:
+          type: array
+          items:
+            type: object
+          description: Relevant PDF documentation chunks retrieved via vector search
+        sql_query:
+          type: string
+          description: Generated SQL query executed against the database
+          example: "SELECT COUNT(*) FROM population WHERE year = 2020"
+        error:
+          type: string
+          description: Error message if query execution failed
+        isLoading:
+          type: boolean
+          description: Whether the message is currently being processed
+        startedAt:
+          type: integer
+          description: Unix timestamp (milliseconds) when processing started
+        isError:
+          type: boolean
+          description: Whether the message resulted in an error
+        run_id:
+          type: string
+          description: UUID of the analysis run for tracking and feedback
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        followup_prompts:
+          type: array
+          items:
+            type: string
+          description: AI-suggested follow-up questions
+          example: ["What about 2021?", "Show me by region"]
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: JWT Bearer token authentication
+
+  responses:
+    UnauthorizedError:
+      description: Unauthorized - Invalid or missing authentication token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "User email not found in token"
+
+    ValidationError:
+      description: Validation Error - Invalid request parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Validation error"
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    loc:
+                      type: array
+                      items:
+                        type: string
+                    msg:
+                      type: string
+                    type:
+                      type: string
+
+    RateLimitError:
+      description: Rate Limit Exceeded - Too many requests
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Rate limit exceeded. Please wait 5.0s before retrying."
+              retry_after:
+                type: number
+                example: 5
+              burst_usage:
+                type: string
+                example: "10/10"
+              window_usage:
+                type: string
+                example: "50/50"
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+                example: "Internal server error"

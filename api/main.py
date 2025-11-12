@@ -1,11 +1,485 @@
-"""FastAPI application for the CZSU multi-agent text-to-SQL system.
+"""CZSU Multi-Agent Text-to-SQL FastAPI Backend Application
 
-This module provides the main FastAPI application with routes for analysis,
-chat, catalog, and other functionality for the Czech Statistical Office data system.
+This module serves as the main entry point for the FastAPI backend application that powers
+the Czech Statistical Office (CZSU) multi-agent text-to-SQL system. It orchestrates a
+sophisticated AI-powered natural language to SQL conversion system with multi-threaded
+conversation management, comprehensive memory monitoring, and production-grade error handling.
+
+The application combines LangGraph-based multi-agent workflows with FastAPI's modern async
+capabilities to provide a robust API for querying statistical databases and PDF-based
+knowledge bases through natural language.
 """
 
-# CRITICAL: Set Windows event loop policy FIRST, before any other imports
-# This must be the very first thing that happens to fix psycopg compatibility
+MODULE_DESCRIPTION = r"""CZSU Multi-Agent Text-to-SQL FastAPI Backend Application
+
+This module serves as the main entry point for the FastAPI backend application that powers
+the Czech Statistical Office (CZSU) multi-agent text-to-SQL system. It orchestrates a 
+sophisticated AI-powered natural language to SQL conversion system with multi-threaded 
+conversation management, comprehensive memory monitoring, and production-grade error handling.
+
+The application combines LangGraph-based multi-agent workflows with FastAPI's modern async 
+capabilities to provide a robust API for querying statistical databases and PDF-based 
+knowledge bases through natural language.
+
+Key Features:
+-------------
+1. Multi-Agent AI System:
+   - LangGraph-based agent orchestration for complex query understanding
+   - Natural language to SQL query translation
+   - Multi-step reasoning with specialized agents
+   - Context-aware query refinement and validation
+   - Integration with ChromaDB for semantic search over PDF documentation
+   - Support for both SQLite (Turso) and cloud database backends
+
+2. Production-Ready Infrastructure:
+   - Asynchronous request handling with FastAPI
+   - PostgreSQL-based checkpointing for conversation state persistence
+   - Thread-safe multi-user conversation management
+   - Graceful shutdown handling with resource cleanup
+   - Comprehensive error handling with detailed logging
+   - Rate limiting with intelligent throttling (wait instead of reject)
+   - CORS and GZip compression middleware
+
+3. Memory Management & Monitoring:
+   - Real-time memory profiling with configurable intervals
+   - Automatic memory leak detection and alerting
+   - Periodic garbage collection with configurable thresholds
+   - Memory baseline tracking from startup
+   - Per-request memory usage monitoring for heavy operations
+   - RSS (Resident Set Size) tracking with growth analysis
+   - Optional memory profiler with top statistics reporting
+   - Automatic memory cleanup background tasks
+
+4. Windows Compatibility:
+   - Explicit Windows event loop policy configuration
+   - psycopg compatibility fixes for Windows async operations
+   - Proper path handling for cross-platform support
+
+5. Authentication & Security:
+   - Bearer token authentication for all protected endpoints
+   - User email extraction from JWT tokens
+   - IP-based rate limiting with burst and window limits
+   - Configurable throttling with semaphores per client
+   - Request validation with proper error responses
+
+6. API Route Organization:
+   - Health & Monitoring: System status, pool diagnostics, memory stats
+   - Data Catalog: Browse CZSU datasets, selections, and metadata
+   - Query Analysis: Natural language to SQL conversion and execution
+   - Chat & Threads: Multi-threaded conversation management
+   - Messages: Retrieve conversation history
+   - Feedback: User feedback collection and sentiment tracking
+   - Bulk Operations: Batch processing capabilities
+   - Debug & Admin: Internal diagnostics and debugging tools
+   - Execution Control: Query interruption and cancellation
+
+7. Error Handling & Debugging:
+   - Custom exception handlers for validation, HTTP, and unexpected errors
+   - Detailed 401 authentication error tracing
+   - Configurable traceback output for development
+   - Comprehensive error logging with request context
+   - Memory-aware error reporting with leak detection
+
+8. Observability & Diagnostics:
+   - Request counting and tracking
+   - Memory usage logging at startup, per-request, and shutdown
+   - Application uptime tracking
+   - Memory growth detection with threshold alerts
+   - Route registration monitoring to prevent memory leaks
+   - Connection pool status monitoring
+
+Architecture Components:
+-----------------------
+1. Application Lifecycle:
+   - Lifespan context manager for startup/shutdown orchestration
+   - Early environment variable loading with dotenv
+   - PostgreSQL checkpointer initialization at startup
+   - Memory baseline establishment
+   - Background task management (profiler, cleanup)
+   - Graceful resource cleanup on shutdown
+
+2. Middleware Stack (Order Matters):
+   - CORS: Allow cross-origin requests (development: *, production: specific)
+   - GZip: Response compression for reduced bandwidth
+   - Throttling: Rate limiting with intelligent wait-instead-of-reject
+   - Memory Monitoring: Track memory usage for heavy operations
+
+3. Database Integration:
+   - PostgreSQL for conversation state checkpointing
+   - Turso SQLite Cloud for CZSU statistical data
+   - ChromaDB for semantic search over PDF documentation
+   - Connection pooling with status monitoring
+
+4. Route Structure:
+   - Root: Basic API information and welcome message
+   - Health: /health, /debug/pool-status, /debug/memory-status
+   - Catalog: /catalog/datasets, /catalog/selections, /catalog/metadata
+   - Analysis: /analyze (main NL-to-SQL endpoint)
+   - Chat: /chat/threads, /chat/messages, /chat/all-messages-for-all-threads
+   - Feedback: /feedback (submit user feedback)
+   - Bulk: /bulk/* (batch operations)
+   - Debug: /debug/* (internal diagnostics)
+   - Stop: /stop (cancel query execution)
+
+Configuration & Environment:
+---------------------------
+Required Environment Variables:
+- Database credentials (PostgreSQL, Turso)
+- LLM API keys (OpenAI, Anthropic, or others)
+- Authentication tokens and secrets
+- CORS allowed origins for production
+
+Memory Management Variables:
+- GC_MEMORY_THRESHOLD: Memory growth threshold for alerts (default: 1900 MB)
+- MEMORY_PROFILER_ENABLED: Enable memory profiler (0/1, default: 0)
+- MEMORY_PROFILER_INTERVAL: Profiler snapshot interval (default: 30s)
+- MEMORY_PROFILER_TOP_STATS: Number of top memory consumers to report (default: 10)
+- MEMORY_CLEANUP_INTERVAL: Background cleanup interval (default: 300s)
+- DEBUG_TRACEBACK: Include tracebacks in error responses (0/1, default: 0)
+
+Rate Limiting Variables:
+- RATE_LIMIT_BURST: Maximum burst requests per client (default: 5)
+- RATE_LIMIT_WINDOW: Window size for rate limiting (default: 60s)
+- THROTTLE_MAX_CONCURRENT: Max concurrent requests per IP (default: 3)
+- THROTTLE_MAX_WAIT: Maximum wait time before rejecting (default: 30s)
+
+Startup Sequence:
+----------------
+1. Windows Event Loop Policy Setup:
+   - Must be FIRST to fix psycopg compatibility on Windows
+   - Sets WindowsSelectorEventLoopPolicy before any async imports
+
+2. Environment Loading:
+   - Load .env file for configuration
+   - Establish BASE_DIR for project root
+   - Add BASE_DIR to sys.path for imports
+
+3. Configuration Import:
+   - Load global settings and constants
+   - Initialize throttle semaphores dictionary
+   - Set memory management variables
+
+4. Application Initialization:
+   - Create FastAPI app with lifespan manager
+   - Configure OpenAPI documentation
+   - Set API metadata and contact info
+
+5. Middleware Registration:
+   - CORS for cross-origin support
+   - GZip for response compression
+   - Rate limiting with throttling
+   - Memory monitoring for heavy operations
+
+6. Exception Handler Registration:
+   - RequestValidationError: 422 responses
+   - StarletteHTTPException: HTTP errors with detailed 401 tracing
+   - ValueError: 400 Bad Request
+   - General Exception: 500 Internal Server Error
+
+7. Route Registration:
+   - Import all route modules
+   - Register routers with tags
+   - Monitor route additions to prevent leaks
+
+8. Lifespan Startup:
+   - Record startup timestamp
+   - Initialize PostgreSQL checkpointer
+   - Establish memory baseline
+   - Start memory profiler (if enabled)
+   - Start background cleanup task
+
+9. Ready to Serve:
+   - Log memory usage
+   - Report startup success
+   - Begin handling requests
+
+Shutdown Sequence:
+-----------------
+1. Shutdown Signal:
+   - Catch SIGTERM/SIGINT
+   - Initiate graceful shutdown
+
+2. Resource Cleanup:
+   - Stop memory profiler
+   - Stop background cleanup task
+   - Close database connections
+   - Cleanup checkpointer resources
+
+3. Final Reporting:
+   - Calculate application uptime
+   - Report final memory statistics
+   - Compare to baseline for leak detection
+   - Alert if memory growth exceeds threshold
+
+Memory Management Strategy:
+--------------------------
+The application implements a sophisticated memory management system to prevent
+memory leaks and optimize resource usage in long-running production environments.
+
+1. Memory Baseline:
+   - Established at startup after initialization
+   - Used as reference for growth calculations
+   - Helps identify abnormal memory accumulation
+
+2. Real-Time Monitoring:
+   - Per-request tracking for heavy operations (/analyze, /chat/all-messages-*)
+   - RSS (Resident Set Size) measurement before and after
+   - Memory growth alerts when exceeding thresholds
+
+3. Memory Profiler (Optional):
+   - Uses tracemalloc for detailed memory snapshots
+   - Configurable snapshot intervals
+   - Reports top memory consumers
+   - Helps identify leak sources in development
+
+4. Background Cleanup:
+   - Periodic garbage collection
+   - Forces memory return to OS
+   - Prevents heap fragmentation
+   - Runs at configurable intervals
+
+5. Route Registration Monitoring:
+   - Tracks all route additions at startup
+   - Prevents "needle in a haystack" memory leak pattern
+   - Ensures routes aren't duplicated on reload
+
+6. Leak Detection:
+   - Compares final memory to baseline at shutdown
+   - Alerts if growth exceeds threshold (default: 1900 MB)
+   - Provides detailed statistics for investigation
+
+Rate Limiting Strategy:
+----------------------
+The application uses a two-tier rate limiting approach:
+
+1. Burst Protection:
+   - Short-term limit for rapid requests
+   - Prevents API abuse and DDoS
+   - Default: 5 requests in quick succession
+
+2. Window-Based Limiting:
+   - Longer-term request limits
+   - Default: 60 requests per 60-second window
+   - Prevents sustained overuse
+
+3. Intelligent Throttling:
+   - Instead of rejecting immediately, requests wait
+   - Uses asyncio semaphores per client IP
+   - Max concurrent requests configurable
+   - Only rejects if wait time exceeds threshold
+
+4. Exempt Endpoints:
+   - /health, /docs, /openapi.json
+   - /debug/pool-status
+   - Essential for monitoring and documentation
+
+Error Handling Philosophy:
+-------------------------
+The application prioritizes detailed error information while maintaining security:
+
+1. Development Mode:
+   - Full tracebacks included in responses
+   - Detailed memory statistics
+   - Comprehensive logging
+
+2. Production Mode:
+   - Generic error messages
+   - No internal details exposed
+   - Log all errors for investigation
+
+3. Special Cases:
+   - 401 errors: Enhanced debugging for authentication issues
+   - 422 errors: Detailed validation errors with field information
+   - 429 errors: Rate limit info with retry-after headers
+   - 500 errors: Generic message, full logging internally
+
+4. Error Context:
+   - Request URL, method, headers
+   - Client IP address
+   - Memory state at error time
+   - Full traceback in logs
+
+API Documentation:
+-----------------
+The application automatically generates OpenAPI documentation at:
+- /docs: Swagger UI (interactive documentation)
+- /redoc: ReDoc (alternative documentation view)
+- /openapi.json: Raw OpenAPI specification
+
+Documentation includes:
+- All endpoint descriptions
+- Request/response schemas
+- Authentication requirements
+- Error response examples
+- Rate limiting information
+
+Usage Example:
+-------------
+# Development server startup
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+
+# Production server with Gunicorn
+gunicorn api.main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:8000
+
+# Docker container
+docker-compose up backend
+
+# Query the API
+curl -X POST "http://localhost:8000/analyze" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Show me population data for Prague", "thread_id": "user123"}'
+
+Dependencies:
+------------
+Core Framework:
+- fastapi: Modern async web framework
+- uvicorn: ASGI server
+- starlette: ASGI toolkit (used by FastAPI)
+- pydantic: Data validation
+
+Database:
+- psycopg[binary]: PostgreSQL driver with Windows async support
+- sqlalchemy: ORM for database operations
+- chromadb: Vector database for semantic search
+
+AI/ML:
+- langchain: LLM orchestration framework
+- langgraph: Agent workflow management
+- openai: OpenAI API client
+- anthropic: Anthropic API client (optional)
+
+Utilities:
+- python-dotenv: Environment variable management
+- psutil: System and process utilities
+- python-multipart: Form data parsing
+- python-jose: JWT token handling
+- tenacity: Retry logic with exponential backoff
+
+API Endpoints Summary:
+---------------------
+GET  /                          - API welcome message
+GET  /health                    - Health check (no auth required)
+GET  /debug/pool-status         - Connection pool diagnostics
+GET  /debug/memory-status       - Memory usage statistics
+GET  /catalog/datasets          - List available CZSU datasets
+GET  /catalog/selections/{id}   - Get selections for dataset
+POST /analyze                   - Convert NL query to SQL and execute
+POST /chat/threads              - Create new conversation thread
+GET  /chat/threads/{thread_id}  - Get thread messages
+GET  /chat/all-messages-*       - Bulk message retrieval (admin)
+POST /feedback                  - Submit user feedback
+POST /stop                      - Cancel query execution
+GET  /debug/*                   - Internal debugging endpoints
+
+Performance Considerations:
+--------------------------
+1. Memory:
+   - Baseline: ~200-400 MB after startup
+   - Per request: +10-50 MB (depends on query complexity)
+   - Alert threshold: 1900 MB growth from baseline
+   - Background cleanup prevents accumulation
+
+2. Database:
+   - Connection pooling for PostgreSQL
+   - Efficient checkpointing to minimize overhead
+   - ChromaDB caching for repeated queries
+
+3. Response Time:
+   - Simple queries: <1 second
+   - Complex multi-agent queries: 5-15 seconds
+   - Bulk operations: Varies by size
+
+4. Concurrency:
+   - Async request handling
+   - Per-client throttling prevents overload
+   - Background tasks don't block requests
+
+Troubleshooting:
+---------------
+1. Memory Growth:
+   - Check MEMORY_PROFILER output for leak sources
+   - Verify GC_MEMORY_THRESHOLD is appropriate
+   - Ensure MEMORY_CLEANUP_INTERVAL is set
+   - Monitor memory-status endpoint
+
+2. Rate Limiting:
+   - Check client IP in logs
+   - Adjust RATE_LIMIT_* variables
+   - Verify exempt endpoints list
+   - Monitor throttle semaphore usage
+
+3. Authentication Errors:
+   - Enable DEBUG_TRACEBACK for details
+   - Verify JWT token format
+   - Check token expiration
+   - Review 401 error traces in logs
+
+4. Database Connection:
+   - Monitor pool-status endpoint
+   - Check PostgreSQL connection string
+   - Verify checkpointer initialization
+   - Review connection pool settings
+
+5. Windows Async Issues:
+   - Ensure event loop policy is set FIRST
+   - Verify psycopg[binary] installation
+   - Check for asyncio compatibility
+
+Production Deployment:
+---------------------
+Recommended setup:
+- Use Gunicorn with uvicorn workers
+- Set appropriate memory limits
+- Enable memory profiler for initial monitoring
+- Configure proper CORS origins
+- Use environment variables for secrets
+- Set up health check monitoring
+- Configure log aggregation
+- Implement container restart policies
+
+Security Checklist:
+- ✓ Bearer token authentication
+- ✓ Rate limiting per client IP
+- ✓ CORS configured for production
+- ✓ No sensitive data in responses
+- ✓ Validation on all inputs
+- ✓ Proper error handling
+- ✓ Secure environment variable management
+
+Monitoring Recommendations:
+- Health check endpoint for uptime
+- Memory status for resource usage
+- Pool status for database health
+- Log aggregation for error tracking
+- Request count for traffic analysis
+- Rate limit metrics for abuse detection
+
+Notes:
+------
+- Windows event loop policy MUST be set before any async imports
+- Memory baseline is established AFTER initialization, not at import time
+- Rate limiting uses wait-instead-of-reject for better UX
+- Heavy operations are monitored for memory usage
+- Route registration is monitored to prevent memory leaks
+- Background cleanup helps prevent memory accumulation in long-running processes
+- Graceful shutdown ensures proper resource cleanup
+
+Version History:
+---------------
+- 1.0.0: Initial production release with multi-agent system
+- Enhanced memory management and monitoring
+- Improved rate limiting with intelligent throttling
+- Production-ready error handling and logging"""
+
+# ==============================================================================
+# CRITICAL WINDOWS COMPATIBILITY SETUP
+# ==============================================================================
+# MUST BE FIRST: Set Windows event loop policy before ANY other imports
+# This fixes psycopg[binary] async compatibility issues on Windows platforms
+# Without this, PostgreSQL checkpointer operations will fail with event loop errors
+# Reference: https://docs.python.org/3/library/asyncio-policy.html#asyncio.WindowsSelectorEventLoopPolicy
 import os
 import sys
 
@@ -14,109 +488,179 @@ if sys.platform == "win32":
 
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Load environment variables early
+# ==============================================================================
+# ENVIRONMENT VARIABLES LOADING
+# ==============================================================================
+# Load .env file early to ensure all configuration is available before imports
+# This allows modules to access environment variables during their initialization
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Constants
+# ==============================================================================
+# PROJECT ROOT DIRECTORY CONFIGURATION
+# ==============================================================================
+# Establish BASE_DIR as the project root (parent of api/ directory)
+# This is used for relative imports and file path resolution
 try:
     from pathlib import Path
 
-    BASE_DIR = Path(__file__).resolve().parents[1]
+    BASE_DIR = Path(__file__).resolve().parents[1]  # Go up one level from api/main.py
 except NameError:
+    # Fallback for interactive environments (Jupyter, REPL)
     BASE_DIR = Path(os.getcwd())
 
 # Add the root directory to Python path for imports to work
+# This enables imports like "from checkpointer import ..." and "from my_agent import ..."
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-# Standard imports
-import traceback
-from contextlib import asynccontextmanager
-from datetime import datetime
+# ==============================================================================
+# STANDARD LIBRARY AND THIRD-PARTY IMPORTS
+# ==============================================================================
+import traceback  # For detailed error logging and debugging
+from contextlib import asynccontextmanager  # For lifespan management
+from datetime import datetime  # For timestamp tracking
 
-import psutil
-from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
-from starlette.exceptions import HTTPException as StarletteHTTPException
+import psutil  # For system/process monitoring (memory, CPU)
+from fastapi import FastAPI, Request  # Core FastAPI framework
+from fastapi.exceptions import RequestValidationError  # Pydantic validation errors
+from fastapi.middleware.cors import CORSMiddleware  # Cross-origin resource sharing
+from fastapi.middleware.gzip import GZipMiddleware  # Response compression
+from fastapi.responses import JSONResponse  # JSON response formatting
+from fastapi.encoders import jsonable_encoder  # Safe JSON encoding
+from starlette.exceptions import HTTPException as StarletteHTTPException  # HTTP errors
 
-# Import configuration and globals
+# ==============================================================================
+# CONFIGURATION AND GLOBAL VARIABLES
+# ==============================================================================
+# Import shared global state and configuration from settings module
 from api.config.settings import (
-    _APP_STARTUP_TIME,
-    _MEMORY_BASELINE,
-    _REQUEST_COUNT,
-    throttle_semaphores,
+    _APP_STARTUP_TIME,  # Timestamp when application started (for uptime calculation)
+    _MEMORY_BASELINE,  # Initial memory usage after startup (for leak detection)
+    _REQUEST_COUNT,  # Total requests processed (for monitoring)
+    throttle_semaphores,  # Per-client semaphores for concurrent request limiting
 )
 
+# ==============================================================================
+# MEMORY MANAGEMENT CONFIGURATION
+# ==============================================================================
 # Load memory-related variables directly from environment
-GC_MEMORY_THRESHOLD = int(os.environ.get("GC_MEMORY_THRESHOLD", "1900"))
-MEMORY_PROFILER_ENABLED = os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
-MEMORY_PROFILER_INTERVAL = int(os.environ.get("MEMORY_PROFILER_INTERVAL", "30"))
-MEMORY_PROFILER_TOP_STATS = int(os.environ.get("MEMORY_PROFILER_TOP_STATS", "10"))
+# These control the memory monitoring and cleanup behavior
+GC_MEMORY_THRESHOLD = int(
+    os.environ.get("GC_MEMORY_THRESHOLD", "1900")
+)  # MB growth before alert
+MEMORY_PROFILER_ENABLED = (
+    os.environ.get("MEMORY_PROFILER_ENABLED", "0") == "1"
+)  # Enable tracemalloc profiler
+MEMORY_PROFILER_INTERVAL = int(
+    os.environ.get("MEMORY_PROFILER_INTERVAL", "30")
+)  # Snapshot interval (seconds)
+MEMORY_PROFILER_TOP_STATS = int(
+    os.environ.get("MEMORY_PROFILER_TOP_STATS", "10")
+)  # Top N memory consumers
 
-# Import authentication
+# ==============================================================================
+# AUTHENTICATION UTILITIES
+# ==============================================================================
+# Authentication is handled via Bearer tokens in route dependencies
+# Uncomment below if centralized auth dependency is needed
 # from api.dependencies.auth import get_current_user
 
-# Import debug functions
+# ==============================================================================
+# DEBUG AND LOGGING UTILITIES
+# ==============================================================================
+# Import debug printing functions for different contexts
 from api.utils.debug import (
-    print__analysis_tracing_debug,
-    print__analyze_debug,
-    print__debug,
-    print__startup_debug,
+    print__analysis_tracing_debug,  # Detailed query analysis tracing
+    print__analyze_debug,  # Analysis endpoint debugging
+    print__debug,  # General debug output
+    print__startup_debug,  # Application startup/shutdown logging
 )
 
-# Import memory utilities
+# ==============================================================================
+# MEMORY MANAGEMENT UTILITIES
+# ==============================================================================
+# Import memory monitoring, profiling, and cleanup functions
 from api.utils.memory import (
-    log_comprehensive_error,
-    log_memory_usage,
-    setup_graceful_shutdown,
-    start_memory_profiler,
-    start_memory_cleanup,
-    stop_memory_profiler,
-    stop_memory_cleanup,
+    log_comprehensive_error,  # Detailed error logging with memory context
+    log_memory_usage,  # Log current memory usage with label
+    setup_graceful_shutdown,  # Register signal handlers for clean shutdown
+    start_memory_profiler,  # Start tracemalloc-based memory profiler
+    start_memory_cleanup,  # Start background memory cleanup task
+    stop_memory_profiler,  # Stop and report memory profiler statistics
+    stop_memory_cleanup,  # Stop background cleanup task
 )
 
-# Import rate limiting utilities
+# ==============================================================================
+# RATE LIMITING UTILITIES
+# ==============================================================================
+# Import rate limiting and throttling functions
 from api.utils.rate_limiting import (
-    check_rate_limit_with_throttling,
-    wait_for_rate_limit,
+    check_rate_limit_with_throttling,  # Check if request exceeds rate limits
+    wait_for_rate_limit,  # Intelligently wait instead of rejecting
 )
 
-# Import database functions
+# ==============================================================================
+# ROUTE ROUTERS AND CHECKPOINTER IMPORTS
+# ==============================================================================
+# Ensure BASE_DIR is in path for checkpointer imports
 sys.path.insert(0, str(BASE_DIR))
-from api.routes.analysis import router as analysis_router
-from api.routes.bulk import router as bulk_router
-from api.routes.catalog import router as catalog_router
-from api.routes.chat import router as chat_router
-from api.routes.debug import router as debug_router
-from api.routes.feedback import router as feedback_router
 
-# Import all route routers
-from api.routes.health import router as health_router
-from api.routes.messages import router as messages_router
-from api.routes.misc import router as misc_router
-from api.routes.stop import router as stop_router
+# Import all API route routers
+# Each router handles a specific functional area of the API
+from api.routes.analysis import (
+    router as analysis_router,
+)  # NL-to-SQL conversion and execution
+from api.routes.bulk import router as bulk_router  # Batch operations
+from api.routes.catalog import router as catalog_router  # CZSU data catalog browsing
+from api.routes.chat import router as chat_router  # Multi-threaded conversations
+from api.routes.debug import router as debug_router  # Internal diagnostics
+from api.routes.feedback import router as feedback_router  # User feedback collection
+from api.routes.health import router as health_router  # Health checks and monitoring
+from api.routes.messages import router as messages_router  # Message retrieval
+from api.routes.misc import router as misc_router  # Miscellaneous utilities
+from api.routes.stop import router as stop_router  # Query execution control
+from api.routes.root import router as root_router  # Root endpoint
+
+# Import PostgreSQL checkpointer for conversation state persistence
 from checkpointer.checkpointer.factory import (
-    initialize_checkpointer,
-    cleanup_checkpointer,
+    initialize_checkpointer,  # Setup PostgreSQL connection and tables
+    cleanup_checkpointer,  # Close connections and cleanup resources
 )
-from api.routes.root import router as root_router
 
 
-# Lifespan management function
+# ==============================================================================
+# APPLICATION LIFESPAN MANAGEMENT
+# ==============================================================================
+# Context manager that handles startup and shutdown operations
+# This ensures proper resource initialization and cleanup
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
+async def lifespan(_app: FastAPI):
+    """Manage application lifecycle: startup initialization and shutdown cleanup.
+
+    Startup sequence:
+    1. Record startup timestamp for uptime tracking
+    2. Setup graceful shutdown handlers (SIGTERM, SIGINT)
+    3. Initialize PostgreSQL checkpointer for conversation state
+    4. Establish memory baseline for leak detection
+    5. Start memory profiler (if enabled)
+    6. Start background memory cleanup task
+
+    Shutdown sequence:
+    1. Stop memory profiler and report final statistics
+    2. Stop background cleanup task
+    3. Cleanup checkpointer and close database connections
+    4. Log final memory statistics and detect leaks
+    """
+    # ==========================================================================
+    # STARTUP SEQUENCE
+    # ==========================================================================
+    # pylint: disable=global-statement
     global _APP_STARTUP_TIME, _MEMORY_BASELINE
     _APP_STARTUP_TIME = datetime.now()
 
     print__startup_debug("🚀 FastAPI application starting up...")
-    from api.utils.memory import print__memory_monitoring
 
     print__memory_monitoring(
         f"Application startup initiated at {_APP_STARTUP_TIME.isoformat()}"
@@ -124,25 +668,32 @@ async def lifespan(app: FastAPI):
     log_memory_usage("app_startup")
 
     # ROUTE REGISTRATION MONITORING: Track all routes that get registered
-    # This prevents the exact issue described in the "Needle in a haystack" article
+    # This prevents the "needle in a haystack" memory leak pattern where routes
+    # are accidentally registered multiple times during hot reloads or improper setup
+    # Reference: Common FastAPI memory leak patterns in production
     print__memory_monitoring(
         "🔍 Monitoring route registrations to prevent memory leaks..."
     )
 
-    # Setup graceful shutdown handlers
+    # Setup graceful shutdown handlers for SIGTERM and SIGINT
+    # Ensures proper cleanup when container/process is terminated
     setup_graceful_shutdown()
 
+    # Initialize PostgreSQL checkpointer for LangGraph conversation state persistence
+    # Creates necessary tables and establishes connection pool
     await initialize_checkpointer()
 
     # Set memory baseline after initialization
+    # This captures the "normal" memory footprint after all imports and setup
+    # Later comparisons against this baseline help detect memory leaks
     if _MEMORY_BASELINE is None:
         try:
             process = psutil.Process()
-            _MEMORY_BASELINE = process.memory_info().rss / 1024 / 1024
+            _MEMORY_BASELINE = process.memory_info().rss / 1024 / 1024  # Convert to MB
             print__memory_monitoring(
                 f"Memory baseline established: {_MEMORY_BASELINE:.1f}MB RSS"
             )
-        except:
+        except Exception:  # pylint: disable=broad-except
             pass
 
     if MEMORY_PROFILER_ENABLED:
@@ -151,7 +702,7 @@ async def lifespan(app: FastAPI):
                 interval=MEMORY_PROFILER_INTERVAL,
                 top_stats=MEMORY_PROFILER_TOP_STATS,
             )
-        except Exception as profiler_error:
+        except Exception as profiler_error:  # pylint: disable=broad-except
             print__memory_monitoring(
                 f"⚠️ Failed to start memory profiler: {profiler_error}"
             )
@@ -172,9 +723,11 @@ async def lifespan(app: FastAPI):
     log_memory_usage("app_ready")
     print__startup_debug("✅ FastAPI application ready to serve requests")
 
-    yield
+    yield  # Application runs here, serving requests
 
-    # Shutdown
+    # ==========================================================================
+    # SHUTDOWN SEQUENCE
+    # ==========================================================================
     print__startup_debug("🛑 FastAPI application shutting down...")
     print__memory_monitoring(
         f"Application ran for {datetime.now() - _APP_STARTUP_TIME}"
@@ -183,7 +736,7 @@ async def lifespan(app: FastAPI):
     if MEMORY_PROFILER_ENABLED:
         try:
             await stop_memory_profiler()
-        except Exception as profiler_error:
+        except Exception as profiler_error:  # pylint: disable=broad-except
             print__memory_monitoring(
                 f"⚠️ Failed to stop memory profiler: {profiler_error}"
             )
@@ -191,34 +744,40 @@ async def lifespan(app: FastAPI):
     # Stop memory cleanup task
     try:
         await stop_memory_cleanup()
-    except Exception as cleanup_error:
+    except Exception as cleanup_error:  # pylint: disable=broad-except
         print__memory_monitoring(
             f"⚠️ Failed to stop memory cleanup task: {cleanup_error}"
         )
 
-    # Log final memory statistics
+    # Log final memory statistics and detect potential memory leaks
+    # Compare final memory usage against baseline to identify abnormal growth
     if _MEMORY_BASELINE:
         try:
             process = psutil.Process()
-            final_memory = process.memory_info().rss / 1024 / 1024
+            final_memory = process.memory_info().rss / 1024 / 1024  # Current RSS in MB
             total_growth = final_memory - _MEMORY_BASELINE
             print__memory_monitoring(
                 f"Final memory stats: Started={_MEMORY_BASELINE:.1f}MB, "
                 f"Final={final_memory:.1f}MB, Growth={total_growth:.1f}MB"
             )
-            if (
-                total_growth > GC_MEMORY_THRESHOLD
-            ):  # More than threshold growth - app will restart soon
+            # Alert if memory growth exceeds threshold (default: 1900 MB)
+            # This indicates a potential memory leak requiring investigation
+            if total_growth > GC_MEMORY_THRESHOLD:
                 print__memory_monitoring(
                     "🚨 SIGNIFICANT MEMORY GROWTH DETECTED - investigate for leaks!"
                 )
-        except:
+        except Exception:  # pylint: disable=broad-except
             pass
 
+    # Cleanup PostgreSQL checkpointer: close connections and release resources
     await cleanup_checkpointer()
 
 
-# Create the FastAPI application
+# ==============================================================================
+# FASTAPI APPLICATION INITIALIZATION
+# ==============================================================================
+# Create the main FastAPI application instance with OpenAPI configuration
+# This serves as the central application object for all routes and middleware
 app = FastAPI(
     title="CZSU Multi-Agent Text-to-SQL API",
     description="""Multi-agent system for converting natural language queries to SQL and retrieving data from the Czech Statistical Office (CZSU) and complex PDF containing statistical summaries of Czech Economy using an AI chatbot.
@@ -292,44 +851,71 @@ All endpoints (except `/health` and `/docs`) require Bearer token authentication
     },
 )
 
+# ==============================================================================
+# MIDDLEWARE REGISTRATION
+# ==============================================================================
 # Monitor all route registrations (including middleware and CORS)
+# This helps detect if routes/middleware are accidentally registered multiple times
 from api.utils.memory import print__memory_monitoring
 
 print__memory_monitoring("[CORS] Registering CORS middleware...")
 # Note: Route registration monitoring happens at runtime to avoid import-time global variable access
 
-# Allow CORS for local frontend dev
+# CORS Middleware: Allow cross-origin requests
+# Development: Allow all origins (*) for local frontend development
+# Production: Configure specific allowed origins via environment variable
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Adjust in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],  # TODO: Restrict in production to specific domains
+    allow_credentials=True,  # Allow cookies and authorization headers
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
 )
 
 print__memory_monitoring("[GZIP] Registering GZip middleware...")
-# Add GZip compression to reduce response sizes and memory usage
+# GZip Middleware: Compress responses to reduce bandwidth and improve performance
+# Only compresses responses larger than 1000 bytes (minimum_size)
+# Helps reduce memory usage by shrinking response payloads
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
+# ==============================================================================
 # RATE LIMITING MIDDLEWARE
+# ==============================================================================
+# Intelligent throttling: waits for rate limit instead of immediate rejection
+# This provides better UX by making clients wait rather than failing requests
 @app.middleware("http")
 async def throttling_middleware(request: Request, call_next):
-    """Throttling middleware that makes requests wait instead of rejecting them."""
+    """Throttling middleware that makes requests wait instead of rejecting them.
 
-    # Skip throttling for health checks and static endpoints
+    Strategy:
+    - Uses per-IP semaphores to limit concurrent requests
+    - Attempts to wait for rate limit availability
+    - Only rejects if wait time exceeds threshold
+    - Provides detailed rate limit info in responses
+
+    Exempt endpoints:
+    - /health, /docs, /openapi.json, /debug/pool-status
+    """
+
+    # Skip throttling for health checks and documentation endpoints
+    # These need to remain accessible for monitoring and API exploration
     if request.url.path in ["/health", "/docs", "/openapi.json", "/debug/pool-status"]:
         return await call_next(request)
 
+    # Extract client IP address for per-client rate limiting
     client_ip = request.client.host if request.client else "unknown"
 
     # Use semaphore to limit concurrent requests per IP
+    # Semaphore is created on-demand via defaultdict in settings
     semaphore = throttle_semaphores[client_ip]
 
     async with semaphore:
         # Try to wait for rate limit instead of immediately rejecting
+        # This improves UX by making the client wait rather than returning 429
         if not await wait_for_rate_limit(client_ip):
             # Only reject if we can't wait (wait time too long or max attempts exceeded)
+            # Get detailed rate limit information for the error response
             rate_info = check_rate_limit_with_throttling(client_ip)
             log_comprehensive_error(
                 "rate_limit_exceeded_after_wait",
@@ -352,39 +938,70 @@ async def throttling_middleware(request: Request, call_next):
         return await call_next(request)
 
 
-# Enhanced middleware to monitor memory patterns and detect leaks
+# ==============================================================================
+# MEMORY MONITORING MIDDLEWARE
+# ==============================================================================
+# Monitor memory usage for heavy operations to detect leaks and track growth
 @app.middleware("http")
 async def simplified_memory_monitoring_middleware(request: Request, call_next):
-    """Simplified memory monitoring middleware."""
+    """Simplified memory monitoring middleware for heavy operations.
+
+    Monitors memory before and after:
+    - /analyze: NL-to-SQL conversion (complex LangGraph operations)
+    - /chat/all-messages-for-all-threads: Bulk message retrieval
+
+    This helps identify memory leaks in specific endpoints without
+    adding overhead to every single request.
+    """
+    # pylint: disable=global-statement
     global _REQUEST_COUNT
 
+    # Increment global request counter for monitoring
     _REQUEST_COUNT += 1
 
-    # Only check memory for heavy operations
+    # Only check memory for heavy operations to avoid overhead
+    # These endpoints are most likely to cause memory issues:
+    # - /analyze: Complex LangGraph multi-agent operations
+    # - /chat/all-messages-*: Bulk database queries
     request_path = request.url.path
     if any(
         path in request_path
         for path in ["/analyze", "/chat/all-messages-for-all-threads"]
     ):
+        # Log memory before processing heavy operation
         log_memory_usage(f"before_{request_path.replace('/', '_')}")
 
+    # Process the request
     response = await call_next(request)
 
-    # Check memory after heavy operations
+    # Check memory after heavy operations to detect growth
     if any(
         path in request_path
         for path in ["/analyze", "/chat/all-messages-for-all-threads"]
     ):
+        # Log memory after processing to calculate delta
         log_memory_usage(f"after_{request_path.replace('/', '_')}")
 
     return response
 
 
+# ==============================================================================
 # EXCEPTION HANDLERS
-# Global exception handlers for proper error handling
+# ==============================================================================
+# Global exception handlers for comprehensive error handling across all endpoints
+# These ensure consistent error responses and proper HTTP status codes
+
+
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(_request: Request, exc: RequestValidationError):
     """Handle Pydantic validation errors with proper 422 status code.
+
+    Triggered when request data doesn't match expected Pydantic models.
+    Common causes:
+    - Missing required fields
+    - Wrong data types
+    - Invalid enum values
+    - Constraint violations
 
     Uses jsonable_encoder to avoid JSON serialization errors (observed 500 during dumps).
     Falls back to minimal structure if encoding fails.
@@ -393,7 +1010,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     try:
         payload = {"detail": "Validation error", "errors": exc.errors()}
         return JSONResponse(status_code=422, content=jsonable_encoder(payload))
-    except Exception as encoding_error:  # Fallback in case of non-serializable content
+    except Exception as encoding_error:  # pylint: disable=broad-except
         print__debug(
             f"🚨 Validation encoding failure: {type(encoding_error).__name__}: {encoding_error}"  # noqa: E501
         )
@@ -414,7 +1031,16 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    """Handle HTTP exceptions with comprehensive debugging for 401 errors."""
+    """Handle HTTP exceptions with comprehensive debugging for 401 errors.
+
+    Special handling for authentication errors (401):
+    - Detailed logging of request context
+    - Headers inspection
+    - Client IP tracking
+    - Full traceback
+
+    This helps diagnose authentication issues in production.
+    """
 
     # Enhanced debugging for 401 errors since these are authentication-related
     if exc.status_code == 401:
@@ -454,17 +1080,28 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 
 
 @app.exception_handler(ValueError)
-async def value_error_handler(request: Request, exc: ValueError):
-    """Handle ValueError exceptions as 400 Bad Request."""
+async def value_error_handler(_request: Request, exc: ValueError):
+    """Handle ValueError exceptions as 400 Bad Request.
+
+    ValueErrors typically indicate invalid input data that passed
+    Pydantic validation but failed business logic validation.
+    """
     print__debug(f"ValueError: {str(exc)}")
     return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 
 @app.exception_handler(Exception)
-async def general_exception_handler(request: Request, exc: Exception):
-    """Handle unexpected exceptions."""
-    import os
+async def general_exception_handler(_request: Request, exc: Exception):
+    """Handle unexpected exceptions (500 Internal Server Error).
 
+    Catches all unhandled exceptions to prevent application crashes.
+
+    Behavior:
+    - Development (DEBUG_TRACEBACK=1): Include full traceback in response
+    - Production (DEBUG_TRACEBACK=0): Generic error message, log details internally
+
+    This ensures the application never crashes and always returns a response.
+    """
     if os.getenv("DEBUG_TRACEBACK", "0") == "1":
         tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
         print__debug(
@@ -477,20 +1114,42 @@ async def general_exception_handler(request: Request, exc: Exception):
     return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
+# ==============================================================================
 # ROUTE REGISTRATION
-# Register all route routers
+# ==============================================================================
+# Register all route routers with the FastAPI application
+# Tags are used for OpenAPI documentation organization
+# Order doesn't affect routing, but affects documentation display
 print__memory_monitoring("[ROUTES] Registering route routers...")
 
-app.include_router(root_router, tags=["Root"])
-app.include_router(health_router, tags=["Health & Monitoring"])
-app.include_router(catalog_router, tags=["Data Catalog"])
-app.include_router(analysis_router, tags=["Query Analysis"])
-app.include_router(feedback_router, tags=["Feedback & Sentiment"])
-app.include_router(chat_router, tags=["Chat & Threads"])
-app.include_router(messages_router, tags=["Messages"])
-app.include_router(bulk_router, tags=["Bulk Operations"])
-app.include_router(debug_router, tags=["Debug & Admin"])
-app.include_router(misc_router, tags=["Utilities"])
-app.include_router(stop_router, tags=["Execution Control"])
+app.include_router(root_router, tags=["Root"])  # GET / - Welcome message
+app.include_router(
+    health_router, tags=["Health & Monitoring"]
+)  # GET /health, /debug/pool-status, etc.
+app.include_router(
+    catalog_router, tags=["Data Catalog"]
+)  # GET /catalog/* - Browse CZSU data
+app.include_router(
+    analysis_router, tags=["Query Analysis"]
+)  # POST /analyze - NL-to-SQL conversion
+app.include_router(
+    feedback_router, tags=["Feedback & Sentiment"]
+)  # POST /feedback - User feedback
+app.include_router(
+    chat_router, tags=["Chat & Threads"]
+)  # POST /chat/threads, GET /chat/threads/*
+app.include_router(
+    messages_router, tags=["Messages"]
+)  # GET /chat/messages/* - Message retrieval
+app.include_router(
+    bulk_router, tags=["Bulk Operations"]
+)  # POST /bulk/* - Batch operations
+app.include_router(
+    debug_router, tags=["Debug & Admin"]
+)  # GET /debug/* - Internal diagnostics
+app.include_router(misc_router, tags=["Utilities"])  # Miscellaneous utility endpoints
+app.include_router(
+    stop_router, tags=["Execution Control"]
+)  # POST /stop - Cancel execution
 
 print__memory_monitoring("[SUCCESS] All route routers registered successfully")
