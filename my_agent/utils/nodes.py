@@ -605,6 +605,7 @@ from langchain_core.tools import tool
 # ==============================================================================
 # CONSTANTS & CONFIGURATION
 # ==============================================================================
+
 # Static IDs for easier debug‑tracking
 GET_SCHEMA_ID = 3
 GENERATE_QUERY_ID = 4
@@ -856,107 +857,737 @@ Now process this conversation:
     return {"rewritten_prompt": rewritten_prompt, "messages": [summary, result]}
 
 
-async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that generates follow-up prompt suggestions for continued data exploration.
+async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph node that maintains bounded conversation memory through cumulative summarization.
 
-    This node uses Azure GPT-4o-mini with high temperature (1.0) to generate 3 diverse, interesting
-    follow-up prompts based on the conversation summary. Prompts are context-aware and help users
-    discover related insights about Czech Statistical Office data.
+    This node implements memory management by compressing conversation history into a concise summary.
+    It uses Azure GPT-4o-mini to update an existing summary with the latest message, maintaining
+    bounded context size while preserving important conversation details.
 
-    The generated prompts cover different aspects like economy, population, finance, etc., and are
-    designed to be directly usable as natural language queries for the system.
+    The summarization strategy prevents token overflow in long conversations while ensuring that
+    context-dependent queries (pronouns, references) can still be resolved in query rewriting.
+
+    The node always maintains a 2-message structure: [summary (SystemMessage), last_message],
+    which is the canonical message format throughout the workflow.
 
     Args:
-        state (DataAnalysisState): Workflow state containing conversation summary.
+        state (DataAnalysisState): Workflow state containing messages list.
 
     Returns:
-        DataAnalysisState: Updated state with 'followup_prompts' containing list of 3 prompt strings.
+        DataAnalysisState: Updated state with messages as [new_summary, last_message].
 
     System Prompt Key Points:
-    - Prompt generation assistant for Czech Statistical Office data analysis system
-    - Task: Generate exactly 3 diverse, interesting, and useful follow-up prompts based on conversation summary
-    - Data context: Summary data on Czechia focusing on real economy, monetary and fiscal indicators from CZSO and other institutions
-    - Guidelines: Prompts can be questions/statements/commands, concise and brief, each on new line, no numbering, context-aware, natural and user-friendly, diverse exploration of different angles
-    - Output format: Exactly 3 prompts, one per line, no numbering, diverse coverage of economy/population/finance aspects when summary is empty
+    - Conversation summarization agent for data analysis conversations between user and AI assistant
+    - Task: Maintain concise, cumulative summary by updating previous summary with latest message content
+    - Process: Receive previous summary and latest message, incorporate new information/decisions/context
+    - Output requirements: Summary suitable for LLM context in future queries, concise but complete, no meta-commentary or formatting, just summary text
+    - Memory management: Prevents token overflow while preserving context for pronoun/reference resolution
 
     Key Steps:
-        1. Extract conversation summary from messages
-        2. Call Azure GPT-4o-mini with creative temperature (1.0)
-        3. Generate 3 diverse, relevant prompts
-        4. Parse and validate prompt list
-        5. Return maximum 3 prompts
+        1. Extract previous summary (SystemMessage) and last message from state
+        2. Skip summarization if both previous summary and last message are empty
+        3. Call Azure GPT-4o-mini (temp=0.0) to generate updated cumulative summary
+        4. Create new SystemMessage containing the updated summary
+        5. Return 2-message structure [summary_msg, last_message] for bounded memory
     """
-    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node")
+    print__nodes_debug("📝 SUMMARY: Enter summarize_messages_node")
 
-    # Key Step 1: Extract conversation summary from messages
+    # Key Step 1: Extract previous summary (SystemMessage) and last message from state
     messages = state.get("messages", [])
     summary = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
         else SystemMessage(content="")
     )
-    summary_content = summary.content
+    last_message = messages[1] if len(messages) > 1 else None
+    prev_summary = summary.content
+    last_message_content = last_message.content if last_message else ""
 
-    print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Summary content: '{summary_content}'")
+    print__nodes_debug(f"📝 SUMMARY: prev_summary: '{prev_summary}'")
+    print__nodes_debug(f"📝 SUMMARY: last_message_content: '{last_message_content}'")
 
-    # Key Step 2: Call Azure GPT-4o-mini with creative temperature (1.0)
-    llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
+    # Key Step 2: Skip summarization if both previous summary and last message are empty
+    if not prev_summary and not last_message_content:
+        print__nodes_debug(
+            "📝 SUMMARY: Skipping summarization (no previous summary or last message)."
+        )
+        return {"messages": [summary] if not last_message else [summary, last_message]}
+
+    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
 
     system_prompt = """
-You are a prompt generation assistant for a Czech Statistical Office data analysis system.
+You are a conversation summarization agent.
+Your job is to maintain a concise, cumulative summary of a data analysis conversation between a 
+user and an AI assistant. 
+Each time you are called, you receive the previous summary (which may be empty) and 
+the latest message. Update the summary to include any new information, decisions, or 
+context from the latest message. The summary should be suitable for 
+providing context to an LLM in future queries. 
+Be concise but do not omit important details. 
+Do not include any meta-commentary or formatting, just the summary text."""
 
-About our data:
-Summary data on Czechia provides selected data from individual areas with a focus on the real economy, 
-monetary and fiscal indicators. They gather data from the CZSO as well as data from other institutions, 
-such as the Czech National Bank, the Ministry of Finance and others.
+    human_prompt = "Previous summary:\n{prev_summary}\n\nLatest message:\n{last_message_content}\n\nUpdate the summary to include the latest message."
+    print__nodes_debug(f"📝 SUMMARY: human_prompt template: {human_prompt}")
 
-Your task: Generate exactly 3 diverse interesting and useful follow-up prompts based on the conversation summary that users might use to continue exploring the data.
-
-Important guidelines:
-- Prompts don't have to be questions - they can be statements, commands, or other types of intents, but structured in a way that can be directly provided to LLM.
-- Be concise and to the point - prompts should be brief
-- Each prompt should be on a new line
-- Don't number the prompts
-- If there's a conversation summary, make prompts relevant to the topics discussed
-- If the summary is empty, generate general prompts covering different aspects (economy, population, finance, etc.)
-- Make them natural and user-friendly
-- Ensure prompts are diverse and explore different angles or related topics
-"""
-
-    human_prompt = "Conversation summary:\n{summary_content}\n\nGenerate 3 diverse most relevant and most interesting follow-up prompts for the user to continue exploring the data."
-    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Calling LLM to generate prompts")
-
-    # Key Step 3: Generate 3 diverse, relevant prompts
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
+    # Key Step 3: Call Azure GPT-4o-mini (temp=0.0) to generate updated cumulative summary
     result = await llm.ainvoke(
-        prompt.format_messages(summary_content=summary_content or "(empty)")
+        prompt.format_messages(
+            prev_summary=prev_summary, last_message_content=last_message_content
+        )
     )
-    generated_text = result.content.strip()
+    new_summary = result.content.strip()
+    print__nodes_debug(f"📝 SUMMARY: Updated summary: {new_summary}")
+
+    # Key Step 4: Create new SystemMessage containing the updated summary
+    summary_msg = SystemMessage(content=new_summary)
+    new_messages = [summary_msg, last_message] if last_message else [summary_msg]
+
     print__nodes_debug(
-        f"💡 FOLLOWUP_PROMPTS: LLM returned {len(generated_text)} characters"
+        f"📝 SUMMARY: New messages: {[getattr(m, 'content', None) for m in new_messages]}"
     )
 
-    # Key Step 4: Parse and validate prompt list
-    followup_prompts = [
-        line.strip() for line in generated_text.split("\n") if line.strip()
+    # Key Step 5: Return 2-message structure [summary_msg, last_message] for bounded memory
+    return {"messages": new_messages}
+
+
+# ==============================================================================
+# GET SQL TABLES NAMES NODES
+# ==============================================================================
+async def retrieve_similar_selections_hybrid_search_node(
+    state: DataAnalysisState,
+) -> DataAnalysisState:
+    """LangGraph node that performs hybrid search on ChromaDB to retrieve similar dataset selections.
+
+    This node executes a hybrid search combining semantic similarity and BM25 keyword matching
+    to find the most relevant dataset selections from the ChromaDB vector database. It supports
+    both local and cloud ChromaDB configurations and includes memory cleanup to prevent resource leaks.
+
+    The search query is extracted from the state (preferring 'rewritten_prompt' over 'prompt').
+    Results are converted to Document objects for downstream processing in the LangGraph workflow.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and configuration parameters.
+
+    Returns:
+        DataAnalysisState: Updated state with 'hybrid_search_results' containing a list of Document objects
+                          representing the retrieved dataset selections. May also include 'chromadb_missing'
+                          flag if local ChromaDB is unavailable.
+
+    Key Steps:
+        1. Extract query (prefer rewritten_prompt) and n_results from state
+        2. Check ChromaDB availability: local directory exists (local mode) or cloud mode enabled
+        3. Initialize ChromaDB client and get collection using chromadb_client_factory
+        4. Perform hybrid search (semantic + BM25) using hybrid_search function
+        5. Convert dict results to Document objects with page_content and metadata
+        6. Clean up ChromaDB resources (clear references, explicit delete, gc.collect())
+        7. Return hybrid_search_results list or empty list on error
+    """
+    print__nodes_debug(
+        f"🔍 {HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node"
+    )
+
+    # Key Step 1: Extract query (prefer rewritten_prompt) and n_results from state
+    query = state.get("rewritten_prompt") or state["prompt"]
+    n_results = state.get("n_results", SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS)
+
+    print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Query: {query}")
+    print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
+
+    # Key Step 2: Check ChromaDB availability: local directory exists (local mode) or cloud mode enabled
+    # Check if ChromaDB directory exists (only when using local ChromaDB)
+
+    use_cloud = should_use_cloud()
+
+    if not use_cloud:
+        # Only check for local directory when not using cloud
+        chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
+        print__nodes_debug(
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: Checking local ChromaDB at: {chroma_db_dir}"
+        )
+        print__nodes_debug(
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB exists: {chroma_db_dir.exists()}"
+        )
+        print__nodes_debug(
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB is_dir: {chroma_db_dir.is_dir() if chroma_db_dir.exists() else 'N/A'}"
+        )
+
+        if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
+            print__nodes_debug(
+                f"📄 {HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}"
+            )
+            return {"hybrid_search_results": [], "chromadb_missing": True}
+
+        print__nodes_debug(
+            f"🔍 {HYBRID_SEARCH_NODE_ID}: Local ChromaDB found! Resetting chromadb_missing flag"
+        )
+    else:
+        print__nodes_debug(
+            f"🌐 {HYBRID_SEARCH_NODE_ID}: Using Chroma Cloud (skipping local directory check)"
+        )
+
+    try:
+        # Key Step 3: Initialize ChromaDB client and get collection using chromadb_client_factory
+        # Use the same method as the test script to get ChromaDB collection directly
+
+        client = get_chromadb_client(
+            local_path=CHROMA_DB_PATH, collection_name=CHROMA_COLLECTION_NAME
+        )
+        collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
+        print__nodes_debug(
+            f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized"
+        )
+
+        # Key Step 4: Perform hybrid search (semantic + BM25) using hybrid_search function
+        hybrid_results = hybrid_search(collection, query, n_results=n_results)
+        print__nodes_debug(
+            f"📊 {HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results"
+        )
+
+        # Key Step 5: Convert dict results to Document objects with page_content and metadata
+        # Convert dict results to Document objects for compatibility
+
+        hybrid_docs = []
+        for result in hybrid_results:
+            doc = Document(page_content=result["document"], metadata=result["metadata"])
+            hybrid_docs.append(doc)
+
+        # Debug: Show detailed hybrid search results
+        print__nodes_debug(
+            f"📄 {HYBRID_SEARCH_NODE_ID}: Detailed hybrid search results:"
+        )
+        for i, doc in enumerate(hybrid_docs[:10], 1):  # Show first 10
+            selection = doc.metadata.get("selection") if doc.metadata else "N/A"
+            content_preview = (
+                doc.page_content[:100].replace("\n", " ")
+                if hasattr(doc, "page_content")
+                else "N/A"
+            )
+            print__nodes_debug(
+                f"📄 {HYBRID_SEARCH_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
+            )
+
+        print__nodes_debug(
+            f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}"
+        )
+
+        # Key Step 6: Clean up ChromaDB resources (clear references, explicit delete, gc.collect())
+        # MEMORY CLEANUP: Explicitly close ChromaDB resources
+        print__nodes_debug(
+            f"🧹 {HYBRID_SEARCH_NODE_ID}: Cleaning up ChromaDB client resources"
+        )
+        collection = None  # Clear collection reference
+        del client  # Explicitly delete client
+        gc.collect()  # Force garbage collection to release memory
+        print__nodes_debug(f"✅ {HYBRID_SEARCH_NODE_ID}: ChromaDB resources released")
+
+        # Key Step 7: Return hybrid_search_results list or empty list on error
+        return {"hybrid_search_results": hybrid_docs}
+    except Exception as e:
+        logger.error("❌ %s: Error in hybrid search: %s", HYBRID_SEARCH_NODE_ID, e)
+
+        logger.error(
+            "📄 %s: Traceback: %s", HYBRID_SEARCH_NODE_ID, traceback.format_exc()
+        )
+        return {"hybrid_search_results": []}
+
+
+async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph node that reranks dataset selection hybrid search results using Cohere.
+
+    This node applies Cohere's multilingual rerank model to improve the quality of dataset selection
+    retrieval. It takes hybrid search results (semantic + BM25) and reorders them based on semantic
+    relevance to the query, returning selection codes with Cohere relevance scores.
+
+    Cohere reranking significantly improves precision by understanding query semantics beyond simple
+    keyword matching, especially important for Czech language queries and domain-specific terminology.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and hybrid_search_results.
+
+    Returns:
+        DataAnalysisState: Updated state with most_similar_selections as list of (selection_code, score) tuples.
+
+    Key Steps:
+        1. Extract query (prefer rewritten_prompt) and hybrid_search_results from state
+        2. Check if hybrid search results exist; return empty list if none
+        3. Call cohere_rerank with documents and query to reorder by semantic relevance
+        4. Extract selection codes and relevance scores from reranked results
+        5. Return most_similar_selections as list of (selection_code, score) tuples
+    """
+
+    print__nodes_debug(
+        f"🔥🔥🔥 🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥"
+    )
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Enter rerank_table_descriptions_node"
+    )
+
+    # Key Step 1: Extract query (prefer rewritten_prompt) and hybrid_search_results from state
+    query = state.get("rewritten_prompt") or state["prompt"]
+    hybrid_results = state.get("hybrid_search_results", [])
+    n_results = state.get("n_results", 20)
+
+    print__nodes_debug(f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Query: {query}")
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
+    )
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Requested n_results: {n_results}"
+    )
+
+    # Key Step 2: Check if hybrid search results exist; return empty list if none
+    # Check if we have hybrid search results to rerank
+    if not hybrid_results:
+        print__nodes_debug(
+            f"📄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: No hybrid search results to rerank"
+        )
+        return {"most_similar_selections": []}
+
+    # Debug: Show input to rerank
+    print__nodes_debug(
+        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Input hybrid results for reranking:"
+    )
+    for i, doc in enumerate(hybrid_results[:10], 1):  # Show first 10
+        selection = doc.metadata.get("selection") if doc.metadata else "N/A"
+        content_preview = (
+            doc.page_content[:100].replace("\n", " ")
+            if hasattr(doc, "page_content")
+            else "N/A"
+        )
+        print__nodes_debug(
+            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
+        )
+
+    try:
+        # Key Step 3: Call cohere_rerank with documents and query to reorder by semantic relevance
+        print__nodes_debug(
+            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
+        )
+        reranked = cohere_rerank(query, hybrid_results, top_n=n_results)
+        print__nodes_debug(
+            f"📊 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Cohere returned {len(reranked)} reranked results"
+        )
+
+        # Key Step 4: Extract selection codes and relevance scores from reranked results
+        most_similar = []
+        for i, (doc, res) in enumerate(reranked, 1):
+            selection_code = doc.metadata.get("selection") if doc.metadata else None
+            score = res.relevance_score
+            most_similar.append((selection_code, score))
+            # Debug: Show detailed rerank results
+            if i <= 10:  # Show top 10 results
+                print__nodes_debug(
+                    f"🎯🎯🎯 🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}"
+                )
+
+        print__nodes_debug(
+            f"🎯🎯🎯 🎯🎯🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
+        )
+
+        # Key Step 5: Return most_similar_selections as list of (selection_code, score) tuples
+        return {"most_similar_selections": most_similar}
+    except Exception as e:
+        logger.error(
+            "❌ %s: Error in reranking: %s", RERANK_TABLE_DESCRIPTIONS_NODE_ID, e
+        )
+
+        logger.error(
+            "📄 %s: Traceback: %s",
+            RERANK_TABLE_DESCRIPTIONS_NODE_ID,
+            traceback.format_exc(),
+        )
+        return {"most_similar_selections": []}
+
+
+async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph node that filters reranked selections by relevance threshold and selects top 3.
+
+    This node implements quality control by filtering dataset selections based on Cohere relevance
+    scores. Only selections exceeding SQL_RELEVANCE_THRESHOLD (0.0005) are retained, with a maximum
+    of 3 selections to prevent information overload and maintain schema size for SQL generation.
+
+    If no selections pass the threshold, the node sets a special final_answer indicating no relevant
+    data was found, allowing the workflow to skip SQL generation and proceed directly to answer formatting.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing most_similar_selections with scores.
+
+    Returns:
+        DataAnalysisState: Updated state with top_selection_codes (max 3), cleared intermediate results.
+
+    Key Steps:
+        1. Extract most_similar_selections list from state
+        2. Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
+        3. Prepare result dict with top_selection_codes and clear intermediate state
+        4. Set special final_answer "No Relevant Selections Found" if no selections pass threshold
+        5. Return filtered selection codes and cleaned state
+    """
+    print__nodes_debug(f"🎯 {RELEVANT_NODE_ID}: Enter relevant_selections_node")
+
+    # Key Step 1: Extract most_similar_selections list from state
+    most_similar = state.get("most_similar_selections", [])
+
+    # Key Step 2: Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
+    # Select up to 3 top selections above threshold
+    top_selection_codes = [
+        sel
+        for sel, score in most_similar
+        if sel is not None and score is not None and score >= SQL_RELEVANCE_THRESHOLD
+    ][:3]
+    print__nodes_debug(
+        f"🎯 {RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}"
+    )
+
+    # Key Step 3: Prepare result dict with top_selection_codes and clear intermediate state
+    result = {
+        "top_selection_codes": top_selection_codes,
+        "hybrid_search_results": [],
+        "most_similar_selections": [],
+    }
+
+    # Key Step 4: Set special final_answer "No Relevant Selections Found" if no selections pass threshold
+    # If no selections pass the threshold, set final_answer for frontend
+    if not top_selection_codes:
+        print__nodes_debug(
+            f"📄 {RELEVANT_NODE_ID}: No selections passed the threshold - setting final_answer"
+        )
+        result["final_answer"] = "No Relevant Selections Found"
+
+    # Key Step 5: Return filtered selection codes and cleaned state
+    return result
+
+
+# ==============================================================================
+# GET PDF CHUNKS NODES
+# ==============================================================================
+async def retrieve_similar_chunks_hybrid_search_node(
+    state: DataAnalysisState,
+) -> DataAnalysisState:
+    """LangGraph node that performs hybrid search on PDF ChromaDB to retrieve similar document chunks.
+
+    This node executes a hybrid search combining semantic similarity and BM25 keyword matching
+    to find the most relevant PDF document chunks from the ChromaDB vector database. It first
+    translates the query to English for better search performance, then supports both local and
+    cloud ChromaDB configurations with memory cleanup to prevent resource leaks.
+
+    The search query is extracted from the state (preferring 'rewritten_prompt' over 'prompt'),
+    translated to English, and used to retrieve relevant PDF chunks. Results are converted to
+    Document objects for downstream processing in the LangGraph workflow.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and configuration parameters.
+
+    Returns:
+        DataAnalysisState: Updated state with 'hybrid_search_chunks' containing a list of Document objects
+                          representing the retrieved PDF chunks. Returns empty list if PDF functionality
+                          is unavailable or ChromaDB is not accessible.
+
+    Key Steps:
+        1. Check if PDF functionality is available
+        2. Extract and translate query to English using Azure Translator
+        3. Extract n_results from state (default: PDF_HYBRID_SEARCH_DEFAULT_RESULTS)
+        4. Check PDF ChromaDB availability (local directory or cloud)
+        5. Initialize PDF ChromaDB client and collection
+        6. Perform hybrid search using pdf_hybrid_search function
+        7. Convert results to Document objects with metadata
+        8. Clean up ChromaDB resources and force garbage collection
+        9. Return results or empty list on error
+    """
+    print__nodes_debug(
+        f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Enter retrieve_similar_chunks_hybrid_search_node"
+    )
+
+    if not PDF_FUNCTIONALITY_AVAILABLE:
+        print__nodes_debug(
+            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF functionality not available"
+        )
+        return {"hybrid_search_chunks": []}
+
+    query_original_language = state.get("rewritten_prompt") or state["prompt"]
+
+    # Translate query to English using Azure Translator
+    query = await translate_to_english(query_original_language)
+
+    print__nodes_debug(
+        f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Original query: '{query_original_language}' -> Translated query: '{query}'"
+    )
+
+    n_results = state.get("n_results", PDF_HYBRID_SEARCH_DEFAULT_RESULTS)
+
+    print__nodes_debug(f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Query: {query}")
+    print__nodes_debug(
+        f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Requested n_results: {n_results}"
+    )
+
+    # Check if PDF ChromaDB directory exists (only when using local ChromaDB)
+
+    use_cloud = should_use_cloud()
+
+    if not use_cloud:
+        # Only check for local directory when not using cloud
+        if not PDF_CHROMA_DB_PATH.exists() or not PDF_CHROMA_DB_PATH.is_dir():
+            print__nodes_debug(
+                f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB directory not found at {PDF_CHROMA_DB_PATH}"
+            )
+            return {"hybrid_search_chunks": []}
+        print__nodes_debug(
+            f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Local PDF ChromaDB found at {PDF_CHROMA_DB_PATH}"
+        )
+    else:
+        print__nodes_debug(
+            f"🌐 {RETRIEVE_CHUNKS_NODE_ID}: Using Chroma Cloud for PDF chunks"
+        )
+
+    try:
+        # Use the PDF ChromaDB collection directly with cloud/local support
+
+        client = get_chromadb_client(
+            local_path=PDF_CHROMA_DB_PATH, collection_name=PDF_COLLECTION_NAME
+        )
+        collection = client.get_collection(name=PDF_COLLECTION_NAME)
+        print__nodes_debug(
+            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized"
+        )
+
+        hybrid_results = pdf_hybrid_search(collection, query, n_results=n_results)
+        print__nodes_debug(
+            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: Retrieved {len(hybrid_results)} PDF hybrid search results"
+        )
+
+        # Convert dict results to Document objects for compatibility
+
+        hybrid_docs = []
+        for result in hybrid_results:
+            doc = Document(page_content=result["document"], metadata=result["metadata"])
+            hybrid_docs.append(doc)
+
+        # Debug: Show detailed hybrid search results
+        print__nodes_debug(
+            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Detailed PDF hybrid search results:"
+        )
+        for i, doc in enumerate(
+            hybrid_docs[:PDF_N_TOP_CHUNKS], 1
+        ):  # Show first few results
+            source = doc.metadata.get("source") if doc.metadata else "N/A"
+            content_preview = (
+                doc.page_content[:100].replace("\n", " ")
+                if hasattr(doc, "page_content")
+                else "N/A"
+            )
+            print__nodes_debug(
+                f"📄 {RETRIEVE_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}..."
+            )
+
+        # MEMORY CLEANUP: Explicitly close ChromaDB resources
+        print__nodes_debug(
+            f"🧹 {RETRIEVE_CHUNKS_NODE_ID}: Cleaning up PDF ChromaDB client resources"
+        )
+        collection = None  # Clear collection reference
+        del client  # Explicitly delete client
+        gc.collect()  # Force garbage collection to release memory
+        print__nodes_debug(
+            f"✅ {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB resources released"
+        )
+
+        return {"hybrid_search_chunks": hybrid_docs}
+    except Exception as e:
+        logger.error(
+            "❌ %s: Error in PDF hybrid search: %s", RETRIEVE_CHUNKS_NODE_ID, e
+        )
+
+        logger.error(
+            "📄 %s: Traceback: %s", RETRIEVE_CHUNKS_NODE_ID, traceback.format_exc()
+        )
+        return {"hybrid_search_chunks": []}
+
+
+async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph node that reranks PDF chunk hybrid search results using Cohere.
+
+    This node applies Cohere's multilingual rerank model to improve the quality of PDF chunk
+    retrieval. It takes hybrid search results (semantic + BM25) from PDF documents and reorders
+    them based on semantic relevance to the query, returning document objects with Cohere scores.
+
+    PDF chunks are typically English text from documentation, so the reranking helps bridge the
+    language gap when queries are in Czech by understanding cross-lingual semantic similarity.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing query and hybrid_search_chunks.
+
+    Returns:
+        DataAnalysisState: Updated state with most_similar_chunks as list of (Document, score) tuples.
+
+    Key Steps:
+        1. Check PDF functionality availability
+        2. Extract query and hybrid search chunks
+        3. Call pdf_cohere_rerank with documents and query
+        4. Extract documents and relevance scores
+        5. Return ranked list of (document, score) pairs
+        6. Log top results for debugging
+    """
+    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Enter rerank_chunks_node")
+
+    if not PDF_FUNCTIONALITY_AVAILABLE:
+        print__nodes_debug(
+            f"📄 {RERANK_CHUNKS_NODE_ID}: PDF functionality not available"
+        )
+        return {"most_similar_chunks": []}
+
+    query = state.get("rewritten_prompt") or state["prompt"]
+    hybrid_results = state.get("hybrid_search_chunks", [])
+    n_results = state.get("n_results", PDF_N_TOP_CHUNKS)
+
+    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Query: {query}")
+    print__nodes_debug(
+        f"🔄 {RERANK_CHUNKS_NODE_ID}: Number of PDF hybrid results received: {len(hybrid_results)}"
+    )
+    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Requested n_results: {n_results}")
+
+    # Check if we have hybrid search results to rerank
+    if not hybrid_results:
+        print__nodes_debug(
+            f"📄 {RERANK_CHUNKS_NODE_ID}: No PDF hybrid search results to rerank"
+        )
+        return {"most_similar_chunks": []}
+
+    # Debug: Show input to rerank
+    print__nodes_debug(
+        f"🔄 {RERANK_CHUNKS_NODE_ID}: Input PDF hybrid results for reranking:"
+    )
+    for i, doc in enumerate(
+        hybrid_results[:PDF_N_TOP_CHUNKS], 1
+    ):  # Show first few results
+        source = doc.metadata.get("source") if doc.metadata else "N/A"
+        content_preview = (
+            doc.page_content[:100].replace("\n", " ")
+            if hasattr(doc, "page_content")
+            else "N/A"
+        )
+        print__nodes_debug(
+            f"🔄 {RERANK_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}..."
+        )
+
+    try:
+        print__nodes_debug(
+            f"🔄 {RERANK_CHUNKS_NODE_ID}: Calling PDF cohere_rerank with {len(hybrid_results)} documents"
+        )
+        reranked = pdf_cohere_rerank(query, hybrid_results, top_n=n_results)
+        print__nodes_debug(
+            f"📄 {RERANK_CHUNKS_NODE_ID}: PDF Cohere returned {len(reranked)} reranked results"
+        )
+
+        most_similar = []
+        for i, (doc, res) in enumerate(reranked, 1):
+            score = res.relevance_score
+            most_similar.append((doc, score))
+            # Debug: Show detailed rerank results
+            if i <= PDF_N_TOP_CHUNKS:  # Show top few results
+                source = doc.metadata.get("source") if doc.metadata else "unknown"
+                print__nodes_debug(
+                    f"🎯🎯🎯 🎯 {RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}"
+                )
+
+        print__nodes_debug(
+            f"🎯🎯🎯 🎯🎯🎯 {RERANK_CHUNKS_NODE_ID}: FINAL PDF RERANK OUTPUT: {len(most_similar)} chunks 🎯🎯🎯"
+        )
+
+        return {"most_similar_chunks": most_similar}
+    except Exception as e:
+        logger.error("❌ %s: Error in PDF reranking: %s", RERANK_CHUNKS_NODE_ID, e)
+
+        logger.error(
+            "📄 %s: Traceback: %s", RERANK_CHUNKS_NODE_ID, traceback.format_exc()
+        )
+        return {"most_similar_chunks": []}
+
+
+async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph node that filters reranked PDF chunks by relevance threshold.
+
+    This node implements quality control for PDF document retrieval by filtering chunks based on
+    Cohere relevance scores. Only chunks exceeding PDF_RELEVANCE_THRESHOLD are retained for
+    inclusion in the final answer synthesis.
+
+    Unlike dataset selections (which have a max of 3), PDF chunks don't have an explicit limit
+    beyond the threshold filter, though upstream configuration (PDF_N_TOP_CHUNKS) controls the
+    maximum number of chunks retrieved.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing most_similar_chunks with scores.
+
+    Returns:
+        DataAnalysisState: Updated state with top_chunks (filtered Documents), cleared intermediate results.
+
+    Key Steps:
+        1. Apply PDF_RELEVANCE_THRESHOLD filter
+        2. Extract Document objects from (doc, score) tuples
+        3. Clear intermediate hybrid search state
+        4. Log chunks that passed threshold
+        5. Return filtered PDF chunks
+    """
+    print__nodes_debug(f"🎯 {RELEVANT_CHUNKS_NODE_ID}: Enter relevant_chunks_node")
+    SIMILARITY_THRESHOLD = PDF_RELEVANCE_THRESHOLD  # Threshold for PDF chunk relevance
+
+    most_similar = state.get("most_similar_chunks", [])
+
+    # Select chunks above threshold
+    top_chunks = [
+        doc
+        for doc, score in most_similar
+        if score is not None and score >= SIMILARITY_THRESHOLD
     ]
     print__nodes_debug(
-        f"💡 FOLLOWUP_PROMPTS: Parsed {len(followup_prompts)} prompts from LLM response"
+        f"📄 {RELEVANT_CHUNKS_NODE_ID}: top_chunks: {len(top_chunks)} chunks passed threshold {SIMILARITY_THRESHOLD}"
     )
 
-    # Key Step 5: Return maximum 3 prompts
-    final_prompts = followup_prompts[:3]
-    print__nodes_debug(
-        f"💡 FOLLOWUP_PROMPTS: Returning {len(final_prompts)} follow-up prompts"
+    # Debug: Show what passed
+    for i, chunk in enumerate(top_chunks[:PDF_N_TOP_CHUNKS], 1):
+        source = chunk.metadata.get("source") if chunk.metadata else "unknown"
+        content_preview = (
+            chunk.page_content[:100].replace("\n", " ")
+            if hasattr(chunk, "page_content")
+            else "N/A"
+        )
+        print__nodes_debug(
+            f"📄 {RELEVANT_CHUNKS_NODE_ID}: Chunk #{i}: {source} | Content: {content_preview}..."
+        )
+
+    return {
+        "top_chunks": top_chunks,
+        "hybrid_search_chunks": [],
+        "most_similar_chunks": [],
+    }
+
+
+async def post_retrieval_sync_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph synchronization node that waits for parallel retrieval branches to complete.
+
+    This node serves as a barrier/join point in the LangGraph workflow, ensuring both parallel
+    retrieval paths (database selections and PDF chunks) have completed before proceeding to
+    SQL generation and answer formatting.
+
+    The node is a pass-through that returns state unchanged but provides a synchronization point
+    for the graph execution engine to coordinate parallel branches.
+
+    Args:
+        state (DataAnalysisState): Workflow state after parallel retrieval completion.
+
+    Returns:
+        DataAnalysisState: Unchanged state (pass-through for synchronization).
+    """
+
+    print__analysis_tracing_debug(
+        "90 - SYNC NODE: Both selection and chunk branches completed"
     )
-    for i, p in enumerate(final_prompts, 1):
-        print__nodes_debug(f"💡 FOLLOWUP_PROMPTS:   {i}. {p}")
-
-    return {"followup_prompts": final_prompts}
+    return state  # Pass through state unchanged
 
 
+# ==============================================================================
+# SQL - Query / Reflect NODES
+# ==============================================================================
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that retrieves database schema for relevant dataset selections.
 
@@ -1649,6 +2280,11 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
     }
 
 
+# ============================================================================ #
+# FINALIZATION NODES
+# ============================================================================ #
+
+
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that formats SQL results and PDF chunks into natural language answers.
 
@@ -1864,6 +2500,107 @@ Bad: "The query shows X is 1,234,567"
     }
 
 
+async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
+    """LangGraph node that generates follow-up prompt suggestions for continued data exploration.
+
+    This node uses Azure GPT-4o-mini with high temperature (1.0) to generate 3 diverse, interesting
+    follow-up prompts based on the conversation summary. Prompts are context-aware and help users
+    discover related insights about Czech Statistical Office data.
+
+    The generated prompts cover different aspects like economy, population, finance, etc., and are
+    designed to be directly usable as natural language queries for the system.
+
+    Args:
+        state (DataAnalysisState): Workflow state containing conversation summary.
+
+    Returns:
+        DataAnalysisState: Updated state with 'followup_prompts' containing list of 3 prompt strings.
+
+    System Prompt Key Points:
+    - Prompt generation assistant for Czech Statistical Office data analysis system
+    - Task: Generate exactly 3 diverse, interesting, and useful follow-up prompts based on conversation summary
+    - Data context: Summary data on Czechia focusing on real economy, monetary and fiscal indicators from CZSO and other institutions
+    - Guidelines: Prompts can be questions/statements/commands, concise and brief, each on new line, no numbering, context-aware, natural and user-friendly, diverse exploration of different angles
+    - Output format: Exactly 3 prompts, one per line, no numbering, diverse coverage of economy/population/finance aspects when summary is empty
+
+    Key Steps:
+        1. Extract conversation summary from messages
+        2. Call Azure GPT-4o-mini with creative temperature (1.0)
+        3. Generate 3 diverse, relevant prompts
+        4. Parse and validate prompt list
+        5. Return maximum 3 prompts
+    """
+    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node")
+
+    # Key Step 1: Extract conversation summary from messages
+    messages = state.get("messages", [])
+    summary = (
+        messages[0]
+        if messages and isinstance(messages[0], SystemMessage)
+        else SystemMessage(content="")
+    )
+    summary_content = summary.content
+
+    print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Summary content: '{summary_content}'")
+
+    # Key Step 2: Call Azure GPT-4o-mini with creative temperature (1.0)
+    llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
+
+    system_prompt = """
+You are a prompt generation assistant for a Czech Statistical Office data analysis system.
+
+About our data:
+Summary data on Czechia provides selected data from individual areas with a focus on the real economy, 
+monetary and fiscal indicators. They gather data from the CZSO as well as data from other institutions, 
+such as the Czech National Bank, the Ministry of Finance and others.
+
+Your task: Generate exactly 3 diverse interesting and useful follow-up prompts based on the conversation summary that users might use to continue exploring the data.
+
+Important guidelines:
+- Prompts don't have to be questions - they can be statements, commands, or other types of intents, but structured in a way that can be directly provided to LLM.
+- Be concise and to the point - prompts should be brief
+- Each prompt should be on a new line
+- Don't number the prompts
+- If there's a conversation summary, make prompts relevant to the topics discussed
+- If the summary is empty, generate general prompts covering different aspects (economy, population, finance, etc.)
+- Make them natural and user-friendly
+- Ensure prompts are diverse and explore different angles or related topics
+"""
+
+    human_prompt = "Conversation summary:\n{summary_content}\n\nGenerate 3 diverse most relevant and most interesting follow-up prompts for the user to continue exploring the data."
+    print__nodes_debug("💡 FOLLOWUP_PROMPTS: Calling LLM to generate prompts")
+
+    # Key Step 3: Generate 3 diverse, relevant prompts
+    prompt = ChatPromptTemplate.from_messages(
+        [("system", system_prompt), ("human", human_prompt)]
+    )
+    result = await llm.ainvoke(
+        prompt.format_messages(summary_content=summary_content or "(empty)")
+    )
+    generated_text = result.content.strip()
+    print__nodes_debug(
+        f"💡 FOLLOWUP_PROMPTS: LLM returned {len(generated_text)} characters"
+    )
+
+    # Key Step 4: Parse and validate prompt list
+    followup_prompts = [
+        line.strip() for line in generated_text.split("\n") if line.strip()
+    ]
+    print__nodes_debug(
+        f"💡 FOLLOWUP_PROMPTS: Parsed {len(followup_prompts)} prompts from LLM response"
+    )
+
+    # Key Step 5: Return maximum 3 prompts
+    final_prompts = followup_prompts[:3]
+    print__nodes_debug(
+        f"💡 FOLLOWUP_PROMPTS: Returning {len(final_prompts)} follow-up prompts"
+    )
+    for i, p in enumerate(final_prompts, 1):
+        print__nodes_debug(f"💡 FOLLOWUP_PROMPTS:   {i}. {p}")
+
+    return {"followup_prompts": final_prompts}
+
+
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that prepares and preserves final answer for user delivery.
 
@@ -1915,6 +2652,11 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
             "followup_prompts", []
         ),  # CRITICAL: Preserve follow-up prompts
     }
+
+
+# ============================================================================ #
+# SAVE / CLEANUP NODES
+# ============================================================================ #
 
 
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:
@@ -2035,731 +2777,6 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
 
     # Key Step 5: Return minimal checkpoint state for database persistence to reduce storage
     return minimal_checkpoint_state
-
-
-async def retrieve_similar_selections_hybrid_search_node(
-    state: DataAnalysisState,
-) -> DataAnalysisState:
-    """LangGraph node that performs hybrid search on ChromaDB to retrieve similar dataset selections.
-
-    This node executes a hybrid search combining semantic similarity and BM25 keyword matching
-    to find the most relevant dataset selections from the ChromaDB vector database. It supports
-    both local and cloud ChromaDB configurations and includes memory cleanup to prevent resource leaks.
-
-    The search query is extracted from the state (preferring 'rewritten_prompt' over 'prompt').
-    Results are converted to Document objects for downstream processing in the LangGraph workflow.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing query and configuration parameters.
-
-    Returns:
-        DataAnalysisState: Updated state with 'hybrid_search_results' containing a list of Document objects
-                          representing the retrieved dataset selections. May also include 'chromadb_missing'
-                          flag if local ChromaDB is unavailable.
-
-    Key Steps:
-        1. Extract query (prefer rewritten_prompt) and n_results from state
-        2. Check ChromaDB availability: local directory exists (local mode) or cloud mode enabled
-        3. Initialize ChromaDB client and get collection using chromadb_client_factory
-        4. Perform hybrid search (semantic + BM25) using hybrid_search function
-        5. Convert dict results to Document objects with page_content and metadata
-        6. Clean up ChromaDB resources (clear references, explicit delete, gc.collect())
-        7. Return hybrid_search_results list or empty list on error
-    """
-    print__nodes_debug(
-        f"🔍 {HYBRID_SEARCH_NODE_ID}: Enter retrieve_similar_selections_hybrid_search_node"
-    )
-
-    # Key Step 1: Extract query (prefer rewritten_prompt) and n_results from state
-    query = state.get("rewritten_prompt") or state["prompt"]
-    n_results = state.get("n_results", SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS)
-
-    print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Query: {query}")
-    print__nodes_debug(f"🔍 {HYBRID_SEARCH_NODE_ID}: Requested n_results: {n_results}")
-
-    # Key Step 2: Check ChromaDB availability: local directory exists (local mode) or cloud mode enabled
-    # Check if ChromaDB directory exists (only when using local ChromaDB)
-
-    use_cloud = should_use_cloud()
-
-    if not use_cloud:
-        # Only check for local directory when not using cloud
-        chroma_db_dir = BASE_DIR / "metadata" / "czsu_chromadb"
-        print__nodes_debug(
-            f"🔍 {HYBRID_SEARCH_NODE_ID}: Checking local ChromaDB at: {chroma_db_dir}"
-        )
-        print__nodes_debug(
-            f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB exists: {chroma_db_dir.exists()}"
-        )
-        print__nodes_debug(
-            f"🔍 {HYBRID_SEARCH_NODE_ID}: ChromaDB is_dir: {chroma_db_dir.is_dir() if chroma_db_dir.exists() else 'N/A'}"
-        )
-
-        if not chroma_db_dir.exists() or not chroma_db_dir.is_dir():
-            print__nodes_debug(
-                f"📄 {HYBRID_SEARCH_NODE_ID}: ChromaDB directory not found at {chroma_db_dir}"
-            )
-            return {"hybrid_search_results": [], "chromadb_missing": True}
-
-        print__nodes_debug(
-            f"🔍 {HYBRID_SEARCH_NODE_ID}: Local ChromaDB found! Resetting chromadb_missing flag"
-        )
-    else:
-        print__nodes_debug(
-            f"🌐 {HYBRID_SEARCH_NODE_ID}: Using Chroma Cloud (skipping local directory check)"
-        )
-
-    try:
-        # Key Step 3: Initialize ChromaDB client and get collection using chromadb_client_factory
-        # Use the same method as the test script to get ChromaDB collection directly
-
-        client = get_chromadb_client(
-            local_path=CHROMA_DB_PATH, collection_name=CHROMA_COLLECTION_NAME
-        )
-        collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
-        print__nodes_debug(
-            f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized"
-        )
-
-        # Key Step 4: Perform hybrid search (semantic + BM25) using hybrid_search function
-        hybrid_results = hybrid_search(collection, query, n_results=n_results)
-        print__nodes_debug(
-            f"📊 {HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results"
-        )
-
-        # Key Step 5: Convert dict results to Document objects with page_content and metadata
-        # Convert dict results to Document objects for compatibility
-
-        hybrid_docs = []
-        for result in hybrid_results:
-            doc = Document(page_content=result["document"], metadata=result["metadata"])
-            hybrid_docs.append(doc)
-
-        # Debug: Show detailed hybrid search results
-        print__nodes_debug(
-            f"📄 {HYBRID_SEARCH_NODE_ID}: Detailed hybrid search results:"
-        )
-        for i, doc in enumerate(hybrid_docs[:10], 1):  # Show first 10
-            selection = doc.metadata.get("selection") if doc.metadata else "N/A"
-            content_preview = (
-                doc.page_content[:100].replace("\n", " ")
-                if hasattr(doc, "page_content")
-                else "N/A"
-            )
-            print__nodes_debug(
-                f"📄 {HYBRID_SEARCH_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
-            )
-
-        print__nodes_debug(
-            f"📄 {HYBRID_SEARCH_NODE_ID}: All selection codes: {[doc.metadata.get('selection') for doc in hybrid_docs]}"
-        )
-
-        # Key Step 6: Clean up ChromaDB resources (clear references, explicit delete, gc.collect())
-        # MEMORY CLEANUP: Explicitly close ChromaDB resources
-        print__nodes_debug(
-            f"🧹 {HYBRID_SEARCH_NODE_ID}: Cleaning up ChromaDB client resources"
-        )
-        collection = None  # Clear collection reference
-        del client  # Explicitly delete client
-        gc.collect()  # Force garbage collection to release memory
-        print__nodes_debug(f"✅ {HYBRID_SEARCH_NODE_ID}: ChromaDB resources released")
-
-        # Key Step 7: Return hybrid_search_results list or empty list on error
-        return {"hybrid_search_results": hybrid_docs}
-    except Exception as e:
-        logger.error("❌ %s: Error in hybrid search: %s", HYBRID_SEARCH_NODE_ID, e)
-
-        logger.error(
-            "📄 %s: Traceback: %s", HYBRID_SEARCH_NODE_ID, traceback.format_exc()
-        )
-        return {"hybrid_search_results": []}
-
-
-async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that reranks dataset selection hybrid search results using Cohere.
-
-    This node applies Cohere's multilingual rerank model to improve the quality of dataset selection
-    retrieval. It takes hybrid search results (semantic + BM25) and reorders them based on semantic
-    relevance to the query, returning selection codes with Cohere relevance scores.
-
-    Cohere reranking significantly improves precision by understanding query semantics beyond simple
-    keyword matching, especially important for Czech language queries and domain-specific terminology.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing query and hybrid_search_results.
-
-    Returns:
-        DataAnalysisState: Updated state with most_similar_selections as list of (selection_code, score) tuples.
-
-    Key Steps:
-        1. Extract query (prefer rewritten_prompt) and hybrid_search_results from state
-        2. Check if hybrid search results exist; return empty list if none
-        3. Call cohere_rerank with documents and query to reorder by semantic relevance
-        4. Extract selection codes and relevance scores from reranked results
-        5. Return most_similar_selections as list of (selection_code, score) tuples
-    """
-
-    print__nodes_debug(
-        f"🔥🔥🔥 🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: ===== RERANK NODE EXECUTING ===== 🔥🔥🔥"
-    )
-    print__nodes_debug(
-        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Enter rerank_table_descriptions_node"
-    )
-
-    # Key Step 1: Extract query (prefer rewritten_prompt) and hybrid_search_results from state
-    query = state.get("rewritten_prompt") or state["prompt"]
-    hybrid_results = state.get("hybrid_search_results", [])
-    n_results = state.get("n_results", 20)
-
-    print__nodes_debug(f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Query: {query}")
-    print__nodes_debug(
-        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
-    )
-    print__nodes_debug(
-        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Requested n_results: {n_results}"
-    )
-
-    # Key Step 2: Check if hybrid search results exist; return empty list if none
-    # Check if we have hybrid search results to rerank
-    if not hybrid_results:
-        print__nodes_debug(
-            f"📄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: No hybrid search results to rerank"
-        )
-        return {"most_similar_selections": []}
-
-    # Debug: Show input to rerank
-    print__nodes_debug(
-        f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Input hybrid results for reranking:"
-    )
-    for i, doc in enumerate(hybrid_results[:10], 1):  # Show first 10
-        selection = doc.metadata.get("selection") if doc.metadata else "N/A"
-        content_preview = (
-            doc.page_content[:100].replace("\n", " ")
-            if hasattr(doc, "page_content")
-            else "N/A"
-        )
-        print__nodes_debug(
-            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: #{i}: {selection} | Content: {content_preview}..."
-        )
-
-    try:
-        # Key Step 3: Call cohere_rerank with documents and query to reorder by semantic relevance
-        print__nodes_debug(
-            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
-        )
-        reranked = cohere_rerank(query, hybrid_results, top_n=n_results)
-        print__nodes_debug(
-            f"📊 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Cohere returned {len(reranked)} reranked results"
-        )
-
-        # Key Step 4: Extract selection codes and relevance scores from reranked results
-        most_similar = []
-        for i, (doc, res) in enumerate(reranked, 1):
-            selection_code = doc.metadata.get("selection") if doc.metadata else None
-            score = res.relevance_score
-            most_similar.append((selection_code, score))
-            # Debug: Show detailed rerank results
-            if i <= 10:  # Show top 10 results
-                print__nodes_debug(
-                    f"🎯🎯🎯 🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Rerank #{i}: {selection_code} | Score: {score:.6f}"
-                )
-
-        print__nodes_debug(
-            f"🎯🎯🎯 🎯🎯🎯 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: FINAL RERANK OUTPUT: {most_similar[:5]} 🎯🎯🎯"
-        )
-
-        # Key Step 5: Return most_similar_selections as list of (selection_code, score) tuples
-        return {"most_similar_selections": most_similar}
-    except Exception as e:
-        logger.error(
-            "❌ %s: Error in reranking: %s", RERANK_TABLE_DESCRIPTIONS_NODE_ID, e
-        )
-
-        logger.error(
-            "📄 %s: Traceback: %s",
-            RERANK_TABLE_DESCRIPTIONS_NODE_ID,
-            traceback.format_exc(),
-        )
-        return {"most_similar_selections": []}
-
-
-async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that filters reranked selections by relevance threshold and selects top 3.
-
-    This node implements quality control by filtering dataset selections based on Cohere relevance
-    scores. Only selections exceeding SQL_RELEVANCE_THRESHOLD (0.0005) are retained, with a maximum
-    of 3 selections to prevent information overload and maintain schema size for SQL generation.
-
-    If no selections pass the threshold, the node sets a special final_answer indicating no relevant
-    data was found, allowing the workflow to skip SQL generation and proceed directly to answer formatting.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing most_similar_selections with scores.
-
-    Returns:
-        DataAnalysisState: Updated state with top_selection_codes (max 3), cleared intermediate results.
-
-    Key Steps:
-        1. Extract most_similar_selections list from state
-        2. Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
-        3. Prepare result dict with top_selection_codes and clear intermediate state
-        4. Set special final_answer "No Relevant Selections Found" if no selections pass threshold
-        5. Return filtered selection codes and cleaned state
-    """
-    print__nodes_debug(f"🎯 {RELEVANT_NODE_ID}: Enter relevant_selections_node")
-
-    # Key Step 1: Extract most_similar_selections list from state
-    most_similar = state.get("most_similar_selections", [])
-
-    # Key Step 2: Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
-    # Select up to 3 top selections above threshold
-    top_selection_codes = [
-        sel
-        for sel, score in most_similar
-        if sel is not None and score is not None and score >= SQL_RELEVANCE_THRESHOLD
-    ][:3]
-    print__nodes_debug(
-        f"🎯 {RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}"
-    )
-
-    # Key Step 3: Prepare result dict with top_selection_codes and clear intermediate state
-    result = {
-        "top_selection_codes": top_selection_codes,
-        "hybrid_search_results": [],
-        "most_similar_selections": [],
-    }
-
-    # Key Step 4: Set special final_answer "No Relevant Selections Found" if no selections pass threshold
-    # If no selections pass the threshold, set final_answer for frontend
-    if not top_selection_codes:
-        print__nodes_debug(
-            f"📄 {RELEVANT_NODE_ID}: No selections passed the threshold - setting final_answer"
-        )
-        result["final_answer"] = "No Relevant Selections Found"
-
-    # Key Step 5: Return filtered selection codes and cleaned state
-    return result
-
-
-async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that maintains bounded conversation memory through cumulative summarization.
-
-    This node implements memory management by compressing conversation history into a concise summary.
-    It uses Azure GPT-4o-mini to update an existing summary with the latest message, maintaining
-    bounded context size while preserving important conversation details.
-
-    The summarization strategy prevents token overflow in long conversations while ensuring that
-    context-dependent queries (pronouns, references) can still be resolved in query rewriting.
-
-    The node always maintains a 2-message structure: [summary (SystemMessage), last_message],
-    which is the canonical message format throughout the workflow.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing messages list.
-
-    Returns:
-        DataAnalysisState: Updated state with messages as [new_summary, last_message].
-
-    System Prompt Key Points:
-    - Conversation summarization agent for data analysis conversations between user and AI assistant
-    - Task: Maintain concise, cumulative summary by updating previous summary with latest message content
-    - Process: Receive previous summary and latest message, incorporate new information/decisions/context
-    - Output requirements: Summary suitable for LLM context in future queries, concise but complete, no meta-commentary or formatting, just summary text
-    - Memory management: Prevents token overflow while preserving context for pronoun/reference resolution
-
-    Key Steps:
-        1. Extract previous summary (SystemMessage) and last message from state
-        2. Skip summarization if both previous summary and last message are empty
-        3. Call Azure GPT-4o-mini (temp=0.0) to generate updated cumulative summary
-        4. Create new SystemMessage containing the updated summary
-        5. Return 2-message structure [summary_msg, last_message] for bounded memory
-    """
-    print__nodes_debug("📝 SUMMARY: Enter summarize_messages_node")
-
-    # Key Step 1: Extract previous summary (SystemMessage) and last message from state
-    messages = state.get("messages", [])
-    summary = (
-        messages[0]
-        if messages and isinstance(messages[0], SystemMessage)
-        else SystemMessage(content="")
-    )
-    last_message = messages[1] if len(messages) > 1 else None
-    prev_summary = summary.content
-    last_message_content = last_message.content if last_message else ""
-
-    print__nodes_debug(f"📝 SUMMARY: prev_summary: '{prev_summary}'")
-    print__nodes_debug(f"📝 SUMMARY: last_message_content: '{last_message_content}'")
-
-    # Key Step 2: Skip summarization if both previous summary and last message are empty
-    if not prev_summary and not last_message_content:
-        print__nodes_debug(
-            "📝 SUMMARY: Skipping summarization (no previous summary or last message)."
-        )
-        return {"messages": [summary] if not last_message else [summary, last_message]}
-
-    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
-
-    system_prompt = """
-You are a conversation summarization agent.
-Your job is to maintain a concise, cumulative summary of a data analysis conversation between a 
-user and an AI assistant. 
-Each time you are called, you receive the previous summary (which may be empty) and 
-the latest message. Update the summary to include any new information, decisions, or 
-context from the latest message. The summary should be suitable for 
-providing context to an LLM in future queries. 
-Be concise but do not omit important details. 
-Do not include any meta-commentary or formatting, just the summary text."""
-
-    human_prompt = "Previous summary:\n{prev_summary}\n\nLatest message:\n{last_message_content}\n\nUpdate the summary to include the latest message."
-    print__nodes_debug(f"📝 SUMMARY: human_prompt template: {human_prompt}")
-
-    prompt = ChatPromptTemplate.from_messages(
-        [("system", system_prompt), ("human", human_prompt)]
-    )
-    # Key Step 3: Call Azure GPT-4o-mini (temp=0.0) to generate updated cumulative summary
-    result = await llm.ainvoke(
-        prompt.format_messages(
-            prev_summary=prev_summary, last_message_content=last_message_content
-        )
-    )
-    new_summary = result.content.strip()
-    print__nodes_debug(f"📝 SUMMARY: Updated summary: {new_summary}")
-
-    # Key Step 4: Create new SystemMessage containing the updated summary
-    summary_msg = SystemMessage(content=new_summary)
-    new_messages = [summary_msg, last_message] if last_message else [summary_msg]
-
-    print__nodes_debug(
-        f"📝 SUMMARY: New messages: {[getattr(m, 'content', None) for m in new_messages]}"
-    )
-
-    # Key Step 5: Return 2-message structure [summary_msg, last_message] for bounded memory
-    return {"messages": new_messages}
-
-
-# ==============================================================================
-# PDF CHUNK NODES
-# ==============================================================================
-async def retrieve_similar_chunks_hybrid_search_node(
-    state: DataAnalysisState,
-) -> DataAnalysisState:
-    """LangGraph node that performs hybrid search on PDF ChromaDB to retrieve similar document chunks.
-
-    This node executes a hybrid search combining semantic similarity and BM25 keyword matching
-    to find the most relevant PDF document chunks from the ChromaDB vector database. It first
-    translates the query to English for better search performance, then supports both local and
-    cloud ChromaDB configurations with memory cleanup to prevent resource leaks.
-
-    The search query is extracted from the state (preferring 'rewritten_prompt' over 'prompt'),
-    translated to English, and used to retrieve relevant PDF chunks. Results are converted to
-    Document objects for downstream processing in the LangGraph workflow.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing query and configuration parameters.
-
-    Returns:
-        DataAnalysisState: Updated state with 'hybrid_search_chunks' containing a list of Document objects
-                          representing the retrieved PDF chunks. Returns empty list if PDF functionality
-                          is unavailable or ChromaDB is not accessible.
-
-    Key Steps:
-        1. Check if PDF functionality is available
-        2. Extract and translate query to English using Azure Translator
-        3. Extract n_results from state (default: PDF_HYBRID_SEARCH_DEFAULT_RESULTS)
-        4. Check PDF ChromaDB availability (local directory or cloud)
-        5. Initialize PDF ChromaDB client and collection
-        6. Perform hybrid search using pdf_hybrid_search function
-        7. Convert results to Document objects with metadata
-        8. Clean up ChromaDB resources and force garbage collection
-        9. Return results or empty list on error
-    """
-    print__nodes_debug(
-        f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Enter retrieve_similar_chunks_hybrid_search_node"
-    )
-
-    if not PDF_FUNCTIONALITY_AVAILABLE:
-        print__nodes_debug(
-            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF functionality not available"
-        )
-        return {"hybrid_search_chunks": []}
-
-    query_original_language = state.get("rewritten_prompt") or state["prompt"]
-
-    # Translate query to English using Azure Translator
-    query = await translate_to_english(query_original_language)
-
-    print__nodes_debug(
-        f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Original query: '{query_original_language}' -> Translated query: '{query}'"
-    )
-
-    n_results = state.get("n_results", PDF_HYBRID_SEARCH_DEFAULT_RESULTS)
-
-    print__nodes_debug(f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Query: {query}")
-    print__nodes_debug(
-        f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Requested n_results: {n_results}"
-    )
-
-    # Check if PDF ChromaDB directory exists (only when using local ChromaDB)
-
-    use_cloud = should_use_cloud()
-
-    if not use_cloud:
-        # Only check for local directory when not using cloud
-        if not PDF_CHROMA_DB_PATH.exists() or not PDF_CHROMA_DB_PATH.is_dir():
-            print__nodes_debug(
-                f"📄 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB directory not found at {PDF_CHROMA_DB_PATH}"
-            )
-            return {"hybrid_search_chunks": []}
-        print__nodes_debug(
-            f"🔍 {RETRIEVE_CHUNKS_NODE_ID}: Local PDF ChromaDB found at {PDF_CHROMA_DB_PATH}"
-        )
-    else:
-        print__nodes_debug(
-            f"🌐 {RETRIEVE_CHUNKS_NODE_ID}: Using Chroma Cloud for PDF chunks"
-        )
-
-    try:
-        # Use the PDF ChromaDB collection directly with cloud/local support
-
-        client = get_chromadb_client(
-            local_path=PDF_CHROMA_DB_PATH, collection_name=PDF_COLLECTION_NAME
-        )
-        collection = client.get_collection(name=PDF_COLLECTION_NAME)
-        print__nodes_debug(
-            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized"
-        )
-
-        hybrid_results = pdf_hybrid_search(collection, query, n_results=n_results)
-        print__nodes_debug(
-            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: Retrieved {len(hybrid_results)} PDF hybrid search results"
-        )
-
-        # Convert dict results to Document objects for compatibility
-
-        hybrid_docs = []
-        for result in hybrid_results:
-            doc = Document(page_content=result["document"], metadata=result["metadata"])
-            hybrid_docs.append(doc)
-
-        # Debug: Show detailed hybrid search results
-        print__nodes_debug(
-            f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Detailed PDF hybrid search results:"
-        )
-        for i, doc in enumerate(
-            hybrid_docs[:PDF_N_TOP_CHUNKS], 1
-        ):  # Show first few results
-            source = doc.metadata.get("source") if doc.metadata else "N/A"
-            content_preview = (
-                doc.page_content[:100].replace("\n", " ")
-                if hasattr(doc, "page_content")
-                else "N/A"
-            )
-            print__nodes_debug(
-                f"📄 {RETRIEVE_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}..."
-            )
-
-        # MEMORY CLEANUP: Explicitly close ChromaDB resources
-        print__nodes_debug(
-            f"🧹 {RETRIEVE_CHUNKS_NODE_ID}: Cleaning up PDF ChromaDB client resources"
-        )
-        collection = None  # Clear collection reference
-        del client  # Explicitly delete client
-        gc.collect()  # Force garbage collection to release memory
-        print__nodes_debug(
-            f"✅ {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB resources released"
-        )
-
-        return {"hybrid_search_chunks": hybrid_docs}
-    except Exception as e:
-        logger.error(
-            "❌ %s: Error in PDF hybrid search: %s", RETRIEVE_CHUNKS_NODE_ID, e
-        )
-
-        logger.error(
-            "📄 %s: Traceback: %s", RETRIEVE_CHUNKS_NODE_ID, traceback.format_exc()
-        )
-        return {"hybrid_search_chunks": []}
-
-
-async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that reranks PDF chunk hybrid search results using Cohere.
-
-    This node applies Cohere's multilingual rerank model to improve the quality of PDF chunk
-    retrieval. It takes hybrid search results (semantic + BM25) from PDF documents and reorders
-    them based on semantic relevance to the query, returning document objects with Cohere scores.
-
-    PDF chunks are typically English text from documentation, so the reranking helps bridge the
-    language gap when queries are in Czech by understanding cross-lingual semantic similarity.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing query and hybrid_search_chunks.
-
-    Returns:
-        DataAnalysisState: Updated state with most_similar_chunks as list of (Document, score) tuples.
-
-    Key Steps:
-        1. Check PDF functionality availability
-        2. Extract query and hybrid search chunks
-        3. Call pdf_cohere_rerank with documents and query
-        4. Extract documents and relevance scores
-        5. Return ranked list of (document, score) pairs
-        6. Log top results for debugging
-    """
-    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Enter rerank_chunks_node")
-
-    if not PDF_FUNCTIONALITY_AVAILABLE:
-        print__nodes_debug(
-            f"📄 {RERANK_CHUNKS_NODE_ID}: PDF functionality not available"
-        )
-        return {"most_similar_chunks": []}
-
-    query = state.get("rewritten_prompt") or state["prompt"]
-    hybrid_results = state.get("hybrid_search_chunks", [])
-    n_results = state.get("n_results", PDF_N_TOP_CHUNKS)
-
-    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Query: {query}")
-    print__nodes_debug(
-        f"🔄 {RERANK_CHUNKS_NODE_ID}: Number of PDF hybrid results received: {len(hybrid_results)}"
-    )
-    print__nodes_debug(f"🔄 {RERANK_CHUNKS_NODE_ID}: Requested n_results: {n_results}")
-
-    # Check if we have hybrid search results to rerank
-    if not hybrid_results:
-        print__nodes_debug(
-            f"📄 {RERANK_CHUNKS_NODE_ID}: No PDF hybrid search results to rerank"
-        )
-        return {"most_similar_chunks": []}
-
-    # Debug: Show input to rerank
-    print__nodes_debug(
-        f"🔄 {RERANK_CHUNKS_NODE_ID}: Input PDF hybrid results for reranking:"
-    )
-    for i, doc in enumerate(
-        hybrid_results[:PDF_N_TOP_CHUNKS], 1
-    ):  # Show first few results
-        source = doc.metadata.get("source") if doc.metadata else "N/A"
-        content_preview = (
-            doc.page_content[:100].replace("\n", " ")
-            if hasattr(doc, "page_content")
-            else "N/A"
-        )
-        print__nodes_debug(
-            f"🔄 {RERANK_CHUNKS_NODE_ID}: #{i}: {source} | Content: {content_preview}..."
-        )
-
-    try:
-        print__nodes_debug(
-            f"🔄 {RERANK_CHUNKS_NODE_ID}: Calling PDF cohere_rerank with {len(hybrid_results)} documents"
-        )
-        reranked = pdf_cohere_rerank(query, hybrid_results, top_n=n_results)
-        print__nodes_debug(
-            f"📄 {RERANK_CHUNKS_NODE_ID}: PDF Cohere returned {len(reranked)} reranked results"
-        )
-
-        most_similar = []
-        for i, (doc, res) in enumerate(reranked, 1):
-            score = res.relevance_score
-            most_similar.append((doc, score))
-            # Debug: Show detailed rerank results
-            if i <= PDF_N_TOP_CHUNKS:  # Show top few results
-                source = doc.metadata.get("source") if doc.metadata else "unknown"
-                print__nodes_debug(
-                    f"🎯🎯🎯 🎯 {RERANK_CHUNKS_NODE_ID}: PDF Rerank #{i}: {source} | Score: {score:.6f}"
-                )
-
-        print__nodes_debug(
-            f"🎯🎯🎯 🎯🎯🎯 {RERANK_CHUNKS_NODE_ID}: FINAL PDF RERANK OUTPUT: {len(most_similar)} chunks 🎯🎯🎯"
-        )
-
-        return {"most_similar_chunks": most_similar}
-    except Exception as e:
-        logger.error("❌ %s: Error in PDF reranking: %s", RERANK_CHUNKS_NODE_ID, e)
-
-        logger.error(
-            "📄 %s: Traceback: %s", RERANK_CHUNKS_NODE_ID, traceback.format_exc()
-        )
-        return {"most_similar_chunks": []}
-
-
-async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph node that filters reranked PDF chunks by relevance threshold.
-
-    This node implements quality control for PDF document retrieval by filtering chunks based on
-    Cohere relevance scores. Only chunks exceeding PDF_RELEVANCE_THRESHOLD are retained for
-    inclusion in the final answer synthesis.
-
-    Unlike dataset selections (which have a max of 3), PDF chunks don't have an explicit limit
-    beyond the threshold filter, though upstream configuration (PDF_N_TOP_CHUNKS) controls the
-    maximum number of chunks retrieved.
-
-    Args:
-        state (DataAnalysisState): Workflow state containing most_similar_chunks with scores.
-
-    Returns:
-        DataAnalysisState: Updated state with top_chunks (filtered Documents), cleared intermediate results.
-
-    Key Steps:
-        1. Apply PDF_RELEVANCE_THRESHOLD filter
-        2. Extract Document objects from (doc, score) tuples
-        3. Clear intermediate hybrid search state
-        4. Log chunks that passed threshold
-        5. Return filtered PDF chunks
-    """
-    print__nodes_debug(f"🎯 {RELEVANT_CHUNKS_NODE_ID}: Enter relevant_chunks_node")
-    SIMILARITY_THRESHOLD = PDF_RELEVANCE_THRESHOLD  # Threshold for PDF chunk relevance
-
-    most_similar = state.get("most_similar_chunks", [])
-
-    # Select chunks above threshold
-    top_chunks = [
-        doc
-        for doc, score in most_similar
-        if score is not None and score >= SIMILARITY_THRESHOLD
-    ]
-    print__nodes_debug(
-        f"📄 {RELEVANT_CHUNKS_NODE_ID}: top_chunks: {len(top_chunks)} chunks passed threshold {SIMILARITY_THRESHOLD}"
-    )
-
-    # Debug: Show what passed
-    for i, chunk in enumerate(top_chunks[:PDF_N_TOP_CHUNKS], 1):
-        source = chunk.metadata.get("source") if chunk.metadata else "unknown"
-        content_preview = (
-            chunk.page_content[:100].replace("\n", " ")
-            if hasattr(chunk, "page_content")
-            else "N/A"
-        )
-        print__nodes_debug(
-            f"📄 {RELEVANT_CHUNKS_NODE_ID}: Chunk #{i}: {source} | Content: {content_preview}..."
-        )
-
-    return {
-        "top_chunks": top_chunks,
-        "hybrid_search_chunks": [],
-        "most_similar_chunks": [],
-    }
-
-
-async def post_retrieval_sync_node(state: DataAnalysisState) -> DataAnalysisState:
-    """LangGraph synchronization node that waits for parallel retrieval branches to complete.
-
-    This node serves as a barrier/join point in the LangGraph workflow, ensuring both parallel
-    retrieval paths (database selections and PDF chunks) have completed before proceeding to
-    SQL generation and answer formatting.
-
-    The node is a pass-through that returns state unchanged but provides a synchronization point
-    for the graph execution engine to coordinate parallel branches.
-
-    Args:
-        state (DataAnalysisState): Workflow state after parallel retrieval completion.
-
-    Returns:
-        DataAnalysisState: Unchanged state (pass-through for synchronization).
-    """
-
-    print__analysis_tracing_debug(
-        "90 - SYNC NODE: Both selection and chunk branches completed"
-    )
-    return state  # Pass through state unchanged
 
 
 async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
