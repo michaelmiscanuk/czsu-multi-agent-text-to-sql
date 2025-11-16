@@ -427,14 +427,14 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
 # Standard imports
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 # Import globals from config
 from api.config.settings import throttle_semaphores
 
 # Import memory functions from utils
-from api.utils.memory import log_comprehensive_error
+from api.utils.memory import log_comprehensive_error, print__memory_monitoring
 
 # Import rate limiting functions from utils
 from api.utils.rate_limiting import (
@@ -550,3 +550,34 @@ async def throttling_middleware(request: Request, call_next):
         # Rate limit check passed (or wait was successful)
         # Proceed with request processing
         return await call_next(request)
+
+
+# ==============================================================================
+# MIDDLEWARE SETUP FUNCTION
+# ==============================================================================
+
+
+def setup_throttling_middleware(app: FastAPI):
+    """Setup rate limiting middleware for the FastAPI application.
+
+    Implements intelligent throttling that makes requests wait instead of
+    immediately rejecting them when rate limits are exceeded.
+
+    Features:
+    - Per-IP rate limiting (sliding window algorithm)
+    - Semaphore-based concurrency control (max 8 concurrent per IP)
+    - Wait-and-retry strategy (up to 5 seconds)
+    - Selective endpoint exemption (health checks, docs)
+
+    Args:
+        app: The FastAPI application instance
+
+    Exempted Endpoints:
+        - /health: Health checks (monitoring)
+        - /docs: API documentation
+        - /openapi.json: OpenAPI schema
+        - /debug/pool-status: Database pool monitoring
+    """
+    print__memory_monitoring("📋 Registering rate limiting middleware...")
+    app.middleware("http")(throttling_middleware)
+    print__memory_monitoring("✅ Rate limiting middleware registered successfully")

@@ -531,6 +531,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException  # HTTP
 
 # Import middleware setup functions
 from api.middleware.cors import setup_cors_middleware, setup_brotli_middleware
+from api.middleware.rate_limiting import setup_throttling_middleware
+from api.middleware.memory_monitoring import setup_memory_monitoring_middleware
 
 # ==============================================================================
 # CONFIGURATION AND GLOBAL VARIABLES
@@ -539,8 +541,6 @@ from api.middleware.cors import setup_cors_middleware, setup_brotli_middleware
 from api.config.settings import (
     _APP_STARTUP_TIME,  # Timestamp when application started (for uptime calculation)
     _MEMORY_BASELINE,  # Initial memory usage after startup (for leak detection)
-    _REQUEST_COUNT,  # Total requests processed (for monitoring)
-    throttle_semaphores,  # Per-client semaphores for concurrent request limiting
 )
 
 # ==============================================================================
@@ -584,22 +584,13 @@ from api.utils.debug import (
 # ==============================================================================
 # Import memory monitoring, profiling, and cleanup functions
 from api.utils.memory import (
-    log_comprehensive_error,  # Detailed error logging with memory context
     log_memory_usage,  # Log current memory usage with label
+    print__memory_monitoring,  # Print memory monitoring messages
     setup_graceful_shutdown,  # Register signal handlers for clean shutdown
     start_memory_profiler,  # Start tracemalloc-based memory profiler
     start_memory_cleanup,  # Start background memory cleanup task
     stop_memory_profiler,  # Stop and report memory profiler statistics
     stop_memory_cleanup,  # Stop background cleanup task
-)
-
-# ==============================================================================
-# RATE LIMITING UTILITIES
-# ==============================================================================
-# Import rate limiting and throttling functions
-from api.utils.rate_limiting import (
-    check_rate_limit_with_throttling,  # Check if request exceeds rate limits
-    wait_for_rate_limit,  # Intelligently wait instead of rejecting
 )
 
 # ==============================================================================
@@ -855,127 +846,23 @@ All endpoints (except `/health` and `/docs`) require Bearer token authentication
 # ==============================================================================
 # MIDDLEWARE REGISTRATION
 # ==============================================================================
-# Monitor all route registrations (including middleware and CORS)
-# This helps detect if routes/middleware are accidentally registered multiple times
-from api.utils.memory import print__memory_monitoring
-
-# ==============================================================================
-# CORS AND COMPRESSION MIDDLEWARE
-# ==============================================================================
 # Setup CORS and compression using wrapper functions from api.middleware.cors
 # These functions provide:
 # - Environment-based CORS configuration (production-ready)
 # - Brotli compression
 # - Logging and monitoring integration
 
+# Setup CORS middleware for cross-origin request handling
 setup_cors_middleware(app)
+
+# Setup Brotli middleware for response compression
 setup_brotli_middleware(app)
 
+# Setup throttling middleware for intelligent rate limiting with wait-instead-of-reject
+setup_throttling_middleware(app)
 
-# ==============================================================================
-# RATE LIMITING MIDDLEWARE
-# ==============================================================================
-# Intelligent throttling: waits for rate limit instead of immediate rejection
-# This provides better UX by making clients wait rather than failing requests
-@app.middleware("http")
-async def throttling_middleware(request: Request, call_next):
-    """Throttling middleware that makes requests wait instead of rejecting them.
-
-    Strategy:
-    - Uses per-IP semaphores to limit concurrent requests
-    - Attempts to wait for rate limit availability
-    - Only rejects if wait time exceeds threshold
-    - Provides detailed rate limit info in responses
-
-    Exempt endpoints:
-    - /health, /docs, /openapi.json, /debug/pool-status
-    """
-
-    # Skip throttling for health checks and documentation endpoints
-    # These need to remain accessible for monitoring and API exploration
-    if request.url.path in ["/health", "/docs", "/openapi.json", "/debug/pool-status"]:
-        return await call_next(request)
-
-    # Extract client IP address for per-client rate limiting
-    client_ip = request.client.host if request.client else "unknown"
-
-    # Use semaphore to limit concurrent requests per IP
-    # Semaphore is created on-demand via defaultdict in settings
-    semaphore = throttle_semaphores[client_ip]
-
-    async with semaphore:
-        # Try to wait for rate limit instead of immediately rejecting
-        # This improves UX by making the client wait rather than returning 429
-        if not await wait_for_rate_limit(client_ip):
-            # Only reject if we can't wait (wait time too long or max attempts exceeded)
-            # Get detailed rate limit information for the error response
-            rate_info = check_rate_limit_with_throttling(client_ip)
-            log_comprehensive_error(
-                "rate_limit_exceeded_after_wait",
-                Exception(
-                    f"Rate limit exceeded for IP: {client_ip} after waiting. Burst: {rate_info['burst_count']}/{rate_info['burst_limit']}, Window: {rate_info['window_count']}/{rate_info['window_limit']}"
-                ),
-                request,
-            )
-            return JSONResponse(
-                status_code=429,
-                content={
-                    "detail": f"Rate limit exceeded. Please wait {rate_info['suggested_wait']:.1f}s before retrying.",
-                    "retry_after": max(rate_info["suggested_wait"], 1),
-                    "burst_usage": f"{rate_info['burst_count']}/{rate_info['burst_limit']}",
-                    "window_usage": f"{rate_info['window_count']}/{rate_info['window_limit']}",
-                },
-                headers={"Retry-After": str(max(int(rate_info["suggested_wait"]), 1))},
-            )
-
-        return await call_next(request)
-
-
-# ==============================================================================
-# MEMORY MONITORING MIDDLEWARE
-# ==============================================================================
-# Monitor memory usage for heavy operations to detect leaks and track growth
-@app.middleware("http")
-async def simplified_memory_monitoring_middleware(request: Request, call_next):
-    """Simplified memory monitoring middleware for heavy operations.
-
-    Monitors memory before and after:
-    - /analyze: NL-to-SQL conversion (complex LangGraph operations)
-    - /chat/all-messages-for-all-threads: Bulk message retrieval
-
-    This helps identify memory leaks in specific endpoints without
-    adding overhead to every single request.
-    """
-    # pylint: disable=global-statement
-    global _REQUEST_COUNT
-
-    # Increment global request counter for monitoring
-    _REQUEST_COUNT += 1
-
-    # Only check memory for heavy operations to avoid overhead
-    # These endpoints are most likely to cause memory issues:
-    # - /analyze: Complex LangGraph multi-agent operations
-    # - /chat/all-messages-*: Bulk database queries
-    request_path = request.url.path
-    if any(
-        path in request_path
-        for path in ["/analyze", "/chat/all-messages-for-all-threads"]
-    ):
-        # Log memory before processing heavy operation
-        log_memory_usage(f"before_{request_path.replace('/', '_')}")
-
-    # Process the request
-    response = await call_next(request)
-
-    # Check memory after heavy operations to detect growth
-    if any(
-        path in request_path
-        for path in ["/analyze", "/chat/all-messages-for-all-threads"]
-    ):
-        # Log memory after processing to calculate delta
-        log_memory_usage(f"after_{request_path.replace('/', '_')}")
-
-    return response
+# Setup memory monitoring middleware for tracking usage in heavy operations
+setup_memory_monitoring_middleware(app)
 
 
 # ==============================================================================

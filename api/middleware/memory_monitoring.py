@@ -386,13 +386,13 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
 # Standard imports
-from fastapi import Request
+from fastapi import FastAPI, Request
 
 # Import globals from config
 from api.config.settings import _REQUEST_COUNT
 
 # Import memory functions from utils
-from api.utils.memory import log_memory_usage
+from api.utils.memory import log_memory_usage, print__memory_monitoring
 
 # ==============================================================================
 # MEMORY MONITORING MIDDLEWARE
@@ -472,3 +472,33 @@ async def simplified_memory_monitoring_middleware(request: Request, call_next):
     # STEP 6: RETURN RESPONSE
     # =======================================================================
     return response
+
+
+# ==============================================================================
+# MIDDLEWARE SETUP FUNCTION
+# ==============================================================================
+
+
+def setup_memory_monitoring_middleware(app: FastAPI):
+    """Setup memory monitoring middleware for the FastAPI application.
+
+    Monitors memory usage for heavy operations to detect leaks and track growth.
+    Focuses on memory-intensive endpoints while minimizing overhead for
+    lightweight endpoints.
+
+    Features:
+    - Selective monitoring for heavy endpoints (/analyze, /bulk)
+    - Request count tracking (global counter)
+    - Before/after memory logging
+    - Integration with memory profiling utilities
+
+    Args:
+        app: The FastAPI application instance
+
+    Monitored Endpoints:
+        - /analyze: AI-powered analysis (memory-intensive)
+        - /chat/all-messages-for-all-threads: Bulk message loading
+    """
+    print__memory_monitoring("📋 Registering memory monitoring middleware...")
+    app.middleware("http")(simplified_memory_monitoring_middleware)
+    print__memory_monitoring("✅ Memory monitoring middleware registered successfully")
