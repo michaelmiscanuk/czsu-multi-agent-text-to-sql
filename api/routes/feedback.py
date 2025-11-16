@@ -657,8 +657,14 @@ FUTURE ENHANCEMENTS
 ===================================================================================
 """
 
+# ==============================================================================
+# CRITICAL WINDOWS COMPATIBILITY CONFIGURATION
+# ==============================================================================
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
+# with asyncio on Windows platforms. This prevents "Event loop is closed" errors
+# and ensures proper async database operations.
 import os
 import sys
 
@@ -672,7 +678,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Constants
+# ==============================================================================
+# PATH AND DIRECTORY CONSTANTS
+# ==============================================================================
+
+# Determine base directory for the project
+# Handles both normal execution and special environments (e.g., REPL, Jupyter)
 try:
     from pathlib import Path
 
@@ -689,13 +700,25 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from langsmith import Client
 
-# Import authentication dependencies
+# ==============================================================================
+# AUTHENTICATION AND AUTHORIZATION
+# ==============================================================================
+
+# Import JWT-based authentication dependency for user verification
 from api.dependencies.auth import get_current_user
 
-# Import models
+# ==============================================================================
+# REQUEST/RESPONSE MODELS
+# ==============================================================================
+
+# Import Pydantic models for feedback and sentiment request validation
 from api.models.requests import FeedbackRequest, SentimentRequest
 
-# Import debug functions
+# ==============================================================================
+# DEBUG AND LOGGING UTILITIES
+# ==============================================================================
+
+# Import specialized debug logging functions for feedback workflows
 from api.utils.debug import (
     print__feedback_debug,
     print__feedback_flow,
@@ -703,15 +726,32 @@ from api.utils.debug import (
     print__sentiment_flow,
 )
 
-# Import database connection functions
+# ==============================================================================
+# DATABASE AND BUSINESS LOGIC IMPORTS
+# ==============================================================================
+
+# Add project root to Python path for direct imports
 sys.path.insert(0, str(BASE_DIR))
-# Import helpers
+
+# Import error response formatting helper
 from api.helpers import traceback_json_response
+
+# Import sentiment tracking and database connection utilities
 from checkpointer.user_management.sentiment_tracking import update_thread_run_sentiment
 from checkpointer.database.connection import get_direct_connection
 
-# Create router for feedback endpoints
+# ==============================================================================
+# FASTAPI ROUTER INITIALIZATION
+# ==============================================================================
+
+# Create router instance for feedback and sentiment endpoints
+# This router will be included in the main FastAPI application
 router = APIRouter()
+
+
+# ==============================================================================
+# FEEDBACK SUBMISSION ENDPOINT
+# ==============================================================================
 
 
 @router.post(
@@ -759,6 +799,10 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         print__feedback_debug(f"🚨 No user email found in token")
         raise HTTPException(status_code=401, detail="User email not found in token")
 
+    # ==========================================================================
+    # REQUEST VALIDATION AND LOGGING
+    # ==========================================================================
+
     print__feedback_flow(f"📥 Incoming feedback request:")
     print__feedback_flow(f"👤 User: {user_email}")
     print__feedback_flow(f"🔑 Run ID: '{request.run_id}'")
@@ -778,6 +822,10 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         )
 
     try:
+        # ======================================================================
+        # UUID FORMAT VALIDATION
+        # ======================================================================
+
         try:
             print__feedback_debug(f"🔍 Starting UUID validation")
             print__feedback_flow(f"🔍 Validating UUID format for: '{request.run_id}'")
@@ -815,7 +863,12 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
                 detail=f"Invalid run_id format. Expected UUID, got: {request.run_id}",
             )
 
+        # ======================================================================
+        # SECURITY: OWNERSHIP VERIFICATION
+        # ======================================================================
+
         # 🔒 SECURITY CHECK: Verify user owns this run_id before submitting feedback
+        # This prevents users from submitting feedback for other users' queries
         print__feedback_debug(f"🔍 Starting ownership verification")
         print__feedback_flow(f"🔒 Verifying run_id ownership for user: {user_email}")
 
@@ -876,6 +929,11 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
                 f"⚠️ Proceeding with feedback submission despite ownership check failure"
             )
 
+        # ======================================================================
+        # LANGSMITH FEEDBACK SUBMISSION
+        # ======================================================================
+
+        # Initialize LangSmith client for external feedback tracking and analytics
         print__feedback_debug(f"🔍 Initializing LangSmith client")
         print__feedback_flow("🔄 Initializing LangSmith client")
         client = Client()
@@ -938,6 +996,11 @@ async def submit_feedback(request: FeedbackRequest, user=Depends(get_current_use
         if resp:
             return resp
         raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {e}")
+
+
+# ==============================================================================
+# SENTIMENT UPDATE ENDPOINT
+# ==============================================================================
 
 
 @router.post("/sentiment")

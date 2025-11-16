@@ -591,8 +591,14 @@ Potential Enhancements:
 ===================================================================================
 """
 
+# ==============================================================================
+# CRITICAL WINDOWS COMPATIBILITY CONFIGURATION
+# ==============================================================================
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
+# with asyncio on Windows platforms. This prevents "Event loop is closed" errors
+# and ensures proper async database operations.
 import asyncio
 import os
 import sys
@@ -608,23 +614,40 @@ from fastapi.responses import JSONResponse
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-# Constants
+# ==============================================================================
+# PATH AND DIRECTORY CONSTANTS
+# ==============================================================================
+
+# Determine base directory for the project
+# Handles both normal execution and special environments (e.g., REPL, Jupyter)
 try:
     BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
-# Import configuration and globals
+# ==============================================================================
+# CONFIGURATION AND CACHE MANAGEMENT
+# ==============================================================================
+
+# Import configuration and globals for bulk loading cache and settings
 from api.config.settings import (
     BULK_CACHE_TIMEOUT,
     _bulk_loading_cache,
     _bulk_loading_locks,
 )
 
-# Import authentication dependencies
+# ==============================================================================
+# AUTHENTICATION AND AUTHORIZATION
+# ==============================================================================
+
+# Import JWT-based authentication dependency for user verification
 from api.dependencies.auth import get_current_user
 
-# Import traceback helper
+# ==============================================================================
+# ERROR HANDLING UTILITIES
+# ==============================================================================
+
+# Import traceback helper for consistent error response formatting
 from api.helpers import traceback_json_response
 
 # Import models
@@ -638,20 +661,44 @@ from api.utils.debug import print__chat_all_messages_debug
 # Import memory utilities
 from api.utils.memory import log_memory_usage
 
-# Import database connection functions
+# ==============================================================================
+# DATABASE CONNECTION MANAGEMENT
+# ==============================================================================
+
+# Import database connection functions for PostgreSQL access
 from checkpointer.database.connection import get_direct_connection
 from checkpointer.checkpointer.factory import get_global_checkpointer
 
-# Load environment variables
+# ==============================================================================
+# ENVIRONMENT CONFIGURATION
+# ==============================================================================
+
+# Load environment variables from .env file for configuration
 load_dotenv()
 
-# Create router for bulk operations endpoints
+# ==============================================================================
+# FASTAPI ROUTER INITIALIZATION
+# ==============================================================================
+
+# Create router instance for bulk loading endpoints
+# This router will be included in the main FastAPI application
 router = APIRouter()
 
-# ENVIRONMENT VARIABLES
+# ==============================================================================
+# CONCURRENCY CONFIGURATION
+# ==============================================================================
+
+# Maximum number of threads to process concurrently during bulk loading
+# This prevents memory exhaustion when loading messages for many threads
+# Default: 3 concurrent operations, configurable via environment variable
 MAX_CONCURRENT_BULK_THREADS = int(
     os.environ.get("MAX_CONCURRENT_BULK_THREADS", "3")
 )  # Read from .env with fallback to 3
+
+
+# ==============================================================================
+# BULK LOADING ENDPOINT
+# ==============================================================================
 
 
 @router.get("/chat/all-messages-for-all-threads")
@@ -666,7 +713,12 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
         f"📥 BULK REQUEST: Loading ALL chat messages for user: {user_email}"
     )
 
-    # Check if we have a recent cached result
+    # ==========================================================================
+    # CACHE LOOKUP AND VALIDATION
+    # ==========================================================================
+
+    # Check if we have a recent cached result to avoid expensive database queries
+    # Cache key is per-user to ensure data isolation
     cache_key = f"bulk_messages_{user_email}"
     current_time = time.time()
     print__chat_all_messages_debug(f"🔍 Cache key: {cache_key}")
@@ -704,7 +756,12 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
     else:
         print__chat_all_messages_debug("🔍 No cache entry found for user")
 
+    # ==========================================================================
+    # PER-USER LOCK ACQUISITION
+    # ==========================================================================
+
     # Use a lock to prevent multiple simultaneous requests from the same user
+    # This implements the double-check locking pattern for efficient cache usage
     print__chat_all_messages_debug(
         f"🔍 Attempting to acquire lock for user: {user_email}"
     )
@@ -735,7 +792,12 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
             f"🔄 CACHE MISS: Processing fresh bulk request for {user_email}"
         )
 
-        # Simple memory check before starting
+        # ======================================================================
+        # MEMORY BASELINE MONITORING
+        # ======================================================================
+
+        # Establish baseline memory usage for comparison after bulk loading completes
+        # This helps track memory consumption and identify potential memory leaks
         print__chat_all_messages_debug("🔍 Starting memory check")
         log_memory_usage("bulk_start")
         print__chat_all_messages_debug("🔍 Memory check completed")
@@ -747,7 +809,12 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 f"🔍 Checkpointer obtained: {type(checkpointer).__name__}"
             )
 
-            # STEP 1: Get all user threads, run-ids, and sentiments in ONE query
+            # ==============================================================
+            # STEP 1: SINGLE OPTIMIZED DATABASE QUERY
+            # ==============================================================
+
+            # Get all user threads, run-ids, and sentiments in ONE optimized query
+            # This eliminates N+1 query problem and dramatically improves performance
             print__chat_all_messages_debug(
                 "🔍 BULK QUERY: Getting all user threads, run-ids, and sentiments"
             )
@@ -863,7 +930,12 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 )
                 return empty_result
 
-            # STEP 2: Process threads with limited concurrency (max 3 concurrent)
+            # ==============================================================
+            # STEP 2: CONCURRENT THREAD PROCESSING WITH SEMAPHORE CONTROL
+            # ==============================================================
+
+            # Process threads with limited concurrency to prevent memory exhaustion
+            # Semaphore ensures we don't process too many threads simultaneously
             print__chat_all_messages_debug(
                 f"🔄 Processing {len(user_thread_ids)} threads with limited concurrency"
             )
@@ -966,7 +1038,12 @@ async def get_all_chat_messages(user=Depends(get_current_user)) -> Dict:
                 f"✅ BULK LOADING COMPLETE: {len(all_messages)} threads, {total_messages} total messages"
             )
 
-            # Match run_ids to messages for each thread
+            # ==============================================================
+            # STEP 3: RUN_ID MATCHING ALGORITHM
+            # ==============================================================
+
+            # Match run_ids to messages using sequential AI message index matching
+            # Only matches messages with final_answer (completed analyses)
             print__chat_all_messages_debug(
                 "🔍 MATCHING RUN_IDS: Starting run_id matching for all threads"
             )

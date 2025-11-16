@@ -734,8 +734,14 @@ FUTURE ENHANCEMENTS
 ===================================================================================
 """
 
+# ==============================================================================
+# CRITICAL WINDOWS COMPATIBILITY CONFIGURATION
+# ==============================================================================
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
+# with asyncio on Windows platforms. This prevents "Event loop is closed" errors
+# and ensures proper async database operations.
 import os
 import sys
 
@@ -749,7 +755,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Constants
+# ==============================================================================
+# PATH AND DIRECTORY CONSTANTS
+# ==============================================================================
+
+# Determine base directory for the project
+# Handles both normal execution and special environments (e.g., REPL, Jupyter)
 try:
     from pathlib import Path
 
@@ -768,16 +779,28 @@ import psutil
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 
-# Import configuration globals
+# ==============================================================================
+# CONFIGURATION AND GLOBAL STATE
+# ==============================================================================
+
+# Import configuration globals for checkpointer and cache access
 from api.config.settings import (
     GLOBAL_CHECKPOINTER,
     _bulk_loading_cache,
 )
 
-# Import authentication dependencies
+# ==============================================================================
+# AUTHENTICATION AND AUTHORIZATION
+# ==============================================================================
+
+# Import JWT-based authentication dependency for user verification
 from api.dependencies.auth import get_current_user
 
-# Import debug functions
+# ==============================================================================
+# DEBUG AND LOGGING UTILITIES
+# ==============================================================================
+
+# Import debug functions for comprehensive logging and diagnostics
 from api.utils.debug import print__debug
 from api.utils.memory import print__memory_monitoring
 
@@ -786,8 +809,18 @@ sys.path.insert(0, str(BASE_DIR))
 from api.helpers import traceback_json_response
 from checkpointer.checkpointer.factory import get_global_checkpointer
 
-# Create router for debug endpoints
+# ==============================================================================
+# FASTAPI ROUTER INITIALIZATION
+# ==============================================================================
+
+# Create router instance for debug and administrative endpoints
+# This router will be included in the main FastAPI application
 router = APIRouter()
+
+
+# ==============================================================================
+# CHECKPOINT INSPECTION ENDPOINT
+# ==============================================================================
 
 
 @router.get("/debug/chat/{thread_id}/checkpoints")
@@ -876,6 +909,11 @@ async def debug_checkpoints(thread_id: str, user=Depends(get_current_user)):
         return {"error": str(e)}
 
 
+# ==============================================================================
+# DATABASE POOL STATUS ENDPOINT
+# ==============================================================================
+
+
 @router.get("/debug/pool-status")
 async def debug_pool_status():
     """Debug endpoint to check pool status - updated for official AsyncPostgresSaver."""
@@ -942,6 +980,11 @@ async def get_pool_status():
             status_code=500,
             content={"error": str(e), "timestamp": datetime.now().isoformat()},
         )
+
+
+# ==============================================================================
+# RUN_ID VERIFICATION ENDPOINT
+# ==============================================================================
 
 
 @router.get("/debug/run-id/{run_id}")
@@ -1044,6 +1087,11 @@ async def debug_run_id(run_id: str, user=Depends(get_current_user)):
         }
 
 
+# ==============================================================================
+# CACHE MANAGEMENT ENDPOINT
+# ==============================================================================
+
+
 @router.post("/admin/clear-cache")
 async def clear_bulk_cache(user=Depends(get_current_user)):
     """Clear the bulk loading cache (admin endpoint)."""
@@ -1081,6 +1129,11 @@ async def clear_bulk_cache(user=Depends(get_current_user)):
     }
 
 
+# ==============================================================================
+# PREPARED STATEMENTS CLEANUP ENDPOINT
+# ==============================================================================
+
+
 @router.post("/admin/clear-prepared-statements")
 async def clear_prepared_statements_endpoint(user=Depends(get_current_user)):
     """Clear prepared statements in the database to free memory."""
@@ -1110,6 +1163,11 @@ async def clear_prepared_statements_endpoint(user=Depends(get_current_user)):
         if resp:
             return resp
         return {"error": str(e)}
+
+
+# ==============================================================================
+# DYNAMIC ENVIRONMENT CONFIGURATION ENDPOINTS
+# ==============================================================================
 
 
 @router.post("/debug/set-env")

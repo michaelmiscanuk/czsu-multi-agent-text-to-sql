@@ -827,7 +827,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                         )
                     )
 
-                    # Poll for cancellation every 0.5 seconds while task runs
+                    # Poll for cancellation every 5 seconds while task runs
                     while not task.done():
                         # Check if user requested cancellation via API
                         if is_cancelled(request.thread_id, run_id):
@@ -842,10 +842,10 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
                                 pass
                             raise asyncio.CancelledError("Execution cancelled by user")
 
-                        # Wait 0.5 seconds before next cancellation check
+                        # Wait 5 seconds before next cancellation check
                         # Use shield to prevent timeout from cancelling the main task
                         try:
-                            await asyncio.wait_for(asyncio.shield(task), timeout=0.5)
+                            await asyncio.wait_for(asyncio.shield(task), timeout=5)
                         except asyncio.TimeoutError:
                             # Timeout just means we should check cancellation again
                             continue

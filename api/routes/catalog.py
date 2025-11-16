@@ -595,9 +595,19 @@ load_dotenv()
 
 # Standard imports
 
-# Create router for catalog endpoints
+# ==============================================================================
+# FASTAPI ROUTER INITIALIZATION
+# ==============================================================================
+
+# Create router instance for catalog and data exploration endpoints
+# This router will be included in the main FastAPI application
 router = APIRouter()
 print__catalog_debug("Catalog router initialized successfully")
+
+
+# ==============================================================================
+# DATA CATALOG ENDPOINT
+# ==============================================================================
 
 
 @router.get(
@@ -650,9 +660,18 @@ def get_catalog(
         f"GET /catalog called - page: {page}, page_size: {page_size}, query: '{q}', user: {user.username if hasattr(user, 'username') else 'unknown'}"
     )
     try:
+        # ======================================================================
+        # DATABASE CONNECTION AND QUERY PREPARATION
+        # ======================================================================
+
+        # Connect to the metadata database containing dataset descriptions
         db_path = "metadata/llm_selection_descriptions/selection_descriptions.db"
         print__catalog_debug(f"Connecting to catalog database: {db_path}")
+
+        # Calculate pagination offset for efficient result retrieval
         offset = (page - 1) * page_size
+
+        # Build WHERE clause for search filtering if query parameter provided
         where_clause = ""
         params = []
         if q:
@@ -699,6 +718,11 @@ def get_catalog(
         if resp:
             return resp
         raise
+
+
+# ==============================================================================
+# DATA TABLES LISTING ENDPOINT
+# ==============================================================================
 
 
 @router.get("/data-tables")
@@ -763,15 +787,26 @@ def get_data_tables(q: Optional[str] = None, user=Depends(get_current_user)):
         raise
 
 
+# ==============================================================================
+# DATA TABLE SCHEMA AND SAMPLE DATA ENDPOINT
+# ==============================================================================
+
+
 @router.get("/data-table")
 def get_data_table(table: Optional[str] = None, user=Depends(get_current_user)):
     print__data_tables_debug(
         f"GET /data-table called - table: '{table}', user: {user.username if hasattr(user, 'username') else 'unknown'}"
     )
     try:
+        # ======================================================================
+        # DATABASE CONNECTION AND TABLE VALIDATION
+        # ======================================================================
+
+        # Connect to the actual data database containing CZSU statistical tables
         db_path = "data/czsu_data.db"
         print__data_tables_debug(f"Connecting to data database: {db_path}")
 
+        # Validate that a table name was provided in the request
         if not table:
             print__data_tables_debug("No table specified")
             return {"columns": [], "rows": []}

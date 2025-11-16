@@ -744,8 +744,14 @@ FUTURE ENHANCEMENTS
 ===================================================================================
 """
 
+# ==============================================================================
+# CRITICAL WINDOWS COMPATIBILITY CONFIGURATION
+# ==============================================================================
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
+# with asyncio on Windows platforms. This prevents "Event loop is closed" errors
+# and ensures proper async database operations.
 import os
 import sys
 
@@ -759,7 +765,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Constants
+# ==============================================================================
+# PATH AND DIRECTORY CONSTANTS
+# ==============================================================================
+
+# Determine base directory for the project
+# Handles both normal execution and special environments (e.g., REPL, Jupyter)
 try:
     from pathlib import Path
 
@@ -776,7 +787,11 @@ import psutil
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-# Import globals and utilities from config/utils
+# ==============================================================================
+# CONFIGURATION AND GLOBAL STATE
+# ==============================================================================
+
+# Import globals and utilities from config/utils for health monitoring
 from api.config.settings import (
     BULK_CACHE_TIMEOUT,
     GLOBAL_CHECKPOINTER,
@@ -788,24 +803,48 @@ from api.config.settings import (
     start_time,
 )
 
-# Import memory-related variables from memory.py
+# ==============================================================================
+# MEMORY AND ERROR HANDLING UTILITIES
+# ==============================================================================
+
+# Import memory-related utilities for cache cleanup and monitoring
 from api.utils.memory import cleanup_bulk_cache
+
+# Import error response formatting helper
 from api.helpers import traceback_json_response
 
-# Create router for health endpoints
+# ==============================================================================
+# FASTAPI ROUTER INITIALIZATION
+# ==============================================================================
+
+# Create router instance for health check endpoints
+# These endpoints are typically used by load balancers and monitoring systems
 router = APIRouter()
+
+
+# ==============================================================================
+# OVERALL SYSTEM HEALTH CHECK ENDPOINT
+# ==============================================================================
 
 
 @router.get("/health")
 async def health_check():
     """Enhanced health check with memory monitoring and database verification."""
     try:
-        # Memory check
+        # ======================================================================
+        # MEMORY USAGE MONITORING
+        # ======================================================================
+
+        # Collect memory metrics for system health assessment
         import psutil
 
         process = psutil.Process()
         memory_info = process.memory_info()
         memory_percent = process.memory_percent()
+
+        # ======================================================================
+        # DATABASE CONNECTIVITY VERIFICATION
+        # ======================================================================
 
         # Database check with proper AsyncPostgresSaver handling
         database_healthy = True
@@ -878,6 +917,11 @@ async def health_check():
         )
 
 
+# ==============================================================================
+# DATABASE HEALTH CHECK ENDPOINT
+# ==============================================================================
+
+
 @router.get("/health/database")
 async def database_health_check():
     """Detailed database health check."""
@@ -943,6 +987,11 @@ async def database_health_check():
         )
 
 
+# ==============================================================================
+# MEMORY HEALTH CHECK ENDPOINT
+# ==============================================================================
+
+
 @router.get("/health/memory")
 async def memory_health_check():
     """Enhanced memory-specific health check with cache information."""
@@ -1002,6 +1051,11 @@ async def memory_health_check():
         }
 
 
+# ==============================================================================
+# RATE LIMIT HEALTH CHECK ENDPOINT
+# ==============================================================================
+
+
 @router.get("/health/rate-limits")
 async def rate_limit_health_check():
     """Rate limiting health check."""
@@ -1027,6 +1081,11 @@ async def rate_limit_health_check():
             "error": str(e),
             "timestamp": datetime.now().isoformat(),
         }
+
+
+# ==============================================================================
+# PREPARED STATEMENTS HEALTH CHECK ENDPOINT
+# ==============================================================================
 
 
 @router.get("/health/prepared-statements")
