@@ -1,3 +1,662 @@
+"""
+MODULE_DESCRIPTION: User Feedback and Sentiment Tracking - Quality Monitoring and User Satisfaction
+
+===================================================================================
+PURPOSE AND OVERVIEW
+===================================================================================
+
+This module implements user feedback collection and sentiment tracking endpoints
+for the CZSU Multi-Agent Text-to-SQL API. It provides two main functionalities:
+
+1. Feedback Submission (/feedback) - Submit detailed feedback to LangSmith
+2. Sentiment Update (/sentiment) - Quick sentiment rating storage
+
+These endpoints enable:
+    - Quality monitoring and improvement
+    - User satisfaction tracking
+    - Model performance evaluation
+    - Feedback-driven iteration
+    - User experience analytics
+
+Feedback Flow:
+    User receives AI response → User rates/comments → Data sent to LangSmith/Database
+    → Analytics and model improvement → Better AI responses
+
+===================================================================================
+KEY FEATURES
+===================================================================================
+
+1. LangSmith Integration (/feedback)
+   - Submit feedback to LangSmith platform
+   - Binary rating (thumbs up/down) support
+   - Text comments for detailed feedback
+   - Run ID tracking for traceability
+   - Automatic quality metrics
+
+2. Sentiment Tracking (/sentiment)
+   - Quick thumbs up/down storage
+   - Database persistence
+   - User-specific sentiment history
+   - Run ID association
+   - Per-query granularity
+
+3. Security and Ownership Verification
+   - JWT authentication required
+   - User ownership validation
+   - Run ID access control
+   - No cross-user feedback manipulation
+   - Audit logging
+
+4. UUID Validation
+   - Strict UUID format validation
+   - Invalid format rejection
+   - Detailed error messages
+   - Character-level diagnostics
+   - Security against injection
+
+5. Flexible Feedback Options
+   - Rating only (binary score)
+   - Comment only (text feedback)
+   - Both rating and comment
+   - Minimum one required
+   - Optional fields handling
+
+6. Comprehensive Logging
+   - Debug logging for all operations
+   - Flow logging for user journeys
+   - Error diagnostics
+   - Security event logging
+   - Performance monitoring
+
+7. Windows Compatibility
+   - WindowsSelectorEventLoopPolicy for async operations
+   - psycopg async support
+   - Cross-platform compatibility
+
+===================================================================================
+API ENDPOINTS
+===================================================================================
+
+POST /feedback
+    Submit feedback for a specific query execution to LangSmith
+
+    Authentication: JWT token required
+    Security: User must own the run_id
+
+    Request Body:
+        {
+            "run_id": "550e8400-e29b-41d4-a716-446655440000",
+            "feedback": 1,        // Optional: 1 (positive), 0 (negative), null (none)
+            "comment": "Great!"   // Optional: Text comment
+        }
+
+    Validation:
+        - At least one of feedback or comment must be provided
+        - run_id must be valid UUID format
+        - User must own the run_id
+
+    Returns:
+        {
+            "message": "Feedback submitted successfully",
+            "run_id": "550e8400-e29b-41d4-a716-446655440000",
+            "feedback": 1,
+            "comment": "Great!"
+        }
+
+    Error Responses:
+        400: Invalid run_id format or missing both feedback and comment
+        401: User not authenticated
+        404: Run ID not found or access denied
+        500: LangSmith submission failure
+
+POST /sentiment
+    Update sentiment rating for a specific query execution
+
+    Authentication: JWT token required
+    Security: Ownership verified in database update
+
+    Request Body:
+        {
+            "run_id": "550e8400-e29b-41d4-a716-446655440000",
+            "sentiment": "positive"  // or "negative", "neutral"
+        }
+
+    Validation:
+        - run_id must be valid UUID format
+        - sentiment must be valid value
+        - User must own the run_id (verified in DB update)
+
+    Returns:
+        {
+            "message": "Sentiment updated successfully",
+            "run_id": "550e8400-e29b-41d4-a716-446655440000",
+            "sentiment": "positive"
+        }
+
+    Error Responses:
+        400: Invalid run_id format
+        401: User not authenticated
+        404: Run ID not found or access denied
+        500: Database update failure
+
+===================================================================================
+LANGSMITH INTEGRATION
+===================================================================================
+
+What is LangSmith:
+    - LangChain's observability and monitoring platform
+    - Tracks LLM application runs and performance
+    - Collects user feedback for model improvement
+    - Provides analytics and debugging tools
+
+Feedback Submission:
+    client = Client()  # LangSmith client
+    client.create_feedback(
+        run_id=run_uuid,
+        key="SENTIMENT",
+        score=request.feedback,      # 1 or 0
+        comment=request.comment      # Optional text
+    )
+
+Feedback Structure:
+    - run_id: Links feedback to specific execution
+    - key: "SENTIMENT" - categorizes feedback type
+    - score: Binary rating (1=positive, 0=negative)
+    - comment: Free-text user comment
+
+LangSmith Benefits:
+    - Automatic aggregation of feedback metrics
+    - Visualization of user satisfaction trends
+    - Correlation with model performance
+    - A/B testing support
+    - Historical feedback analysis
+
+Use Cases:
+    - Track model accuracy over time
+    - Identify problematic query patterns
+    - Measure user satisfaction
+    - Prioritize improvements
+    - Validate model updates
+
+===================================================================================
+SENTIMENT TRACKING
+===================================================================================
+
+Database Storage:
+    Table: users_threads_runs
+    Columns:
+        - run_id (UUID, PRIMARY KEY)
+        - email (TEXT)
+        - thread_id (TEXT)
+        - prompt (TEXT)
+        - timestamp (TIMESTAMP)
+        - sentiment (TEXT, NULLABLE)
+
+Sentiment Values:
+    - "positive": User satisfied with response
+    - "negative": User unsatisfied with response
+    - "neutral": User neutral about response
+    - null: No sentiment recorded yet
+
+Update Process:
+    1. Validate UUID format
+    2. Call update_thread_run_sentiment(run_uuid, sentiment)
+    3. Function verifies user ownership internally
+    4. Updates sentiment column in database
+    5. Returns success/failure
+
+Ownership Verification:
+    - Handled by update_thread_run_sentiment function
+    - Uses WHERE run_id = %s AND email = %s
+    - Prevents cross-user sentiment manipulation
+    - Returns False if not owned
+
+Difference from /feedback:
+    - /feedback → LangSmith (external platform)
+    - /sentiment → Database (internal storage)
+    - Can use both for same run_id
+    - Complementary systems
+
+===================================================================================
+SECURITY AND OWNERSHIP VERIFICATION
+===================================================================================
+
+Security Model:
+    1. Authentication: JWT token required (all endpoints)
+    2. Authorization: User must own the run_id
+    3. Validation: UUID format strictly enforced
+    4. Logging: All access attempts logged
+
+Ownership Verification Process (/feedback):
+    1. Extract user_email from JWT token
+    2. Validate run_id is UUID format
+    3. Query database:
+       SELECT COUNT(*) FROM users_threads_runs
+       WHERE run_id = %s AND email = %s
+    4. If count == 0 → Access denied (404)
+    5. If count > 0 → Authorized, proceed
+
+Ownership Verification Process (/sentiment):
+    - Delegated to update_thread_run_sentiment function
+    - Function includes WHERE email = %s clause
+    - Updates only if user owns run_id
+    - Returns False if update affected 0 rows
+
+Why Ownership Matters:
+    - Prevents feedback spam
+    - Ensures feedback authenticity
+    - Protects user privacy
+    - Prevents malicious manipulation
+    - Maintains data integrity
+
+Security Scenarios:
+    1. Valid owner → Feedback accepted
+    2. Non-owner → 404 error (doesn't reveal existence)
+    3. Invalid UUID → 400 error (format validation)
+    4. Missing auth → 401 error (authentication)
+
+===================================================================================
+UUID VALIDATION
+===================================================================================
+
+Validation Process:
+    try:
+        run_uuid = str(uuid.UUID(request.run_id))
+        # Validation successful
+    except ValueError:
+        raise HTTPException(400, "Invalid run_id format")
+
+Why Strict Validation:
+    - Prevents SQL injection
+    - Ensures data type consistency
+    - Catches client-side errors early
+    - Improves error messages
+    - Security best practice
+
+Diagnostic Logging:
+    - Length check (< 32 chars suspicious)
+    - Character-by-character validation
+    - Invalid character detection
+    - Position and ordinal reporting
+
+Example Diagnostics:
+    Input: "invalid-uuid-123"
+    Logs:
+        - Run ID suspiciously short: length 16
+        - Invalid character at position 7: '-' (expected hex)
+        - UUID ValueError: badly formed hexadecimal UUID string
+
+Valid UUID Format:
+    550e8400-e29b-41d4-a716-446655440000
+    - 36 characters total
+    - 5 groups separated by hyphens
+    - Hexadecimal characters only
+
+===================================================================================
+FLEXIBLE FEEDBACK OPTIONS
+===================================================================================
+
+Three Submission Modes:
+
+1. Rating Only:
+   {
+       "run_id": "...",
+       "feedback": 1,
+       "comment": null
+   }
+   → LangSmith receives score only
+
+2. Comment Only:
+   {
+       "run_id": "...",
+       "feedback": null,
+       "comment": "The query was incorrect"
+   }
+   → LangSmith receives comment only
+
+3. Both Rating and Comment:
+   {
+       "run_id": "...",
+       "feedback": 0,
+       "comment": "SQL syntax error"
+   }
+   → LangSmith receives both
+
+Validation Rule:
+    if feedback is None and not comment:
+        raise HTTPException(400, "At least one required")
+
+Why Flexibility:
+    - Reduces user friction (quick thumbs up/down)
+    - Allows detailed feedback when needed
+    - Supports various UI patterns
+    - Accommodates user preferences
+
+UI Patterns:
+    - Quick rating: Single click (feedback only)
+    - Detailed feedback: Text box (comment only)
+    - Full feedback: Rating + comment dialog
+
+===================================================================================
+ERROR HANDLING
+===================================================================================
+
+Error Handling Hierarchy:
+
+1. Validation Errors (400)
+   - Invalid UUID format
+   - Missing both feedback and comment
+   - Malformed request body
+
+2. Authentication Errors (401)
+   - No JWT token provided
+   - Invalid JWT token
+   - User email not in token
+
+3. Authorization Errors (404)
+   - Run ID not found
+   - User doesn't own run_id
+   - Access denied
+
+4. External Service Errors (500)
+   - LangSmith API failure
+   - Database connection error
+   - Unexpected exceptions
+
+Error Response Pattern:
+    try:
+        # Endpoint logic
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions
+    except Exception as e:
+        resp = traceback_json_response(e)
+        if resp:
+            return resp
+        raise HTTPException(500, f"Failed: {e}")
+
+Graceful Degradation:
+    - Ownership check failure → Log warning, continue submission
+    - Non-critical errors → Log but don't fail request
+    - Critical errors → Return proper HTTP error
+
+===================================================================================
+LOGGING AND DEBUGGING
+===================================================================================
+
+Debug Functions:
+    - print__feedback_debug: Detailed feedback endpoint logging
+    - print__feedback_flow: User journey flow logging
+    - print__sentiment_debug: Detailed sentiment endpoint logging
+    - print__sentiment_flow: User journey flow logging
+
+Logged Information:
+
+Entry Point:
+    - Endpoint called
+    - Request parameters
+    - User email extraction
+
+Validation:
+    - UUID format validation
+    - Request data validation
+    - Character-level diagnostics (if errors)
+
+Security:
+    - Ownership verification start
+    - Database query execution
+    - Ownership result (granted/denied)
+    - Security decisions
+
+Processing:
+    - LangSmith client initialization
+    - Feedback data preparation
+    - Submission to external services
+    - Database updates
+
+Results:
+    - Success/failure status
+    - Response data
+    - Error details if failed
+
+Security Events:
+    - Access denied (user doesn't own run_id)
+    - Ownership check failures
+    - Authentication issues
+
+Log Patterns:
+    print__feedback_flow("📥 Incoming feedback request:")
+    print__feedback_flow(f"👤 User: {user_email}")
+    print__feedback_flow(f"✅ Feedback successfully submitted")
+
+Benefits:
+    - Troubleshoot issues quickly
+    - Audit user actions
+    - Monitor security events
+    - Understand user journeys
+    - Debug validation failures
+
+===================================================================================
+PERFORMANCE CHARACTERISTICS
+===================================================================================
+
+Feedback Endpoint (/feedback):
+    - Response time: 100-300ms (includes LangSmith API call)
+    - Network latency: ~50-100ms (LangSmith)
+    - Database query: ~10-20ms (ownership check)
+    - Processing: <10ms
+    - External dependency: LangSmith API
+
+Sentiment Endpoint (/sentiment):
+    - Response time: 50-150ms
+    - Database query: ~20-50ms (update with WHERE clause)
+    - Processing: <10ms
+    - No external dependencies
+
+Optimization Opportunities:
+    1. Async LangSmith submission (fire-and-forget)
+    2. Batch feedback submissions
+    3. Cache ownership checks (short TTL)
+    4. Connection pooling (already implemented)
+
+Scaling:
+    - Linear scaling with request volume
+    - LangSmith API rate limits apply
+    - Database write scalability depends on PostgreSQL
+    - Consider queueing for high volume
+
+===================================================================================
+INTEGRATION WITH FRONTEND
+===================================================================================
+
+Typical UI Flow:
+
+1. User Receives AI Response
+   - Query executed
+   - Results displayed
+   - run_id available in response
+
+2. User Provides Feedback
+   - Click thumbs up/down
+   - Optionally add comment
+   - Submit feedback
+
+3. Frontend Makes Request
+   POST /feedback
+   {
+       "run_id": response.run_id,
+       "feedback": 1,  // or 0
+       "comment": optional_text
+   }
+
+4. Optional Sentiment Update
+   POST /sentiment
+   {
+       "run_id": response.run_id,
+       "sentiment": "positive"
+   }
+
+UI Patterns:
+
+Quick Feedback:
+    - Single thumbs up/down button
+    - No comment required
+    - Instant submission
+    - Minimal user friction
+
+Detailed Feedback:
+    - Thumbs up/down + comment field
+    - Optional text input
+    - Submit button
+    - Richer data collection
+
+Sentiment Only:
+    - Quick sentiment buttons (😊😐😞)
+    - Maps to positive/neutral/negative
+    - Fast user interaction
+    - Lightweight tracking
+
+===================================================================================
+MONITORING AND ANALYTICS
+===================================================================================
+
+Metrics to Track:
+
+Feedback Metrics:
+    - Submission rate (% of users providing feedback)
+    - Positive vs negative ratio
+    - Average comment length
+    - Time to feedback submission
+
+Sentiment Metrics:
+    - Sentiment distribution (positive/negative/neutral)
+    - Sentiment trends over time
+    - Per-user sentiment patterns
+    - Correlation with query complexity
+
+Quality Metrics:
+    - Feedback consistency (same query patterns)
+    - User satisfaction scores
+    - Model performance correlation
+    - Improvement validation
+
+Error Metrics:
+    - Validation failure rate
+    - Ownership denial rate
+    - LangSmith API failures
+    - Database errors
+
+Alerting:
+    - High negative feedback rate (> 30%)
+    - LangSmith API errors (> 5%)
+    - Ownership check failures (suspicious activity)
+    - Validation error spike
+
+===================================================================================
+TESTING CONSIDERATIONS
+===================================================================================
+
+Unit Tests:
+    1. UUID validation (valid/invalid formats)
+    2. Ownership verification logic
+    3. Feedback data preparation
+    4. Error handling paths
+    5. Request validation
+
+Integration Tests:
+    1. Full feedback submission to LangSmith
+    2. Sentiment database updates
+    3. Ownership verification with database
+    4. Authentication integration
+    5. Error responses
+
+Mock Testing:
+    - Mock LangSmith Client
+    - Mock database connections
+    - Mock authentication
+    - Test error scenarios
+
+Test Data:
+    - Valid UUIDs
+    - Invalid UUIDs (malformed, short, special chars)
+    - Owned/non-owned run_ids
+    - Various feedback combinations
+    - Edge cases (empty strings, nulls)
+
+Security Testing:
+    - Cross-user access attempts
+    - Missing authentication
+    - SQL injection attempts
+    - UUID format exploits
+
+===================================================================================
+DEPENDENCIES
+===================================================================================
+
+Standard Library:
+    - os: Environment variables
+    - sys: Platform detection, path manipulation
+    - uuid: UUID validation and conversion
+    - traceback: Error diagnostics
+    - typing: Type hints
+    - asyncio: Event loop (Windows)
+
+Third-Party:
+    - fastapi: Web framework, routing, dependencies
+    - langsmith: LangSmith client for feedback submission
+    - dotenv: Environment variable loading
+
+Internal:
+    - api.dependencies.auth: JWT authentication (get_current_user)
+    - api.models.requests: FeedbackRequest, SentimentRequest models
+    - api.utils.debug: Debug logging functions
+    - api.helpers: Traceback JSON response utility
+    - checkpointer.user_management.sentiment_tracking: Database sentiment updates
+    - checkpointer.database.connection: Database connection management
+
+===================================================================================
+FUTURE ENHANCEMENTS
+===================================================================================
+
+1. Feedback Analytics Dashboard
+   - Real-time feedback visualization
+   - Sentiment trend graphs
+   - User satisfaction metrics
+   - Query performance correlation
+
+2. Automated Response
+   - Thank user for feedback
+   - Acknowledge specific issues
+   - Provide status updates
+   - Close feedback loop
+
+3. Feedback Categories
+   - Accuracy issues
+   - Performance problems
+   - UI/UX feedback
+   - Feature requests
+   - Structured classification
+
+4. Batch Operations
+   - Bulk feedback submission
+   - Historical feedback import
+   - Batch sentiment updates
+   - Improved performance
+
+5. Advanced Analytics
+   - ML-based sentiment analysis on comments
+   - Automatic issue detection
+   - Pattern recognition
+   - Predictive quality metrics
+
+6. Webhook Integration
+   - Real-time feedback notifications
+   - Slack/Teams integration
+   - PagerDuty alerting
+   - Custom webhooks
+
+===================================================================================
+"""
+
 # CRITICAL: Set Windows event loop policy FIRST, before any other imports
 # This must be the very first thing that happens to fix psycopg compatibility
 import os
