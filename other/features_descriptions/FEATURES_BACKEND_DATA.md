@@ -98,8 +98,8 @@ The FastAPI-based REST API serves as the primary interface between the frontend 
 3. **Middleware Stack Configuration**
    - CORS middleware for cross-origin requests
       → `api/main.py` line 241: `add_middleware(CORSMiddleware, ...)`
-   - GZip compression for large responses (catalog, messages)
-      → `api/main.py` line 245: `app.add_middleware(GZipMiddleware, minimum_size=1000)`
+   - Brotli compression for large responses (catalog, messages)
+      → `api/middleware/cors.py`: `setup_brotli_middleware(app)`
    - Custom throttling middleware with graceful waiting
       → `api/middleware/rate_limiting.py`: `ThrottlingMiddleware` class
    - Memory monitoring middleware for heavy operations
@@ -169,11 +169,11 @@ The FastAPI-based REST API serves as the primary interface between the frontend 
 
 **Challenge 6: Response Compression and Size Optimization**
 - **Problem**: Catalog and message endpoints return large JSON payloads
-- **Solution**: GZip compression middleware with 1KB minimum threshold
-   → `api/main.py` line 245: `app.add_middleware(GZipMiddleware, minimum_size=1000)`
-- **Impact**: Reduces bandwidth usage by 60-80% for large responses
-- **Implementation**: `GZipMiddleware` with automatic Content-Encoding headers
-   → FastAPI's GZipMiddleware automatically adds Content-Encoding headers
+- **Solution**: Brotli compression middleware with 1KB minimum threshold
+   → `api/middleware/cors.py`: `setup_brotli_middleware(app)`
+- **Impact**: Reduces bandwidth usage by 70-85% for large responses
+- **Implementation**: `BrotliMiddleware` with automatic Content-Encoding headers
+   → Brotli compression from brotli-asgi package with quality 4 and minimum size 1000 bytes
 
 ---
 
@@ -2196,7 +2196,7 @@ LlamaParse provides advanced PDF parsing capabilities specifically optimized for
 3. **Database Connection Failures**: Automatic fallback to InMemorySaver
 4. **JSON Serialization**: Custom handler for Pydantic ValidationError
 5. **API Documentation**: Automatic OpenAPI/Swagger generation
-6. **Response Size Management**: GZip compression with 1KB minimum
+6. **Response Size Management**: Brotli compression with 1KB minimum
 
 ### Authentication & Security Challenges
 7. **Stateless Authentication**: JWT tokens with Google public key verification

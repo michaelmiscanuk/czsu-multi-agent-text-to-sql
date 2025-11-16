@@ -312,7 +312,7 @@ mindmap = {
                         "allow_credentials=True verification",
                         "allow_methods and allow_headers",
                     ],
-                    "GZip": [
+                    "Brotli": [
                         "Compression for responses > 1000 bytes",
                         "Content-Encoding header verification",
                     ],
@@ -550,7 +550,7 @@ mindmap = {
                     ],
                     "test_middleware_functionality": [
                         "CORS headers in responses",
-                        "GZip compression",
+                        "Brotli compression",
                         "Rate limiting behavior",
                         "Memory monitoring",
                     ],

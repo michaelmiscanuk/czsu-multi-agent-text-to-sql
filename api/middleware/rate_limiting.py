@@ -261,7 +261,7 @@ Registration in main.py:
 Middleware Order:
     Typically registered AFTER:
         - CORS middleware
-        - GZip middleware
+        - Brotli middleware
 
     Typically registered BEFORE:
         - Memory monitoring

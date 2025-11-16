@@ -92,7 +92,7 @@
 
 #### Middleware Stack
 - **CORS**: Permissive policy for cross-origin requests
-- **GZip Compression**: Response compression for JSON payloads over 1000 bytes
+- **Brotli Compression**: Response compression for JSON payloads over 1000 bytes
 - **Throttling**: IP-based semaphore limits (max 8 concurrent requests per IP)
 - **Rate Limiting**: Request tracking with retry logic and wait mechanisms
 - **Memory Monitoring**: Request counting and logging for heavy endpoints

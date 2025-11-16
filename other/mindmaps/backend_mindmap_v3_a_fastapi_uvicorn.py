@@ -72,9 +72,9 @@ mindmap = {
                 ],
                 "Summary": "Cross-origin resource sharing for frontend API access.",
             },
-            "GZip Middleware": {
+            "Brotli Middleware": {
                 "Details": [
-                    "GZipMiddleware from fastapi.middleware.gzip",
+                    "BrotliMiddleware from brotli-asgi",
                     "minimum_size=1000 bytes before compression",
                     "Reduces bandwidth and improves performance",
                     "File: api/middleware/cors.py + api/main.py",

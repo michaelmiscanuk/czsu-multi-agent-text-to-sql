@@ -289,7 +289,7 @@ Local Windows testing confirmed:
 ### Memory Configuration
 - **Garbage Collection**: More aggressive thresholds (700, 10, 10)
 - **Response Format**: ORJSON for faster, memory-efficient JSON
-- **Compression**: GZip middleware for reduced response sizes
+- **Compression**: Brotli middleware for reduced response sizes
 - **Connection Pooling**: Optimized PostgreSQL connection management
 
 ## Expected Results

@@ -1,8 +1,17 @@
 {
-    "python.defaultInterpreterPath": "./.venv/Scripts/python.exe",
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
     "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
     "python.analysis.extraPaths": [
         "${workspaceFolder}"
     ],
-    "python.envFile": "${workspaceFolder}/.env"
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.terminal.executeInFileDir": false,
+    "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "code-runner.executorMap": {
+        "python": "\"$pythonPath\" -u $fullFileName"
+    },
+    "code-runner.fileDirectoryAsCwd": false,
+    "code-runner.respectShebang": false,
+    "python-envs.pythonProjects": []
 }

@@ -503,7 +503,7 @@ mindmap = {
                 "Retry-Friendly Rate Limiting": [
                     "Exponential backoff for transient errors",
                 ],
-                "Gzip Compression": [
+                "Brotli Compression": [
                     "Reduce response payload sizes",
                 ],
                 "Memory Cleanup Tasks": [
@@ -974,7 +974,7 @@ mindmap = {
                 ],
             },
             "Performance Optimization": {
-                "Gzip Compression": [
+                "Brotli Compression": [
                     "Reduce response bandwidth",
                 ],
                 "48-Hour Browser Caching": [
@@ -1048,7 +1048,7 @@ mindmap = {
                     "Async request handling (Uvicorn)",
                     "Connection pooling (PostgreSQL)",
                     "Semaphore throttling",
-                    "Gzip compression",
+                    "Brotli compression",
                     "Memory cleanup tasks",
                 ],
                 "Database": [

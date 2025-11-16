@@ -579,7 +579,7 @@ Potential Enhancements:
    - Eliminate cold start latency
 
 5. Compression
-   - gzip compress large responses
+   - Brotli compress large responses
    - Reduce network bandwidth
    - Faster transfers for mobile clients
 

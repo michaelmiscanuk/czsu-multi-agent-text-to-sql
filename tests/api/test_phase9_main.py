@@ -145,21 +145,6 @@ def get_test_cases(test_run_ids: list[str] = None):
         else "22222222-2222-2222-2222-222222222222"
     )
 
-
-def get_test_cases(test_run_ids: list[str] = None):
-    """Get test cases with actual run_ids if available."""
-    # Use real run_ids if available, otherwise use dummy ones
-    feedback_run_id = (
-        test_run_ids[0]
-        if test_run_ids and len(test_run_ids) > 0
-        else "11111111-1111-1111-1111-111111111111"
-    )
-    sentiment_run_id = (
-        test_run_ids[1]
-        if test_run_ids and len(test_run_ids) > 1
-        else "22222222-2222-2222-2222-222222222222"
-    )
-
     return [
         {
             "endpoint": "/health",
@@ -566,7 +551,10 @@ async def test_application_startup():
             middleware.cls.__name__ for middleware in app.user_middleware
         ]
         assert "CORSMiddleware" in middleware_types, "Should have CORS middleware"
-        assert "GZipMiddleware" in middleware_types, "Should have GZip middleware"
+        # Check for BrotliMiddleware only
+        assert (
+            "BrotliMiddleware" in middleware_types
+        ), "Should have Brotli compression middleware"
 
         # Validate exception handlers
         from fastapi.exceptions import RequestValidationError
@@ -597,7 +585,7 @@ async def test_application_startup():
             )
             return True
         else:
-            print(f"❌ Application startup validation failed: {excxc}")
+            print(f"❌ Application startup validation failed: {exc}")
             return False
     except Exception as exc:
         print(f"❌ Application startup validation failed: {exc}")

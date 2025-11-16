@@ -38,7 +38,7 @@ Key Features:
    - Graceful shutdown handling with resource cleanup
    - Comprehensive error handling with detailed logging
    - Rate limiting with intelligent throttling (wait instead of reject)
-   - CORS and GZip compression middleware
+   - CORS and Brotli compression middleware
 
 3. Memory Management & Monitoring:
    - Real-time memory profiling with configurable intervals
@@ -100,7 +100,7 @@ Architecture Components:
 
 2. Middleware Stack (Order Matters):
    - CORS: Allow cross-origin requests (development: *, production: specific)
-   - GZip: Response compression for reduced bandwidth
+   - Brotli: Response compression for reduced bandwidth
    - Throttling: Rate limiting with intelligent wait-instead-of-reject
    - Memory Monitoring: Track memory usage for heavy operations
 
@@ -166,7 +166,7 @@ Startup Sequence:
 
 5. Middleware Registration:
    - CORS for cross-origin support
-   - GZip for response compression
+   - Brotli for response compression
    - Rate limiting with throttling
    - Memory monitoring for heavy operations
 
@@ -525,11 +525,12 @@ from datetime import datetime  # For timestamp tracking
 import psutil  # For system/process monitoring (memory, CPU)
 from fastapi import FastAPI, Request  # Core FastAPI framework
 from fastapi.exceptions import RequestValidationError  # Pydantic validation errors
-from fastapi.middleware.cors import CORSMiddleware  # Cross-origin resource sharing
-from fastapi.middleware.gzip import GZipMiddleware  # Response compression
 from fastapi.responses import JSONResponse  # JSON response formatting
 from fastapi.encoders import jsonable_encoder  # Safe JSON encoding
 from starlette.exceptions import HTTPException as StarletteHTTPException  # HTTP errors
+
+# Import middleware setup functions
+from api.middleware.cors import setup_cors_middleware, setup_brotli_middleware
 
 # ==============================================================================
 # CONFIGURATION AND GLOBAL VARIABLES
@@ -858,25 +859,17 @@ All endpoints (except `/health` and `/docs`) require Bearer token authentication
 # This helps detect if routes/middleware are accidentally registered multiple times
 from api.utils.memory import print__memory_monitoring
 
-print__memory_monitoring("[CORS] Registering CORS middleware...")
-# Note: Route registration monitoring happens at runtime to avoid import-time global variable access
+# ==============================================================================
+# CORS AND COMPRESSION MIDDLEWARE
+# ==============================================================================
+# Setup CORS and compression using wrapper functions from api.middleware.cors
+# These functions provide:
+# - Environment-based CORS configuration (production-ready)
+# - Brotli compression
+# - Logging and monitoring integration
 
-# CORS Middleware: Allow cross-origin requests
-# Development: Allow all origins (*) for local frontend development
-# Production: Configure specific allowed origins via environment variable
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # TODO: Restrict in production to specific domains
-    allow_credentials=True,  # Allow cookies and authorization headers
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],  # Allow all headers
-)
-
-print__memory_monitoring("[GZIP] Registering GZip middleware...")
-# GZip Middleware: Compress responses to reduce bandwidth and improve performance
-# Only compresses responses larger than 1000 bytes (minimum_size)
-# Helps reduce memory usage by shrinking response payloads
-app.add_middleware(GZipMiddleware, minimum_size=1000)
+setup_cors_middleware(app)
+setup_brotli_middleware(app)
 
 
 # ==============================================================================

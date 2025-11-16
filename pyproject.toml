@@ -22,6 +22,7 @@ dependencies = [
     "uvicorn[standard]>=0.24.0",
     "starlette==0.45.3",
     "python-multipart>=0.0.6",
+    "brotli-asgi>=1.4.0",  # Brotli compression middleware
     
     # Pydantic for data validation
     "pydantic>=2.5.0",

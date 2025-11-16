@@ -28,22 +28,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Constants
-try:
-    from pathlib import Path
-
-    BASE_DIR = Path(__file__).resolve().parents[2]  # Go up to project root
-except NameError:
-    BASE_DIR = Path(os.getcwd()).parents[0]
-
 # Standard imports
 import asyncio
-import time
 import traceback
 from datetime import datetime
-
-# Add project root to path
-sys.path.insert(0, str(BASE_DIR))
 
 # Import test helpers
 from tests.helpers import (
@@ -91,7 +79,7 @@ PLACEHOLDER_TEST_CASES = [
         "width": 200,
         "height": 150,
         "description": "Standard placeholder dimensions",
-        "test_focus": "Basic SVG generation with normal width/height parameters",
+        "test_focus": "Basic SVG generation with normal dimensions",
         "expected_result": "Valid SVG response with Cache-Control and CORS headers",
         "should_succeed": True,
     },
@@ -100,7 +88,7 @@ PLACEHOLDER_TEST_CASES = [
         "width": 100,
         "height": 100,
         "description": "Square placeholder image",
-        "test_focus": "Equal width/height parameter handling and SVG content generation",
+        "test_focus": "Equal dimensions handling and SVG generation",
         "expected_result": "Square SVG with proper dimensions and text content",
         "should_succeed": True,
     },
@@ -109,7 +97,7 @@ PLACEHOLDER_TEST_CASES = [
         "width": 5000,
         "height": 3000,
         "description": "Oversized dimensions (should be limited)",
-        "test_focus": "Dimension validation and automatic limiting to 2000px maximum",
+        "test_focus": "Dimension validation and limiting to 2000px max",
         "expected_result": "SVG with dimensions capped at 2000x2000",
         "should_succeed": True,
     },
@@ -118,7 +106,7 @@ PLACEHOLDER_TEST_CASES = [
         "width": -10,
         "height": -5,
         "description": "Negative dimensions (should be corrected)",
-        "test_focus": "Input validation and automatic correction to minimum 1px",
+        "test_focus": "Input validation and correction to minimum 1px",
         "expected_result": "SVG with dimensions corrected to 1x1 minimum",
         "should_succeed": True,
     },
@@ -127,7 +115,7 @@ PLACEHOLDER_TEST_CASES = [
         "width": 0,
         "height": 0,
         "description": "Zero dimensions (should be corrected)",
-        "test_focus": "Edge case handling for zero-value width/height parameters",
+        "test_focus": "Edge case handling for zero width/height parameters",
         "expected_result": "SVG with dimensions corrected to 1x1 minimum",
         "should_succeed": True,
     },
@@ -136,7 +124,7 @@ PLACEHOLDER_TEST_CASES = [
         "width": 0,
         "height": 10000,
         "description": "Mixed edge case dimensions",
-        "test_focus": "Combined validation of minimum and maximum dimension limits",
+        "test_focus": "Combined validation of min and max dimension limits",
         "expected_result": "SVG with width=1 (corrected) and height=2000 (limited)",
         "should_succeed": True,
     },
@@ -174,12 +162,6 @@ def _get_dependency_test_explanation(dependencies: list) -> str:
     return f"Module dependencies verification: ensuring required imports ({deps_str}) are available and properly configured"
 
 
-def print_test_status(message: str):
-    """Print test status messages with timestamp."""
-    timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-    print(f"[{timestamp}] {message}")
-
-
 def test_phase8_misc_imports():
     """Test that miscellaneous routes can be imported successfully."""
     print_test_status("🔍 Testing Phase 8.9 miscellaneous routes imports...")
@@ -208,7 +190,8 @@ def test_phase8_misc_imports():
             print(f"   🔧 Import: {test_case['import_name']}")
             print(f"   ✅ Expected Result: Successful import with valid object type")
             print(
-                f"   🎯 What we're testing: {_get_import_test_explanation(test_case['module'], test_case['import_name'])}"
+                f"   🎯 What we're testing: "
+                f"{_get_import_test_explanation(test_case['module'], test_case['import_name'])}"
             )
 
             if test_case["import_name"] == "router":
@@ -263,7 +246,8 @@ async def test_get_placeholder_image_function():
         )
         print(f"   ✅ Expected Result: {test_case['expected_result']}")
         print(
-            f"   🎯 What we're testing: {_get_placeholder_test_explanation(test_case)}"
+            f"   🎯 What we're testing: "
+            f"{_get_placeholder_test_explanation(test_case)}"
         )
 
         # Test placeholder image generation
@@ -321,7 +305,8 @@ async def test_placeholder_image_dimensions():
             print(f"   📝 Test Scenario: {test_case['description']}")
             print(f"   ✅ Expected Result: {test_case['expected_result']}")
             print(
-                f"   🎯 What we're testing: {_get_placeholder_test_explanation(test_case)}"
+                f"   🎯 What we're testing: "
+                f"{_get_placeholder_test_explanation(test_case)}"
             )
 
             result = await get_placeholder_image(width=width, height=height)
@@ -368,7 +353,8 @@ def test_misc_router_structure():
         print(f"   📊 Route Count: {len(expected_routes)}")
         print(f"   ✅ Expected Result: {router_test['expected_result']}")
         print(
-            f"   🎯 What we're testing: {_get_router_test_explanation(expected_routes)}"
+            f"   🎯 What we're testing: "
+            f"{_get_router_test_explanation(expected_routes)}"
         )
 
         from misc import router
@@ -423,12 +409,11 @@ def test_misc_dependencies():
             if test_case["test_id"] == "fastapi_imports":
                 print(f"   🔧 Testing Imports: {test_case['imports']}")
                 print(
-                    f"   🎯 What we're testing: {_get_dependency_test_explanation(test_case['imports'])}"
+                    f"   🎯 What we're testing: "
+                    f"{_get_dependency_test_explanation(test_case['imports'])}"
                 )
-
                 # Test that FastAPI dependencies are properly imported
                 from fastapi import APIRouter
-                from fastapi.responses import Response
 
                 print("✅ FastAPI dependencies imported successfully")
 
@@ -472,7 +457,9 @@ def test_frontend_compatibility():
         print(f"   🔧 Backend Route: {compatibility_test['backend_route']} (FastAPI)")
         print(f"   ✅ Expected Result: {compatibility_test['expected_result']}")
         print(
-            f"   🎯 What we're testing: Next.js and FastAPI route independence - frontend uses its own Next.js API route system, backend provides FastAPI endpoints, no path conflicts or updates needed"
+            f"   🎯 What we're testing: Next.js and FastAPI route independence - "
+            f"frontend uses its own Next.js API route system, backend provides "
+            f"FastAPI endpoints, no path conflicts or updates needed"
         )
 
         # The frontend uses its own Next.js API route at /api/placeholder/[width]/[height]
@@ -515,7 +502,9 @@ async def test_placeholder_image_error_handling():
         print(f"   📝 Description: {error_handling_test['description']}")
         print(f"   ✅ Expected Result: {error_handling_test['expected_result']}")
         print(
-            f"   🎯 What we're testing: Code structure analysis to verify error handling mechanisms - checking for try/except blocks, fallback SVG generation, and graceful error responses"
+            f"   🎯 What we're testing: Code structure analysis to verify error "
+            f"handling mechanisms - checking for try/except blocks, fallback "
+            f"SVG generation, and graceful error responses"
         )
 
         # The function should handle errors gracefully and return a fallback SVG

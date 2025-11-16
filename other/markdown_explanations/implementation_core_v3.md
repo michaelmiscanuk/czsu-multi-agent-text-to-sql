@@ -22,9 +22,9 @@
 
 **External Service Integration:** **Azure OpenAI Deployments** (GPT-4o, GPT-4o-mini, embeddings) • **Azure AI Translator & Language Detection** • **Cohere Rerank API** • Google OAuth Verification • **CZSU API Ingestion Jobs** • **LlamaParse PDF Processing**
 
-**Error Handling, Authentication, Middleware:** Global exception handlers • **Throttling middleware** • Memory-monitoring middleware • CORS • GZip compression • **JWT verification**
+**Error Handling, Authentication, Middleware:** Global exception handlers • **Throttling middleware** • Memory-monitoring middleware • CORS • Brotli compression • **JWT verification**
 
-**Performance Optimizations:** **Semaphore-based throttling** • Retry-friendly **rate limiting** • **Gzip compression** • **Memory cleanup tasks**
+**Performance Optimizations:** **Semaphore-based throttling** • Retry-friendly **rate limiting** • **Brotli compression** • **Memory cleanup tasks**
 
 ### 3. Frontend
 **Frontend Architecture and Technologies:** **Next.js 15 App Router** (server/client separation) • **React 19 Client Components** • **TypeScript Strict Mode** • **TailwindCSS** (utility-first) • **NextAuth Session Management**
@@ -48,7 +48,7 @@
 
 **Monitoring and Debugging:** Health endpoints (database, memory, rate-limits) • Debug routes (checkpoints, run IDs, pool status) • Platform dashboards (Vercel, Railway)
 
-**Performance Optimization:** **Gzip compression** • 48-hour browser caching • **Connection pooling** • **Semaphore throttling** • **Memory cleanup tasks**
+**Performance Optimization:** **Brotli compression** • 48-hour browser caching • **Connection pooling** • **Semaphore throttling** • **Memory cleanup tasks**
 
 ## 1. High-Level System Architecture
 
@@ -259,7 +259,7 @@
 - Global exception handlers return consistent JSON payloads, while throttling and memory-monitoring middleware enforce per-IP concurrency and log heavy requests so the service remains stable under load ([FastAPI, 2024](https://fastapi.tiangolo.com/advanced/exception-handlers/)).
 
 ### Performance Optimizations (summary)
-- Semaphore-based throttling, retry-friendly rate limiting, gzip compression, and memory cleanup tasks reduce perceived latency, prevent noisy-neighbour effects, and keep the ASGI worker within Railway limits ([Microsoft, 2023](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design)).
+- Semaphore-based throttling, retry-friendly rate limiting, Brotli compression, and memory cleanup tasks reduce perceived latency, prevent noisy-neighbour effects, and keep the ASGI worker within Railway limits ([Microsoft, 2023](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design)).
 
 ## 3. Frontend
 
@@ -411,7 +411,7 @@
 - Health endpoints expose database pool status, memory usage, and rate-limit state; debug routes surface checkpoint history and run IDs; Vercel/Railway dashboards track request volumes, error rates, and deployment logs for operational awareness ([Bogatin et al., 2023](https://arxiv.org/abs/2307.05973)).
 
 ### Performance Optimization (summary)
-- Gzip compression, 48-hour browser caching, connection pooling, semaphore-based throttling, and memory cleanup tasks collectively reduce bandwidth, improve responsiveness, and prevent resource exhaustion under sustained load ([Microsoft, 2023](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design)).
+- Brotli compression, 48-hour browser caching, connection pooling, semaphore-based throttling, and memory cleanup tasks collectively reduce bandwidth, improve responsiveness, and prevent resource exhaustion under sustained load ([Microsoft, 2023](https://learn.microsoft.com/en-us/azure/architecture/best-practices/api-design)).
 
 ## References
 - Bass, L., Clements, P., & Kazman, R. (2021). *Software Architecture in Practice (4th ed.)*. SEI. https://www.sei.cmu.edu/education-outreach/books/software-architecture-in-practice-fourth-edition.cfm

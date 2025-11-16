@@ -128,7 +128,7 @@ def main():
         print(f"\n{'='*60}")
         unzip_path(path)
 
-    print(f"\n{'='*60}")
+    print("\n" + "=" * 60)
     print("Unzip process completed!")
 
 

@@ -44,7 +44,7 @@ from tests.helpers import (
 
 # Test imports from extracted middleware modules
 try:
-    from api.middleware.cors import setup_cors_middleware, setup_gzip_middleware
+    from api.middleware.cors import setup_cors_middleware, setup_brotli_middleware
     from api.middleware.memory_monitoring import simplified_memory_monitoring_middleware
     from api.middleware.rate_limiting import throttling_middleware
 
@@ -59,7 +59,7 @@ except Exception as e:
 # Test configuration following Phase 8 patterns
 REQUIRED_MIDDLEWARE = {
     "setup_cors_middleware",
-    "setup_gzip_middleware",
+    "setup_brotli_middleware",
     "simplified_memory_monitoring_middleware",
     "throttling_middleware",
 }
@@ -68,20 +68,20 @@ MIDDLEWARE_VALIDATION_TESTS = [
     {
         "test_id": "MID_001",
         "middleware": "setup_cors_middleware",
-        "description": "CORS middleware setup with default configuration",
+        "description": "CORS middleware setup with environment-based configuration",
         "test_type": "setup",
         "input_data": {},
         "expected_middlewares": ["CORSMiddleware"],
-        "expected_config": {"allow_credentials": True, "allow_origins": ["*"]},
+        "expected_config": {"allow_credentials": True},  # allow_origins is now from env
         "should_succeed": True,
     },
     {
         "test_id": "MID_002",
-        "middleware": "setup_gzip_middleware",
-        "description": "GZip middleware setup with compression",
+        "middleware": "setup_brotli_middleware",
+        "description": "Brotli compression middleware setup",
         "test_type": "setup",
         "input_data": {},
-        "expected_middlewares": ["GZipMiddleware"],
+        "expected_middlewares": ["BrotliMiddleware"],
         "expected_config": {"minimum_size": 1000},
         "should_succeed": True,
     },
@@ -231,8 +231,10 @@ async def validate_middleware_function(
         input_data = test_case.get("input_data", {})
 
         if test_type == "setup":
-            # Test setup functions (CORS, GZip)
+            # Test setup functions (CORS, Brotli)
             mock_app = MockFastAPIApp()
+
+            result_description = "Middleware setup completed"
 
             if middleware_name == "setup_cors_middleware":
                 print(f"   📥 Input: FastAPI app instance")
@@ -247,34 +249,45 @@ async def validate_middleware_function(
 
                 cors_middleware = cors_middlewares[0]
                 expected_config = test_case.get("expected_config", {})
+                # Note: CORS now uses environment-based origins, so we check for list type instead of exact value
+                if "allow_origins" in expected_config:
+                    actual_origins = cors_middleware["kwargs"].get("allow_origins")
+                    assert isinstance(
+                        actual_origins, list
+                    ), "allow_origins should be a list"
+                    assert len(actual_origins) > 0, "allow_origins should not be empty"
+
+                # Check other config values
                 for key, expected_value in expected_config.items():
-                    actual_value = cors_middleware["kwargs"].get(key)
-                    assert (
-                        actual_value == expected_value
-                    ), f"Expected {key}={expected_value}, got {actual_value}"
+                    if key != "allow_origins":  # Skip origins as it's environment-based
+                        actual_value = cors_middleware["kwargs"].get(key)
+                        assert (
+                            actual_value == expected_value
+                        ), f"Expected {key}={expected_value}, got {actual_value}"
 
                 result_description = f"Added CORSMiddleware with {len(cors_middleware['kwargs'])} config options"
 
-            elif middleware_name == "setup_gzip_middleware":
+            elif middleware_name == "setup_brotli_middleware":
                 print(f"   📥 Input: FastAPI app instance")
-                print(f"   🔧 Calling: setup_gzip_middleware(app)")
-                setup_gzip_middleware(mock_app)
+                print(f"   🔧 Calling: setup_brotli_middleware(app)")
+                setup_brotli_middleware(mock_app)
 
-                # Validate GZip middleware was added
-                gzip_middlewares = [
-                    m for m in mock_app.middlewares if "GZip" in str(m["class"])
+                # Validate Brotli middleware was added
+                brotli_middlewares = [
+                    m for m in mock_app.middlewares if "Brotli" in str(m["class"])
                 ]
-                assert len(gzip_middlewares) > 0, "GZip middleware should be added"
+                assert len(brotli_middlewares) > 0, "Brotli middleware should be added"
 
-                gzip_middleware = gzip_middlewares[0]
+                # Validate configuration
                 expected_config = test_case.get("expected_config", {})
+                middleware = brotli_middlewares[0]
                 for key, expected_value in expected_config.items():
-                    actual_value = gzip_middleware["kwargs"].get(key)
+                    actual_value = middleware["kwargs"].get(key)
                     assert (
                         actual_value == expected_value
                     ), f"Expected {key}={expected_value}, got {actual_value}"
 
-                result_description = f"Added GZipMiddleware with {len(gzip_middleware['kwargs'])} config options"
+                result_description = f"Added BrotliMiddleware with compression"
 
             response_time = time.time() - start_time
 
@@ -302,6 +315,8 @@ async def validate_middleware_function(
             call_next_mock = AsyncMock(return_value="mock_response")
 
             print(f"   📥 Input: Request({method} {url})")
+
+            result_description = "Middleware call completed"
 
             if middleware_name == "throttling_middleware":
                 print(f"   🔧 Calling: throttling_middleware(request, call_next)")

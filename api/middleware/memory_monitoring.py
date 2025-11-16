@@ -285,7 +285,7 @@ Registration in main.py:
 Middleware Order:
     Typically registered AFTER:
         - CORS middleware
-        - GZip middleware
+        - Brotli middleware
         - Rate limiting middleware
 
     Reason:

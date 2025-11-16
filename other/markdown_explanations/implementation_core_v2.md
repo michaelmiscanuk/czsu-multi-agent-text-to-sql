@@ -145,7 +145,7 @@
 #### Middleware Stack
 - **CORS**: Permissive policy for cross-origin requests
   - **Purpose:** Allows the Vercel-hosted frontend to call the Railway backend securely from the browser.
-- **GZip Compression**: Response compression for JSON payloads over 1000 bytes
+- **Brotli Compression**: Response compression for JSON payloads over 1000 bytes
   - **Purpose:** Reduces bandwidth usage and speeds up perception of large analysis responses.
 - **Throttling**: IP-based semaphore limits (max 8 concurrent requests per IP)
   - **Purpose:** Protects backend resources from noisy clients while still permitting legitimate parallel usage.
