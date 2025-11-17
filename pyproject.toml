@@ -134,6 +134,12 @@ dev = [
     # Graphs
     "graphviz",
 
+    # Call graph visualization
+    "pycg<=0.0.8",
+    "pyvis>=0.3.2",
+    "networkx>=3.0",
+    "pyan3>=1.2.0",
+
     # Testing
     "pytest",
     "pytest-asyncio",

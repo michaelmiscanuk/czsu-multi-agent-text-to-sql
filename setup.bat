@@ -6,7 +6,7 @@ if not exist ".venv" (
     echo Creating new virtual environment...
     uv venv --python 3.11.9
     echo Installing backend dependencies for the first time...
-    echo Installing/Updating backend packages...
+    echo Installing backend packages...
     uv pip install --python .venv .
     uv pip install --python .venv .[dev]
 ) else (
@@ -38,7 +38,26 @@ echo         "python": "\"$pythonPath\" -u $fullFileName"
 echo     },
 echo     "code-runner.fileDirectoryAsCwd": false,
 echo     "code-runner.respectShebang": false,
-echo     "python-envs.pythonProjects": []
+echo     "python-envs.pythonProjects": [],
+echo     "terminal.integrated.env.windows": {},
+echo     "terminal.integrated.cwd": "${workspaceFolder}",
+echo     "terminal.integrated.defaultProfile.windows": "Command Prompt",
+echo     "terminal.integrated.profiles.windows": {
+echo         "Command Prompt": {
+echo             "path": "cmd.exe",
+echo             "args": ["/K", ".venv\\Scripts\\activate.bat"],
+echo             "icon": "terminal-cmd"
+echo         },
+echo         "PowerShell": {
+echo             "source": "PowerShell",
+echo             "args": ["-NoExit", "-Command", "& '.venv\\Scripts\\Activate.ps1'"],
+echo             "icon": "terminal-powershell"
+echo         }
+echo     },
+echo     "terminal.integrated.automationProfile.windows": {
+echo         "path": "cmd.exe",
+echo         "args": ["/K", ".venv\\Scripts\\activate.bat"]
+echo     }
 echo }
 ) > .vscode\settings.json
 

@@ -639,9 +639,9 @@ def main():
     print(f"Mindmap saved as '{png_path}.png'")
 
     # Also save as PDF for better quality
-    # pdf_path = os.path.join(script_dir, script_name)
-    # graph.render(pdf_path, format="pdf", cleanup=True)
-    # print(f"Mindmap saved as '{pdf_path}.pdf'")
+    pdf_path = os.path.join(script_dir, script_name)
+    graph.render(pdf_path, format="pdf", cleanup=True)
+    print(f"Mindmap saved as '{pdf_path}.pdf'")
 
     # Print text representation
     print("\nText-based Mindmap:")
