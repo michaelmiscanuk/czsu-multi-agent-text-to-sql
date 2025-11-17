@@ -314,14 +314,14 @@ cleanup_resources_node:
 Helper Functions:
 ================
 
-translate_to_english():
-- Input: text (any language)
-- Output: English translation
-- Purpose: Translate PDF search queries to English
+translate_text():
+- Input: text (any language), target_language (language code, default='en')
+- Output: Translation in target language
+- Purpose: Translate PDF search queries to target language (typically English)
 - API: Azure Translator API
 - Key Logic:
   * Loads API credentials from environment
-  * Constructs translation endpoint with params
+  * Constructs translation endpoint with target language param
   * Runs synchronous request in thread pool
   * Returns translated text
   * Used before PDF chunk retrieval
@@ -639,7 +639,7 @@ print(f"🔍 Current working directory: {Path.cwd()}")
 from api.utils.debug import print__nodes_debug, print__analysis_tracing_debug
 
 # Import helper functions
-from my_agent.utils.helpers import load_schema, translate_to_english, detect_language
+from my_agent.utils.helpers import load_schema, translate_text, detect_language
 
 # Import tools
 from my_agent.utils.tools import finish_gathering, get_sqlite_tools
@@ -1309,7 +1309,7 @@ async def retrieve_similar_chunks_hybrid_search_node(
     query_original_language = state.get("rewritten_prompt") or state["prompt"]
 
     # Translate query to English using Azure Translator
-    query = await translate_to_english(query_original_language)
+    query = await translate_text(query_original_language, target_language="en")
 
     print__nodes_debug(
         f"🔄 {RETRIEVE_CHUNKS_NODE_ID}: Original query: '{query_original_language}' -> Translated query: '{query}'"
@@ -2289,15 +2289,16 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that formats SQL results and PDF chunks into natural language answers.
 
     This node synthesizes data from multiple sources (SQL query results and PDF document chunks)
-    into a coherent, bilingual answer. It uses Azure GPT-4o-mini to generate markdown-formatted
-    responses that match the user's query language (Czech/English) and follow strict data-only rules.
+    into a coherent answer. It uses Azure GPT-4o-mini to generate markdown-formatted responses,
+    then translates the final answer to match the user's query language using Azure Translator API
+    for reliable multilingual support.
 
     The node handles:
     - Multi-source data synthesis (SQL + PDF)
     - Source attribution and clear separation
     - Markdown formatting with tables and lists
     - Number formatting without separators
-    - Language matching (Czech/English)
+    - Language translation to match user's query language
     - Preservation of PDF chunks for frontend display
 
     Args:
@@ -2307,35 +2308,41 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
         DataAnalysisState: Updated state with final_answer, messages, and preserved top_chunks.
 
     System Prompt Key Points:
-    - Bilingual (Czech/English) data analyst that responds strictly using provided SQL results and PDF document context
+    - Data analyst that responds strictly using provided SQL results and PDF document context
     - Data rules: Use ONLY provided data, read query details to match user questions, understand 'value' column meanings, never format numbers, use PDF context to enrich answers
-    - Response rules: Respond in detected language, translate all content including data labels/headers, synthesize SQL+PDF data comprehensively, provide relevant details, compare values, highlight patterns/trends, note contradictions, never hallucinate
+    - Response rules: Synthesize SQL+PDF data comprehensively, provide relevant details, compare values, highlight patterns/trends, note contradictions, never hallucinate
     - Style rules: No query/results references, no filler phrases, logical structure, structured output instead of long sentences, organize complementary SQL+PDF data
     - Output format: Markdown with bullet points/lists/tables/headings, plain digits for numbers, clear PDF source attribution
 
     Key Steps:
-        1. Extract data from state (queries_and_results, top_chunks, prompt) and detect language
-        2. Build separate context sections (SQL queries/results text, PDF chunks text with sources)
-        3. Build comprehensive system prompt with data/response/style/format rules
-        4. Call Azure GPT-4o-mini to synthesize answer from all data sources
-        5. Extract generated markdown answer and update message state
-        6. Return final_answer with preserved top_chunks for frontend display
+        1. Extract state data
+        2. Detect prompt language for translation
+        3. Build SQL context section from queries and results
+        4. Build PDF context section from document chunks (if available)
+        5. Build system prompt with formatting instructions
+        6. Build human prompt with conditional sections based on available data
+        7. Prepare template variables for prompt formatting
+        8. Invoke LLM to generate markdown answer
+        9. Extract answer content from LLM response
+        10. Detect answer language
+        11. Translate answer to prompt language if languages differ
+        12. Update message state with summary and result
+        13. Return updated state with final_answer and preserved top_chunks
     """
     print__nodes_debug(f"🎨 {FORMAT_ANSWER_ID}: Enter format_answer_node")
 
-    # Key Step 1: Extract SQL results and PDF chunks from state
+    # Step 1: Extract state data
     queries_and_results = state.get("queries_and_results", [])
     top_chunks = state.get("top_chunks", [])
     rewritten_prompt = state.get("rewritten_prompt")
     prompt = state["prompt"]
     messages = state.get("messages", [])
 
-    # Key Step 1: Extract data from state (queries_and_results, top_chunks, prompt) and detect language
-    # Detect the language of the original prompt
-    detected_language = await detect_language(prompt)
-    print__nodes_debug(f"🌍 {FORMAT_ANSWER_ID}: Detected language: {detected_language}")
-
-    # Add debug logging for PDF chunks
+    # Step 2: Detect prompt language for translation
+    detected_language_prompt = await detect_language(prompt)
+    print__nodes_debug(
+        f"🌍 {FORMAT_ANSWER_ID}: Detected prompt language: {detected_language_prompt}"
+    )
     print__nodes_debug(f"📄 {FORMAT_ANSWER_ID}: PDF chunks count: {len(top_chunks)}")
     if top_chunks:
         print__nodes_debug(
@@ -2344,14 +2351,13 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
 
     llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
 
-    # Key Step 2: Build separate context sections (SQL queries/results text, PDF chunks text with sources)
-    # Prepare SQL queries and results context
+    # Step 3: Build SQL context section from queries and results
     queries_results_text = "\n\n".join(
         f"Query {i+1}:\n{query}\nResult {i+1}:\n{result}"
         for i, (query, result) in enumerate(queries_and_results)
     )
 
-    # Prepare PDF chunks context separately
+    # Step 4: Build PDF context section from document chunks (if available)
     pdf_chunks_text = ""
     if top_chunks:
         print__nodes_debug(
@@ -2374,8 +2380,9 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
             f"📄 {FORMAT_ANSWER_ID}: No PDF chunks available for context"
         )
 
-    system_prompt = f"""
-You are a bilingual (Czech/English) data analyst. Respond strictly using provided SQL results and PDF document context:
+    # Step 5: Build system prompt with formatting instructions
+    system_prompt = """
+You are a bilingual data analyst. Respond strictly using provided SQL results and PDF document context:
 
 1. **Data Rules**:
    - Use ONLY provided data (SQL results and PDF document content)
@@ -2385,8 +2392,6 @@ You are a bilingual (Czech/English) data analyst. Respond strictly using provide
    - If PDF document context is provided, use it to enrich your answer with additional relevant information
    
 2. **Response Rules**:
-   - IMPORTANT: Your response MUST be in this language: {detected_language}
-   - IMPORTANT: Translate ALL content to {detected_language}, including data labels, column names, table headers, and any Czech terms in the data
    - Synthesize all data (SQL + PDF) into one comprehensive answer
    - Provide as much as possible of the RELEVANT details from SQL and PDF data that are relevant to the user's prompt.
    - Compare values when relevant
@@ -2420,18 +2425,15 @@ Bad: "The query shows X is 1,234,567"
 
 """
 
-    # Build the formatted prompt with separate sections for SQL and PDF data
+    # Step 6: Build human prompt with conditional sections based on available data
     formatted_prompt_parts = ["Question: {question}"]
 
-    # Add SQL data section if available
     if queries_and_results:
         formatted_prompt_parts.append("SQL Data Context:\n{sql_context}")
 
-    # Add PDF data section if available
     if pdf_chunks_text:
         formatted_prompt_parts.append("PDF Document Context:\n{pdf_context}")
 
-    # Add instruction
     if queries_and_results and pdf_chunks_text:
         instruction = "Please answer the question based on both the SQL queries/results and the PDF document context provided."
     elif queries_and_results:
@@ -2445,12 +2447,10 @@ Bad: "The query shows X is 1,234,567"
     else:
         instruction = "No data context available to answer the question."
 
-    language_stress = f"   - IMPORTANT: Translate ALL content to {detected_language}, including data labels, column names, table headers, and any Czech terms in the data"
     formatted_prompt_parts.append(instruction)
-    formatted_prompt_parts.append(language_stress)
     formatted_prompt = "\n\n".join(formatted_prompt_parts)
 
-    # Prepare template variables
+    # Step 7: Prepare template variables for prompt formatting
     template_vars = {"question": rewritten_prompt or prompt}
 
     if queries_and_results:
@@ -2459,18 +2459,36 @@ Bad: "The query shows X is 1,234,567"
     if pdf_chunks_text:
         template_vars["pdf_context"] = pdf_chunks_text
 
+    # Step 8: Invoke LLM to generate markdown answer
     chain = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", formatted_prompt)]
     )
-    # Key Step 3: Build comprehensive system prompt with data/response/style/format rules (already built above)
-    # Key Step 4: Call Azure GPT-4o-mini to synthesize answer from all data sources
     result = await llm.ainvoke(chain.format_messages(**template_vars))
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
 
-    # Key Step 5: Extract generated markdown answer and update message state
-    # Extract the final answer content
+    # Step 9: Extract answer content from LLM response
     final_answer_content = result.content if hasattr(result, "content") else str(result)
-    # FIX: Escape curly braces in final_answer_content to prevent f-string parsing errors
+
+    # Step 10: Detect answer language
+    detected_language_llm = await detect_language(final_answer_content)
+    print__nodes_debug(
+        f"🌍 {FORMAT_ANSWER_ID}: Detected LLM output language: {detected_language_llm}"
+    )
+
+    # Step 11: Translate answer to prompt language if languages differ
+    if detected_language_llm != detected_language_prompt:
+        print__nodes_debug(
+            f"🌍 {FORMAT_ANSWER_ID}: Translating answer from {detected_language_llm} to {detected_language_prompt}"
+        )
+        final_answer_content = await translate_text(
+            final_answer_content, target_language=detected_language_prompt
+        )
+        print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Translation completed")
+    else:
+        print__nodes_debug(
+            f"🌍 {FORMAT_ANSWER_ID}: LLM output language matches prompt language ({detected_language_prompt}), no translation needed"
+        )
+
     final_answer_preview = (
         final_answer_content[:100].replace("{", "{{").replace("}", "}}")
     )
@@ -2478,7 +2496,7 @@ Bad: "The query shows X is 1,234,567"
         f"📄 {FORMAT_ANSWER_ID}: Final answer: {final_answer_preview}..."
     )
 
-    # Update messages state (existing logic)
+    # Step 12: Update message state with summary and result
     summary = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
@@ -2487,16 +2505,15 @@ Bad: "The query shows X is 1,234,567"
     if not hasattr(result, "id") or not result.id:
         result.id = "format_answer"
 
-    # Add final debug logging
     print__nodes_debug(
         f"📄 {FORMAT_ANSWER_ID}: Preserving {len(top_chunks)} PDF chunks for frontend"
     )
 
-    # Key Step 6: Return final_answer with preserved top_chunks for frontend display
+    # Step 13: Return updated state with final_answer and preserved top_chunks
     return {
         "messages": [summary, result],
         "final_answer": final_answer_content,
-        "top_chunks": top_chunks,  # Preserve chunks for frontend instead of clearing them
+        "top_chunks": top_chunks,
     }
 
 
@@ -2510,8 +2527,11 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
     The generated prompts cover different aspects like economy, population, finance, etc., and are
     designed to be directly usable as natural language queries for the system.
 
+    The node detects the user's query language and automatically translates the generated prompts
+    to match it, ensuring a consistent multilingual experience.
+
     Args:
-        state (DataAnalysisState): Workflow state containing conversation summary.
+        state (DataAnalysisState): Workflow state containing conversation summary and original prompt.
 
     Returns:
         DataAnalysisState: Updated state with 'followup_prompts' containing list of 3 prompt strings.
@@ -2524,16 +2544,25 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
     - Output format: Exactly 3 prompts, one per line, no numbering, diverse coverage of economy/population/finance aspects when summary is empty
 
     Key Steps:
-        1. Extract conversation summary from messages
+        1. Extract conversation summary from messages and detect prompt language
         2. Call Azure GPT-4o-mini with creative temperature (1.0)
         3. Generate 3 diverse, relevant prompts
         4. Parse and validate prompt list
-        5. Return maximum 3 prompts
+        5. Detect language of generated prompts and translate if needed
+        6. Return maximum 3 prompts in user's language
     """
     print__nodes_debug("💡 FOLLOWUP_PROMPTS: Enter followup_prompts_node")
 
-    # Key Step 1: Extract conversation summary from messages
+    # Key Step 1: Extract conversation summary from messages and detect prompt language
     messages = state.get("messages", [])
+    prompt = state["prompt"]
+
+    # Detect prompt language for translation
+    detected_language_prompt = await detect_language(prompt)
+    print__nodes_debug(
+        f"🌍 FOLLOWUP_PROMPTS: Detected prompt language: {detected_language_prompt}"
+    )
+
     summary = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
@@ -2590,7 +2619,34 @@ Important guidelines:
         f"💡 FOLLOWUP_PROMPTS: Parsed {len(followup_prompts)} prompts from LLM response"
     )
 
-    # Key Step 5: Return maximum 3 prompts
+    # Key Step 5: Detect language and translate if needed
+    # Detect the language of generated prompts (check first prompt as representative)
+    if followup_prompts:
+        first_prompt = followup_prompts[0]
+        detected_language_llm = await detect_language(first_prompt)
+        print__nodes_debug(
+            f"🌍 FOLLOWUP_PROMPTS: Detected LLM output language: {detected_language_llm}"
+        )
+
+        # Translate all prompts if language differs
+        if detected_language_llm != detected_language_prompt:
+            print__nodes_debug(
+                f"🌍 FOLLOWUP_PROMPTS: Translating prompts from {detected_language_llm} to {detected_language_prompt}"
+            )
+            translated_prompts = []
+            for prompt_text in followup_prompts:
+                translated = await translate_text(
+                    prompt_text, target_language=detected_language_prompt
+                )
+                translated_prompts.append(translated)
+            followup_prompts = translated_prompts
+            print__nodes_debug(f"✅ FOLLOWUP_PROMPTS: Translation completed")
+        else:
+            print__nodes_debug(
+                f"🌍 FOLLOWUP_PROMPTS: LLM output language matches prompt language ({detected_language_prompt}), no translation needed"
+            )
+
+    # Key Step 6: Return maximum 3 prompts
     final_prompts = followup_prompts[:3]
     print__nodes_debug(
         f"💡 FOLLOWUP_PROMPTS: Returning {len(final_prompts)} follow-up prompts"

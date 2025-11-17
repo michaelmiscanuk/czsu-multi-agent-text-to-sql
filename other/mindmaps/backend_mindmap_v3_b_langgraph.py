@@ -717,20 +717,20 @@ mindmap = {
                     },
                     "Translation": {
                         "Details": [
-                            "translate_to_english(text) - Async Azure Translator API call",
-                            "Endpoint: /translate?api-version=3.0&to=en",
+                            "translate_text(text, target_language='en') - Async Azure Translator API call",
+                            "Endpoint: /translate?api-version=3.0&to={target_language}",
                             "Uses: TRANSLATOR_TEXT_SUBSCRIPTION_KEY, TRANSLATOR_TEXT_REGION, TRANSLATOR_TEXT_ENDPOINT",
                             "Headers: Ocp-Apim-Subscription-Key, Ocp-Apim-Subscription-Region, X-ClientTraceId",
                             "Runs synchronous requests.post in thread pool executor (async-safe)",
-                            "Returns: Translated text in English",
+                            "Returns: Translated text in target language",
                         ],
-                        "Summary": "Azure Translator API integration for Czech to English translation.",
+                        "Summary": "Azure Translator API integration for multilingual translation.",
                     },
                     "Language Detection": {
                         "Details": [
                             "detect_language(text) - Async Azure Translator API call",
                             "Endpoint: /detect?api-version=3.0",
-                            "Same authentication as translate_to_english",
+                            "Same authentication as translate_text",
                             "Runs synchronous requests.post in thread pool executor",
                             "Returns: Language code (e.g., 'cs', 'en', 'de')",
                             "Used for bilingual answer generation (match query language)",
@@ -874,13 +874,13 @@ mindmap = {
             "Azure Translator": {
                 "Details": [
                     "Language detection: detect_language(text) in helpers.py",
-                    "Translation: translate_to_english(text) in helpers.py",
+                    "Translation: translate_text(text, target_language='en') in helpers.py",
                     "API version: 3.0",
                     "Used for: PDF chunk retrieval (Czech query → English docs)",
                     "Used for: Bilingual answer generation (match query language)",
                     "Endpoints: /detect, /translate",
                 ],
-                "Summary": "Azure Cognitive Services Translator for language detection and translation.",
+                "Summary": "Azure Cognitive Services Translator for language detection and multilingual translation.",
             },
             "MCP Server (Optional)": {
                 "Details": [

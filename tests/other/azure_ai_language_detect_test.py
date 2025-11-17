@@ -20,10 +20,11 @@ headers = {
 
 # Test with multiple texts in different languages
 body = [
-    {"text": "Ahoj, jak se máš?"},  # Czech
-    {"text": "Hello, how are you?"},  # English
-    {"text": "Kolik je zaměstnanost v Praze?"},  # Czech
-    {"text": "What is the employment rate in Prague?"},  # English
+    # {"text": "Ahoj, jak se máš?"},  # Czech
+    # {"text": "Hello, how are you?"},  # English
+    # {"text": "Kolik je zaměstnanost v Praze?"},  # Czech
+    # {"text": "What is the employment rate in Prague?"},  # English
+    {"text": "skolko zensin v Prage??"},  # Russian
 ]
 
 request = requests.post(constructed_url, headers=headers, json=body)

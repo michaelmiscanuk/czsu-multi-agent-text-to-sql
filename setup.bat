@@ -24,12 +24,21 @@ if not exist ".vscode" mkdir .vscode
 echo Creating .vscode\settings.json...
 (
 echo {
-echo     "python.defaultInterpreterPath": "./.venv/Scripts/python.exe",
+echo     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
 echo     "python.terminal.activateEnvironment": true,
+echo     "python.terminal.activateEnvInCurrentTerminal": true,
 echo     "python.analysis.extraPaths": [
 echo         "${workspaceFolder}"
 echo     ],
-echo     "python.envFile": "${workspaceFolder}/.env"
+echo     "python.envFile": "${workspaceFolder}/.env",
+echo     "python.terminal.executeInFileDir": false,
+echo     "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+echo     "code-runner.executorMap": {
+echo         "python": "\"$pythonPath\" -u $fullFileName"
+echo     },
+echo     "code-runner.fileDirectoryAsCwd": false,
+echo     "code-runner.respectShebang": false,
+echo     "python-envs.pythonProjects": []
 echo }
 ) > .vscode\settings.json
 

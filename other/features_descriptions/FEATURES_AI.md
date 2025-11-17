@@ -520,7 +520,7 @@ The hybrid search system combines semantic similarity search (using embeddings) 
 - **Problem**: Czech query on English PDF content has low BM25 scores
 - **Solution**: Translate query to English before PDF hybrid search
 - **Impact**: 50% improvement in PDF retrieval for Czech queries
-- **Implementation**: `translate_to_english()` before pdf_hybrid_search()
+- **Implementation**: `translate_text(query, target_language='en')` before pdf_hybrid_search()
 
 **Challenge 10: Evaluation and Validation**
 - **Problem**: No ground truth to validate retrieval quality improvements
@@ -592,7 +592,7 @@ The hybrid search system combines semantic similarity search (using embeddings) 
 - **Problem**: Czech query doesn't match English PDF documentation semantically
 - **Solution**: Translate Czech query to English before PDF retrieval
 - **Impact**: 80% improvement in cross-lingual retrieval quality
-- **Implementation**: `translate_to_english()` before PDF hybrid search
+- **Implementation**: `translate_text(query, target_language='en')` before PDF hybrid search
 
 **Challenge 3: Hybrid Search Accuracy**
 - **Problem**: Semantic search misses exact terminology, keyword search misses paraphrases

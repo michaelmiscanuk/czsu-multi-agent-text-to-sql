@@ -100,8 +100,8 @@ async def load_schema(state=None):
     return "No selection_code provided in state."
 
 
-async def translate_to_english(text):
-    """Helper function that translates text to English using Azure Translator API.
+async def translate_text(text, target_language="en"):
+    """Helper function that translates text to a target language using Azure Translator API.
 
     This function provides language translation for PDF chunk retrieval, where queries may be in
     Czech but PDF documentation is in English. It uses Azure Cognitive Services Translator API
@@ -113,9 +113,10 @@ async def translate_to_english(text):
 
     Args:
         text (str): Text to translate (any language supported by Azure Translator).
+        target_language (str): Target language code (e.g., 'en', 'cs', 'de', 'fr'). Defaults to 'en'.
 
     Returns:
-        str: Translated text in English.
+        str: Translated text in the target language.
 
     Key Steps:
         1. Load Azure Translator credentials from environment
@@ -124,7 +125,7 @@ async def translate_to_english(text):
         4. Create request body with input text
         5. Execute POST request in thread pool (async-safe)
         6. Parse JSON response and extract translated text
-        7. Return English translation
+        7. Return translated text in target language
 
     Environment Variables Required:
         - TRANSLATOR_TEXT_SUBSCRIPTION_KEY: Azure Translator API key
@@ -132,7 +133,7 @@ async def translate_to_english(text):
         - TRANSLATOR_TEXT_ENDPOINT: API endpoint URL
 
     API Details:
-        - Endpoint: /translate?api-version=3.0&to=en
+        - Endpoint: /translate?api-version=3.0&to={target_language}
         - Method: POST
         - Content-Type: application/json
         - Headers: Ocp-Apim-Subscription-Key, Ocp-Apim-Subscription-Region, X-ClientTraceId
@@ -143,7 +144,7 @@ async def translate_to_english(text):
     endpoint = os.environ["TRANSLATOR_TEXT_ENDPOINT"]
 
     path = "/translate?api-version=3.0"
-    params = "&to=en"
+    params = f"&to={target_language}"
     constructed_url = endpoint + path + params
 
     headers = {
