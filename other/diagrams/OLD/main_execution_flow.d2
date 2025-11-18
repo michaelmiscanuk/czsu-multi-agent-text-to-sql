@@ -1,0 +1,454 @@
+# LangGraph Multi-Agent Execution Flow
+# Main.py - Before and After Graph Execution
+# Generated: 2025-11-18
+
+direction: down
+
+title: |md
+  # LangGraph Multi-Agent Execution Flow
+  **Main.py Orchestration**
+|
+
+# ============================================================
+# START NODE
+# ============================================================
+start: {
+  label: |md
+    🚀 **Function Entry**
+    
+    main.py
+  |
+  shape: oval
+  style: {
+    fill: "#d5e8d4"
+    stroke: "#82b366"
+    stroke-width: 3
+    font-size: 18
+  }
+}
+
+# ============================================================
+# PHASE 1: INITIALIZATION
+# ============================================================
+phase1: {
+  label: "PHASE 1: INITIALIZATION"
+  style: {
+    fill: "#f0f8ff"
+    stroke: "#0066CC"
+    stroke-width: 2
+    font-size: 16
+    bold: true
+  }
+  
+  step1: {
+    label: |md
+      📝 **Resolve Input Parameters**
+      
+      _prompt, thread_id, run_id_
+    |
+    style: {
+      fill: "#dae8fc"
+      stroke: "#6c8ebf"
+      stroke-width: 2
+    }
+  }
+  
+  step2: {
+    label: |md
+      💾 **Establish Memory Baseline**
+      
+      _track RSS memory usage_
+    |
+    style: {
+      fill: "#dae8fc"
+      stroke: "#6c8ebf"
+      stroke-width: 2
+    }
+  }
+  
+  step3: {
+    label: |md
+      🗄️ **Initialize Checkpointer**
+      
+      _PostgreSQL or InMemory fallback_
+    |
+    style: {
+      fill: "#dae8fc"
+      stroke: "#6c8ebf"
+      stroke-width: 2
+    }
+  }
+  
+  step4: {
+    label: |md
+      🔧 **Create LangGraph Workflow**
+      
+      _17 nodes across 6 stages_
+    |
+    style: {
+      fill: "#dae8fc"
+      stroke: "#6c8ebf"
+      stroke-width: 2
+    }
+  }
+  
+  step1 -> step2
+  step2 -> step3
+  step3 -> step4
+}
+
+# ============================================================
+# PHASE 2: STATE PREPARATION
+# ============================================================
+phase2: {
+  label: "PHASE 2: STATE PREPARATION"
+  style: {
+    fill: "#fffef0"
+    stroke: "#0066CC"
+    stroke-width: 2
+    font-size: 16
+    bold: true
+  }
+  
+  step5: {
+    label: |md
+      🔍 **Check Existing State**
+      
+      _query checkpointer for messages_
+    |
+    style: {
+      fill: "#fff2cc"
+      stroke: "#d6b656"
+      stroke-width: 2
+    }
+  }
+  
+  decision1: {
+    label: |md
+      **Existing**
+      **Conversation?**
+    |
+    shape: diamond
+    style: {
+      fill: "#ffe6cc"
+      stroke: "#d79b00"
+      stroke-width: 2
+      font-size: 14
+      bold: true
+    }
+  }
+  
+  step6a: {
+    label: |md
+      🆕 **New Conversation**
+      
+      Initialize complete state
+      
+      _13 fields + follow-up prompts_
+    |
+    style: {
+      fill: "#fff2cc"
+      stroke: "#d6b656"
+      stroke-width: 2
+    }
+  }
+  
+  step6b: {
+    label: |md
+      🔄 **Continuing Conversation**
+      
+      Reset iteration fields
+      
+      _preserve message history_
+    |
+    style: {
+      fill: "#fff2cc"
+      stroke: "#d6b656"
+      stroke-width: 2
+    }
+  }
+  
+  merge1: {
+    label: ""
+    shape: circle
+    width: 20
+    height: 20
+    style: {
+      fill: "#000000"
+      stroke: "#000000"
+    }
+  }
+  
+  step5 -> decision1
+  decision1 -> step6a: NO
+  decision1 -> step6b: YES
+  step6a -> merge1
+  step6b -> merge1
+}
+
+# ============================================================
+# PHASE 3: LANGGRAPH EXECUTION (THE MAIN EVENT)
+# ============================================================
+graph_exec: {
+  label: |md
+    ⚡ **EXECUTE LANGGRAPH WORKFLOW**
+    
+    **graph.ainvoke()**
+    
+    • Query Rewriting
+    • Parallel Retrieval (DB + PDF)
+    • SQL Generation (MCP tools)
+    • Self-Correction Loop
+    • Answer Synthesis
+  |
+  style: {
+    fill: "#f8cecc"
+    stroke: "#b85450"
+    stroke-width: 4
+    font-size: 16
+    bold: true
+    multiple: true
+  }
+}
+
+# ============================================================
+# PHASE 4: POST-EXECUTION MONITORING
+# ============================================================
+phase4: {
+  label: "PHASE 4: POST-EXECUTION MONITORING"
+  style: {
+    fill: "#f8f0ff"
+    stroke: "#0066CC"
+    stroke-width: 2
+    font-size: 16
+    bold: true
+  }
+  
+  step7: {
+    label: |md
+      📊 **Monitor Memory Growth**
+      
+      _compare before/after RSS_
+    |
+    style: {
+      fill: "#e1d5e7"
+      stroke: "#9673a6"
+      stroke-width: 2
+    }
+  }
+  
+  decision2: {
+    label: |md
+      **Memory Growth**
+      **> Threshold?**
+    |
+    shape: diamond
+    style: {
+      fill: "#ffe6cc"
+      stroke: "#d79b00"
+      stroke-width: 2
+      font-size: 14
+      bold: true
+    }
+  }
+  
+  step8: {
+    label: |md
+      🚨 **Emergency Cleanup**
+      
+      _force garbage collection_
+    |
+    style: {
+      fill: "#f8cecc"
+      stroke: "#b85450"
+      stroke-width: 2
+    }
+  }
+  
+  merge2: {
+    label: ""
+    shape: circle
+    width: 20
+    height: 20
+    style: {
+      fill: "#000000"
+      stroke: "#000000"
+    }
+  }
+  
+  step7 -> decision2
+  decision2 -> step8: YES
+  decision2 -> merge2: NO
+  step8 -> merge2
+}
+
+# ============================================================
+# PHASE 5: RESULT PROCESSING
+# ============================================================
+phase5: {
+  label: "PHASE 5: RESULT PROCESSING"
+  style: {
+    fill: "#f0fff0"
+    stroke: "#0066CC"
+    stroke-width: 2
+    font-size: 16
+    bold: true
+  }
+  
+  step9: {
+    label: |md
+      📦 **Extract Key Results**
+      
+      _answer, SQL queries, datasets_
+    |
+    style: {
+      fill: "#d5e8d4"
+      stroke: "#82b366"
+      stroke-width: 2
+    }
+  }
+  
+  step10: {
+    label: |md
+      🔎 **Filter Used Dataset Codes**
+      
+      _parse SQL for table names_
+    |
+    style: {
+      fill: "#d5e8d4"
+      stroke: "#82b366"
+      stroke-width: 2
+    }
+  }
+  
+  step11: {
+    label: |md
+      📄 **Serialize PDF Chunks**
+      
+      _Document to JSON format_
+    |
+    style: {
+      fill: "#d5e8d4"
+      stroke: "#82b366"
+      stroke-width: 2
+    }
+  }
+  
+  step9 -> step10
+  step10 -> step11
+}
+
+# ============================================================
+# PHASE 6: FINAL CLEANUP
+# ============================================================
+phase6: {
+  label: "PHASE 6: FINAL CLEANUP"
+  style: {
+    fill: "#f8f0ff"
+    stroke: "#0066CC"
+    stroke-width: 2
+    font-size: 16
+    bold: true
+  }
+  
+  step12: {
+    label: |md
+      🧹 **Final Garbage Collection**
+      
+      _release temporary resources_
+    |
+    style: {
+      fill: "#e1d5e7"
+      stroke: "#9673a6"
+      stroke-width: 2
+    }
+  }
+  
+  step13: {
+    label: |md
+      📝 **Log Memory Statistics**
+      
+      _total growth & diagnostics_
+    |
+    style: {
+      fill: "#e1d5e7"
+      stroke: "#9673a6"
+      stroke-width: 2
+    }
+  }
+  
+  step12 -> step13
+}
+
+# ============================================================
+# END NODE
+# ============================================================
+end: {
+  label: |md
+    ✅ **Return Serialized Result**
+    
+    API Response
+  |
+  shape: oval
+  style: {
+    fill: "#d5e8d4"
+    stroke: "#82b366"
+    stroke-width: 3
+    font-size: 18
+  }
+}
+
+# ============================================================
+# MAIN FLOW CONNECTIONS
+# ============================================================
+start -> phase1.step1
+phase1.step4 -> phase2.step5
+phase2.merge1 -> graph_exec
+graph_exec -> phase4.step7
+phase4.merge2 -> phase5.step9
+phase5.step11 -> phase6.step12
+phase6.step13 -> end
+
+# ============================================================
+# NOTES & STATISTICS
+# ============================================================
+notes: {
+  label: |md
+    # 📊 KEY STATISTICS
+    
+    ## Before Execution:
+    ✓ 4 initialization steps
+    ✓ Checkpointer setup
+    ✓ State detection & prep
+    
+    ## During Execution:
+    ✓ 17 workflow nodes
+    ✓ Parallel retrieval
+    ✓ Iterative SQL generation
+    
+    ## After Execution:
+    ✓ Memory monitoring (2 stages)
+    ✓ Result extraction (3 steps)
+    ✓ Final cleanup & logging
+    
+    ---
+    
+    ## ⏱️ PERFORMANCE
+    • **Execution:** 5-15 seconds
+    • **Memory Growth:** 50-150 MB
+    • **Phases:** 6 main stages
+    • **Decision Points:** 2 conditional branches
+  |
+  style: {
+    fill: "#f5f5f5"
+    stroke: "#666666"
+    stroke-width: 2
+    stroke-dash: 5
+    font-size: 12
+  }
+}
+
+graph_exec -> notes: {
+  style.stroke-dash: 3
+  style.opacity: 0.5
+}

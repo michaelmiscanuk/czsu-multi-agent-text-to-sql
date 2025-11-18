@@ -1,0 +1,109 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
+  <diagram id="main-v2-balanced" name="Main Execution Flow v2 Balanced">
+    <mxGraphModel dx="693" dy="446" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Main.py Execution Flow" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="350" y="10" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="start" value="main() Entry" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="20" y="60" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="params" value="Resolve Parameters&#xa;(prompt, thread_id, run_id)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="180" y="60" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="checkpointer" value="Initialize Checkpointer&#xa;(PostgreSQL or InMemory)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="350" y="60" width="140" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="graph" value="Create LangGraph&lt;br&gt;Graph with Checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="520" y="60" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="state" value="Check Existing&lt;br&gt;Conversation State in Checkpointer using thread_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="670" y="60" width="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="decision" value="New or&#xa;Continuing?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="180" y="198" width="100" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="new_setup" value="New Conversation Setup&lt;br&gt;• Full state initialization with empty or default values" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="350" y="144" width="140" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="continue_setup" value="Continuing Conversation Setup&lt;br&gt;• Reset state&lt;br&gt;• Preserve messages state with summary" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="350" y="260" width="140" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="execution" value="Execute LangGraph&lt;br&gt;&lt;br&gt;• Query Rewriting&lt;br&gt;• Parallel Retrieval&lt;br&gt;• Reflection&lt;br&gt;• Answer Synthesis&lt;br&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;•&amp;nbsp;&lt;/span&gt;Follow-up&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;fontStyle=1;align=center;" parent="1" vertex="1">
+          <mxGeometry x="520" y="180" width="120" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="result" value="Process Results&lt;br&gt;• Extract final answer&lt;br&gt;• Extract dataset codes&lt;br&gt;• Serialize response data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="680" y="205" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="end" value="Return Result" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="685" y="310" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow1" parent="1" source="start" target="params" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" parent="1" source="params" target="checkpointer" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" style="exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="checkpointer" target="graph" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="graph" target="state" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" style="entryX=0.5;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=1;edgeStyle=orthogonalEdgeStyle;" parent="1" source="state" target="decision" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="130" />
+              <mxPoint x="230" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow6" style="exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" edge="1" target="new_setup" source="decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_continue" style="exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" edge="1" parent="1" source="decision" target="continue_setup">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;curved=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="new_setup" target="execution" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="520" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow_continue_exec" style="edgeStyle=orthogonalEdgeStyle;curved=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="continue_setup" target="execution">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow8" style="exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="execution" target="result" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow9" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="result" target="end" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_title" value="Legend" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="30" y="150" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_start" value="Start/End" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="30" y="175" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_setup" value="Setup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="80" y="175" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_state" value="State" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="30" y="204" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_decision" value="Decision" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="78" y="198" width="41" height="33" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_exec" value="Execute" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="30" y="234" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_result" value="Result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;" parent="1" vertex="1">
+          <mxGeometry x="80" y="234" width="40" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

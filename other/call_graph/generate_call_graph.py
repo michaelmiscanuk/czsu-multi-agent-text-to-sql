@@ -142,32 +142,66 @@ def generate_call_graph(
             from pyan.visgraph import VisualGraph
             from pyan.writers import DotWriter
             import logging
+            import threading
 
-            # Create visitor
-            visitor = CallGraphVisitor(
-                [str(f) for f in python_files], logging.getLogger()
-            )
+            print("  Analyzing code structure (this may take a moment)...")
 
-            # Create visual graph
-            graph = VisualGraph.from_visitor(
-                visitor,
-                options={
-                    "grouped": True,
-                    "nested_groups": True,
-                    "colored": True,
-                    "annotated": True,
-                },
-            )
+            # Use threading for timeout on Windows
+            dot_content = None
+            error_msg = None
 
-            # Generate DOT content
-            writer = DotWriter(
-                graph, options=["rankdir=LR"], output=None, logger=logging.getLogger()
-            )
+            def analyze_with_pyan():
+                nonlocal dot_content, error_msg
+                try:
+                    # Create visitor
+                    visitor = CallGraphVisitor(
+                        [str(f) for f in python_files], logging.getLogger()
+                    )
 
-            dot_content = writer.run()
+                    # Create visual graph
+                    graph = VisualGraph.from_visitor(
+                        visitor,
+                        options={
+                            "grouped": True,
+                            "nested_groups": True,
+                            "colored": True,
+                            "annotated": True,
+                        },
+                    )
+
+                    # Generate DOT content
+                    writer = DotWriter(
+                        graph,
+                        options=["rankdir=LR"],
+                        output=None,
+                        logger=logging.getLogger(),
+                    )
+
+                    dot_content = writer.run()
+                except Exception as e:
+                    error_msg = str(e)
+
+            # Run analysis in a thread with timeout
+            analysis_thread = threading.Thread(target=analyze_with_pyan, daemon=True)
+            analysis_thread.start()
+            analysis_thread.join(timeout=30)  # 30 second timeout
+
+            if analysis_thread.is_alive():
+                print(
+                    f"  ⚠️  Analysis timed out after 30 seconds, using simple import graph..."
+                )
+                dot_content = create_simple_import_graph(python_files, package_name)
+            elif error_msg:
+                print(
+                    f"  ⚠️  pyan3 API failed ({error_msg}), using simple import graph..."
+                )
+                dot_content = create_simple_import_graph(python_files, package_name)
+            elif not dot_content:
+                print(f"  ⚠️  No content generated, using simple import graph...")
+                dot_content = create_simple_import_graph(python_files, package_name)
 
         except Exception as e:
-            print(f"  ⚠️  pyan3 API failed ({e}), using simple import graph...")
+            print(f"  ⚠️  pyan3 setup failed ({e}), using simple import graph...")
             # Fallback: create a simple import graph
             dot_content = create_simple_import_graph(python_files, package_name)
 

@@ -1,0 +1,120 @@
+flowchart TB
+    %% Start Node
+    Start([🚀 Function Entry<br/>main.py]):::startNode
+    
+    %% ============================================================
+    %% PHASE 1: INITIALIZATION
+    %% ============================================================
+    subgraph Phase1["<b>PHASE 1: INITIALIZATION</b>"]
+        direction TB
+        Step1[📝 Resolve Input Parameters<br/><i>prompt, thread_id, run_id</i>]:::initNode
+        Step2[💾 Establish Memory Baseline<br/><i>track RSS memory usage</i>]:::initNode
+        Step3[🗄️ Initialize Checkpointer<br/><i>PostgreSQL or InMemory fallback</i>]:::initNode
+        Step4[🔧 Create LangGraph Workflow<br/><i>17 nodes across 6 stages</i>]:::initNode
+        
+        Step1 --> Step2
+        Step2 --> Step3
+        Step3 --> Step4
+    end
+    
+    %% ============================================================
+    %% PHASE 2: STATE PREPARATION
+    %% ============================================================
+    subgraph Phase2["<b>PHASE 2: STATE PREPARATION</b>"]
+        direction TB
+        Step5[🔍 Check Existing State<br/><i>query checkpointer for messages</i>]:::stateNode
+        Decision1{Existing<br/>Conversation?}:::decisionNode
+        Step6A[🆕 New Conversation<br/><i>Initialize complete state<br/>13 fields + follow-up prompts</i>]:::stateNode
+        Step6B[🔄 Continuing Conversation<br/><i>Reset iteration fields<br/>preserve message history</i>]:::stateNode
+        
+        Step5 --> Decision1
+        Decision1 -->|NO| Step6A
+        Decision1 -->|YES| Step6B
+    end
+    
+    %% ============================================================
+    %% PHASE 3: LANGGRAPH EXECUTION (THE MAIN EVENT)
+    %% ============================================================
+    GraphExec["<b>⚡ EXECUTE LANGGRAPH WORKFLOW</b><br/>graph.ainvoke<br/><br/>• Query Rewriting<br/>• Parallel Retrieval DB + PDF<br/>• SQL Generation MCP tools<br/>• Self-Correction Loop<br/>• Answer Synthesis"]:::execNode
+    
+    %% ============================================================
+    %% PHASE 4: POST-EXECUTION MONITORING
+    %% ============================================================
+    subgraph Phase4["<b>PHASE 4: POST-EXECUTION MONITORING</b>"]
+        direction TB
+        Step7[📊 Monitor Memory Growth<br/><i>compare before/after RSS</i>]:::monitorNode
+        Decision2{Memory Growth<br/>> Threshold?}:::decisionNode
+        Step8[🚨 Emergency Cleanup<br/><i>force garbage collection</i>]:::emergencyNode
+        
+        Step7 --> Decision2
+        Decision2 -->|YES| Step8
+        Decision2 -->|NO| Merge2[ ]:::mergeNode
+        Step8 --> Merge2
+    end
+    
+    %% ============================================================
+    %% PHASE 5: RESULT PROCESSING
+    %% ============================================================
+    subgraph Phase5["<b>PHASE 5: RESULT PROCESSING</b>"]
+        direction TB
+        Step9[📦 Extract Key Results<br/><i>answer, SQL queries, datasets</i>]:::resultNode
+        Step10[🔎 Filter Used Dataset Codes<br/><i>parse SQL for table names</i>]:::resultNode
+        Step11[📄 Serialize PDF Chunks<br/><i>Document to JSON format</i>]:::resultNode
+        
+        Step9 --> Step10
+        Step10 --> Step11
+    end
+    
+    %% ============================================================
+    %% PHASE 6: FINAL CLEANUP
+    %% ============================================================
+    subgraph Phase6["<b>PHASE 6: FINAL CLEANUP</b>"]
+        direction TB
+        Step12[🧹 Final Garbage Collection<br/><i>release temporary resources</i>]:::cleanupNode
+        Step13[📝 Log Memory Statistics<br/><i>total growth & diagnostics</i>]:::cleanupNode
+        
+        Step12 --> Step13
+    end
+    
+    %% End Node
+    End([✅ Return Serialized Result<br/>API Response]):::endNode
+    
+    %% ============================================================
+    %% MAIN FLOW CONNECTIONS
+    %% ============================================================
+    Start --> Phase1
+    Phase1 --> Phase2
+    Step6A --> Merge1[ ]:::mergeNode
+    Step6B --> Merge1
+    Merge1 --> GraphExec
+    GraphExec --> Phase4
+    Phase4 --> Phase5
+    Phase5 --> Phase6
+    Phase6 --> End
+    
+    %% ============================================================
+    %% STYLING
+    %% ============================================================
+    classDef startNode fill:#d5e8d4,stroke:#82b366,stroke-width:3px,color:#000
+    classDef endNode fill:#d5e8d4,stroke:#82b366,stroke-width:3px,color:#000
+    classDef initNode fill:#dae8fc,stroke:#6c8ebf,stroke-width:2px,color:#000
+    classDef stateNode fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000
+    classDef execNode fill:#f8cecc,stroke:#b85450,stroke-width:4px,color:#000,font-weight:bold
+    classDef monitorNode fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000
+    classDef emergencyNode fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000
+    classDef resultNode fill:#d5e8d4,stroke:#82b366,stroke-width:2px,color:#000
+    classDef cleanupNode fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000
+    classDef decisionNode fill:#ffe6cc,stroke:#d79b00,stroke-width:2px,color:#000
+    classDef mergeNode fill:#000,stroke:#000,stroke-width:1px,color:#000
+    
+    %% ============================================================
+    %% NOTES & STATISTICS
+    %% ============================================================
+    Note1["<b>📊 KEY STATISTICS</b><br/><br/><b>Before Execution:</b><br/>✓ 4 initialization steps<br/>✓ Checkpointer setup<br/>✓ State detection & prep<br/><br/><b>During Execution:</b><br/>✓ 17 workflow nodes<br/>✓ Parallel retrieval<br/>✓ Iterative SQL generation<br/><br/><b>After Execution:</b><br/>✓ Memory monitoring<br/>✓ Result extraction<br/>✓ Final cleanup"]:::noteBox
+    
+    Note2["<b>⏱️ PERFORMANCE</b><br/><br/>• Execution: 5-15 sec<br/>• Memory Growth: 50-150 MB<br/>• Phases: 6 stages<br/>• Decision Points: 2"]:::noteBox
+    
+    classDef noteBox fill:#f5f5f5,stroke:#666,stroke-width:2px,stroke-dasharray: 5 5,color:#000,text-align:left
+    
+    GraphExec -.->|stats| Note1
+    End -.->|metrics| Note2

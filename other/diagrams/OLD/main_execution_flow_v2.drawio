@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net">
+  <diagram id="main-v2" name="Main Execution Flow v2">
+    <mxGraphModel dx="1434" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="Condensed Main.py Execution Flow" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="200" y="20" width="400" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- START -->
+        <mxCell id="start" value="main() Entry" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="380" y="80" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- PHASE 1: INITIALIZATION -->
+        <mxCell id="phase1-label" value="PHASE 1: INITIALIZATION" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#0066CC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="200" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="init1" value="Resolve Parameters&#xa;(prompt, thread_id, run_id)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="150" width="180" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="init2" value="Initialize Checkpointer&#xa;(PostgreSQL or InMemory)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="220" width="180" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="init3" value="Create LangGraph Workflow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="290" width="180" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- PHASE 2: STATE PREPARATION -->
+        <mxCell id="phase2-label" value="PHASE 2: STATE PREPARATION" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#0066CC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="370" width="220" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="state1" value="Check Existing Conversation State" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="370" width="180" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="decision" value="Existing&#xa;state?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="390" y="440" width="100" height="80" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="state2a" value="New Conversation:&#xa;Full state init" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="200" y="550" width="140" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="state2b" value="Continuing:&#xa;Reset fields" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="550" width="140" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="merge" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="430" y="630" width="15" height="15" as="geometry" />
+        </mxCell>
+        
+        <!-- PHASE 3: EXECUTION -->
+        <mxCell id="phase3-label" value="PHASE 3: LANGGRAPH EXECUTION" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#CC0000;" vertex="1" parent="1">
+          <mxGeometry x="40" y="670" width="250" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="execution" value="Execute LangGraph Workflow&#xa;(graph.ainvoke)&#xa;&#xa;• Query Rewriting&#xa;• Parallel Retrieval&#xa;• SQL Generation&#xa;• Self-Correction&#xa;• Answer Synthesis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="300" y="670" width="250" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- PHASE 4: RESULT PROCESSING -->
+        <mxCell id="phase4-label" value="PHASE 4: RESULT PROCESSING" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#0066CC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800" width="220" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="result1" value="Extract Key Results&#xa;(answer, queries, datasets)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="800" width="180" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="result2" value="Filter Used Dataset Codes&#xa;&amp; Serialize PDF Chunks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="350" y="870" width="180" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- END -->
+        <mxCell id="end" value="Return Result" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="380" y="950" width="120" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows -->
+        <mxCell id="arrow1" edge="1" parent="1" source="start" target="init1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" edge="1" parent="1" source="init1" target="init2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" edge="1" parent="1" source="init2" target="init3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" edge="1" parent="1" source="init3" target="state1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" edge="1" parent="1" source="state1" target="decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6a" value="NO" edge="1" parent="1" source="decision" target="state2a">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6b" value="YES" edge="1" parent="1" source="decision" target="state2b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7a" edge="1" parent="1" source="state2a" target="merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7b" edge="1" parent="1" source="state2b" target="merge">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow8" edge="1" parent="1" source="merge" target="execution">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow9" edge="1" parent="1" source="execution" target="result1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow10" edge="1" parent="1" source="result1" target="result2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow11" edge="1" parent="1" source="result2" target="end">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
