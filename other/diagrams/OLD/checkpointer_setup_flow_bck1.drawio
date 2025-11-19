@@ -1,0 +1,387 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/28.2.8 Chrome/140.0.7339.240 Electron/38.4.0 Safari/537.36" version="28.2.8">
+  <diagram id="checkpointer-setup-flow" name="Checkpointer Setup Flow">
+    <mxGraphModel dx="1400" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="2000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="PostgreSQL Checkpointer Setup Flow" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="20" width="500" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Subtitle -->
+        <mxCell id="subtitle" value="Multi-Agent Text-to-SQL Application Database Initialization" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="450" y="55" width="500" height="25" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 1: Application Startup -->
+        <mxCell id="phase1_header" value="PHASE 1: APPLICATION STARTUP" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="100" width="1320" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Start -->
+        <mxCell id="start" value="initialize_checkpointer()&lt;br&gt;Called at App Startup" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Check Global State -->
+        <mxCell id="check_global" value="Check Global&lt;br&gt;Checkpointer State&lt;br&gt;(_GLOBAL_CHECKPOINTER)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="250" y="145" width="140" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Already Exists -->
+        <mxCell id="exists" value="Already Initialized&lt;br&gt;Skip Setup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="440" y="155" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 2: Validation & Configuration -->
+        <mxCell id="phase2_header" value="PHASE 2: VALIDATION &amp; CONFIGURATION" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="250" width="1320" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Validate Environment -->
+        <mxCell id="validate_env" value="Validate Environment&lt;br&gt;check_postgres_env_vars()&lt;br&gt;&lt;br&gt;• POSTGRES_HOST&lt;br&gt;• POSTGRES_PORT&lt;br&gt;• POSTGRES_USER&lt;br&gt;• POSTGRES_PASSWORD&lt;br&gt;• POSTGRES_DB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="300" width="160" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Generate Connection String -->
+        <mxCell id="gen_conn_string" value="Generate Connection String&lt;br&gt;get_connection_string()&lt;br&gt;&lt;br&gt;• Unique app name&lt;br&gt;• SSL configuration&lt;br&gt;• Timeout settings&lt;br&gt;• Keepalive params&lt;br&gt;• Cache globally" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="260" y="300" width="160" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Get Connection Kwargs -->
+        <mxCell id="get_kwargs" value="Get Connection Params&lt;br&gt;get_connection_kwargs()&lt;br&gt;&lt;br&gt;• autocommit: False&lt;br&gt;• prepare_threshold: None" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="460" y="300" width="160" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 3: Connection Pool Setup -->
+        <mxCell id="phase3_header" value="PHASE 3: CONNECTION POOL SETUP" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="460" width="1320" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Create Pool -->
+        <mxCell id="create_pool" value="Create AsyncConnectionPool&lt;br&gt;&lt;br&gt;Configuration:&lt;br&gt;• min_size: 5&lt;br&gt;• max_size: 25&lt;br&gt;• timeout: 180s&lt;br&gt;• max_idle: 600s&lt;br&gt;• max_lifetime: 3600s&lt;br&gt;• Health check enabled" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="510" width="180" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Open Pool -->
+        <mxCell id="open_pool" value="Open Connection Pool&lt;br&gt;pool.open()&lt;br&gt;&lt;br&gt;Establishes initial&lt;br&gt;connections to database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="280" y="510" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Test Connection -->
+        <mxCell id="test_conn" value="Test Connection&lt;br&gt;Health Check&lt;br&gt;&lt;br&gt;Execute: SELECT 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="480" y="510" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 4: Create Checkpointer -->
+        <mxCell id="phase4_header" value="PHASE 4: CHECKPOINTER CREATION" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="690" width="1320" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Create Checkpointer -->
+        <mxCell id="create_checkpointer" value="Create AsyncPostgresSaver&lt;br&gt;&lt;br&gt;AsyncPostgresSaver(&lt;br&gt;  pool=pool,&lt;br&gt;  serde=None&lt;br&gt;)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="740" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Assign Global -->
+        <mxCell id="assign_global" value="Assign to Global&lt;br&gt;&lt;br&gt;_GLOBAL_CHECKPOINTER&lt;br&gt;= checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="280" y="740" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 5: Database Table Setup -->
+        <mxCell id="phase5_header" value="PHASE 5: DATABASE TABLE SETUP" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="880" width="1320" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Check Table Exists -->
+        <mxCell id="check_table" value="Check if 'checkpoints'&lt;br&gt;table exists" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="70" y="930" width="140" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Skip Setup -->
+        <mxCell id="skip_setup" value="Table Exists&lt;br&gt;Skip Setup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="250" y="940" width="110" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Setup LangGraph Tables -->
+        <mxCell id="setup_langgraph" value="Setup LangGraph Tables&lt;br&gt;setup_checkpointer_with_autocommit()&lt;br&gt;&lt;br&gt;1. Create temp pool (autocommit=True)&lt;br&gt;2. Create temp checkpointer&lt;br&gt;3. Call AsyncPostgresSaver.setup()&lt;br&gt;&lt;br&gt;Tables Created:&lt;br&gt;• checkpoints&lt;br&gt;• checkpoint_writes&lt;br&gt;• checkpoint_blobs&lt;br&gt;• Indexes for performance&lt;br&gt;&lt;br&gt;4. Close temp pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1040" width="220" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- Setup Custom Table -->
+        <mxCell id="setup_custom" value="Setup Custom Table&lt;br&gt;setup_users_threads_runs_table()&lt;br&gt;&lt;br&gt;Table: users_threads_runs&lt;br&gt;• id (SERIAL PRIMARY KEY)&lt;br&gt;• email (VARCHAR)&lt;br&gt;• thread_id (VARCHAR)&lt;br&gt;• run_id (VARCHAR UNIQUE)&lt;br&gt;• prompt (TEXT)&lt;br&gt;• timestamp (TIMESTAMP)&lt;br&gt;• sentiment (BOOLEAN)&lt;br&gt;&lt;br&gt;Indexes Created:&lt;br&gt;• idx_email (user queries)&lt;br&gt;• idx_thread_id (thread lookup)&lt;br&gt;• idx_email_thread (security)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1040" width="220" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 6: Testing & Validation -->
+        <mxCell id="phase6_header" value="PHASE 6: TESTING &amp; VALIDATION" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1280" width="1320" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Test Checkpointer -->
+        <mxCell id="test_checkpointer" value="Test Checkpointer&lt;br&gt;&lt;br&gt;config = {&lt;br&gt;  'configurable': {&lt;br&gt;    'thread_id': 'setup_test'&lt;br&gt;  }&lt;br&gt;}&lt;br&gt;&lt;br&gt;await checkpointer.aget(config)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1330" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Success -->
+        <mxCell id="success" value="✓ Setup Complete&lt;br&gt;&lt;br&gt;Checkpointer Ready&lt;br&gt;for Use" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="300" y="1340" width="140" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Error Handling Box -->
+        <mxCell id="error_box" value="ERROR HANDLING &amp; FALLBACK" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="700" y="100" width="640" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- On Error -->
+        <mxCell id="on_error" value="On Any Error During Setup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="720" y="150" width="180" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- Log Error -->
+        <mxCell id="log_error" value="Log Detailed Error&lt;br&gt;&lt;br&gt;• Error type&lt;br&gt;• Stack trace&lt;br&gt;• Context info" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="720" y="220" width="140" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Cleanup Resources -->
+        <mxCell id="cleanup" value="Cleanup Resources&lt;br&gt;&lt;br&gt;• Close pools&lt;br&gt;• Clear globals&lt;br&gt;• Free connections" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="720" y="330" width="140" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Fallback -->
+        <mxCell id="fallback" value="Fallback to MemorySaver&lt;br&gt;&lt;br&gt;_GLOBAL_CHECKPOINTER&lt;br&gt;= MemorySaver()&lt;br&gt;&lt;br&gt;⚠ No persistence!&lt;br&gt;Data lost on restart" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="720" y="440" width="140" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Retry Decorators Box -->
+        <mxCell id="retry_box" value="RETRY MECHANISMS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="920" y="150" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- SSL Retry -->
+        <mxCell id="ssl_retry" value="SSL Connection Retry&lt;br&gt;&lt;br&gt;@retry_on_ssl_connection_error&lt;br&gt;max_retries: 3&lt;br&gt;&lt;br&gt;Handles:&lt;br&gt;• SSL handshake failures&lt;br&gt;• Connection drops&lt;br&gt;• Network timeouts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="940" y="200" width="170" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Prepared Statement Retry -->
+        <mxCell id="stmt_retry" value="Prepared Statement Retry&lt;br&gt;&lt;br&gt;@retry_on_prepared_statement_error&lt;br&gt;max_retries: 2&lt;br&gt;&lt;br&gt;Handles:&lt;br&gt;• Statement conflicts&lt;br&gt;• Duplicate statements&lt;br&gt;• Cache issues" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="200" width="170" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Health Monitoring Box -->
+        <mxCell id="health_box" value="HEALTH MONITORING" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="920" y="360" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Health Check -->
+        <mxCell id="health_check" value="Pool Health Check&lt;br&gt;check_pool_health_and_recreate()&lt;br&gt;&lt;br&gt;1. Acquire connection (10s timeout)&lt;br&gt;2. Execute SELECT 1&lt;br&gt;3. Validate result&lt;br&gt;&lt;br&gt;On Failure:&lt;br&gt;• Force close pools&lt;br&gt;• Clear global state&lt;br&gt;• Recreate checkpointer&lt;br&gt;&lt;br&gt;Auto-recovery enabled!" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="940" y="410" width="180" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Access Pattern -->
+        <mxCell id="access_pattern" value="Access Pattern&lt;br&gt;get_global_checkpointer()&lt;br&gt;&lt;br&gt;1. Check if exists&lt;br&gt;2. If None, create with lock&lt;br&gt;3. Run health check&lt;br&gt;4. Return healthy instance&lt;br&gt;&lt;br&gt;Thread-safe with&lt;br&gt;async lock protection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="410" width="160" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Key Features Box -->
+        <mxCell id="features_box" value="KEY FEATURES" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="700" y="610" width="640" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Feature 1 -->
+        <mxCell id="feature1" value="🔒 Connection Pooling&lt;br&gt;&lt;br&gt;• Min 5, Max 25 connections&lt;br&gt;• Automatic scaling&lt;br&gt;• Connection reuse&lt;br&gt;• Health validation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="720" y="660" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Feature 2 -->
+        <mxCell id="feature2" value="🌐 Cloud Optimized&lt;br&gt;&lt;br&gt;• SSL/TLS required&lt;br&gt;• Keepalive enabled&lt;br&gt;• Timeout protection&lt;br&gt;• Network resilience" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="900" y="660" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Feature 3 -->
+        <mxCell id="feature3" value="🔄 Auto-Recovery&lt;br&gt;&lt;br&gt;• Retry mechanisms&lt;br&gt;• Health checks&lt;br&gt;• Pool recreation&lt;br&gt;• Graceful fallback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="660" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Feature 4 -->
+        <mxCell id="feature4" value="🎯 Thread Safety&lt;br&gt;&lt;br&gt;• Async lock protection&lt;br&gt;• Singleton pattern&lt;br&gt;• Race prevention&lt;br&gt;• Concurrent access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="720" y="780" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Feature 5 -->
+        <mxCell id="feature5" value="📊 State Persistence&lt;br&gt;&lt;br&gt;• LangGraph checkpoints&lt;br&gt;• User thread tracking&lt;br&gt;• Conversation history&lt;br&gt;• Crash recovery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="900" y="780" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Feature 6 -->
+        <mxCell id="feature6" value="🔍 Monitoring Ready&lt;br&gt;&lt;br&gt;• Detailed logging&lt;br&gt;• Unique app names&lt;br&gt;• Debug tracking&lt;br&gt;• Connection IDs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="780" width="160" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend_title" value="LEGEND" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="700" y="920" width="100" height="25" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_startup" value="Application Startup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="720" y="955" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_config" value="Configuration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="860" y="955" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_pool" value="Connection Pool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="955" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_checkpointer" value="Checkpointer Setup" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="955" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_tables" value="Database Tables" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="720" y="1000" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_retry" value="Retry/Recovery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="860" y="1000" width="120" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend_decision" value="Decision Point" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="1015" y="995" width="90" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows Phase 1 -->
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="start" target="check_global">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="check_global" target="exists">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2_label" value="Exists" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="395" y="165" width="40" height="20" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows Phase 2 -->
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="check_global" target="validate_env">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3_label" value="None" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="145" y="230" width="35" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="validate_env" target="gen_conn_string">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="gen_conn_string" target="get_kwargs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows Phase 3 -->
+        <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="get_kwargs" target="create_pool">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="450" />
+              <mxPoint x="150" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="create_pool" target="open_pool">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="open_pool" target="test_conn">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows Phase 4 -->
+        <mxCell id="arrow9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="test_conn" target="create_checkpointer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="660" />
+              <mxPoint x="150" y="660" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="create_checkpointer" target="assign_global">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows Phase 5 -->
+        <mxCell id="arrow11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="assign_global" target="check_table">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="850" />
+              <mxPoint x="140" y="850" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="check_table" target="skip_setup">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow12_label" value="Yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="215" y="950" width="30" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="check_table" target="setup_langgraph">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow13_label" value="No" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="145" y="1010" width="25" height="20" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="setup_langgraph" target="setup_custom">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows Phase 6 -->
+        <mxCell id="arrow15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="setup_custom" target="test_checkpointer">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="430" y="1270" />
+              <mxPoint x="160" y="1270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="arrow16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="test_checkpointer" target="success">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Error Flow Arrows -->
+        <mxCell id="arrow17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#b85450;strokeWidth=2;dashed=1;" edge="1" parent="1" source="on_error" target="log_error">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#b85450;strokeWidth=2;dashed=1;" edge="1" parent="1" source="log_error" target="cleanup">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="arrow19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#b85450;strokeWidth=2;dashed=1;" edge="1" parent="1" source="cleanup" target="fallback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Notes -->
+        <mxCell id="note1" value="💡 Note: Connection string includes unique app name&lt;br&gt;with PID, thread ID, timestamp, and UUID for tracking" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=8;align=left;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1490" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note2" value="💡 Note: Pool uses health checks before returning&lt;br&gt;connections to ensure reliability" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=8;align=left;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="1490" width="250" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="note3" value="💡 Note: All operations are idempotent - safe to&lt;br&gt;call multiple times without side effects" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=8;align=left;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="600" y="1490" width="250" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
