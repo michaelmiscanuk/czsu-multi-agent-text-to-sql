@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram id="main-v2-balanced" name="Main Execution Flow v2 Balanced">
-    <mxGraphModel dx="1418" dy="803" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+    <mxGraphModel dx="578" dy="371" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -31,8 +31,8 @@
         <mxCell id="execution" value="Execute LangGraph&lt;br&gt;&lt;br&gt;&lt;div style=&quot;font-weight: normal; text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&amp;nbsp;&lt;i&gt;graph.invoke(input_state,&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;thread_id, run_id)&lt;/i&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;br&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;• Query Rewriting&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;• Parallel Retrieval&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;• Reflection&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;• Answer Synthesis&lt;/span&gt;&lt;/div&gt;&lt;/span&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp; &amp;nbsp;•&amp;nbsp;&lt;/span&gt;Follow-up&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;fontStyle=1;align=center;gradientColor=#FF9999;" parent="1" vertex="1">
           <mxGeometry x="520" y="176" width="120" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="result" value="&lt;b&gt;Process Results&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;• Extract final answer&lt;br&gt;• Extract dataset codes&lt;br&gt;• Serialize response data&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;gradientColor=#B9E0A5;" parent="1" vertex="1">
-          <mxGeometry x="680" y="211" width="120" height="70" as="geometry" />
+        <mxCell id="result" value="&lt;b&gt;Process Results&lt;/b&gt;&lt;div&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;• Extract state values&lt;br&gt;• Extract dataset codes&lt;br&gt;• Prepare serializable response&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="680" y="206.5" width="120" height="79" as="geometry" />
         </mxCell>
         <mxCell id="end" value="Return Result" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
           <mxGeometry x="685" y="316" width="110" height="50" as="geometry" />
@@ -97,7 +97,7 @@
         <mxCell id="legend_result" value="Result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
           <mxGeometry x="113" y="249" width="40" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="Dv6EdHEjNeDgqD8YQVPt-7" value="Checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#66FFFF;" vertex="1" parent="1">
+        <mxCell id="Dv6EdHEjNeDgqD8YQVPt-7" value="Checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#66FFFF;" parent="1" vertex="1">
           <mxGeometry x="77" y="279" width="57" height="20" as="geometry" />
         </mxCell>
       </root>
