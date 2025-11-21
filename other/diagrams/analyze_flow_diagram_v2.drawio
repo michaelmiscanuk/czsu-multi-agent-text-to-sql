@@ -1,0 +1,219 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="sequence" name="CZSU Multi-Agent Sequence">
+    <mxGraphModel dx="1240" dy="731" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user_lifeline" value=":User" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;gradientColor=#B9E0A5;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="50" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="frontend_lifeline" value=":Frontend&#xa;(Vercel)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="190" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="backend_lifeline" value=":Backend&#xa;(Railway)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="330" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase_lifeline" value="&lt;font&gt;:PostgreSQL&lt;br&gt;(Supabase)&lt;/font&gt;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=10;gradientColor=#66FFFF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="470" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="multiagent_lifeline" value=":Multi-Agent&#xa;(LangGraph)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="610" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_lifeline" value=":LLM&#xa;(Azure OpenAI)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="750" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="vectordb_lifeline" value=":Vector DB&#xa;(Chroma)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;gradientColor=#FFCC99;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="890" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="reranker_lifeline" value=":Reranker&#xa;(Cohere)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;gradientColor=#FFCC99;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="1030" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp_lifeline" value=":MCP Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="1170" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="turso_lifeline" value=":SQLite&#xa;(Turso)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=10;gradientColor=#66FFFF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="1310" y="80" width="100" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="user_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#d5e8d4;strokeColor=#82b366;gradientColor=#B9E0A5;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="95" y="160" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="frontend_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#dae8fc;strokeColor=#3399FF;gradientColor=#66B2FF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="235" y="160" width="10" height="820" as="geometry" />
+        </mxCell>
+        <mxCell id="backend_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#dae8fc;strokeColor=#3399FF;gradientColor=#66B2FF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="375" y="220" width="10" height="720" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#dae8fc;strokeColor=#00CCCC;gradientColor=#66FFFF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="515" y="280" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="multiagent_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="655" y="360" width="10" height="460" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="795" y="420" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="vectordb_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;gradientColor=#FFCC99;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="935" y="480" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="reranker_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#ffe6cc;strokeColor=#d79b00;gradientColor=#FFCC99;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="1075" y="580" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_act2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="795" y="680" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mcp_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="1215" y="720" width="10" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="turso_act1" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#dae8fc;strokeColor=#00CCCC;gradientColor=#66FFFF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="1355" y="740" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="llm_act3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#FF9999;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="795" y="800" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase_act2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#dae8fc;strokeColor=#00CCCC;gradientColor=#66FFFF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="515" y="880" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase_act3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#dae8fc;strokeColor=#00CCCC;gradientColor=#66FFFF;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="515" y="960" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="user_act2" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;fillColor=#d5e8d4;strokeColor=#82b366;gradientColor=#B9E0A5;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="95" y="1020" width="10" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="msg1" value="Query" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="user_act1" target="frontend_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="105" y="160" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg2" value="POST /analyze" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="frontend_act1" target="backend_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="245" y="220" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg3" value="Create thread" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="backend_act1" target="supabase_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="385" y="280" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg4" value="Invoke Graph" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="backend_act1" target="multiagent_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="385" y="360" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg5" value="Embeddings" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="multiagent_act1" target="llm_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="665" y="420" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg6" value="Vector search" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="multiagent_act1" target="vectordb_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="665" y="480" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg7" value="SQL Metadata, PDF Data" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" source="vectordb_act1" target="multiagent_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="935" y="540" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg8" value="Rerank" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="multiagent_act1" target="reranker_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="665" y="580" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg9" value="Results" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" source="reranker_act1" target="multiagent_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1075" y="640" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg10" value="Generate SQL" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="multiagent_act1" target="llm_act2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="665" y="680" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg11" value="Execute SQL" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="multiagent_act1" target="mcp_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="665" y="720" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg12" value="Query data" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="mcp_act1" target="turso_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1225" y="740" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg13" value="Results" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" source="turso_act1" target="mcp_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1355" y="780" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg14" value="Data" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" source="mcp_act1" target="multiagent_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1215" y="780" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg15" value="Format answer" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="multiagent_act1" target="llm_act3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="665" y="800" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg16" value="Response" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" source="multiagent_act1" target="backend_act1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="655" y="820" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg17" value="Save state" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" source="backend_act1" target="supabase_act2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="385" y="880" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg18" value="HTTP 200" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="934.9999999999975" as="sourcePoint" />
+            <mxPoint x="245" y="934.9999999999975" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg19" value="GET messages" style="html=1;verticalAlign=bottom;endArrow=block;fontSize=10;fontFamily=Verdana;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="245" y="950" as="sourcePoint" />
+            <mxPoint x="375" y="950" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg20" value="Fetch state" style="html=1;verticalAlign=bottom;endArrow=block;entryX=0;entryY=0;fontSize=10;fontFamily=Verdana;" parent="1" target="supabase_act3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="385" y="960" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg21" value="Messages" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" source="supabase_act3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="515" y="1000" as="sourcePoint" />
+            <mxPoint x="385" y="1000" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg22" value="State" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;fontSize=10;fontFamily=Verdana;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="1010" as="sourcePoint" />
+            <mxPoint x="245" y="1010" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg23" value="Display" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;exitX=0;exitY=1;fontSize=10;fontFamily=Verdana;" parent="1" source="frontend_act1" target="user_act2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235" y="1020" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend_user" value="User" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;gradientColor=#B9E0A5;fontFamily=Verdana;" vertex="1" parent="1">
+          <mxGeometry x="50" y="45" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_api" value="API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=8;gradientColor=#66B2FF;fontFamily=Verdana;" vertex="1" parent="1">
+          <mxGeometry x="130" y="45" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_db" value="Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=8;gradientColor=#66FFFF;fontFamily=Verdana;" vertex="1" parent="1">
+          <mxGeometry x="210" y="45" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_search" value="Search" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=8;gradientColor=#FFCC99;fontFamily=Verdana;" vertex="1" parent="1">
+          <mxGeometry x="290" y="45" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_exec" value="Graph" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=8;gradientColor=#FF9999;fontFamily=Verdana;" vertex="1" parent="1">
+          <mxGeometry x="370" y="45" width="70" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
