@@ -1,86 +1,2421 @@
-2.1.2	Structured Data
-My application wasn’t directly connected to any data from the beginning, so when I started the project my first task was to find interesting and useful data that I would be able to use for the kind of project in my mind, that is agentic flow that would allow us to communicate with structured and unstructured data.
-
-After some research, data that I found was available for extraction by API from Czech Statistical Office (CZSU). Description of the API is provided on this website //link// Základní informace pro použití API DataStatu | Statistika. There are some nuances and complexities in this data making it a good fit for this kind of project. I will describe this in better detail, since understanding the data will allow us to work better with them later.
-
-There are three layers that we must go through to extract all of the selections with the specific values. On the upper level, we have a list of all datasets available //link// data.csu.gov.cz/api/katalog/v1/sady . From this list we can construct links to the available selections in each dataset, for example //link// https://data.csu.gov.cz/api/katalog/v1/sady/OBY01PD/vybery . And each selection has a specific code that allows us to construct a link where we get data in a JSON-Stat format, for example here //link// data.csu.gov.cz/api/dotaz/v1/data/vybery/OBY01PDT01. 
-
-In the following part I address a few key points regarding the data extraction and loading implementation and data complexities. More detailed descriptions can be found in the docstrings and comments in the code – which are written iteratively with AI assistance and my verification. 
-
-There are 2 main scripts for data extraction. Script called datasets_selections_get_csvs.py is the main script that downloads and transforms all data to a CSV format. Here we use nested loops and link constructions to get the data. Each selection is loaded to the pandas DataFrame using available library function and then saved to a CSV, where we need to specify UTF-8 as encoding, because all data files contain Czech Characters. 
-
-Here is a list of the main data complexities which make it challenging to work with them, manually or with AI:
-•	Columns names, dimensional and metric values are in Czech Language
-•	Amount of dataset selections, over 900 tables
-•	Dataset can have similar selections, which can differ in dimension or metrics used, but otherwise have same focus area, for example selections about population
-•	Long Data Format, with multiple metrics in one column
-•	Columns names, dimensional and metric values are often sentences with additional notes in brackets
-•	Czech descriptive abbreviations, e.g. HUZ
-•	Tables often contain sets of records which are the total for other dimensional values, for example values for each region and values for the whole country in one file
-•	One column with values, which contains different kinds of values based on metric name in another column, like counts, aggregations, percentages
-•	Selections can have only some dimensional values present, for example, only one-year, or only one region present
-•	Records can have missing values
-
-Here is an example of one of the selections in CSV format with several records to have an idea of how this data looks like, here formatted as a table and translated to English. The selection shows the number of visitors in accommodation facilities.
-
-
-Years	Czech Republic, Cohesion Regions, Regions	Indicator	Residence	value
-2023	Czech Republic	Number of guests	Total	21977671
-2023	Czech Republic	Number of guests	Residents	12418741
-2023	Czech Republic	Number of guests	Non-residents	9558930
-2023	Czech Republic	Number of overnight stays	Total	55842471
-2023	Czech Republic	Number of overnight stays	Residents	32480862
-2023	Czech Republic	Number of overnight stays	Non-residents	23361609
-2023	Prague Capital City	Number of guests	Total	7442614
-2023	Prague Capital City	Number of guests	Residents	1577633
-2023	Prague Capital City	Number of guests	Non-residents	5864981
-2023	Prague Capital City	Number of overnight stays	Total	16861664
-2023	Prague Capital City	Number of overnight stays	Residents	2691291
-2023	Prague Capital City	Number of overnight stays	Non-residents	14170373
-
-
-Second script that is used for data handling, csvs_to_sqllite.py, stores all CSV files into one table in the local SQLite Database. Local database I have chosen for simplicity reasons, otherwise this is a less standard way, which requires, for example, compressing the .db file to be able to put it into git. Data is small enough and open, so the local database is sufficient for our use case and prototype solution. 
-
-
-2.1.3	Metadata
-Metadata are descriptive elements for our data. In our case, we are mainly concerned about descriptions of each selection or table. The main usage of this metadata is to use those descriptions to find best selection for the user query based on semantic search. Other usage is to display selections and their descriptions in the UI. 
-
-In this section I go over the steps I did to prepare metadata for this semantic search. I created a semi-automatic process to get selection descriptions and store them into a vector database using several scripts. This can be streamlined to get the end-to-end flow, but for our purposes I left the self-contained scripts with separated logic since they are not used for updates, and the LLM step at the end can be expensive. Below i describe the process in more details from a conceptual view. Even more technical details can be found as comments and docstrings in individual scripts under provided links.
-
-JSON-stat format contains both data and metadata for each selection. The script get_metadata_schemas_all_selections.py is used to extract the metadata from json-stat format and store them into a json format. Because we have a lot of selections, script is prepared in a way that will go over all datasets and selection in parallel with dynamic link building, this is done similarly to extraction of data. Each selection is then accessed using a REST API library, which returns a json, which is then stored as a python dictionary and the core of the code is that I simply select the necessary metadata keys excluding the data keys. The result is that for each selection a json file is created with its metadata named by its Selection ID. The main descriptive elements that we are going to use later are the label or description of the selection, column labels and distinct values in each non-value column.
-
-Other similar and simplified script - extract_selection_descriptions_from_metadata.py, creates a CSV file with 2 columns: selection_code and description. Selection code is the ID of selection and description in this case is again taken from Json-stat and extended by temporal and regional information if present, here is an example of one record:
-
-"OBY03T01";"Births - selected summary data. Time granularity: Year. Territory types: State, Region"
-
-The next script I prepared can be used with minor adjustments in other places where we need to do several iterations over LLM to provide an answer to our prompt for each row in a table - dynamic_parallel_dataframe_llm_processor.py. In our case, we are taking previously extracted schemas and simple original descriptions of all selections, and we ask LLM to give us back the extended description that will be used to create vector embeddings for the semantic search to find the best selection matching the user query. 
-Because prompting LLM many times over many records can be long and expensive depending on the size of data and LLM model chosen, I implemented several precocious. To reduce cost, I don't allow to send prompt for selection ID when we already have extended description for it, which means it was already processed before. Results are incrementally saved to the SQLLite database one record at time – this way if processing fails, it can be picked up when we execute the script again. This makes our script repeatable, which means we can run it as needed, and it will only add LLM answer to the records or IDs where it is missing. 
-To speed up the process I use parallel processing to process several records in a table simultaneously. The problem here is that making too many API requests to the LLM model at once will result into limits reached. Both cases are controlled by config variables. Because running this script can take some time, I also added the progress monitoring in the terminal using TQDM package.
-Prompt template //link// https://github.com/michaelmiscanuk/czsu-multi-agent-text-to-sql/blob/main/metadata/llm_selection_descriptions/PROMPT_TEMPLATE.txt     that is used to ask LLM to provide the extended description has placeholders for short description and schema. Those will be replaced in each iteration over our pandas dataframe by cell values in given columns. Full Prompt then will be provided to LLM. Answer from the LLM is written to the column extended_description. To keep those descriptions similar and standardized I provide a set of rules, output format and most importantly the example output structure.
-For LLM I used Azure OpenAI service where I served several models to be used throughout our application. The one used here is GPT-4.1 model. Models are configured in my code in models.py. Returned extended selection descriptions therefore have well-structured textual format describing the focus of the dataset, listing all the columns and all distinct values in each column. Below is the reduced example of the LLM answer for one of the selections. Note that there is a mix of Czech and English language, which should not be a problem for our use here which is the creation of the vector embeddings.
-This dataset focuses on "Narození" (Births). The data is collected at the "Kumulace čtvrtletí" (Cumulative Quarter) level and covers the territory types "ČR, kraje" (State, Region). The dataset includes the following columns: "Kumulace čtvrtletí", "ČR, kraje", and "Ukazatel".
-For "Kumulace čtvrtletí", the available values are "Q1-Q3 2024".
- 
-For "ČR, kraje", the available values are:
-- "Česko"
-- "Hlavní město Praha"
-- "Středočeský kraj"
- 
-For "Ukazatel", the available values are:
-- "Narození"
-- "Živě narození"
-- "Živě narození - chlapci"
-
-The data is organized hierarchically, with "Kumulace čtvrtletí" representing the time dimension, "ČR, kraje" representing the geographic dimension, and "Ukazatel" representing the metric or indicator dimension. This structure allows for semantic search and analysis of births data across different regions and time periods.
-The next script create_and_load_chromadb.py can be used as a standalone runnable script, which is used to create and fill the ChromaDB with vector embeddings, but also can be used as a module to be loaded into other scripts providing custom functions to work with this ChromaDB for document retrieval functionality using semantic search. Here I describe the first part which belongs to metadata preparation, second part is covered in the agentic flow during the step of finding best selections based on user query.
-In the code I am moving data from the previously prepared table in SQLite database with extended descriptions to the ChromaDB database. Script is done in a way that can be executed repeatably, which means that calls to LLM to generate embedding are done only for new or changed extended descriptions – using the upsert pattern. Main execution flow happens in upsert_documents_to_chromadb() function.  I start by getting all documents from SQLite and I generate a MD5 hash over extended description column. ChromaDB collection is then created if it does not exist, otherwise we just get a pointer to it. MD5 hash is then used to check if retrieved records are present in collection. Existing documents are filtered out and remaining are processed in batches to speed up the process.
-ChromaDB is configured with HNSW set to space with cosine similarity, which is best suited for text embeddings. Embeddings are created using LLM model served in Azure OpenAI called text-embedding-3-large. This large model creates a vector of 3072 components for each chunk of text and has 8191 max token size. For this reason, I added a splitting function that divides the text into multiple chunks in a way that one chunk won’t exceed the limit.
-The chunking strategy I used here is a simple division of text into equally sized chunks. The reason for this is that in most cases the extended description of selection won’t exceed the limit. If this is the case, some improvements can be made to chunking of our text. This I discuss more in possible improvements section. To get number of tokens I use the tiktoken tokenizer from OpenAI with cl100k_base encoding suitable for our embedding model. Then ceil division calculation of number of tokens in a text diving by max number of tokens is applied to find number of chunks that the text must be split into.
-2.1.4	Unstructured Data
-I have put section about unstructured data after metadata because there are some similarities in the processing of both. Previously we had extended descriptions of each dataset that we use to find best matching selections for the user prompt based on vector semantic search. When best description is found, we took the selections that this description is for, and this selection contains our data. In this case with unstructured data, the data itself, described in natural language, is our data that is searched based on vector semantic search to be closest to the user prompt. 
-Data that I have chosen for our application comes with its own set of complexities, which again makes it ideal to get a feel to match some real-world scenarios. The PDF file I used is called “Statistical Yearbook of the Czech Republic”  //link https://csu.gov.cz/docs/107508/db2ef2f9-5b1f-82c2-5ebf-621acf94791d/32019824.pdf?version=1.2 // . It contains broad statistical overview information of industries in Czech economy. While there is some overlap with our tabular data, the two sources are designed to complement each other, expanding our ability to address a broad spectrum of national statistical inquiries.
-Some of the complexities of this file are as follows. A lot of information in this file comes from extensive use of tables that are in non-standard format with nested hierarchies which can span multiple pages, but also from charts and normal text. PDF file is written in bilingual style, interlacing Czech and English even in the same visuals. Many tables contain footer information with additional descriptions about the values included. File itself is quite big with over 800 pages. Details of one of possible ways that I used to deal with this file are described later in complexities section. 
-Script that is used to prepare unstructured data for application use is called pdf_to_chromadb.py.  It is used in several ways and can be used for experimentation. At the beginning of the script there are configuration variables, specifying which functionality to enable. Normally it runs in sequence, parsing one or more pdf files in parallel, chunking and storing in ChromaDB and finally testing retrieval on some test queries using semantic search functions. 
-There are many different libraries for document parsing, but I have chosen the LLM parsing using LlamaParse service because of the stated complexities. Parsing is done using instructions provided to LLM. Those can be tweaked in the same script, turning off the chunking and testing part. Parsing creates a txt file with the same name as PDF file.
-When we are done with parsing, we can proceed with chunking and testing, turning off the parsing step. Chunking can be done in many ways and tweaked using many hyperparameters until best aggregated search score is achieved, more on this later. Main variables to adjust here in our case are chunk size, overlap size, and embedding model used. 
-After chunking is done and ChromaDB vector database is filled we can proceed with tweaking of search functionality turning off parsing and chunking. Strategies I used here to get most relevant chunks for our query are hybrid search using combination of semantic search with keyword search and reranking using Cohere’s Rerank Model. Hyperparameters used here are number of documents retrieved by hybrid search, weights for hybrid search – giving more importance to semantic part, and finally number of best matched documents returned as a result. Same script is also used as a module to be loaded into our main application to provide search functions over the vector database. 
+[{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 515,
+	"startColumn": 32,
+	"endLineNumber": 515,
+	"endColumn": 41,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 541,
+	"startColumn": 12,
+	"endLineNumber": 541,
+	"endColumn": 21,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import uuid\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 323,
+	"startColumn": 1,
+	"endLineNumber": 323,
+	"endColumn": 12,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import psycopg\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 325,
+	"startColumn": 1,
+	"endLineNumber": 325,
+	"endColumn": 15,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from api.utils.debug import print__checkpointers_debug\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 327,
+	"startColumn": 1,
+	"endLineNumber": 327,
+	"endColumn": 55,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.database.connection import get_connection_kwargs\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 328,
+	"startColumn": 1,
+	"endLineNumber": 328,
+	"endColumn": 67,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.config import get_db_config\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 329,
+	"startColumn": 1,
+	"endLineNumber": 329,
+	"endColumn": 46,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (102/100)",
+	"source": "Pylint",
+	"startLineNumber": 436,
+	"startColumn": 1,
+	"endLineNumber": 436,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (186/100)",
+	"source": "Pylint",
+	"startLineNumber": 446,
+	"startColumn": 1,
+	"endLineNumber": 446,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (121/100)",
+	"source": "Pylint",
+	"startLineNumber": 489,
+	"startColumn": 1,
+	"endLineNumber": 489,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (105/100)",
+	"source": "Pylint",
+	"startLineNumber": 502,
+	"startColumn": 1,
+	"endLineNumber": 502,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (120/100)",
+	"source": "Pylint",
+	"startLineNumber": 513,
+	"startColumn": 1,
+	"endLineNumber": 513,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (119/100)",
+	"source": "Pylint",
+	"startLineNumber": 520,
+	"startColumn": 1,
+	"endLineNumber": 520,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (126/100)",
+	"source": "Pylint",
+	"startLineNumber": 527,
+	"startColumn": 1,
+	"endLineNumber": 527,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/prepared_statements.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (109/100)",
+	"source": "Pylint",
+	"startLineNumber": 532,
+	"startColumn": 1,
+	"endLineNumber": 532,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0603:global-statement",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/global-statement.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Using the global statement",
+	"source": "Pylint",
+	"startLineNumber": 623,
+	"startColumn": 33,
+	"endLineNumber": 623,
+	"endColumn": 60,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 645,
+	"startColumn": 44,
+	"endLineNumber": 645,
+	"endColumn": 53,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 663,
+	"startColumn": 36,
+	"endLineNumber": 663,
+	"endColumn": 45,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0603:global-statement",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/global-statement.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Using the global statement",
+	"source": "Pylint",
+	"startLineNumber": 790,
+	"startColumn": 33,
+	"endLineNumber": 790,
+	"endColumn": 60,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 808,
+	"startColumn": 44,
+	"endLineNumber": 808,
+	"endColumn": 53,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 821,
+	"startColumn": 36,
+	"endLineNumber": 821,
+	"endColumn": 45,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import functools\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 482,
+	"startColumn": 1,
+	"endLineNumber": 482,
+	"endColumn": 17,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import traceback\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 483,
+	"startColumn": 1,
+	"endLineNumber": 483,
+	"endColumn": 17,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import asyncio\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 484,
+	"startColumn": 1,
+	"endLineNumber": 484,
+	"endColumn": 15,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from typing import Callable, Awaitable\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 485,
+	"startColumn": 1,
+	"endLineNumber": 485,
+	"endColumn": 39,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from api.utils.debug import print__checkpointers_debug\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 487,
+	"startColumn": 1,
+	"endLineNumber": 487,
+	"endColumn": 55,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.error_handling.prepared_statements import is_prepared_statement_error, clear_prepared_statements\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 488,
+	"startColumn": 1,
+	"endLineNumber": 491,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.config import DEFAULT_MAX_RETRIES, T\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 492,
+	"startColumn": 1,
+	"endLineNumber": 492,
+	"endColumn": 55,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.globals import _GLOBAL_CHECKPOINTER\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 493,
+	"startColumn": 1,
+	"endLineNumber": 493,
+	"endColumn": 54,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 580,
+	"startColumn": 1,
+	"endLineNumber": 580,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (103/100)",
+	"source": "Pylint",
+	"startLineNumber": 598,
+	"startColumn": 1,
+	"endLineNumber": 598,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 609,
+	"startColumn": 1,
+	"endLineNumber": 609,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (103/100)",
+	"source": "Pylint",
+	"startLineNumber": 614,
+	"startColumn": 1,
+	"endLineNumber": 614,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (121/100)",
+	"source": "Pylint",
+	"startLineNumber": 618,
+	"startColumn": 1,
+	"endLineNumber": 618,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (109/100)",
+	"source": "Pylint",
+	"startLineNumber": 628,
+	"startColumn": 1,
+	"endLineNumber": 628,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 643,
+	"startColumn": 1,
+	"endLineNumber": 643,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 647,
+	"startColumn": 1,
+	"endLineNumber": 647,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (110/100)",
+	"source": "Pylint",
+	"startLineNumber": 649,
+	"startColumn": 1,
+	"endLineNumber": 649,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 652,
+	"startColumn": 1,
+	"endLineNumber": 652,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (110/100)",
+	"source": "Pylint",
+	"startLineNumber": 656,
+	"startColumn": 1,
+	"endLineNumber": 656,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 676,
+	"startColumn": 1,
+	"endLineNumber": 676,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 735,
+	"startColumn": 1,
+	"endLineNumber": 735,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (103/100)",
+	"source": "Pylint",
+	"startLineNumber": 745,
+	"startColumn": 1,
+	"endLineNumber": 745,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (105/100)",
+	"source": "Pylint",
+	"startLineNumber": 763,
+	"startColumn": 1,
+	"endLineNumber": 763,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (115/100)",
+	"source": "Pylint",
+	"startLineNumber": 776,
+	"startColumn": 1,
+	"endLineNumber": 776,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (111/100)",
+	"source": "Pylint",
+	"startLineNumber": 782,
+	"startColumn": 1,
+	"endLineNumber": 782,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (106/100)",
+	"source": "Pylint",
+	"startLineNumber": 786,
+	"startColumn": 1,
+	"endLineNumber": 786,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (126/100)",
+	"source": "Pylint",
+	"startLineNumber": 795,
+	"startColumn": 1,
+	"endLineNumber": 795,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (112/100)",
+	"source": "Pylint",
+	"startLineNumber": 812,
+	"startColumn": 1,
+	"endLineNumber": 812,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (109/100)",
+	"source": "Pylint",
+	"startLineNumber": 816,
+	"startColumn": 1,
+	"endLineNumber": 816,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (112/100)",
+	"source": "Pylint",
+	"startLineNumber": 819,
+	"startColumn": 1,
+	"endLineNumber": 819,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/error_handling/retry_decorators.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (103/100)",
+	"source": "Pylint",
+	"startLineNumber": 834,
+	"startColumn": 1,
+	"endLineNumber": 834,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/sentiment_tracking.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 234,
+	"startColumn": 12,
+	"endLineNumber": 234,
+	"endColumn": 21,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/sentiment_tracking.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 301,
+	"startColumn": 12,
+	"endLineNumber": 301,
+	"endColumn": 21,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/sentiment_tracking.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from typing import Dict\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 154,
+	"startColumn": 1,
+	"endLineNumber": 154,
+	"endColumn": 24,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/sentiment_tracking.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from api.utils.debug import print__checkpointers_debug\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 157,
+	"startColumn": 1,
+	"endLineNumber": 157,
+	"endColumn": 55,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/sentiment_tracking.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.database.connection import get_direct_connection\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 160,
+	"startColumn": 1,
+	"endLineNumber": 160,
+	"endColumn": 67,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/sentiment_tracking.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 163,
+	"startColumn": 1,
+	"endLineNumber": 165,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/sentiment_tracking.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.config import DEFAULT_MAX_RETRIES\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 168,
+	"startColumn": 1,
+	"endLineNumber": 168,
+	"endColumn": 52,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 351,
+	"startColumn": 12,
+	"endLineNumber": 351,
+	"endColumn": 21,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 487,
+	"startColumn": 12,
+	"endLineNumber": 487,
+	"endColumn": 21,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "W0718:broad-exception-caught",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/warning/broad-exception-caught.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 4,
+	"message": "Catching too general exception Exception",
+	"source": "Pylint",
+	"startLineNumber": 544,
+	"startColumn": 12,
+	"endLineNumber": 544,
+	"endColumn": 21,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import traceback\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 244,
+	"startColumn": 1,
+	"endLineNumber": 244,
+	"endColumn": 17,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import uuid\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 245,
+	"startColumn": 1,
+	"endLineNumber": 245,
+	"endColumn": 12,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from typing import List, Dict, Any\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 246,
+	"startColumn": 1,
+	"endLineNumber": 246,
+	"endColumn": 35,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from api.utils.debug import print__checkpointers_debug\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 249,
+	"startColumn": 1,
+	"endLineNumber": 249,
+	"endColumn": 55,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.database.connection import get_direct_connection\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 252,
+	"startColumn": 1,
+	"endLineNumber": 252,
+	"endColumn": 67,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 255,
+	"startColumn": 1,
+	"endLineNumber": 257,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.config import DEFAULT_MAX_RETRIES, THREAD_TITLE_MAX_LENGTH, THREAD_TITLE_SUFFIX_LENGTH\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 260,
+	"startColumn": 1,
+	"endLineNumber": 264,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (106/100)",
+	"source": "Pylint",
+	"startLineNumber": 312,
+	"startColumn": 1,
+	"endLineNumber": 312,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (106/100)",
+	"source": "Pylint",
+	"startLineNumber": 375,
+	"startColumn": 1,
+	"endLineNumber": 375,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/user_management/thread_operations.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (123/100)",
+	"source": "Pylint",
+	"startLineNumber": 562,
+	"startColumn": 1,
+	"endLineNumber": 562,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/checkpointer/health.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0415:import-outside-toplevel",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/import-outside-toplevel.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import outside toplevel (checkpointer.checkpointer.factory.check_pool_health_and_recreate)",
+	"source": "Pylint",
+	"startLineNumber": 176,
+	"startColumn": 5,
+	"endLineNumber": 178,
+	"endColumn": 6,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import os\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 188,
+	"startColumn": 1,
+	"endLineNumber": 188,
+	"endColumn": 10,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from pathlib import Path\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 189,
+	"startColumn": 1,
+	"endLineNumber": 189,
+	"endColumn": 25,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from typing import TypeVar\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 190,
+	"startColumn": 1,
+	"endLineNumber": 190,
+	"endColumn": 27,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from api.utils.debug import print__checkpointers_debug\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 192,
+	"startColumn": 1,
+	"endLineNumber": 192,
+	"endColumn": 55,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (113/100)",
+	"source": "Pylint",
+	"startLineNumber": 224,
+	"startColumn": 1,
+	"endLineNumber": 224,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (111/100)",
+	"source": "Pylint",
+	"startLineNumber": 225,
+	"startColumn": 1,
+	"endLineNumber": 225,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (114/100)",
+	"source": "Pylint",
+	"startLineNumber": 228,
+	"startColumn": 1,
+	"endLineNumber": 228,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (109/100)",
+	"source": "Pylint",
+	"startLineNumber": 242,
+	"startColumn": 1,
+	"endLineNumber": 242,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (108/100)",
+	"source": "Pylint",
+	"startLineNumber": 249,
+	"startColumn": 1,
+	"endLineNumber": 249,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/config.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (110/100)",
+	"source": "Pylint",
+	"startLineNumber": 250,
+	"startColumn": 1,
+	"endLineNumber": 250,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/checkpointer/globals.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (104/100)",
+	"source": "Pylint",
+	"startLineNumber": 10,
+	"startColumn": 1,
+	"endLineNumber": 10,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0302:too-many-lines",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/too-many-lines.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Too many lines in module (1319/1000)",
+	"source": "Pylint",
+	"startLineNumber": 1,
+	"startColumn": 1,
+	"endLineNumber": 1,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (102/100)",
+	"source": "Pylint",
+	"startLineNumber": 251,
+	"startColumn": 1,
+	"endLineNumber": 251,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import argparse\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 272,
+	"startColumn": 1,
+	"endLineNumber": 272,
+	"endColumn": 16,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import gc\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 273,
+	"startColumn": 1,
+	"endLineNumber": 273,
+	"endColumn": 10,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import os\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 274,
+	"startColumn": 1,
+	"endLineNumber": 274,
+	"endColumn": 10,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import re\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 275,
+	"startColumn": 1,
+	"endLineNumber": 275,
+	"endColumn": 10,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import uuid\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 276,
+	"startColumn": 1,
+	"endLineNumber": 276,
+	"endColumn": 12,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from pathlib import Path\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 277,
+	"startColumn": 1,
+	"endLineNumber": 277,
+	"endColumn": 25,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from typing import List\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 278,
+	"startColumn": 1,
+	"endLineNumber": 278,
+	"endColumn": 24,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"import psutil\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 280,
+	"startColumn": 1,
+	"endLineNumber": 280,
+	"endColumn": 14,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from dotenv import load_dotenv\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 281,
+	"startColumn": 1,
+	"endLineNumber": 281,
+	"endColumn": 31,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from langchain_core.messages import HumanMessage\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 282,
+	"startColumn": 1,
+	"endLineNumber": 284,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from my_agent import create_graph\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 296,
+	"startColumn": 1,
+	"endLineNumber": 296,
+	"endColumn": 34,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from my_agent.utils.nodes import MAX_ITERATIONS\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 297,
+	"startColumn": 1,
+	"endLineNumber": 297,
+	"endColumn": 48,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.error_handling.retry_decorators import retry_on_prepared_statement_error, retry_on_ssl_connection_error\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 298,
+	"startColumn": 1,
+	"endLineNumber": 301,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from checkpointer.checkpointer.factory import get_global_checkpointer\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 302,
+	"startColumn": 1,
+	"endLineNumber": 304,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from api.utils.debug import print__analysis_tracing_debug, print__main_debug, print__memory_debug\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 327,
+	"startColumn": 1,
+	"endLineNumber": 331,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0413:wrong-import-position",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/wrong-import-position.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import \"from my_agent.utils.followup import generate_initial_followup_prompts\" should be placed at the top of the module",
+	"source": "Pylint",
+	"startLineNumber": 332,
+	"startColumn": 1,
+	"endLineNumber": 334,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0412:ungrouped-imports",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/ungrouped-imports.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Imports from package my_agent are not grouped",
+	"source": "Pylint",
+	"startLineNumber": 332,
+	"startColumn": 1,
+	"endLineNumber": 334,
+	"endColumn": 2,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (111/100)",
+	"source": "Pylint",
+	"startLineNumber": 404,
+	"startColumn": 1,
+	"endLineNumber": 404,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (102/100)",
+	"source": "Pylint",
+	"startLineNumber": 622,
+	"startColumn": 1,
+	"endLineNumber": 622,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (102/100)",
+	"source": "Pylint",
+	"startLineNumber": 767,
+	"startColumn": 1,
+	"endLineNumber": 767,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0415:import-outside-toplevel",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/import-outside-toplevel.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Import outside toplevel (langgraph.checkpoint.memory.InMemorySaver)",
+	"source": "Pylint",
+	"startLineNumber": 816,
+	"startColumn": 13,
+	"endLineNumber": 816,
+	"endColumn": 66,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (102/100)",
+	"source": "Pylint",
+	"startLineNumber": 826,
+	"startColumn": 1,
+	"endLineNumber": 826,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (105/100)",
+	"source": "Pylint",
+	"startLineNumber": 948,
+	"startColumn": 1,
+	"endLineNumber": 948,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (104/100)",
+	"source": "Pylint",
+	"startLineNumber": 976,
+	"startColumn": 1,
+	"endLineNumber": 976,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (101/100)",
+	"source": "Pylint",
+	"startLineNumber": 977,
+	"startColumn": 1,
+	"endLineNumber": 977,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (106/100)",
+	"source": "Pylint",
+	"startLineNumber": 992,
+	"startColumn": 1,
+	"endLineNumber": 992,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (103/100)",
+	"source": "Pylint",
+	"startLineNumber": 999,
+	"startColumn": 1,
+	"endLineNumber": 999,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (112/100)",
+	"source": "Pylint",
+	"startLineNumber": 1030,
+	"startColumn": 1,
+	"endLineNumber": 1030,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (118/100)",
+	"source": "Pylint",
+	"startLineNumber": 1033,
+	"startColumn": 1,
+	"endLineNumber": 1033,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (105/100)",
+	"source": "Pylint",
+	"startLineNumber": 1041,
+	"startColumn": 1,
+	"endLineNumber": 1041,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (102/100)",
+	"source": "Pylint",
+	"startLineNumber": 1049,
+	"startColumn": 1,
+	"endLineNumber": 1049,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (113/100)",
+	"source": "Pylint",
+	"startLineNumber": 1069,
+	"startColumn": 1,
+	"endLineNumber": 1069,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (109/100)",
+	"source": "Pylint",
+	"startLineNumber": 1119,
+	"startColumn": 1,
+	"endLineNumber": 1119,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (104/100)",
+	"source": "Pylint",
+	"startLineNumber": 1180,
+	"startColumn": 1,
+	"endLineNumber": 1180,
+	"endColumn": 1,
+	"origin": "extHost2"
+},{
+	"resource": "/c:/Users/mmiscanuk/OneDrive/Knowledge Base/0207_GenAI/Code/czsu-multi-agent-text-to-sql/main.py",
+	"owner": "_generated_diagnostic_collection_name_#4",
+	"code": {
+		"value": "C0301:line-too-long",
+		"target": {
+			"$mid": 1,
+			"path": "/en/latest/user_guide/messages/convention/line-too-long.html",
+			"scheme": "https",
+			"authority": "pylint.readthedocs.io"
+		}
+	},
+	"severity": 2,
+	"message": "Line too long (153/100)",
+	"source": "Pylint",
+	"startLineNumber": 1281,
+	"startColumn": 1,
+	"endLineNumber": 1281,
+	"endColumn": 1,
+	"origin": "extHost2"
+}]

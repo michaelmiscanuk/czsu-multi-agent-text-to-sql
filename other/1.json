@@ -1,0 +1,178 @@
+<class 'langgraph.pregel.io.AddableValuesDict'>
+{'chromadb_missing': False,
+ 'final_answer': '## Výroba kapalných paliv z ropy v České republice v roce '
+                 '2023\n'
+                 '\n'
+                 '- **Výroba kapalných paliv z ropy**: V roce 2023 byla výroba '
+                 'v procesech zušlechťování paliv celkem **330962.822** tun.\n'
+                 '  \n'
+                 '### Doplňující informace z PDF dokumentu\n'
+                 '\n'
+                 '- **Import kerosenového typu leteckého paliva**: V roce 2023 '
+                 'činil import **132000** tun.\n'
+                 '- **Export palivových olejů**: V roce 2023 byl export '
+                 '**110000** tun.\n'
+                 '- **Export kerosenového typu leteckého paliva**: V roce 2023 '
+                 'byl export **7000** tun.\n'
+                 '- **Export nafty**: V roce 2023 byl export **767000** tun.\n'
+                 '\n'
+                 '### Shrnutí\n'
+                 'V roce 2023 byla výroba kapalných paliv z ropy v České '
+                 'republice významná, s celkovou produkcí přes 330 tisíc tun. '
+                 'Doplňující údaje o importu a exportu ukazují na aktivní '
+                 'obchod s různými typy paliv, což může ovlivnit celkovou '
+                 'energetickou bilanci země.',
+ 'followup_prompts': ['Analyzuj trendy výroby kapalných paliv v České '
+                      'republice za posledních 5 let.',
+                      'Zjisti, jaký vliv má export a import paliv na '
+                      'energetickou bilanci země.',
+                      'Porovnej výrobu kapalných paliv z ropy v České '
+                      'republice s jinými zeměmi Evropské unie v roce 2023.'
+    ],
+ 'hybrid_search_chunks': [],
+ 'hybrid_search_results': [],
+ 'iteration': 0,
+ 'messages': [SystemMessage(content='Uživatel se ptá na výrobu kapalných paliv z ropy v České republice v roce 2023. Data gathering je dokončeno a byly provedeny 1 dotazy. V roce 2023 byla výroba kapalných paliv z ropy v procesech zušlechťování celkem 330962.822 tun. Import kerosenového typu leteckého paliva činil 132000 tun, export palivových olejů byl 110000 tun, export kerosenového typu leteckého paliva 7000 tun a export nafty 767000 tun. Celková produkce přes 330 tisíc tun a aktivní obchod s různými typy paliv ovlivňují energetickou bilanci země.', additional_kwargs={}, response_metadata={}),
+              AIMessage(content='## Výroba kapalných paliv z ropy v České republice v roce 2023\n\n- **Výroba kapalných paliv z ropy**: V roce 2023 byla výroba v procesech zušlechťování paliv celkem **330962.822** tun.\n  \n### Doplňující informace z PDF dokumentu\n\n- **Import kerosenového typu leteckého paliva**: V roce 2023 činil import **132000** tun.\n- **Export palivových olejů**: V roce 2023 byl export **110000** tun.\n- **Export kerosenového typu leteckého paliva**: V roce 2023 byl export **7000** tun.\n- **Export nafty**: V roce 2023 byl export **767000** tun.\n\n### Shrnutí\nV roce 2023 byla výroba kapalných paliv z ropy v České republice významná, s celkovou produkcí přes 330 tisíc tun. Doplňující údaje o importu a exportu ukazují na aktivní obchod s různými typy paliv, což může ovlivnit celkovou energetickou bilanci země.', additional_kwargs={'refusal': None
+        }, response_metadata={'token_usage': {'completion_tokens': 259, 'prompt_tokens': 1237, 'total_tokens': 1496, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0
+                }, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0
+                }
+            }, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_efad92c60b', 'id': 'chatcmpl-CeK6njr0O9hp72lvFhQYFZ0fEfMjF', 'service_tier': None, 'prompt_filter_results': [
+                {'prompt_index': 0, 'content_filter_results': {'hate': {'filtered': False, 'severity': 'safe'
+                        }, 'jailbreak': {'filtered': False, 'detected': False
+                        }, 'self_harm': {'filtered': False, 'severity': 'safe'
+                        }, 'sexual': {'filtered': False, 'severity': 'safe'
+                        }, 'violence': {'filtered': False, 'severity': 'safe'
+                        }
+                    }
+                }
+            ], 'finish_reason': 'stop', 'logprobs': None, 'content_filter_results': {'hate': {'filtered': False, 'severity': 'safe'
+                }, 'protected_material_code': {'filtered': False, 'detected': False
+                }, 'protected_material_text': {'filtered': False, 'detected': False
+                }, 'self_harm': {'filtered': False, 'severity': 'safe'
+                }, 'sexual': {'filtered': False, 'severity': 'safe'
+                }, 'violence': {'filtered': False, 'severity': 'safe'
+                }
+            }
+        }, id='run--9340284a-a9f6-4885-8e9d-ab0fe486e071-0', usage_metadata={'input_tokens': 1237, 'output_tokens': 259, 'total_tokens': 1496, 'input_token_details': {'audio': 0, 'cache_read': 0
+            }, 'output_token_details': {'audio': 0, 'reasoning': 0
+            }
+        })
+    ],
+ 'most_similar_chunks': [],
+ 'most_similar_selections': [],
+ 'prompt': 'Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?',
+ 'queries_and_results': [('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]'),
+                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]'),
+                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]'),
+                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]'),
+                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]'),
+                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]'),
+                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]'),
+                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
+                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
+                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
+                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
+                          '"Výroba v procesech zušlechťování paliv celkem";',
+                          '[
+            [
+                "Výroba v procesech zušlechťování paliv celkem", '
+                          '"Výroba kapalných paliv z ropy ",
+                330962.822
+            ]
+        ]')
+    ],
+ 'reflection_decision': '',
+ 'rewritten_prompt': 'Jaká byla výroba kapalných paliv z ropy v České '
+                     'republice v roce 2023?',
+ 'top_chunks': [Document(metadata={'token_chunk_index': 0, 'chunk_index': 8, 'doc_hash': '41525607014f1f631db6687081c65a36', 'char_count': 340, 'source_file': '501_PDFsam_32019824.pdf', 'page_number': 1, 'chunk_id': 10637, 'token_count': 87
+        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods to the Czech Republic (Imports) - Kerosene-type jet fuel', the amount was 140 thousand tonnes in 2015, 99 thousand tonnes in 2020, 96 thousand tonnes in 2021, 169 thousand tonnes in 2022, and 132 thousand tonnes in 2023."),
+                Document(metadata={'chunk_index': 4, 'page_number': 1, 'char_count': 328, 'source_file': '501_PDFsam_32019824.pdf', 'token_count': 83, 'token_chunk_index': 0, 'doc_hash': '205a764531eeec3ea8431c8e7eb52c08', 'chunk_id': 10633
+        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Fuel oils', the amount was 132 thousand tonnes in 2015, 51 thousand tonnes in 2020, 29 thousand tonnes in 2021, 56 thousand tonnes in 2022, and 110 thousand tonnes in 2023."),
+                Document(metadata={'chunk_id': 10631, 'token_count': 87, 'token_chunk_index': 0, 'char_count': 334, 'source_file': '501_PDFsam_32019824.pdf', 'page_number': 1, 'doc_hash': '044eff42d0d2cee2e7b5a854568000a7', 'chunk_index': 2
+        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Kerosene-type jet fuel', the amount was 0 thousand tonnes in 2015, 0 thousand tonnes in 2020, 2 thousand tonnes in 2021, 0 thousand tonnes in 2022, and 7 thousand tonnes in 2023."),
+                Document(metadata={'page_number': 1, 'chunk_id': 10632, 'doc_hash': '87abe915859cfdd565c6b0dff59e3fd5', 'token_chunk_index': 0, 'char_count': 334, 'source_file': '501_PDFsam_32019824.pdf', 'chunk_index': 3, 'token_count': 85
+        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Diesel oil', the amount was 1043 thousand tonnes in 2015, 769 thousand tonnes in 2020, 1002 thousand tonnes in 2021, 735 thousand tonnes in 2022, and 767 thousand tonnes in 2023."),
+                Document(metadata={'source_file': '1_PDFsam_32019824.pdf', 'doc_hash': 'c491b44441fab14fdfc1d041eae15c5b', 'token_chunk_index': 0, 'token_count': 135, 'char_count': 399, 'chunk_id': 10368, 'page_number': 493, 'chunk_index': 4
+        }, page_content="In table 'Consumption of automotive fuel in the CR including biofuels', under 'motor gasoline', the consumption was 2.0 million tonnes in 2010, 1.8 million tonnes in 2015, 1.7 million tonnes in 2016, 1.7 million tonnes in 2017, 1.7 million tonnes in 2018, 1.7 million tonnes in 2019, 1.6 million tonnes in 2020, 1.6 million tonnes in 2021, 1.7 million tonnes in 2022, and 1.7 million tonnes in 2023.")
+    ],
+ 'top_selection_codes': ['EP801', 'ENE02T4', 'ENE02T5'
+    ]
+}

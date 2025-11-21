@@ -1010,6 +1010,11 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # - Parallel retrieval (database + PDF) happens automatically in the graph
     result = await graph.ainvoke(input_state, config=config)
 
+    # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    # print(type(result))
+    # from pprint import pprint
+
+    # pprint(result)
     # Log successful graph completion
     print__main_debug(
         f"✅ graph.ainvoke() completed for thread_id={thread_id}, run_id={run_id}"
