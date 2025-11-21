@@ -1,0 +1,176 @@
+<mxfile host="65bd71144e">
+    <diagram id="used-services-v8-final" name="Used Services Diagram v8 Final">
+        <mxGraphModel dx="927" dy="1113" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1654" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="user" value="👤&lt;br&gt;&lt;b&gt;User of&lt;br&gt;React Next.js&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="30" y="530" width="100" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="frontend_container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5ff;strokeColor=#01579b;gradientColor=#B3D9FF;" parent="1" vertex="1">
+                    <mxGeometry x="30" y="30" width="180" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="frontend_label" value="&lt;b&gt;🌐 Frontend Layer&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="30" y="30" width="180" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="FE" value="&lt;b&gt;Vercel&lt;/b&gt;&lt;br&gt;React/Next.js" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="70" width="140" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="backend_container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;gradientColor=#FFDAB3;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="500" width="230" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="backend_label" value="&lt;b&gt;⚙️ Backend Layer&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="160" y="500" width="230" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="BE" value="&lt;b&gt;Railway&lt;/b&gt;&lt;br&gt;FastAPI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="540" width="90" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="MCP" value="&lt;b&gt;MCP Server&lt;/b&gt;&lt;br&gt;(FastMCP or&lt;br&gt;Local SQLite)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="610" width="90" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="ai_container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;gradientColor=#E6B3D6;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="30" width="370" height="450" as="geometry"/>
+                </mxCell>
+                <mxCell id="ai_label" value="&lt;b&gt;🤖 AI Components&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="320" y="30" width="370" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="LG" value="&lt;b&gt;LangGraph&lt;/b&gt;&lt;br&gt;Agent Workflow" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="75" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="LS" value="&lt;b&gt;LangSmith&lt;/b&gt;&lt;br&gt;Tracing &amp;amp; Evaluation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="75" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="AzureOAI" value="&lt;b&gt;Azure OpenAI&lt;/b&gt;&lt;br&gt;Chat + Embedding&lt;br&gt;Models" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="275" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="AzureTrans" value="&lt;b&gt;Azure AI Services&lt;/b&gt;&lt;br&gt;Language Translation&lt;br&gt;+ Detection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="160" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="Cohere" value="&lt;b&gt;Cohere&lt;/b&gt;&lt;br&gt;Reranking" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="530" y="390" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="data_container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#1b5e20;gradientColor=#C8E6C9;" parent="1" vertex="1">
+                    <mxGeometry x="760" y="70" width="200" height="480" as="geometry"/>
+                </mxCell>
+                <mxCell id="data_label" value="&lt;b&gt;💾 Data Storage&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;" parent="1" vertex="1">
+                    <mxGeometry x="760" y="70" width="200" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="Chroma" value="&lt;b&gt;Chroma Cloud&lt;/b&gt;&lt;br&gt;Vector DB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="790" y="210" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="Supabase" value="&lt;b&gt;Supabase&lt;/b&gt;&lt;br&gt;PostgreSQL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="790" y="430" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="Turso" value="&lt;b&gt;Turso&lt;/b&gt;&lt;br&gt;SQLite" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f3ff;strokeColor=#0066cc;fontSize=10;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="790" y="540" width="140" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_frontend" value="🌐 Frontend Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5ff;strokeColor=#01579b;fontSize=9;align=center;verticalAlign=middle;gradientColor=#B3D9FF;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="250" width="180" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_backend" value="⚙️ Backend Layer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#e65100;fontSize=9;align=center;verticalAlign=middle;gradientColor=#FFDAB3;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="300" width="180" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_ai" value="🤖 AI Components" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#4a148c;fontSize=9;align=center;verticalAlign=middle;gradientColor=#E6B3D6;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="350" width="180" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_data" value="💾 Data Storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#1b5e20;fontSize=9;align=center;verticalAlign=middle;gradientColor=#C8E6C9;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="400" width="180" height="35" as="geometry"/>
+                </mxCell>
+                <mxCell id="conn_User_FE" value="REST API" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="user" target="FE" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="80" y="450"/>
+                            <mxPoint x="80" y="125"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_FE_BE" value="REST API" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="FE" target="BE" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="120" y="200"/>
+                            <mxPoint x="225" y="200"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_BE_LG" value="AI Processing" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="BE" target="LG" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="280" y="570"/>
+                            <mxPoint x="300" y="570"/>
+                            <mxPoint x="300" y="105"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_LG_LS" value="Tracing &amp; Evaluation" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="LG" target="LS" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="conn_LG_AzureOAI" value="LLM + Embeddings" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="LG" target="AzureOAI" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="420" y="150"/>
+                            <mxPoint x="420" y="305"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_LG_AzureTrans" value="Translation + Detection" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="LG" target="AzureTrans" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="510" y="105"/>
+                            <mxPoint x="510" y="190"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_LG_Supabase" value="Checkpointing" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="LG" target="Supabase" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="420" y="150"/>
+                            <mxPoint x="420" y="465"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_LG_Chroma" value="Hybrid Search" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="LG" target="Chroma" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="710" y="105"/>
+                            <mxPoint x="710" y="245"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_LG_Cohere" value="Rerank Results" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="LG" target="Cohere" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="600" y="150"/>
+                            <mxPoint x="600" y="360"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_LG_MCP" value="SQL Queries" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="LG" target="MCP" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="340" y="105"/>
+                            <mxPoint x="300" y="105"/>
+                            <mxPoint x="300" y="640"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_MCP_Turso" value="Data Access" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;fontSize=9;" parent="1" source="MCP" target="Turso" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="280" y="640"/>
+                            <mxPoint x="730" y="640"/>
+                            <mxPoint x="730" y="575"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="conn_AzureOAI_Chroma" value="Vector Embeddings" style="edgeStyle=orthogonalEdgeStyle;curved=1;rounded=0;dashed=1;fontSize=9;" parent="1" source="AzureOAI" target="Chroma" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="710" y="305"/>
+                            <mxPoint x="710" y="245"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
