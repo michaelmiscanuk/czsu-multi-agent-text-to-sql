@@ -5,6 +5,8 @@ managing singleton instances, cached connection parameters, and synchronization 
 used throughout the multi-agent LangGraph checkpoint persistence infrastructure.
 """
 
+from __future__ import annotations
+
 MODULE_DESCRIPTION = r"""Global State Management and Shared Resources for PostgreSQL Checkpointer System
 
 This module provides centralized global state management for the PostgreSQL checkpointer
@@ -239,8 +241,6 @@ Future Enhancements:
 - Multiple checkpointer instances for multi-database support
 - Metrics collection for checkpointer usage statistics
 - Health check integration for monitoring and alerting"""
-
-from __future__ import annotations
 
 # ==============================================================================
 # MODULE ORGANIZATION

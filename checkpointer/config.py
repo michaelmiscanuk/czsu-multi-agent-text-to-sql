@@ -5,6 +5,8 @@ system, including connection parameters, retry logic, timeout settings, pool con
 and environment variable validation for robust database connectivity.
 """
 
+from __future__ import annotations
+
 MODULE_DESCRIPTION = r"""PostgreSQL Checkpointer Configuration Management
 
 This module serves as the central configuration hub for the PostgreSQL checkpointer system,
@@ -182,8 +184,6 @@ This approach:
 - Enables consistent retry and timeout behavior
 - Facilitates testing with different configuration profiles
 - Supports deployment-specific optimization through environment variables"""
-
-from __future__ import annotations
 
 import os
 from pathlib import Path

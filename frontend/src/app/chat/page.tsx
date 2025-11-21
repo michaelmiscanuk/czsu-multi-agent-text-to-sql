@@ -505,6 +505,10 @@ export default function ChatPage() {
 
     console.log('[ChatPage-newChat] 🔄 Checking for existing New Chat');
     
+    // CRITICAL FIX: Clear old prompts immediately to prevent flash of stale prompts
+    setInitialFollowupPrompts([]);
+    setIsLoadingInitialPrompts(true);
+    
     // First, check if there's already an existing "New Chat" thread
     const existingNewChat = threads.find(thread => 
       thread.title === 'New Chat' && 
@@ -1261,6 +1265,20 @@ export default function ChatPage() {
           // If there are messages, followup prompts are handled inside MessageArea
           
           console.log('[ChatPage-followup] Final follow-up prompts to display in initial section:', followupPrompts);
+          
+          // Show loading state while fetching new prompts
+          if (messages.length === 0 && isLoadingInitialPrompts) {
+            return (
+              <div className="bg-white border-t border-gray-100 py-3">
+                <div className="max-w-4xl mx-auto px-4">
+                  <div className="flex items-center justify-center py-8">
+                    <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="ml-3 text-sm text-gray-500">Loading suggestions...</span>
+                  </div>
+                </div>
+              </div>
+            );
+          }
           
           return followupPrompts.length > 0 ? (
             <div className="bg-white border-t border-gray-100 py-3">

@@ -5,6 +5,9 @@ by re-exporting the check_pool_health_and_recreate function from the factory mod
 It serves as a compatibility layer and logical grouping for health-related operations.
 """
 
+from __future__ import annotations
+
+
 # ==============================================================================
 # MODULE OVERVIEW
 # ==============================================================================
@@ -112,8 +115,6 @@ Dependencies:
 -----------
 - checkpointer.checkpointer.factory: Source of re-exported function
 """
-
-from __future__ import annotations
 
 
 # ==============================================================================

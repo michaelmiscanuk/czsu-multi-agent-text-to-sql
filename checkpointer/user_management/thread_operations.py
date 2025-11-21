@@ -6,6 +6,8 @@ the complete lifecycle of user conversation threads including creation, retrieva
 pagination, counting, and deletion operations.
 """
 
+from __future__ import annotations
+
 MODULE_DESCRIPTION = r"""User Thread Management for PostgreSQL Checkpointer System
 
 This module provides comprehensive functionality for managing conversation threads
@@ -238,8 +240,6 @@ Security Considerations:
 - Thread ownership verification before deletion
 - No raw SQL string interpolation
 - Secure connection handling via connection pool"""
-
-from __future__ import annotations
 
 import traceback
 import uuid

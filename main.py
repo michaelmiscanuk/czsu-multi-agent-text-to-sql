@@ -804,7 +804,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             print__analysis_tracing_debug(
                 "42 - POSTGRES SUCCESS: PostgreSQL checkpointer obtained"
             )
-        except Exception as e:
+        except Exception as e:  # pylint: disable=broad-except
             # PostgreSQL unavailable - fallback to memory-only storage (development mode)
             print__analysis_tracing_debug(
                 f"43 - POSTGRES FAILED: Failed to initialize PostgreSQL checkpointer - {str(e)}"
@@ -896,7 +896,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         print__analysis_tracing_debug(
             f"53 - CONVERSATION TYPE: Continuing conversation: {is_continuing_conversation}"
         )
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-except
         # Error checking state - treat as new conversation
         print__main_debug(f"❌ Error checking existing state: {e}")
         print__analysis_tracing_debug(
@@ -1086,7 +1086,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
         print__analysis_tracing_debug(
             f"66 - RESULT SIZE: Result object size: {result_size:.1f}KB"
         )
-    except:
+    except Exception:  # pylint: disable=broad-except
         # Size calculation failed - log and continue
         print__memory_debug("🔍 MEMORY: Could not determine result size")
 
@@ -1132,7 +1132,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
                 f"71 - HIGH MEMORY WARNING: High memory retention ({total_growth:.1f}MB) detected!"
             )
 
-    except Exception as memory_error:
+    except Exception as memory_error:  # pylint: disable=broad-except
         # Error during memory monitoring - log but don't fail
         print__memory_debug(
             f"⚠️ MEMORY: Error during final memory check: {memory_error}"
@@ -1315,5 +1315,5 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
 #     asyncio.run(main())
 # Or create a separate CLI script that imports and calls main()
 #
-# if __name__ == "__main__":
-#     asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

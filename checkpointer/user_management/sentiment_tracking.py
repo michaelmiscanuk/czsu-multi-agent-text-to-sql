@@ -4,6 +4,8 @@ This module provides robust sentiment tracking and retrieval functionality for u
 in the context of multi-agent conversation threads stored in a PostgreSQL database.
 """
 
+from __future__ import annotations
+
 MODULE_DESCRIPTION = r"""User Feedback Sentiment Tracking for PostgreSQL Checkpointer System
 
 This module provides robust sentiment tracking and retrieval functionality for user feedback
@@ -148,8 +150,6 @@ Security:
 - No direct SQL string interpolation
 - Connection credentials managed externally
 - Audit trail via debug logging"""
-
-from __future__ import annotations
 
 from typing import Dict
 

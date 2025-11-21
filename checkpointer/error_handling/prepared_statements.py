@@ -5,6 +5,8 @@ statement conflicts that can occur in PostgreSQL database connections, particula
 when using connection pooling or when prepared statements become stale.
 """
 
+from __future__ import annotations
+
 MODULE_DESCRIPTION = r"""PostgreSQL Prepared Statement Error Detection and Cleanup
 
 This module provides specialized functionality for detecting and resolving prepared
@@ -317,8 +319,6 @@ Future Enhancements:
 - Automatic cleanup scheduling
 - Enhanced pattern detection
 - Statement usage statistics"""
-
-from __future__ import annotations
 
 import uuid
 

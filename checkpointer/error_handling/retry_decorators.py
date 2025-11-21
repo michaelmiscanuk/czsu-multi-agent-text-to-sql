@@ -6,6 +6,8 @@ system. It implements exponential backoff, connection pool recreation, and state
 cleanup for both prepared statement and SSL connection errors.
 """
 
+from __future__ import annotations
+
 MODULE_DESCRIPTION = r"""Retry Logic and Automatic Error Recovery Decorators
 
 This module provides sophisticated retry decorators with automatic error detection
@@ -476,8 +478,6 @@ Future Enhancements:
 - Automatic retry tuning based on success rates
 - Distributed tracing integration
 - Health check integration before retry"""
-
-from __future__ import annotations
 
 import functools
 import traceback
