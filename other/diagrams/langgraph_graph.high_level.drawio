@@ -1,0 +1,69 @@
+<mxfile host="65bd71144e">
+    <diagram id="langgraph-nodes-v4" name="LangGraph High-Level Architecture">
+        <mxGraphModel dx="842" dy="628" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1200" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-8" value="&lt;b style=&quot;font-style: normal;&quot;&gt;Query + Reflect&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="465" width="470" height="230" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-6" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="query_start" target="sql_search" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-7" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="query_start" target="pdf_search" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="query_start" value="&lt;b&gt;PROMPT&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
+                    <mxGeometry x="435" y="50" width="130" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="parallel_retrieval_bg" value="&lt;b style=&quot;font-style: normal;&quot;&gt;Retrieval&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="220" width="700" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-3" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="sql_search" target="generate_query" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="sql_search" value="&lt;b&gt;&lt;font&gt;SQL&lt;/font&gt;&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=15;fontStyle=1;gradientColor=#CE93D8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="280" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-14" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="pdf_search" target="format" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="600" y="320"/>
+                            <mxPoint x="600" y="770"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="pdf_search" value="&lt;b&gt;PDF&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=15;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="280" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.75;exitY=0;exitDx=0;exitDy=0;curved=1;" parent="1" source="generate_query" target="reflect" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="generate_query" value="&lt;b&gt;Generate Query&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=15;fontStyle=1;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="100" y="515" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-2" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" parent="1" source="reflect" target="generate_query" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-16" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="reflect" target="format" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="reflect" value="&lt;b&gt;Reflect&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=15;fontStyle=1;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="351" y="565" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-11" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="format" target="answer_end" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="format" value="&lt;b&gt;Format&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=15;fontStyle=1;gradientColor=#F8BBD0;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="225" y="730" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="answer_end" value="&lt;b&gt;ANSWER&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="854" width="130" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="7YheNYXH9NRtwh606Cuw-17" value="&lt;b style=&quot;font-style: normal;&quot;&gt;Core Agentic Workflow Capabilities&lt;/b&gt;&lt;div&gt;&lt;b style=&quot;font-style: normal;&quot;&gt;&lt;br&gt;&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Agentic Workflow&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Tool Calling&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Reflection Pattern&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Conditional Routing&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Parallel Retrieval&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Structured Data RAG&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;✓&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left; background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;Unstructured Data RAG&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ SQL Generation&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ MCP&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Embeddings&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Reranking&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Rewriting&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Chat history&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ State&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Persistence&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Checkpointers&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Summarization&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Hybrid Search&lt;/span&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;✓ Infinite loop prevention&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); font-size: 11px; font-weight: 400; text-align: left;&quot;&gt;&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="650" y="540" width="250" height="310" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

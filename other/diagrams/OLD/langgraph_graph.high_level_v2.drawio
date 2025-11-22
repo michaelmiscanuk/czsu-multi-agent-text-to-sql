@@ -1,0 +1,79 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="langgraph-simple" name="LangGraph Simplified Architecture">
+    <mxGraphModel dx="1213" dy="795" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;&lt;font style=&quot;font-size: 22px;&quot;&gt;Multi-Agent Text-to-SQL System&lt;/font&gt;&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;" parent="1" vertex="1">
+          <mxGeometry x="350" y="40" width="500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="start_node" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;User Query&lt;/font&gt;&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;shadow=1;strokeWidth=3;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="500" y="120" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="phase1" value="&lt;b style=&quot;font-size: 16px;&quot;&gt;1. Information Retrieval&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Query Preprocessing • Semantic Search&lt;br&gt;Structured &amp;amp; Unstructured Data Retrieval&lt;br&gt;Context Ranking &amp;amp; Filtering&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1976D2;fontSize=12;align=center;verticalAlign=top;shadow=1;strokeWidth=3;spacingTop=15;gradientColor=#90CAF9;" parent="1" vertex="1">
+          <mxGeometry x="400" y="260" width="400" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="phase2" value="&lt;b style=&quot;font-size: 16px;&quot;&gt;2. Query Generation &amp;amp; Execution&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;SQL Query Generation • Execution&lt;br&gt;Reflection &amp;amp; Validation&lt;br&gt;Iterative Refinement Loop&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4EC;strokeColor=#C2185B;fontSize=12;align=center;verticalAlign=top;shadow=1;strokeWidth=3;spacingTop=15;gradientColor=#F8BBD0;" parent="1" vertex="1">
+          <mxGeometry x="400" y="440" width="400" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="phase3" value="&lt;b style=&quot;font-size: 16px;&quot;&gt;3. Answer Generation&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size: 12px;&quot;&gt;Format Results • Generate Response&lt;br&gt;Create Follow-up Prompts&lt;br&gt;Save &amp;amp; Finalize&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;fontSize=12;align=center;verticalAlign=top;shadow=1;strokeWidth=3;spacingTop=15;gradientColor=#A5D6A7;" parent="1" vertex="1">
+          <mxGeometry x="400" y="620" width="400" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="end_node" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;Final Answer&lt;/font&gt;&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;shadow=1;strokeWidth=3;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="500" y="790" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=4;strokeColor=#1976D2;endArrow=block;endFill=1;endSize=12;" parent="1" source="start_node" target="phase1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=4;strokeColor=#C2185B;endArrow=block;endFill=1;endSize=12;" parent="1" source="phase1" target="phase2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=4;strokeColor=#2E7D32;endArrow=block;endFill=1;endSize=12;" parent="1" source="phase2" target="phase3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=4;strokeColor=#82b366;endArrow=block;endFill=1;endSize=12;" parent="1" source="phase3" target="end_node" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="loop_arrow" value="&lt;b style=&quot;font-size: 12px;&quot;&gt;Needs Refinement&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;strokeColor=#C2185B;endArrow=block;endFill=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;dashed=1;dashPattern=12 6;labelBackgroundColor=#ffffff;fontSize=11;endSize=10;" parent="1" source="phase2" target="phase2" edge="1">
+          <mxGeometry x="-0.1" y="-30" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300" y="500" />
+              <mxPoint x="300" y="500" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="features_bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#BDBDBD;fontSize=12;shadow=1;strokeWidth=2;dashed=1;dashPattern=4 4;" parent="1" vertex="1">
+          <mxGeometry x="60" y="260" width="280" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="features_title" value="&lt;b style=&quot;font-size: 14px;&quot;&gt;Key Features&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;" parent="1" vertex="1">
+          <mxGeometry x="60" y="270" width="280" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="feature1" value="&lt;b&gt;🔍 Hybrid Retrieval&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Parallel search across&lt;br&gt;SQL databases &amp;amp; PDF documents&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1BEE7;strokeColor=#7B1FA2;fontSize=11;align=center;verticalAlign=middle;shadow=0;strokeWidth=2;spacingTop=5;gradientColor=#CE93D8;" parent="1" vertex="1">
+          <mxGeometry x="80" y="320" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="feature2" value="&lt;b&gt;🔄 Iterative Refinement&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Self-reflection &amp;amp; query improvement&lt;br&gt;until satisfactory results achieved&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#E64A19;fontSize=11;align=center;verticalAlign=middle;shadow=0;strokeWidth=2;spacingTop=5;gradientColor=#FFAB91;" parent="1" vertex="1">
+          <mxGeometry x="80" y="400" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="feature3" value="&lt;b&gt;🧠 Semantic Understanding&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Context-aware processing&lt;br&gt;with intelligent ranking&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B2DFDB;strokeColor=#00796B;fontSize=11;align=center;verticalAlign=middle;shadow=0;strokeWidth=2;spacingTop=5;gradientColor=#80CBC4;" parent="1" vertex="1">
+          <mxGeometry x="80" y="480" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="feature4" value="&lt;b&gt;💡 Smart Responses&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Formatted answers with&lt;br&gt;contextual follow-up suggestions&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF9C4;strokeColor=#F57F17;fontSize=11;align=center;verticalAlign=middle;shadow=0;strokeWidth=2;spacingTop=5;gradientColor=#FFF59D;" parent="1" vertex="1">
+          <mxGeometry x="80" y="560" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tech_stack" value="&lt;b&gt;Technology Stack&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;LangGraph • LangChain • ChromaDB&lt;br&gt;OpenAI/Anthropic • SQLite/PostgreSQL&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#9E9E9E;fontSize=11;align=center;verticalAlign=middle;shadow=1;strokeWidth=2;spacingTop=5;" parent="1" vertex="1">
+          <mxGeometry x="880" y="260" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="benefits" value="&lt;b&gt;System Benefits&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;✓ Natural language to SQL conversion&lt;br&gt;✓ Multi-source information retrieval&lt;br&gt;✓ Self-correcting query generation&lt;br&gt;✓ Context-aware responses&lt;br&gt;✓ Conversation memory management&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F5E9;strokeColor=#2E7D32;fontSize=11;align=left;verticalAlign=top;shadow=1;strokeWidth=2;spacingTop=10;spacingLeft=15;gradientColor=#C8E6C9;" parent="1" vertex="1">
+          <mxGeometry x="880" y="360" width="260" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="workflow_type" value="&lt;b&gt;Workflow Pattern&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Agentic RAG with Reflection&lt;br&gt;&lt;br&gt;Combines retrieval-augmented&lt;br&gt;generation with iterative&lt;br&gt;self-improvement mechanisms&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#E65100;fontSize=11;align=center;verticalAlign=top;shadow=1;strokeWidth=2;spacingTop=10;gradientColor=#FFE0B2;" parent="1" vertex="1">
+          <mxGeometry x="880" y="520" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="footer" value="&lt;i&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Simplified architecture diagram showing the three main processing stages of the multi-agent text-to-SQL system&lt;/font&gt;&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="300" y="900" width="600" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
