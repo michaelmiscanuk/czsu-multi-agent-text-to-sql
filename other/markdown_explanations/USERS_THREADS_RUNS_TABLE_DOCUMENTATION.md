@@ -1125,6 +1125,36 @@ async def cleanup_test_run_ids_from_db(run_ids: list[str]):
 
 ---
 
+## Summary 2: How the Table Enables Key Functionalities
+
+The `users_threads_runs` table serves as an enabling layer that makes the multi-agent text-to-SQL system's chat interface fast, secure, and user-friendly. Rather than just storing data, it actively supports six critical functionalities through its design.
+
+### Enabling Multi-Tenant Isolation
+
+The table uses the email field to separate all user data within a single database table, allowing the system to serve multiple users without requiring separate databases. By indexing the email field, the table supports fast user-scoped queries that prevent cross-user data access. This design enables the system to quickly retrieve all threads and runs belonging to a specific user while maintaining strict isolation boundaries. The email-based filtering works throughout the application to ensure users only interact with their own data.
+
+### Powering the Side Panel Conversation List
+
+The table uses thread_id values to display all of a user's conversation history in the UI side panel. When the side panel reloads, it queries only this table—avoiding expensive checkpointer table access—to list available threads quickly. The prompt field is leveraged to generate meaningful thread titles by storing the user's initial question, giving users context about each conversation at a glance. The system counts threads per user directly from this table to support pagination, enabling smooth navigation even when users have accumulated hundreds of conversations.
+
+### Correlating Messages to User Sentiments
+
+The table creates a one-to-one mapping between graph executions and UI messages using unique run_ids. This correlation enables the system to match sentiments (user feedback) to the correct AI responses displayed in the chat interface. When users rate responses, the table stores the sentiment per run_id, creating a trackable quality metric for each message. The UI retrieves these sentiments to display feedback icons on previously-rated messages, and the timestamp ordering ensures messages appear chronologically. This design supports updating sentiments while preserving the message-to-feedback correlation.
+
+### Acting as Security Gateway for Checkpointer Access
+
+The table verifies ownership before allowing any access to checkpoint data, ensuring logged-in users can only retrieve their own threads. This verification happens at multiple points throughout the application, creating defense-in-depth protection against unauthorized access. When users attempt to delete threads, the table first confirms ownership before cascading the deletion to checkpointer tables, preventing users from deleting others' data. By acting as a gatekeeper, the table makes it structurally impossible to access conversation data without proper ownership credentials verified against the email field.
+
+### Managing User Feedback Collection
+
+The table stores sentiment values per run_id to track the quality of each AI response over time. It supports both initial feedback submission and subsequent updates, allowing users to change their ratings as needed. When displaying conversations, the system retrieves sentiments from this table and links them to messages from the checkpointer using run_id correlation. This separation of sentiment data from conversation data simplifies feedback management while enabling the UI to display existing feedback icons on the correct messages without complex joins.
+
+### Optimizing Performance Through Strategic Design
+
+The table uses its email index to load all user threads in a single query, eliminating the N+1 query problem that would occur if each thread required separate lookups. By handling side panel reloads independently, the table avoids expensive checkpointer queries that would slow down the UI. The lightweight design enables fast ownership checks without loading full conversation data, and thread counting happens entirely within this indexed table. This architecture keeps frequent operations fast and scalable, even as conversation history grows, by ensuring that common UI actions never touch the heavier checkpoint storage.
+
+---
+
 ## Summary of Usage and Purposes
 
 The `users_threads_runs` table serves as the **central tracking table** for user interactions with the multi-agent text-to-SQL system. Here's a summary of its primary functions:

@@ -1,0 +1,178 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="chat-management-mindmap-v3" name="users_threads_runs Table - Purpose-Driven">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Background Groups -->
+        <mxCell id="bg_left_top" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="60" width="360" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_left_bottom" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="300" width="360" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_right_top" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="1000" y="60" width="360" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_right_bottom" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="1000" y="300" width="360" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_bottom_left" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="240" y="540" width="360" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_bottom_right" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="800" y="540" width="360" height="180" as="geometry" />
+        </mxCell>
+        
+        <!-- Root Node - Central -->
+        <mxCell id="root" value="users_threads_runs" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="600" y="340" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 1: Multi-Tenancy - Top Left -->
+        <mxCell id="branch1_title" value="Enables Multi-Tenant Isolation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="80" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item1" value="Uses email field to separate all user data in single table" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="130" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item2" value="Prevents cross-user data access through indexed email queries" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="170" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item3" value="Enables system to serve multiple users without separate databases" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="210" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item4" value="Supports fast user-scoped queries through email index" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="250" width="320" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 2: Side Panel - Bottom Left -->
+        <mxCell id="branch2_title" value="Powers Side Panel Conversation List" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="320" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item1" value="Uses thread_id to display all user's conversation history in UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="370" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item2" value="Reloads side panel using only this table, avoiding checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="410" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item3" value="Uses prompt field to generate thread titles for UI display" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="450" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item4" value="Counts threads per user to support pagination in side panel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="490" width="320" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 3: Message Correlation - Top Right -->
+        <mxCell id="branch3_title" value="Correlates Messages to Sentiments" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=11;fontStyle=1;gradientColor=#A5D6A7;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="80" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item1" value="One run_id per graph execution links each UI message uniquely" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="130" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item2" value="Matches run_id to sentiment to display correct feedback icons" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="170" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item3" value="Supports updating sentiment while preserving message correlation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="210" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item4" value="Orders messages chronologically by timestamp for UI rendering" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="250" width="320" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 4: Security Gateway - Bottom Right -->
+        <mxCell id="branch4_title" value="Acts as Security Gateway for Checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=11;fontStyle=1;gradientColor=#CE93D8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="320" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item1" value="Verifies ownership before any access to checkpoint data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="370" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item2" value="Protects against unauthorized thread access at multiple points" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="410" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item3" value="Ensures users delete only their own threads before cascading" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="450" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item4" value="Cascades deletion to checkpointer only after ownership verified" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1020" y="490" width="320" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 5: Sentiment Management - Bottom Left -->
+        <mxCell id="branch5_title" value="Manages User Feedback Collection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=11;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="260" y="560" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch5_item1" value="Stores sentiment per run_id to track quality of each response" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="260" y="610" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch5_item2" value="Retrieves sentiments to display existing feedback in UI messages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="260" y="650" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch5_item3" value="Links run_id from checkpointer to sentiment for correct display" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="260" y="690" width="320" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 6: Performance - Bottom Right -->
+        <mxCell id="branch6_title" value="Optimizes Performance Through Design" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=11;fontStyle=1;gradientColor=#FFF59D;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="820" y="560" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch6_item1" value="Loads all user threads in single query using email index" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="820" y="610" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch6_item2" value="Avoids expensive checkpointer queries for side panel reloads" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="820" y="650" width="320" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch6_item3" value="Enables fast ownership checks without loading conversation data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="820" y="690" width="320" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Curved Edges from Root to Branch Titles -->
+        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3399FF;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch1_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch2_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge3" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#388E3C;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch3_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7B1FA2;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch4_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge5" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#00796B;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch5_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F57F17;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch6_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend_bg" value="&lt;b&gt;Purpose Categories&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;fontSize=11;fontStyle=1;opacity=50;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="600" y="60" width="200" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_root" value="Table" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="620" y="90" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_multi" value="Multi-Tenancy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="710" y="90" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_panel" value="Side Panel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="620" y="125" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_correlation" value="Correlation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=9;gradientColor=#A5D6A7;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="710" y="125" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_security" value="Security" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;gradientColor=#CE93D8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="620" y="160" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_sentiment" value="Feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=9;gradientColor=#80CBC4;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="710" y="160" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_perf" value="Performance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;gradientColor=#FFF59D;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="620" y="195" width="70" height="25" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
