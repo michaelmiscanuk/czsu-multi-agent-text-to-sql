@@ -1,0 +1,210 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="chat-management-mindmap" name="users_threads_runs Table Uses">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Background Groups with opacity=20 like in reference -->
+        <mxCell id="bg_left_top" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="60" width="320" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_left_mid" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="320" width="320" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_left_bottom" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="580" width="320" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_right_top" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="1040" y="60" width="320" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_right_mid" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="1040" y="320" width="320" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_right_bottom" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="1040" y="580" width="320" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="bg_bottom" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="540" y="880" width="320" height="240" as="geometry" />
+        </mxCell>
+        
+        <!-- Root Node - Central -->
+        <mxCell id="root" value="users_threads_runs" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;fontStyle=1;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="600" y="400" width="200" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 1: Track Questions - Top Left -->
+        <mxCell id="branch1_title" value="Keeps Track of Who Asked What" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="80" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item1" value="Every time a user asks a question, we record it here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="130" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item2" value="We remember which user owns which conversation thread" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="170" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item3" value="We create a complete history of all user interactions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="210" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch1_item4" value="This lets us show users only their own conversations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="250" width="280" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 2: Security - Middle Left -->
+        <mxCell id="branch2_title" value="Makes Sure Users Only See Their Own Data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="340" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item1" value="Before showing any conversation, we check if the user owns it" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="390" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item2" value="We prevent users from accessing other people's conversations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="430" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item3" value="When someone tries to give feedback, we verify they own that response" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="470" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch2_item4" value="This protects all the conversation data stored in checkpoints" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="510" width="280" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 3: Feedback - Bottom Left -->
+        <mxCell id="branch3_title" value="Collects User Feedback on AI Responses" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=11;fontStyle=1;gradientColor=#A5D6A7;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="600" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item1" value="Users can rate each AI response as good or bad" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="650" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item2" value="We store these ratings and link them to the specific response" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="690" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item3" value="This helps us understand which responses users liked or disliked" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="730" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch3_item4" value="We can send this feedback to LangSmith to improve the system" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="60" y="770" width="280" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 4: Manage Conversations - Top Right -->
+        <mxCell id="branch4_title" value="Helps Users Manage Their Conversations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=11;fontStyle=1;gradientColor=#CE93D8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="80" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item1" value="Users can see a list of all their past conversations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="130" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item2" value="Each conversation gets a title based on the first question asked" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="170" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item3" value="If users have many conversations, we show them in pages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="210" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch4_item4" value="Users can delete entire conversations and we clean up all related data" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="250" width="280" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 5: Message Links - Middle Right -->
+        <mxCell id="branch5_title" value="Connects Messages to Feedback and Ratings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=11;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="340" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch5_item1" value="Each message in a conversation gets linked to a unique run_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="390" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch5_item2" value="When a user rates a response, we know exactly which one they rated" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="430" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch5_item3" value="We can show all messages in the order they happened" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="470" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch5_item4" value="This gives us the full picture of what happened in each conversation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="510" width="280" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 6: Performance - Bottom Right -->
+        <mxCell id="branch6_title" value="Makes the System Fast and Efficient" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=11;fontStyle=1;gradientColor=#FFF59D;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="600" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch6_item1" value="Instead of many database calls, we get all user data in one query" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="650" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch6_item2" value="We cache results so repeated requests are instant" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="690" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch6_item3" value="The database is set up with indexes to find user data quickly" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="730" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch6_item4" value="This means the chat interface loads conversations without delay" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="770" width="280" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Branch 7: Debug - Bottom Center -->
+        <mxCell id="branch7_title" value="Helps Us Debug and Monitor the System" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=11;fontStyle=1;gradientColor=#F8BBD0;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="560" y="900" width="280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="branch7_item1" value="We can check if a run_id exists and who owns it" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=10;gradientColor=#F8BBD0;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="560" y="950" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch7_item2" value="When something goes wrong, we can see what happened" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=10;gradientColor=#F8BBD0;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="560" y="990" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch7_item3" value="We track when things happened and who was involved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=10;gradientColor=#F8BBD0;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="560" y="1030" width="280" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="branch7_item4" value="This helps us fix problems and understand system usage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=10;gradientColor=#F8BBD0;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="560" y="1070" width="280" height="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Curved Edges from Root to Branch Titles - matching reference style -->
+        <mxCell id="edge1" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3399FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch1_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch2_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge3" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#388E3C;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch3_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7B1FA2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch4_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge5" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#00796B;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch5_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F57F17;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch6_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge7" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#AD1457;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="root" target="branch7_title" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Legend - matching reference style, positioned on the right -->
+        <mxCell id="legend_bg" value="&lt;b&gt;Legend&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;fontSize=11;fontStyle=1;opacity=50;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="600" y="60" width="200" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_root" value="Table" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;rounded=1;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="620" y="90" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_tracking" value="Tracking" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="710" y="90" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_security" value="Security" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="620" y="125" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_feedback" value="Feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=9;gradientColor=#A5D6A7;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="710" y="125" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_manage" value="Manage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;gradientColor=#CE93D8;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="620" y="160" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_connect" value="Linking" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=9;gradientColor=#80CBC4;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="710" y="160" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_perf" value="Performance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;gradientColor=#FFF59D;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="620" y="195" width="70" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_debug" value="Debugging" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=9;gradientColor=#F8BBD0;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="710" y="195" width="70" height="25" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

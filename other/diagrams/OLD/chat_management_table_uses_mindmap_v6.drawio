@@ -1,31 +1,31 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
-  <diagram id="chat-management-mindmap-v7" name="users_threads_runs Table - Symmetric">
-    <mxGraphModel dx="1418" dy="830" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+  <diagram id="chat-management-mindmap-v6" name="users_threads_runs Table - Concise">
+    <mxGraphModel dx="1188" dy="701" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="bg_left_top" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
-          <mxGeometry x="200" y="60" width="360" height="230" as="geometry" />
+          <mxGeometry x="180" y="60" width="360" height="230" as="geometry" />
         </mxCell>
         <mxCell id="bg_left_bottom" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
-          <mxGeometry x="160" y="300" width="360" height="230" as="geometry" />
+          <mxGeometry x="161" y="300" width="360" height="230" as="geometry" />
         </mxCell>
         <mxCell id="bg_right_top" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
-          <mxGeometry x="840" y="60" width="360" height="230" as="geometry" />
+          <mxGeometry x="861" y="60" width="361" height="230" as="geometry" />
         </mxCell>
         <mxCell id="bg_right_bottom" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
-          <mxGeometry x="880" y="300" width="360" height="230" as="geometry" />
+          <mxGeometry x="882" y="300" width="360" height="230" as="geometry" />
         </mxCell>
         <mxCell id="bg_bottom_left" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
-          <mxGeometry x="280" y="540" width="360" height="190" as="geometry" />
+          <mxGeometry x="320" y="540" width="360" height="190" as="geometry" />
         </mxCell>
         <mxCell id="bg_bottom_right" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
-          <mxGeometry x="761" y="540" width="360" height="190" as="geometry" />
+          <mxGeometry x="720" y="540" width="360" height="190" as="geometry" />
         </mxCell>
-        <mxCell id="cnNI5RdFNrDlWjlF0uQJ-4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#00796B;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryDx=0;entryDy=0;exitDx=0;exitDy=0;miterlimit=4;entryX=0.75;entryY=0;" parent="1" source="root" target="bg_bottom_left" edge="1">
+        <mxCell id="cnNI5RdFNrDlWjlF0uQJ-4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#00796B;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryDx=0;entryDy=0;exitDx=0;exitDy=0;miterlimit=4;entryX=0.75;entryY=0;" edge="1" parent="1" source="root" target="bg_bottom_left">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="cnNI5RdFNrDlWjlF0uQJ-5" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="root" target="bg_left_bottom" edge="1">
+        <mxCell id="cnNI5RdFNrDlWjlF0uQJ-5" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#b85450;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" edge="1" parent="1" source="root" target="bg_left_bottom">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="589.2893218813451" y="408.2842712474617" as="sourcePoint" />
           </mxGeometry>
@@ -34,88 +34,88 @@
           <mxGeometry x="600" y="340" width="200" height="80" as="geometry" />
         </mxCell>
         <mxCell id="branch1_title" value="Multi-Tenant Separation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="220" y="80" width="320" height="40" as="geometry" />
+          <mxGeometry x="200" y="80" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="branch1_item1" value="Email-based isolation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="220" y="130" width="320" height="35" as="geometry" />
+          <mxGeometry x="200" y="130" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch1_item2" value="Higher level than thread_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="220" y="170" width="320" height="35" as="geometry" />
+          <mxGeometry x="200" y="170" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch1_item3" value="Multiple threads per user" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="220" y="210" width="320" height="35" as="geometry" />
+          <mxGeometry x="200" y="210" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch1_item4" value="Foundation for user operations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="220" y="250" width="320" height="35" as="geometry" />
+          <mxGeometry x="200" y="250" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch2_title" value="Security Verification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="180" y="320" width="320" height="40" as="geometry" />
+          <mxGeometry x="181" y="320" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="branch2_item1" value="Ownership verification before access" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="180" y="370" width="320" height="35" as="geometry" />
+          <mxGeometry x="181" y="370" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch2_item2" value="Verification across application" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="180" y="410" width="320" height="35" as="geometry" />
+          <mxGeometry x="181" y="410" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch2_item3" value="User data isolation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="180" y="450" width="320" height="35" as="geometry" />
+          <mxGeometry x="181" y="450" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch2_item4" value="Applies to deletion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;gradientColor=#FF9999;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="180" y="490" width="320" height="35" as="geometry" />
+          <mxGeometry x="181" y="490" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch3_title" value="Deletion Management" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=11;fontStyle=1;gradientColor=#A5D6A7;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="860" y="80" width="320" height="40" as="geometry" />
+          <mxGeometry x="881" y="80" width="321" height="40" as="geometry" />
         </mxCell>
         <mxCell id="branch3_item1" value="Thread_id removed first" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="860" y="130" width="320" height="35" as="geometry" />
+          <mxGeometry x="881" y="130" width="321" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch3_item2" value="Cascades to other tables" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="860" y="170" width="320" height="35" as="geometry" />
+          <mxGeometry x="881" y="170" width="321" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch3_item3" value="Clean data removal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="860" y="210" width="320" height="35" as="geometry" />
+          <mxGeometry x="881" y="210" width="321" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch3_item4" value="Prevents orphaned records" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=10;gradientColor=#A5D6A7;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="860" y="250" width="320" height="35" as="geometry" />
+          <mxGeometry x="881" y="250" width="321" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch4_title" value="Side Panel Loading" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=11;fontStyle=1;gradientColor=#CE93D8;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="900" y="320" width="320" height="40" as="geometry" />
+          <mxGeometry x="902" y="320" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="branch4_item1" value="Lists user conversations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="900" y="370" width="320" height="35" as="geometry" />
+          <mxGeometry x="902" y="370" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch4_item2" value="Fast loading from this table" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="900" y="410" width="320" height="35" as="geometry" />
+          <mxGeometry x="902" y="410" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch4_item3" value="Truncated prompts for titles" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="900" y="450" width="320" height="35" as="geometry" />
+          <mxGeometry x="902" y="450" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch4_item4" value="Timestamp sorts latest first" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=10;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="900" y="490" width="320" height="35" as="geometry" />
+          <mxGeometry x="902" y="490" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch5_title" value="Message Granularity" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=11;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="300" y="560" width="320" height="40" as="geometry" />
+          <mxGeometry x="340" y="560" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="branch5_item1" value="run_id = single prompt = UI message" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="300" y="610" width="320" height="35" as="geometry" />
+          <mxGeometry x="340" y="610" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch5_item2" value="Record per graph execution" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="300" y="650" width="320" height="35" as="geometry" />
+          <mxGeometry x="340" y="650" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch5_item3" value="All run_ids loaded on reload" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=10;gradientColor=#80CBC4;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="300" y="690" width="320" height="35" as="geometry" />
+          <mxGeometry x="340" y="690" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch6_title" value="Sentiment Persistence" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=11;fontStyle=1;gradientColor=#FFF59D;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="781" y="560" width="320" height="40" as="geometry" />
+          <mxGeometry x="740" y="560" width="320" height="40" as="geometry" />
         </mxCell>
         <mxCell id="branch6_item1" value="Separate from checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="781" y="610" width="320" height="35" as="geometry" />
+          <mxGeometry x="740" y="610" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch6_item2" value="Updates run_id with thumbs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="781" y="650" width="320" height="35" as="geometry" />
+          <mxGeometry x="740" y="650" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="branch6_item3" value="Persists under messages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=10;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=8;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="781" y="690" width="320" height="35" as="geometry" />
+          <mxGeometry x="740" y="690" width="320" height="35" as="geometry" />
         </mxCell>
         <mxCell id="edge1" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3399FF;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=1;entryY=0.75;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="root" target="bg_left_top" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -125,37 +125,35 @@
         </mxCell>
         <mxCell id="edge4" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7B1FA2;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="root" target="bg_right_bottom" edge="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1040" y="380" as="sourcePoint" />
+            <mxPoint x="840" y="380" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="edge6" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#F57F17;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=0.25;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="root" target="bg_bottom_right" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="919" y="420" as="sourcePoint" />
-          </mxGeometry>
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="legend_bg" value="&lt;b&gt;Purpose Categories&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;fontSize=11;fontStyle=1;opacity=50;align=center;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
-          <mxGeometry x="570" y="80" width="260" height="130" as="geometry" />
+          <mxGeometry x="580" y="80" width="260" height="130" as="geometry" />
         </mxCell>
         <mxCell id="legend_root" value="Table" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;rounded=1;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;gradientColor=#B9E0A5;" parent="1" vertex="1">
-          <mxGeometry x="662" y="140" width="78" height="25" as="geometry" />
+          <mxGeometry x="672" y="140" width="78" height="25" as="geometry" />
         </mxCell>
         <mxCell id="legend_multi" value="Multi-Tenancy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="608" y="112.5" width="78" height="25" as="geometry" />
+          <mxGeometry x="618" y="112.5" width="78" height="25" as="geometry" />
         </mxCell>
         <mxCell id="legend_security" value="Security" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="580" y="145" width="78" height="25" as="geometry" />
+          <mxGeometry x="590" y="145" width="78" height="25" as="geometry" />
         </mxCell>
         <mxCell id="legend_deletion" value="Deletion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=9;gradientColor=#A5D6A7;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="717" y="112.5" width="78" height="25" as="geometry" />
+          <mxGeometry x="727" y="112.5" width="78" height="25" as="geometry" />
         </mxCell>
         <mxCell id="legend_panel" value="Conversations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;gradientColor=#CE93D8;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="746" y="145" width="78" height="25" as="geometry" />
+          <mxGeometry x="756" y="145" width="78" height="25" as="geometry" />
         </mxCell>
         <mxCell id="legend_granularity" value="Messages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=9;gradientColor=#80CBC4;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="619" y="175" width="78" height="25" as="geometry" />
+          <mxGeometry x="629" y="175" width="78" height="25" as="geometry" />
         </mxCell>
         <mxCell id="legend_sentiment" value="Sentiment" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;gradientColor=#FFF59D;align=center;verticalAlign=middle;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
-          <mxGeometry x="705" y="175" width="78" height="25" as="geometry" />
+          <mxGeometry x="715" y="175" width="78" height="25" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
