@@ -1,0 +1,144 @@
+<mxfile host="65bd71144e">
+    <diagram id="mcp-communication-flow" name="MCP Communication Flow">
+        <mxGraphModel dx="793" dy="753" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="kSMiORt9ZGTSpai4xbSn-9" value="&lt;span&gt;LAYER 4:&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span&gt;REMOTE DATABASE&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5ff;strokeColor=#01579b;fontSize=9;fontStyle=1;opacity=30;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=#B3D9FF;spacing=0;" parent="1" vertex="1">
+                    <mxGeometry x="147.5" y="463.88" width="651.25" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="kSMiORt9ZGTSpai4xbSn-5" value="&lt;span&gt;LAYER 3:&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span&gt;MCP SERVER&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=1;opacity=20;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="148.75" y="313.88" width="650" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="kSMiORt9ZGTSpai4xbSn-4" value="&lt;span&gt;LAYER 2:&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span&gt;MCP CLIENT&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=1;opacity=30;align=left;verticalAlign=top;spacingLeft=5;spacingTop=5;fontFamily=Verdana;fontColor=default;gradientColor=none;spacingBottom=0;spacing=2;" parent="1" vertex="1">
+                    <mxGeometry x="152.5" y="164" width="650" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="kSMiORt9ZGTSpai4xbSn-1" value="&lt;span&gt;LAYER 1:&amp;nbsp;&lt;/span&gt;&lt;div&gt;&lt;span&gt;MCP HOST&amp;nbsp;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;(AI Application)&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=1;opacity=30;align=left;verticalAlign=top;spacingLeft=10;spacingTop=9;fontFamily=Verdana;fontColor=default;gradientColor=#CCFFCC;spacing=0;spacingBottom=0;" parent="1" vertex="1">
+                    <mxGeometry x="152.5" y="14" width="650" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="user_prompt" value="User&amp;nbsp;&lt;div&gt;Prompt&lt;br&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;fontStyle=1;rounded=1;align=center;verticalAlign=middle;fontColor=#333333;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="70" width="70" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="generate_query_node" value="&lt;b&gt;&lt;span&gt;generate_query_node()&lt;/span&gt;&lt;br&gt;&lt;/b&gt;&lt;br&gt;• LangGraph node&lt;br&gt;• Binds MCP tools to LLM&lt;br&gt;• Starts agentic loop" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=0;gradientColor=#B9E0A5;align=left;verticalAlign=middle;fontFamily=Verdana;fontColor=default;shadow=1;spacingBottom=0;spacingRight=0;" parent="1" vertex="1">
+                    <mxGeometry x="380" y="60" width="130" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="llm_loop" value="&lt;b&gt;Agentic Loop&lt;/b&gt;&lt;br&gt;&lt;br&gt;• LLM generates SQL&lt;br&gt;• Invokes tool calls&lt;br&gt;• Examines results&lt;br&gt;• Decides next step" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=0;gradientColor=#B9E0A5;align=left;verticalAlign=middle;spacingLeft=5;spacingTop=5;shadow=1;spacingRight=0;spacingBottom=0;fontFamily=Verdana;fontColor=default;" parent="1" vertex="1">
+                    <mxGeometry x="620" y="55" width="170" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="get_sqlite_tools" value="&lt;b&gt;get_sqlite_tools()&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Reads MCP server URL&lt;br&gt;• Returns tool list" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;fontStyle=0;gradientColor=#FFF59D;align=left;verticalAlign=middle;fontFamily=Verdana;fontColor=default;spacingLeft=5;" parent="1" vertex="1">
+                    <mxGeometry x="255" y="199" width="140" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="remote_mcp_client" value="&lt;b&gt;MultiServerMCPClient&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Connects via HTTP&lt;br&gt;• Gets available tools&lt;br&gt;• Calls tool.ainvoke()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=9;gradientColor=#FFF59D;align=left;verticalAlign=middle;spacingLeft=5;spacingTop=5;fontFamily=Verdana;fontColor=default;fontStyle=0;" parent="1" vertex="1">
+                    <mxGeometry x="531.75" y="194" width="160" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="mcp_server" value="&lt;b&gt;FastMCP&lt;/b&gt;&lt;br&gt;&lt;br&gt;• HTTP server on port 8100&lt;br&gt;• Exposes tools via MCP protocol" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=0;gradientColor=#CE93D8;align=left;verticalAlign=middle;fontFamily=Verdana;fontColor=default;spacingLeft=5;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="349" width="170" height="105" as="geometry"/>
+                </mxCell>
+                <mxCell id="sqlite_query_handler" value="&lt;b&gt;@mcp.tool() sqlite_query&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Receives SQL query&lt;br&gt;• Executes on database&lt;br&gt;• Returns JSON result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;gradientColor=#CE93D8;align=left;verticalAlign=middle;spacingLeft=5;spacingTop=5;fontFamily=Verdana;fontColor=default;fontStyle=0;" parent="1" vertex="1">
+                    <mxGeometry x="528.25" y="349" width="180" height="105" as="geometry"/>
+                </mxCell>
+                <mxCell id="turso_db" value="&lt;b&gt;&lt;span&gt;Turso SQLite Cloud&lt;/span&gt;&lt;br&gt;&lt;/b&gt;&lt;br&gt;• Remote database&lt;br&gt;• Connected via libsql" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5ff;strokeColor=#01579b;gradientColor=#B3D9FF;verticalAlign=middle;spacing=9;fontStyle=0;fontFamily=Verdana;fontSize=9;align=left;spacingLeft=5;" parent="1" vertex="1">
+                    <mxGeometry x="379" y="505" width="160" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#666666;curved=1;fontFamily=Verdana;" parent="1" source="user_prompt" target="generate_query_node" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow1_label" value="1. User Question" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="110" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#666666;fontFamily=Verdana;" parent="1" source="generate_query_node" target="llm_loop" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow2_label" value="2. Initialize Loop" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="531.75" y="110" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;curved=1;fontFamily=Verdana;" parent="1" source="llm_loop" target="get_sqlite_tools" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow3_label" value="3. Request Tools" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="284" y="170" width="80" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#666666;fontFamily=Verdana;" parent="1" source="get_sqlite_tools" target="remote_mcp_client" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow4_label" value="4. Init Client" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="425" y="219" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;curved=0;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;startArrow=none;startFill=0;endArrow=classic;" parent="1" source="mcp_server" target="sqlite_query_handler" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow6_label" value="6. Route to Tool" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="432.5" y="403" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;curved=1;fontFamily=Verdana;" parent="1" source="sqlite_query_handler" target="turso_db" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow7_label" value="7. Execute Query" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#330000;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="391" y="470" width="80" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;dashed=1;curved=1;fontFamily=Verdana;dashPattern=8 8;" parent="1" source="turso_db" target="sqlite_query_handler" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow8_label" value="8. Query Results" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#330000;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="635" y="520" width="80" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow9" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=1;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#330000;strokeWidth=1;align=center;verticalAlign=middle;fontFamily=Verdana;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;startArrow=none;startFill=0;dashed=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;fillColor=#e51400;dashPattern=8 8;" parent="1" source="sqlite_query_handler" target="mcp_server" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow9_label" value="9. Tool Response" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="432.5" y="349" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;dashed=1;curved=1;fillColor=#e51400;fontFamily=Verdana;dashPattern=8 8;" parent="1" target="remote_mcp_client" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="400" y="330"/>
+                            <mxPoint x="652" y="330"/>
+                        </Array>
+                        <mxPoint x="400" y="352" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="arrow10_label" value="10. HTTP Response&lt;br&gt;(JSON Result)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="652.5" y="313.88" width="95" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;dashed=1;curved=1;fontColor=#330000;fontFamily=Verdana;dashPattern=8 8;" parent="1" source="remote_mcp_client" target="llm_loop" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow11_label" value="11. Tool Result" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=light-dark(#000000, #32b532);fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="709" y="177" width="70" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;dashed=1;curved=1;spacing=2;fontFamily=Verdana;dashPattern=8 8;" parent="1" source="llm_loop" target="user_prompt" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="620" y="40"/>
+                            <mxPoint x="260" y="40"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="arrow12_label" value="12. Final Answer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#330000;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="405" y="14" width="80" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_agent" value="Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="437.5" y="671" width="80" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_mcp_client" value="MCP Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="240" y="671" width="80" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_mcp_server" value="MCP Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;gradientColor=#CE93D8;fontFamily=Verdana;align=left;verticalAlign=middle;fontColor=default;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="339" y="671" width="85" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_start" value="MCP Host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;fontFamily=Verdana;rounded=1;shadow=1;align=left;verticalAlign=middle;spacingRight=0;spacingBottom=0;fontColor=default;fontStyle=0;" parent="1" vertex="1">
+                    <mxGeometry x="152.5" y="671" width="70" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="kSMiORt9ZGTSpai4xbSn-7" value="&lt;span style=&quot;font-weight: 700;&quot;&gt;5. HTTP Request&lt;/span&gt;&lt;br style=&quot;font-weight: 700;&quot;&gt;&lt;span style=&quot;font-weight: 700;&quot;&gt;(MCP Protocol)&lt;/span&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;spacing=2;fontSize=8;fontColor=#330000;fontFamily=Verdana;" parent="1" vertex="1">
+                    <mxGeometry x="370" y="273" width="80" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#330000;curved=1;fillColor=#e51400;fontFamily=Verdana;" parent="1" source="remote_mcp_client" target="mcp_server" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="520.75" y="301.5" as="sourcePoint"/>
+                        <mxPoint x="315" y="366" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

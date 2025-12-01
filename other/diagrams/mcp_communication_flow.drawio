@@ -1,352 +1,145 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram id="mcp-communication-flow" name="MCP Communication Flow">
-    <mxGraphModel dx="1050" dy="675" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+    <mxGraphModel dx="1173" dy="664" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        
-        <!-- Title -->
-        <mxCell id="title" value="MCP Server Communication Flow - CZSU SQLite Query System" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="350" y="20" width="700" height="35" as="geometry" />
+        <mxCell id="layer1_bg" value="&lt;b&gt;LAYER 1: MCP HOST&lt;/b&gt;&lt;div&gt;(AI Application)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=0;opacity=30;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;gradientColor=#B9E0A5;" parent="1" vertex="1">
+          <mxGeometry x="150" y="20" width="650" height="140" as="geometry" />
         </mxCell>
-
-        <!-- LAYER 1: USER/HOST -->
-        <mxCell id="layer1_label" value="LAYER 1: MCP HOST (VS Code / IDE / AI Application)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="40" y="70" width="350" height="20" as="geometry" />
+        <mxCell id="layer2_bg" value="&lt;b&gt;LAYER 2: MCP CLIENT&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=0;opacity=30;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;gradientColor=#FFE599;" parent="1" vertex="1">
+          <mxGeometry x="150" y="177" width="650" height="140" as="geometry" />
         </mxCell>
-
-        <!-- User Prompt -->
-        <mxCell id="user_prompt" value="User Prompt&lt;br&gt;&lt;i&gt;Natural language question&lt;/i&gt;&lt;br&gt;(Czech/English)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;rounded=1;align=center;verticalAlign=middle;gradientColor=#B9E0A5;" parent="1" vertex="1">
-          <mxGeometry x="60" y="100" width="140" height="70" as="geometry" />
+        <mxCell id="layer3_bg" value="&lt;b&gt;LAYER 3: MCP SERVER&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=0;opacity=30;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;gradientColor=#CE93D8;" parent="1" vertex="1">
+          <mxGeometry x="150" y="334" width="650" height="140" as="geometry" />
         </mxCell>
-
-        <!-- LAYER 2: AGENT NODE -->
-        <mxCell id="layer2_label" value="LAYER 2: LANGGRAPH AGENT NODE (nodes.py)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="40" y="200" width="350" height="20" as="geometry" />
+        <mxCell id="layer4_bg" value="&lt;b&gt;LAYER 4: DATABASE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5ff;strokeColor=#01579b;fontSize=9;fontStyle=0;opacity=30;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;fontFamily=Verdana;gradientColor=#B3D9FF;" parent="1" vertex="1">
+          <mxGeometry x="150" y="491" width="650" height="130" as="geometry" />
         </mxCell>
-
-        <!-- Generate Query Node -->
-        <mxCell id="generate_query_node" value="&lt;b&gt;generate_query_node()&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Load schema for datasets&lt;br&gt;• Build system prompt&lt;br&gt;• Initialize LLM (GPT-4o)&lt;br&gt;• Bind MCP tools to LLM&lt;br&gt;• Start agentic loop" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;spacingLeft=5;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="50" y="230" width="160" height="110" as="geometry" />
+        <mxCell id="user_prompt" value="&lt;b&gt;User&lt;/b&gt;&lt;div&gt;&lt;b&gt;Prompt&lt;/b&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=9;fontStyle=0;align=center;verticalAlign=middle;fontColor=#333333;fontFamily=Verdana;shadow=1;" parent="1" vertex="1">
+          <mxGeometry x="180" y="55" width="70" height="70" as="geometry" />
         </mxCell>
-
-        <!-- LLM Tool Calling Loop -->
-        <mxCell id="llm_loop" value="&lt;b&gt;Agentic Loop&lt;/b&gt;&lt;br&gt;(max iterations)&lt;br&gt;&lt;br&gt;• LLM generates SQL&lt;br&gt;• Creates tool_call request&lt;br&gt;• Examines results&lt;br&gt;• Decides if more data needed&lt;br&gt;• Calls finish_gathering when done" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=0;gradientColor=#FFFF99;align=left;verticalAlign=top;spacingLeft=5;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="250" y="230" width="170" height="110" as="geometry" />
+        <mxCell id="generate_query_node" value="&lt;b&gt;generate_query_node()&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Load schema for datasets&lt;br&gt;• Build system prompt&lt;br&gt;• Initialize LLM&lt;br&gt;• Bind MCP tools to LLM&lt;br&gt;• Start agentic loop" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=0;gradientColor=#B9E0A5;align=left;verticalAlign=middle;fontFamily=Verdana;shadow=1;spacingLeft=5;" parent="1" vertex="1">
+          <mxGeometry x="306" y="45" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- LAYER 3: MCP CLIENT -->
-        <mxCell id="layer3_label" value="LAYER 3: MCP CLIENT (tools.py - langchain-mcp-adapters)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="40" y="380" width="450" height="20" as="geometry" />
+        <mxCell id="llm_loop" value="&lt;b&gt;Agentic Loop&lt;/b&gt;&lt;br&gt;&lt;br&gt;• LLM generates SQL&lt;br&gt;• Creates tool_call request&lt;br&gt;• Examines results&lt;br&gt;• Decides if more data needed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=0;gradientColor=#B9E0A5;align=left;verticalAlign=middle;fontFamily=Verdana;shadow=1;spacingLeft=5;" parent="1" vertex="1">
+          <mxGeometry x="566" y="45" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- Get SQLite Tools -->
-        <mxCell id="get_sqlite_tools" value="&lt;b&gt;get_sqlite_tools()&lt;/b&gt;&lt;br&gt;&lt;br&gt;Initialize MCP Client&lt;br&gt;&lt;i&gt;MultiServerMCPClient&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=center;verticalAlign=top;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="60" y="410" width="140" height="70" as="geometry" />
+        <mxCell id="get_sqlite_tools" value="&lt;b&gt;get_sqlite_tools()&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Reads MCP server URL&lt;br&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;•&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&amp;nbsp;&lt;/span&gt;local SQLite tool fallback&lt;br&gt;• Returns tool list&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=0;gradientColor=#FFE599;align=left;verticalAlign=middle;fontFamily=Verdana;shadow=1;spacingLeft=5;" parent="1" vertex="1">
+          <mxGeometry x="306" y="202" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- Connection Decision -->
-        <mxCell id="connection_decision" value="MCP Server&lt;br&gt;URL&lt;br&gt;&lt;b&gt;Configured?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=center;verticalAlign=middle;fontStyle=1;gradientColor=#FFFF99;" parent="1" vertex="1">
-          <mxGeometry x="250" y="405" width="130" height="80" as="geometry" />
+        <mxCell id="remote_mcp_client" value="&lt;b&gt;MultiServerMCPClient&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Connect via Streamable HTTP&lt;br&gt;• Get available tools" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=0;gradientColor=#FFE599;align=left;verticalAlign=middle;fontFamily=Verdana;shadow=1;spacingLeft=5;" parent="1" vertex="1">
+          <mxGeometry x="566" y="202" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- Remote MCP Path -->
-        <mxCell id="remote_mcp_client" value="&lt;b&gt;Remote MCP Client&lt;/b&gt;&lt;br&gt;&lt;br&gt;Transport: streamable_http&lt;br&gt;URL: MCP_SERVER_URL&lt;br&gt;&lt;br&gt;client.get_tools()&lt;br&gt;→ Returns sqlite_query tool" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;gradientColor=#CCCCFF;align=left;verticalAlign=top;spacingLeft=5;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="440" y="400" width="160" height="90" as="geometry" />
+        <mxCell id="mcp_server" value="&lt;b&gt;FastMCP Server&lt;/b&gt;&lt;br style=&quot;font-weight: 700;&quot;&gt;&lt;br style=&quot;font-weight: 700;&quot;&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;•&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;Name: CZSU-SQLite-Server&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;•&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;Transport: streamable-http&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;•&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;Port: 8100&lt;br&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;•&lt;/span&gt;&lt;span style=&quot;color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); background-color: transparent;&quot;&gt;&amp;nbsp;&lt;/span&gt;Exposes tools via MCP protocol" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=0;gradientColor=#CE93D8;align=left;verticalAlign=middle;fontFamily=Verdana;shadow=1;spacingLeft=5;" parent="1" vertex="1">
+          <mxGeometry x="306" y="359" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- Local Fallback Path -->
-        <mxCell id="local_fallback" value="&lt;b&gt;Local SQLite Fallback&lt;/b&gt;&lt;br&gt;&lt;br&gt;LocalSQLiteQueryTool&lt;br&gt;&lt;br&gt;Direct sqlite3 connection&lt;br&gt;to local DB file:&lt;br&gt;&lt;i&gt;data/czsu_data.db&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=left;verticalAlign=top;spacingLeft=5;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="235" y="530" width="160" height="90" as="geometry" />
+        <mxCell id="sqlite_query_handler" value="&lt;b&gt;@mcp.tool() sqlite_query&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Receives SQL query string&lt;br&gt;• Validates query&lt;br&gt;• Executes on database&lt;br&gt;• Returns JSON result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=0;gradientColor=#CE93D8;align=left;verticalAlign=middle;fontFamily=Verdana;shadow=1;spacingLeft=5;" parent="1" vertex="1">
+          <mxGeometry x="566" y="359" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- LAYER 4: MCP SERVER -->
-        <mxCell id="layer4_label" value="LAYER 4: MCP SERVER (czsu_mcp_server_sqlite/main.py - FastMCP)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="680" y="380" width="500" height="20" as="geometry" />
+        <mxCell id="turso_db" value="&lt;b&gt;Turso SQLite Cloud&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Remote database&lt;br&gt;• Connected via libsql" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5ff;strokeColor=#01579b;fontSize=9;fontStyle=0;gradientColor=#B3D9FF;align=left;verticalAlign=middle;fontFamily=Verdana;shadow=1;spacingLeft=5;" parent="1" vertex="1">
+          <mxGeometry x="426" y="516" width="160" height="90" as="geometry" />
         </mxCell>
-
-        <!-- MCP Server -->
-        <mxCell id="mcp_server" value="&lt;b&gt;FastMCP Server&lt;/b&gt;&lt;br&gt;&lt;br&gt;Name: CZSU-SQLite-Server&lt;br&gt;Transport: streamable-http&lt;br&gt;Port: 8100&lt;br&gt;&lt;br&gt;Exposes tools via MCP protocol" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=left;verticalAlign=top;spacingLeft=5;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="690" y="410" width="170" height="95" as="geometry" />
-        </mxCell>
-
-        <!-- SQLite Query Tool Handler -->
-        <mxCell id="sqlite_query_handler" value="&lt;b&gt;@mcp.tool()&lt;/b&gt;&lt;br&gt;&lt;b&gt;sqlite_query(query: str)&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Receives SQL query string&lt;br&gt;• Validates query&lt;br&gt;• Executes via connection&lt;br&gt;• Formats results as JSON&lt;br&gt;• Returns string result" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=left;verticalAlign=top;spacingLeft=5;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="900" y="410" width="180" height="95" as="geometry" />
-        </mxCell>
-
-        <!-- Database Connection -->
-        <mxCell id="db_connection_decision" value="Database&lt;br&gt;&lt;b&gt;Type?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=center;verticalAlign=middle;fontStyle=1;gradientColor=#FFFF99;" parent="1" vertex="1">
-          <mxGeometry x="930" y="540" width="120" height="70" as="geometry" />
-        </mxCell>
-
-        <!-- LAYER 5: DATABASE -->
-        <mxCell id="layer5_label" value="LAYER 5: REMOTE DATABASE" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="680" y="650" width="250" height="20" as="geometry" />
-        </mxCell>
-
-        <!-- SQLite Cloud -->
-        <mxCell id="sqlite_cloud" value="&lt;b&gt;SQLite Cloud&lt;/b&gt;&lt;br&gt;&lt;br&gt;Connection via&lt;br&gt;&lt;i&gt;sqlitecloud&lt;/i&gt; library&lt;br&gt;&lt;br&gt;SQLITE_CLOUD_&lt;br&gt;CONNECTION_STRING" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;gradientColor=#CCCCFF;align=center;verticalAlign=top;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="710" y="680" width="140" height="90" as="geometry" />
-        </mxCell>
-
-        <!-- Turso -->
-        <mxCell id="turso_db" value="&lt;b&gt;Turso Database&lt;/b&gt;&lt;br&gt;&lt;br&gt;Connection via&lt;br&gt;&lt;i&gt;libsql&lt;/i&gt; library&lt;br&gt;&lt;br&gt;TURSO_CONNECTION_&lt;br&gt;STRING with auth token" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;gradientColor=#CCCCFF;align=center;verticalAlign=top;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="920" y="680" width="140" height="90" as="geometry" />
-        </mxCell>
-
-        <!-- Local Database (from fallback) -->
-        <mxCell id="local_db" value="&lt;b&gt;Local SQLite Database&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;i&gt;data/czsu_data.db&lt;/i&gt;&lt;br&gt;&lt;br&gt;Direct file access&lt;br&gt;via sqlite3 library" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=center;verticalAlign=top;spacingTop=5;" parent="1" vertex="1">
-          <mxGeometry x="235" y="680" width="160" height="90" as="geometry" />
-        </mxCell>
-
-        <!-- ARROWS AND FLOW -->
-        
-        <!-- User to Agent Node -->
-        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="user_prompt" target="generate_query_node" edge="1">
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;curved=1;fontFamily=Verdana;" parent="1" source="user_prompt" target="generate_query_node" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="arrow1_label" value="1. User Question" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="140" y="180" width="80" height="15" as="geometry" />
+        <mxCell id="arrow1_label" value="1. User&amp;nbsp;&lt;div&gt;Question&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="235" y="65" width="80" height="20" as="geometry" />
         </mxCell>
-
-        <!-- Agent Node to LLM Loop -->
-        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="generate_query_node" target="llm_loop" edge="1">
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;fontFamily=Verdana;" parent="1" source="generate_query_node" target="llm_loop" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="arrow2_label" value="2. Initialize&lt;br&gt;Agentic Loop" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="212" y="265" width="35" height="25" as="geometry" />
+        <mxCell id="arrow2_label" value="2. Initialize Loop" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="466" y="70" width="80" height="20" as="geometry" />
         </mxCell>
-
-        <!-- LLM Loop to Get Tools -->
-        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#666666;curved=1;" parent="1" source="llm_loop" target="get_sqlite_tools" edge="1">
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#666666;curved=1;fontFamily=Verdana;" parent="1" source="llm_loop" target="get_sqlite_tools" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3_label" value="3. Request Tools" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="348" y="158" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;fontFamily=Verdana;" parent="1" source="get_sqlite_tools" target="remote_mcp_client" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4_label" value="4. Init Client" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="466" y="222" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#666666;curved=1;fontFamily=Verdana;fontColor=default;" parent="1" source="remote_mcp_client" target="mcp_server" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5_label" value="5. HTTP Request&lt;br&gt;(MCP Protocol)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="338" y="311" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#666666;fontFamily=Verdana;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" parent="1" source="mcp_server" target="sqlite_query_handler" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="466" y="420" as="sourcePoint" />
+            <mxPoint x="546" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow6_label" value="6. Route to Tool" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="475" y="424" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#666666;curved=1;fontFamily=Verdana;" parent="1" source="sqlite_query_handler" target="turso_db" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7_label" value="7. Execute Query" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="444" y="472" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#663300;dashed=1;curved=1;fontFamily=Verdana;dashPattern=8 8;" parent="1" source="turso_db" target="sqlite_query_handler" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow8_label" value="8. Query Results" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#663300;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="685" y="472" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#663300;dashed=1;fontFamily=Verdana;dashPattern=8 8;fontColor=#663300;" parent="1" source="sqlite_query_handler" target="mcp_server" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="546" y="390" as="sourcePoint" />
+            <mxPoint x="466" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow9_label" value="9. Tool Response" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontStyle=1;fontColor=#663300;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="476" y="381" width="80" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#663300;dashed=1;curved=1;fontFamily=Verdana;dashPattern=8 8;" parent="1" source="mcp_server" target="remote_mcp_client" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="335" y="370" />
-              <mxPoint x="130" y="370" />
+              <mxPoint x="466" y="350" />
+              <mxPoint x="646" y="350" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="arrow3_label" value="3. Request&lt;br&gt;MCP Tools" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="190" y="355" width="50" height="25" as="geometry" />
+        <mxCell id="arrow10_label" value="&lt;span style=&quot;&quot;&gt;10. HTTP Response&lt;/span&gt;&lt;br style=&quot;&quot;&gt;&lt;span style=&quot;&quot;&gt;(JSON Result)&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=7;fontStyle=1;fontColor=#663300;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="643" y="316" width="90" height="20" as="geometry" />
         </mxCell>
-
-        <!-- Get Tools to Connection Decision -->
-        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="get_sqlite_tools" target="connection_decision" edge="1">
+        <mxCell id="arrow11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#663300;dashed=1;curved=1;fontFamily=Verdana;dashPattern=8 8;fontColor=#663300;" parent="1" source="remote_mcp_client" target="llm_loop" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="arrow4_label" value="4. Check Config" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="200" y="430" width="50" height="15" as="geometry" />
+        <mxCell id="arrow11_label" value="11. Tool Result" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#660000;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="687" y="159" width="70" height="20" as="geometry" />
         </mxCell>
-
-        <!-- Decision to Remote MCP -->
-        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#00AA00;" parent="1" source="connection_decision" target="remote_mcp_client" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow5_label" value="Yes - Remote" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#00AA00;" parent="1" vertex="1">
-          <mxGeometry x="380" y="430" width="60" height="15" as="geometry" />
-        </mxCell>
-
-        <!-- Decision to Local Fallback -->
-        <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#CC0000;" parent="1" source="connection_decision" target="local_fallback" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow6_label" value="No - Fallback" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="315" y="495" width="60" height="15" as="geometry" />
-        </mxCell>
-
-        <!-- Remote MCP to Server -->
-        <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#0066CC;" parent="1" source="remote_mcp_client" target="mcp_server" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow7_label" value="5. HTTP Request&lt;br&gt;(MCP Protocol)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="610" y="430" width="70" height="25" as="geometry" />
-        </mxCell>
-
-        <!-- MCP Server to Tool Handler -->
-        <mxCell id="arrow8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="mcp_server" target="sqlite_query_handler" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow8_label" value="6. Route to&lt;br&gt;sqlite_query" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="865" y="435" width="35" height="25" as="geometry" />
-        </mxCell>
-
-        <!-- Tool Handler to DB Decision -->
-        <mxCell id="arrow9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#666666;" parent="1" source="sqlite_query_handler" target="db_connection_decision" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow9_label" value="7. Get DB&lt;br&gt;Connection" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="993" y="510" width="50" height="25" as="geometry" />
-        </mxCell>
-
-        <!-- DB Decision to SQLite Cloud -->
-        <mxCell id="arrow10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#9673a6;curved=1;" parent="1" source="db_connection_decision" target="sqlite_cloud" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow10_label" value="SQLite Cloud" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#9673a6;" parent="1" vertex="1">
-          <mxGeometry x="810" y="630" width="70" height="15" as="geometry" />
-        </mxCell>
-
-        <!-- DB Decision to Turso -->
-        <mxCell id="arrow11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#9673a6;curved=1;" parent="1" source="db_connection_decision" target="turso_db" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow11_label" value="Turso" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#9673a6;" parent="1" vertex="1">
-          <mxGeometry x="1010" y="630" width="40" height="15" as="geometry" />
-        </mxCell>
-
-        <!-- Local Fallback to Local DB -->
-        <mxCell id="arrow12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#CC0000;" parent="1" source="local_fallback" target="local_db" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="arrow12_label" value="8. Direct Query&lt;br&gt;(sqlite3)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="320" y="635" width="70" height="25" as="geometry" />
-        </mxCell>
-
-        <!-- RETURN PATH ARROWS -->
-        
-        <!-- DB Response (Cloud/Turso) -->
-        <mxCell id="arrow13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#9673a6;dashed=1;curved=1;" parent="1" source="turso_db" target="sqlite_query_handler" edge="1">
+        <mxCell id="arrow12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;strokeColor=#660000;dashed=1;curved=1;fontFamily=Verdana;dashPattern=8 8;" parent="1" source="llm_loop" target="user_prompt" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="1120" y="680" />
-              <mxPoint x="1120" y="505" />
+              <mxPoint x="540" y="40" />
+              <mxPoint x="240" y="40" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="arrow13_label" value="9. Query Results" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#9673a6;" parent="1" vertex="1">
-          <mxGeometry x="1090" y="590" width="70" height="15" as="geometry" />
+        <mxCell id="arrow12_label" value="12. Final Answer" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#663300;fontFamily=Verdana;" parent="1" vertex="1">
+          <mxGeometry x="349" y="20" width="80" height="20" as="geometry" />
         </mxCell>
-
-        <!-- Server Response to Client -->
-        <mxCell id="arrow14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#0066CC;dashed=1;curved=1;" parent="1" source="mcp_server" target="remote_mcp_client" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="775" y="380" />
-              <mxPoint x="520" y="380" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="legend_host" value="MCP Host" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;fontStyle=1;gradientColor=#B9E0A5;fontFamily=Verdana;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="180" y="634" width="80" height="25" as="geometry" />
         </mxCell>
-        <mxCell id="arrow14_label" value="10. HTTP Response&lt;br&gt;(JSON result)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="590" y="355" width="80" height="25" as="geometry" />
+        <mxCell id="legend_client" value="MCP Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;fontStyle=1;gradientColor=#FFE599;fontFamily=Verdana;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="280" y="634" width="80" height="25" as="geometry" />
         </mxCell>
-
-        <!-- Client/Fallback Response to LLM -->
-        <mxCell id="arrow15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#666666;dashed=1;curved=1;" parent="1" source="remote_mcp_client" target="llm_loop" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="600" y="360" />
-              <mxPoint x="335" y="360" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="legend_server" value="MCP Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=9;fontStyle=1;gradientColor=#CE93D8;fontFamily=Verdana;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="380" y="634" width="80" height="25" as="geometry" />
         </mxCell>
-        <mxCell id="arrow15_label" value="11. Tool Result&lt;br&gt;to LLM" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="420" y="350" width="60" height="25" as="geometry" />
+        <mxCell id="legend_db" value="Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5ff;strokeColor=#01579b;fontSize=9;fontStyle=1;gradientColor=#B3D9FF;fontFamily=Verdana;align=center;verticalAlign=middle;" parent="1" vertex="1">
+          <mxGeometry x="480" y="634" width="80" height="25" as="geometry" />
         </mxCell>
-
-        <!-- Local DB Response -->
-        <mxCell id="arrow16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#CC0000;dashed=1;curved=1;" parent="1" source="local_db" target="local_fallback" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="180" y="680" />
-              <mxPoint x="180" y="620" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="arrow16_label" value="9. Results" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="120" y="645" width="50" height="15" as="geometry" />
-        </mxCell>
-
-        <!-- Local Fallback to LLM -->
-        <mxCell id="arrow17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#CC0000;dashed=1;curved=1;" parent="1" source="local_fallback" target="llm_loop" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="315" y="360" />
-              <mxPoint x="250" y="360" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="arrow17_label" value="11. Results&lt;br&gt;to LLM" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="250" y="420" width="50" height="25" as="geometry" />
-        </mxCell>
-
-        <!-- Final Response -->
-        <mxCell id="arrow18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;strokeColor=#00AA00;dashed=1;curved=1;" parent="1" source="llm_loop" target="user_prompt" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="220" y="230" />
-              <mxPoint x="220" y="135" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="arrow18_label" value="12. Final Answer&lt;br&gt;(formatted response)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=8;fontStyle=1;fontColor=#00AA00;" parent="1" vertex="1">
-          <mxGeometry x="210" y="165" width="80" height="25" as="geometry" />
-        </mxCell>
-
-        <!-- LEGEND -->
-        <mxCell id="legend_title" value="LEGEND" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontStyle=1" parent="1" vertex="1">
-          <mxGeometry x="40" y="820" width="80" height="20" as="geometry" />
-        </mxCell>
-
-        <mxCell id="legend_agent" value="Agent Node" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;" parent="1" vertex="1">
-          <mxGeometry x="50" y="850" width="80" height="30" as="geometry" />
-        </mxCell>
-
-        <mxCell id="legend_decision" value="Decision" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;gradientColor=#FFFF99;" parent="1" vertex="1">
-          <mxGeometry x="150" y="850" width="70" height="30" as="geometry" />
-        </mxCell>
-
-        <mxCell id="legend_mcp_client" value="MCP Client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;" parent="1" vertex="1">
-          <mxGeometry x="240" y="850" width="80" height="30" as="geometry" />
-        </mxCell>
-
-        <mxCell id="legend_mcp_server" value="MCP Server" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;gradientColor=#CCCCFF;" parent="1" vertex="1">
-          <mxGeometry x="340" y="850" width="80" height="30" as="geometry" />
-        </mxCell>
-
-        <mxCell id="legend_fallback" value="Local Fallback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;" parent="1" vertex="1">
-          <mxGeometry x="440" y="850" width="80" height="30" as="geometry" />
-        </mxCell>
-
-        <mxCell id="legend_start" value="Start/End" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;" parent="1" vertex="1">
-          <mxGeometry x="540" y="850" width="70" height="30" as="geometry" />
-        </mxCell>
-
-        <mxCell id="legend_request" value="Request →" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;" parent="1" vertex="1">
-          <mxGeometry x="50" y="890" width="60" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="legend_request_line" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="110" y="900" as="sourcePoint" />
-            <mxPoint x="160" y="900" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-
-        <mxCell id="legend_response" value="Response ←" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;" parent="1" vertex="1">
-          <mxGeometry x="180" y="890" width="70" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="legend_response_line" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#666666;dashed=1;" parent="1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="250" y="900" as="sourcePoint" />
-            <mxPoint x="300" y="900" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-
-        <!-- KEY FEATURES BOX -->
-        <mxCell id="features_box" value="&lt;b&gt;KEY FEATURES:&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Agentic loop: LLM iteratively calls tools&lt;br&gt;• MCP Protocol: Standard communication&lt;br&gt;• Dual Path: Remote MCP server OR local fallback&lt;br&gt;• Flexible DB: SQLite Cloud, Turso, or local file&lt;br&gt;• Error Handling: Automatic fallback on failure&lt;br&gt;• Tool Binding: LangChain tool integration&lt;br&gt;• Stateless Server: FastMCP streamable-http" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=9;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;gradientColor=#FFFF99;" parent="1" vertex="1">
-          <mxGeometry x="1150" y="100" width="230" height="150" as="geometry" />
-        </mxCell>
-
-        <!-- PROCESS FLOW BOX -->
-        <mxCell id="process_box" value="&lt;b&gt;PROCESS FLOW:&lt;/b&gt;&lt;br&gt;&lt;br&gt;1️⃣ User asks question&lt;br&gt;2️⃣ Agent node loads schema &amp; initializes LLM&lt;br&gt;3️⃣ LLM generates SQL via tool call&lt;br&gt;4️⃣ MCP client checks configuration&lt;br&gt;5️⃣ Routes to remote MCP server OR local fallback&lt;br&gt;6️⃣ Server executes query on database&lt;br&gt;7️⃣ Results returned through layers&lt;br&gt;8️⃣ LLM examines results&lt;br&gt;9️⃣ Loop continues or finishes&lt;br&gt;🔟 Final formatted answer to user" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;gradientColor=#B9E0A5;" parent="1" vertex="1">
-          <mxGeometry x="1150" y="270" width="230" height="190" as="geometry" />
-        </mxCell>
-
-        <!-- TECHNOLOGY STACK BOX -->
-        <mxCell id="tech_box" value="&lt;b&gt;TECHNOLOGY STACK:&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;u&gt;Agent Layer:&lt;/u&gt;&lt;br&gt;• LangGraph, Azure GPT-4o&lt;br&gt;&lt;br&gt;&lt;u&gt;MCP Client:&lt;/u&gt;&lt;br&gt;• langchain-mcp-adapters&lt;br&gt;• MultiServerMCPClient&lt;br&gt;&lt;br&gt;&lt;u&gt;MCP Server:&lt;/u&gt;&lt;br&gt;• FastMCP, streamable-http&lt;br&gt;&lt;br&gt;&lt;u&gt;Database:&lt;/u&gt;&lt;br&gt;• SQLite Cloud / Turso / sqlite3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=9;align=left;verticalAlign=top;spacingLeft=10;spacingTop=5;gradientColor=#CCCCFF;" parent="1" vertex="1">
-          <mxGeometry x="1150" y="480" width="230" height="190" as="geometry" />
-        </mxCell>
-
       </root>
     </mxGraphModel>
   </diagram>
