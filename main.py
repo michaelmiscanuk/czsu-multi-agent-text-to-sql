@@ -70,10 +70,15 @@ Key Features:
    - Explicit resource cleanup (ChromaDB clients)
 
 4. LangSmith Tracing Integration:
-   - Run ID tracking for observability
+   - Unique run_id for each analysis request (identifies the trace in LangSmith)
    - Thread ID for conversation tracking
    - Configuration metadata capture
    - Input/output logging for debugging
+
+   Note on run_id terminology: LangGraph uses "run_id" to identify the complete
+   execution (what LangSmith calls a "trace"). Each trace contains multiple runs
+   (individual steps like LLM calls, tool invocations). The run_id we generate
+   becomes the trace identifier because it's the root run's ID.
 
 5. Flexible Deployment:
    - CLI mode: Direct execution with command-line arguments
@@ -86,7 +91,7 @@ Processing Flow:
 1. Initialization:
    - Parse command-line arguments or use provided parameters
    - Generate thread_id for conversation tracking
-   - Generate run_id for LangSmith tracing
+   - Generate run_id for LangSmith tracing (identifies the complete execution)
    - Initialize PostgreSQL checkpointer (or fallback to InMemorySaver)
    - Monitor baseline memory usage
 
@@ -175,7 +180,7 @@ Input (main function parameters):
 - prompt (str, optional): Natural language question to analyze
 - thread_id (str, optional): Conversation thread ID for memory persistence
 - checkpointer (optional): Shared checkpointer instance (for multi-request scenarios)
-- run_id (str, optional): LangSmith tracing run ID
+- run_id (str, optional): Unique ID for LangSmith tracing (identifies the complete execution)
 
 Output (dict):
 - prompt (str): Original user question
@@ -231,7 +236,7 @@ Enable debug logging via utility functions:
 - print__memory_debug(): Memory usage and GC diagnostics
 
 LangSmith integration provides:
-- Run-level tracing with unique run_id
+- Unique run_id per analysis (identifies the trace)
 - Thread-level conversation tracking
 - Input/output capture for all LLM calls
 - Node execution timing and metrics
@@ -509,7 +514,7 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     1. CLI Mode: Direct execution with command-line arguments
        - Prompts can be provided as positional argument or use DEFAULT_PROMPT
        - Optional --thread_id flag for continuing conversations
-       - Optional --run_id flag for LangSmith tracing correlation
+       - Optional --run_id flag for LangSmith trace ID correlation
 
     2. API Mode: Called from FastAPI endpoints (api/main.py)
        - All parameters provided programmatically
@@ -601,7 +606,9 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             Stores conversation history, retrieved datasets, and intermediate results.
 
         run_id (str, optional):
-            UUID for LangSmith tracing correlation.
+            Unique identifier for LangSmith tracing. This ID identifies the complete
+            execution in LangSmith (LangSmith calls this the "trace" - a collection of
+            all the individual "runs" or steps within this execution).
             Enables tracking of:
             - LLM calls and token usage
             - Node execution timing
@@ -748,7 +755,9 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # ===========================================================================
     # STEP 35-36: RUN ID GENERATION FOR LANGSMITH TRACING
     # ===========================================================================
-    # Run ID enables correlation of all LLM calls and node executions in LangSmith
+    # run_id enables correlation of all LLM calls and node executions in LangSmith.
+    # In LangSmith terminology: run_id identifies the "trace" (complete execution),
+    # which contains multiple "runs" (individual steps like LLM calls, tool calls).
     if run_id is None:
         run_id = str(uuid.uuid4())
         print__analysis_tracing_debug(
@@ -852,7 +861,8 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # ===========================================================================
     # STEP 49: EXECUTION CONFIGURATION
     # ===========================================================================
-    # Configure graph execution with thread ID for checkpointing and run ID for tracing
+    # Configure graph execution with thread ID for checkpointing and run_id for LangSmith.
+    # In LangSmith, run_id identifies the complete execution (called a "trace").
     config = {"configurable": {"thread_id": thread_id}, "run_id": run_id}
     print__analysis_tracing_debug(
         "49 - CONFIG SETUP: Configuration for thread-level persistence and LangSmith tracing"

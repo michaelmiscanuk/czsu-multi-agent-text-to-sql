@@ -19,8 +19,9 @@ Key Features:
 -------------
 1. Thread Run Entry Management:
    - Creation of new thread run entries with unique run IDs
-   - Automatic generation of UUID-based run identifiers
-   - Upsert operations to handle duplicate run IDs gracefully
+   - The run_id is passed to LangGraph and used by LangSmith for tracing
+   - Automatic generation of UUID-based identifiers
+   - Upsert operations to handle duplicate IDs gracefully
    - Timestamp tracking for each thread run entry
    - Association of prompts with thread runs
    - Resilient fallback to return run IDs even on database failures
@@ -292,11 +293,15 @@ async def create_thread_run_entry(
     duplicate run IDs and provides resilient operation by returning a run_id even if
     database storage fails.
 
+    Note:
+        The run_id is passed to LangGraph and used by LangSmith for tracing.
+        As the root run ID, it identifies the complete execution in LangSmith.
+
     Args:
         email (str): User's email address for thread ownership
         thread_id (str): Unique identifier for the conversation thread
         prompt (str, optional): User's query or prompt text. Defaults to None.
-        run_id (str, optional): Unique run identifier. Auto-generated if not provided.
+        run_id (str, optional): Unique run identifier (UUID). Auto-generated if not provided.
 
     Returns:
         str: The run_id for this thread entry (either provided or generated)

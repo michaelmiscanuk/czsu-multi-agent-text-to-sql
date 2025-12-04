@@ -37,14 +37,20 @@ Key Features:
    - Connection pool management
    - Graceful degradation strategies
 
-4. Authentication and Authorization:
+4. Run ID Management:
+   - Unique run_id generation for LangSmith tracing
+   - The run_id identifies the root run, which LangSmith uses as the trace identifier
+   - Execution tracking and cancellation support
+   - User-specific execution linking
+
+5. Authentication and Authorization:
    - JWT-based user authentication
    - Email extraction from tokens
    - Thread-level access control
    - User-specific execution tracking
    - Session management
 
-5. Concurrency and Resource Management:
+6. Concurrency and Resource Management:
    - Semaphore-based concurrency limiting
    - Maximum concurrent analysis prevention
    - Memory usage monitoring and logging
@@ -52,7 +58,7 @@ Key Features:
    - Resource cleanup after execution
    - Timeout protection (4-minute limit)
 
-6. Error Handling and Recovery:
+7. Error Handling and Recovery:
    - Comprehensive exception handling
    - Database connection fallback mechanisms
    - Prepared statement error recovery
@@ -652,7 +658,8 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         request (AnalyzeRequest): Request object containing:
             - prompt: Natural language query from user
             - thread_id: Unique conversation thread identifier
-            - run_id: Optional run identifier (generated if not provided)
+            - run_id: Optional run identifier (generated if not provided).
+                      Passed to LangGraph as the root run ID for LangSmith tracing.
         user (dict): Authenticated user object from JWT token dependency
 
     Returns:
@@ -663,7 +670,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             - thread_id: Conversation thread identifier
             - datasets_used: List of CZSU selection codes used
             - sql: Final SQL query (if any)
-            - run_id: Unique execution identifier
+            - run_id: Unique identifier for LangSmith tracing
             - top_chunks: RAG context chunks used
             - followup_prompts: Suggested follow-up questions
 
