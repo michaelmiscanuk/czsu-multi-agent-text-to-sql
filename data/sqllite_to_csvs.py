@@ -59,7 +59,7 @@ def export_all_sqlite_to_csvs(db_path: str = None, output_folder: str = None) ->
 # Example usage
 if __name__ == "__main__":
     # Option 1: Export from default db to default folder
-    # export_all_sqlite_to_csvs()
+    export_all_sqlite_to_csvs()
 
     # Option 2: Export from specific db to specific folder
-    export_all_sqlite_to_csvs(None, "data/CSVs")
+    # export_all_sqlite_to_csvs("czsu_data.db", "data/CSVs")

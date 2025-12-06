@@ -1086,11 +1086,9 @@ async def retrieve_similar_selections_hybrid_search_node(
         # Key Step 7: Return hybrid_search_results list or empty list on error
         return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
-        logger.error("❌ %s: Error in hybrid search: %s", HYBRID_SEARCH_NODE_ID, e)
+        print(f"❌ {HYBRID_SEARCH_NODE_ID}: Error in hybrid search: {e}")
 
-        logger.error(
-            "📄 %s: Traceback: %s", HYBRID_SEARCH_NODE_ID, traceback.format_exc()
-        )
+        print(f"📄 {HYBRID_SEARCH_NODE_ID}: Traceback: {traceback.format_exc()}")
         return {"hybrid_search_results": []}
 
 
@@ -1190,12 +1188,10 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         # Key Step 5: Return most_similar_selections as list of (selection_code, score) tuples
         return {"most_similar_selections": most_similar}
     except Exception as e:
-        logger.error(
-            "❌ %s: Error in reranking: %s", RERANK_TABLE_DESCRIPTIONS_NODE_ID, e
-        )
+        print(f"❌ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Error in reranking: {e}")
 
-        logger.error(
-            "📄 %s: Traceback: %s",
+        print(
+            f"📄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Traceback: {traceback.format_exc()}",
             RERANK_TABLE_DESCRIPTIONS_NODE_ID,
             traceback.format_exc(),
         )
@@ -1394,13 +1390,9 @@ async def retrieve_similar_chunks_hybrid_search_node(
 
         return {"hybrid_search_chunks": hybrid_docs}
     except Exception as e:
-        logger.error(
-            "❌ %s: Error in PDF hybrid search: %s", RETRIEVE_CHUNKS_NODE_ID, e
-        )
+        print(f"❌ {RETRIEVE_CHUNKS_NODE_ID}: Error in PDF hybrid search: {e}")
 
-        logger.error(
-            "📄 %s: Traceback: %s", RETRIEVE_CHUNKS_NODE_ID, traceback.format_exc()
-        )
+        print(f"📄 {RETRIEVE_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}")
         return {"hybrid_search_chunks": []}
 
 
@@ -1496,11 +1488,9 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 
         return {"most_similar_chunks": most_similar}
     except Exception as e:
-        logger.error("❌ %s: Error in PDF reranking: %s", RERANK_CHUNKS_NODE_ID, e)
+        print(f"❌ {RERANK_CHUNKS_NODE_ID}: Error in PDF reranking: {e}")
 
-        logger.error(
-            "📄 %s: Traceback: %s", RERANK_CHUNKS_NODE_ID, traceback.format_exc()
-        )
+        print(f"📄 {RERANK_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}")
         return {"most_similar_chunks": []}
 
 
@@ -2040,8 +2030,7 @@ Remember: Always examine the schema to understand:
 
                 except Exception as e:
                     error_msg = f"Error executing query: {str(e)}"
-                    print__nodes_debug(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
-                    logger.error("❌ %s: %s", GENERATE_QUERY_ID, error_msg)
+                    print(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
 
                     # Store error as result
                     new_queries_and_results.append((sql_query, f"Error: {str(e)}"))
@@ -2795,7 +2784,7 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
                 f"✅ {SAVE_RESULT_ID}: ✅ Result saved to {result_path} and {json_result_path}"
             )
         except Exception as e:
-            logger.error("❌ %s: ⚠️ Error saving JSON: %s", SAVE_RESULT_ID, e)
+            print(f"❌ {SAVE_RESULT_ID}: ⚠️ Error saving JSON: {e}")
     else:
         print__nodes_debug(
             f"💾 {SAVE_RESULT_ID}: File saving disabled (SAVE_TO_FILE_TXT_JSONL = {SAVE_TO_FILE_TXT_JSONL})"
