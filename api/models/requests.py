@@ -15,6 +15,11 @@ Request Models:
     2. FeedbackRequest: User feedback submission for query results
     3. SentimentRequest: Quick sentiment tracking (positive/negative)
 
+Note on run_id:
+    The run_id field identifies the root run of a LangGraph execution.
+    In LangSmith, this root run ID also serves as the trace identifier,
+    allowing feedback to be attached to the complete execution trace.
+
 Each model includes:
     - Field definitions with types and constraints
     - Custom validators for business logic
@@ -455,7 +460,11 @@ class AnalyzeRequest(BaseModel):
     run_id: Optional[str] = Field(
         None,  # Optional field (auto-generated if not provided)
         min_length=1,  # If provided, must be non-empty
-        description="Optional run ID in UUID format. Auto-generated if not provided.",
+        description=(
+            "Optional run ID in UUID format for LangSmith tracing. "
+            "Passed to LangGraph as the root run identifier. "
+            "Auto-generated if not provided."
+        ),
         examples=["550e8400-e29b-41d4-a716-446655440000"],
     )
 
@@ -526,7 +535,7 @@ class AnalyzeRequest(BaseModel):
         """Validate that run_id is a valid UUID string if provided.
 
         Optional field - can be None. If provided, must be valid UUID format.
-        This ensures run_id can be used reliably for tracking and feedback.
+        This run_id is passed to LangGraph and used for LangSmith tracing.
 
         Args:
             v: The run_id value to validate (can be None)

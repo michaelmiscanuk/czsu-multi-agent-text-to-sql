@@ -1,0 +1,287 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="langsmith-observability" name="LangSmith Observability &amp; Tracing">
+    <mxGraphModel dx="1400" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Main Title -->
+        <mxCell id="main_title" value="&lt;b&gt;LANGSMITH OBSERVABILITY &amp; TRACING CONCEPTS&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontStyle=1;fontFamily=Helvetica;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="500" y="20" width="600" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- SECTION 1: ORGANIZATIONAL HIERARCHY -->
+        <mxCell id="org_title" value="&lt;b&gt;ORGANIZATIONAL HIERARCHY&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#0066CC;" parent="1" vertex="1">
+          <mxGeometry x="80" y="70" width="220" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="organization" value="&lt;b&gt;ORGANIZATION&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Top-level container&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;User management&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Billing &amp;amp; settings&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;RBAC configuration&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=10;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="80" y="100" width="220" height="90" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="workspace" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;WORKSPACE&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Team/business unit isolation&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Role-based access control&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Shared settings &amp;amp; API keys&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Resource tagging&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Multiple per organization&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="80" y="220" width="220" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="project" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;PROJECT&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Container for traces&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Single application/service&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Prebuilt dashboards&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Automation rules&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Online evaluators&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Data retention settings&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="80" y="350" width="220" height="110" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows for hierarchy -->
+        <mxCell id="arrow_org_ws" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="organization" target="workspace" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_ws_proj" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="workspace" target="project" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- SECTION 2: TRACING HIERARCHY -->
+        <mxCell id="trace_title" value="&lt;b&gt;TRACING HIERARCHY&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#CC6600;" parent="1" vertex="1">
+          <mxGeometry x="380" y="70" width="220" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="trace" value="&lt;b&gt;TRACE&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Collection of runs&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Single user request&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Input → Output journey&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Unique trace_id&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;gradientColor=#FFCC99;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="380" y="100" width="220" height="90" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="run" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;RUN (SPAN)&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Single unit of work&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• OpenTelemetry span equivalent&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Has inputs &amp;amp; outputs&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Start/end timestamps&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Parent-child relationships&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Status: pending/success/error&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="380" y="220" width="220" height="110" as="geometry" />
+        </mxCell>
+        
+        <!-- Run Types Box -->
+        <mxCell id="run_types" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;RUN TYPES&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;llm&lt;/b&gt; - LLM model calls&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;chain&lt;/b&gt; - Sequence of operations&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;tool&lt;/b&gt; - Tool/function calls&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;retriever&lt;/b&gt; - Document retrieval&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;embedding&lt;/b&gt; - Vector embeddings&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;parser&lt;/b&gt; - Output parsing&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;prompt&lt;/b&gt; - Prompt formatting&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="380" y="360" width="220" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Thread Box -->
+        <mxCell id="thread" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;THREAD&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Multi-turn conversation&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Sequence of traces&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Linked via session_id,&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;thread_id, or conversation_id&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Chatbot interactions&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=9;gradientColor=#66FFFF;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="380" y="520" width="220" height="95" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows for tracing -->
+        <mxCell id="arrow_trace_run" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="trace" target="run" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_run_types" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="run" target="run_types" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- SECTION 3: RUN DATA STRUCTURE -->
+        <mxCell id="data_title" value="&lt;b&gt;RUN DATA STRUCTURE&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#990099;" parent="1" vertex="1">
+          <mxGeometry x="680" y="70" width="220" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="core_fields" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;CORE FIELDS&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• id (UUID)&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• name&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• run_type&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• inputs / outputs&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• start_time / end_time&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• status&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• error (if any)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="680" y="100" width="220" height="135" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="relationships" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;RELATIONSHIPS&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• trace_id&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• parent_run_id&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• child_run_ids&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• session_id (project)&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• dotted_order (hierarchy)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="680" y="260" width="220" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="token_cost" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;TOKENS &amp;amp; COST&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• total_tokens&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• prompt_tokens&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• completion_tokens&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• total_cost&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• prompt_cost&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• completion_cost&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• first_token_time&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="680" y="385" width="220" height="120" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="metadata_tags" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;METADATA &amp;amp; TAGS&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• tags[] - string labels&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• metadata{} - key-value pairs&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• extra{} - additional info&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• events[] - streaming events&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• feedback_stats{}  &lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="680" y="530" width="220" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- SECTION 4: FEEDBACK & EVALUATION -->
+        <mxCell id="feedback_title" value="&lt;b&gt;FEEDBACK &amp;amp; EVALUATION&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#006600;" parent="1" vertex="1">
+          <mxGeometry x="980" y="70" width="220" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="feedback" value="&lt;b&gt;FEEDBACK&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Scoring individual runs&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Bound to run by run_id&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Key (criteria) + Score&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;Continuous or categorical&lt;/i&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;gradientColor=#B9E0A5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="980" y="100" width="220" height="90" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="feedback_sources" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;FEEDBACK SOURCES&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• User feedback via SDK&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Inline annotation (UI)&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Annotation queues&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Offline evaluators&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Online evaluators&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="980" y="215" width="220" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="offline_eval" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;OFFLINE EVALUATION&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Test before deployment&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Curated datasets&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Experiments (runs on dataset)&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Compare versions&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Catch regressions&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Human / Code / LLM-judge&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="980" y="340" width="220" height="110" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="online_eval" value="&lt;div style=&quot;text-align: center;&quot;&gt;&lt;b&gt;ONLINE EVALUATION&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Monitor in production&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Real-time feedback&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• LLM-as-judge evaluators&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Custom code evaluators&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Run-level or Thread-level&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Sampling &amp;amp; filtering&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="980" y="475" width="220" height="110" as="geometry" />
+        </mxCell>
+        
+        <!-- SECTION 5: MONITORING & AUTOMATION -->
+        <mxCell id="monitor_title" value="&lt;b&gt;MONITORING &amp;amp; AUTOMATION&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#CC0000;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="70" width="240" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="dashboards" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;DASHBOARDS&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Prebuilt (per project)&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Custom dashboards&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Trace count &amp;amp; latency&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Error rates&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• LLM call metrics&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Token usage &amp;amp; costs&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Tool performance&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=9;gradientColor=#66FFFF;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="100" width="240" height="125" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="alerts" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;ALERTS&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Threshold-based alerting&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Errored runs detection&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Latency monitoring&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Feedback score changes&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Webhook notifications&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="250" width="240" height="95" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="automations" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;AUTOMATIONS&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Filter + Sampling + Action&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Add traces to datasets&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Add to annotation queues&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Trigger webhooks&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Extend data retention&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Rule-based processing&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="370" width="240" height="110" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="data_retention" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;DATA RETENTION&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Max 400 days (SaaS)&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Extended retention option&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Auto-upgrade for evals&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Datasets persist indefinitely&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1280" y="505" width="240" height="85" as="geometry" />
+        </mxCell>
+        
+        <!-- SECTION 6: DATASETS & EXPERIMENTS -->
+        <mxCell id="dataset_title" value="&lt;b&gt;DATASETS &amp;amp; EXPERIMENTS&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#666600;" parent="1" vertex="1">
+          <mxGeometry x="80" y="500" width="220" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="dataset" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;DATASET&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Collection of examples&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Inputs + optional outputs&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Reference outputs for eval&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Persist indefinitely&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Created from traces&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="80" y="530" width="220" height="100" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="experiment" value="&lt;b&gt;&amp;nbsp; &amp;nbsp;EXPERIMENT&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• App version on dataset&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Captures outputs &amp;amp; scores&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Execution traces&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Side-by-side comparison&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;• Regression detection&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="80" y="660" width="220" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrows -->
+        <mxCell id="arrow_ds_exp" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="dataset" target="experiment" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_fb_sources" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="feedback" target="feedback_sources" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Cross-section arrows showing relationships -->
+        <mxCell id="arrow_proj_trace" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1;dashed=1;" parent="1" source="project" target="trace" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="330" y="405" />
+              <mxPoint x="330" y="145" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow_thread_trace" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1;dashed=1;" parent="1" source="thread" target="trace" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="568" />
+              <mxPoint x="640" y="145" />
+              <mxPoint x="600" y="145" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="arrow_run_feedback" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#666666;strokeWidth=1;dashed=1;" parent="1" source="run" target="feedback" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="275" />
+              <mxPoint x="940" y="145" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- LEGEND -->
+        <mxCell id="legend_title" value="&lt;b&gt;LEGEND&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;fontStyle=1;fontFamily=Helvetica;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="80" y="800" width="60" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_org" value="Organizational" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=8;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="150" y="800" width="90" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_tracing" value="Tracing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=8;gradientColor=#FFCC99;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="260" y="800" width="90" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_eval" value="Evaluation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=8;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="370" y="800" width="90" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_storage" value="Storage/Metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;gradientColor=#B9E0A5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="480" y="800" width="90" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_external" value="External/Multi-turn" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=8;gradientColor=#66FFFF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="590" y="800" width="100" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- TRACING FLOW VISUALIZATION -->
+        <mxCell id="flow_title" value="&lt;b&gt;EXAMPLE TRACE FLOW (RAG Application)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="80" y="850" width="350" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_input" value="&lt;b&gt;User Input&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=9;gradientColor=#66B2FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="80" y="890" width="80" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_chain" value="&lt;b&gt;chain&lt;/b&gt;&lt;div&gt;(root run)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;gradientColor=#FFCC99;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="190" y="885" width="90" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_retriever" value="&lt;b&gt;retriever&lt;/b&gt;&lt;div&gt;(child run)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="310" y="885" width="90" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_embedding" value="&lt;b&gt;embedding&lt;/b&gt;&lt;div&gt;(child run)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="430" y="885" width="90" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_llm" value="&lt;b&gt;llm&lt;/b&gt;&lt;div&gt;(child run)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=9;gradientColor=#FF9999;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="550" y="885" width="90" height="50" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="flow_output" value="&lt;b&gt;Output&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;align=center;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="670" y="890" width="80" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- Flow arrows -->
+        <mxCell id="flow_arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="flow_input" target="flow_chain" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="flow_chain" target="flow_retriever" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="flow_retriever" target="flow_embedding" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="flow_embedding" target="flow_llm" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" parent="1" source="flow_llm" target="flow_output" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- PERFORMANCE METRICS -->
+        <mxCell id="metrics_title" value="&lt;b&gt;KEY PERFORMANCE METRICS&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="810" y="850" width="250" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="metrics_box" value="&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;latency_p50 / latency_p99&lt;/b&gt; - Response time percentiles&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;first_token_p50 / first_token_p99&lt;/b&gt; - Time to first token&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;error_rate&lt;/b&gt; - Percentage of failed runs&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;total_tokens&lt;/b&gt; - Prompt + completion tokens&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;total_cost&lt;/b&gt; - Calculated from token usage&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• &lt;b&gt;feedback_stats&lt;/b&gt; - Aggregated scores by key&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;gradientColor=#B9E0A5;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="810" y="880" width="350" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- INTEGRATIONS -->
+        <mxCell id="integrations_title" value="&lt;b&gt;INTEGRATIONS&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontStyle=1;fontFamily=Helvetica;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="1200" y="850" width="180" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="integrations_box" value="&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• LangChain (Python/JS)&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• LangGraph&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• OpenAI SDK&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• Anthropic SDK&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• Vercel AI SDK&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• OpenTelemetry&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• CrewAI / AutoGen&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&amp;nbsp; &amp;nbsp;• @traceable decorator&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#00CCCC;fontSize=9;gradientColor=#66FFFF;align=left;verticalAlign=middle;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
+          <mxGeometry x="1200" y="880" width="180" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- Annotation explaining hierarchy -->
+        <mxCell id="hierarchy_note" value="&lt;i&gt;Traces contain Runs → Projects contain Traces → Workspaces contain Projects → Organizations contain Workspaces&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;fontFamily=Helvetica;fontColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="300" y="50" width="600" height="15" as="geometry" />
+        </mxCell>
+        
+        <!-- Additional connecting arrows showing containment -->
+        <mxCell id="arrow_offline_eval" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="feedback_sources" target="offline_eval" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow_online_eval" style="edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="offline_eval" target="online_eval" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

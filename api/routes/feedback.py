@@ -18,6 +18,11 @@ These endpoints enable:
     - Feedback-driven iteration
     - User experience analytics
 
+Note on run_id:
+    The run_id identifies the root run of a LangGraph execution, which
+    LangSmith also uses as the trace identifier. Feedback is attached
+    to this run_id via LangSmith's create_feedback API.
+
 Feedback Flow:
     User receives AI response → User rates/comments → Data sent to LangSmith/Database
     → Analytics and model improvement → Better AI responses
