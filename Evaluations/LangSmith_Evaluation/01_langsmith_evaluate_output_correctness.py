@@ -15,6 +15,7 @@ Key components:
 # ==============================================================================
 import sys
 import os
+from pathlib import Path
 
 # Temporarily override DEBUG for this notebook execution
 original_debug_value = os.environ.get("DEBUG")
@@ -23,10 +24,14 @@ print(
     f"Temporarily setting DEBUG=0 for this notebook execution (was: {original_debug_value})"
 )
 
-# Add the parent directory to the Python path so we can import the my_agent module
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
-if parent_dir not in sys.path:
-    sys.path.append(parent_dir)
+# Resolve base directory (project root)
+try:
+    BASE_DIR = Path(__file__).resolve().parents[2]
+except NameError:  # Fallback if __file__ not defined
+    BASE_DIR = Path(os.getcwd()).parents[0]
+
+# Make project root importable
+sys.path.insert(0, str(BASE_DIR))
 
 import uuid
 from langsmith import aevaluate
@@ -40,9 +45,9 @@ from my_agent.utils.models import get_azure_llm_gpt_4o
 # Experiment configuration
 EXPERIMENT_CONFIG = {
     # "dataset_name": "czsu agent",  # Name of the LangSmith dataset to use
-    "dataset_name": "czsu agent simple 2",  # Name of the LangSmith dataset to use
+    "dataset_name": "czsu agent simple 3",  # Name of the LangSmith dataset to use
     "experiment_prefix": "test1_judge_4_0__query_gen_gpt-4.1",  # Prefix for the experiment run
-    "max_concurrency": 2,  # Maximum number of concurrent evaluations
+    "max_concurrency": 3,  # Maximum number of concurrent evaluations
     "evaluators": ["correctness"],  # List of evaluator functions to use
 }
 
