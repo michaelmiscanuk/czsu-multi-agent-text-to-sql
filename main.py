@@ -348,8 +348,11 @@ from my_agent.utils.followup import (
 # - Industry statistics (wages by sector)
 # - Internet usage demographics
 # - Energy/fuel production data
-DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
-# English: "What was the production of liquid fuels from oil in Czechia in 2023?"
+# DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
+# DEFAULT_PROMPT = "What was the production of liquid fuels from oil in Czechia in 2023?"
+DEFAULT_PROMPT = (
+    "How many thousands of passengers were transported by air in Czechia in Q4 2018?"
+)
 
 # ==============================================================================
 # HELPER FUNCTIONS
