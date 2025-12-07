@@ -672,6 +672,7 @@ from my_agent.utils.models import (
     get_azure_llm_gpt_4o,
     get_azure_llm_gpt_4o_mini,
     get_azure_llm_gpt_4o_4_1,
+    get_gemini_llm,
 )
 from metadata.chromadb_client_factory import should_use_cloud
 from .state import DataAnalysisState
@@ -1765,7 +1766,10 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
     # Key Step 3: Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
-    llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
+    # llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)  # Commented out - using Gemini instead
+
+    # Using Gemini 3 Pro with thought signatures (requires langchain-google-genai >= 3.1.0)
+    llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
     tools = await get_sqlite_tools()
     sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
     if not sqlite_tool:
@@ -2014,8 +2018,9 @@ Remember: Always examine the schema to understand:
     if last_message_content:
         template_vars["last_message_content"] = last_message_content
 
-    # Key Step 7: Bind tools to LLM, create prompt template, format initial messages, initialize conversation state
-    llm_with_tools = llm.bind_tools(tools)
+    # Key Step 7: Create prompt template, format initial messages, initialize conversation state
+    # Note: We pass tools directly to ainvoke() instead of using bind_tools() to properly maintain
+    # thought signatures across multi-turn conversations with Gemini 3
 
     # Build initial messages for the conversation
     prompt_template = ChatPromptTemplate.from_messages(
@@ -2041,9 +2046,13 @@ Remember: Always examine the schema to understand:
         )
 
         # Invoke LLM with retry logic (may return tool calls or signal completion)
+        # CRITICAL: Pass tools directly to ainvoke() to maintain thought signatures properly
         for attempt in range(MAX_RETRIES):
             try:
-                llm_response = await llm_with_tools.ainvoke(conversation_messages)
+                llm_response = await llm.ainvoke(
+                    conversation_messages,
+                    tools=tools,  # Pass tools here instead of using bind_tools()
+                )
                 break
             except RateLimitError as e:
                 if attempt < MAX_RETRIES - 1:
@@ -2083,12 +2092,14 @@ Remember: Always examine the schema to understand:
             break
 
         # LLM wants to call tools - add its message to conversation
+        # CRITICAL: This preserves thought signatures from Gemini's response
         conversation_messages.append(llm_response)
         print__nodes_debug(
             f"🔧 {GENERATE_QUERY_ID}: LLM requested {len(llm_response.tool_calls)} tool call(s)"
         )
 
         # Execute each tool call
+        # Note: tool_calls from Gemini 3 include thought signatures that must be preserved
         for tool_call in llm_response.tool_calls:
             tool_name = tool_call.get("name", "unknown")
             tool_args = tool_call.get("args", {})

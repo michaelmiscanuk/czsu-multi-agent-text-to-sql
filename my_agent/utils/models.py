@@ -5,6 +5,10 @@ used throughout the application, with support for both sync and async operations
 """
 
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from openai import AzureOpenAI
@@ -109,6 +113,42 @@ def get_azure_llm_gpt_4o_4_1(temperature=0.0):
 #     print(f"\nInput message:\n{messages[0]['content']}")
 #     response = llm.invoke(messages)
 #     print(f"\nResponse from LLM:\n{response.content}")
+
+
+# ===============================================================================
+# Google Gemini Models
+# ===============================================================================
+def get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0):
+    """Get an instance of Google Gemini LLM with standard configuration.
+
+    The returned model instance supports both sync (invoke) and async (ainvoke)
+    operations for flexibility in different execution contexts.
+
+    Args:
+        model_name (str): The Gemini model name (e.g., "gemini-2.0-flash-exp", "gemini-1.5-pro")
+        temperature (float): Temperature setting for generation randomness
+
+    Returns:
+        ChatGoogleGenerativeAI: Configured LLM instance with async support
+    """
+    from langchain_google_genai import ChatGoogleGenerativeAI
+
+    return ChatGoogleGenerativeAI(
+        model=model_name,
+        temperature=temperature,
+        google_api_key=os.getenv("GOOGLE_API_KEY"),
+        include_thoughts=True,  # CRITICAL: Automatically handles thought signatures in multi-turn conversations (requires langchain-google-genai >= 3.1.0)
+    )
+
+
+def get_gemini_llm_test():
+    # Test get_gemini_llm() with a simple message
+    print("\nTesting get_gemini_llm()...")
+    llm = get_gemini_llm()
+    messages = [{"role": "user", "content": "Say hello"}]
+    print(f"\nInput message:\n{messages[0]['content']}")
+    response = llm.invoke(messages)
+    print(f"\nResponse from LLM:\n{response.content}")
 
 
 # ===============================================================================
@@ -233,7 +273,8 @@ if __name__ == "__main__":
     # get_azure_llm_gpt_4o_test()
     # get_azure_llm_gpt_4o_mini_test()
 
-    llm = get_ollama_llm("qwen:7b")
+    # llm = get_ollama_llm("qwen:7b")
+    llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
 
     # Then use it like any LangChain model
     response = llm.invoke("Hi")

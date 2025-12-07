@@ -356,7 +356,8 @@ from my_agent.utils.followup import (
 # DEFAULT_PROMPT = "Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?"
 # DEFAULT_PROMPT = "What was the production of liquid fuels from oil in Czechia in 2023?"
 DEFAULT_PROMPT = (
-    "How many thousands of passengers were transported by air in Czechia in Q4 2018?"
+    # "How many thousands of passengers were transported by air in Czechia in Q4 2018?"
+    "What was the number of active enterprises in the ICT sector in Czechia in 2023?"
 )
 
 # ==============================================================================

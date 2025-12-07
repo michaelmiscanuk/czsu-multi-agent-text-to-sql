@@ -45,7 +45,8 @@ from my_agent.utils.models import get_azure_llm_gpt_4o
 # Experiment configuration
 EXPERIMENT_CONFIG = {
     # "dataset_name": "czsu agent",  # Name of the LangSmith dataset to use
-    "dataset_name": "001b_golden_dataset__output_correctness__simple_QA_from_SQL",  # Name of the LangSmith dataset to use
+    # "dataset_name": "001b_golden_dataset__output_correctness__simple_QA_from_SQL",  # Name of the LangSmith dataset to use
+    "dataset_name": "001d_golden_dataset__output_correctness__simple_QA_from_SQL_manually_chosen",  # Name of the LangSmith dataset to use
     # "dataset_name": "001c_golden_dataset__output_correctness__edge_cases",  # Name of the LangSmith dataset to use
     "experiment_prefix": "test1_judge_4_0__query_gen_gpt-4.1",  # Prefix for the experiment run
     "max_concurrency": 2,  # Maximum number of concurrent evaluations
