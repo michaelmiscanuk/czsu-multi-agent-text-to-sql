@@ -595,11 +595,15 @@ from pathlib import Path
 import gc
 import traceback
 import re
+import asyncio
 
 from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from langchain_core.tools import tool
+
+# Import RateLimitError for retry logic
+from openai import RateLimitError
 
 
 # ==============================================================================
@@ -677,6 +681,18 @@ from .state import DataAnalysisState
 logger = logging.getLogger(__name__)
 
 PDF_FUNCTIONALITY_AVAILABLE = True
+
+# ==============================================================================
+# RETRY CONFIGURATION FOR LLM RATE LIMITING PROTECTION
+# ==============================================================================
+# Configuration for LLM API request handling with retry logic
+# Similar to data/datasets_selections_get_csvs_01.py pattern
+TIMEOUT = 60  # Request timeout in seconds
+MAX_RETRIES = 3  # Maximum number of retry attempts
+RETRY_WAIT_MIN = 5  # Minimum wait time between retries (seconds)
+RETRY_WAIT_MAX = 20  # Maximum wait time between retries (seconds)
+RATE_LIMIT_DELAY = 2  # Delay between requests (seconds)
+RESPONSE_DIAGNOSTICS = 1  # Enable detailed response diagnostics (1=yes, 0=no)
 
 # Configurable iteration limit to prevent excessive looping
 MAX_ITERATIONS = int(
@@ -844,9 +860,45 @@ Now process this conversation:
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
-    result = await llm.ainvoke(
-        prompt.format_messages(summary_content=summary.content, prompt_text=prompt_text)
+    # Inline retry logic for rate limiting
+    messages_to_send = prompt.format_messages(
+        summary_content=summary.content, prompt_text=prompt_text
     )
+    for attempt in range(MAX_RETRIES):
+        try:
+            result = await llm.ainvoke(messages_to_send)
+            break
+        except RateLimitError as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "Rate limit hit (attempt %d/%d), waiting %s seconds: %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    wait_time,
+                    str(e),
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "Rate limit error after %d attempts: %s", MAX_RETRIES, str(e)
+                )
+                raise
+        except Exception as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "LLM error (attempt %d/%d): %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    str(e)[:100],
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "LLM error after %d attempts: %s", MAX_RETRIES, str(e)[:100]
+                )
+                raise
     rewritten_prompt = result.content.strip()
     # FIX: Escape curly braces in rewritten_prompt to prevent f-string parsing errors
     rewritten_prompt_escaped = rewritten_prompt.replace("{", "{{").replace("}", "}}")
@@ -933,11 +985,41 @@ Do not include any meta-commentary or formatting, just the summary text."""
         [("system", system_prompt), ("human", human_prompt)]
     )
     # Key Step 3: Call Azure GPT-4o-mini (temp=0.0) to generate updated cumulative summary
-    result = await llm.ainvoke(
-        prompt.format_messages(
-            prev_summary=prev_summary, last_message_content=last_message_content
-        )
+    messages_to_send = prompt.format_messages(
+        prev_summary=prev_summary, last_message_content=last_message_content
     )
+    for attempt in range(MAX_RETRIES):
+        try:
+            result = await llm.ainvoke(messages_to_send)
+            break
+        except RateLimitError as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "Rate limit hit (attempt %d/%d), waiting %s seconds: %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    wait_time,
+                    str(e),
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "Rate limit error after %d attempts: %s", MAX_RETRIES, str(e)
+                )
+                raise
+        except Exception as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "LLM error (attempt %d/%d): %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    str(e)[:100],
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                raise
     new_summary = result.content.strip()
     print__nodes_debug(f"📝 SUMMARY: Updated summary: {new_summary}")
 
@@ -1958,8 +2040,39 @@ Remember: Always examine the schema to understand:
             f"🔄 {GENERATE_QUERY_ID}: Tool iteration {tool_call_count}/{MAX_TOOL_ITERATIONS}"
         )
 
-        # Invoke LLM (may return tool calls or signal completion)
-        llm_response = await llm_with_tools.ainvoke(conversation_messages)
+        # Invoke LLM with retry logic (may return tool calls or signal completion)
+        for attempt in range(MAX_RETRIES):
+            try:
+                llm_response = await llm_with_tools.ainvoke(conversation_messages)
+                break
+            except RateLimitError as e:
+                if attempt < MAX_RETRIES - 1:
+                    wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                    logger.warning(
+                        "Rate limit hit (attempt %d/%d), waiting %s seconds: %s",
+                        attempt + 1,
+                        MAX_RETRIES,
+                        wait_time,
+                        str(e),
+                    )
+                    await asyncio.sleep(wait_time)
+                else:
+                    logger.error(
+                        "Rate limit error after %d attempts: %s", MAX_RETRIES, str(e)
+                    )
+                    raise
+            except Exception as e:
+                if attempt < MAX_RETRIES - 1:
+                    wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                    logger.warning(
+                        "LLM error (attempt %d/%d): %s",
+                        attempt + 1,
+                        MAX_RETRIES,
+                        str(e)[:100],
+                    )
+                    await asyncio.sleep(wait_time)
+                else:
+                    raise
 
         # Check if LLM wants to use tools
         if not llm_response.tool_calls:
@@ -2233,14 +2346,47 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
             ),
         ]
     )
-    result = await llm.ainvoke(
-        prompt_template.format_messages(
-            question=rewritten_prompt or prompt,
-            summary=summary.content,
-            last_message=last_message_content,
-            results=queries_results_text,
-        )
+    messages_to_send = prompt_template.format_messages(
+        question=rewritten_prompt or prompt,
+        summary=summary.content,
+        last_message=last_message_content,
+        results=queries_results_text,
     )
+    for attempt in range(MAX_RETRIES):
+        try:
+            result = await llm.ainvoke(messages_to_send)
+            break
+        except RateLimitError as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "Rate limit hit (attempt %d/%d), waiting %s seconds: %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    wait_time,
+                    str(e),
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "Rate limit error after %d attempts: %s", MAX_RETRIES, str(e)
+                )
+                raise
+        except Exception as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "LLM error (attempt %d/%d): %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    str(e)[:100],
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "LLM error after %d attempts: %s", MAX_RETRIES, str(e)[:100]
+                )
+                raise
     content = result.content if hasattr(result, "content") else str(result)
 
     # Key Step 4: Call Azure GPT-4o-mini to analyze and provide feedback
@@ -2452,7 +2598,42 @@ Bad: "The query shows X is 1,234,567"
     chain = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", formatted_prompt)]
     )
-    result = await llm.ainvoke(chain.format_messages(**template_vars))
+    messages_to_send = chain.format_messages(**template_vars)
+    for attempt in range(MAX_RETRIES):
+        try:
+            result = await llm.ainvoke(messages_to_send)
+            break
+        except RateLimitError as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "Rate limit hit (attempt %d/%d), waiting %s seconds: %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    wait_time,
+                    str(e),
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "Rate limit error after %d attempts: %s", MAX_RETRIES, str(e)
+                )
+                raise
+        except Exception as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "LLM error (attempt %d/%d): %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    str(e)[:100],
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "LLM error after %d attempts: %s", MAX_RETRIES, str(e)[:100]
+                )
+                raise
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
 
     # Step 9: Extract answer content from LLM response
@@ -2592,9 +2773,44 @@ Important guidelines:
     prompt = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
-    result = await llm.ainvoke(
-        prompt.format_messages(summary_content=summary_content or "(empty)")
+    messages_to_send = prompt.format_messages(
+        summary_content=summary_content or "(empty)"
     )
+    for attempt in range(MAX_RETRIES):
+        try:
+            result = await llm.ainvoke(messages_to_send)
+            break
+        except RateLimitError as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "Rate limit hit (attempt %d/%d), waiting %s seconds: %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    wait_time,
+                    str(e),
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "Rate limit error after %d attempts: %s", MAX_RETRIES, str(e)
+                )
+                raise
+        except Exception as e:
+            if attempt < MAX_RETRIES - 1:
+                wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
+                logger.warning(
+                    "LLM error (attempt %d/%d): %s",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    str(e)[:100],
+                )
+                await asyncio.sleep(wait_time)
+            else:
+                logger.error(
+                    "LLM error after %d attempts: %s", MAX_RETRIES, str(e)[:100]
+                )
+                raise
     generated_text = result.content.strip()
     print__nodes_debug(
         f"💡 FOLLOWUP_PROMPTS: LLM returned {len(generated_text)} characters"
