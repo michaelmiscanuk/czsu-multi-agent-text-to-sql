@@ -155,7 +155,6 @@ import numpy as np
 import openpyxl
 import tiktoken
 import tqdm as tqdm_module
-from langchain.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 from openpyxl import Workbook

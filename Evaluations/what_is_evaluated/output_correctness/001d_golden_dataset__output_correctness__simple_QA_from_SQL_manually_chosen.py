@@ -48,6 +48,36 @@ question_answers = {
     "What was the number of active enterprises in the ICT sector in Czechia in 2023?": "60043",
     # MZDKQT5.csv; Q1-Q2 2025;Pracovištní metoda;Praha;Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč);62395.036985578
     "What was the average gross monthly wage per adjusted employee in Prague in Q1-Q2 2025?": "62395.036985578 CZK",
+    # MZDRT2.csv; Česko;2024;P - Vzdělávání;Průměrná hrubá měsíční mzda na fyzické osoby (Kč);38999.1122333656
+    "What was the average gross monthly wage per individual in Education in Czechia in 2024?": "38999.1122333656 CZK",
+    # NEZ01T1.csv; 2023;Hlavní město Praha;Uchazeči o zaměstnání v evidenci ÚP - celkem;27425.0
+    "What was the number of job applicants registered at the Labor Office in Prague in 2023?": "27425",
+    # NUC06RT01.csv; Česko;Hrubý domácí produkt (mil. Kč, běžné ceny);2024;8057032.0
+    "What was the gross domestic product in Czechia in 2024?": "8057032.0 million CZK",
+    # OBY01AT01.csv; Q1-Q4 2024;Česko;Rozvody;20796
+    "What was the number of divorces in Czechia in 2024?": "20796",
+    # OBY02FGEN.csv; 2024;Česko;Věkový medián (roky);Ženy;45.66620224
+    "What was the age median for women in Czechia in 2024?": "45.66620224 years",
+    # OBY02PT02.csv; Česko;Živě narození;2044;93746.0
+    "What is the forecast of the number of live births in Czechia in 2044?": "93746",
+    # RES01QT1.csv; Česko;Počet ekonomických subjektů v registru;Soukromí podnikatelé podnikající podle živnostenského zákona;3. čtvrtletí 2025;1797952
+    "What was the number of private entrepreneurs operating under the Trade Licensing Act in Czechia in Q3 2025?": "1797952",
+    # RES02QT4.csv; Počet ekonomických subjektů celkem;Celkem;Hlavní město Praha;3. čtvrtletí 2025;687339
+    "What was the total number of economic entities in Prague in Q3 2025?": "687339",
+    # SLD023T02.csv; 2021;Počet bytů;Hlavní město Praha;Neobydlené byty;93627
+    "What was the number of uninhabited apartments in Prague in 2021?": "93627",
+    # SLD053T02.csv; Obydlené domy celkem;Hlavní město Praha;1980;75794
+    "What was the number of inhabited houses in Prague in 1980?": "75794",
+    # STA08A1T1.csv; Česko;duben 2025;Počet stavebních povolení v ČR;18568.0
+    "What was the number of building permits in Czechia in April 2025?": "18568",
+    # SZB01B.csv; Průměrná hodnota vyplaceného (měsíčního) důchodu (Kč);Důchody celkem;Celkem;Hlavní město Praha;2023;20897
+    "What was the average value of the paid monthly pension in Prague in 2023?": "20897 CZK",
+    # SZB02.csv; Česko;Hodnota vyplacených dávek státní sociální podpory (tis. Kč);Přídavek na dítě;2024;5411668.986
+    "What was the value of paid state social support benefits in Czechia in 2024?": "5411668.986 thousand CZK",
+    # SZB07A1.csv; Počet zařízení sociálních služeb;2023;Česko;Domovy pro seniory;526
+    "What was the number of social service facilities in Czechia in 2023?": "526",
+    # VOLPST2.csv; 2025;Česko;Volební účast (%);68.95
+    "What was the voter turnout percentage in Czechia in 2025?": "68.95%",
 }
 
 ls_client = Client()

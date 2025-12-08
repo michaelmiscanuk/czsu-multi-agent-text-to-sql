@@ -26,19 +26,19 @@ dependencies = [
     
     # Pydantic for data validation
     "pydantic>=2.5.0",
-    "pydantic-settings==2.9.1",
-    "pydantic_core==2.33.2",
+    "pydantic-settings>=2.10.1",
+    "pydantic_core>=2.33.2",
     
     # LangChain ecosystem (core)
     "langchain>=0.1.0",
-    "langchain-core>=0.1.0",
+    "langchain-core>=1.1.2",
     "langchain-openai>=0.0.2",
-    "langchain-community>=0.0.10",
-    "langchain-text-splitters==0.3.8",
+    "langchain-community>=0.3.28",
+    "langchain-text-splitters>=0.3.21",
     "langgraph>=0.2.0",
-    "langgraph-checkpoint==2.0.26",
-    "langgraph-checkpoint-postgres==2.0.21",
-    "langsmith==0.3.34",
+    "langgraph-checkpoint>=2.1.0",
+    "langgraph-checkpoint-postgres>=2.0.21",
+    "langsmith>=0.3.45",
     "langchain-anthropic>=0.1.0",
     
     # OpenAI and Azure OpenAI

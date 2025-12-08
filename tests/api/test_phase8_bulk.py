@@ -17,6 +17,11 @@ import pytest
 
 from pathlib import Path
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # CRITICAL: Set Windows event loop policy FIRST, before other imports
 if sys.platform == "win32":
     import asyncio
@@ -38,6 +43,9 @@ from checkpointer.checkpointer.factory import (
     close_async_postgres_saver,
     cleanup_checkpointer,
 )
+
+# LangSmith testing imports
+from langsmith import unit, testing as ls_testing
 
 # Test configuration
 TEST_EMAIL = "test_user@example.com"
@@ -987,10 +995,37 @@ async def main():
 
 
 # Test runner for pytest
-@pytest.mark.asyncio
+@unit
 async def test_bulk_endpoints():
     """Pytest-compatible test function."""
+    # Log test inputs
+    ls_testing.log_inputs(
+        {
+            "server_url": SERVER_BASE_URL,
+            "test_email": TEST_EMAIL,
+            "request_timeout": REQUEST_TIMEOUT,
+            "test_type": "bulk_endpoints",
+        }
+    )
+
     result = await main()
+
+    # Log test outputs
+    ls_testing.log_outputs(
+        {
+            "test_passed": result,
+            "server_url": SERVER_BASE_URL,
+            "test_email": TEST_EMAIL,
+        }
+    )
+
+    # Log feedback based on result
+    ls_testing.log_feedback(
+        key="test_success",
+        score=1.0 if result else 0.0,
+        value="passed" if result else "failed",
+    )
+
     assert result, "Bulk endpoints test failed"
 
 

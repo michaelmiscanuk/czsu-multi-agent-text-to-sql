@@ -8,6 +8,11 @@ echo.
 
 echo [1/2] Removing old files and folders...
 
+REM Close VS Code instances first to prevent file locks
+echo   Closing VS Code instances...
+taskkill /f /im Code.exe 2>nul
+taskkill /f /im Code - Insiders.exe 2>nul
+
 REM Kill any Python/Node processes that might lock folders
 echo   Killing processes that may lock folders...
 taskkill /f /im python.exe 2>nul
@@ -101,7 +106,7 @@ start "Frontend Install" cmd /k "cd frontend && npm install --verbose --force &&
 REM Backend install in foreground
 echo   Installing backend...
 uv venv --python 3.11.9
-uv pip install --python .venv . .[dev]
+uv pip install --prerelease=allow --python .venv . .[dev]
 python unzip_files.py
 
 echo.

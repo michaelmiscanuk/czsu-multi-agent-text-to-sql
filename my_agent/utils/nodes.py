@@ -1766,10 +1766,13 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
     # Key Step 3: Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
-    # llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)  # Commented out - using Gemini instead
+    llm = get_azure_llm_gpt_4o_4_1(
+        temperature=0.0
+    )  # Commented out - using Gemini instead
 
     # Using Gemini 3 Pro with thought signatures (requires langchain-google-genai >= 3.1.0)
-    llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
+    # llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
+
     tools = await get_sqlite_tools()
     sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
     if not sqlite_tool:
