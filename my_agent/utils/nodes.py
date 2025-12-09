@@ -673,6 +673,7 @@ from my_agent.utils.models import (
     get_azure_llm_gpt_4o_mini,
     get_azure_llm_gpt_4o_4_1,
     get_gemini_llm,
+    get_ollama_llm,
 )
 from metadata.chromadb_client_factory import should_use_cloud
 from .state import DataAnalysisState
@@ -1766,12 +1767,27 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
     # Key Step 3: Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
-    llm = get_azure_llm_gpt_4o_4_1(
-        temperature=0.0
-    )  # Commented out - using Gemini instead
+    # ============================================================================
+    # MODEL CONFIGURATION - Change the active model here
+    # ============================================================================
+    MODEL_TYPE = "openai"  # Options: "openai", "gemini", "ollama"
 
-    # Using Gemini 3 Pro with thought signatures (requires langchain-google-genai >= 3.1.0)
-    # llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
+    if MODEL_TYPE == "openai":
+        llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
+        USE_BIND_TOOLS = True  # OpenAI requires bind_tools()
+    elif MODEL_TYPE == "gemini":
+        llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
+        USE_BIND_TOOLS = False  # Gemini accepts tools directly in ainvoke()
+    elif MODEL_TYPE == "ollama":
+        # You can change the model_name parameter: "llama3.2:1b", "qwen:7b", etc.
+        llm = get_ollama_llm(model_name="gpt-oss:latest", temperature=0.0)
+        USE_BIND_TOOLS = (
+            True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
+        )
+    else:
+        raise ValueError(
+            f"Unknown MODEL_TYPE: {MODEL_TYPE}. Options: 'openai', 'gemini', 'ollama'"
+        )
 
     tools = await get_sqlite_tools()
     sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
@@ -2022,14 +2038,21 @@ Remember: Always examine the schema to understand:
         template_vars["last_message_content"] = last_message_content
 
     # Key Step 7: Create prompt template, format initial messages, initialize conversation state
-    # Note: We pass tools directly to ainvoke() instead of using bind_tools() to properly maintain
-    # thought signatures across multi-turn conversations with Gemini 3
+    # Note: OpenAI requires bind_tools(), while Gemini accepts tools directly in ainvoke()
 
     # Build initial messages for the conversation
     prompt_template = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
     initial_messages = prompt_template.format_messages(**template_vars)
+
+    # Prepare LLM with tools based on model type
+    if USE_BIND_TOOLS:
+        # OpenAI: bind tools to the model instance
+        llm_with_tools = llm.bind_tools(tools)
+    else:
+        # Gemini: tools will be passed directly to ainvoke()
+        llm_with_tools = llm
 
     # Enter agentic loop: LLM generates queries and calls tool iteratively
     conversation_messages = list(initial_messages)
@@ -2049,13 +2072,16 @@ Remember: Always examine the schema to understand:
         )
 
         # Invoke LLM with retry logic (may return tool calls or signal completion)
-        # CRITICAL: Pass tools directly to ainvoke() to maintain thought signatures properly
         for attempt in range(MAX_RETRIES):
             try:
-                llm_response = await llm.ainvoke(
-                    conversation_messages,
-                    tools=tools,  # Pass tools here instead of using bind_tools()
-                )
+                if USE_BIND_TOOLS:
+                    # OpenAI: tools already bound, just invoke
+                    llm_response = await llm_with_tools.ainvoke(conversation_messages)
+                else:
+                    # Gemini: pass tools directly to maintain thought signatures
+                    llm_response = await llm_with_tools.ainvoke(
+                        conversation_messages, tools=tools
+                    )
                 break
             except RateLimitError as e:
                 if attempt < MAX_RETRIES - 1:

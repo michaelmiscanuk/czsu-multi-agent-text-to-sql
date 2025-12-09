@@ -180,20 +180,20 @@ def get_ollama_llm(
     )
 
 
-def get_ollama_llm_test():
+def get_ollama_llm_test(model_name="llama3.2:1b", prompt="Hi"):
     """Test the OLLAMA LLM with a simple message"""
     print("\nTesting get_ollama_llm()...")
 
     try:
-        llm = get_ollama_llm()
+        llm = get_ollama_llm(model_name=model_name)
         print(f"✓ OLLAMA LLM instance created successfully!")
         print(f"Model: {llm.model_name}")
         print(f"Base URL: {llm.openai_api_base}")
         print(f"Temperature: {llm.temperature}")
 
         # Test with a simple prompt
-        print("\nSending test prompt: 'Hi'")
-        response = llm.invoke("Hi")
+        print(f"\nSending test prompt: '{prompt}'")
+        response = llm.invoke(prompt)
         print(f"\nResponse from OLLAMA:\n{response.content}")
         print("\n✓ Test completed successfully!")
 
@@ -272,10 +272,13 @@ if __name__ == "__main__":
     # get_azure_embedding_model_test()
     # get_azure_llm_gpt_4o_test()
     # get_azure_llm_gpt_4o_mini_test()
+    # get_ollama_llm_test(model_name="qwen3:1.7b")
+    get_ollama_llm_test(
+        model_name="sqlcoder:latest",
+        prompt="Generate me SQL to create a table for storing customer information. Return only SQL code.",
+    )
 
-    # llm = get_ollama_llm("qwen:7b")
-    llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
-
-    # Then use it like any LangChain model
-    response = llm.invoke("Hi")
-    print(response.content)
+    # llm = get_ollama_llm("sqlcoder:latest")
+    # llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
+    # response = llm.invoke("Hi")
+    # print(response.content)
