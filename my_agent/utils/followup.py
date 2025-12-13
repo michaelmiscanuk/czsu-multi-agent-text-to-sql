@@ -96,6 +96,7 @@ import os
 import random
 import time
 from typing import List
+import langsmith as ls
 
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -397,6 +398,12 @@ def generate_initial_followup_prompts_template() -> List[str]:
 # ==============================================================================
 # AI-BASED GENERATION
 # ==============================================================================
+@ls.traceable(
+    run_type="llm",
+    name="Generate AI Follow-up Prompts",
+    tags=["ai-generation", "prompts", "llm"],
+    metadata={"model": "gpt-4o-mini", "temperature": 1.0}
+)
 def generate_initial_followup_prompts_ai() -> List[str]:
     """Generate initial follow-up prompt suggestions using AI.
 
