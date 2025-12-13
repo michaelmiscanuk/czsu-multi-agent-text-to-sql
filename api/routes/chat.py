@@ -472,6 +472,75 @@ async def get_thread_messages_with_metadata(
         f"🔄 Processing thread {thread_id} for user {user_email}"
     )
 
+    def get_channel_values(checkpoint_tuple):
+        """Best-effort extraction of channel_values from LangGraph checkpoint tuples."""
+
+        checkpoint_data = None
+        if isinstance(checkpoint_tuple, dict):
+            checkpoint_data = checkpoint_tuple.get("checkpoint")
+        else:
+            checkpoint_data = getattr(checkpoint_tuple, "checkpoint", None)
+
+        if checkpoint_data is None:
+            return {}
+
+        # Handle dict-based checkpoints as well as objects with attributes
+        if isinstance(checkpoint_data, dict):
+            channel_dict = checkpoint_data.get("channel_values") or {}
+        else:
+            channel_dict = (
+                getattr(checkpoint_data, "channel_values", None)
+                or getattr(checkpoint_data, "values", None)
+                or {}
+            )
+
+        if channel_dict is None:
+            return {}
+
+        if isinstance(channel_dict, dict):
+            return channel_dict
+
+        # Fallback: try to coerce other mapping types to dict
+        try:
+            return dict(channel_dict)
+        except Exception:
+            return {}
+
+    def normalize_top_chunks(raw_chunks):
+        """Convert LangGraph chunk objects into serializable dictionaries."""
+
+        if not raw_chunks:
+            return []
+
+        chunks_processed = []
+        for chunk in raw_chunks:
+            chunk_data = {}
+
+            if hasattr(chunk, "page_content"):
+                chunk_data["page_content"] = chunk.page_content
+            elif isinstance(chunk, dict):
+                chunk_data["page_content"] = chunk.get("page_content", "")
+            else:
+                chunk_data["page_content"] = str(chunk)
+
+            metadata = None
+            if hasattr(chunk, "metadata"):
+                metadata = chunk.metadata
+            elif isinstance(chunk, dict):
+                metadata = chunk.get("metadata")
+
+            if metadata:
+                chunk_data["metadata"] = metadata
+                if isinstance(metadata, dict):
+                    if "source_file" in metadata:
+                        chunk_data["source_file"] = metadata["source_file"]
+                    if "page_number" in metadata:
+                        chunk_data["page_number"] = metadata["page_number"]
+
+            chunks_processed.append(chunk_data)
+
+        return chunks_processed
+
     try:
         # =======================================================================
         # SECURITY VERIFICATION
@@ -596,6 +665,12 @@ async def get_thread_messages_with_metadata(
         # Extract all user-AI interactions in one pass through checkpoints
         # Each interaction contains: prompt, response, queries, datasets, chunks
         interactions = []
+        active_interaction: Dict[str, object] | None = None
+
+        def start_new_interaction(initial_step: int) -> Dict[str, object]:
+            interaction = {"step": initial_step}
+            interactions.append(interaction)
+            return interaction
 
         print__chat_all_messages_debug(
             f"🔍 INTERACTION EXTRACTION: Extracting complete interactions from {len(checkpoint_tuples)} checkpoints"
@@ -605,14 +680,11 @@ async def get_thread_messages_with_metadata(
         for checkpoint_index, checkpoint_tuple in enumerate(checkpoint_tuples):
             # Extract metadata from checkpoint tuple
             metadata = checkpoint_tuple.metadata or {}
+            channel_values = get_channel_values(checkpoint_tuple)
             step = metadata.get("step", 0)  # Chronological step number
             writes = metadata.get("writes", {})  # Agent outputs
 
-            # Initialize interaction dictionary for this checkpoint
-            interaction = {
-                "step": step,
-                "checkpoint_index": checkpoint_index,
-            }
+            data_updates: Dict[str, object] = {}
 
             # ===================================================================
             # EXTRACT USER PROMPT
@@ -625,10 +697,19 @@ async def get_thread_messages_with_metadata(
                 if isinstance(start_data, dict) and "prompt" in start_data:
                     prompt = start_data["prompt"]
                     if prompt and prompt.strip():
-                        interaction["prompt"] = prompt.strip()
+                        data_updates["prompt"] = prompt.strip()
                         print__chat_all_messages_debug(
                             f"🔍 USER PROMPT FOUND: Step {step}: {prompt[:50]}..."
                         )
+
+            # Fallback to channel_values when writes lacks the prompt
+            if "prompt" not in data_updates:
+                channel_prompt = channel_values.get("prompt")
+                if isinstance(channel_prompt, str) and channel_prompt.strip():
+                    data_updates["prompt"] = channel_prompt.strip()
+                    print__chat_all_messages_debug(
+                        f"🔍 USER PROMPT FOUND (channel_values): Step {step}: {channel_prompt[:50]}..."
+                    )
 
             # ===================================================================
             # EXTRACT AI RESPONSE AND ALL METADATA
@@ -645,7 +726,7 @@ async def get_thread_messages_with_metadata(
                     if "final_answer" in submit_data:
                         final_answer = submit_data["final_answer"]
                         if final_answer and final_answer.strip():
-                            interaction["final_answer"] = final_answer.strip()
+                            data_updates["final_answer"] = final_answer.strip()
                             print__chat_all_messages_debug(
                                 f"🔍 AI ANSWER FOUND: Step {step}: {final_answer[:50]}..."
                             )
@@ -657,7 +738,7 @@ async def get_thread_messages_with_metadata(
                     if "followup_prompts" in submit_data:
                         followup_prompts = submit_data["followup_prompts"]
                         if followup_prompts:
-                            interaction["followup_prompts"] = followup_prompts
+                            data_updates["followup_prompts"] = followup_prompts
                             print__chat_all_messages_debug(
                                 f"🔍 FOLLOWUP PROMPTS FOUND: Step {step}: Found {len(followup_prompts)} follow-up prompts"
                             )
@@ -669,7 +750,7 @@ async def get_thread_messages_with_metadata(
                     if "queries_and_results" in submit_data:
                         queries_and_results = submit_data["queries_and_results"]
                         if queries_and_results:
-                            interaction["queries_and_results"] = queries_and_results
+                            data_updates["queries_and_results"] = queries_and_results
                             print__chat_all_messages_debug(
                                 f"🔍 QUERIES FOUND: Step {step}: Found queries and results for this interaction"
                             )
@@ -681,7 +762,7 @@ async def get_thread_messages_with_metadata(
                     if "top_selection_codes" in submit_data:
                         top_selection_codes = submit_data["top_selection_codes"]
                         if top_selection_codes:
-                            interaction["datasets_used"] = top_selection_codes
+                            data_updates["datasets_used"] = top_selection_codes
                             print__chat_all_messages_debug(
                                 f"🔍 DATASETS FOUND: Step {step}: Found {len(top_selection_codes)} datasets for this interaction"
                             )
@@ -692,61 +773,14 @@ async def get_thread_messages_with_metadata(
                     # Contains chunks from PDF documents used for answering the query
                     # Each chunk includes: page_content, source_file, page_number
                     if "top_chunks" in submit_data:
-                        top_chunks_raw = submit_data["top_chunks"]
-                        if top_chunks_raw:
-                            chunks_processed = []
-
-                            # Process each chunk to extract content and metadata
-                            for chunk in top_chunks_raw:
-                                try:
-                                    # Initialize chunk data dictionary
-                                    chunk_data = {
-                                        "page_content": (
-                                            chunk.page_content  # Try attribute access first
-                                            if hasattr(chunk, "page_content")
-                                            else chunk.get(
-                                                "page_content", ""
-                                            )  # Fallback to dict access
-                                        )
-                                    }
-
-                                    # Extract chunk metadata (source file, page number, etc.)
-                                    metadata = (
-                                        chunk.metadata  # Try attribute access first
-                                        if hasattr(chunk, "metadata")
-                                        else chunk.get(
-                                            "metadata", {}
-                                        )  # Fallback to dict access
-                                    )
-
-                                    # Add important metadata fields if present
-                                    if metadata:
-                                        if "source_file" in metadata:
-                                            chunk_data["source_file"] = metadata[
-                                                "source_file"
-                                            ]
-                                        if "page_number" in metadata:
-                                            chunk_data["page_number"] = metadata[
-                                                "page_number"
-                                            ]
-                                        # Preserve all metadata for potential future use
-                                        chunk_data["metadata"] = metadata
-
-                                    chunks_processed.append(chunk_data)
-
-                                except Exception as chunk_error:
-                                    # Log chunk processing errors but continue with other chunks
-                                    print__chat_all_messages_debug(
-                                        f"🔍 Error processing chunk: {chunk_error}"
-                                    )
-                                    continue
-
-                            # Add processed chunks to interaction if any were successfully extracted
-                            if chunks_processed:
-                                interaction["top_chunks"] = chunks_processed
-                                print__chat_all_messages_debug(
-                                    f"🔍 CHUNKS FOUND: Step {step}: Found {len(chunks_processed)} chunks for this interaction"
-                                )
+                        processed_chunks = normalize_top_chunks(
+                            submit_data.get("top_chunks")
+                        )
+                        if processed_chunks:
+                            data_updates["top_chunks"] = processed_chunks
+                            print__chat_all_messages_debug(
+                                f"🔍 CHUNKS FOUND: Step {step}: Found {len(processed_chunks)} chunks for this interaction"
+                            )
 
                     # ---------------------------------------------------------------
                     # Extension point for additional metadata
@@ -756,13 +790,93 @@ async def get_thread_messages_with_metadata(
                     # (e.g., timing data, confidence scores, etc.)
 
             # ===================================================================
-            # INTERACTION VALIDATION AND STORAGE
+            # FALLBACKS USING CHANNEL VALUES
             # ===================================================================
 
-            # Only add interaction if it contains at least prompt or final_answer
-            # Empty interactions are discarded
-            if "prompt" in interaction or "final_answer" in interaction:
-                interactions.append(interaction)
+            if channel_values:
+                if "final_answer" not in data_updates:
+                    channel_final_answer = channel_values.get("final_answer")
+                    if (
+                        isinstance(channel_final_answer, str)
+                        and channel_final_answer.strip()
+                    ):
+                        data_updates["final_answer"] = channel_final_answer.strip()
+                        print__chat_all_messages_debug(
+                            f"🔍 AI ANSWER FOUND (channel_values): Step {step}: {channel_final_answer[:50]}..."
+                        )
+
+                if "followup_prompts" not in data_updates:
+                    followups = channel_values.get("followup_prompts")
+                    if followups:
+                        data_updates["followup_prompts"] = followups
+                        print__chat_all_messages_debug(
+                            f"🔍 FOLLOWUP PROMPTS FOUND (channel_values): Step {step}: Found {len(followups)} follow-up prompts"
+                        )
+
+                if "queries_and_results" not in data_updates:
+                    queries = channel_values.get("queries_and_results")
+                    if queries:
+                        data_updates["queries_and_results"] = queries
+                        print__chat_all_messages_debug(
+                            f"🔍 QUERIES FOUND (channel_values): Step {step}: Found queries and results for this interaction"
+                        )
+
+                if "datasets_used" not in data_updates:
+                    datasets = channel_values.get("top_selection_codes")
+                    if datasets:
+                        data_updates["datasets_used"] = datasets
+                        print__chat_all_messages_debug(
+                            f"🔍 DATASETS FOUND (channel_values): Step {step}: Found {len(datasets)} datasets for this interaction"
+                        )
+
+                if "top_chunks" not in data_updates:
+                    processed_chunks = normalize_top_chunks(
+                        channel_values.get("top_chunks")
+                    )
+                    if processed_chunks:
+                        data_updates["top_chunks"] = processed_chunks
+                        print__chat_all_messages_debug(
+                            f"🔍 CHUNKS FOUND (channel_values): Step {step}: Found {len(processed_chunks)} chunks for this interaction"
+                        )
+
+            if not data_updates:
+                continue
+
+            prompt_in_update = "prompt" in data_updates
+            target_interaction = active_interaction
+
+            if prompt_in_update:
+                stripped_prompt = data_updates["prompt"].strip()
+                data_updates["prompt"] = stripped_prompt
+                needs_new = False
+
+                if target_interaction is None:
+                    needs_new = True
+                else:
+                    has_final = target_interaction.get("final_answer") is not None
+                    if has_final:
+                        needs_new = True
+
+                if needs_new:
+                    target_interaction = start_new_interaction(step)
+                    print__chat_all_messages_debug(
+                        f"🔄 STARTED NEW INTERACTION: Step {step}"
+                    )
+
+                active_interaction = target_interaction
+                if not target_interaction.get("prompt"):
+                    target_interaction["prompt"] = stripped_prompt
+            else:
+                if target_interaction is None:
+                    target_interaction = start_new_interaction(step)
+                    active_interaction = target_interaction
+
+            target_interaction["step"] = min(target_interaction.get("step", step), step)
+
+            for key, value in data_updates.items():
+                if key == "prompt":
+                    continue
+                target_interaction[key] = value
 
         # =======================================================================
         # INTERACTION SORTING
