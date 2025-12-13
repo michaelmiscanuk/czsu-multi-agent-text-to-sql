@@ -648,6 +648,15 @@ from my_agent.utils.helpers import load_schema, translate_text, detect_language
 # Import tools
 from my_agent.utils.tools import finish_gathering, get_sqlite_tools
 
+# Import models
+from my_agent.utils.models import (
+    get_azure_llm_gpt_4o,
+    get_azure_llm_gpt_4o_mini,
+    get_azure_llm_gpt_4o_4_1,
+    get_gemini_llm,
+    get_ollama_llm,
+)
+
 # PDF chunk functionality imports
 from data.pdf_to_chromadb__llamaparse_custom_separators import (
     CHROMA_DB_PATH as PDF_CHROMA_DB_PATH,
@@ -667,13 +676,6 @@ from metadata.create_and_load_chromadb__04 import (
 )
 from metadata.chromadb_client_factory import (
     get_chromadb_client,
-)
-from my_agent.utils.models import (
-    get_azure_llm_gpt_4o,
-    get_azure_llm_gpt_4o_mini,
-    get_azure_llm_gpt_4o_4_1,
-    get_gemini_llm,
-    get_ollama_llm,
 )
 from metadata.chromadb_client_factory import should_use_cloud
 from .state import DataAnalysisState
@@ -1780,7 +1782,7 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         USE_BIND_TOOLS = False  # Gemini accepts tools directly in ainvoke()
     elif MODEL_TYPE == "ollama":
         # You can change the model_name parameter: "llama3.2:1b", "qwen:7b", etc.
-        llm = get_ollama_llm(model_name="gpt-oss:latest", temperature=0.0)
+        llm = get_ollama_llm(model_name="qwen2.5-coder:0.5b", temperature=0.0)
         USE_BIND_TOOLS = (
             True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
         )
