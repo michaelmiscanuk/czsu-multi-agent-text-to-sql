@@ -596,7 +596,6 @@ import gc
 import traceback
 import re
 import asyncio
-import langsmith as ls
 
 from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -735,11 +734,6 @@ SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
 # ==============================================================================
 # NODE FUNCTIONS
 # ==============================================================================
-@ls.traceable(
-    run_type="chain",
-    tags=["query-preprocessing", "rewrite", "llm"],
-    metadata={"node_type": "graph_node", "model": "gpt-4o"},
-)
 async def rewrite_prompt_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that rewrites user prompts for optimal vector search and standalone context.
 
@@ -919,11 +913,6 @@ Now process this conversation:
     return {"rewritten_prompt": rewritten_prompt, "messages": [summary, result]}
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["memory", "summarization", "llm"],
-    metadata={"node_type": "graph_node", "model": "gpt-4o-mini"},
-)
 async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that maintains bounded conversation memory through cumulative summarization.
 
@@ -1053,14 +1042,6 @@ Do not include any meta-commentary or formatting, just the summary text."""
 # ==============================================================================
 # GET SQL TABLES NAMES NODES
 # ==============================================================================
-@ls.traceable(
-    run_type="retriever",
-    tags=["retrieval", "chromadb", "hybrid-search", "database-selection"],
-    metadata={
-        "node_type": "graph_node",
-        "default_n_results": SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS,
-    },
-)
 async def retrieve_similar_selections_hybrid_search_node(
     state: DataAnalysisState,
 ) -> DataAnalysisState:
@@ -1197,11 +1178,6 @@ async def retrieve_similar_selections_hybrid_search_node(
         return {"hybrid_search_results": []}
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["retrieval", "reranking", "cohere", "database-selection"],
-    metadata={"node_type": "graph_node"},
-)
 async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that reranks dataset selection hybrid search results using Cohere.
 
@@ -1308,11 +1284,6 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         return {"most_similar_selections": []}
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["retrieval", "filtering", "database-selection"],
-    metadata={"node_type": "graph_node", "threshold": SQL_RELEVANCE_THRESHOLD},
-)
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that filters reranked selections by relevance threshold and selects top 3.
 
@@ -1374,14 +1345,6 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
 # ==============================================================================
 # GET PDF CHUNKS NODES
 # ==============================================================================
-@ls.traceable(
-    run_type="retriever",
-    tags=["retrieval", "chromadb", "hybrid-search", "pdf"],
-    metadata={
-        "node_type": "graph_node",
-        "default_n_results": PDF_HYBRID_SEARCH_DEFAULT_RESULTS,
-    },
-)
 async def retrieve_similar_chunks_hybrid_search_node(
     state: DataAnalysisState,
 ) -> DataAnalysisState:
@@ -1519,11 +1482,6 @@ async def retrieve_similar_chunks_hybrid_search_node(
         return {"hybrid_search_chunks": []}
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["retrieval", "reranking", "cohere", "pdf"],
-    metadata={"node_type": "graph_node"},
-)
 async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that reranks PDF chunk hybrid search results using Cohere.
 
@@ -1622,11 +1580,6 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
         return {"most_similar_chunks": []}
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["retrieval", "filtering", "pdf"],
-    metadata={"node_type": "graph_node", "threshold": PDF_RELEVANCE_THRESHOLD},
-)
 async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that filters reranked PDF chunks by relevance threshold.
 
@@ -1685,11 +1638,6 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
     }
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["synchronization"],
-    metadata={"node_type": "graph_node"},
-)
 async def post_retrieval_sync_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph synchronization node that waits for parallel retrieval branches to complete.
 
@@ -1716,11 +1664,6 @@ async def post_retrieval_sync_node(state: DataAnalysisState) -> DataAnalysisStat
 # ==============================================================================
 # SQL - Query / Reflect NODES
 # ==============================================================================
-@ls.traceable(
-    run_type="chain",
-    tags=["sql", "schema", "metadata"],
-    metadata={"node_type": "graph_node"},
-)
 async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that retrieves database schema for relevant dataset selections.
 
@@ -1756,15 +1699,6 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
     return {"messages": [summary, msg]}
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["sql", "generation", "execution", "agentic", "llm"],
-    metadata={
-        "node_type": "graph_node",
-        "model": "gpt-4o",
-        "max_tool_iterations": MAX_TOOL_ITERATIONS,
-    },
-)
 async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that generates and executes SQLite queries using agentic tool calling pattern.
 
@@ -2300,15 +2234,6 @@ Remember: Always examine the schema to understand:
     }
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["reflection", "self-correction", "llm"],
-    metadata={
-        "node_type": "graph_node",
-        "model": "gpt-4o-mini",
-        "max_iterations": MAX_ITERATIONS,
-    },
-)
 async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that analyzes query results and decides whether to improve or answer.
 
@@ -2537,11 +2462,6 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
 # ============================================================================ #
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["formatting", "synthesis", "llm"],
-    metadata={"node_type": "graph_node", "model": "gpt-4o-mini"},
-)
 async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that formats SQL results and PDF chunks into natural language answers.
 
@@ -2809,11 +2729,6 @@ Bad: "The query shows X is 1,234,567"
     }
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["follow-up", "suggestions", "llm"],
-    metadata={"node_type": "graph_node", "model": "gpt-4o-mini"},
-)
 async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that generates follow-up prompt suggestions for continued data exploration.
 
@@ -2989,11 +2904,6 @@ Important guidelines:
     return {"followup_prompts": final_prompts}
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["submission", "output"],
-    metadata={"node_type": "graph_node"},
-)
 async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that prepares and preserves final answer for user delivery.
 
@@ -3052,11 +2962,6 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
 # ============================================================================ #
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["persistence", "save"],
-    metadata={"node_type": "graph_node", "save_to_file": bool(SAVE_TO_FILE_TXT_JSONL)},
-)
 async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that saves results to files and creates minimal database checkpoint.
 
@@ -3177,11 +3082,6 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
     return minimal_checkpoint_state
 
 
-@ls.traceable(
-    run_type="chain",
-    tags=["cleanup", "memory"],
-    metadata={"node_type": "graph_node"},
-)
 async def cleanup_resources_node(state: DataAnalysisState) -> DataAnalysisState:
     """LangGraph node that performs aggressive memory cleanup and garbage collection.
 
