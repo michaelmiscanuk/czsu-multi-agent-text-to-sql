@@ -398,11 +398,6 @@ def generate_initial_followup_prompts_template() -> List[str]:
 # ==============================================================================
 # AI-BASED GENERATION
 # ==============================================================================
-@ls.traceable(
-    run_type="llm",
-    tags=["ai-generation", "prompts", "llm"],
-    metadata={"model": "gpt-4o-mini", "temperature": 1.0},
-)
 def generate_initial_followup_prompts_ai() -> List[str]:
     """Generate initial follow-up prompt suggestions using AI.
 

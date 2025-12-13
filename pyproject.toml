@@ -30,8 +30,8 @@ dependencies = [
     "pydantic_core>=2.33.2",
     
     # LangChain ecosystem (core)
-    "langchain>=0.1.0",
-    "langchain-core>=1.1.2",
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
     "langchain-openai>=0.0.2",
     "langchain-community>=0.3.28",
     "langchain-text-splitters>=0.3.21",

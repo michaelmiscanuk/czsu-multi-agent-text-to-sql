@@ -1,178 +1,1597 @@
-<class 'langgraph.pregel.io.AddableValuesDict'>
-{'chromadb_missing': False,
- 'final_answer': '## Výroba kapalných paliv z ropy v České republice v roce '
-                 '2023\n'
-                 '\n'
-                 '- **Výroba kapalných paliv z ropy**: V roce 2023 byla výroba '
-                 'v procesech zušlechťování paliv celkem **330962.822** tun.\n'
-                 '  \n'
-                 '### Doplňující informace z PDF dokumentu\n'
-                 '\n'
-                 '- **Import kerosenového typu leteckého paliva**: V roce 2023 '
-                 'činil import **132000** tun.\n'
-                 '- **Export palivových olejů**: V roce 2023 byl export '
-                 '**110000** tun.\n'
-                 '- **Export kerosenového typu leteckého paliva**: V roce 2023 '
-                 'byl export **7000** tun.\n'
-                 '- **Export nafty**: V roce 2023 byl export **767000** tun.\n'
-                 '\n'
-                 '### Shrnutí\n'
-                 'V roce 2023 byla výroba kapalných paliv z ropy v České '
-                 'republice významná, s celkovou produkcí přes 330 tisíc tun. '
-                 'Doplňující údaje o importu a exportu ukazují na aktivní '
-                 'obchod s různými typy paliv, což může ovlivnit celkovou '
-                 'energetickou bilanci země.',
- 'followup_prompts': ['Analyzuj trendy výroby kapalných paliv v České '
-                      'republice za posledních 5 let.',
-                      'Zjisti, jaký vliv má export a import paliv na '
-                      'energetickou bilanci země.',
-                      'Porovnej výrobu kapalných paliv z ropy v České '
-                      'republice s jinými zeměmi Evropské unie v roce 2023.'
-    ],
- 'hybrid_search_chunks': [],
- 'hybrid_search_results': [],
- 'iteration': 0,
- 'messages': [SystemMessage(content='Uživatel se ptá na výrobu kapalných paliv z ropy v České republice v roce 2023. Data gathering je dokončeno a byly provedeny 1 dotazy. V roce 2023 byla výroba kapalných paliv z ropy v procesech zušlechťování celkem 330962.822 tun. Import kerosenového typu leteckého paliva činil 132000 tun, export palivových olejů byl 110000 tun, export kerosenového typu leteckého paliva 7000 tun a export nafty 767000 tun. Celková produkce přes 330 tisíc tun a aktivní obchod s různými typy paliv ovlivňují energetickou bilanci země.', additional_kwargs={}, response_metadata={}),
-              AIMessage(content='## Výroba kapalných paliv z ropy v České republice v roce 2023\n\n- **Výroba kapalných paliv z ropy**: V roce 2023 byla výroba v procesech zušlechťování paliv celkem **330962.822** tun.\n  \n### Doplňující informace z PDF dokumentu\n\n- **Import kerosenového typu leteckého paliva**: V roce 2023 činil import **132000** tun.\n- **Export palivových olejů**: V roce 2023 byl export **110000** tun.\n- **Export kerosenového typu leteckého paliva**: V roce 2023 byl export **7000** tun.\n- **Export nafty**: V roce 2023 byl export **767000** tun.\n\n### Shrnutí\nV roce 2023 byla výroba kapalných paliv z ropy v České republice významná, s celkovou produkcí přes 330 tisíc tun. Doplňující údaje o importu a exportu ukazují na aktivní obchod s různými typy paliv, což může ovlivnit celkovou energetickou bilanci země.', additional_kwargs={'refusal': None
-        }, response_metadata={'token_usage': {'completion_tokens': 259, 'prompt_tokens': 1237, 'total_tokens': 1496, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0
-                }, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0
+[
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-8a2f-6e7d-bfff-d6c182f282e1",
+        "parent_checkpoint_id": null,
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-8a2f-6e7d-bfff-d6c182f282e1",
+            "ts": "2025-12-13T15:31:51.281420+00:00",
+            "versions_seen": {
+                "__input__": {}
+            },
+            "channel_values": {},
+            "channel_versions": {
+                "__start__": "00000000000000000000000000000001.0.6124805770241168"
+            },
+            "updated_channels": [
+                "__start__"
+            ]
+        },
+        "metadata": {
+            "step": -1,
+            "source": "input",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-8a32-6595-8000-7ad84d9c900d",
+        "parent_checkpoint_id": "1f0d838d-8a2f-6e7d-bfff-d6c182f282e1",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-8a32-6595-8000-7ad84d9c900d",
+            "ts": "2025-12-13T15:31:51.282421+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
                 }
-            }, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_efad92c60b', 'id': 'chatcmpl-CeK6njr0O9hp72lvFhQYFZ0fEfMjF', 'service_tier': None, 'prompt_filter_results': [
-                {'prompt_index': 0, 'content_filter_results': {'hate': {'filtered': False, 'severity': 'safe'
-                        }, 'jailbreak': {'filtered': False, 'detected': False
-                        }, 'self_harm': {'filtered': False, 'severity': 'safe'
-                        }, 'sexual': {'filtered': False, 'severity': 'safe'
-                        }, 'violence': {'filtered': False, 'severity': 'safe'
-                        }
-                    }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": null,
+                "reflection_decision": "",
+                "branch:to:rewrite_prompt": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.4166900495370822",
+                "messages": "00000000000000000000000000000002.0.4166900495370822",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000002.0.4166900495370822",
+                "top_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "final_answer": "00000000000000000000000000000002.0.4166900495370822",
+                "chromadb_missing": "00000000000000000000000000000002.0.4166900495370822",
+                "followup_prompts": "00000000000000000000000000000002.0.4166900495370822",
+                "rewritten_prompt": "00000000000000000000000000000002.0.4166900495370822",
+                "most_similar_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "queries_and_results": "00000000000000000000000000000002.0.4166900495370822",
+                "reflection_decision": "00000000000000000000000000000002.0.4166900495370822",
+                "top_selection_codes": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_results": "00000000000000000000000000000002.0.4166900495370822",
+                "most_similar_selections": "00000000000000000000000000000002.0.4166900495370822",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+            },
+            "updated_channels": [
+                "branch:to:rewrite_prompt",
+                "chromadb_missing",
+                "final_answer",
+                "followup_prompts",
+                "hybrid_search_chunks",
+                "hybrid_search_results",
+                "iteration",
+                "messages",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "prompt",
+                "queries_and_results",
+                "reflection_decision",
+                "rewritten_prompt",
+                "top_chunks",
+                "top_selection_codes"
+            ]
+        },
+        "metadata": {
+            "step": 0,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-9633-6e39-8001-22862dc221ff",
+        "parent_checkpoint_id": "1f0d838d-8a32-6595-8000-7ad84d9c900d",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-9633-6e39-8001-22862dc221ff",
+            "ts": "2025-12-13T15:31:52.540343+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
                 }
-            ], 'finish_reason': 'stop', 'logprobs': None, 'content_filter_results': {'hate': {'filtered': False, 'severity': 'safe'
-                }, 'protected_material_code': {'filtered': False, 'detected': False
-                }, 'protected_material_text': {'filtered': False, 'detected': False
-                }, 'self_harm': {'filtered': False, 'severity': 'safe'
-                }, 'sexual': {'filtered': False, 'severity': 'safe'
-                }, 'violence': {'filtered': False, 'severity': 'safe'
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:summarize_messages_rewrite": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.4166900495370822",
+                "messages": "00000000000000000000000000000003.0.9771520891328783",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000002.0.4166900495370822",
+                "top_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "final_answer": "00000000000000000000000000000002.0.4166900495370822",
+                "chromadb_missing": "00000000000000000000000000000002.0.4166900495370822",
+                "followup_prompts": "00000000000000000000000000000002.0.4166900495370822",
+                "rewritten_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "most_similar_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "queries_and_results": "00000000000000000000000000000002.0.4166900495370822",
+                "reflection_decision": "00000000000000000000000000000002.0.4166900495370822",
+                "top_selection_codes": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_results": "00000000000000000000000000000002.0.4166900495370822",
+                "most_similar_selections": "00000000000000000000000000000002.0.4166900495370822",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_rewrite",
+                "messages",
+                "rewritten_prompt"
+            ]
+        },
+        "metadata": {
+            "step": 1,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-a0da-67e6-8002-234af8a145fd",
+        "parent_checkpoint_id": "1f0d838d-9633-6e39-8001-22862dc221ff",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-a0da-67e6-8002-234af8a145fd",
+            "ts": "2025-12-13T15:31:53.658160+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
                 }
-            }
-        }, id='run--9340284a-a9f6-4885-8e9d-ab0fe486e071-0', usage_metadata={'input_tokens': 1237, 'output_tokens': 259, 'total_tokens': 1496, 'input_token_details': {'audio': 0, 'cache_read': 0
-            }, 'output_token_details': {'audio': 0, 'reasoning': 0
-            }
-        })
-    ],
- 'most_similar_chunks': [],
- 'most_similar_selections': [],
- 'prompt': 'Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?',
- 'queries_and_results': [('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:retrieve_similar_chunks_hybrid_search": null,
+                "branch:to:retrieve_similar_selections_hybrid_search": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.4166900495370822",
+                "messages": "00000000000000000000000000000004.0.2120562712246633",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000002.0.4166900495370822",
+                "top_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "final_answer": "00000000000000000000000000000002.0.4166900495370822",
+                "chromadb_missing": "00000000000000000000000000000002.0.4166900495370822",
+                "followup_prompts": "00000000000000000000000000000002.0.4166900495370822",
+                "rewritten_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "most_similar_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "queries_and_results": "00000000000000000000000000000002.0.4166900495370822",
+                "reflection_decision": "00000000000000000000000000000002.0.4166900495370822",
+                "top_selection_codes": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_results": "00000000000000000000000000000002.0.4166900495370822",
+                "most_similar_selections": "00000000000000000000000000000002.0.4166900495370822",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+            },
+            "updated_channels": [
+                "branch:to:retrieve_similar_chunks_hybrid_search",
+                "branch:to:retrieve_similar_selections_hybrid_search",
+                "messages"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 2,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-e315-66e1-8003-25cee872d1f8",
+        "parent_checkpoint_id": "1f0d838d-a0da-67e6-8002-234af8a145fd",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-e315-66e1-8003-25cee872d1f8",
+            "ts": "2025-12-13T15:32:00.602902+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:rerank_chunks": null,
+                "branch:to:rerank_table_descriptions": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.4166900495370822",
+                "messages": "00000000000000000000000000000004.0.2120562712246633",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000002.0.4166900495370822",
+                "top_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "final_answer": "00000000000000000000000000000002.0.4166900495370822",
+                "chromadb_missing": "00000000000000000000000000000002.0.4166900495370822",
+                "followup_prompts": "00000000000000000000000000000002.0.4166900495370822",
+                "rewritten_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "most_similar_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "queries_and_results": "00000000000000000000000000000002.0.4166900495370822",
+                "reflection_decision": "00000000000000000000000000000002.0.4166900495370822",
+                "top_selection_codes": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_chunks": "00000000000000000000000000000005.0.6626917251268796",
+                "hybrid_search_results": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796",
+                "most_similar_selections": "00000000000000000000000000000002.0.4166900495370822",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:rerank_chunks",
+                "branch:to:rerank_table_descriptions",
+                "hybrid_search_chunks",
+                "hybrid_search_results"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 3,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-f012-68a5-8004-ad0a8b1e4689",
+        "parent_checkpoint_id": "1f0d838d-e315-66e1-8003-25cee872d1f8",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-f012-68a5-8004-ad0a8b1e4689",
+            "ts": "2025-12-13T15:32:01.964867+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:relevant_chunks": null,
+                "branch:to:relevant_selections": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.4166900495370822",
+                "messages": "00000000000000000000000000000004.0.2120562712246633",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000002.0.4166900495370822",
+                "top_chunks": "00000000000000000000000000000002.0.4166900495370822",
+                "final_answer": "00000000000000000000000000000002.0.4166900495370822",
+                "chromadb_missing": "00000000000000000000000000000002.0.4166900495370822",
+                "followup_prompts": "00000000000000000000000000000002.0.4166900495370822",
+                "rewritten_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "most_similar_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "queries_and_results": "00000000000000000000000000000002.0.4166900495370822",
+                "reflection_decision": "00000000000000000000000000000002.0.4166900495370822",
+                "top_selection_codes": "00000000000000000000000000000002.0.4166900495370822",
+                "hybrid_search_chunks": "00000000000000000000000000000005.0.6626917251268796",
+                "hybrid_search_results": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:relevant_chunks",
+                "branch:to:relevant_selections",
+                "most_similar_chunks",
+                "most_similar_selections"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 4,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-f021-6344-8005-d4b1d40708e1",
+        "parent_checkpoint_id": "1f0d838d-f012-68a5-8004-ad0a8b1e4689",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-f021-6344-8005-d4b1d40708e1",
+            "ts": "2025-12-13T15:32:01.970874+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:post_retrieval_sync": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.4166900495370822",
+                "messages": "00000000000000000000000000000004.0.2120562712246633",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000002.0.4166900495370822",
+                "top_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "final_answer": "00000000000000000000000000000002.0.4166900495370822",
+                "chromadb_missing": "00000000000000000000000000000002.0.4166900495370822",
+                "followup_prompts": "00000000000000000000000000000002.0.4166900495370822",
+                "rewritten_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "most_similar_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "queries_and_results": "00000000000000000000000000000002.0.4166900495370822",
+                "reflection_decision": "00000000000000000000000000000002.0.4166900495370822",
+                "top_selection_codes": "00000000000000000000000000000007.0.6745577105929629",
+                "hybrid_search_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "hybrid_search_results": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:post_retrieval_sync",
+                "hybrid_search_chunks",
+                "hybrid_search_results",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "top_chunks",
+                "top_selection_codes"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 5,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-f026-6164-8006-b320acf4fdb5",
+        "parent_checkpoint_id": "1f0d838d-f021-6344-8005-d4b1d40708e1",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-f026-6164-8006-b320acf4fdb5",
+            "ts": "2025-12-13T15:32:01.972874+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:get_schema": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000008.0.727969673798788",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000008.0.727969673798788",
+                "top_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "final_answer": "00000000000000000000000000000008.0.727969673798788",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000008.0.727969673798788",
+                "rewritten_prompt": "00000000000000000000000000000008.0.727969673798788",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000008.0.727969673798788",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:get_schema",
+                "chromadb_missing",
+                "final_answer",
+                "followup_prompts",
+                "hybrid_search_chunks",
+                "hybrid_search_results",
+                "iteration",
+                "messages",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "prompt",
+                "queries_and_results",
+                "reflection_decision",
+                "rewritten_prompt",
+                "top_chunks",
+                "top_selection_codes"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 6,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838d-f02d-6691-8007-ef44b4ed2951",
+        "parent_checkpoint_id": "1f0d838d-f026-6164-8006-b320acf4fdb5",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838d-f02d-6691-8007-ef44b4ed2951",
+            "ts": "2025-12-13T15:32:01.975873+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:generate_query": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000009.0.7401255528141678",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000008.0.727969673798788",
+                "top_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "final_answer": "00000000000000000000000000000008.0.727969673798788",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000008.0.727969673798788",
+                "rewritten_prompt": "00000000000000000000000000000008.0.727969673798788",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000008.0.727969673798788",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:generate_query",
+                "messages"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 7,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838e-1f20-6ca9-8008-eaf66995daa5",
+        "parent_checkpoint_id": "1f0d838d-f02d-6691-8007-ef44b4ed2951",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838e-1f20-6ca9-8008-eaf66995daa5",
+            "ts": "2025-12-13T15:32:06.899012+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:summarize_messages_query": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000010.0.27893039532489117",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "final_answer": "00000000000000000000000000000008.0.727969673798788",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000008.0.727969673798788",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000010.0.27893039532489117",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_query",
+                "iteration",
+                "messages",
+                "queries_and_results",
+                "rewritten_prompt"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 8,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838e-2bfa-67f0-8009-4e82eab37df6",
+        "parent_checkpoint_id": "1f0d838e-1f20-6ca9-8008-eaf66995daa5",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838e-2bfa-67f0-8009-4e82eab37df6",
+            "ts": "2025-12-13T15:32:08.246475+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:format_answer": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000011.0.6577641453810225",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "final_answer": "00000000000000000000000000000008.0.727969673798788",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000008.0.727969673798788",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000010.0.27893039532489117",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:format_answer": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:format_answer",
+                "messages"
             ]
-        ]')
-    ],
- 'reflection_decision': '',
- 'rewritten_prompt': 'Jaká byla výroba kapalných paliv z ropy v České '
-                     'republice v roce 2023?',
- 'top_chunks': [Document(metadata={'token_chunk_index': 0, 'chunk_index': 8, 'doc_hash': '41525607014f1f631db6687081c65a36', 'char_count': 340, 'source_file': '501_PDFsam_32019824.pdf', 'page_number': 1, 'chunk_id': 10637, 'token_count': 87
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods to the Czech Republic (Imports) - Kerosene-type jet fuel', the amount was 140 thousand tonnes in 2015, 99 thousand tonnes in 2020, 96 thousand tonnes in 2021, 169 thousand tonnes in 2022, and 132 thousand tonnes in 2023."),
-                Document(metadata={'chunk_index': 4, 'page_number': 1, 'char_count': 328, 'source_file': '501_PDFsam_32019824.pdf', 'token_count': 83, 'token_chunk_index': 0, 'doc_hash': '205a764531eeec3ea8431c8e7eb52c08', 'chunk_id': 10633
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Fuel oils', the amount was 132 thousand tonnes in 2015, 51 thousand tonnes in 2020, 29 thousand tonnes in 2021, 56 thousand tonnes in 2022, and 110 thousand tonnes in 2023."),
-                Document(metadata={'chunk_id': 10631, 'token_count': 87, 'token_chunk_index': 0, 'char_count': 334, 'source_file': '501_PDFsam_32019824.pdf', 'page_number': 1, 'doc_hash': '044eff42d0d2cee2e7b5a854568000a7', 'chunk_index': 2
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Kerosene-type jet fuel', the amount was 0 thousand tonnes in 2015, 0 thousand tonnes in 2020, 2 thousand tonnes in 2021, 0 thousand tonnes in 2022, and 7 thousand tonnes in 2023."),
-                Document(metadata={'page_number': 1, 'chunk_id': 10632, 'doc_hash': '87abe915859cfdd565c6b0dff59e3fd5', 'token_chunk_index': 0, 'char_count': 334, 'source_file': '501_PDFsam_32019824.pdf', 'chunk_index': 3, 'token_count': 85
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Diesel oil', the amount was 1043 thousand tonnes in 2015, 769 thousand tonnes in 2020, 1002 thousand tonnes in 2021, 735 thousand tonnes in 2022, and 767 thousand tonnes in 2023."),
-                Document(metadata={'source_file': '1_PDFsam_32019824.pdf', 'doc_hash': 'c491b44441fab14fdfc1d041eae15c5b', 'token_chunk_index': 0, 'token_count': 135, 'char_count': 399, 'chunk_id': 10368, 'page_number': 493, 'chunk_index': 4
-        }, page_content="In table 'Consumption of automotive fuel in the CR including biofuels', under 'motor gasoline', the consumption was 2.0 million tonnes in 2010, 1.8 million tonnes in 2015, 1.7 million tonnes in 2016, 1.7 million tonnes in 2017, 1.7 million tonnes in 2018, 1.7 million tonnes in 2019, 1.6 million tonnes in 2020, 1.6 million tonnes in 2021, 1.7 million tonnes in 2022, and 1.7 million tonnes in 2023.")
-    ],
- 'top_selection_codes': ['EP801', 'ENE02T4', 'ENE02T5'
-    ]
-}
+        },
+        "metadata": {
+            "step": 9,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838f-0d52-61ec-800a-840974ec761e",
+        "parent_checkpoint_id": "1f0d838e-2bfa-67f0-8009-4e82eab37df6",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838f-0d52-61ec-800a-840974ec761e",
+            "ts": "2025-12-13T15:32:31.875326+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000011.0.6577641453810225"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "# Analysis of Czech Koruna Exchange Rates\n\n## Exchange Rate Against Euro (CZK/EUR)\n- The exchange rate of the Czech koruna against the euro has shown a declining trend from 2020 to 2023:\n  - **2020**: 26.44 CZK per 1 EUR\n  - **2021**: 25.65 CZK per 1 EUR\n  - **2022**: 24.57 CZK per 1 EUR\n  - **2023**: 24.01 CZK per 1 EUR\n- Historical fluctuations from 2019 to 2023 indicate a range between approximately 24-28 CZK per EUR.\n\n## Exchange Rate Against U.S. Dollar (CZK/USD)\n- The exchange rate of the Czech koruna against the U.S. dollar has also varied over the same period:\n  - **2020**: 23.20 CZK per 1 USD\n  - **2021**: 21.68 CZK per 1 USD\n  - **2022**: 23.36 CZK per 1 USD\n  - **2023**: 22.21 CZK per 1 USD\n- The exchange rate fluctuated between approximately 21-25 CZK per USD throughout the period.\n\n## Summary of Trends\n- Both exchange rates show a general trend of strengthening of the Czech koruna against the euro and a mixed trend against the U.S. dollar.\n- The CZK has appreciated against the euro over the years, while the fluctuations against the U.S. dollar indicate some volatility but a general strengthening trend from 2020 to 2021, followed by a slight depreciation in 2022 and 2023.\n\nThis analysis highlights the performance of the Czech koruna against two major currencies, reflecting both stability and fluctuations in the foreign exchange market.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:summarize_messages_format": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000012.0.3835772842693752",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000012.0.3835772842693752",
+                "final_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000008.0.727969673798788",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000010.0.27893039532489117",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:format_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000012.0.3835772842693752",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_format",
+                "final_answer",
+                "messages",
+                "top_chunks"
+            ]
+        },
+        "metadata": {
+            "step": 10,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838f-291b-60d2-800b-7c18f31ccc55",
+        "parent_checkpoint_id": "1f0d838f-0d52-61ec-800a-840974ec761e",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838f-291b-60d2-800b-7c18f31ccc55",
+            "ts": "2025-12-13T15:32:34.788782+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000011.0.6577641453810225"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000012.0.3835772842693752"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "# Analysis of Czech Koruna Exchange Rates\n\n## Exchange Rate Against Euro (CZK/EUR)\n- The exchange rate of the Czech koruna against the euro has shown a declining trend from 2020 to 2023:\n  - **2020**: 26.44 CZK per 1 EUR\n  - **2021**: 25.65 CZK per 1 EUR\n  - **2022**: 24.57 CZK per 1 EUR\n  - **2023**: 24.01 CZK per 1 EUR\n- Historical fluctuations from 2019 to 2023 indicate a range between approximately 24-28 CZK per EUR.\n\n## Exchange Rate Against U.S. Dollar (CZK/USD)\n- The exchange rate of the Czech koruna against the U.S. dollar has also varied over the same period:\n  - **2020**: 23.20 CZK per 1 USD\n  - **2021**: 21.68 CZK per 1 USD\n  - **2022**: 23.36 CZK per 1 USD\n  - **2023**: 22.21 CZK per 1 USD\n- The exchange rate fluctuated between approximately 21-25 CZK per USD throughout the period.\n\n## Summary of Trends\n- Both exchange rates show a general trend of strengthening of the Czech koruna against the euro and a mixed trend against the U.S. dollar.\n- The CZK has appreciated against the euro over the years, while the fluctuations against the U.S. dollar indicate some volatility but a general strengthening trend from 2020 to 2021, followed by a slight depreciation in 2022 and 2023.\n\nThis analysis highlights the performance of the Czech koruna against two major currencies, reflecting both stability and fluctuations in the foreign exchange market.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:generate_followup_prompts": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000013.0.26320772214606736",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000012.0.3835772842693752",
+                "final_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000008.0.727969673798788",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000010.0.27893039532489117",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:format_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000013.0.26320772214606736",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000013.0.26320772214606736",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:generate_followup_prompts",
+                "messages"
+            ]
+        },
+        "metadata": {
+            "step": 11,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838f-428a-67e4-800c-5966cf6329a1",
+        "parent_checkpoint_id": "1f0d838f-291b-60d2-800b-7c18f31ccc55",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838f-428a-67e4-800c-5966cf6329a1",
+            "ts": "2025-12-13T15:32:37.455869+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000011.0.6577641453810225"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000013.0.26320772214606736"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000012.0.3835772842693752"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "# Analysis of Czech Koruna Exchange Rates\n\n## Exchange Rate Against Euro (CZK/EUR)\n- The exchange rate of the Czech koruna against the euro has shown a declining trend from 2020 to 2023:\n  - **2020**: 26.44 CZK per 1 EUR\n  - **2021**: 25.65 CZK per 1 EUR\n  - **2022**: 24.57 CZK per 1 EUR\n  - **2023**: 24.01 CZK per 1 EUR\n- Historical fluctuations from 2019 to 2023 indicate a range between approximately 24-28 CZK per EUR.\n\n## Exchange Rate Against U.S. Dollar (CZK/USD)\n- The exchange rate of the Czech koruna against the U.S. dollar has also varied over the same period:\n  - **2020**: 23.20 CZK per 1 USD\n  - **2021**: 21.68 CZK per 1 USD\n  - **2022**: 23.36 CZK per 1 USD\n  - **2023**: 22.21 CZK per 1 USD\n- The exchange rate fluctuated between approximately 21-25 CZK per USD throughout the period.\n\n## Summary of Trends\n- Both exchange rates show a general trend of strengthening of the Czech koruna against the euro and a mixed trend against the U.S. dollar.\n- The CZK has appreciated against the euro over the years, while the fluctuations against the U.S. dollar indicate some volatility but a general strengthening trend from 2020 to 2021, followed by a slight depreciation in 2022 and 2023.\n\nThis analysis highlights the performance of the Czech koruna against two major currencies, reflecting both stability and fluctuations in the foreign exchange market.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:submit_final_answer": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000013.0.26320772214606736",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000012.0.3835772842693752",
+                "final_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000014.0.7516150352466683",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000010.0.27893039532489117",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:format_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:submit_final_answer": "00000000000000000000000000000014.0.7516150352466683",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000014.0.7516150352466683",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000013.0.26320772214606736",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:submit_final_answer",
+                "followup_prompts"
+            ]
+        },
+        "metadata": {
+            "step": 12,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838f-4291-6d10-800d-9935bec8ad6b",
+        "parent_checkpoint_id": "1f0d838f-428a-67e4-800c-5966cf6329a1",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838f-4291-6d10-800d-9935bec8ad6b",
+            "ts": "2025-12-13T15:32:37.458868+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000011.0.6577641453810225"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "submit_final_answer": {
+                    "branch:to:submit_final_answer": "00000000000000000000000000000014.0.7516150352466683"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000013.0.26320772214606736"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000012.0.3835772842693752"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "# Analysis of Czech Koruna Exchange Rates\n\n## Exchange Rate Against Euro (CZK/EUR)\n- The exchange rate of the Czech koruna against the euro has shown a declining trend from 2020 to 2023:\n  - **2020**: 26.44 CZK per 1 EUR\n  - **2021**: 25.65 CZK per 1 EUR\n  - **2022**: 24.57 CZK per 1 EUR\n  - **2023**: 24.01 CZK per 1 EUR\n- Historical fluctuations from 2019 to 2023 indicate a range between approximately 24-28 CZK per EUR.\n\n## Exchange Rate Against U.S. Dollar (CZK/USD)\n- The exchange rate of the Czech koruna against the U.S. dollar has also varied over the same period:\n  - **2020**: 23.20 CZK per 1 USD\n  - **2021**: 21.68 CZK per 1 USD\n  - **2022**: 23.36 CZK per 1 USD\n  - **2023**: 22.21 CZK per 1 USD\n- The exchange rate fluctuated between approximately 21-25 CZK per USD throughout the period.\n\n## Summary of Trends\n- Both exchange rates show a general trend of strengthening of the Czech koruna against the euro and a mixed trend against the U.S. dollar.\n- The CZK has appreciated against the euro over the years, while the fluctuations against the U.S. dollar indicate some volatility but a general strengthening trend from 2020 to 2021, followed by a slight depreciation in 2022 and 2023.\n\nThis analysis highlights the performance of the Czech koruna against two major currencies, reflecting both stability and fluctuations in the foreign exchange market.",
+                "branch:to:save": null,
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": ""
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.727969673798788",
+                "messages": "00000000000000000000000000000015.0.07332491043272404",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000015.0.07332491043272404",
+                "final_answer": "00000000000000000000000000000015.0.07332491043272404",
+                "branch:to:save": "00000000000000000000000000000015.0.07332491043272404",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000015.0.07332491043272404",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "queries_and_results": "00000000000000000000000000000015.0.07332491043272404",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000015.0.07332491043272404",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:format_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:submit_final_answer": "00000000000000000000000000000015.0.07332491043272404",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000014.0.7516150352466683",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000013.0.26320772214606736",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:save",
+                "final_answer",
+                "followup_prompts",
+                "messages",
+                "queries_and_results",
+                "top_chunks",
+                "top_selection_codes"
+            ]
+        },
+        "metadata": {
+            "step": 13,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838f-429b-6951-800e-64a0326fcfef",
+        "parent_checkpoint_id": "1f0d838f-4291-6d10-800d-9935bec8ad6b",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838f-429b-6951-800e-64a0326fcfef",
+            "ts": "2025-12-13T15:32:37.462868+00:00",
+            "versions_seen": {
+                "save": {
+                    "branch:to:save": "00000000000000000000000000000015.0.07332491043272404"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000011.0.6577641453810225"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "submit_final_answer": {
+                    "branch:to:submit_final_answer": "00000000000000000000000000000014.0.7516150352466683"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000013.0.26320772214606736"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000012.0.3835772842693752"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "# Analysis of Czech Koruna Exchange Rates\n\n## Exchange Rate Against Euro (CZK/EUR)\n- The exchange rate of the Czech koruna against the euro has shown a declining trend from 2020 to 2023:\n  - **2020**: 26.44 CZK per 1 EUR\n  - **2021**: 25.65 CZK per 1 EUR\n  - **2022**: 24.57 CZK per 1 EUR\n  - **2023**: 24.01 CZK per 1 EUR\n- Historical fluctuations from 2019 to 2023 indicate a range between approximately 24-28 CZK per EUR.\n\n## Exchange Rate Against U.S. Dollar (CZK/USD)\n- The exchange rate of the Czech koruna against the U.S. dollar has also varied over the same period:\n  - **2020**: 23.20 CZK per 1 USD\n  - **2021**: 21.68 CZK per 1 USD\n  - **2022**: 23.36 CZK per 1 USD\n  - **2023**: 22.21 CZK per 1 USD\n- The exchange rate fluctuated between approximately 21-25 CZK per USD throughout the period.\n\n## Summary of Trends\n- Both exchange rates show a general trend of strengthening of the Czech koruna against the euro and a mixed trend against the U.S. dollar.\n- The CZK has appreciated against the euro over the years, while the fluctuations against the U.S. dollar indicate some volatility but a general strengthening trend from 2020 to 2021, followed by a slight depreciation in 2022 and 2023.\n\nThis analysis highlights the performance of the Czech koruna against two major currencies, reflecting both stability and fluctuations in the foreign exchange market.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": "",
+                "branch:to:cleanup_resources": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000016.0.2711061751208861",
+                "messages": "00000000000000000000000000000016.0.2711061751208861",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000015.0.07332491043272404",
+                "final_answer": "00000000000000000000000000000016.0.2711061751208861",
+                "branch:to:save": "00000000000000000000000000000016.0.2711061751208861",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000016.0.2711061751208861",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000016.0.2711061751208861",
+                "queries_and_results": "00000000000000000000000000000016.0.2711061751208861",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000015.0.07332491043272404",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:format_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000016.0.2711061751208861",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:cleanup_resources": "00000000000000000000000000000016.0.2711061751208861",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:submit_final_answer": "00000000000000000000000000000015.0.07332491043272404",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000014.0.7516150352466683",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000013.0.26320772214606736",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "branch:to:cleanup_resources",
+                "final_answer",
+                "followup_prompts",
+                "messages",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "prompt",
+                "queries_and_results"
+            ]
+        },
+        "metadata": {
+            "step": 14,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "d0bee464-61d6-42f2-9a30-83f83958b8e4",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d838f-44cc-691c-800f-6365936bc746",
+        "parent_checkpoint_id": "1f0d838f-429b-6951-800e-64a0326fcfef",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d838f-44cc-691c-800f-6365936bc746",
+            "ts": "2025-12-13T15:32:37.692649+00:00",
+            "versions_seen": {
+                "save": {
+                    "branch:to:save": "00000000000000000000000000000015.0.07332491043272404"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.6124805770241168"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.727969673798788"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000011.0.6577641453810225"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.7401255528141678"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.4166900495370822"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "cleanup_resources": {
+                    "branch:to:cleanup_resources": "00000000000000000000000000000016.0.2711061751208861"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.6745577105929629"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.5841473742710036"
+                },
+                "submit_final_answer": {
+                    "branch:to:submit_final_answer": "00000000000000000000000000000014.0.7516150352466683"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.27893039532489117"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000013.0.26320772214606736"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.6626917251268796"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000012.0.3835772842693752"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.9771520891328783"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.2120562712246633"
+                }
+            },
+            "channel_values": {
+                "prompt": "Analyze the exchange rates of the Czech koruna against the euro and dollar.",
+                "iteration": 0,
+                "final_answer": "# Analysis of Czech Koruna Exchange Rates\n\n## Exchange Rate Against Euro (CZK/EUR)\n- The exchange rate of the Czech koruna against the euro has shown a declining trend from 2020 to 2023:\n  - **2020**: 26.44 CZK per 1 EUR\n  - **2021**: 25.65 CZK per 1 EUR\n  - **2022**: 24.57 CZK per 1 EUR\n  - **2023**: 24.01 CZK per 1 EUR\n- Historical fluctuations from 2019 to 2023 indicate a range between approximately 24-28 CZK per EUR.\n\n## Exchange Rate Against U.S. Dollar (CZK/USD)\n- The exchange rate of the Czech koruna against the U.S. dollar has also varied over the same period:\n  - **2020**: 23.20 CZK per 1 USD\n  - **2021**: 21.68 CZK per 1 USD\n  - **2022**: 23.36 CZK per 1 USD\n  - **2023**: 22.21 CZK per 1 USD\n- The exchange rate fluctuated between approximately 21-25 CZK per USD throughout the period.\n\n## Summary of Trends\n- Both exchange rates show a general trend of strengthening of the Czech koruna against the euro and a mixed trend against the U.S. dollar.\n- The CZK has appreciated against the euro over the years, while the fluctuations against the U.S. dollar indicate some volatility but a general strengthening trend from 2020 to 2021, followed by a slight depreciation in 2022 and 2023.\n\nThis analysis highlights the performance of the Czech koruna against two major currencies, reflecting both stability and fluctuations in the foreign exchange market.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "Analyze the exchange rates of the Czech koruna against the euro and the U.S. dollar.",
+                "reflection_decision": ""
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000017.0.7091869297854775",
+                "messages": "00000000000000000000000000000017.0.7091869297854775",
+                "__start__": "00000000000000000000000000000002.0.4166900495370822",
+                "iteration": "00000000000000000000000000000010.0.27893039532489117",
+                "top_chunks": "00000000000000000000000000000017.0.7091869297854775",
+                "final_answer": "00000000000000000000000000000017.0.7091869297854775",
+                "branch:to:save": "00000000000000000000000000000016.0.2711061751208861",
+                "chromadb_missing": "00000000000000000000000000000008.0.727969673798788",
+                "followup_prompts": "00000000000000000000000000000017.0.7091869297854775",
+                "rewritten_prompt": "00000000000000000000000000000010.0.27893039532489117",
+                "most_similar_chunks": "00000000000000000000000000000016.0.2711061751208861",
+                "queries_and_results": "00000000000000000000000000000017.0.7091869297854775",
+                "reflection_decision": "00000000000000000000000000000008.0.727969673798788",
+                "top_selection_codes": "00000000000000000000000000000017.0.7091869297854775",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.7401255528141678",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.727969673798788",
+                "hybrid_search_results": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:format_answer": "00000000000000000000000000000012.0.3835772842693752",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.5841473742710036",
+                "most_similar_selections": "00000000000000000000000000000016.0.2711061751208861",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.27893039532489117",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.9771520891328783",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:cleanup_resources": "00000000000000000000000000000017.0.7091869297854775",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.727969673798788",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.6745577105929629",
+                "branch:to:submit_final_answer": "00000000000000000000000000000015.0.07332491043272404",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.6577641453810225",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000014.0.7516150352466683",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.5841473742710036",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000013.0.26320772214606736",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.2120562712246633",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.6626917251268796",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.6626917251268796"
+            },
+            "updated_channels": [
+                "final_answer",
+                "followup_prompts",
+                "messages",
+                "prompt",
+                "queries_and_results",
+                "top_chunks",
+                "top_selection_codes"
+            ]
+        },
+        "metadata": {
+            "step": 15,
+            "source": "loop",
+            "parents": {}
+        }
+    }
+]
