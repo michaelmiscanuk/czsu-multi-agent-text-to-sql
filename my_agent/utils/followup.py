@@ -96,7 +96,6 @@ import os
 import random
 import time
 from typing import List
-import langsmith as ls
 
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -398,11 +397,6 @@ def generate_initial_followup_prompts_template() -> List[str]:
 # ==============================================================================
 # AI-BASED GENERATION
 # ==============================================================================
-@ls.traceable(
-    run_type="llm",
-    tags=["ai-generation", "prompts", "llm"],
-    metadata={"model": "gpt-4o-mini", "temperature": 1.0},
-)
 def generate_initial_followup_prompts_ai() -> List[str]:
     """Generate initial follow-up prompt suggestions using AI.
 
@@ -457,46 +451,7 @@ def generate_initial_followup_prompts_ai() -> List[str]:
         llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
         print__main_debug("🤖 PROMPT GEN: LLM initialized with temperature=1.0")
 
-        # Define a large pool of topics to ensure diversity
-        all_topics = [
-            "population trends",
-            "GDP growth",
-            "employment rates",
-            "inflation data",
-            "trade balance",
-            "environmental emissions",
-            "climate data",
-            "national parks",
-            "waste generation",
-            "water supply",
-            "birth rates",
-            "death causes",
-            "migration patterns",
-            "foreign investment",
-            "government debt",
-            "tax receipts",
-            "capital formation",
-            "monetary aggregates",
-            "exchange rates",
-            "consumer prices",
-            "household income",
-            "labour costs",
-            "unemployment rates",
-            "business births",
-            "export volumes",
-            "import values",
-            "real estate prices",
-            "agricultural prices",
-            "energy consumption",
-            "housing costs",
-        ]
-
-        # Randomly select 10 topics to force variety in the prompt context
-        # This ensures that even with the same system prompt structure, the context changes
-        selected_topics = random.sample(all_topics, min(10, len(all_topics)))
-        topics_str = ", ".join(selected_topics)
-
-        system_prompt = f"""
+        system_prompt = """
 You are a prompt generation assistant for a Czech Statistical Office data analysis system.
 
 About our data:
@@ -514,7 +469,7 @@ Important guidelines:
 - Cover different aspects of the available data (economy, population, finance, etc.)
 - Make them natural and user-friendly
 
-Here are some RANDOM example topics to draw inspiration from (use these to ensure variety): {topics_str}.
+Here are some example topics to draw inspiration from: population trends, GDP growth, employment rates, inflation data, trade balance, environmental emissions, climate data, national parks, waste generation, water supply, birth rates, death causes, migration patterns, foreign investment, government debt, tax receipts, capital formation, monetary aggregates, exchange rates, consumer prices, household income, labour costs, unemployment rates, business births, export volumes, import values, real estate prices, agricultural prices, energy consumption, housing costs.
 """
 
         human_prompt = "Generate 5 prompts for users to explore Czech statistical data."
