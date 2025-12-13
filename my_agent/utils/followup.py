@@ -468,6 +468,8 @@ Important guidelines:
 - Don't number the prompts
 - Cover different aspects of the available data (economy, population, finance, etc.)
 - Make them natural and user-friendly
+
+Here are some example topics to draw inspiration from: population trends, GDP growth, employment rates, inflation data, trade balance, environmental emissions, climate data, national parks, waste generation, water supply, birth rates, death causes, migration patterns, foreign investment, government debt, tax receipts, capital formation, monetary aggregates, exchange rates, consumer prices, household income, labour costs, unemployment rates, business births, export volumes, import values, real estate prices, agricultural prices, energy consumption, housing costs.
 """
 
         human_prompt = "Generate 5 prompts for users to explore Czech statistical data."
