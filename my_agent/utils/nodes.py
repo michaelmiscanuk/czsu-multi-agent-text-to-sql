@@ -737,7 +737,6 @@ SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
 # ==============================================================================
 @ls.traceable(
     run_type="chain",
-    name="Rewrite Prompt Node",
     tags=["query-preprocessing", "rewrite", "llm"],
     metadata={"node_type": "graph_node", "model": "gpt-4o"},
 )
@@ -922,7 +921,6 @@ Now process this conversation:
 
 @ls.traceable(
     run_type="chain",
-    name="Summarize Messages Node",
     tags=["memory", "summarization", "llm"],
     metadata={"node_type": "graph_node", "model": "gpt-4o-mini"},
 )
@@ -1057,7 +1055,6 @@ Do not include any meta-commentary or formatting, just the summary text."""
 # ==============================================================================
 @ls.traceable(
     run_type="retriever",
-    name="Retrieve Similar Selections (Hybrid)",
     tags=["retrieval", "chromadb", "hybrid-search", "database-selection"],
     metadata={
         "node_type": "graph_node",
@@ -1202,7 +1199,6 @@ async def retrieve_similar_selections_hybrid_search_node(
 
 @ls.traceable(
     run_type="chain",
-    name="Rerank Table Descriptions",
     tags=["retrieval", "reranking", "cohere", "database-selection"],
     metadata={"node_type": "graph_node"},
 )
@@ -1314,7 +1310,6 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
 
 @ls.traceable(
     run_type="chain",
-    name="Filter Relevant Selections",
     tags=["retrieval", "filtering", "database-selection"],
     metadata={"node_type": "graph_node", "threshold": SQL_RELEVANCE_THRESHOLD},
 )
@@ -1381,7 +1376,6 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
 # ==============================================================================
 @ls.traceable(
     run_type="retriever",
-    name="Retrieve Similar PDF Chunks (Hybrid)",
     tags=["retrieval", "chromadb", "hybrid-search", "pdf"],
     metadata={
         "node_type": "graph_node",
@@ -1527,7 +1521,6 @@ async def retrieve_similar_chunks_hybrid_search_node(
 
 @ls.traceable(
     run_type="chain",
-    name="Rerank PDF Chunks",
     tags=["retrieval", "reranking", "cohere", "pdf"],
     metadata={"node_type": "graph_node"},
 )
@@ -1631,7 +1624,6 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 
 @ls.traceable(
     run_type="chain",
-    name="Filter Relevant PDF Chunks",
     tags=["retrieval", "filtering", "pdf"],
     metadata={"node_type": "graph_node", "threshold": PDF_RELEVANCE_THRESHOLD},
 )
@@ -1695,7 +1687,6 @@ async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 
 @ls.traceable(
     run_type="chain",
-    name="Post Retrieval Sync",
     tags=["synchronization"],
     metadata={"node_type": "graph_node"},
 )
@@ -1727,7 +1718,6 @@ async def post_retrieval_sync_node(state: DataAnalysisState) -> DataAnalysisStat
 # ==============================================================================
 @ls.traceable(
     run_type="chain",
-    name="Get Database Schema",
     tags=["sql", "schema", "metadata"],
     metadata={"node_type": "graph_node"},
 )
@@ -1768,7 +1758,6 @@ async def get_schema_node(state: DataAnalysisState) -> DataAnalysisState:
 
 @ls.traceable(
     run_type="chain",
-    name="Generate and Execute SQL",
     tags=["sql", "generation", "execution", "agentic", "llm"],
     metadata={
         "node_type": "graph_node",
@@ -2313,7 +2302,6 @@ Remember: Always examine the schema to understand:
 
 @ls.traceable(
     run_type="chain",
-    name="Reflect on Results",
     tags=["reflection", "self-correction", "llm"],
     metadata={
         "node_type": "graph_node",
@@ -2551,7 +2539,6 @@ REMEMBER: Always end your response with either 'DECISION: answer' or 'DECISION: 
 
 @ls.traceable(
     run_type="chain",
-    name="Format Final Answer",
     tags=["formatting", "synthesis", "llm"],
     metadata={"node_type": "graph_node", "model": "gpt-4o-mini"},
 )
@@ -2824,7 +2811,6 @@ Bad: "The query shows X is 1,234,567"
 
 @ls.traceable(
     run_type="chain",
-    name="Generate Follow-up Prompts",
     tags=["follow-up", "suggestions", "llm"],
     metadata={"node_type": "graph_node", "model": "gpt-4o-mini"},
 )
@@ -3005,7 +2991,6 @@ Important guidelines:
 
 @ls.traceable(
     run_type="chain",
-    name="Submit Final Answer",
     tags=["submission", "output"],
     metadata={"node_type": "graph_node"},
 )
@@ -3069,7 +3054,6 @@ async def submit_final_answer_node(state: DataAnalysisState) -> DataAnalysisStat
 
 @ls.traceable(
     run_type="chain",
-    name="Save Results",
     tags=["persistence", "save"],
     metadata={"node_type": "graph_node", "save_to_file": bool(SAVE_TO_FILE_TXT_JSONL)},
 )
@@ -3195,7 +3179,6 @@ async def save_node(state: DataAnalysisState) -> DataAnalysisState:
 
 @ls.traceable(
     run_type="chain",
-    name="Cleanup Resources",
     tags=["cleanup", "memory"],
     metadata={"node_type": "graph_node"},
 )

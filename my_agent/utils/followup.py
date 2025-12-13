@@ -400,7 +400,6 @@ def generate_initial_followup_prompts_template() -> List[str]:
 # ==============================================================================
 @ls.traceable(
     run_type="llm",
-    name="Generate AI Follow-up Prompts",
     tags=["ai-generation", "prompts", "llm"],
     metadata={"model": "gpt-4o-mini", "temperature": 1.0},
 )
