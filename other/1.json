@@ -1,178 +1,2088 @@
-<class 'langgraph.pregel.io.AddableValuesDict'>
-{'chromadb_missing': False,
- 'final_answer': '## Výroba kapalných paliv z ropy v České republice v roce '
-                 '2023\n'
-                 '\n'
-                 '- **Výroba kapalných paliv z ropy**: V roce 2023 byla výroba '
-                 'v procesech zušlechťování paliv celkem **330962.822** tun.\n'
-                 '  \n'
-                 '### Doplňující informace z PDF dokumentu\n'
-                 '\n'
-                 '- **Import kerosenového typu leteckého paliva**: V roce 2023 '
-                 'činil import **132000** tun.\n'
-                 '- **Export palivových olejů**: V roce 2023 byl export '
-                 '**110000** tun.\n'
-                 '- **Export kerosenového typu leteckého paliva**: V roce 2023 '
-                 'byl export **7000** tun.\n'
-                 '- **Export nafty**: V roce 2023 byl export **767000** tun.\n'
-                 '\n'
-                 '### Shrnutí\n'
-                 'V roce 2023 byla výroba kapalných paliv z ropy v České '
-                 'republice významná, s celkovou produkcí přes 330 tisíc tun. '
-                 'Doplňující údaje o importu a exportu ukazují na aktivní '
-                 'obchod s různými typy paliv, což může ovlivnit celkovou '
-                 'energetickou bilanci země.',
- 'followup_prompts': ['Analyzuj trendy výroby kapalných paliv v České '
-                      'republice za posledních 5 let.',
-                      'Zjisti, jaký vliv má export a import paliv na '
-                      'energetickou bilanci země.',
-                      'Porovnej výrobu kapalných paliv z ropy v České '
-                      'republice s jinými zeměmi Evropské unie v roce 2023.'
-    ],
- 'hybrid_search_chunks': [],
- 'hybrid_search_results': [],
- 'iteration': 0,
- 'messages': [SystemMessage(content='Uživatel se ptá na výrobu kapalných paliv z ropy v České republice v roce 2023. Data gathering je dokončeno a byly provedeny 1 dotazy. V roce 2023 byla výroba kapalných paliv z ropy v procesech zušlechťování celkem 330962.822 tun. Import kerosenového typu leteckého paliva činil 132000 tun, export palivových olejů byl 110000 tun, export kerosenového typu leteckého paliva 7000 tun a export nafty 767000 tun. Celková produkce přes 330 tisíc tun a aktivní obchod s různými typy paliv ovlivňují energetickou bilanci země.', additional_kwargs={}, response_metadata={}),
-              AIMessage(content='## Výroba kapalných paliv z ropy v České republice v roce 2023\n\n- **Výroba kapalných paliv z ropy**: V roce 2023 byla výroba v procesech zušlechťování paliv celkem **330962.822** tun.\n  \n### Doplňující informace z PDF dokumentu\n\n- **Import kerosenového typu leteckého paliva**: V roce 2023 činil import **132000** tun.\n- **Export palivových olejů**: V roce 2023 byl export **110000** tun.\n- **Export kerosenového typu leteckého paliva**: V roce 2023 byl export **7000** tun.\n- **Export nafty**: V roce 2023 byl export **767000** tun.\n\n### Shrnutí\nV roce 2023 byla výroba kapalných paliv z ropy v České republice významná, s celkovou produkcí přes 330 tisíc tun. Doplňující údaje o importu a exportu ukazují na aktivní obchod s různými typy paliv, což může ovlivnit celkovou energetickou bilanci země.', additional_kwargs={'refusal': None
-        }, response_metadata={'token_usage': {'completion_tokens': 259, 'prompt_tokens': 1237, 'total_tokens': 1496, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0
-                }, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0
+[
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-066d-64ec-bfff-4fa74b5b90be",
+        "parent_checkpoint_id": null,
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-066d-64ec-bfff-4fa74b5b90be",
+            "ts": "2025-12-13T17:29:17.317860+00:00",
+            "versions_seen": {
+                "__input__": {}
+            },
+            "channel_values": {},
+            "channel_versions": {
+                "__start__": "00000000000000000000000000000001.0.9064285046639541"
+            },
+            "updated_channels": [
+                "__start__"
+            ]
+        },
+        "metadata": {
+            "step": -1,
+            "source": "input",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-0673-66b2-8000-f92fbf591950",
+        "parent_checkpoint_id": "1f0d8494-066d-64ec-bfff-4fa74b5b90be",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-0673-66b2-8000-f92fbf591950",
+            "ts": "2025-12-13T17:29:17.320363+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
                 }
-            }, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_efad92c60b', 'id': 'chatcmpl-CeK6njr0O9hp72lvFhQYFZ0fEfMjF', 'service_tier': None, 'prompt_filter_results': [
-                {'prompt_index': 0, 'content_filter_results': {'hate': {'filtered': False, 'severity': 'safe'
-                        }, 'jailbreak': {'filtered': False, 'detected': False
-                        }, 'self_harm': {'filtered': False, 'severity': 'safe'
-                        }, 'sexual': {'filtered': False, 'severity': 'safe'
-                        }, 'violence': {'filtered': False, 'severity': 'safe'
-                        }
-                    }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": null,
+                "reflection_decision": "",
+                "branch:to:rewrite_prompt": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.02217113613151478",
+                "messages": "00000000000000000000000000000002.0.02217113613151478",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000002.0.02217113613151478",
+                "top_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "final_answer": "00000000000000000000000000000002.0.02217113613151478",
+                "chromadb_missing": "00000000000000000000000000000002.0.02217113613151478",
+                "followup_prompts": "00000000000000000000000000000002.0.02217113613151478",
+                "rewritten_prompt": "00000000000000000000000000000002.0.02217113613151478",
+                "most_similar_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "queries_and_results": "00000000000000000000000000000002.0.02217113613151478",
+                "reflection_decision": "00000000000000000000000000000002.0.02217113613151478",
+                "top_selection_codes": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_results": "00000000000000000000000000000002.0.02217113613151478",
+                "most_similar_selections": "00000000000000000000000000000002.0.02217113613151478",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+            },
+            "updated_channels": [
+                "branch:to:rewrite_prompt",
+                "chromadb_missing",
+                "final_answer",
+                "followup_prompts",
+                "hybrid_search_chunks",
+                "hybrid_search_results",
+                "iteration",
+                "messages",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "prompt",
+                "queries_and_results",
+                "reflection_decision",
+                "rewritten_prompt",
+                "top_chunks",
+                "top_selection_codes"
+            ]
+        },
+        "metadata": {
+            "step": 0,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-126c-6416-8001-cbc9359991fe",
+        "parent_checkpoint_id": "1f0d8494-0673-66b2-8000-f92fbf591950",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-126c-6416-8001-cbc9359991fe",
+            "ts": "2025-12-13T17:29:18.575720+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
                 }
-            ], 'finish_reason': 'stop', 'logprobs': None, 'content_filter_results': {'hate': {'filtered': False, 'severity': 'safe'
-                }, 'protected_material_code': {'filtered': False, 'detected': False
-                }, 'protected_material_text': {'filtered': False, 'detected': False
-                }, 'self_harm': {'filtered': False, 'severity': 'safe'
-                }, 'sexual': {'filtered': False, 'severity': 'safe'
-                }, 'violence': {'filtered': False, 'severity': 'safe'
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:summarize_messages_rewrite": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.02217113613151478",
+                "messages": "00000000000000000000000000000003.0.2435601019596353",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000002.0.02217113613151478",
+                "top_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "final_answer": "00000000000000000000000000000002.0.02217113613151478",
+                "chromadb_missing": "00000000000000000000000000000002.0.02217113613151478",
+                "followup_prompts": "00000000000000000000000000000002.0.02217113613151478",
+                "rewritten_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "most_similar_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "queries_and_results": "00000000000000000000000000000002.0.02217113613151478",
+                "reflection_decision": "00000000000000000000000000000002.0.02217113613151478",
+                "top_selection_codes": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_results": "00000000000000000000000000000002.0.02217113613151478",
+                "most_similar_selections": "00000000000000000000000000000002.0.02217113613151478",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_rewrite",
+                "messages",
+                "rewritten_prompt"
+            ]
+        },
+        "metadata": {
+            "step": 1,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-1e2d-61ae-8002-d45dae09e091",
+        "parent_checkpoint_id": "1f0d8494-126c-6416-8001-cbc9359991fe",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-1e2d-61ae-8002-d45dae09e091",
+            "ts": "2025-12-13T17:29:19.808145+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
                 }
-            }
-        }, id='run--9340284a-a9f6-4885-8e9d-ab0fe486e071-0', usage_metadata={'input_tokens': 1237, 'output_tokens': 259, 'total_tokens': 1496, 'input_token_details': {'audio': 0, 'cache_read': 0
-            }, 'output_token_details': {'audio': 0, 'reasoning': 0
-            }
-        })
-    ],
- 'most_similar_chunks': [],
- 'most_similar_selections': [],
- 'prompt': 'Jaká byla výroba kapalných paliv z ropy v Česku v roce 2023?',
- 'queries_and_results': [('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:retrieve_similar_chunks_hybrid_search": null,
+                "branch:to:retrieve_similar_selections_hybrid_search": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.02217113613151478",
+                "messages": "00000000000000000000000000000004.0.008512811861959402",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000002.0.02217113613151478",
+                "top_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "final_answer": "00000000000000000000000000000002.0.02217113613151478",
+                "chromadb_missing": "00000000000000000000000000000002.0.02217113613151478",
+                "followup_prompts": "00000000000000000000000000000002.0.02217113613151478",
+                "rewritten_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "most_similar_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "queries_and_results": "00000000000000000000000000000002.0.02217113613151478",
+                "reflection_decision": "00000000000000000000000000000002.0.02217113613151478",
+                "top_selection_codes": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_results": "00000000000000000000000000000002.0.02217113613151478",
+                "most_similar_selections": "00000000000000000000000000000002.0.02217113613151478",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+            },
+            "updated_channels": [
+                "branch:to:retrieve_similar_chunks_hybrid_search",
+                "branch:to:retrieve_similar_selections_hybrid_search",
+                "messages"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 2,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-60bc-618f-8003-3aa472051def",
+        "parent_checkpoint_id": "1f0d8494-1e2d-61ae-8002-d45dae09e091",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-60bc-618f-8003-3aa472051def",
+            "ts": "2025-12-13T17:29:26.787316+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:rerank_chunks": null,
+                "branch:to:rerank_table_descriptions": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.02217113613151478",
+                "messages": "00000000000000000000000000000004.0.008512811861959402",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000002.0.02217113613151478",
+                "top_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "final_answer": "00000000000000000000000000000002.0.02217113613151478",
+                "chromadb_missing": "00000000000000000000000000000002.0.02217113613151478",
+                "followup_prompts": "00000000000000000000000000000002.0.02217113613151478",
+                "rewritten_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "most_similar_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "queries_and_results": "00000000000000000000000000000002.0.02217113613151478",
+                "reflection_decision": "00000000000000000000000000000002.0.02217113613151478",
+                "top_selection_codes": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_chunks": "00000000000000000000000000000005.0.28364387449437156",
+                "hybrid_search_results": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156",
+                "most_similar_selections": "00000000000000000000000000000002.0.02217113613151478",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:rerank_chunks",
+                "branch:to:rerank_table_descriptions",
+                "hybrid_search_chunks",
+                "hybrid_search_results"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 3,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-6ea2-64ba-8004-f493cf51cf59",
+        "parent_checkpoint_id": "1f0d8494-60bc-618f-8003-3aa472051def",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-6ea2-64ba-8004-f493cf51cf59",
+            "ts": "2025-12-13T17:29:28.244754+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:relevant_chunks": null,
+                "branch:to:relevant_selections": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.02217113613151478",
+                "messages": "00000000000000000000000000000004.0.008512811861959402",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000002.0.02217113613151478",
+                "top_chunks": "00000000000000000000000000000002.0.02217113613151478",
+                "final_answer": "00000000000000000000000000000002.0.02217113613151478",
+                "chromadb_missing": "00000000000000000000000000000002.0.02217113613151478",
+                "followup_prompts": "00000000000000000000000000000002.0.02217113613151478",
+                "rewritten_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "most_similar_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "queries_and_results": "00000000000000000000000000000002.0.02217113613151478",
+                "reflection_decision": "00000000000000000000000000000002.0.02217113613151478",
+                "top_selection_codes": "00000000000000000000000000000002.0.02217113613151478",
+                "hybrid_search_chunks": "00000000000000000000000000000005.0.28364387449437156",
+                "hybrid_search_results": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:relevant_chunks",
+                "branch:to:relevant_selections",
+                "most_similar_chunks",
+                "most_similar_selections"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 4,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-6ea9-69e7-8005-e0c663df8e7d",
+        "parent_checkpoint_id": "1f0d8494-6ea2-64ba-8004-f493cf51cf59",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-6ea9-69e7-8005-e0c663df8e7d",
+            "ts": "2025-12-13T17:29:28.247754+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:post_retrieval_sync": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000002.0.02217113613151478",
+                "messages": "00000000000000000000000000000004.0.008512811861959402",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000002.0.02217113613151478",
+                "top_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "final_answer": "00000000000000000000000000000002.0.02217113613151478",
+                "chromadb_missing": "00000000000000000000000000000002.0.02217113613151478",
+                "followup_prompts": "00000000000000000000000000000002.0.02217113613151478",
+                "rewritten_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "most_similar_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "queries_and_results": "00000000000000000000000000000002.0.02217113613151478",
+                "reflection_decision": "00000000000000000000000000000002.0.02217113613151478",
+                "top_selection_codes": "00000000000000000000000000000007.0.5726946164223213",
+                "hybrid_search_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "hybrid_search_results": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:post_retrieval_sync",
+                "hybrid_search_chunks",
+                "hybrid_search_results",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "top_chunks",
+                "top_selection_codes"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 5,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-6eae-680d-8006-7b8ec9ab6009",
+        "parent_checkpoint_id": "1f0d8494-6ea9-69e7-8005-e0c663df8e7d",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-6eae-680d-8006-7b8ec9ab6009",
+            "ts": "2025-12-13T17:29:28.249754+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:get_schema": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000008.0.8292281150082357",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000008.0.8292281150082357",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000008.0.8292281150082357",
+                "reflection_decision": "00000000000000000000000000000008.0.8292281150082357",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:get_schema",
+                "chromadb_missing",
+                "final_answer",
+                "followup_prompts",
+                "hybrid_search_chunks",
+                "hybrid_search_results",
+                "iteration",
+                "messages",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "prompt",
+                "queries_and_results",
+                "reflection_decision",
+                "rewritten_prompt",
+                "top_chunks",
+                "top_selection_codes"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 6,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8494-6eb5-6d33-8007-60ed8f01d01e",
+        "parent_checkpoint_id": "1f0d8494-6eae-680d-8006-7b8ec9ab6009",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8494-6eb5-6d33-8007-60ed8f01d01e",
+            "ts": "2025-12-13T17:29:28.252753+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:generate_query": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000009.0.11748618780033515",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000008.0.8292281150082357",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000008.0.8292281150082357",
+                "reflection_decision": "00000000000000000000000000000008.0.8292281150082357",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000009.0.11748618780033515",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:generate_query",
+                "messages"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 7,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8495-1431-60a8-8008-da7463723197",
+        "parent_checkpoint_id": "1f0d8494-6eb5-6d33-8007-60ed8f01d01e",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8495-1431-60a8-8008-da7463723197",
+            "ts": "2025-12-13T17:29:45.604727+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.11748618780033515"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "",
+                "branch:to:summarize_messages_query": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000010.0.46376648505680174",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000010.0.46376648505680174",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000010.0.46376648505680174",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000010.0.46376648505680174",
+                "reflection_decision": "00000000000000000000000000000008.0.8292281150082357",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.46376648505680174",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.46376648505680174",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_query",
+                "iteration",
+                "messages",
+                "queries_and_results",
+                "rewritten_prompt"
             ]
-        ]'),
-                         ('SELECT `Ukazatel`, `Druh energetického pochodu`, '
-                          '`value` FROM EP801 WHERE `Území` = "Česko" AND '
-                          '`Roky` = "2023" AND `Druh energetického pochodu` = '
-                          '"Výroba kapalných paliv z ropy " AND `Ukazatel` = '
-                          '"Výroba v procesech zušlechťování paliv celkem";',
-                          '[
-            [
-                "Výroba v procesech zušlechťování paliv celkem", '
-                          '"Výroba kapalných paliv z ropy ",
-                330962.822
+        },
+        "metadata": {
+            "step": 8,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8495-210f-6a68-8009-9c2c9ca635a3",
+        "parent_checkpoint_id": "1f0d8495-1431-60a8-8008-da7463723197",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8495-210f-6a68-8009-9c2c9ca635a3",
+            "ts": "2025-12-13T17:29:46.954199+00:00",
+            "versions_seen": {
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.11748618780033515"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.46376648505680174"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 0,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "branch:to:reflect": null,
+                "reflection_decision": ""
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000011.0.41472831731883064",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000010.0.46376648505680174",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000010.0.46376648505680174",
+                "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000010.0.46376648505680174",
+                "reflection_decision": "00000000000000000000000000000008.0.8292281150082357",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.46376648505680174",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.41472831731883064",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:reflect",
+                "messages"
             ]
-        ]')
-    ],
- 'reflection_decision': '',
- 'rewritten_prompt': 'Jaká byla výroba kapalných paliv z ropy v České '
-                     'republice v roce 2023?',
- 'top_chunks': [Document(metadata={'token_chunk_index': 0, 'chunk_index': 8, 'doc_hash': '41525607014f1f631db6687081c65a36', 'char_count': 340, 'source_file': '501_PDFsam_32019824.pdf', 'page_number': 1, 'chunk_id': 10637, 'token_count': 87
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods to the Czech Republic (Imports) - Kerosene-type jet fuel', the amount was 140 thousand tonnes in 2015, 99 thousand tonnes in 2020, 96 thousand tonnes in 2021, 169 thousand tonnes in 2022, and 132 thousand tonnes in 2023."),
-                Document(metadata={'chunk_index': 4, 'page_number': 1, 'char_count': 328, 'source_file': '501_PDFsam_32019824.pdf', 'token_count': 83, 'token_chunk_index': 0, 'doc_hash': '205a764531eeec3ea8431c8e7eb52c08', 'chunk_id': 10633
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Fuel oils', the amount was 132 thousand tonnes in 2015, 51 thousand tonnes in 2020, 29 thousand tonnes in 2021, 56 thousand tonnes in 2022, and 110 thousand tonnes in 2023."),
-                Document(metadata={'chunk_id': 10631, 'token_count': 87, 'token_chunk_index': 0, 'char_count': 334, 'source_file': '501_PDFsam_32019824.pdf', 'page_number': 1, 'doc_hash': '044eff42d0d2cee2e7b5a854568000a7', 'chunk_index': 2
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Kerosene-type jet fuel', the amount was 0 thousand tonnes in 2015, 0 thousand tonnes in 2020, 2 thousand tonnes in 2021, 0 thousand tonnes in 2022, and 7 thousand tonnes in 2023."),
-                Document(metadata={'page_number': 1, 'chunk_id': 10632, 'doc_hash': '87abe915859cfdd565c6b0dff59e3fd5', 'token_chunk_index': 0, 'char_count': 334, 'source_file': '501_PDFsam_32019824.pdf', 'chunk_index': 3, 'token_count': 85
-        }, page_content="In table 'Energy balance of crude oil refinery processing (by IEA methodology)', under 'Cross border movements of goods from the Czech Republic (Exports) - Diesel oil', the amount was 1043 thousand tonnes in 2015, 769 thousand tonnes in 2020, 1002 thousand tonnes in 2021, 735 thousand tonnes in 2022, and 767 thousand tonnes in 2023."),
-                Document(metadata={'source_file': '1_PDFsam_32019824.pdf', 'doc_hash': 'c491b44441fab14fdfc1d041eae15c5b', 'token_chunk_index': 0, 'token_count': 135, 'char_count': 399, 'chunk_id': 10368, 'page_number': 493, 'chunk_index': 4
-        }, page_content="In table 'Consumption of automotive fuel in the CR including biofuels', under 'motor gasoline', the consumption was 2.0 million tonnes in 2010, 1.8 million tonnes in 2015, 1.7 million tonnes in 2016, 1.7 million tonnes in 2017, 1.7 million tonnes in 2018, 1.7 million tonnes in 2019, 1.6 million tonnes in 2020, 1.6 million tonnes in 2021, 1.7 million tonnes in 2022, and 1.7 million tonnes in 2023.")
-    ],
- 'top_selection_codes': ['EP801', 'ENE02T4', 'ENE02T5'
-    ]
-}
+        },
+        "metadata": {
+            "step": 9,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8495-484a-6ece-800a-b7a9f0e84130",
+        "parent_checkpoint_id": "1f0d8495-210f-6a68-8009-9c2c9ca635a3",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8495-484a-6ece-800a-b7a9f0e84130",
+            "ts": "2025-12-13T17:29:51.067924+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.11748618780033515"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.46376648505680174"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:summarize_messages_reflect": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000012.0.5268220160357918",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000012.0.5268220160357918",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000010.0.46376648505680174",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000010.0.46376648505680174",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000010.0.46376648505680174",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.41472831731883064",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_reflect",
+                "iteration",
+                "messages",
+                "reflection_decision"
+            ]
+        },
+        "metadata": {
+            "step": 10,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8495-5a34-6ee4-800b-307101af07dd",
+        "parent_checkpoint_id": "1f0d8495-484a-6ece-800a-b7a9f0e84130",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8495-5a34-6ee4-800b-307101af07dd",
+            "ts": "2025-12-13T17:29:52.946352+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000009.0.11748618780033515"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.46376648505680174"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:generate_query": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000013.0.21811984865260814",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000012.0.5268220160357918",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000010.0.46376648505680174",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000010.0.46376648505680174",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000011.0.41472831731883064",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:generate_query",
+                "messages"
+            ]
+        },
+        "metadata": {
+            "step": 11,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8495-a358-6f95-800c-d250db5d4b4f",
+        "parent_checkpoint_id": "1f0d8495-5a34-6ee4-800b-307101af07dd",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8495-a358-6f95-800c-d250db5d4b4f",
+            "ts": "2025-12-13T17:30:00.615720+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000010.0.46376648505680174"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:summarize_messages_query": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000014.0.7034373761863536",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000014.0.7034373761863536",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_query",
+                "iteration",
+                "messages",
+                "queries_and_results",
+                "rewritten_prompt"
+            ]
+        },
+        "metadata": {
+            "step": 12,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8495-b754-6014-800d-0380bc00dc41",
+        "parent_checkpoint_id": "1f0d8495-a358-6f95-800c-d250db5d4b4f",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8495-b754-6014-800d-0380bc00dc41",
+            "ts": "2025-12-13T17:30:02.710837+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:format_answer": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000015.0.015086114860244693",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "final_answer": "00000000000000000000000000000008.0.8292281150082357",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000014.0.7034373761863536",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:format_answer": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:format_answer",
+                "messages"
+            ]
+        },
+        "metadata": {
+            "step": 13,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8495-f764-63da-800e-1b4035858bfc",
+        "parent_checkpoint_id": "1f0d8495-b754-6014-800d-0380bc00dc41",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8495-f764-63da-800e-1b4035858bfc",
+            "ts": "2025-12-13T17:30:09.428373+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000015.0.015086114860244693"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "# Latest Trends in Inflation Data for Czechia\n\n## Recent Statistics\n\n### Monthly Consumer Price Index Changes\n- **October 2024**: \n  - Monthly increase: 0.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 3.1%\n  \n- **July 2024**: \n  - Monthly increase: 0.7%\n  - Year-on-year increase: 2.2%\n  - Average annual index increase: 4.4%\n  \n- **June 2024**: \n  - Monthly decrease: -0.3%\n  - Year-on-year increase: 2.0%\n  - Average annual index increase: 4.9%\n\n- **January 2025**: \n  - Monthly increase: 1.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 2.5%\n\n- **February 2025**: \n  - Monthly increase: 0.2%\n  - Year-on-year increase: 2.7%\n  - Average annual index increase: 2.5%\n\n### Annual Inflation Rates\n- **2024**: Average annual inflation rate is 2.4%\n- **2023**: Average annual inflation rate was significantly higher at 10.7%\n- **2022**: The inflation rate peaked at 15.1%\n- **2021**: Inflation was at 3.8%\n- **2020**: Inflation was at 3.2%\n\n## Contributing Factors\n\n### Economic Context\n- The Czech economy in 2023 experienced mixed influences:\n  - **Positive Factors**: Increasing external demand, domestic investment activity, and government consumption.\n  - **Negative Factors**: Declining household consumption and adverse changes in inventories.\n  \n- The GDP saw a slight decrease of 0.1% in 2023, indicating economic stagnation despite rising consumer prices.\n\n### Wage and Employment Trends\n- Total wages and salaries increased by 7.8% in nominal terms, but real earnings fell by 1.2% due to rising price levels. This suggests that while nominal wages were up, inflation outpaced wage growth, affecting purchasing power.\n\n## Summary of Trends\n- Inflation in Czechia has shown a significant decline from the peak of 15.1% in 2022 to 10.7% in 2023, and further down to 2.4% in 2024.\n- Monthly fluctuations in consumer prices indicate a trend of stabilization, with recent months showing modest increases or slight decreases.\n- The interplay of external demand, investment, and consumption patterns continues to shape the inflation landscape, with real earnings being negatively impacted by inflation.\n\nThis comprehensive overview highlights the recent trends in inflation data for Czechia, supported by both statistical data and economic context.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:summarize_messages_format": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000016.0.4981100058328485",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000016.0.4981100058328485",
+                "final_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000014.0.7034373761863536",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:format_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000016.0.4981100058328485",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:summarize_messages_format",
+                "final_answer",
+                "messages",
+                "top_chunks"
+            ]
+        },
+        "metadata": {
+            "step": 14,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8496-1e53-6b2b-800f-bd13fada0384",
+        "parent_checkpoint_id": "1f0d8495-f764-63da-800e-1b4035858bfc",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8496-1e53-6b2b-800f-bd13fada0384",
+            "ts": "2025-12-13T17:30:13.511044+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000015.0.015086114860244693"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000016.0.4981100058328485"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "# Latest Trends in Inflation Data for Czechia\n\n## Recent Statistics\n\n### Monthly Consumer Price Index Changes\n- **October 2024**: \n  - Monthly increase: 0.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 3.1%\n  \n- **July 2024**: \n  - Monthly increase: 0.7%\n  - Year-on-year increase: 2.2%\n  - Average annual index increase: 4.4%\n  \n- **June 2024**: \n  - Monthly decrease: -0.3%\n  - Year-on-year increase: 2.0%\n  - Average annual index increase: 4.9%\n\n- **January 2025**: \n  - Monthly increase: 1.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 2.5%\n\n- **February 2025**: \n  - Monthly increase: 0.2%\n  - Year-on-year increase: 2.7%\n  - Average annual index increase: 2.5%\n\n### Annual Inflation Rates\n- **2024**: Average annual inflation rate is 2.4%\n- **2023**: Average annual inflation rate was significantly higher at 10.7%\n- **2022**: The inflation rate peaked at 15.1%\n- **2021**: Inflation was at 3.8%\n- **2020**: Inflation was at 3.2%\n\n## Contributing Factors\n\n### Economic Context\n- The Czech economy in 2023 experienced mixed influences:\n  - **Positive Factors**: Increasing external demand, domestic investment activity, and government consumption.\n  - **Negative Factors**: Declining household consumption and adverse changes in inventories.\n  \n- The GDP saw a slight decrease of 0.1% in 2023, indicating economic stagnation despite rising consumer prices.\n\n### Wage and Employment Trends\n- Total wages and salaries increased by 7.8% in nominal terms, but real earnings fell by 1.2% due to rising price levels. This suggests that while nominal wages were up, inflation outpaced wage growth, affecting purchasing power.\n\n## Summary of Trends\n- Inflation in Czechia has shown a significant decline from the peak of 15.1% in 2022 to 10.7% in 2023, and further down to 2.4% in 2024.\n- Monthly fluctuations in consumer prices indicate a trend of stabilization, with recent months showing modest increases or slight decreases.\n- The interplay of external demand, investment, and consumption patterns continues to shape the inflation landscape, with real earnings being negatively impacted by inflation.\n\nThis comprehensive overview highlights the recent trends in inflation data for Czechia, supported by both statistical data and economic context.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:generate_followup_prompts": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000017.0.8871361493145291",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000016.0.4981100058328485",
+                "final_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000008.0.8292281150082357",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000014.0.7034373761863536",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:format_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000017.0.8871361493145291",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000017.0.8871361493145291",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:generate_followup_prompts",
+                "messages"
+            ]
+        },
+        "metadata": {
+            "step": 15,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8496-3649-6176-8010-5c877772c76d",
+        "parent_checkpoint_id": "1f0d8496-1e53-6b2b-800f-bd13fada0384",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8496-3649-6176-8010-5c877772c76d",
+            "ts": "2025-12-13T17:30:16.023282+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000015.0.015086114860244693"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000017.0.8871361493145291"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000016.0.4981100058328485"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "# Latest Trends in Inflation Data for Czechia\n\n## Recent Statistics\n\n### Monthly Consumer Price Index Changes\n- **October 2024**: \n  - Monthly increase: 0.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 3.1%\n  \n- **July 2024**: \n  - Monthly increase: 0.7%\n  - Year-on-year increase: 2.2%\n  - Average annual index increase: 4.4%\n  \n- **June 2024**: \n  - Monthly decrease: -0.3%\n  - Year-on-year increase: 2.0%\n  - Average annual index increase: 4.9%\n\n- **January 2025**: \n  - Monthly increase: 1.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 2.5%\n\n- **February 2025**: \n  - Monthly increase: 0.2%\n  - Year-on-year increase: 2.7%\n  - Average annual index increase: 2.5%\n\n### Annual Inflation Rates\n- **2024**: Average annual inflation rate is 2.4%\n- **2023**: Average annual inflation rate was significantly higher at 10.7%\n- **2022**: The inflation rate peaked at 15.1%\n- **2021**: Inflation was at 3.8%\n- **2020**: Inflation was at 3.2%\n\n## Contributing Factors\n\n### Economic Context\n- The Czech economy in 2023 experienced mixed influences:\n  - **Positive Factors**: Increasing external demand, domestic investment activity, and government consumption.\n  - **Negative Factors**: Declining household consumption and adverse changes in inventories.\n  \n- The GDP saw a slight decrease of 0.1% in 2023, indicating economic stagnation despite rising consumer prices.\n\n### Wage and Employment Trends\n- Total wages and salaries increased by 7.8% in nominal terms, but real earnings fell by 1.2% due to rising price levels. This suggests that while nominal wages were up, inflation outpaced wage growth, affecting purchasing power.\n\n## Summary of Trends\n- Inflation in Czechia has shown a significant decline from the peak of 15.1% in 2022 to 10.7% in 2023, and further down to 2.4% in 2024.\n- Monthly fluctuations in consumer prices indicate a trend of stabilization, with recent months showing modest increases or slight decreases.\n- The interplay of external demand, investment, and consumption patterns continues to shape the inflation landscape, with real earnings being negatively impacted by inflation.\n\nThis comprehensive overview highlights the recent trends in inflation data for Czechia, supported by both statistical data and economic context.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:submit_final_answer": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000017.0.8871361493145291",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000016.0.4981100058328485",
+                "final_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000018.0.8188923057525985",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000014.0.7034373761863536",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:format_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:submit_final_answer": "00000000000000000000000000000018.0.8188923057525985",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000018.0.8188923057525985",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000017.0.8871361493145291",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:submit_final_answer",
+                "followup_prompts"
+            ]
+        },
+        "metadata": {
+            "step": 16,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8496-364b-6883-8011-dc314aa8c9c9",
+        "parent_checkpoint_id": "1f0d8496-3649-6176-8010-5c877772c76d",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8496-364b-6883-8011-dc314aa8c9c9",
+            "ts": "2025-12-13T17:30:16.024281+00:00",
+            "versions_seen": {
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000015.0.015086114860244693"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "submit_final_answer": {
+                    "branch:to:submit_final_answer": "00000000000000000000000000000018.0.8188923057525985"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000017.0.8871361493145291"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000016.0.4981100058328485"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "# Latest Trends in Inflation Data for Czechia\n\n## Recent Statistics\n\n### Monthly Consumer Price Index Changes\n- **October 2024**: \n  - Monthly increase: 0.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 3.1%\n  \n- **July 2024**: \n  - Monthly increase: 0.7%\n  - Year-on-year increase: 2.2%\n  - Average annual index increase: 4.4%\n  \n- **June 2024**: \n  - Monthly decrease: -0.3%\n  - Year-on-year increase: 2.0%\n  - Average annual index increase: 4.9%\n\n- **January 2025**: \n  - Monthly increase: 1.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 2.5%\n\n- **February 2025**: \n  - Monthly increase: 0.2%\n  - Year-on-year increase: 2.7%\n  - Average annual index increase: 2.5%\n\n### Annual Inflation Rates\n- **2024**: Average annual inflation rate is 2.4%\n- **2023**: Average annual inflation rate was significantly higher at 10.7%\n- **2022**: The inflation rate peaked at 15.1%\n- **2021**: Inflation was at 3.8%\n- **2020**: Inflation was at 3.2%\n\n## Contributing Factors\n\n### Economic Context\n- The Czech economy in 2023 experienced mixed influences:\n  - **Positive Factors**: Increasing external demand, domestic investment activity, and government consumption.\n  - **Negative Factors**: Declining household consumption and adverse changes in inventories.\n  \n- The GDP saw a slight decrease of 0.1% in 2023, indicating economic stagnation despite rising consumer prices.\n\n### Wage and Employment Trends\n- Total wages and salaries increased by 7.8% in nominal terms, but real earnings fell by 1.2% due to rising price levels. This suggests that while nominal wages were up, inflation outpaced wage growth, affecting purchasing power.\n\n## Summary of Trends\n- Inflation in Czechia has shown a significant decline from the peak of 15.1% in 2022 to 10.7% in 2023, and further down to 2.4% in 2024.\n- Monthly fluctuations in consumer prices indicate a trend of stabilization, with recent months showing modest increases or slight decreases.\n- The interplay of external demand, investment, and consumption patterns continues to shape the inflation landscape, with real earnings being negatively impacted by inflation.\n\nThis comprehensive overview highlights the recent trends in inflation data for Czechia, supported by both statistical data and economic context.",
+                "branch:to:save": null,
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve"
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000008.0.8292281150082357",
+                "messages": "00000000000000000000000000000019.0.3669734112174555",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000019.0.3669734112174555",
+                "final_answer": "00000000000000000000000000000019.0.3669734112174555",
+                "branch:to:save": "00000000000000000000000000000019.0.3669734112174555",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000019.0.3669734112174555",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "queries_and_results": "00000000000000000000000000000019.0.3669734112174555",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000019.0.3669734112174555",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:format_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:submit_final_answer": "00000000000000000000000000000019.0.3669734112174555",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000018.0.8188923057525985",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000017.0.8871361493145291",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:save",
+                "final_answer",
+                "followup_prompts",
+                "messages",
+                "queries_and_results",
+                "top_chunks",
+                "top_selection_codes"
+            ]
+        },
+        "metadata": {
+            "step": 17,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8496-3650-66ca-8012-13ba0a86822b",
+        "parent_checkpoint_id": "1f0d8496-364b-6883-8011-dc314aa8c9c9",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8496-3650-66ca-8012-13ba0a86822b",
+            "ts": "2025-12-13T17:30:16.026285+00:00",
+            "versions_seen": {
+                "save": {
+                    "branch:to:save": "00000000000000000000000000000019.0.3669734112174555"
+                },
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000015.0.015086114860244693"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "submit_final_answer": {
+                    "branch:to:submit_final_answer": "00000000000000000000000000000018.0.8188923057525985"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000017.0.8871361493145291"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000016.0.4981100058328485"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "# Latest Trends in Inflation Data for Czechia\n\n## Recent Statistics\n\n### Monthly Consumer Price Index Changes\n- **October 2024**: \n  - Monthly increase: 0.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 3.1%\n  \n- **July 2024**: \n  - Monthly increase: 0.7%\n  - Year-on-year increase: 2.2%\n  - Average annual index increase: 4.4%\n  \n- **June 2024**: \n  - Monthly decrease: -0.3%\n  - Year-on-year increase: 2.0%\n  - Average annual index increase: 4.9%\n\n- **January 2025**: \n  - Monthly increase: 1.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 2.5%\n\n- **February 2025**: \n  - Monthly increase: 0.2%\n  - Year-on-year increase: 2.7%\n  - Average annual index increase: 2.5%\n\n### Annual Inflation Rates\n- **2024**: Average annual inflation rate is 2.4%\n- **2023**: Average annual inflation rate was significantly higher at 10.7%\n- **2022**: The inflation rate peaked at 15.1%\n- **2021**: Inflation was at 3.8%\n- **2020**: Inflation was at 3.2%\n\n## Contributing Factors\n\n### Economic Context\n- The Czech economy in 2023 experienced mixed influences:\n  - **Positive Factors**: Increasing external demand, domestic investment activity, and government consumption.\n  - **Negative Factors**: Declining household consumption and adverse changes in inventories.\n  \n- The GDP saw a slight decrease of 0.1% in 2023, indicating economic stagnation despite rising consumer prices.\n\n### Wage and Employment Trends\n- Total wages and salaries increased by 7.8% in nominal terms, but real earnings fell by 1.2% due to rising price levels. This suggests that while nominal wages were up, inflation outpaced wage growth, affecting purchasing power.\n\n## Summary of Trends\n- Inflation in Czechia has shown a significant decline from the peak of 15.1% in 2022 to 10.7% in 2023, and further down to 2.4% in 2024.\n- Monthly fluctuations in consumer prices indicate a trend of stabilization, with recent months showing modest increases or slight decreases.\n- The interplay of external demand, investment, and consumption patterns continues to shape the inflation landscape, with real earnings being negatively impacted by inflation.\n\nThis comprehensive overview highlights the recent trends in inflation data for Czechia, supported by both statistical data and economic context.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve",
+                "branch:to:cleanup_resources": null
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000020.0.9806315793562873",
+                "messages": "00000000000000000000000000000020.0.9806315793562873",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000019.0.3669734112174555",
+                "final_answer": "00000000000000000000000000000020.0.9806315793562873",
+                "branch:to:save": "00000000000000000000000000000020.0.9806315793562873",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000020.0.9806315793562873",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000020.0.9806315793562873",
+                "queries_and_results": "00000000000000000000000000000020.0.9806315793562873",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000019.0.3669734112174555",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:format_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000020.0.9806315793562873",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:cleanup_resources": "00000000000000000000000000000020.0.9806315793562873",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:submit_final_answer": "00000000000000000000000000000019.0.3669734112174555",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000018.0.8188923057525985",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000017.0.8871361493145291",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "branch:to:cleanup_resources",
+                "final_answer",
+                "followup_prompts",
+                "messages",
+                "most_similar_chunks",
+                "most_similar_selections",
+                "prompt",
+                "queries_and_results"
+            ]
+        },
+        "metadata": {
+            "step": 18,
+            "source": "loop",
+            "parents": {}
+        }
+    },
+    {
+        "thread_id": "7e9702e9-56fc-4546-bf55-f71b93b7dd0f",
+        "checkpoint_ns": "",
+        "checkpoint_id": "1f0d8496-3871-6035-8013-19cf0df00291",
+        "parent_checkpoint_id": "1f0d8496-3650-66ca-8012-13ba0a86822b",
+        "type": null,
+        "checkpoint": {
+            "v": 4,
+            "id": "1f0d8496-3871-6035-8013-19cf0df00291",
+            "ts": "2025-12-13T17:30:16.249349+00:00",
+            "versions_seen": {
+                "save": {
+                    "branch:to:save": "00000000000000000000000000000019.0.3669734112174555"
+                },
+                "reflect": {
+                    "branch:to:reflect": "00000000000000000000000000000011.0.41472831731883064"
+                },
+                "__input__": {},
+                "__start__": {
+                    "__start__": "00000000000000000000000000000001.0.9064285046639541"
+                },
+                "get_schema": {
+                    "branch:to:get_schema": "00000000000000000000000000000008.0.8292281150082357"
+                },
+                "format_answer": {
+                    "branch:to:format_answer": "00000000000000000000000000000015.0.015086114860244693"
+                },
+                "rerank_chunks": {
+                    "branch:to:rerank_chunks": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "generate_query": {
+                    "branch:to:generate_query": "00000000000000000000000000000013.0.21811984865260814"
+                },
+                "rewrite_prompt": {
+                    "branch:to:rewrite_prompt": "00000000000000000000000000000002.0.02217113613151478"
+                },
+                "relevant_chunks": {
+                    "branch:to:relevant_chunks": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "cleanup_resources": {
+                    "branch:to:cleanup_resources": "00000000000000000000000000000020.0.9806315793562873"
+                },
+                "post_retrieval_sync": {
+                    "branch:to:post_retrieval_sync": "00000000000000000000000000000007.0.5726946164223213"
+                },
+                "relevant_selections": {
+                    "branch:to:relevant_selections": "00000000000000000000000000000006.0.3497285929713304"
+                },
+                "submit_final_answer": {
+                    "branch:to:submit_final_answer": "00000000000000000000000000000018.0.8188923057525985"
+                },
+                "summarize_messages_query": {
+                    "branch:to:summarize_messages_query": "00000000000000000000000000000014.0.7034373761863536"
+                },
+                "generate_followup_prompts": {
+                    "branch:to:generate_followup_prompts": "00000000000000000000000000000017.0.8871361493145291"
+                },
+                "rerank_table_descriptions": {
+                    "branch:to:rerank_table_descriptions": "00000000000000000000000000000005.0.28364387449437156"
+                },
+                "summarize_messages_format": {
+                    "branch:to:summarize_messages_format": "00000000000000000000000000000016.0.4981100058328485"
+                },
+                "summarize_messages_reflect": {
+                    "branch:to:summarize_messages_reflect": "00000000000000000000000000000012.0.5268220160357918"
+                },
+                "summarize_messages_rewrite": {
+                    "branch:to:summarize_messages_rewrite": "00000000000000000000000000000003.0.2435601019596353"
+                },
+                "retrieve_similar_chunks_hybrid_search": {
+                    "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                },
+                "retrieve_similar_selections_hybrid_search": {
+                    "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000004.0.008512811861959402"
+                }
+            },
+            "channel_values": {
+                "prompt": "Show me the latest trends in inflation data for Czechia.",
+                "iteration": 1,
+                "final_answer": "# Latest Trends in Inflation Data for Czechia\n\n## Recent Statistics\n\n### Monthly Consumer Price Index Changes\n- **October 2024**: \n  - Monthly increase: 0.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 3.1%\n  \n- **July 2024**: \n  - Monthly increase: 0.7%\n  - Year-on-year increase: 2.2%\n  - Average annual index increase: 4.4%\n  \n- **June 2024**: \n  - Monthly decrease: -0.3%\n  - Year-on-year increase: 2.0%\n  - Average annual index increase: 4.9%\n\n- **January 2025**: \n  - Monthly increase: 1.3%\n  - Year-on-year increase: 2.8%\n  - Average annual index increase: 2.5%\n\n- **February 2025**: \n  - Monthly increase: 0.2%\n  - Year-on-year increase: 2.7%\n  - Average annual index increase: 2.5%\n\n### Annual Inflation Rates\n- **2024**: Average annual inflation rate is 2.4%\n- **2023**: Average annual inflation rate was significantly higher at 10.7%\n- **2022**: The inflation rate peaked at 15.1%\n- **2021**: Inflation was at 3.8%\n- **2020**: Inflation was at 3.2%\n\n## Contributing Factors\n\n### Economic Context\n- The Czech economy in 2023 experienced mixed influences:\n  - **Positive Factors**: Increasing external demand, domestic investment activity, and government consumption.\n  - **Negative Factors**: Declining household consumption and adverse changes in inventories.\n  \n- The GDP saw a slight decrease of 0.1% in 2023, indicating economic stagnation despite rising consumer prices.\n\n### Wage and Employment Trends\n- Total wages and salaries increased by 7.8% in nominal terms, but real earnings fell by 1.2% due to rising price levels. This suggests that while nominal wages were up, inflation outpaced wage growth, affecting purchasing power.\n\n## Summary of Trends\n- Inflation in Czechia has shown a significant decline from the peak of 15.1% in 2022 to 10.7% in 2023, and further down to 2.4% in 2024.\n- Monthly fluctuations in consumer prices indicate a trend of stabilization, with recent months showing modest increases or slight decreases.\n- The interplay of external demand, investment, and consumption patterns continues to shape the inflation landscape, with real earnings being negatively impacted by inflation.\n\nThis comprehensive overview highlights the recent trends in inflation data for Czechia, supported by both statistical data and economic context.",
+                "chromadb_missing": false,
+                "rewritten_prompt": "What are the latest trends in inflation data for Czechia, including recent statistics and contributing factors?",
+                "reflection_decision": "improve"
+            },
+            "channel_versions": {
+                "prompt": "00000000000000000000000000000021.0.8095887577680891",
+                "messages": "00000000000000000000000000000021.0.8095887577680891",
+                "__start__": "00000000000000000000000000000002.0.02217113613151478",
+                "iteration": "00000000000000000000000000000014.0.7034373761863536",
+                "top_chunks": "00000000000000000000000000000021.0.8095887577680891",
+                "final_answer": "00000000000000000000000000000021.0.8095887577680891",
+                "branch:to:save": "00000000000000000000000000000020.0.9806315793562873",
+                "chromadb_missing": "00000000000000000000000000000008.0.8292281150082357",
+                "followup_prompts": "00000000000000000000000000000021.0.8095887577680891",
+                "rewritten_prompt": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:reflect": "00000000000000000000000000000012.0.5268220160357918",
+                "most_similar_chunks": "00000000000000000000000000000020.0.9806315793562873",
+                "queries_and_results": "00000000000000000000000000000021.0.8095887577680891",
+                "reflection_decision": "00000000000000000000000000000012.0.5268220160357918",
+                "top_selection_codes": "00000000000000000000000000000021.0.8095887577680891",
+                "branch:to:get_schema": "00000000000000000000000000000009.0.11748618780033515",
+                "hybrid_search_chunks": "00000000000000000000000000000008.0.8292281150082357",
+                "hybrid_search_results": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:format_answer": "00000000000000000000000000000016.0.4981100058328485",
+                "branch:to:rerank_chunks": "00000000000000000000000000000006.0.3497285929713304",
+                "most_similar_selections": "00000000000000000000000000000020.0.9806315793562873",
+                "branch:to:generate_query": "00000000000000000000000000000014.0.7034373761863536",
+                "branch:to:rewrite_prompt": "00000000000000000000000000000003.0.2435601019596353",
+                "branch:to:relevant_chunks": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:cleanup_resources": "00000000000000000000000000000021.0.8095887577680891",
+                "branch:to:post_retrieval_sync": "00000000000000000000000000000008.0.8292281150082357",
+                "branch:to:relevant_selections": "00000000000000000000000000000007.0.5726946164223213",
+                "branch:to:submit_final_answer": "00000000000000000000000000000019.0.3669734112174555",
+                "branch:to:summarize_messages_query": "00000000000000000000000000000015.0.015086114860244693",
+                "branch:to:generate_followup_prompts": "00000000000000000000000000000018.0.8188923057525985",
+                "branch:to:rerank_table_descriptions": "00000000000000000000000000000006.0.3497285929713304",
+                "branch:to:summarize_messages_format": "00000000000000000000000000000017.0.8871361493145291",
+                "branch:to:summarize_messages_reflect": "00000000000000000000000000000013.0.21811984865260814",
+                "branch:to:summarize_messages_rewrite": "00000000000000000000000000000004.0.008512811861959402",
+                "branch:to:retrieve_similar_chunks_hybrid_search": "00000000000000000000000000000005.0.28364387449437156",
+                "branch:to:retrieve_similar_selections_hybrid_search": "00000000000000000000000000000005.0.28364387449437156"
+            },
+            "updated_channels": [
+                "final_answer",
+                "followup_prompts",
+                "messages",
+                "prompt",
+                "queries_and_results",
+                "top_chunks",
+                "top_selection_codes"
+            ]
+        },
+        "metadata": {
+            "step": 19,
+            "source": "loop",
+            "parents": {}
+        }
+    }
+]
