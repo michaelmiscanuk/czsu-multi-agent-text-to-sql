@@ -467,6 +467,15 @@ class AnalyzeRequest(BaseModel):
         ),
         examples=["550e8400-e29b-41d4-a716-446655440000"],
     )
+    stream: Optional[bool] = Field(
+        False,
+        description=(
+            "When true, the /analyze endpoint responds with a streaming "
+            "text/event-stream payload that emits incremental answer chunks "
+            "followed by the final metadata payload."
+        ),
+        examples=[True],
+    )
 
     # =======================================================================
     # OPENAPI CONFIGURATION
@@ -479,6 +488,7 @@ class AnalyzeRequest(BaseModel):
                     "prompt": "Show me unemployment rates for 2023",
                     "thread_id": "thread_12345",
                     "run_id": "550e8400-e29b-41d4-a716-446655440000",
+                    "stream": True,
                 }
             ]
         }

@@ -596,11 +596,14 @@ import gc
 import traceback
 import re
 import asyncio
+from typing import List
 
 from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from langchain_core.tools import tool
+
+from my_agent.utils.streaming import emit_answer_chunk, get_streaming_callback
 
 # Import RateLimitError for retry logic
 from openai import RateLimitError
@@ -2528,7 +2531,7 @@ async def format_answer_node(state: DataAnalysisState) -> DataAnalysisState:
             f"📄 {FORMAT_ANSWER_ID}: First chunk preview: {top_chunks[0].page_content[:100] if hasattr(top_chunks[0], 'page_content') else str(top_chunks[0])[:100]}..."
         )
 
-    llm = get_azure_llm_gpt_4o_mini(temperature=0.1)
+    streaming_requested = get_streaming_callback() is not None
 
     # Step 3: Build SQL context section from queries and results
     queries_results_text = "\n\n".join(
@@ -2643,9 +2646,59 @@ Bad: "The query shows X is 1,234,567"
         [("system", system_prompt), ("human", formatted_prompt)]
     )
     messages_to_send = chain.format_messages(**template_vars)
+
+    async def stream_answer_tokens() -> str:
+        """Stream answer tokens from the LLM and emit them via callback."""
+
+        llm_stream = get_azure_llm_gpt_4o_mini(temperature=0.1, streaming=True)
+        chunks: List[str] = []
+
+        async for chunk in llm_stream.astream(messages_to_send):
+            chunk_text = ""
+            if hasattr(chunk, "message") and chunk.message is not None:
+                content = chunk.message.content
+                if isinstance(content, str):
+                    chunk_text = content
+                elif isinstance(content, list):
+                    chunk_text = "".join(
+                        part.get("text", "") if isinstance(part, dict) else str(part)
+                        for part in content
+                    )
+                elif content:
+                    chunk_text = str(content)
+            elif hasattr(chunk, "text") and chunk.text:
+                chunk_text = chunk.text
+
+            if not chunk_text:
+                continue
+
+            chunks.append(chunk_text)
+            await emit_answer_chunk(chunk_text)
+
+        return "".join(chunks)
+
+    final_answer_content = ""
+    result: AIMessage
     for attempt in range(MAX_RETRIES):
         try:
-            result = await llm.ainvoke(messages_to_send)
+            if streaming_requested:
+                final_answer_content = await stream_answer_tokens()
+                result = AIMessage(
+                    content=final_answer_content, id="format_answer_stream"
+                )
+            else:
+                llm_standard = get_azure_llm_gpt_4o_mini(temperature=0.1)
+                llm_response = await llm_standard.ainvoke(messages_to_send)
+                final_answer_content = (
+                    llm_response.content
+                    if hasattr(llm_response, "content")
+                    else str(llm_response)
+                )
+                result = (
+                    llm_response
+                    if isinstance(llm_response, AIMessage)
+                    else AIMessage(content=final_answer_content)
+                )
             break
         except RateLimitError as e:
             if attempt < MAX_RETRIES - 1:
@@ -2664,6 +2717,16 @@ Bad: "The query shows X is 1,234,567"
                 )
                 raise
         except Exception as e:
+            if streaming_requested:
+                logger.warning(
+                    "Streaming generation failed (attempt %d/%d): %s. Falling back to non-streaming.",
+                    attempt + 1,
+                    MAX_RETRIES,
+                    str(e)[:100],
+                )
+                streaming_requested = False
+                await asyncio.sleep(0)
+                continue
             if attempt < MAX_RETRIES - 1:
                 wait_time = min(RETRY_WAIT_MIN * (2**attempt), RETRY_WAIT_MAX)
                 logger.warning(
@@ -2678,10 +2741,10 @@ Bad: "The query shows X is 1,234,567"
                     "LLM error after %d attempts: %s", MAX_RETRIES, str(e)[:100]
                 )
                 raise
+
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
 
-    # Step 9: Extract answer content from LLM response
-    final_answer_content = result.content if hasattr(result, "content") else str(result)
+    # Step 9: final_answer_content already populated above
 
     # Step 10: Detect answer language
     detected_language_llm = await detect_language(final_answer_content)

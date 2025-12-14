@@ -9,6 +9,8 @@ import { useSentiment } from '@/lib/useSentiment';
 import { useChatCache } from '@/contexts/ChatCacheContext';
 
 const PROGRESS_DURATION = 480000; // 8 minutes - matches backend analysis timeout
+const SCROLL_LOCK_THRESHOLD_PX = 160;
+type ScrollBehaviorType = 'auto' | 'smooth';
 
 // Utility function to detect if text contains markdown
 const containsMarkdown = (text: string): boolean => {
@@ -600,6 +602,20 @@ const getPersistedFeedbackData = (): { [key: string]: any } => {
 const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onCloseSQLModal, onPDFClick, openPDFModalForMsgId, onClosePDFModal, onFollowupPromptClick, onRerunPrompt, isLoading, isAnyLoading, threads, activeThreadId }: MessageAreaProps) => {
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
+    const autoScrollRef = React.useRef(true);
+    const scrollTickingRef = React.useRef<number | null>(null);
+    const [isPinnedToBottom, setIsPinnedToBottom] = React.useState(true);
+
+    const scrollToBottom = React.useCallback((behavior: ScrollBehaviorType = 'smooth') => {
+        if (!bottomRef.current) return;
+        bottomRef.current.scrollIntoView({ behavior, block: 'end' });
+    }, []);
+
+    const handleJumpToLatest = React.useCallback(() => {
+        autoScrollRef.current = true;
+        setIsPinnedToBottom(true);
+        scrollToBottom('smooth');
+    }, [scrollToBottom]);
     
     // NEW: Debug messages changes
     React.useEffect(() => {
@@ -610,6 +626,47 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
             completedMessages: messages.filter(m => m.final_answer && !m.isLoading).length
         });
     }, [messages, threadId]);
+
+    React.useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const updatePinnedState = () => {
+            const distanceFromBottom = container.scrollHeight - (container.scrollTop + container.clientHeight);
+            const shouldStick = distanceFromBottom <= SCROLL_LOCK_THRESHOLD_PX;
+            if (autoScrollRef.current !== shouldStick) {
+                autoScrollRef.current = shouldStick;
+                setIsPinnedToBottom(shouldStick);
+            }
+        };
+
+        const handleScroll = () => {
+            if (scrollTickingRef.current !== null) {
+                cancelAnimationFrame(scrollTickingRef.current);
+            }
+            scrollTickingRef.current = requestAnimationFrame(updatePinnedState);
+        };
+
+        // Initialize state based on current position
+        updatePinnedState();
+        container.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => {
+            if (scrollTickingRef.current !== null) {
+                cancelAnimationFrame(scrollTickingRef.current);
+            }
+            container.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
+    const lastMessageSignature = React.useMemo(() => {
+        if (!messages.length) {
+            return 'empty';
+        }
+        const lastMessage = messages[messages.length - 1];
+        const followupSignature = lastMessage.followup_prompts?.join('||') ?? '';
+        return `${lastMessage.id}:${lastMessage.final_answer?.length ?? 0}:${lastMessage.isLoading ? '1' : '0'}:${followupSignature}`;
+    }, [messages]);
     
     // State for feedback functionality
     const [feedbackState, setFeedbackState] = React.useState<{ [runId: string]: { feedback: number | null; comment?: string } }>({});
@@ -624,12 +681,19 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     // Track which run_ids have already sent feedback to LangSmith to prevent duplicates
     const [langsmithFeedbackSent, setLangsmithFeedbackSent] = React.useState<Set<string>>(new Set());
     
-    // Auto-scroll to bottom when messages change or thread changes
+    // Auto-scroll when thread changes
     React.useEffect(() => {
-        if (bottomRef.current) {
-            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        autoScrollRef.current = true;
+        setIsPinnedToBottom(true);
+        scrollToBottom('auto');
+    }, [threadId, scrollToBottom]);
+
+    // Auto-scroll when latest message updates and user is pinned to bottom
+    React.useEffect(() => {
+        if (autoScrollRef.current) {
+            scrollToBottom(messages.length <= 2 ? 'auto' : 'smooth');
         }
-    }, [messages, threadId]);
+    }, [lastMessageSignature, messages.length, scrollToBottom]);
 
     // Reset LangSmith feedback tracking when thread changes
     React.useEffect(() => {
@@ -1212,6 +1276,20 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                         </div>
                     ) : null;
                 })()}
+
+                {!isPinnedToBottom && (
+                    <div className="sticky bottom-4 flex justify-center pointer-events-none mt-4">
+                        <button
+                            type="button"
+                            onClick={handleJumpToLatest}
+                            className="pointer-events-auto px-5 py-2 rounded-full light-blue-theme shadow-lg text-sm font-semibold flex items-center gap-2"
+                            aria-label="Jump to latest message"
+                        >
+                            Jump to latest
+                            <span aria-hidden="true">↓</span>
+                        </button>
+                    </div>
+                )}
                 
                 <div ref={bottomRef} />
             </div>

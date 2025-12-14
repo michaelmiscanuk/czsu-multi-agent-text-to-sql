@@ -50,7 +50,7 @@ def get_azure_llm_gpt_4o_test():
     print(f"\nResponse from LLM:\n{response.content}")
 
 
-def get_azure_llm_gpt_4o_mini(temperature=0.0):
+def get_azure_llm_gpt_4o_mini(temperature=0.0, streaming: bool = False):
     """Get an instance of Azure OpenAI GPT-4o Mini LLM with standard configuration.
 
     The returned model instance supports both sync (invoke) and async (ainvoke)
@@ -69,6 +69,7 @@ def get_azure_llm_gpt_4o_mini(temperature=0.0):
         temperature=temperature,
         azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        streaming=streaming,
     )
 
 

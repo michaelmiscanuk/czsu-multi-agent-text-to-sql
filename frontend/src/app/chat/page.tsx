@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { v4 as uuidv4 } from 'uuid';
 import { useSession, getSession, signOut } from "next-auth/react";
 import { useChatCache } from '@/contexts/ChatCacheContext';
-import { ChatThreadMeta, ChatMessage, AnalyzeResponse, ChatThreadResponse } from '@/types';
+import { ChatThreadMeta, ChatMessage, AnalyzeRequest, AnalyzeResponse, ChatThreadResponse } from '@/types';
 import { API_CONFIG, authApiFetch } from '@/lib/api';
 import { useInfiniteScroll } from '@/lib/hooks/useInfiniteScroll';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -19,6 +19,8 @@ const INITIAL_MESSAGE = [
     type: 'message'
   }
 ];
+
+type StreamingOutcome = 'completed' | 'unsupported' | 'aborted';
 
 export default function ChatPage() {
   const { data: session, status, update } = useSession();
@@ -124,6 +126,8 @@ export default function ChatPage() {
   const prevMsgCountRef = React.useRef<number>(1);
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
+  const streamAbortControllerRef = React.useRef<AbortController | null>(null);
+  const streamCancelRequestedRef = React.useRef(false);
   
   // Simple text persistence
   const setCurrentMessageWithPersistence = (message: string) => {
@@ -602,11 +606,11 @@ export default function ChatPage() {
 
   const executeSendMessage = async (messageText: string) => {
     console.log('🔍 print__analysis_tracing_debug: 01 - DIRECT SEND: Direct message send triggered');
-    
+
     if (!messageText.trim() || isUIBlocking || !userEmail) return;
-    
+
     console.log('🔍 print__analysis_tracing_debug: 02 - VALIDATION PASSED: Message validation passed');
-    
+
     // CRITICAL: Block if user is already loading in ANY tab before doing anything else
     const existingLoadingState = checkUserLoadingState(userEmail);
     if (existingLoadingState) {
@@ -617,29 +621,29 @@ export default function ChatPage() {
 
     console.log('[ChatPage-send] ✅ No existing loading state found, proceeding with request for user:', userEmail);
     console.log('🔍 print__analysis_tracing_debug: 04 - LOADING STATE CLEAR: No existing loading state, proceeding');
-    
+
     // Clear the input field and draft
     setCurrentMessage("");
     localStorage.removeItem('czsu-draft-message');
-    
+
     console.log('🔍 print__analysis_tracing_debug: 05 - MESSAGE PREPARED: Message text prepared and input cleared');
-    
+
     // Capture state for recovery mechanism - count messages with final answers
     const messagesBefore = messages.filter(msg => msg.final_answer && !msg.isLoading).length;
-    
+
     // Set loading state in BOTH local and context to ensure persistence across navigation
     setIsLoading(true);
     setLoading(true); // Context loading state - persists across navigation
-    
+
     console.log('🔍 print__analysis_tracing_debug: 06 - LOADING STATES SET: Both local and context loading states set');
-    
+
     // NEW: Set cross-tab loading state tied to user email IMMEDIATELY
     setUserLoadingState(userEmail, true);
     console.log('🔍 print__analysis_tracing_debug: 07 - CROSS-TAB LOADING: Cross-tab loading state set for user');
-    
+
     let currentThreadId = activeThreadId;
     let shouldUpdateTitle = false;
-    
+
     // Create new thread if none exists
     if (!currentThreadId) {
       currentThreadId = uuidv4();
@@ -650,7 +654,7 @@ export default function ChatPage() {
         title: messageText.slice(0, 50) + (messageText.length > 50 ? '...' : ''),
         full_prompt: messageText
       };
-      
+
       addThread(newThread);
       setActiveThreadId(currentThreadId);
       console.log('[ChatPage-send] ✅ Created new thread with title:', newThread.title);
@@ -660,29 +664,29 @@ export default function ChatPage() {
       // Check if existing thread needs title update
       const currentThread = threads.find(t => t.thread_id === currentThreadId);
       const currentMessages = messages.filter(msg => msg.user === userEmail); // Count only user messages
-      
+
       // Update title if:
       // 1. Current title is generic ("New Chat" or empty)
       // 2. OR this is the first user message in the thread
       // 3. OR the full_prompt is empty/missing
-      if (currentThread && 
-          (currentThread.title === 'New Chat' || !currentThread.title || 
+      if (currentThread &&
+          (currentThread.title === 'New Chat' || !currentThread.title ||
            currentMessages.length === 0 || !currentThread.full_prompt)) {
         shouldUpdateTitle = true;
         const newTitle = messageText.slice(0, 50) + (messageText.length > 50 ? '...' : '');
-        
+
         // IMMEDIATELY update thread title in frontend state and localStorage
         updateThread(currentThreadId, {
           title: newTitle,
           full_prompt: messageText,
           latest_timestamp: new Date().toISOString()
         });
-        
+
         console.log('[ChatPage-send] ✅ Immediately updated existing thread title to:', newTitle);
         console.log('🔍 print__analysis_tracing_debug: 10 - THREAD TITLE UPDATE: Updated existing thread title');
       }
     }
-    
+
     // Add user message to cache with both prompt and placeholder for final_answer
     const userMessage: ChatMessage = {
       id: uuidv4(),
@@ -704,80 +708,70 @@ export default function ChatPage() {
 
     addMessage(currentThreadId, userMessage);
     console.log('🔍 print__analysis_tracing_debug: 11 - USER MESSAGE ADDED: User message added to cache');
-    
+
     // Store the message ID for later update
     const messageId = userMessage.id;
-    
+
     // Generate run_id on frontend so we can track it immediately for cancellation
     const generatedRunId = uuidv4();
     setCurrentRunId(generatedRunId);
+    streamCancelRequestedRef.current = false;
     console.log('[ChatPage-send] 🔍 Generated run_id for tracking:', generatedRunId);
-    
-    try {
-      // Get fresh session for authentication
-      const freshSession = await getSession();
-      if (!freshSession?.id_token) {
-        throw new Error('No authentication token available');
-      }
-      console.log('🔍 print__analysis_tracing_debug: 13 - AUTHENTICATION: Fresh session obtained');
 
-      // Create API call promise with proper timeout
-      const apiCall = authApiFetch<AnalyzeResponse>('/analyze', freshSession.id_token, {
-        method: 'POST',
-        body: JSON.stringify({
-          prompt: messageText,
-          thread_id: currentThreadId,
-          run_id: generatedRunId  // Pass the generated run_id to backend
-        }),
-      });
-      
-      // Use Promise.race with a simple timeout
-      const data = await Promise.race([
-        apiCall,
-        new Promise<AnalyzeResponse>((_, reject) => {
-          setTimeout(() => {
-            reject(new Error('API call timeout after 8 minutes'));
-          }, 480000); // 8 minutes to match backend timeout
-        })
-      ]);
+    let latestMessageSnapshot: ChatMessage = { ...userMessage };
+
+    const updatePartialAnswer = (partialAnswer: string) => {
+      latestMessageSnapshot = {
+        ...latestMessageSnapshot,
+        final_answer: partialAnswer,
+        isLoading: true,
+        isError: false,
+        error: undefined,
+        run_id: generatedRunId,
+      };
+      updateMessage(currentThreadId, messageId, latestMessageSnapshot);
+    };
+
+    const processAnalyzeResponse = async (data: AnalyzeResponse) => {
+      if (streamCancelRequestedRef.current) {
+        console.log('[ChatPage-send] ⚠️ Response received after cancellation - ignoring payload.');
+        return;
+      }
 
       console.log('[ChatPage-send] ✅ Response received with run_id:', data.run_id);
       console.log('[ChatPage-send] 🔍 DEBUG - Full API response:', data);
       console.log('[ChatPage-send] 🔍 DEBUG - followup_prompts in response:', data.followup_prompts);
 
-      // Verify the run_id matches what we sent
       if (data.run_id !== generatedRunId) {
         console.warn('[ChatPage-send] ⚠️ Run ID mismatch! Sent:', generatedRunId, 'Received:', data.run_id);
       }
 
-      // Update loading message with response
       const responseMessage: ChatMessage = {
         id: messageId,
         threadId: currentThreadId,
-        user: userEmail, // Use the actual user email
-        createdAt: userMessage.createdAt, // Keep original timestamp
-        prompt: messageText, // Keep the original prompt
+        user: userEmail,
+        createdAt: userMessage.createdAt,
+        prompt: messageText,
         final_answer: data.result,
-        followup_prompts: data.followup_prompts || undefined, // Add follow-up suggestions from API
+        followup_prompts: data.followup_prompts || undefined,
         queries_and_results: data.queries_and_results || [],
-        datasets_used: data.datasets_used || data.top_selection_codes || [], // Fix: use datasets_used first, fallback to top_selection_codes
+        datasets_used: data.datasets_used || data.top_selection_codes || [],
         sql_query: data.sql || undefined,
         top_chunks: data.top_chunks || [],
-        isLoading: false, // CRITICAL: Explicitly set to false
+        isLoading: false,
         isError: false,
         error: undefined,
-        startedAt: undefined, // Clear the started timestamp
-        run_id: data.run_id // Store the run_id for feedback functionality
+        startedAt: undefined,
+        run_id: data.run_id,
       };
 
-      // CRITICAL DEBUG: Log datasetsUsed before update
+      latestMessageSnapshot = responseMessage;
+
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - datasetsUsed:', responseMessage.datasets_used);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - full responseMessage:', JSON.stringify(responseMessage, null, 2));
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - messageId:', messageId);
       console.log('[ChatPage-send] 🔍 BEFORE updateMessage - currentThreadId:', currentThreadId);
 
-      // CRITICAL FIX: Always sync with backend after successful API call
-      // This is the key fix - the backend saves the data correctly, but frontend cache gets out of sync
       console.log('[ChatPage-send] 💾 CRITICAL FIX: Syncing with backend after successful API response');
       try {
         const freshSession = await getSession();
@@ -787,28 +781,22 @@ export default function ChatPage() {
             runIds: { run_id: string; prompt: string; timestamp: string }[];
             sentiments: { [runId: string]: boolean };
           }>(`/chat/all-messages-for-one-thread/${currentThreadId}`, freshSession.id_token);
-          
+
           const freshMessages = response.messages || [];
-          
-          // Replace frontend cache with authoritative backend data
           setMessages(currentThreadId, freshMessages);
         }
       } catch (syncError) {
         console.error('[ChatPage-send] ❌ Backend sync failed:', syncError);
-        // Fallback to optimistic update
         console.log('[ChatPage-send] 🔄 Falling back to optimistic frontend update');
-        
-        // Check if the message exists before updating
+
         const existingMessage = messages.find(msg => msg.id === messageId);
         console.log('[ChatPage-send] 🔍 FALLBACK - existing message found:', !!existingMessage);
-        
+
         if (existingMessage) {
           updateMessage(currentThreadId, messageId, responseMessage);
         } else {
-          // Message lost - add the complete conversation
           console.log('[ChatPage-send] 🏗️ FALLBACK - Adding complete conversation');
-          
-          // Add user message if missing
+
           const userMessageExists = messages.find(msg => msg.prompt === data.prompt && msg.user === userEmail);
           if (!userMessageExists) {
             const userMessageRecovery: ChatMessage = {
@@ -829,25 +817,239 @@ export default function ChatPage() {
             };
             addMessage(currentThreadId, userMessageRecovery);
           }
-          
-          // Add response message
+
           addMessage(currentThreadId, responseMessage);
         }
       }
 
-      // Force re-render by updating the loading state
       setIsLoading(false);
-      
-      // CRITICAL FIX: Clear loading state for any user 
       setUserLoadingState(userEmail, false);
-      
-      // Clear the run_id after successful completion
       setCurrentRunId(null);
-      
-      // IMPORTANT: Mark this response as successfully processed to prevent recovery interference
       console.log('[ChatPage-send] ✅ API response processed successfully - recovery mechanisms should not interfere');
-      
+    };
+
+    const attemptStreamingAnalysis = async (
+      token: string,
+      payload: AnalyzeRequest & { stream: boolean }
+    ): Promise<StreamingOutcome> => {
+      console.log('[ChatPage-send] 🌊 Attempting streaming analysis...');
+      const controller = new AbortController();
+      streamAbortControllerRef.current = controller;
+      let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
+
+      try {
+        const response = await fetch(`${API_CONFIG.baseUrl}/analyze`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'text/event-stream',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.text().catch(() => '');
+          throw new Error(`Streaming request failed: ${response.status} ${response.statusText} ${errorBody}`);
+        }
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!response.body || !contentType.includes('text/event-stream')) {
+          console.warn('[ChatPage-send] ⚠️ Streaming not supported by backend response, falling back to JSON.');
+          return 'unsupported';
+        }
+
+        reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+        let streamCompleted = false;
+        let accumulatedAnswer = latestMessageSnapshot.final_answer || '';
+
+        const handleEventPayload = async (eventPayload: any) => {
+          if (!eventPayload || typeof eventPayload !== 'object') {
+            return;
+          }
+
+          switch (eventPayload.type) {
+            case 'status':
+              if (eventPayload.run_id) {
+                setCurrentRunId(eventPayload.run_id);
+              }
+              console.log('[ChatPage-send] 📡 Streaming status:', eventPayload.message || eventPayload.type);
+              break;
+            case 'answer_chunk': {
+              const tokenValue = typeof eventPayload.token === 'string'
+                ? eventPayload.token
+                : eventPayload.token != null
+                  ? String(eventPayload.token)
+                  : '';
+              if (tokenValue) {
+                accumulatedAnswer += tokenValue;
+                updatePartialAnswer(accumulatedAnswer);
+              }
+              break;
+            }
+            case 'final': {
+              streamCompleted = true;
+              const finalData = eventPayload.data as AnalyzeResponse;
+              if (finalData?.result && !accumulatedAnswer) {
+                updatePartialAnswer(finalData.result);
+              }
+              if (!finalData) {
+                throw new Error('Streaming final event missing data payload');
+              }
+              await processAnalyzeResponse(finalData);
+              break;
+            }
+            case 'error': {
+              const err = new Error(eventPayload.message || 'Streaming error');
+              (err as any).status = eventPayload.status;
+              (err as any).__streamingFatal = true;
+              throw err;
+            }
+            default:
+              console.log('[ChatPage-send] ℹ️ Unhandled streaming event type:', eventPayload.type);
+          }
+        };
+
+        const processBufferedEvents = async () => {
+          let boundaryIndex = buffer.indexOf('\n\n');
+          while (boundaryIndex !== -1) {
+            const rawEvent = buffer.slice(0, boundaryIndex);
+            buffer = buffer.slice(boundaryIndex + 2);
+            const trimmed = rawEvent.trim();
+            if (trimmed) {
+              const dataLines: string[] = [];
+              trimmed.split('\n').forEach((line) => {
+                const trimmedLine = line.trim();
+                if (trimmedLine.startsWith('data:')) {
+                  dataLines.push(trimmedLine.slice(5).trim());
+                }
+              });
+              if (dataLines.length > 0) {
+                const dataPayload = dataLines.join('\n');
+                try {
+                  const parsed = JSON.parse(dataPayload);
+                  await handleEventPayload(parsed);
+                } catch (parseError) {
+                  console.warn('[ChatPage-send] ⚠️ Failed to parse streaming event payload:', parseError, dataPayload);
+                }
+              }
+            }
+            if (streamCompleted) {
+              break;
+            }
+            boundaryIndex = buffer.indexOf('\n\n');
+          }
+        };
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            break;
+          }
+          buffer += decoder.decode(value, { stream: true });
+          await processBufferedEvents();
+          if (streamCompleted) {
+            break;
+          }
+        }
+
+        buffer += decoder.decode();
+        await processBufferedEvents();
+
+        if (streamCompleted) {
+          console.log('[ChatPage-send] ✅ Streaming completed successfully.');
+          return 'completed';
+        }
+
+        console.warn('[ChatPage-send] ⚠️ Streaming ended without final payload, falling back.');
+        return 'unsupported';
+      } catch (error) {
+        if (controller.signal.aborted || streamCancelRequestedRef.current) {
+          console.log('[ChatPage-send] ℹ️ Streaming request aborted.');
+          return 'aborted';
+        }
+        throw error;
+      } finally {
+        if (reader) {
+          try {
+            await reader.cancel();
+          } catch (cancelError) {
+            // ignore reader cancel errors
+          }
+        }
+        if (streamAbortControllerRef.current === controller) {
+          streamAbortControllerRef.current = null;
+        }
+      }
+    };
+
+    try {
+      // Get fresh session for authentication
+      const freshSession = await getSession();
+      if (!freshSession?.id_token) {
+        throw new Error('No authentication token available');
+      }
+      console.log('🔍 print__analysis_tracing_debug: 13 - AUTHENTICATION: Fresh session obtained');
+
+      const streamingPayload = {
+        prompt: messageText,
+        thread_id: currentThreadId,
+        run_id: generatedRunId,
+        stream: true as boolean,
+      };
+
+      let streamingOutcome: StreamingOutcome = 'unsupported';
+      try {
+        streamingOutcome = await attemptStreamingAnalysis(freshSession.id_token, streamingPayload);
+      } catch (streamError) {
+        if (streamCancelRequestedRef.current) {
+          console.log('[ChatPage-send] ⚠️ Streaming aborted by user, skipping fallback.');
+          return;
+        }
+        if ((streamError as any)?.__streamingFatal) {
+          throw streamError;
+        }
+        console.warn('[ChatPage-send] ⚠️ Streaming failed, falling back to JSON:', streamError);
+      }
+
+      if (streamingOutcome === 'completed') {
+        return;
+      }
+
+      if (streamingOutcome === 'aborted') {
+        console.log('[ChatPage-send] ℹ️ Streaming request aborted - stopping send pipeline.');
+        return;
+      }
+
+      const apiCall = authApiFetch<AnalyzeResponse>('/analyze', freshSession.id_token, {
+        method: 'POST',
+        body: JSON.stringify({
+          prompt: messageText,
+          thread_id: currentThreadId,
+          run_id: generatedRunId,
+          stream: false,
+        }),
+      });
+
+      const data = await Promise.race([
+        apiCall,
+        new Promise<AnalyzeResponse>((_, reject) => {
+          setTimeout(() => {
+            reject(new Error('API call timeout after 8 minutes'));
+          }, 480000);
+        })
+      ]);
+
+      await processAnalyzeResponse(data);
     } catch (error) {
+      if (streamCancelRequestedRef.current) {
+        console.log('[ChatPage-send] ⚠️ Send flow aborted after user cancellation, skipping error handling.');
+        return;
+      }
+
       console.error('[ChatPage-send] ❌ Error sending message:', error);
       console.error('[ChatPage-send] ❌ Error details:', {
         message: error instanceof Error ? error.message : 'Unknown error',
@@ -855,20 +1057,16 @@ export default function ChatPage() {
         type: typeof error,
         error: error
       });
-      
-      // MEMORY PRESSURE RECOVERY: Check if response was saved to PostgreSQL despite error
+
       console.log('[ChatPage-Recovery] 🔄 Attempting response recovery due to error...');
-      
+
       const recoverySuccessful = await checkForNewMessagesAfterTimeout(currentThreadId, messagesBefore);
-      
+
       if (recoverySuccessful) {
         console.log('[ChatPage-Recovery] 🎉 Response recovered from PostgreSQL!');
-        
-        // Remove the loading message since we recovered the real response
         console.log('[ChatPage-Recovery] ✅ Response recovery completed successfully');
-        
+
       } else {
-        // Recovery failed - show error message
         const errorMessage: ChatMessage = {
           id: messageId,
           threadId: currentThreadId,
@@ -885,19 +1083,18 @@ export default function ChatPage() {
           isError: true,
           error: error instanceof Error ? error.message : 'Unknown error'
         };
-        
+
         updateMessage(currentThreadId, messageId, errorMessage);
         console.log('[ChatPage-Recovery] ❌ Recovery failed - showing error message');
       }
     } finally {
       setIsLoading(false);
       setLoading(false); // Clear context loading state as well
-      
-      // NEW: Clear cross-tab loading state tied to user email
+
       setUserLoadingState(userEmail, false);
-      
-      // Clear run_id on completion or error
       setCurrentRunId(null);
+      streamAbortControllerRef.current = null;
+      streamCancelRequestedRef.current = false;
     }
   };
 
@@ -955,6 +1152,17 @@ export default function ChatPage() {
     setLoading(false);
     setUserLoadingState(userEmail, false);
     setCurrentRunId(null);
+
+    if (streamAbortControllerRef.current) {
+      streamCancelRequestedRef.current = true;
+      try {
+        streamAbortControllerRef.current.abort();
+      } catch (abortError) {
+        console.warn('[ChatPage-stop] ⚠️ Error aborting streaming request:', abortError);
+      } finally {
+        streamAbortControllerRef.current = null;
+      }
+    }
 
     // Update the loading message immediately to show it was cancelled
     const loadingMessages = messages.filter(msg => msg.isLoading);
