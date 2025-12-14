@@ -664,13 +664,38 @@ async def get_thread_messages_with_metadata(
 
         # Extract all user-AI interactions in one pass through checkpoints
         # Each interaction contains: prompt, response, queries, datasets, chunks
-        interactions = []
+        interactions: List[Dict[str, object]] = []
         active_interaction: Dict[str, object] | None = None
 
-        def start_new_interaction(initial_step: int) -> Dict[str, object]:
-            interaction = {"step": initial_step}
-            interactions.append(interaction)
-            return interaction
+        def reset_active_interaction(
+            initial_step: int, prompt_value: str | None = None
+        ) -> Dict[str, object]:
+            nonlocal active_interaction
+            active_interaction = {"step": initial_step, "__recorded": False}
+            if prompt_value:
+                active_interaction["prompt"] = prompt_value
+            return active_interaction
+
+        def ensure_active_interaction(current_step: int) -> Dict[str, object]:
+            nonlocal active_interaction
+            if active_interaction is None:
+                return reset_active_interaction(current_step)
+            active_interaction["step"] = min(
+                active_interaction.get("step", current_step), current_step
+            )
+            return active_interaction
+
+        def finalize_active_interaction() -> None:
+            if (
+                active_interaction
+                and active_interaction.get("final_answer")
+                and not active_interaction.get("__recorded")
+            ):
+                interactions.append(active_interaction)
+                active_interaction["__recorded"] = True
+                print__chat_all_messages_debug(
+                    f"✅ FINALIZED INTERACTION: Step {active_interaction['step']}"
+                )
 
         print__chat_all_messages_debug(
             f"🔍 INTERACTION EXTRACTION: Extracting complete interactions from {len(checkpoint_tuples)} checkpoints"
@@ -686,6 +711,7 @@ async def get_thread_messages_with_metadata(
 
             data_updates: Dict[str, object] = {}
             prompt_from_writes = False
+            final_answer_in_update = False
 
             # ===================================================================
             # EXTRACT USER PROMPT
@@ -728,9 +754,11 @@ async def get_thread_messages_with_metadata(
                     if "final_answer" in submit_data:
                         final_answer = submit_data["final_answer"]
                         if final_answer and final_answer.strip():
-                            data_updates["final_answer"] = final_answer.strip()
+                            final_answer_clean = final_answer.strip()
+                            data_updates["final_answer"] = final_answer_clean
+                            final_answer_in_update = True
                             print__chat_all_messages_debug(
-                                f"🔍 AI ANSWER FOUND: Step {step}: {final_answer[:50]}..."
+                                f"🔍 AI ANSWER FOUND: Step {step}: {final_answer_clean[:50]}..."
                             )
 
                     # ---------------------------------------------------------------
@@ -802,9 +830,11 @@ async def get_thread_messages_with_metadata(
                         isinstance(channel_final_answer, str)
                         and channel_final_answer.strip()
                     ):
-                        data_updates["final_answer"] = channel_final_answer.strip()
+                        final_answer_clean = channel_final_answer.strip()
+                        data_updates["final_answer"] = final_answer_clean
+                        final_answer_in_update = True
                         print__chat_all_messages_debug(
-                            f"🔍 AI ANSWER FOUND (channel_values): Step {step}: {channel_final_answer[:50]}..."
+                            f"🔍 AI ANSWER FOUND (channel_values): Step {step}: {final_answer_clean[:50]}..."
                         )
 
                 if "followup_prompts" not in data_updates:
@@ -845,47 +875,62 @@ async def get_thread_messages_with_metadata(
                 continue
 
             prompt_in_update = "prompt" in data_updates
-            target_interaction = active_interaction
 
             if prompt_in_update:
                 stripped_prompt = data_updates["prompt"].strip()
                 data_updates["prompt"] = stripped_prompt
 
-                is_same_prompt = (
-                    target_interaction is not None
-                    and target_interaction.get("prompt") == stripped_prompt
+                current_prompt = (
+                    active_interaction.get("prompt") if active_interaction else None
+                )
+                interaction_completed = (
+                    active_interaction.get("__recorded", False)
+                    if active_interaction
+                    else False
                 )
 
                 should_start_new = False
-                if target_interaction is None:
+                if active_interaction is None:
                     should_start_new = True
                 elif prompt_from_writes:
-                    should_start_new = True
-                elif not is_same_prompt:
+                    if (
+                        not interaction_completed
+                        and current_prompt == stripped_prompt
+                    ):
+                        should_start_new = False
+                    elif (
+                        interaction_completed
+                        or not current_prompt
+                        or current_prompt != stripped_prompt
+                    ):
+                        should_start_new = True
+                elif interaction_completed and current_prompt != stripped_prompt:
                     should_start_new = True
 
                 if should_start_new:
-                    target_interaction = start_new_interaction(step)
-                    active_interaction = target_interaction
+                    target_interaction = reset_active_interaction(
+                        step, stripped_prompt
+                    )
                     print__chat_all_messages_debug(
                         f"🔄 STARTED NEW INTERACTION: Step {step}"
                     )
                 else:
-                    active_interaction = target_interaction
-
-                if target_interaction and not target_interaction.get("prompt"):
-                    target_interaction["prompt"] = stripped_prompt
+                    target_interaction = ensure_active_interaction(step)
+                    if stripped_prompt and not target_interaction.get("prompt"):
+                        target_interaction["prompt"] = stripped_prompt
             else:
-                if target_interaction is None:
-                    target_interaction = start_new_interaction(step)
-                active_interaction = target_interaction
-
-            target_interaction["step"] = min(target_interaction.get("step", step), step)
+                target_interaction = ensure_active_interaction(step)
 
             for key, value in data_updates.items():
                 if key == "prompt":
                     continue
                 target_interaction[key] = value
+
+            if final_answer_in_update:
+                finalize_active_interaction()
+
+        for interaction in interactions:
+            interaction.pop("__recorded", None)
 
         # =======================================================================
         # INTERACTION SORTING
