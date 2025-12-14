@@ -90,7 +90,8 @@ const CACHE_KEY = 'czsu-chat-cache'
 const ACTIVE_THREAD_KEY = 'czsu-last-active-chat'
 const CACHE_DURATION = 60 * 60 * 1000 * 48 // 48 hours in milliseconds
 const PAGE_REFRESH_FLAG_KEY = 'czsu-page-refresh-flag'
-const USER_LOADING_STATE_KEY = 'czsu-user-loading-state' // NEW: Cross-tab loading state
+const USER_LOADING_TTL = 4 * 60 * 1000 // 4 minutes
+const USER_LOADING_KEY_PREFIX = 'czsu-user-loading-'
 const F5_REFRESH_THROTTLE_KEY = 'czsu-f5-refresh-throttle' // NEW: F5 refresh throttling
 const F5_REFRESH_COOLDOWN = 100 // Reduced for faster recovery testing (was 1000)
 
@@ -522,37 +523,90 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
   const currentMessages = activeThreadId ? messages[activeThreadId] || [] : []
 
   // NEW: Cross-tab loading state management
+  const getUserLoadingKey = useCallback((email: string) => `${USER_LOADING_KEY_PREFIX}${email}`, [])
+
   const setUserLoadingState = useCallback((email: string, loading: boolean) => {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      const key = `czsu-user-loading-${email}`;
-      if (loading) {
-        localStorage.setItem(key, Date.now().toString());
-        console.log('[ChatCache] 🔒 Set user loading state for:', email);
-      } else {
-        localStorage.removeItem(key);
-        console.log('[ChatCache] 🔓 Cleared user loading state for:', email);
-      }
+    if (!email || typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      setIsUserLoading(loading)
+      return
     }
-  }, []);
+
+    const key = getUserLoadingKey(email)
+    if (loading) {
+      const payload = JSON.stringify({ timestamp: Date.now() })
+      localStorage.setItem(key, payload)
+      setIsUserLoading(true)
+      console.log('[ChatCache] 🔒 Set user loading state for:', email)
+    } else {
+      localStorage.removeItem(key)
+      setIsUserLoading(false)
+      console.log('[ChatCache] 🔓 Cleared user loading state for:', email)
+    }
+  }, [getUserLoadingKey])
 
   const checkUserLoadingState = useCallback((email: string): boolean => {
-    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
-      const key = `czsu-user-loading-${email}`;
-      const loadingTime = localStorage.getItem(key);
-      if (loadingTime) {
-        const elapsed = Date.now() - parseInt(loadingTime, 10);
-        // Consider loading stale after 30 seconds
-        if (elapsed > 30000) {
-          localStorage.removeItem(key);
-          console.log('[ChatCache] ⏰ User loading state expired for:', email);
-          return false;
-        }
-        console.log('[ChatCache] 🔒 User is already loading:', email, 'elapsed:', elapsed, 'ms');
-        return true;
+    if (!email || typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      setIsUserLoading(false)
+      return false
+    }
+
+    const key = getUserLoadingKey(email)
+    const storedValue = localStorage.getItem(key)
+    if (!storedValue) {
+      setIsUserLoading(false)
+      return false
+    }
+
+    let timestamp = Number(storedValue)
+    if (Number.isNaN(timestamp)) {
+      try {
+        const parsed = JSON.parse(storedValue)
+        timestamp = typeof parsed?.timestamp === 'number' ? parsed.timestamp : NaN
+      } catch (err) {
+        timestamp = NaN
       }
     }
-    return false;
-  }, []);
+
+    if (!timestamp) {
+      localStorage.removeItem(key)
+      setIsUserLoading(false)
+      return false
+    }
+
+    const elapsed = Date.now() - timestamp
+    if (elapsed > USER_LOADING_TTL) {
+      localStorage.removeItem(key)
+      setIsUserLoading(false)
+      console.log('[ChatCache] ⏰ User loading state expired for:', email)
+      return false
+    }
+
+    setIsUserLoading(true)
+    console.log('[ChatCache] 🔒 User is already loading:', email, 'elapsed:', elapsed, 'ms')
+    return true
+  }, [getUserLoadingKey])
+
+  useEffect(() => {
+    if (userEmail) {
+      checkUserLoadingState(userEmail)
+    } else {
+      setIsUserLoading(false)
+    }
+  }, [userEmail, checkUserLoadingState])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined
+
+    const handleStorage = (event: StorageEvent) => {
+      if (!event.key || !userEmail) return
+      if (event.key === getUserLoadingKey(userEmail)) {
+        checkUserLoadingState(userEmail)
+      }
+    }
+
+    window.addEventListener('storage', handleStorage)
+    return () => window.removeEventListener('storage', handleStorage)
+  }, [userEmail, checkUserLoadingState, getUserLoadingKey])
 
   // NEW: Reset page refresh state
   const resetPageRefresh = useCallback(() => {

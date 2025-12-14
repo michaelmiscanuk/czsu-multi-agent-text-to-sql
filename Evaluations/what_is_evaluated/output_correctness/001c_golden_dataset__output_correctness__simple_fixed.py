@@ -15,11 +15,13 @@ load_dotenv(project_root / ".env")
 # Your questions and answers
 # Define questions and answers for the golden dataset
 # Each question is preceded by a comment showing the filename and exact source line from the CSV data
-question_answers = {
-    # STA01T1.csv; Česko;"Stavební práce ""S"" celkem (mil. Kč, b.c.)";2024;695799.256
-    # changed 'construction work to 'construction production' because of better translation to match with data
-    "What was the total value of construction production in Czechia in 2024?": "695799.256 million CZK",
-}
+question_answers = [
+    {
+        "question": "What was the total value of construction production in Czechia in 2024?",
+        "answer": "695799.256 million CZK",
+        "source": 'STA01T1.csv; Česko;"Stavební práce ""S"" celkem (mil. Kč, b.c.)";2024;695799.256',
+    }
+]
 
 ls_client = Client()
 
@@ -45,10 +47,14 @@ for ex in existing_examples:
 
 # Prepare only new examples (filter out duplicates)
 new_examples = []
-for question, answer in question_answers.items():
-    if question not in existing_questions:
+for item in question_answers:
+    if item["question"] not in existing_questions:
         new_examples.append(
-            {"inputs": {"question": question}, "outputs": {"answers": answer}}
+            {
+                "inputs": {"question": item["question"]},
+                "outputs": {"answer": item["answer"]},
+                "metadata": {"source": item["source"]},
+            }
         )
 
 if new_examples:
