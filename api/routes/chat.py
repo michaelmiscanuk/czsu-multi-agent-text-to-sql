@@ -893,10 +893,7 @@ async def get_thread_messages_with_metadata(
                 if active_interaction is None:
                     should_start_new = True
                 elif prompt_from_writes:
-                    if (
-                        not interaction_completed
-                        and current_prompt == stripped_prompt
-                    ):
+                    if not interaction_completed and current_prompt == stripped_prompt:
                         should_start_new = False
                     elif (
                         interaction_completed
@@ -908,9 +905,7 @@ async def get_thread_messages_with_metadata(
                     should_start_new = True
 
                 if should_start_new:
-                    target_interaction = reset_active_interaction(
-                        step, stripped_prompt
-                    )
+                    target_interaction = reset_active_interaction(step, stripped_prompt)
                     print__chat_all_messages_debug(
                         f"🔄 STARTED NEW INTERACTION: Step {step}"
                     )
