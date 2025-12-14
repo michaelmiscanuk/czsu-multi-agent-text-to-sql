@@ -351,7 +351,7 @@ except NameError:
 # ==============================================================================
 # FASTAPI AND HTTP IMPORTS
 # ==============================================================================
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse, StreamingResponse
 
 # ==============================================================================
@@ -406,6 +406,14 @@ from api.utils.cancellation import (
     register_execution,  # Register execution for cancellation tracking
     unregister_execution,  # Remove execution from tracking after completion
     is_cancelled,  # Check if execution has been cancelled by user
+)
+
+# Execution locking to guarantee one active prompt per client identity
+from api.utils.execution_lock import (
+    acquire_execution_slot,
+    build_execution_identity,
+    get_client_ip,
+    release_execution_slot,
 )
 
 # ==============================================================================
@@ -642,7 +650,9 @@ async def get_thread_metadata_from_single_thread_endpoint(
         500: {"description": "Internal error during query processing"},
     },
 )
-async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
+async def analyze(
+    request: AnalyzeRequest, http_request: Request, user=Depends(get_current_user)
+):
     """Main analysis endpoint - converts natural language to SQL and executes against CZSU database.
 
     This endpoint orchestrates the complete multi-agent workflow for processing user queries:
@@ -688,7 +698,7 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     """
 
     if request.stream:
-        return await analyze_streaming(request, user)
+        return await analyze_streaming(request, http_request, user)
 
     # ==========================================================================
     # ENTRY POINT LOGGING AND REQUEST VALIDATION
@@ -697,6 +707,9 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
     print__analyze_debug("🔍 ANALYZE ENDPOINT - ENTRY POINT")
     print__analyze_debug(f"🔍 Request received: thread_id={request.thread_id}")
     print__analyze_debug(f"🔍 Request prompt length: {len(request.prompt)}")
+
+    execution_identity = None
+    lock_acquired = False
 
     try:
         # ======================================================================
@@ -727,6 +740,34 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         )
         print__analyze_debug(
             f"🔍 ANALYZE REQUEST RECEIVED: thread_id={request.thread_id}, user={user_email}"
+        )
+
+        # ======================================================================
+        # PER-IP EXECUTION LOCK (ONE PROMPT AT A TIME)
+        # ======================================================================
+        client_ip = get_client_ip(http_request)
+        execution_identity = build_execution_identity(client_ip, user_email)
+        if not await acquire_execution_slot(execution_identity):
+            print__analysis_tracing_debug(
+                "05 - EXECUTION LOCK DENIED: Existing analysis in progress for identity"
+            )
+            print__analyze_debug(
+                f"🚫 Execution lock denied for identity {execution_identity}"
+            )
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "Another analysis is already running for your IP. "
+                    "Please wait for it to finish before starting a new prompt."
+                ),
+            )
+
+        lock_acquired = True
+        print__analysis_tracing_debug(
+            "05.1 - EXECUTION LOCK ACQUIRED: Proceeding with analysis"
+        )
+        print__analyze_debug(
+            f"🔒 Execution lock acquired for identity {execution_identity}"
         )
 
         # ======================================================================
@@ -1316,6 +1357,12 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             status_code=500,
             detail="Sorry, there was an error processing your request. Please try again.",
         )
+    finally:
+        if lock_acquired and execution_identity:
+            release_execution_slot(execution_identity)
+            print__analyze_debug(
+                f"🔓 Execution lock released for identity {execution_identity}"
+            )
 
 
 @router.post(
@@ -1339,12 +1386,25 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         }
     },
 )
-async def analyze_streaming(request: AnalyzeRequest, user=Depends(get_current_user)):
+async def analyze_streaming(
+    request: AnalyzeRequest, http_request: Request, user=Depends(get_current_user)
+):
     """Server-Sent Events variant of the analysis endpoint."""
 
     user_email = user.get("email")
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
+
+    client_ip = get_client_ip(http_request)
+    execution_identity = build_execution_identity(client_ip, user_email)
+    if not await acquire_execution_slot(execution_identity):
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Another analysis is already running for your IP. "
+                "Please wait for it to finish before starting a new prompt."
+            ),
+        )
 
     queue: asyncio.Queue[dict] = asyncio.Queue()
 
@@ -1527,14 +1587,21 @@ async def analyze_streaming(request: AnalyzeRequest, user=Depends(get_current_us
         finally:
             if run_id:
                 unregister_execution(request.thread_id, run_id)
+            release_execution_slot(execution_identity)
 
-    asyncio.create_task(run_analysis_workflow())
-    return StreamingResponse(
-        sse_event_generator(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",
-        },
-    )
+    release_on_exception = True
+    try:
+        asyncio.create_task(run_analysis_workflow())
+        release_on_exception = False
+        return StreamingResponse(
+            sse_event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            },
+        )
+    finally:
+        if release_on_exception:
+            release_execution_slot(execution_identity)
