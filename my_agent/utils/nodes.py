@@ -2753,18 +2753,18 @@ Bad: "The query shows X is 1,234,567"
     )
 
     # Step 11: Translate answer to prompt language if languages differ
-    if detected_language_llm != detected_language_prompt:
-        print__nodes_debug(
-            f"🌍 {FORMAT_ANSWER_ID}: Translating answer from {detected_language_llm} to {detected_language_prompt}"
-        )
-        final_answer_content = await translate_text(
-            final_answer_content, target_language=detected_language_prompt
-        )
-        print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Translation completed")
-    else:
-        print__nodes_debug(
-            f"🌍 {FORMAT_ANSWER_ID}: LLM output language matches prompt language ({detected_language_prompt}), no translation needed"
-        )
+    # if detected_language_llm != detected_language_prompt:
+    print__nodes_debug(
+        f"🌍 {FORMAT_ANSWER_ID}: Translating answer from {detected_language_llm} to {detected_language_prompt}"
+    )
+    final_answer_content = await translate_text(
+        final_answer_content, target_language=detected_language_prompt
+    )
+    print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Translation completed")
+    # else:
+    #     print__nodes_debug(
+    #         f"🌍 {FORMAT_ANSWER_ID}: LLM output language matches prompt language ({detected_language_prompt}), no translation needed"
+    #     )
 
     final_answer_preview = (
         final_answer_content[:100].replace("{", "{{").replace("}", "}}")
