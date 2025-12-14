@@ -603,6 +603,9 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     const bottomRef = React.useRef<HTMLDivElement>(null);
     const containerRef = React.useRef<HTMLDivElement>(null);
     const autoScrollRef = React.useRef(true);
+    const streamingLockRef = React.useRef(false);
+    const userOverrideRef = React.useRef(false);
+    const lastScrollTopRef = React.useRef(0);
     const scrollTickingRef = React.useRef<number | null>(null);
     const [isPinnedToBottom, setIsPinnedToBottom] = React.useState(true);
 
@@ -612,6 +615,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     }, []);
 
     const handleJumpToLatest = React.useCallback(() => {
+        userOverrideRef.current = false;
         autoScrollRef.current = true;
         setIsPinnedToBottom(true);
         scrollToBottom('smooth');
@@ -631,23 +635,42 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
         const container = containerRef.current;
         if (!container) return;
 
-        const updatePinnedState = () => {
+        lastScrollTopRef.current = container.scrollTop;
+
+        const updatePinnedState = (isScrollingDown = false) => {
             const distanceFromBottom = container.scrollHeight - (container.scrollTop + container.clientHeight);
-            const shouldStick = distanceFromBottom <= SCROLL_LOCK_THRESHOLD_PX;
-            if (autoScrollRef.current !== shouldStick) {
-                autoScrollRef.current = shouldStick;
-                setIsPinnedToBottom(shouldStick);
+            const nearBottom = distanceFromBottom <= SCROLL_LOCK_THRESHOLD_PX;
+
+            if (userOverrideRef.current && nearBottom && isScrollingDown && distanceFromBottom <= 4) {
+                userOverrideRef.current = false;
             }
+
+            const pinned = nearBottom && !userOverrideRef.current && !streamingLockRef.current;
+            setIsPinnedToBottom(nearBottom && !userOverrideRef.current);
+            autoScrollRef.current = pinned;
         };
 
         const handleScroll = () => {
             if (scrollTickingRef.current !== null) {
                 cancelAnimationFrame(scrollTickingRef.current);
             }
-            scrollTickingRef.current = requestAnimationFrame(updatePinnedState);
+
+            scrollTickingRef.current = requestAnimationFrame(() => {
+                const currentTop = container.scrollTop;
+                const prevTop = lastScrollTopRef.current;
+                const isScrollingUp = currentTop < prevTop;
+                const isScrollingDown = currentTop > prevTop;
+
+                if (isScrollingUp) {
+                    userOverrideRef.current = true;
+                    autoScrollRef.current = false;
+                }
+
+                lastScrollTopRef.current = currentTop;
+                updatePinnedState(isScrollingDown);
+            });
         };
 
-        // Initialize state based on current position
         updatePinnedState();
         container.addEventListener('scroll', handleScroll, { passive: true });
 
@@ -683,10 +706,27 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
     
     // Auto-scroll when thread changes
     React.useEffect(() => {
+        userOverrideRef.current = false;
         autoScrollRef.current = true;
         setIsPinnedToBottom(true);
         scrollToBottom('auto');
     }, [threadId, scrollToBottom]);
+
+    // Detect if any message is currently streaming/loading
+    const hasStreamingMessage = React.useMemo(() => {
+        return messages.some((message) => message.isLoading);
+    }, [messages]);
+
+    // Lock auto-scroll while a response is streaming
+    React.useEffect(() => {
+        streamingLockRef.current = hasStreamingMessage;
+        if (hasStreamingMessage) {
+            autoScrollRef.current = false;
+        } else if (!userOverrideRef.current && isPinnedToBottom) {
+            autoScrollRef.current = true;
+            scrollToBottom(messages.length <= 2 ? 'auto' : 'smooth');
+        }
+    }, [hasStreamingMessage, isPinnedToBottom, scrollToBottom, messages.length]);
 
     // Auto-scroll when latest message updates and user is pinned to bottom
     React.useEffect(() => {

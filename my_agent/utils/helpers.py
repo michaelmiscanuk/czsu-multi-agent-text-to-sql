@@ -8,6 +8,7 @@ and other operations needed by the agent.
 # IMPORTS
 # ==============================================================================
 import os
+import re
 import sqlite3
 import requests
 import uuid
@@ -100,6 +101,9 @@ async def load_schema(state=None):
     return "No selection_code provided in state."
 
 
+NEWLINE_SPLIT_PATTERN = re.compile(r"(\r?\n+)")
+
+
 async def translate_text(text, target_language="en"):
     """Helper function that translates text to a target language using Azure Translator API.
 
@@ -138,6 +142,9 @@ async def translate_text(text, target_language="en"):
         - Content-Type: application/json
         - Headers: Ocp-Apim-Subscription-Key, Ocp-Apim-Subscription-Region, X-ClientTraceId
     """
+
+    if not text:
+        return ""
     load_dotenv()
     subscription_key = os.environ["TRANSLATOR_TEXT_SUBSCRIPTION_KEY"]
     region = os.environ["TRANSLATOR_TEXT_REGION"]
@@ -154,15 +161,42 @@ async def translate_text(text, target_language="en"):
         "X-ClientTraceId": str(uuid.uuid4()),
     }
 
-    body = [{"text": text}]
+    parts = NEWLINE_SPLIT_PATTERN.split(text)
+    translate_indices = []
+    translate_segments = []
+    for idx, part in enumerate(parts):
+        if not part:
+            continue
+        if NEWLINE_SPLIT_PATTERN.fullmatch(part):
+            continue
+        translate_indices.append(idx)
+        translate_segments.append(part)
 
-    # Run the synchronous request in a thread
+    if not translate_segments:
+        return text
+
     loop = asyncio.get_event_loop()
-    response = await loop.run_in_executor(
-        None, lambda: requests.post(constructed_url, headers=headers, json=body)
-    )
-    result = response.json()
-    return result[0]["translations"][0]["text"]
+
+    async def translate_batch(batch):
+        body = [{"text": chunk} for chunk in batch]
+        response = await loop.run_in_executor(
+            None, lambda: requests.post(constructed_url, headers=headers, json=body)
+        )
+        response.raise_for_status()
+        data = response.json()
+        return [item["translations"][0]["text"] for item in data]
+
+    translated_parts = []
+    batch_size = 50
+    for start in range(0, len(translate_segments), batch_size):
+        batch = translate_segments[start : start + batch_size]
+        translated_parts.extend(await translate_batch(batch))
+
+    translated_iter = iter(translated_parts)
+    for idx in translate_indices:
+        parts[idx] = next(translated_iter)
+
+    return "".join(parts)
 
 
 async def detect_language(text: str) -> str:
