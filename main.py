@@ -280,7 +280,7 @@ import os  # Operating system interface for environment variables
 import re  # Regular expressions for SQL parsing
 import uuid  # UUID generation for unique thread and run IDs
 from pathlib import Path  # Object-oriented filesystem paths
-from typing import List  # Type hints for better code documentation
+from typing import List, Optional  # Type hints for better code documentation
 
 import psutil  # Process and system monitoring for memory tracking
 from dotenv import load_dotenv  # Environment variable loading from .env files
@@ -336,6 +336,11 @@ from api.utils.debug import (
 )
 from my_agent.utils.followup import (
     generate_initial_followup_prompts,  # Follow-up prompt generation (template or AI-based)
+)
+from my_agent.utils.streaming import (
+    StreamCallback,
+    reset_streaming_callback,
+    set_streaming_callback,
 )
 
 # ==============================================================================
@@ -505,7 +510,13 @@ def get_used_selection_codes(
 # ==============================================================================
 @retry_on_ssl_connection_error(max_retries=3)
 @retry_on_prepared_statement_error(max_retries=3)
-async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
+async def main(
+    prompt=None,
+    thread_id=None,
+    checkpointer=None,
+    run_id=None,
+    streaming_callback: Optional[StreamCallback] = None,
+):
     """Main orchestration function for CZSU multi-agent text-to-SQL data analysis.
 
     This async function serves as the central coordinator for the entire analysis pipeline,
@@ -619,6 +630,13 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
             - Errors and exceptions
             - Input/output for each step
             If None, generates new UUID automatically.
+
+        streaming_callback (StreamCallback, optional):
+            Coroutine invoked with streaming events emitted by downstream nodes
+            (currently the formatted final answer). When provided, format_answer_node
+            will stream incremental chunks through this callback so the API layer can
+            forward them to clients (e.g., via Server-Sent Events). When omitted, the
+            workflow behaves as before and only returns the final result when ready.
 
     Returns:
         dict: Serialized analysis result with the following structure:
@@ -1022,7 +1040,15 @@ async def main(prompt=None, thread_id=None, checkpointer=None, run_id=None):
     # - config: Contains thread_id for checkpointing and run_id for LangSmith tracing
     # - Automatic checkpointing after each node enables resumability
     # - Parallel retrieval (database + PDF) happens automatically in the graph
-    result = await graph.ainvoke(input_state, config=config)
+    callback_token = None
+    if streaming_callback:
+        callback_token = set_streaming_callback(streaming_callback)
+
+    try:
+        result = await graph.ainvoke(input_state, config=config)
+    finally:
+        if callback_token is not None:
+            reset_streaming_callback(callback_token)
 
     # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
     # print(type(result))

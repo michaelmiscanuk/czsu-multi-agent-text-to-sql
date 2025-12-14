@@ -315,6 +315,7 @@ Windows Compatibility:
 # and ensures proper async database operations.
 import asyncio
 import gc
+import json
 import os
 import sys
 import traceback
@@ -351,7 +352,7 @@ except NameError:
 # FASTAPI AND HTTP IMPORTS
 # ==============================================================================
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 # ==============================================================================
 # CONFIGURATION AND SETTINGS
@@ -503,8 +504,6 @@ async def get_thread_metadata_from_single_thread_endpoint(
         else:
             # JSONResponse object - need to extract the actual data
             if hasattr(result, "body"):
-                import json
-
                 # Decode the response body from bytes and parse JSON
                 response_data = json.loads(result.body.decode())
             else:
@@ -687,6 +686,9 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
         - Supports user-initiated cancellation
         - Includes comprehensive error handling and logging
     """
+
+    if request.stream:
+        return await analyze_streaming(request, user)
 
     # ==========================================================================
     # ENTRY POINT LOGGING AND REQUEST VALIDATION
@@ -1314,3 +1316,225 @@ async def analyze(request: AnalyzeRequest, user=Depends(get_current_user)):
             status_code=500,
             detail="Sorry, there was an error processing your request. Please try again.",
         )
+
+
+@router.post(
+    "/analyze/stream",
+    summary="Analyze natural language query (streaming)",
+    description="""
+    Streaming variant of the /analyze endpoint. Returns a text/event-stream payload
+    that emits incremental answer tokens (type=answer_chunk) followed by the final
+    metadata payload (type=final). The request body matches /analyze; simply set
+    "stream": true on the frontend to switch to this endpoint.
+    """,
+    response_description="Server-Sent Events with analysis progress, answer chunks, and final payload.",
+    responses={
+        200: {
+            "description": "Streaming response initiated",
+            "content": {
+                "text/event-stream": {
+                    "example": 'data: {"type": "status", "message": "analysis_started"}\n\n'
+                }
+            },
+        }
+    },
+)
+async def analyze_streaming(request: AnalyzeRequest, user=Depends(get_current_user)):
+    """Server-Sent Events variant of the analysis endpoint."""
+
+    user_email = user.get("email")
+    if not user_email:
+        raise HTTPException(status_code=401, detail="User email not found in token")
+
+    queue: asyncio.Queue[dict] = asyncio.Queue()
+
+    async def enqueue(event: dict):
+        await queue.put(event)
+
+    async def sse_event_generator():
+        try:
+            while True:
+                event = await queue.get()
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+                if event.get("type") in {"final", "error"}:
+                    break
+        finally:
+            while not queue.empty():
+                queue.get_nowait()
+
+    async def stream_callback(event: dict):
+        await enqueue(event)
+
+    async def run_analysis_workflow():
+        run_id = None
+        checkpointer = None
+        try:
+            await enqueue({"type": "status", "message": "initializing"})
+            async with analysis_semaphore:
+                checkpointer = await get_global_checkpointer()
+
+                run_id = request.run_id if request.run_id else None
+                run_id = await create_thread_run_entry(
+                    user_email, request.thread_id, request.prompt, run_id=run_id
+                )
+                register_execution(request.thread_id, run_id)
+                await enqueue(
+                    {"type": "status", "message": "analysis_started", "run_id": run_id}
+                )
+
+                async def cancellable_analysis(active_checkpointer):
+                    task = asyncio.create_task(
+                        analysis_main(
+                            request.prompt,
+                            thread_id=request.thread_id,
+                            checkpointer=active_checkpointer,
+                            run_id=run_id,
+                            streaming_callback=stream_callback,
+                        )
+                    )
+                    while not task.done():
+                        if is_cancelled(request.thread_id, run_id):
+                            task.cancel()
+                            raise asyncio.CancelledError("Execution cancelled by user")
+                        try:
+                            await asyncio.wait_for(asyncio.shield(task), timeout=5)
+                        except asyncio.TimeoutError:
+                            continue
+                    return await task
+
+                try:
+                    result = await asyncio.wait_for(
+                        cancellable_analysis(checkpointer), timeout=240
+                    )
+                    unregister_execution(request.thread_id, run_id)
+                except Exception as analysis_error:  # pylint: disable=broad-except
+                    unregister_execution(request.thread_id, run_id)
+                    error_msg = str(analysis_error).lower()
+
+                    is_prepared_stmt_error = any(
+                        indicator in error_msg
+                        for indicator in [
+                            "prepared statement",
+                            "does not exist",
+                            "_pg3_",
+                            "_pg_",
+                            "invalidsqlstatementname",
+                        ]
+                    )
+                    if is_prepared_stmt_error:
+                        raise HTTPException(
+                            status_code=500,
+                            detail="Database prepared statement error. Please try again.",
+                        ) from analysis_error
+
+                    is_db_error = any(
+                        keyword in error_msg
+                        for keyword in [
+                            "pool",
+                            "connection",
+                            "closed",
+                            "timeout",
+                            "ssl",
+                            "postgres",
+                        ]
+                    )
+
+                    if is_db_error and INMEMORY_FALLBACK_ENABLED:
+                        from langgraph.checkpoint.memory import InMemorySaver
+
+                        fallback_checkpointer = InMemorySaver()
+                        await enqueue(
+                            {
+                                "type": "status",
+                                "message": "database_issue_fallback",
+                                "detail": str(analysis_error),
+                            }
+                        )
+                        register_execution(request.thread_id, run_id)
+                        result = await asyncio.wait_for(
+                            cancellable_analysis(fallback_checkpointer), timeout=240
+                        )
+                        unregister_execution(request.thread_id, run_id)
+                    elif is_db_error:
+                        raise HTTPException(
+                            status_code=500,
+                            detail="Database connection error. Please try again.",
+                        ) from analysis_error
+                    else:
+                        raise
+
+            thread_metadata = await get_thread_metadata_from_single_thread_endpoint(
+                request.thread_id, user_email
+            )
+
+            response_data = {
+                "prompt": request.prompt,
+                "result": (
+                    result["result"]
+                    if isinstance(result, dict) and "result" in result
+                    else str(result)
+                ),
+                "queries_and_results": thread_metadata.get("queries_and_results", []),
+                "thread_id": request.thread_id,
+                "top_selection_codes": thread_metadata.get("top_selection_codes", []),
+                "datasets_used": thread_metadata.get("datasets_used", []),
+                "iteration": (
+                    result.get("iteration", 0) if isinstance(result, dict) else 0
+                ),
+                "max_iterations": (
+                    result.get("max_iterations", 2) if isinstance(result, dict) else 2
+                ),
+                "sql": thread_metadata.get("sql"),
+                "datasetUrl": thread_metadata.get("dataset_url"),
+                "run_id": run_id,
+                "top_chunks": thread_metadata.get("top_chunks", []),
+                "followup_prompts": thread_metadata.get("followup_prompts", []),
+            }
+
+            await enqueue({"type": "final", "data": response_data})
+        except asyncio.CancelledError:
+            await enqueue(
+                {
+                    "type": "error",
+                    "status": 499,
+                    "message": "Analysis was cancelled by user",
+                }
+            )
+        except asyncio.TimeoutError:
+            await enqueue(
+                {
+                    "type": "error",
+                    "status": 408,
+                    "message": "Analysis timed out after 8 minutes",
+                }
+            )
+        except HTTPException as exc:
+            await enqueue(
+                {
+                    "type": "error",
+                    "status": exc.status_code,
+                    "message": exc.detail,
+                }
+            )
+        except Exception as exc:  # pylint: disable=broad-except
+            await enqueue(
+                {
+                    "type": "error",
+                    "status": 500,
+                    "message": str(exc),
+                }
+            )
+        finally:
+            if run_id:
+                unregister_execution(request.thread_id, run_id)
+
+    asyncio.create_task(run_analysis_workflow())
+    return StreamingResponse(
+        sse_event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )

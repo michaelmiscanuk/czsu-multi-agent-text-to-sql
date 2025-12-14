@@ -38,6 +38,7 @@ export interface AnalyzeRequest {
   prompt: string;
   thread_id: string;
   run_id?: string; // Optional run_id for tracking execution
+  stream?: boolean; // Optional flag to request streaming responses
 }
 
 export interface AnalyzeResponse {
