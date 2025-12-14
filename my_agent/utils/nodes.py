@@ -1772,23 +1772,25 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     # ============================================================================
     # MODEL CONFIGURATION - Change the active model here
     # ============================================================================
-    MODEL_TYPE = "openai"  # Options: "openai", "gemini", "ollama"
+    model_type = os.environ.get(
+        "MODEL_TYPE", "azureopenai"
+    )  # Options: "openai", "gemini", "ollama"
 
-    if MODEL_TYPE == "openai":
+    if model_type == "azureopenai":
         llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
-        USE_BIND_TOOLS = True  # OpenAI requires bind_tools()
-    elif MODEL_TYPE == "gemini":
+        use_bind_tools = True  # OpenAI requires bind_tools()
+    elif model_type == "gemini":
         llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
-        USE_BIND_TOOLS = False  # Gemini accepts tools directly in ainvoke()
-    elif MODEL_TYPE == "ollama":
+        use_bind_tools = False  # Gemini accepts tools directly in ainvoke()
+    elif model_type == "ollama":
         # You can change the model_name parameter: "llama3.2:1b", "qwen:7b", etc.
         llm = get_ollama_llm(model_name="qwen2.5-coder:0.5b", temperature=0.0)
-        USE_BIND_TOOLS = (
+        use_bind_tools = (
             True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
         )
     else:
         raise ValueError(
-            f"Unknown MODEL_TYPE: {MODEL_TYPE}. Options: 'openai', 'gemini', 'ollama'"
+            f"Unknown model_type: {model_type}. Options: 'openai', 'gemini', 'ollama'"
         )
 
     tools = await get_sqlite_tools()
@@ -2049,7 +2051,7 @@ Remember: Always examine the schema to understand:
     initial_messages = prompt_template.format_messages(**template_vars)
 
     # Prepare LLM with tools based on model type
-    if USE_BIND_TOOLS:
+    if use_bind_tools:
         # OpenAI: bind tools to the model instance
         llm_with_tools = llm.bind_tools(tools)
     else:
@@ -2076,7 +2078,7 @@ Remember: Always examine the schema to understand:
         # Invoke LLM with retry logic (may return tool calls or signal completion)
         for attempt in range(MAX_RETRIES):
             try:
-                if USE_BIND_TOOLS:
+                if use_bind_tools:
                     # OpenAI: tools already bound, just invoke
                     llm_response = await llm_with_tools.ainvoke(conversation_messages)
                 else:

@@ -21,25 +21,20 @@ dependencies = [
     "fastapi>=0.104.1",
     "uvicorn[standard]>=0.24.0",
     "starlette==0.45.3",
-    "python-multipart>=0.0.6",
     "brotli-asgi>=1.4.0",  # Brotli compression middleware
     
     # Pydantic for data validation
     "pydantic>=2.5.0",
-    "pydantic-settings>=2.10.1",
-    "pydantic_core>=2.33.2",
     
     # LangChain ecosystem (core)
     "langchain>=0.3.0",
     "langchain-core>=0.3.0",
     "langchain-openai>=0.0.2",
     "langchain-community>=0.3.28",
-    "langchain-text-splitters>=0.3.21",
     "langgraph>=0.2.0",
     "langgraph-checkpoint>=2.1.0",
     "langgraph-checkpoint-postgres>=2.0.21",
     "langsmith>=0.3.45",
-    "langchain-anthropic>=0.1.0",
     
     # OpenAI and Azure OpenAI
     "openai>=1.108.1,<2",
@@ -51,21 +46,14 @@ dependencies = [
     "cohere==5.15.0",
     
     # Google Gemini
-    "google-genai>=0.1.0",
     "langchain-google-genai>=3.1.0",
     
     # PostgreSQL database
     "psycopg[binary,pool]>=3.1.13",
     "psycopg-pool==3.2.6",
-    "SQLAlchemy>=2.0.23",
-    "asyncpg>=0.29.0",
-    "alembic==1.15.2",
-    "libsql-client>=0.3.1",
     
     # Authentication
-    "authlib==1.5.2",
     "PyJWT[crypto]>=2.8.0",
-    "python-jose[cryptography]>=3.3.0",
     
     # Essential utilities
     "python-dotenv>=1.0.0",
@@ -85,20 +73,13 @@ dependencies = [
     # PDF Processing
     "llama-parse>=0.4.0",  # Premium LLM-based parser (requires API key)
     "azure-ai-documentintelligence>=1.0.0",  # Azure Document Intelligence SDK
-    "isodate>=0.6.1",  # ISO 8601 date parsing (required by azure-ai-documentintelligence)
     
     # JSON/serialization
-    "orjson>=3.9.10",
-    "PyYAML==6.0.2",
     
     # MCP server
-    "mcp>=1.20.0",  # Updated for langchain-mcp-adapters compatibility
-    "fastmcp>=2.0.0",  # FastMCP for remote MCP client connections
     "langchain-mcp-adapters>=0.1.0",  # Official LangChain MCP adapters
     
     # Async utilities
-    "aiofiles==24.1.0",
-    "anyio==4.9.0",
     
     # Text processing
     "tiktoken==0.9.0",
@@ -106,18 +87,10 @@ dependencies = [
     
     # HTTP and networking
     "httpx==0.28.1",
-    "httpcore==1.0.9",
-    "certifi==2025.1.31",
-    "charset-normalizer==3.4.1",
-    "idna==3.10",
-    "h11==0.16.0",
     
     # Templates
-    "Jinja2==3.1.6",
-    "MarkupSafe==3.0.2",
     
     # Type checking
-    "typing_extensions",
     
     # LlamaIndex OpenAI integration
     "llama-index-llms-openai==0.6.6",
@@ -127,9 +100,6 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     # Jupyter/IPython support for development
-    "ipykernel>=6.25.0",
-    "jupyter>=1.0.0", 
-    "notebook>=6.5.0",
     "ipython>=8.0.0",
     
     # Development and monitoring utilities
@@ -139,14 +109,9 @@ dev = [
     "graphviz",
 
     # Call graph visualization
-    "pycg<=0.0.8",
-    "pyvis>=0.3.2",
-    "networkx>=3.0",
     "pyan3>=1.2.0",
 
     # Testing
-    "pytest",
-    "pytest-asyncio",
     "httpx"
 ]
 
