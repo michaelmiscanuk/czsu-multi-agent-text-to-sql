@@ -685,6 +685,7 @@ async def get_thread_messages_with_metadata(
             writes = metadata.get("writes", {})  # Agent outputs
 
             data_updates: Dict[str, object] = {}
+            prompt_from_writes = False
 
             # ===================================================================
             # EXTRACT USER PROMPT
@@ -698,6 +699,7 @@ async def get_thread_messages_with_metadata(
                     prompt = start_data["prompt"]
                     if prompt and prompt.strip():
                         data_updates["prompt"] = prompt.strip()
+                        prompt_from_writes = True
                         print__chat_all_messages_debug(
                             f"🔍 USER PROMPT FOUND: Step {step}: {prompt[:50]}..."
                         )
@@ -848,28 +850,35 @@ async def get_thread_messages_with_metadata(
             if prompt_in_update:
                 stripped_prompt = data_updates["prompt"].strip()
                 data_updates["prompt"] = stripped_prompt
-                needs_new = False
 
+                is_same_prompt = (
+                    target_interaction is not None
+                    and target_interaction.get("prompt") == stripped_prompt
+                )
+
+                should_start_new = False
                 if target_interaction is None:
-                    needs_new = True
-                else:
-                    has_final = target_interaction.get("final_answer") is not None
-                    if has_final:
-                        needs_new = True
+                    should_start_new = True
+                elif prompt_from_writes:
+                    should_start_new = True
+                elif not is_same_prompt:
+                    should_start_new = True
 
-                if needs_new:
+                if should_start_new:
                     target_interaction = start_new_interaction(step)
+                    active_interaction = target_interaction
                     print__chat_all_messages_debug(
                         f"🔄 STARTED NEW INTERACTION: Step {step}"
                     )
+                else:
+                    active_interaction = target_interaction
 
-                active_interaction = target_interaction
-                if not target_interaction.get("prompt"):
+                if target_interaction and not target_interaction.get("prompt"):
                     target_interaction["prompt"] = stripped_prompt
             else:
                 if target_interaction is None:
                     target_interaction = start_new_interaction(step)
-                    active_interaction = target_interaction
+                active_interaction = target_interaction
 
             target_interaction["step"] = min(target_interaction.get("step", step), step)
 
