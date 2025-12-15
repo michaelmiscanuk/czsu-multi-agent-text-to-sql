@@ -899,7 +899,9 @@ async def analyze(
                         try:
                             await asyncio.wait_for(asyncio.shield(task), timeout=5)
                         except asyncio.TimeoutError:
-                            print("🚨 TIMEOUT ERROR: Task took too long to complete")
+                            print(
+                                "🚨 TIMEOUT: Timeout just means we should check cancellation again"
+                            )
                             # Timeout just means we should check cancellation again
                             continue
                         except asyncio.CancelledError:
@@ -1387,17 +1389,6 @@ async def analyze_streaming(
     if not user_email:
         raise HTTPException(status_code=401, detail="User email not found in token")
 
-    client_ip = get_client_ip(http_request)
-    execution_identity = build_execution_identity(client_ip, user_email)
-    if not await acquire_execution_slot(execution_identity):
-        raise HTTPException(
-            status_code=409,
-            detail=(
-                "Another analysis is already running for your IP. "
-                "Please wait for it to finish before starting a new prompt."
-            ),
-        )
-
     queue: asyncio.Queue[dict] = asyncio.Queue()
 
     async def enqueue(event: dict):
@@ -1587,21 +1578,14 @@ async def analyze_streaming(
         finally:
             if run_id:
                 unregister_execution(request.thread_id, run_id)
-            release_execution_slot(execution_identity)
 
-    release_on_exception = True
-    try:
-        asyncio.create_task(run_analysis_workflow())
-        release_on_exception = False
-        return StreamingResponse(
-            sse_event_generator(),
-            media_type="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "X-Accel-Buffering": "no",
-            },
-        )
-    finally:
-        if release_on_exception:
-            release_execution_slot(execution_identity)
+    asyncio.create_task(run_analysis_workflow())
+    return StreamingResponse(
+        sse_event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
