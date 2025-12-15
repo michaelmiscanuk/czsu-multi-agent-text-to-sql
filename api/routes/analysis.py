@@ -1451,7 +1451,7 @@ async def analyze_streaming(
                         try:
                             await asyncio.wait_for(asyncio.shield(task), timeout=5)
                         except asyncio.TimeoutError:
-                            print("🚨 TIMEOUT ERROR: Task took too long to complete")
+                            print("🚨 NOT cancelled yet, continuing analysis...")
                             continue
                     return await task
 
