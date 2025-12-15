@@ -12,7 +12,8 @@ from __future__ import annotations
 import asyncio
 import os
 import time
-from typing import Dict
+from collections import deque
+from typing import Deque, Dict
 
 from fastapi import Request
 
@@ -23,16 +24,32 @@ LOCK_TTL_SECONDS = int(
     os.getenv("USER_EXECUTION_LOCK_TTL_SECONDS", DEFAULT_LOCK_TTL_SECONDS)
 )
 
+# Allow limited parallel executions per identity (IP+user) to avoid false conflicts
+DEFAULT_MAX_SLOTS_PER_IDENTITY = 2
+MAX_SLOTS_PER_IDENTITY = max(
+    1,
+    int(
+        os.getenv(
+            "USER_EXECUTION_LOCK_MAX_SLOTS",
+            str(DEFAULT_MAX_SLOTS_PER_IDENTITY),
+        )
+    ),
+)
+
 # Internal registries guarded by an asyncio lock for thread-safety inside the event loop.
 _registry_lock = asyncio.Lock()
-_active_slots: Dict[str, float] = {}
+_active_slots: Dict[str, Deque[float]] = {}
 
 
 def _purge_expired(now: float) -> None:
     """Remove lock entries that exceeded the configured TTL."""
-    expired_keys = [
-        key for key, ts in _active_slots.items() if now - ts > LOCK_TTL_SECONDS
-    ]
+    expired_keys = []
+    for key, timestamps in _active_slots.items():
+        while timestamps and now - timestamps[0] > LOCK_TTL_SECONDS:
+            timestamps.popleft()
+        if not timestamps:
+            expired_keys.append(key)
+
     for key in expired_keys:
         _active_slots.pop(key, None)
 
@@ -70,10 +87,11 @@ async def acquire_execution_slot(identity: str) -> bool:
     now = time.time()
     async with _registry_lock:
         _purge_expired(now)
-        if identity in _active_slots:
+        timestamps = _active_slots.setdefault(identity, deque())
+        if len(timestamps) >= MAX_SLOTS_PER_IDENTITY:
             return False
 
-        _active_slots[identity] = now
+        timestamps.append(now)
         return True
 
 
@@ -81,7 +99,15 @@ def release_execution_slot(identity: str) -> None:
     """Release an execution slot when analysis completes or fails."""
     if not identity:
         return
-    _active_slots.pop(identity, None)
+    timestamps = _active_slots.get(identity)
+    if not timestamps:
+        return
+
+    if timestamps:
+        timestamps.popleft()
+
+    if not timestamps:
+        _active_slots.pop(identity, None)
 
 
 def has_active_slot(identity: str) -> bool:

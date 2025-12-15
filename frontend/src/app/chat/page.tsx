@@ -1060,7 +1060,20 @@ export default function ChatPage() {
 
       console.log('[ChatPage-Recovery] 🔄 Attempting response recovery due to error...');
 
-      const recoverySuccessful = await checkForNewMessagesAfterTimeout(currentThreadId, messagesBefore);
+      const errorStatus = (error as any)?.status;
+      const isExecutionLockConflict = errorStatus === 409;
+      const isTimeoutLikeError =
+        error instanceof Error && error.message?.toLowerCase().includes('timeout');
+
+      const recoverySuccessful = await waitForMessageRecovery(currentThreadId, messagesBefore, {
+        maxAttempts: isExecutionLockConflict ? 20 : isTimeoutLikeError ? 8 : 3,
+        delayMs: isExecutionLockConflict ? 4000 : isTimeoutLikeError ? 2500 : 1500,
+        reason: isExecutionLockConflict
+          ? 'execution_lock_conflict'
+          : isTimeoutLikeError
+            ? 'timeout_retry'
+            : 'standard_error',
+      });
 
       if (recoverySuccessful) {
         console.log('[ChatPage-Recovery] 🎉 Response recovered from PostgreSQL!');
@@ -1331,6 +1344,34 @@ export default function ChatPage() {
       console.error('[ChatPage-Recovery] ❌ Error during message recovery:', error);
       return false;
     }
+  };
+
+  const waitForMessageRecovery = async (
+    threadId: string,
+    beforeMessageCount: number,
+    options?: { maxAttempts?: number; delayMs?: number; reason?: string }
+  ) => {
+    const { maxAttempts = 3, delayMs = 1500, reason = 'default' } = options || {};
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      console.log(
+        `[ChatPage-Recovery] ⏳ Poll attempt ${attempt}/${maxAttempts} (reason: ${reason})`
+      );
+      const recovered = await checkForNewMessagesAfterTimeout(threadId, beforeMessageCount);
+      if (recovered) {
+        console.log(
+          `[ChatPage-Recovery] ✅ Recovery succeeded on attempt ${attempt}`
+        );
+        return true;
+      }
+      if (attempt < maxAttempts) {
+        console.log(
+          `[ChatPage-Recovery] ⏲️ Waiting ${delayMs}ms before next recovery attempt...`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+    console.log('[ChatPage-Recovery] ❌ Exhausted recovery attempts without success');
+    return false;
   };
 
   // UI
