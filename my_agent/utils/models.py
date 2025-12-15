@@ -18,102 +18,37 @@ from langchain_openai import AzureOpenAIEmbeddings
 # ===============================================================================
 # Azure Chat Models
 # ===============================================================================
-def get_azure_llm_gpt_4o(temperature=0.0):
-    """Get an instance of Azure OpenAI LLM with standard configuration.
+def get_azure_openai_chat_llm(
+    deployment_name: str,
+    model_name: str,
+    openai_api_version: str,
+    temperature: float = 0.0,
+    streaming: bool = False,
+) -> AzureChatOpenAI:
+    """Get an instance of Azure OpenAI Chat LLM with configurable parameters.
 
     The returned model instance supports both sync (invoke) and async (ainvoke)
     operations for flexibility in different execution contexts.
 
     Args:
-        temperature (float): Temperature setting for generation randomness
+        deployment_name (str): Azure deployment name (e.g., "gpt-4o__test1")
+        model_name (str): Model name (e.g., "gpt-4o", "gpt-4o-mini")
+        openai_api_version (str): Azure OpenAI API version (e.g., "2024-05-01-preview")
+        temperature (float): Temperature setting for generation randomness (default: 0.0)
+        streaming (bool): Enable streaming mode (default: False)
 
     Returns:
         AzureChatOpenAI: Configured LLM instance with async support
     """
     return AzureChatOpenAI(
-        deployment_name="gpt-4o__test1",
-        model_name="gpt-4o",
-        openai_api_version="2024-05-01-preview",
+        deployment_name=deployment_name,
+        model_name=model_name,
+        openai_api_version=openai_api_version,
         temperature=temperature,
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    )
-
-
-def get_azure_llm_gpt_4o_test():
-    # Test get_azure_llm_gpt_4o() with a simple message
-    print("\nTesting get_azure_llm_gpt_4o()...")
-    llm = get_azure_llm_gpt_4o()
-    messages = [{"role": "user", "content": "Say hello"}]
-    print(f"\nInput message:\n{messages[0]['content']}")
-    response = llm.invoke(messages)
-    print(f"\nResponse from LLM:\n{response.content}")
-
-
-def get_azure_llm_gpt_4o_mini(temperature=0.0, streaming: bool = False):
-    """Get an instance of Azure OpenAI GPT-4o Mini LLM with standard configuration.
-
-    The returned model instance supports both sync (invoke) and async (ainvoke)
-    operations for flexibility in different execution contexts.
-
-    Args:
-        temperature (float): Temperature setting for generation randomness
-
-    Returns:
-        AzureChatOpenAI: Configured LLM instance with async support
-    """
-    return AzureChatOpenAI(
-        deployment_name="gpt-4o-mini-mimi2",
-        model_name="gpt-4o-mini",
-        openai_api_version="2024-05-01-preview",
-        temperature=temperature,
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
         streaming=streaming,
-    )
-
-
-def get_azure_llm_gpt_4o_mini_test():
-    # Test get_azure_llm_gpt_4o() with a simple message
-    print("\nTesting get_azure_llm_gpt_4o_mini()...")
-    llm = get_azure_llm_gpt_4o()
-    messages = [{"role": "user", "content": "Say hello"}]
-    print(f"\nInput message:\n{messages[0]['content']}")
-    response = llm.invoke(messages)
-    print(f"\nResponse from LLM:\n{response.content}")
-
-
-# -------------------------------------------------------------------------------
-def get_azure_llm_gpt_4o_4_1(temperature=0.0):
-    """Get an instance of Azure OpenAI LLM with standard configuration.
-
-    The returned model instance supports both sync (invoke) and async (ainvoke)
-    operations for flexibility in different execution contexts.
-
-    Args:
-        temperature (float): Temperature setting for generation randomness
-
-    Returns:
-        AzureChatOpenAI: Configured LLM instance with async support
-    """
-    return AzureChatOpenAI(
-        deployment_name="gpt-4.1___test1",
-        model_name="gpt-4.1",
-        openai_api_version="2024-05-01-preview",
-        temperature=temperature,
         azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         api_key=os.getenv("AZURE_OPENAI_API_KEY"),
     )
-
-
-# def get_azure_llm_gpt_4o_4_1_test():
-#     # Test get_azure_llm_gpt_4o() with a simple message
-#     print("\nTesting get_azure_llm_gpt_4o()...")
-#     llm = get_azure_llm_gpt_4o_4_1()
-#     messages = [{"role": "user", "content": "What LLM Model version exactly you are?"}]
-#     print(f"\nInput message:\n{messages[0]['content']}")
-#     response = llm.invoke(messages)
-#     print(f"\nResponse from LLM:\n{response.content}")
 
 
 # ===============================================================================
@@ -270,16 +205,4 @@ def get_langchain_azure_embedding_model_test():
 
 
 if __name__ == "__main__":
-    # get_azure_embedding_model_test()
-    # get_azure_llm_gpt_4o_test()
-    # get_azure_llm_gpt_4o_mini_test()
-    # get_ollama_llm_test(model_name="qwen3:1.7b")
-    get_ollama_llm_test(
-        model_name="sqlcoder:latest",
-        prompt="Generate me SQL to create a table for storing customer information. Return only SQL code.",
-    )
-
-    # llm = get_ollama_llm("sqlcoder:latest")
-    # llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
-    # response = llm.invoke("Hi")
-    # print(response.content)
+    pass  # No test code to run

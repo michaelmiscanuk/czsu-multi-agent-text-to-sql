@@ -353,10 +353,10 @@ except ImportError:
 
 # Import LLM function from models.py
 try:
-    from my_agent.utils.models import get_azure_llm_gpt_4o
+    from my_agent.utils.models import get_azure_openai_chat_llm
 except ImportError:
-    print("Warning: Could not import get_azure_llm_gpt_4o from models.py")
-    get_azure_llm_gpt_4o = None
+    print("Warning: Could not import get_azure_openai_chat_llm from models.py")
+    get_azure_openai_chat_llm = None
 
 # ==============================================================================
 # CONFIGURATION
@@ -1425,8 +1425,13 @@ def process_parsed_text_to_chunks(
 
     # Configure Azure OpenAI LLM for MarkdownElementNodeParser
     # This prevents the parser from defaulting to OpenAI and causing API key errors
-    if get_azure_llm_gpt_4o is not None:
-        llm = get_azure_llm_gpt_4o(temperature=0.0)
+    if get_azure_openai_chat_llm is not None:
+        llm = get_azure_openai_chat_llm(
+            deployment_name="gpt-4o__test1",
+            model_name="gpt-4o",
+            openai_api_version="2024-05-01-preview",
+            temperature=0.0,
+        )
     else:
         # Fallback if import failed
         from llama_index.llms.azure_openai import AzureOpenAI

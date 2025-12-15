@@ -48,8 +48,8 @@ Functions marked as legacy or kept for backward compatibility:
 ### Category 4: Test LLM Functions
 Test functions for LLM models (not used in production):
 
-- `get_azure_llm_gpt_4o_test` - my_agent\utils\models.py:39
-- `get_azure_llm_gpt_4o_mini_test` - my_agent\utils\models.py:71
+- `get_azure_llm_gpt_4o_test` - my_agent\utils\models.py:39 (REMOVED - refactored into get_azure_openai_chat_llm)
+- `get_azure_llm_gpt_4o_mini_test` - my_agent\utils\models.py:71 (REMOVED - refactored into get_azure_openai_chat_llm)
 - `get_ollama_llm_test` - my_agent\utils\models.py:143
 - `get_azure_embedding_model_test` - my_agent\utils\models.py:184
 - `get_langchain_azure_embedding_model_test` - my_agent\utils\models.py:220
@@ -103,9 +103,9 @@ print__admin_clear_cache_debug
 ### Phase 2: Test Functions
 Remove test LLM functions if not needed:
 ```python
-# These 5 functions in my_agent\utils\models.py
-get_azure_llm_gpt_4o_test
-get_azure_llm_gpt_4o_mini_test
+# These 3 functions in my_agent\utils\models.py (2 were refactored)
+# get_azure_llm_gpt_4o_test (REMOVED - refactored into get_azure_openai_chat_llm)
+# get_azure_llm_gpt_4o_mini_test (REMOVED - refactored into get_azure_openai_chat_llm)
 get_ollama_llm_test
 get_azure_embedding_model_test
 get_langchain_azure_embedding_model_test

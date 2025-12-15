@@ -653,9 +653,7 @@ from my_agent.utils.tools import finish_gathering, get_sqlite_tools
 
 # Import models
 from my_agent.utils.models import (
-    get_azure_llm_gpt_4o,
-    get_azure_llm_gpt_4o_mini,
-    get_azure_llm_gpt_4o_4_1,
+    get_azure_openai_chat_llm,
     get_gemini_llm,
     get_ollama_llm,
 )
@@ -775,7 +773,12 @@ async def rewrite_prompt_node(state: DataAnalysisState) -> DataAnalysisState:
         else SystemMessage(content="")
     )
 
-    llm = get_azure_llm_gpt_4o(temperature=0.0)
+    llm = get_azure_openai_chat_llm(
+        deployment_name="gpt-4o__test1",
+        model_name="gpt-4o",
+        openai_api_version="2024-05-01-preview",
+        temperature=0.0,
+    )
 
     system_prompt = """
 Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language, that can be used to query a vector database.
@@ -966,13 +969,12 @@ async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState
     print__nodes_debug(f"📝 SUMMARY: last_message_content: '{last_message_content}'")
 
     # Key Step 2: Skip summarization if both previous summary and last message are empty
-    if not prev_summary and not last_message_content:
-        print__nodes_debug(
-            "📝 SUMMARY: Skipping summarization (no previous summary or last message)."
-        )
-        return {"messages": [summary] if not last_message else [summary, last_message]}
-
-    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
+    llm = get_azure_openai_chat_llm(
+        deployment_name="gpt-4o-mini-mimi2",
+        model_name="gpt-4o-mini",
+        openai_api_version="2024-05-01-preview",
+        temperature=0.0,
+    )
 
     system_prompt = """
 You are a conversation summarization agent.
@@ -1780,7 +1782,12 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     )  # Options: "openai", "gemini", "ollama"
 
     if model_type == "azureopenai":
-        llm = get_azure_llm_gpt_4o_4_1(temperature=0.0)
+        llm = get_azure_openai_chat_llm(
+            deployment_name="gpt-4.1___test1",
+            model_name="gpt-4o",
+            openai_api_version="2024-05-01-preview",
+            temperature=0.0,
+        )
         use_bind_tools = True  # OpenAI requires bind_tools()
     elif model_type == "gemini":
         llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
@@ -2310,7 +2317,12 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
             "iteration": current_iteration,
         }
 
-    llm = get_azure_llm_gpt_4o_mini(temperature=0.0)
+    llm = get_azure_openai_chat_llm(
+        deployment_name="gpt-4o-mini-mimi2",
+        model_name="gpt-4o-mini",
+        openai_api_version="2024-05-01-preview",
+        temperature=0.0,
+    )
     summary = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
@@ -2650,7 +2662,13 @@ Bad: "The query shows X is 1,234,567"
     async def stream_answer_tokens() -> str:
         """Stream answer tokens from the LLM and emit them via callback."""
 
-        llm_stream = get_azure_llm_gpt_4o_mini(temperature=0.1, streaming=True)
+        llm_stream = get_azure_openai_chat_llm(
+            deployment_name="gpt-4o-mini-mimi2",
+            model_name="gpt-4o-mini",
+            openai_api_version="2024-05-01-preview",
+            temperature=0.1,
+            streaming=True,
+        )
         chunks: List[str] = []
 
         async for chunk in llm_stream.astream(messages_to_send):
@@ -2687,7 +2705,12 @@ Bad: "The query shows X is 1,234,567"
                     content=final_answer_content, id="format_answer_stream"
                 )
             else:
-                llm_standard = get_azure_llm_gpt_4o_mini(temperature=0.1)
+                llm_standard = get_azure_openai_chat_llm(
+                    deployment_name="gpt-4o-mini-mimi2",
+                    model_name="gpt-4o-mini",
+                    openai_api_version="2024-05-01-preview",
+                    temperature=0.1,
+                )
                 llm_response = await llm_standard.ainvoke(messages_to_send)
                 final_answer_content = (
                     llm_response.content
@@ -2850,7 +2873,12 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
     print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Summary content: '{summary_content}'")
 
     # Key Step 2: Call Azure GPT-4o-mini with creative temperature (1.0)
-    llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
+    llm = get_azure_openai_chat_llm(
+        deployment_name="gpt-4o-mini-mimi2",
+        model_name="gpt-4o-mini",
+        openai_api_version="2024-05-01-preview",
+        temperature=1.0,
+    )
 
     system_prompt = """
 You are a prompt generation assistant for a Czech Statistical Office data analysis system.

@@ -37,7 +37,7 @@ import uuid
 from langsmith import aevaluate
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
-from my_agent.utils.models import get_azure_llm_gpt_4o
+from my_agent.utils.models import get_azure_openai_chat_llm
 
 # ==============================================================================
 # INITIALIZATION
@@ -54,7 +54,12 @@ EXPERIMENT_CONFIG = {
 }
 
 # Get Model
-judge_llm = get_azure_llm_gpt_4o(temperature=0.0)
+judge_llm = get_azure_openai_chat_llm(
+    deployment_name="gpt-4o__test1",
+    model_name="gpt-4o",
+    openai_api_version="2024-05-01-preview",
+    temperature=0.0,
+)
 
 # Create the agent graph
 graph = create_graph()

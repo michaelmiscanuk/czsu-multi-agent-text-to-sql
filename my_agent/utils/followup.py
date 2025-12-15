@@ -100,7 +100,7 @@ import langsmith as ls
 
 from langchain_core.prompts import ChatPromptTemplate
 
-from my_agent.utils.models import get_azure_llm_gpt_4o_mini
+from my_agent.utils.models import get_azure_openai_chat_llm
 
 # ==============================================================================
 # CONDITIONAL IMPORTS
@@ -449,7 +449,12 @@ def generate_initial_followup_prompts_ai() -> List[str]:
     print__main_debug("🎯 PROMPT GEN: Starting AI-based initial prompt generation")
     try:
         # Use the same model as other nodes but with temperature 1.0 for creativity
-        llm = get_azure_llm_gpt_4o_mini(temperature=1.0)
+        llm = get_azure_openai_chat_llm(
+            deployment_name="gpt-4o-mini-mimi2",
+            model_name="gpt-4o-mini",
+            openai_api_version="2024-05-01-preview",
+            temperature=1.0,
+        )
         print__main_debug("🤖 PROMPT GEN: LLM initialized with temperature=1.0")
 
         # Define a large pool of topics to ensure diversity
