@@ -450,9 +450,9 @@ def generate_initial_followup_prompts_ai() -> List[str]:
     try:
         # Use the same model as other nodes but with temperature 1.0 for creativity
         llm = get_azure_openai_chat_llm(
-            deployment_name="gpt-4o-mini-mimi2",
-            model_name="gpt-4o-mini",
-            openai_api_version="2024-05-01-preview",
+            deployment_name="gpt-5-nano_mimi_test",
+            model_name="gpt-5-nano",
+            openai_api_version="2024-12-01-preview",
             temperature=1.0,
         )
         print__main_debug("🤖 PROMPT GEN: LLM initialized with temperature=1.0")

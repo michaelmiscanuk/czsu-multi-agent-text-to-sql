@@ -773,10 +773,16 @@ async def rewrite_prompt_node(state: DataAnalysisState) -> DataAnalysisState:
         else SystemMessage(content="")
     )
 
+    # llm = get_azure_openai_chat_llm(
+    #     deployment_name="gpt-4o__test1",
+    #     model_name="gpt-4o",
+    #     openai_api_version="2024-05-01-preview",
+    #     temperature=0.0,
+    # )
     llm = get_azure_openai_chat_llm(
-        deployment_name="gpt-4o__test1",
-        model_name="gpt-4o",
-        openai_api_version="2024-05-01-preview",
+        deployment_name="gpt-5-nano_mimi_test",
+        model_name="gpt-5-nano",
+        openai_api_version="2024-12-01-preview",
         temperature=0.0,
     )
 
@@ -969,10 +975,17 @@ async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState
     print__nodes_debug(f"📝 SUMMARY: last_message_content: '{last_message_content}'")
 
     # Key Step 2: Skip summarization if both previous summary and last message are empty
+    # llm = get_azure_openai_chat_llm(
+    #     deployment_name="gpt-4o-mini-mimi2",
+    #     model_name="gpt-4o-mini",
+    #     openai_api_version="2024-05-01-preview",
+    #     temperature=0.0,
+    # )
+
     llm = get_azure_openai_chat_llm(
-        deployment_name="gpt-4o-mini-mimi2",
-        model_name="gpt-4o-mini",
-        openai_api_version="2024-05-01-preview",
+        deployment_name="gpt-5-nano_mimi_test",
+        model_name="gpt-5-nano",
+        openai_api_version="2024-12-01-preview",
         temperature=0.0,
     )
 
@@ -2317,10 +2330,16 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
             "iteration": current_iteration,
         }
 
+    # llm = get_azure_openai_chat_llm(
+    #     deployment_name="gpt-4o-mini-mimi2",
+    #     model_name="gpt-4o-mini",
+    #     openai_api_version="2024-05-01-preview",
+    #     temperature=0.0,
+    # )
     llm = get_azure_openai_chat_llm(
-        deployment_name="gpt-4o-mini-mimi2",
-        model_name="gpt-4o-mini",
-        openai_api_version="2024-05-01-preview",
+        deployment_name="gpt-5-nano_mimi_test",
+        model_name="gpt-5-nano",
+        openai_api_version="2024-12-01-preview",
         temperature=0.0,
     )
     summary = (
@@ -2662,13 +2681,22 @@ Bad: "The query shows X is 1,234,567"
     async def stream_answer_tokens() -> str:
         """Stream answer tokens from the LLM and emit them via callback."""
 
+        # llm_stream = get_azure_openai_chat_llm(
+        #     deployment_name="gpt-4o-mini-mimi2",
+        #     model_name="gpt-4o-mini",
+        #     openai_api_version="2024-05-01-preview",
+        #     temperature=0.1,
+        #     streaming=True,
+        # )
+
         llm_stream = get_azure_openai_chat_llm(
-            deployment_name="gpt-4o-mini-mimi2",
-            model_name="gpt-4o-mini",
-            openai_api_version="2024-05-01-preview",
+            deployment_name="gpt-5-nano_mimi_test",
+            model_name="gpt-5-nano",
+            openai_api_version="2024-12-01-preview",
             temperature=0.1,
             streaming=True,
         )
+
         chunks: List[str] = []
 
         async for chunk in llm_stream.astream(messages_to_send):
@@ -2705,10 +2733,16 @@ Bad: "The query shows X is 1,234,567"
                     content=final_answer_content, id="format_answer_stream"
                 )
             else:
+                # llm_standard = get_azure_openai_chat_llm(
+                #     deployment_name="gpt-4o-mini-mimi2",
+                #     model_name="gpt-4o-mini",
+                #     openai_api_version="2024-05-01-preview",
+                #     temperature=0.1,
+                # )
                 llm_standard = get_azure_openai_chat_llm(
-                    deployment_name="gpt-4o-mini-mimi2",
-                    model_name="gpt-4o-mini",
-                    openai_api_version="2024-05-01-preview",
+                    deployment_name="gpt-5-nano_mimi_test",
+                    model_name="gpt-5-nano",
+                    openai_api_version="2024-12-01-preview",
                     temperature=0.1,
                 )
                 llm_response = await llm_standard.ainvoke(messages_to_send)
@@ -2874,9 +2908,9 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
 
     # Key Step 2: Call Azure GPT-4o-mini with creative temperature (1.0)
     llm = get_azure_openai_chat_llm(
-        deployment_name="gpt-4o-mini-mimi2",
-        model_name="gpt-4o-mini",
-        openai_api_version="2024-05-01-preview",
+        deployment_name="gpt-5-nano_mimi_test",
+        model_name="gpt-5-nano",
+        openai_api_version="2024-12-01-preview",
         temperature=1.0,
     )
 
