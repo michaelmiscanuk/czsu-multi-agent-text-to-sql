@@ -962,7 +962,7 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
             aria-live="polite" 
             role="log"
         >
-            <div className="max-w-4xl mx-auto p-6">
+            <div className="relative max-w-4xl mx-auto p-6">
                 {messages.length === 0 ? (
                     <div className="flex items-center justify-center h-full min-h-[400px]">
                         <div className="text-center">
@@ -1317,22 +1317,20 @@ const MessageArea = ({ messages, threadId, onSQLClick, openSQLModalForMsgId, onC
                     ) : null;
                 })()}
 
-                {!isPinnedToBottom && (
-                    <div className="sticky bottom-4 flex justify-center pointer-events-none mt-4">
-                        <button
-                            type="button"
-                            onClick={handleJumpToLatest}
-                            className="pointer-events-auto px-5 py-2 rounded-full light-blue-theme shadow-lg text-sm font-semibold flex items-center gap-2"
-                            aria-label="Jump to latest message"
-                        >
-                            Jump to latest
-                            <span aria-hidden="true">↓</span>
-                        </button>
-                    </div>
-                )}
-                
                 <div ref={bottomRef} />
             </div>
+            
+            {/* Jump to latest button - fixed position outside scrollable area */}
+            {!isPinnedToBottom && (
+                <button
+                    type="button"
+                    onClick={handleJumpToLatest}
+                    className="fixed bottom-24 right-8 p-2.5 rounded-full light-blue-theme shadow-lg flex items-center justify-center z-10"
+                    aria-label="Jump to latest message"
+                >
+                    <span aria-hidden="true" className="text-lg">↓</span>
+                </button>
+            )}
         </div>
     );
 };
