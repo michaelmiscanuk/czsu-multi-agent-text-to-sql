@@ -817,14 +817,22 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
       // IMPORTANT: Load messages for the newly loaded threads
       // This ensures conversation messages are available when user clicks on new threads
       if (newThreadMetas.length > 0) {
-        console.log('[ChatCache] 🔄 Loading conversation messages for', newThreadMetas.length, 'newly loaded threads...');
-        try {
-          // Reload all messages to include the new threads' messages
-          await loadAllMessagesFromAPI();
-          console.log('[ChatCache] ✅ Successfully loaded messages for newly loaded threads');
-        } catch (messageError) {
-          console.error('[ChatCache] ⚠️ Failed to load messages for new threads:', messageError);
-          // Don't throw here - we still have the threads loaded
+        const threadsMissingMessages = newThreadMetas.filter(meta => {
+          const threadMessages = messages[meta.thread_id];
+          return !threadMessages || threadMessages.length === 0;
+        });
+
+        if (threadsMissingMessages.length > 0) {
+          console.log('[ChatCache] 🔄 Reloading conversation messages only for threads missing cache:', threadsMissingMessages.length);
+          try {
+            await loadAllMessagesFromAPI();
+            console.log('[ChatCache] ✅ Successfully refreshed messages after loading new threads');
+          } catch (messageError) {
+            console.error('[ChatCache] ⚠️ Failed to refresh messages for new threads:', messageError);
+            // Don't throw here - we still have the threads loaded
+          }
+        } else {
+          console.log('[ChatCache] 💤 Skipping bulk message reload - new threads already have cached messages');
         }
       }
       
@@ -834,7 +842,7 @@ export function ChatCacheProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setThreadsLoading(false);
     }
-  }, [userEmail, threadsLoading, threadsHasMore, threadsPage, threads.length, loadAllMessagesFromAPI]);
+  }, [userEmail, threadsLoading, threadsHasMore, threadsPage, threads.length, messages, loadAllMessagesFromAPI]);
   
   // NEW: Reset pagination
   const resetPagination = useCallback(() => {
