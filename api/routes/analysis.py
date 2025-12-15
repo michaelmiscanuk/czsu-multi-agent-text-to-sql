@@ -710,6 +710,7 @@ async def analyze(
 
     execution_identity = None
     lock_acquired = False
+    run_id = None  # Initialize run_id for error handling scope
 
     try:
         # ======================================================================
@@ -777,7 +778,6 @@ async def analyze(
         # Establish baseline memory usage for comparison after analysis
         print__analyze_debug("🔍 Starting memory logging")
         log_memory_usage("analysis_start")
-        run_id = None  # Initialize run_id for error handling scope
 
         # ======================================================================
         # CONCURRENCY CONTROL - SEMAPHORE ACQUISITION
