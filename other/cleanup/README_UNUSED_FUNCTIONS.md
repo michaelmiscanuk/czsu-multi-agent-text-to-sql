@@ -140,8 +140,9 @@ Test functions for LLM models:
 
 ```python
 # my_agent/utils/models.py
-get_azure_llm_gpt_4o_test               # Line 39
-get_azure_llm_gpt_4o_mini_test          # Line 71
+# NOTE: These test functions were refactored into get_azure_openai_chat_llm() with parameters
+# get_azure_llm_gpt_4o_test               # Line 39 (REMOVED - refactored)
+# get_azure_llm_gpt_4o_mini_test          # Line 71 (REMOVED - refactored)
 get_ollama_llm_test                     # Line 143
 get_azure_embedding_model_test          # Line 184
 get_langchain_azure_embedding_model_test # Line 220

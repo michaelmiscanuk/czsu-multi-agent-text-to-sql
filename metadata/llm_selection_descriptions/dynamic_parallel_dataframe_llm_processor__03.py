@@ -144,8 +144,8 @@ except NameError:  # Fallback if __file__ not defined
 # Make project root importable
 sys.path.insert(0, str(BASE_DIR))
 
-# Import the get_azure_llm_gpt_4o_4_1 function
-from my_agent.utils.models import get_azure_llm_gpt_4o_4_1
+# Import the get_azure_openai_chat_llm function
+from my_agent.utils.models import get_azure_openai_chat_llm
 
 
 # ===============================================================================
@@ -490,7 +490,7 @@ def handle_processing_error(
 #     wait=wait_exponential(multiplier=10, min=10, max=60),  # Wait between 10-60 seconds, increasing exponentially
 #     reraise=True
 # )
-def get_azure_llm_gpt_4o_4_1_response(**kwargs: Dict[str, Any]) -> str:
+def get_azure_llm_response(**kwargs: Dict[str, Any]) -> str:
     """Get response from Azure OpenAI using the configured LLM with retry logic.
 
     This function provides robust API communication with Azure OpenAI,
@@ -537,7 +537,11 @@ def get_azure_llm_gpt_4o_4_1_response(**kwargs: Dict[str, Any]) -> str:
 
         try:
             print(f"\nInitializing LLM connection...")
-            llm = get_azure_llm_gpt_4o_4_1()
+            llm = get_azure_openai_chat_llm(
+                deployment_name="gpt-4.1___test1",
+                model_name="gpt-4.1",
+                openai_api_version="2024-05-01-preview",
+            )
             print("LLM initialized successfully")
 
             messages = [{"role": "user", "content": formatted_prompt}]
@@ -868,7 +872,7 @@ def process_row(
 
         # Call LLM and get response
         print(f"\nCalling LLM for {selection_code}...")
-        result = get_azure_llm_gpt_4o_4_1_response(**row_dict)
+        result = get_azure_llm_response(**row_dict)
         print(f"\nSuccessfully got response for {selection_code}")
         return index, result
 

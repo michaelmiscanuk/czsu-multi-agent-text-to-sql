@@ -635,12 +635,12 @@ mindmap = {
                 "Models (my_agent/utils/models.py)": {
                     "Azure OpenAI Chat Models": {
                         "Details": [
-                            "get_azure_llm_gpt_4o(temperature=0.0) - GPT-4o via AzureChatOpenAI",
+                            "get_azure_openai_chat_llm(deployment_name='gpt-4o__test1', model_name='gpt-4o', openai_api_version='2024-05-01-preview', temperature=0.0) - GPT-4o via AzureChatOpenAI",
                             "Deployment: gpt-4o__test1, Model: gpt-4o",
                             "API version: 2024-05-01-preview",
-                            "get_azure_llm_gpt_4o_mini(temperature=0.0) - GPT-4o-mini",
+                            "get_azure_openai_chat_llm(deployment_name='gpt-4o-mini-mimi2', model_name='gpt-4o-mini', openai_api_version='2024-05-01-preview', temperature=0.0) - GPT-4o-mini",
                             "Deployment: gpt-4o-mini-mimi2, Model: gpt-4o-mini",
-                            "get_azure_llm_gpt_4o_4_1(temperature=0.0) - GPT-4.1",
+                            "get_azure_openai_chat_llm(deployment_name='gpt-4.1___test1', model_name='gpt-4.1', openai_api_version='2024-05-01-preview', temperature=0.0) - GPT-4.1",
                             "Deployment: gpt-4.1___test1, Model: gpt-4.1",
                             "All support sync (invoke) and async (ainvoke) operations",
                             "Configured via AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY",

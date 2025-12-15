@@ -246,7 +246,7 @@ Azure OpenAI provides the foundational large language models (LLMs) for natural 
 - **Problem**: GPT-4o costs $5/1M input tokens vs. GPT-4o-mini at $0.15/1M - using full model everywhere is 33x more expensive
 - **Solution**: Strategic model selection - mini for 4 summarization nodes + reflection + formatting + follow-ups (8 of 12 LLM calls)
 - **Impact**: 60-70% cost reduction with <5% accuracy loss measured via evaluation datasets
-- **Implementation**: Separate `get_azure_llm_gpt_4o()` and `get_azure_llm_gpt_4o_mini()` factory functions
+- **Implementation**: Separate `get_azure_openai_chat_llm(deployment_name="gpt-4o__test1", model_name="gpt-4o", openai_api_version="2024-05-01-preview")` and `get_azure_openai_chat_llm(deployment_name="gpt-4o-mini-mimi2", model_name="gpt-4o-mini", openai_api_version="2024-05-01-preview")` factory functions
 
 **Challenge 2: Deterministic Production Behavior**
 - **Problem**: Non-deterministic LLM outputs complicate debugging, testing, and user trust
@@ -264,7 +264,7 @@ Azure OpenAI provides the foundational large language models (LLMs) for natural 
 - **Problem**: GPT-4o had 15-20% tool calling failure rate in early testing
 - **Solution**: GPT-4.1 deployed specifically for agentic SQL generation node
 - **Impact**: Tool calling success rate improved to 95%+
-- **Implementation**: `get_azure_llm_gpt_4o_4_1()` for generate_query_node only
+- **Implementation**: `get_azure_openai_chat_llm(deployment_name="gpt-4.1___test1", model_name="gpt-4.1", openai_api_version="2024-05-01-preview")` for generate_query_node only
 
 **Challenge 5: API Rate Limiting**
 - **Problem**: Azure OpenAI has per-minute token limits that can cause 429 errors
