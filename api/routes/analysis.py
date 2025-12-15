@@ -345,6 +345,7 @@ try:
     # Structure: project_root/api/routes/analysis.py -> go up 2 levels
     BASE_DIR = Path(__file__).resolve().parents[2]
 except NameError:
+    print("⚠️ __file__ is not defined; using current working directory for BASE_DIR")
     # Fallback for environments where __file__ is not defined
     BASE_DIR = Path(os.getcwd()).parents[0]
 
@@ -595,8 +596,8 @@ async def get_thread_metadata_from_single_thread_endpoint(
 
     except Exception as e:
         # Handle any errors during metadata extraction gracefully
-        print__analyze_debug(f"🚨 Error calling single-thread endpoint: {e}")
-        print__analysis_tracing_debug(f"METADATA EXTRACTION ERROR: {e}")
+        print(f"🚨 Error calling single-thread endpoint: {e}")
+        print(f"METADATA EXTRACTION ERROR: {e}")
 
         # Try to generate error response for logging
         resp = traceback_json_response(
@@ -889,6 +890,7 @@ async def analyze(
                             try:
                                 await task
                             except asyncio.CancelledError:
+                                print("🛑 Analysis was cancelled by user")
                                 pass
                             raise asyncio.CancelledError("Execution cancelled by user")
 
@@ -897,9 +899,11 @@ async def analyze(
                         try:
                             await asyncio.wait_for(asyncio.shield(task), timeout=5)
                         except asyncio.TimeoutError:
+                            print("🚨 TIMEOUT ERROR: Task took too long to complete")
                             # Timeout just means we should check cancellation again
                             continue
                         except asyncio.CancelledError:
+                            print("🛑 Analysis was cancelled by user")
                             # Task was cancelled - re-raise
                             raise
 
@@ -931,16 +935,16 @@ async def analyze(
                 # ==============================================================
                 # ANALYSIS EXCEPTION HANDLER
                 # ==============================================================
-                print__analysis_tracing_debug(
+                print(
                     f"14 - ANALYSIS ERROR: Exception in analysis block - {type(analysis_error).__name__}"
                 )
-                print__analyze_debug(
+                print(
                     f"🚨 Exception in analysis block: {type(analysis_error).__name__}: {str(analysis_error)}"
                 )
 
                 # Convert error message to lowercase for case-insensitive matching
                 error_msg = str(analysis_error).lower()
-                print__analyze_debug(f"🔍 Error message (lowercase): {error_msg}")
+                print(f"🔍 Error message (lowercase): {error_msg}")
 
                 # ==============================================================
                 # PREPARED STATEMENT ERROR DETECTION
@@ -1092,15 +1096,13 @@ async def analyze(
                         # ==========================================================
                         # FALLBACK ALSO FAILED
                         # ==========================================================
-                        print__analysis_tracing_debug(
+                        print(
                             f"22 - FALLBACK FAILED: Fallback also failed - {type(fallback_error).__name__}"
                         )
-                        print__analyze_debug(
+                        print(
                             f"🚨 Fallback also failed: {type(fallback_error).__name__}: {str(fallback_error)}"
                         )
-                        print__feedback_flow(
-                            f"🚨 Fallback analysis also failed: {fallback_error}"
-                        )
+                        print(f"🚨 Fallback analysis also failed: {fallback_error}")
                         resp = traceback_json_response(fallback_error)
                         if resp:
                             return resp
@@ -1108,7 +1110,7 @@ async def analyze(
                         raise HTTPException(
                             status_code=500,
                             detail="Sorry, there was an error processing your request. Please try again.",
-                        )
+                        ) from fallback_error
                 else:
                     # ==============================================================
                     # NON-DATABASE ERROR - RE-RAISE
@@ -1265,16 +1267,14 @@ async def analyze(
     # ==========================================================================
     # EXCEPTION HANDLERS FOR DIFFERENT ERROR TYPES
     # ==========================================================================
-    except asyncio.CancelledError:
+    except asyncio.CancelledError as exc:
         # ======================================================================
         # USER-INITIATED CANCELLATION HANDLER
         # ======================================================================
         error_msg = "Analysis was cancelled by user"
-        print__analysis_tracing_debug(
-            "26 - CANCELLED ERROR: Analysis was cancelled by user"
-        )
-        print__analyze_debug(f"🛑 CANCELLED: {error_msg}")
-        print__feedback_flow(f"🛑 {error_msg}")
+        print("26 - CANCELLED ERROR: Analysis was cancelled by user")
+        print(f"🛑 CANCELLED: {error_msg}")
+        print(f"🛑 {error_msg}")
 
         # Unregister execution from cancellation tracking on cancellation
         if run_id:
@@ -1283,18 +1283,16 @@ async def analyze(
         # Return 499 status code (Client Closed Request) for cancelled requests
         raise HTTPException(
             status_code=499, detail=error_msg
-        )  # 499 Client Closed Request
+        ) from exc  # 499 Client Closed Request
 
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as exc:
         # ======================================================================
         # TIMEOUT ERROR HANDLER (4-MINUTE LIMIT EXCEEDED)
         # ======================================================================
         error_msg = "Analysis timed out after 8 minutes"
-        print__analysis_tracing_debug(
-            "27 - TIMEOUT ERROR: Analysis timed out after 8 minutes"
-        )
-        print__analyze_debug(f"🚨 TIMEOUT ERROR: {error_msg}")
-        print__feedback_flow(f"🚨 {error_msg}")
+        print("27 - TIMEOUT ERROR: Analysis timed out after 8 minutes")
+        print(f"🚨 TIMEOUT ERROR: {error_msg}")
+        print(f"🚨 {error_msg}")
 
         # Unregister execution from cancellation tracking on timeout
         if run_id:
@@ -1306,18 +1304,14 @@ async def analyze(
             return resp
 
         # Return 408 status code (Request Timeout)
-        raise HTTPException(status_code=408, detail=error_msg)
+        raise HTTPException(status_code=408, detail=error_msg) from exc
 
     except HTTPException as http_exc:
         # ======================================================================
         # HTTP EXCEPTION HANDLER (RE-RAISE WITH CLEANUP)
         # ======================================================================
-        print__analysis_tracing_debug(
-            f"28 - HTTP EXCEPTION: HTTP exception {http_exc.status_code}"
-        )
-        print__analyze_debug(
-            f"🚨 HTTP EXCEPTION: {http_exc.status_code} - {http_exc.detail}"
-        )
+        print(f"28 - HTTP EXCEPTION: HTTP exception {http_exc.status_code}")
+        print(f"🚨 HTTP EXCEPTION: {http_exc.status_code} - {http_exc.detail}")
 
         # Unregister execution from cancellation tracking on HTTP exception
         if run_id:
@@ -1336,12 +1330,10 @@ async def analyze(
         # UNEXPECTED EXCEPTION HANDLER (CATCH-ALL)
         # ======================================================================
         error_msg = f"Analysis failed: {str(e)}"
-        print__analysis_tracing_debug(
-            f"29 - UNEXPECTED EXCEPTION: Unexpected exception - {type(e).__name__}"
-        )
-        print__analyze_debug(f"🚨 UNEXPECTED EXCEPTION: {type(e).__name__}: {str(e)}")
-        print__analyze_debug(f"🚨 Exception traceback: {traceback.format_exc()}")
-        print__feedback_flow(f"🚨 {error_msg}")
+        print(f"29 - UNEXPECTED EXCEPTION: Unexpected exception - {type(e).__name__}")
+        print(f"🚨 UNEXPECTED EXCEPTION: {type(e).__name__}: {str(e)}")
+        print(f"🚨 Exception traceback: {traceback.format_exc()}")
+        print(f"🚨 {error_msg}")
 
         # Unregister execution from cancellation tracking on unexpected exception
         if run_id:
@@ -1459,6 +1451,7 @@ async def analyze_streaming(
                         try:
                             await asyncio.wait_for(asyncio.shield(task), timeout=5)
                         except asyncio.TimeoutError:
+                            print("🚨 TIMEOUT ERROR: Task took too long to complete")
                             continue
                     return await task
 
@@ -1468,6 +1461,9 @@ async def analyze_streaming(
                     )
                     unregister_execution(request.thread_id, run_id)
                 except Exception as analysis_error:  # pylint: disable=broad-except
+                    print(
+                        f"🚨 Exception in analysis block: {type(analysis_error).__name__}: {str(analysis_error)}"
+                    )
                     unregister_execution(request.thread_id, run_id)
                     error_msg = str(analysis_error).lower()
 
@@ -1553,6 +1549,7 @@ async def analyze_streaming(
 
             await enqueue({"type": "final", "data": response_data})
         except asyncio.CancelledError:
+            print("🛑 Analysis was cancelled by user")
             await enqueue(
                 {
                     "type": "error",
@@ -1561,6 +1558,7 @@ async def analyze_streaming(
                 }
             )
         except asyncio.TimeoutError:
+            print("🚨 Analysis timed out after 8 minutes")
             await enqueue(
                 {
                     "type": "error",
@@ -1569,6 +1567,7 @@ async def analyze_streaming(
                 }
             )
         except HTTPException as exc:
+            print(f"🚨 HTTP Exception {exc.status_code}: {exc.detail}")
             await enqueue(
                 {
                     "type": "error",
@@ -1577,6 +1576,7 @@ async def analyze_streaming(
                 }
             )
         except Exception as exc:  # pylint: disable=broad-except
+            print(f"🚨 Unexpected Exception: {type(exc).__name__}: {str(exc)}")
             await enqueue(
                 {
                     "type": "error",
