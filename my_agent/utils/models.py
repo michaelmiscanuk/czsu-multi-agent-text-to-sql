@@ -13,6 +13,7 @@ load_dotenv()
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from openai import AzureOpenAI
 from langchain_openai import AzureOpenAIEmbeddings
+from typing import Optional
 
 
 # ===============================================================================
@@ -22,7 +23,7 @@ def get_azure_openai_chat_llm(
     deployment_name: str,
     model_name: str,
     openai_api_version: str,
-    temperature: float = 0.0,
+    temperature: Optional[float] = None,
     streaming: bool = False,
 ) -> AzureChatOpenAI:
     """Get an instance of Azure OpenAI Chat LLM with configurable parameters.
@@ -178,11 +179,20 @@ if __name__ == "__main__":
     # print(f"Response: {response.content}")
 
     ######################################################
+    # llm = get_azure_openai_chat_llm(
+    #     deployment_name="gpt-5-nano_mimi_test",
+    #     model_name="gpt-5-nano",
+    #     openai_api_version="2024-12-01-preview",
+    #     temperature=0.0,
+    # )
+    # response = llm.invoke("Hi")
+    # print(f"Response: {response.content}")
+
+    ######################################################
     llm = get_azure_openai_chat_llm(
-        deployment_name="gpt-5-nano_mimi_test",
-        model_name="gpt-5-nano",
+        deployment_name="gpt-5.2-chat-mimi-test",
+        model_name="gpt-5.2-chat",
         openai_api_version="2024-12-01-preview",
-        temperature=0.0,
     )
     response = llm.invoke("Hi")
     print(f"Response: {response.content}")

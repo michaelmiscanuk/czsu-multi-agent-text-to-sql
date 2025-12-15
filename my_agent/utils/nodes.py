@@ -1801,6 +1801,17 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
             openai_api_version="2024-05-01-preview",
             temperature=0.0,
         )
+        # llm = get_azure_openai_chat_llm(
+        #     deployment_name="gpt-5.2-chat-mimi-test",
+        #     model_name="gpt-5.2-chat",
+        #     openai_api_version="2024-12-01-preview",
+        # )
+        # llm = get_azure_openai_chat_llm(
+        #     deployment_name="gpt-4o-mini-mimi2",
+        #     model_name="gpt-4o-mini",
+        #     openai_api_version="2024-05-01-preview",
+        #     temperature=0.0,
+        # )
         use_bind_tools = True  # OpenAI requires bind_tools()
     elif model_type == "gemini":
         llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
