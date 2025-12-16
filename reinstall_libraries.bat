@@ -8,15 +8,17 @@ echo.
 
 echo [1/2] Removing old files and folders...
 
-REM Close VS Code instances first to prevent file locks
+REM Close VS Code instances first to prevent file locks (skip if running from VS Code)
 echo   Closing VS Code instances...
-taskkill /f /im "Code.exe" /t 2>nul
-taskkill /f /im "Code - Insiders.exe" /t 2>nul
+powershell -Command "Get-Process 'Code*' | Stop-Process -Force" 2>nul
 
 REM Kill any Python/Node processes that might lock folders
 echo   Killing processes that may lock folders...
-taskkill /f /im "python.exe" 2>nul
-taskkill /f /im "node.exe" 2>nul
+start /b taskkill /f /im "python.exe" 2>nul
+start /b taskkill /f /im "node.exe" 2>nul
+
+REM Give time for processes to terminate
+timeout /t 2 /nobreak >nul
 
 REM Small delay to let processes fully terminate
 timeout /t 1 /nobreak >nul
@@ -35,28 +37,36 @@ if exist ".venv" (
     robocopy "%TEMP%\empty_dir" ".venv" /mir /njh /njs /ndl /nc /ns /nfl >nul 2>&1
     rd /s /q ".venv" >nul 2>&1
     if exist ".venv" (
-        for /d %%i in (".venv\*") do rd /s /q "%%i" >nul 2>&1
+        for /d %%i in (".venv\*") do if exist "%%i" rd /s /q "%%i" >nul 2>&1
         rd /s /q ".venv" >nul 2>&1
     )
 )
-if exist "czsu_multi_agent_text_to_sql.egg-info" start /b "" cmd /c "rd /s /q "czsu_multi_agent_text_to_sql.egg-info" 2>nul"
-if exist "__pycache__" start /b "" cmd /c "rd /s /q "__pycache__" 2>nul"
-if exist "frontend\.next" start /b "" cmd /c "robocopy "%TEMP%\empty_dir" "frontend\.next" /mir /njh /njs /ndl /nc /ns /nfl >nul 2>&1 & rd /s /q "frontend\.next" 2>nul"
-if exist "frontend\node_modules" start /b "" cmd /c "robocopy "%TEMP%\empty_dir" "frontend\node_modules" /mir /njh /njs /ndl /nc /ns /nfl >nul 2>&1 & rd /s /q "frontend\node_modules" 2>nul"
+if exist "czsu_multi_agent_text_to_sql.egg-info" start /b "" cmd /c "if exist "czsu_multi_agent_text_to_sql.egg-info" rd /s /q "czsu_multi_agent_text_to_sql.egg-info" 2>nul"
+if exist "__pycache__" start /b "" cmd /c "if exist "__pycache__" rd /s /q "__pycache__" 2>nul"
+if exist "frontend\.next" start /b "" cmd /c "robocopy "%TEMP%\empty_dir" "frontend\.next" /mir /njh /njs /ndl /nc /ns /nfl >nul 2>&1 & if exist "frontend\.next" rd /s /q "frontend\.next" 2>nul"
+if exist "frontend\node_modules" start /b "" cmd /c "robocopy "%TEMP%\empty_dir" "frontend\node_modules" /mir /njh /njs /ndl /nc /ns /nfl >nul 2>&1 & if exist "frontend\node_modules" rd /s /q "frontend\node_modules" 2>nul"
 
-REM Wait for critical folders to be deleted before proceeding
+REM Wait for critical folders to be deleted before proceeding (with timeout)
+set wait_count=0
 :wait_venv
 if exist ".venv" (
+    set /a wait_count+=1
+    if !wait_count! gtr 30 goto venv_timeout
     timeout /t 1 /nobreak >nul
     goto wait_venv
 )
+:venv_timeout
+set wait_count=0
 :wait_node
 if exist "frontend\node_modules" (
+    set /a wait_count+=1
+    if !wait_count! gtr 30 goto node_timeout
     timeout /t 1 /nobreak >nul
     goto wait_node
 )
+:node_timeout
 
-rd /s /q "%TEMP%\empty_dir" 2>nul
+if exist "%TEMP%\empty_dir" rd /s /q "%TEMP%\empty_dir" 2>nul
 
 echo   Done removing old files.
 echo.

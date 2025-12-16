@@ -16,6 +16,14 @@ import asyncio
 from pathlib import Path
 from dotenv import load_dotenv
 
+# Import model configuration functions (required for get_configured_llm)
+from my_agent.utils.models import (
+    get_azure_openai_chat_llm,
+    get_anthropic_llm,
+    get_gemini_llm,
+    get_ollama_llm,
+)
+
 # ==============================================================================
 # CONSTANTS & CONFIGURATION
 # ==============================================================================
@@ -260,3 +268,99 @@ async def detect_language(text: str) -> str:
     )
     result = response.json()
     return result[0]["language"]
+
+
+# ==============================================================================
+# LLM CONFIGURATION HELPER
+# ==============================================================================
+def get_configured_llm(model_type: str = None, tools: list = None):
+    """Get configured LLM instance with optional tool binding based on model type.
+
+    This function centralizes model configuration and handles tool binding according to
+    each model's API requirements:
+    - OpenAI/Anthropic/OLLAMA: Tools are bound using llm.bind_tools()
+    - Gemini: Tools are passed separately (caller must pass to ainvoke())
+
+    Args:
+        model_type (str, optional): Model type - "azureopenai", "gemini", "ollama", or "anthropic"
+                         If None (default), reads from MODEL_TYPE environment variable,
+                         falling back to "azureopenai" if not set
+        tools (list, optional): List of tool objects to bind/configure with the LLM.
+                               If None, no tools are bound.
+
+    Returns:
+        tuple: (llm_configured, use_bind_tools_flag)
+               - llm_configured: LLM instance with tools bound (if use_bind_tools=True and tools provided)
+                                or base LLM instance (if use_bind_tools=False or no tools)
+               - use_bind_tools_flag: Boolean indicating tool binding strategy
+                                     True for OpenAI/Anthropic/OLLAMA, False for Gemini
+
+    Raises:
+        ValueError: If unknown model_type is provided
+
+    Example:
+        # Without tools
+        llm, use_bind_tools = get_configured_llm()
+
+        # With tools for OpenAI (auto-binds)
+        llm, use_bind_tools = get_configured_llm(tools=[my_tool])
+        # llm already has tools bound, just call: llm.ainvoke(messages)
+
+        # With tools for Gemini (tools returned separately)
+        llm, use_bind_tools = get_configured_llm("gemini", tools=[my_tool])
+        # Must pass tools to ainvoke: llm.ainvoke(messages, tools=tools)
+    """
+    if model_type is None:
+        model_type = os.environ.get("MODEL_TYPE", "azureopenai")
+
+    if model_type == "azureopenai":
+        llm = get_azure_openai_chat_llm(
+            deployment_name="gpt-4.1___test1",
+            model_name="gpt-4o",
+            openai_api_version="2024-05-01-preview",
+            temperature=0.0,
+        )
+        # Alternative Azure OpenAI configurations:
+        # llm = get_azure_openai_chat_llm(
+        #     deployment_name="gpt-5.2-chat-mimi-test",
+        #     model_name="gpt-5.2-chat",
+        #     openai_api_version="2024-12-01-preview",
+        # )
+        # llm = get_azure_openai_chat_llm(
+        #     deployment_name="gpt-4o-mini-mimi2",
+        #     model_name="gpt-4o-mini",
+        #     openai_api_version="2024-05-01-preview",
+        #     temperature=0.0,
+        # )
+        use_bind_tools = True  # OpenAI requires bind_tools()
+    elif model_type == "anthropic":
+        llm = get_anthropic_llm(
+            model_name="claude-sonnet-4-5-20250929",
+            temperature=0.0,
+        )
+        use_bind_tools = True  # Anthropic requires bind_tools()
+    elif model_type == "gemini":
+        llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
+        use_bind_tools = False  # Gemini accepts tools directly in ainvoke()
+    elif model_type == "ollama":
+        # IMPORTANT: Use models with native tool calling support
+        # Recommended models: llama3.2:3b, llama3.1:8b, mistral:7b, qwen2.5:7b
+        # Specialized: llama3-groq-tool-use:8b (fine-tuned for tool calling)
+        # For tool-enabled qwen2.5-coder, use: hhao/qwen2.5-coder-tools
+        # Small models (0.5b, 1b) have very poor tool calling support - avoid them!
+        llm = get_ollama_llm(model_name="granite4:latest", temperature=0.0)
+        use_bind_tools = (
+            True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
+        )
+    else:
+        raise ValueError(
+            f"Unknown model_type: {model_type}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama'"
+        )
+
+    # Bind tools if needed and provided
+    if tools and use_bind_tools:
+        llm_configured = llm.bind_tools(tools)
+    else:
+        llm_configured = llm
+
+    return llm_configured, use_bind_tools

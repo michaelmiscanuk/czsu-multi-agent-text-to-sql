@@ -31,6 +31,8 @@ dependencies = [
     "langchain-core>=0.3.0",
     "langchain-openai>=0.0.2",
     "langchain-community>=0.3.28",
+    "langchain-ollama>=1.0.1",  # OLLAMA integration with proper tool calling support
+    "langchain-anthropic==1.3.0",
     "langgraph>=0.2.0",
     "langgraph-checkpoint>=2.1.0",
     "langgraph-checkpoint-postgres>=2.0.21",

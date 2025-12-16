@@ -598,7 +598,7 @@ import re
 import asyncio
 from typing import List
 
-from langchain_core.messages import AIMessage, SystemMessage, ToolMessage
+from langchain_core.messages import AIMessage, SystemMessage, ToolMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.documents import Document
 from langchain_core.tools import tool
@@ -646,17 +646,18 @@ print(f"🔍 Current working directory: {Path.cwd()}")
 from api.utils.debug import print__nodes_debug, print__analysis_tracing_debug
 
 # Import helper functions
-from my_agent.utils.helpers import load_schema, translate_text, detect_language
+from my_agent.utils.helpers import (
+    load_schema,
+    translate_text,
+    detect_language,
+    get_configured_llm,
+)
 
 # Import tools
 from my_agent.utils.tools import finish_gathering, get_sqlite_tools
 
 # Import models
-from my_agent.utils.models import (
-    get_azure_openai_chat_llm,
-    get_gemini_llm,
-    get_ollama_llm,
-)
+from my_agent.utils.models import get_azure_openai_chat_llm
 
 # PDF chunk functionality imports
 from data.pdf_to_chromadb__llamaparse_custom_separators import (
@@ -732,6 +733,8 @@ SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
 )
 
 
+# ==============================================================================
+# HELPER FUNCTIONS
 # ==============================================================================
 # NODE FUNCTIONS
 # ==============================================================================
@@ -1724,7 +1727,8 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     SQL queries and when it has gathered sufficient data. The LLM can call the sqlite_query tool
     multiple times (up to MAX_TOOL_ITERATIONS) to iteratively gather information.
 
-    The node uses Azure GPT-4o with tool binding, allowing the LLM to:
+    The node uses a configurable LLM (Azure OpenAI, Anthropic, Gemini, or OLLAMA) with tool binding,
+    allowing the LLM to:
     - Generate SQL queries based on user questions
     - Execute queries using the MCP (Model Context Protocol) sqlite_query tool
     - Examine results and decide if more queries are needed
@@ -1756,13 +1760,14 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     Key Steps:
         1. Extract state variables and log current iteration
         2. Check for potential query loops (if 3+ existing queries)
-        3. Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
-        4. Extract conversation context (summary_message, last_message, skip schema details if present)
-        5. Load schema data for selected dataset codes
-        6. Build comprehensive SQL generation prompt (system prompt with instructions, human prompt with context)
-        7. Bind tools to LLM, create prompt template, format initial messages, initialize conversation state
-        8. Run agentic loop: invoke LLM, process tool calls (sqlite_query or finish_gathering), store results, check if finished
-        9. Create completion message and return updated state (messages, queries_and_results, iteration)
+        3. Get sqlite tools from MCP server, verify sqlite_tool exists, add finish_gathering tool
+        4. Configure LLM using get_configured_llm helper with tools (supports Azure OpenAI, Anthropic, Gemini, OLLAMA)
+        5. Extract conversation context (summary_message, last_message, skip schema details if present)
+        6. Load schema data for selected dataset codes
+        7. Build comprehensive SQL generation prompt (system prompt with instructions, human prompt with context)
+        8. Create prompt template, format initial messages, initialize conversation state
+        9. Run agentic loop: invoke LLM with tools, process tool calls (sqlite_query or finish_gathering), store results, check if finished
+        10. Create completion message and return updated state (messages, queries_and_results, iteration)
 
 
     """
@@ -1786,47 +1791,7 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
         recent_queries = [query for query, _ in existing_queries_and_results[-3:]]
         print__nodes_debug(f"🔄 {GENERATE_QUERY_ID}: Recent queries: {recent_queries}")
 
-    # Key Step 3: Set up LLM (GPT-4o), create MCP server, verify sqlite_tool exists, add finish_gathering tool
-    # ============================================================================
-    # MODEL CONFIGURATION - Change the active model here
-    # ============================================================================
-    model_type = os.environ.get(
-        "MODEL_TYPE", "azureopenai"
-    )  # Options: "openai", "gemini", "ollama"
-
-    if model_type == "azureopenai":
-        llm = get_azure_openai_chat_llm(
-            deployment_name="gpt-4.1___test1",
-            model_name="gpt-4o",
-            openai_api_version="2024-05-01-preview",
-            temperature=0.0,
-        )
-        # llm = get_azure_openai_chat_llm(
-        #     deployment_name="gpt-5.2-chat-mimi-test",
-        #     model_name="gpt-5.2-chat",
-        #     openai_api_version="2024-12-01-preview",
-        # )
-        # llm = get_azure_openai_chat_llm(
-        #     deployment_name="gpt-4o-mini-mimi2",
-        #     model_name="gpt-4o-mini",
-        #     openai_api_version="2024-05-01-preview",
-        #     temperature=0.0,
-        # )
-        use_bind_tools = True  # OpenAI requires bind_tools()
-    elif model_type == "gemini":
-        llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
-        use_bind_tools = False  # Gemini accepts tools directly in ainvoke()
-    elif model_type == "ollama":
-        # You can change the model_name parameter: "llama3.2:1b", "qwen:7b", etc.
-        llm = get_ollama_llm(model_name="qwen2.5-coder:0.5b", temperature=0.0)
-        use_bind_tools = (
-            True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
-        )
-    else:
-        raise ValueError(
-            f"Unknown model_type: {model_type}. Options: 'openai', 'gemini', 'ollama'"
-        )
-
+    # Key Step 3: Get sqlite tools from MCP server, verify sqlite_tool exists, add finish_gathering tool
     tools = await get_sqlite_tools()
     sqlite_tool = next((tool for tool in tools if tool.name == "sqlite_query"), None)
     if not sqlite_tool:
@@ -1838,19 +1803,24 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
             + [("ERROR", error_msg)],
             "iteration": current_iteration,
         }
-
-    # Add finish gathering tool
     tools.append(finish_gathering)
 
-    # Key Step 4: Extract conversation context (summary_message, last_message, skip schema details if present)
+    # Key Step 4: Configure LLM using get_configured_llm helper with tools (supports Azure OpenAI, Anthropic, Gemini, OLLAMA)
+    # ============================================================================
+    # MODEL CONFIGURATION - Change the active model here
+    # ============================================================================
+    # Get configured LLM with tools bound (for OpenAI/Anthropic/OLLAMA) or base LLM (for Gemini)
+    # Options: "azureopenai", "anthropic", "gemini", "ollama"
+    # Can be set via MODEL_TYPE environment variable or passed directly
+    llm_with_tools, use_bind_tools = get_configured_llm(tools=tools)
+
+    # Key Step 5: Extract conversation context (summary_message, last_message, skip schema details if present)
     summary_message = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
         else SystemMessage(content="")
     )
     last_message = messages[1] if len(messages) > 1 else None
-
-    # Skip last message if it's schema details to avoid duplication in prompt
     last_message_content = ""
     if (
         last_message
@@ -1861,10 +1831,10 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     else:
         last_message_content = last_message.content if last_message else ""
 
-    # Key Step 5: Load schema data for selected dataset codes
+    # Key Step 6: Load schema data for selected dataset codes
     schema_data = await load_schema({"top_selection_codes": selected_codes})
 
-    # Key Step 6: Build comprehensive SQL generation prompt (system prompt with instructions, human prompt with context)
+    # Key Step 7: Build comprehensive SQL generation prompt (system prompt with instructions, human prompt with context)
     system_prompt = f"""
 You are a Bilingual Data Query Specialist proficient in both Czech and English and an expert in SQL with SQLite dialect. 
 Your task is to translate the user's natural-language question into SQLite SQL queries using the sqlite_query tool.
@@ -1874,9 +1844,13 @@ Your task is to translate the user's natural-language question into SQLite SQL q
 - You can call this tool up to {MAX_TOOL_ITERATIONS} times to gather all necessary information
 - You can use some preparatory queries first to examine data structure and understand what information is available
 - After each tool call, you'll see the results and can decide if you need more data
+- CRITICAL FOR ITERATIVE WORKFLOW: After receiving query results, you MUST analyze them and decide:
+  * If you need MORE data → call sqlite_query again with a different SQL query
+  * If you have ENOUGH data → call the finish_gathering tool with no arguments to end data collection
 - IMPORTANT: When you have sufficient information to answer the user's question, call the finish_gathering tool with no arguments. Do not generate any text response. The data you gathered will be used later to format the final answer.
 - Use the tool iteratively to refine your understanding and gather comprehensive data
 - If the last message contains reflection feedback indicating that more queries are needed to answer the question, you MUST call the sqlite_query tool to gather additional data. Do not provide an answer based on existing summary data when reflection feedback requests more queries.
+- REMEMBER: You are in an agentic loop - keep calling sqlite_query tool until you have ALL the data needed!
 
 - Do not ask the user for additional information; provide the best answer possible based on available data.
 
@@ -1947,6 +1921,7 @@ IMPORTANT notes about SQL query generation:
 - Always examine the ALL Schema to see how the data are laid out - column names and their concrete dimensional values. 
 - If you are not sure with column names, call the tool with this query to get the table schema with column names: PRAGMA table_info(EP801) where EP801 is the table name. Then use it to generate correct query and use tool to get results.
 - Be careful about how you ALIAS (AS Clause) the Column names to make sense of the data - based on what you use in where or group by clause.
+- Use Dataset name in the FROM clause
 - ALWAYS INCLUDE COLUMN "metric" or "ukazatel" columns in SELECT and GROUP BY clauses if present - it will provide additional information about meaning of 'value' column in the result.
 
 === VERIFICATION AND COMPLETION ===
@@ -2075,24 +2050,13 @@ Remember: Always examine the schema to understand:
     if last_message_content:
         template_vars["last_message_content"] = last_message_content
 
-    # Key Step 7: Create prompt template, format initial messages, initialize conversation state
-    # Note: OpenAI requires bind_tools(), while Gemini accepts tools directly in ainvoke()
-
-    # Build initial messages for the conversation
+    # Key Step 8: Create prompt template, format initial messages, initialize conversation state
+    # Note: llm_with_tools already has tools bound for OpenAI/Anthropic/OLLAMA
+    #       For Gemini, tools will be passed directly to ainvoke()
     prompt_template = ChatPromptTemplate.from_messages(
         [("system", system_prompt), ("human", human_prompt)]
     )
     initial_messages = prompt_template.format_messages(**template_vars)
-
-    # Prepare LLM with tools based on model type
-    if use_bind_tools:
-        # OpenAI: bind tools to the model instance
-        llm_with_tools = llm.bind_tools(tools)
-    else:
-        # Gemini: tools will be passed directly to ainvoke()
-        llm_with_tools = llm
-
-    # Enter agentic loop: LLM generates queries and calls tool iteratively
     conversation_messages = list(initial_messages)
     new_queries_and_results = []
     tool_call_count = 0
@@ -2102,7 +2066,7 @@ Remember: Always examine the schema to understand:
         f"🔄 {GENERATE_QUERY_ID}: Starting agentic loop (max iterations: {MAX_TOOL_ITERATIONS})"
     )
 
-    # Key Step 8: Run agentic loop: invoke LLM, process tool calls (sqlite_query or finish_gathering), store results, check if finished
+    # Key Step 9: Run agentic loop: invoke LLM with tools, process tool calls (sqlite_query or finish_gathering), store results, check if finished
     while tool_call_count < MAX_TOOL_ITERATIONS:
         tool_call_count += 1
         print__nodes_debug(
@@ -2219,6 +2183,26 @@ Remember: Always examine the schema to understand:
                     )
                     conversation_messages.append(tool_message)
 
+                    # CRITICAL FIX FOR OLLAMA: Add continuation prompt after tool result
+                    # Ollama models often stop after first tool call. Explicitly instruct to continue.
+                    model_type = os.environ.get("MODEL_TYPE", "azureopenai")
+                    if model_type == "ollama" and tool_call_count < MAX_TOOL_ITERATIONS:
+                        continuation_prompt = HumanMessage(
+                            content=f"""Based on the query result above, analyze whether you have sufficient data to answer the user's question.
+
+If you need more information:
+- Call the sqlite_query tool again with a new SQL query to gather additional data
+- You can make up to {MAX_TOOL_ITERATIONS - tool_call_count} more tool calls
+- Each query should provide NEW information not already gathered
+
+If you have sufficient data:
+- Simply stop calling tools (do not make any more tool calls)
+- The system will automatically format your results into a final answer
+
+Decide now: Do you need more data? If yes, call sqlite_query with your next SQL query."""
+                        )
+                        conversation_messages.append(continuation_prompt)
+
                 except Exception as e:
                     error_msg = f"Error executing query: {str(e)}"
                     print(f"❌ {GENERATE_QUERY_ID}: {error_msg}")
@@ -2231,6 +2215,19 @@ Remember: Always examine the schema to understand:
                         content=error_msg, tool_call_id=tool_call_id
                     )
                     conversation_messages.append(tool_message)
+
+                    # CRITICAL FIX FOR OLLAMA: Add continuation prompt after error too
+                    model_type = os.environ.get("MODEL_TYPE", "azureopenai")
+                    if model_type == "ollama" and tool_call_count < MAX_TOOL_ITERATIONS:
+                        continuation_prompt = HumanMessage(
+                            content=f"""The previous query resulted in an error. You should:
+1. Fix the SQL query based on the error message
+2. Call sqlite_query again with the corrected query
+3. You can make up to {MAX_TOOL_ITERATIONS - tool_call_count} more tool calls
+
+Analyze the error and try again with a corrected query."""
+                        )
+                        conversation_messages.append(continuation_prompt)
             else:
                 # Tool call without required query parameter
                 error_msg = "Tool call missing 'query' parameter"
@@ -2247,7 +2244,7 @@ Remember: Always examine the schema to understand:
             f"⚠️ {GENERATE_QUERY_ID}: Max tool iterations ({MAX_TOOL_ITERATIONS}) reached"
         )
 
-    # Key Step 9: Create completion message and return updated state (messages, queries_and_results, iteration)
+    # Key Step 10: Create completion message and return updated state (messages, queries_and_results, iteration)
     # Create completion message
     completion_message = AIMessage(
         content=f"Data gathering complete. {len(new_queries_and_results)} queries executed.",

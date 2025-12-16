@@ -14,6 +14,7 @@ from langchain_openai import AzureChatOpenAI, ChatOpenAI
 from openai import AzureOpenAI
 from langchain_openai import AzureOpenAIEmbeddings
 from typing import Optional
+from langchain_anthropic import ChatAnthropic
 
 
 # ===============================================================================
@@ -49,6 +50,29 @@ def get_azure_openai_chat_llm(
         streaming=streaming,
         azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+    )
+
+
+# ===============================================================================
+# Anthropic Models
+# ===============================================================================
+def get_anthropic_llm(
+    model_name: str = "claude-sonnet-4-5-20250929",
+    temperature: Optional[float] = 0.0,
+) -> ChatAnthropic:
+    """Get an instance of Anthropic Chat LLM with configurable parameters.
+
+    Args:
+        model_name (str): Anthropic model name (e.g., "claude-sonnet-4-5-20250929")
+        temperature (float): Temperature setting for generation randomness
+
+    Returns:
+        ChatAnthropic: Configured LLM instance
+    """
+    return ChatAnthropic(
+        model=model_name,
+        temperature=temperature,
+        api_key=os.getenv("ANTHROPIC_API_KEY"),
     )
 
 
@@ -92,40 +116,48 @@ def get_gemini_llm_test():
 # Local OLLAMA Models
 # ===============================================================================
 def get_ollama_llm(
-    model_name="llama3.2:1b", base_url="http://localhost:11434/v1", temperature=0.0
+    model_name="llama3.2:3b", base_url="http://localhost:11434", temperature=0.0
 ):
-    """Get an instance of local OLLAMA LLM with standard configuration.
+    """Get an instance of local OLLAMA LLM with proper tool calling support.
 
-    Uses LangChain's ChatOpenAI with local OLLAMA endpoint for compatibility.
+    CRITICAL: Uses ChatOllama from langchain_ollama (NOT ChatOpenAI) for proper tool calling.
+    ChatOpenAI wrapper doesn't properly handle OLLAMA's tool calling format - it returns
+    tool calls as JSON text instead of actual tool_calls that can be executed.
+
+    IMPORTANT: Smaller models (1b) have very poor tool calling support and often fail to iterate
+    in agentic loops. Use at least 3b models or specialized tool-use models for reliable tool calling:
+    - Recommended: llama3.2:3b, llama3.1:8b, mistral:7b, qwen2.5:7b
+    - Specialized: llama3-groq-tool-use:8b (fine-tuned for tool calling)
+    - NOT recommended: llama3.2:1b, qwen2.5-coder (unless using hhao/qwen2.5-coder-tools variant)
 
     Args:
-        model_name (str): The OLLAMA model name (e.g., "llama3.2:1b", "smollm:latest", "qwen:7b")
-        base_url (str): The base URL for the local OLLAMA server (with /v1 endpoint)
+        model_name (str): The OLLAMA model name (e.g., "llama3.2:3b", "llama3.1:8b", "mistral:7b")
+                         Note: Use models with tool calling support (llama3.1+, mistral, etc.)
+        base_url (str): The base URL for the local OLLAMA server (default: http://localhost:11434)
+                       Note: Do NOT include /v1 endpoint for ChatOllama
         temperature (float): Temperature setting for generation randomness
 
     Returns:
-        ChatOpenAI: Configured OLLAMA LLM instance compatible with LangChain
+        ChatOllama: Configured OLLAMA LLM instance with proper tool calling support
     """
-    # Set a dummy API key for local OLLAMA (required by ChatOpenAI but not used)
-    os.environ["OPENAI_API_KEY"] = "ollama-local-dummy-key"
+    from langchain_ollama import ChatOllama
 
-    return ChatOpenAI(
+    return ChatOllama(
         model=model_name,
         base_url=base_url,
         temperature=temperature,
-        api_key="ollama-local-dummy-key",  # Required but not used for local OLLAMA
     )
 
 
-def get_ollama_llm_test(model_name="llama3.2:1b", prompt="Hi"):
+def get_ollama_llm_test(model_name="llama3.2", prompt="Hi"):
     """Test the OLLAMA LLM with a simple message"""
     print("\nTesting get_ollama_llm()...")
 
     try:
         llm = get_ollama_llm(model_name=model_name)
         print(f"✓ OLLAMA LLM instance created successfully!")
-        print(f"Model: {llm.model_name}")
-        print(f"Base URL: {llm.openai_api_base}")
+        print(f"Model: {llm.model}")
+        print(f"Base URL: {llm.base_url}")
         print(f"Temperature: {llm.temperature}")
 
         # Test with a simple prompt
@@ -140,6 +172,7 @@ def get_ollama_llm_test(model_name="llama3.2:1b", prompt="Hi"):
         print("1. OLLAMA is running (ollama serve)")
         print("2. You have a model downloaded (ollama pull llama3.2)")
         print("3. The model name matches what you have installed")
+        print("4. langchain-ollama package is installed (pip install langchain-ollama)")
 
 
 # ===============================================================================
@@ -188,17 +221,25 @@ if __name__ == "__main__":
     # response = llm.invoke("Hi")
     # print(f"Response: {response.content}")
 
-    ######################################################
-    llm = get_azure_openai_chat_llm(
-        deployment_name="gpt-5.2-chat-mimi-test",
-        model_name="gpt-5.2-chat",
-        openai_api_version="2024-12-01-preview",
-    )
-    response = llm.invoke("Hi")
-    print(f"Response: {response.content}")
-
-    # #######################################################
-    # get_ollama_llm_test(
-    #     model_name="sqlcoder:latest",
-    #     prompt="Hi",
+    # ######################################################
+    # llm = get_azure_openai_chat_llm(
+    #     deployment_name="gpt-5.2-chat-mimi-test",
+    #     model_name="gpt-5.2-chat",
+    #     openai_api_version="2024-12-01-preview",
     # )
+    # response = llm.invoke("Hi")
+    # print(f"Response: {response.content}")
+
+    ######################################################
+    # llm = get_anthropic_llm(
+    #     model_name="claude-sonnet-4-5-20250929",
+    #     temperature=0.0,
+    # )
+    # response = llm.invoke("Hi")
+    # print(f"Response: {response.content}")
+
+    #######################################################
+    get_ollama_llm_test(
+        model_name="sqlcoder:latest",
+        prompt="Hi",
+    )
