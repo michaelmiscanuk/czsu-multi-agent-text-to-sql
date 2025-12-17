@@ -1,0 +1,27 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install python-dotenv",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && pip install python-dotenv"
+			],
+			"isBackground": false,
+			"group": "build"
+		},
+		{
+			"label": "Run models.py",
+			"type": "shell",
+			"command": "e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\\.venv\\Scripts\\python.exe",
+			"args": [
+				"-u",
+				"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\\my_agent\\utils\\models.py"
+			],
+			"isBackground": false,
+			"group": "test"
+		}
+	]
+}

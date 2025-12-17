@@ -15,6 +15,7 @@ from openai import AzureOpenAI
 from langchain_openai import AzureOpenAIEmbeddings
 from typing import Optional
 from langchain_anthropic import ChatAnthropic
+from langchain_xai import ChatXAI
 
 
 # ===============================================================================
@@ -102,16 +103,6 @@ def get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0):
     )
 
 
-def get_gemini_llm_test():
-    # Test get_gemini_llm() with a simple message
-    print("\nTesting get_gemini_llm()...")
-    llm = get_gemini_llm()
-    messages = [{"role": "user", "content": "Say hello"}]
-    print(f"\nInput message:\n{messages[0]['content']}")
-    response = llm.invoke(messages)
-    print(f"\nResponse from LLM:\n{response.content}")
-
-
 # ===============================================================================
 # Local OLLAMA Models
 # ===============================================================================
@@ -149,30 +140,29 @@ def get_ollama_llm(
     )
 
 
-def get_ollama_llm_test(model_name="llama3.2", prompt="Hi"):
-    """Test the OLLAMA LLM with a simple message"""
-    print("\nTesting get_ollama_llm()...")
+# ===============================================================================
+# xAI Models
+# ===============================================================================
+def get_xai_llm(
+    model_name: str = "grok-4", temperature: Optional[float] = 0.0
+) -> ChatXAI:
+    """Get an instance of xAI Chat LLM with configurable parameters.
 
-    try:
-        llm = get_ollama_llm(model_name=model_name)
-        print(f"✓ OLLAMA LLM instance created successfully!")
-        print(f"Model: {llm.model}")
-        print(f"Base URL: {llm.base_url}")
-        print(f"Temperature: {llm.temperature}")
+    The returned model instance supports both sync (invoke) and async (ainvoke)
+    operations for flexibility in different execution contexts.
 
-        # Test with a simple prompt
-        print(f"\nSending test prompt: '{prompt}'")
-        response = llm.invoke(prompt)
-        print(f"\nResponse from OLLAMA:\n{response.content}")
-        print("\n✓ Test completed successfully!")
+    Args:
+        model_name (str): xAI model name (e.g., "grok-4")
+        temperature (float): Temperature setting for generation randomness
 
-    except Exception as e:
-        print(f"\n❌ Error testing OLLAMA LLM: {str(e)}")
-        print("Make sure:")
-        print("1. OLLAMA is running (ollama serve)")
-        print("2. You have a model downloaded (ollama pull llama3.2)")
-        print("3. The model name matches what you have installed")
-        print("4. langchain-ollama package is installed (pip install langchain-ollama)")
+    Returns:
+        ChatXAI: Configured LLM instance with async support
+    """
+    return ChatXAI(
+        model=model_name,
+        temperature=temperature,
+        xai_api_key=os.getenv("XAI_API_KEY"),
+    )
 
 
 # ===============================================================================
@@ -238,8 +228,18 @@ if __name__ == "__main__":
     # response = llm.invoke("Hi")
     # print(f"Response: {response.content}")
 
-    #######################################################
-    get_ollama_llm_test(
-        model_name="sqlcoder:latest",
-        prompt="Hi",
+    ######################################################
+    # llm = get_ollama_llm(
+    #     model_name="sqlcoder:latest",
+    #     temperature=0.0,
+    # )
+    # response = llm.invoke("Hi")
+    # print(f"Response: {response.content}")
+
+    #####################################################
+    llm = get_xai_llm(
+        model_name="grok-4-1-fast-reasoning-latest",
+        temperature=0.0,
     )
+    response = llm.invoke("Hi")
+    print(f"Response: {response.content}")

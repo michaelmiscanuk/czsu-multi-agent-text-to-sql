@@ -248,13 +248,14 @@ async def main():
     """Run tests for all models."""
     print("🚀 Starting LLM Tool Testing")
     print("Question: How many people live in Prague?")
-    print("Models to test: azureopenai, anthropic, gemini, ollama")
+    print("Models to test: azureopenai, anthropic, gemini, ollama, xai")
 
     models_to_test = [
         # "azureopenai",
         # "anthropic",
         # "gemini",
-        "ollama",
+        # "ollama",
+        "xai",
     ]
 
     for model_type in models_to_test:

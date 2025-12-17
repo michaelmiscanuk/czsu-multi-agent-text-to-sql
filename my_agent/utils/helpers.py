@@ -22,6 +22,7 @@ from my_agent.utils.models import (
     get_anthropic_llm,
     get_gemini_llm,
     get_ollama_llm,
+    get_xai_llm,
 )
 
 # ==============================================================================
@@ -352,9 +353,12 @@ def get_configured_llm(model_type: str = None, tools: list = None):
         use_bind_tools = (
             True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
         )
+    elif model_type == "xai":
+        llm = get_xai_llm(model_name="grok-4-1-fast-reasoning-latest", temperature=0.0)
+        use_bind_tools = True  # xAI uses OpenAI-compatible API, requires bind_tools()
     else:
         raise ValueError(
-            f"Unknown model_type: {model_type}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama'"
+            f"Unknown model_type: {model_type}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai'"
         )
 
     # Bind tools if needed and provided
