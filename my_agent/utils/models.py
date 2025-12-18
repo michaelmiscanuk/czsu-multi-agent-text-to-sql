@@ -16,6 +16,7 @@ from langchain_openai import AzureOpenAIEmbeddings
 from typing import Optional
 from langchain_anthropic import ChatAnthropic
 from langchain_xai import ChatXAI
+from langchain_mistralai import ChatMistralAI
 
 
 # ===============================================================================
@@ -143,9 +144,7 @@ def get_ollama_llm(
 # ===============================================================================
 # xAI Models
 # ===============================================================================
-def get_xai_llm(
-    model_name: str = "grok-4", temperature: Optional[float] = 0.0
-) -> ChatXAI:
+def get_xai_llm(model_name: str = "", temperature: Optional[float] = 0.0) -> ChatXAI:
     """Get an instance of xAI Chat LLM with configurable parameters.
 
     The returned model instance supports both sync (invoke) and async (ainvoke)
@@ -166,8 +165,29 @@ def get_xai_llm(
 
 
 # ===============================================================================
-# Azure Chat Models Tests
+# Mistral AI Models
 # ===============================================================================
+def get_mistral_llm(
+    model_name: str = "mistral-small-latest",
+    temperature: Optional[float] = 0.0,
+) -> ChatMistralAI:
+    """Get an instance of Mistral AI Chat LLM with configurable parameters.
+
+    The returned model instance supports both sync (invoke) and async (ainvoke)
+    operations for flexibility in different execution contexts.
+
+    Args:
+        model_name (str): Mistral model name (e.g., "mistral-small-latest", "mistral-large-latest")
+        temperature (float): Temperature setting for generation randomness
+
+    Returns:
+        ChatMistralAI: Configured LLM instance with async support
+    """
+    return ChatMistralAI(
+        model=model_name,
+        temperature=temperature,
+        api_key=os.getenv("MISTRAL_API_KEY"),
+    )
 
 
 if __name__ == "__main__":
@@ -179,6 +199,9 @@ if __name__ == "__main__":
     #     temperature=0.0,
     # )
     # response = llm.invoke("Hi")
+    # print(
+    #     f"Model Type: {type(llm).__name__}, Deployment Name: {llm.deployment_name}, Model Name: {llm.model_name}"
+    # )
     # print(f"Response: {response.content}")
 
     # ######################################################
@@ -189,6 +212,9 @@ if __name__ == "__main__":
     #     temperature=0.0,
     # )
     # response = llm.invoke("Hi")
+    # print(
+    #     f"Model Type: {type(llm).__name__}, Deployment Name: {llm.deployment_name}, Model Name: {llm.model_name}"
+    # )
     # print(f"Response: {response.content}")
 
     # ######################################################
@@ -199,9 +225,12 @@ if __name__ == "__main__":
     #     temperature=0.0,
     # )
     # response = llm.invoke("Hi")
+    # print(
+    #     f"Model Type: {type(llm).__name__}, Deployment Name: {llm.deployment_name}, Model Name: {llm.model_name}"
+    # )
     # print(f"Response: {response.content}")
 
-    ######################################################
+    # #####################################################
     # llm = get_azure_openai_chat_llm(
     #     deployment_name="gpt-5-nano_mimi_test",
     #     model_name="gpt-5-nano",
@@ -209,6 +238,9 @@ if __name__ == "__main__":
     #     temperature=0.0,
     # )
     # response = llm.invoke("Hi")
+    # print(
+    #     f"Model Type: {type(llm).__name__}, Deployment Name: {llm.deployment_name}, Model Name: {llm.model_name}"
+    # )
     # print(f"Response: {response.content}")
 
     # ######################################################
@@ -218,28 +250,43 @@ if __name__ == "__main__":
     #     openai_api_version="2024-12-01-preview",
     # )
     # response = llm.invoke("Hi")
+    # print(
+    #     f"Model Type: {type(llm).__name__}, Deployment Name: {llm.deployment_name}, Model Name: {llm.model_name}"
+    # )
     # print(f"Response: {response.content}")
 
-    ######################################################
+    # #####################################################
     # llm = get_anthropic_llm(
     #     model_name="claude-sonnet-4-5-20250929",
     #     temperature=0.0,
     # )
     # response = llm.invoke("Hi")
+    # print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model}")
     # print(f"Response: {response.content}")
 
-    ######################################################
+    # ####################################################
     # llm = get_ollama_llm(
-    #     model_name="sqlcoder:latest",
+    #     model_name="deepseek-r1-coder-tools:14b",
     #     temperature=0.0,
     # )
     # response = llm.invoke("Hi")
+    # print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model}")
     # print(f"Response: {response.content}")
 
-    #####################################################
-    llm = get_xai_llm(
-        model_name="grok-4-1-fast-reasoning-latest",
+    # #####################################################
+    # llm = get_xai_llm(
+    #     model_name="grok-4-1-fast-reasoning-latest",
+    #     temperature=0.0,
+    # )
+    # response = llm.invoke("Hi")
+    # print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model}")
+    # print(f"Response: {response.content}")
+
+    ######################################################
+    llm = get_mistral_llm(
+        model_name="devstral-latest",
         temperature=0.0,
     )
     response = llm.invoke("Hi")
+    print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model}")
     print(f"Response: {response.content}")

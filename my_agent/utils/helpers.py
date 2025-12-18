@@ -23,6 +23,7 @@ from my_agent.utils.models import (
     get_gemini_llm,
     get_ollama_llm,
     get_xai_llm,
+    get_mistral_llm,
 )
 
 # ==============================================================================
@@ -349,16 +350,26 @@ def get_configured_llm(model_type: str = None, tools: list = None):
         # Specialized: llama3-groq-tool-use:8b (fine-tuned for tool calling)
         # For tool-enabled qwen2.5-coder, use: hhao/qwen2.5-coder-tools
         # Small models (0.5b, 1b) have very poor tool calling support - avoid them!
-        llm = get_ollama_llm(model_name="granite4:latest", temperature=0.0)
+        llm = get_ollama_llm(
+            model_name="ishumilin/deepseek-r1-coder-tools:14b", temperature=0.0
+        )
         use_bind_tools = (
             True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
         )
     elif model_type == "xai":
         llm = get_xai_llm(model_name="grok-4-1-fast-reasoning-latest", temperature=0.0)
         use_bind_tools = True  # xAI uses OpenAI-compatible API, requires bind_tools()
+    elif model_type == "mistral":
+        llm = get_mistral_llm(
+            model_name="mistral-small-latest",
+            temperature=0.0,
+        )
+        use_bind_tools = (
+            True  # Mistral uses OpenAI-compatible API, requires bind_tools()
+        )
     else:
         raise ValueError(
-            f"Unknown model_type: {model_type}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai'"
+            f"Unknown model_type: {model_type}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai', 'mistral'"
         )
 
     # Bind tools if needed and provided
