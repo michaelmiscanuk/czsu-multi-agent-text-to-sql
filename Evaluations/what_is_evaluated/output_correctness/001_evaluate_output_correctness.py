@@ -53,8 +53,12 @@ EXPERIMENT_CONFIG = {
     # "experiment_prefix": "test1_judge_4_0__query_gen_grok-4-1-fast-reasoning",  # Prefix for the experiment run
     # "experiment_prefix": "test1_judge_4_0__query_gen_grok-4-1-fast-non-reasoning",  # Prefix for the experiment run
     # "experiment_prefix": "test1_judge_4_0__query_gen_grok-code-fast-1",  # Prefix for the experiment run
-    "experiment_prefix": "test1_judge_4_0__query_gen_llama3.2:1b",  # Prefix for the experiment run
-    "max_concurrency": 1,  # Maximum number of concurrent evaluations
+    # "experiment_prefix": "test1_judge_4_0__query_gen_llama3.2:1b",  # Prefix for the experiment run
+    # "experiment_prefix": "test1_judge_4_0__query_gen_mistral_devstral-2512_123B",  # Prefix for the experiment run
+    # "experiment_prefix": "test1_judge_4_0__query_gen_mistral_mistral-large-2512_675B",  # Prefix for the experiment run
+    # "experiment_prefix": "test1_judge_4_0__query_gen_mistral_codestral-2508_best_code_paid",  # Prefix for the experiment run
+    "experiment_prefix": "test1_judge_4_0__query_gen_mistral_open-mistral-nemo",  # Prefix for the experiment run
+    "max_concurrency": 4,  # Maximum number of concurrent evaluations
     "evaluators": ["correctness"],  # List of evaluator functions to use
 }
 

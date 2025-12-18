@@ -1811,7 +1811,7 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     # ============================================================================
     # Get configured LLM with tools bound (for OpenAI/Anthropic/OLLAMA) or base LLM (for Gemini)
     # Options: "azureopenai", "anthropic", "gemini", "ollama"
-    # Can be set via MODEL_TYPE environment variable or passed directly
+    # Can be set via MODEL_PROVIDER environment variable or passed directly
     llm_with_tools, use_bind_tools = get_configured_llm(tools=tools)
 
     # Key Step 5: Extract conversation context (summary_message, last_message, skip schema details if present)
@@ -2185,8 +2185,11 @@ Remember: Always examine the schema to understand:
 
                     # CRITICAL FIX FOR OLLAMA: Add continuation prompt after tool result
                     # Ollama models often stop after first tool call. Explicitly instruct to continue.
-                    model_type = os.environ.get("MODEL_TYPE", "azureopenai")
-                    if model_type == "ollama" and tool_call_count < MAX_TOOL_ITERATIONS:
+                    model_provider = os.environ.get("MODEL_PROVIDER", "azureopenai")
+                    if (
+                        model_provider == "ollama"
+                        and tool_call_count < MAX_TOOL_ITERATIONS
+                    ):
                         continuation_prompt = HumanMessage(
                             content=f"""Based on the query result above, analyze whether you have sufficient data to answer the user's question.
 
@@ -2217,8 +2220,11 @@ Decide now: Do you need more data? If yes, call sqlite_query with your next SQL 
                     conversation_messages.append(tool_message)
 
                     # CRITICAL FIX FOR OLLAMA: Add continuation prompt after error too
-                    model_type = os.environ.get("MODEL_TYPE", "azureopenai")
-                    if model_type == "ollama" and tool_call_count < MAX_TOOL_ITERATIONS:
+                    model_provider = os.environ.get("MODEL_PROVIDER", "azureopenai")
+                    if (
+                        model_provider == "ollama"
+                        and tool_call_count < MAX_TOOL_ITERATIONS
+                    ):
                         continuation_prompt = HumanMessage(
                             content=f"""The previous query resulted in an error. You should:
 1. Fix the SQL query based on the error message

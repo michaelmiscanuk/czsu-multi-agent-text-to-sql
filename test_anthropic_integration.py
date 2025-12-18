@@ -24,22 +24,22 @@ def test_calculator(a: int, b: int) -> int:
     return a + b
 
 
-def test_model_configuration(model_type: str):
+def test_model_configuration(model_provider: str):
     """Test LLM configuration for a specific model type"""
     print(f"\n{'='*60}")
-    print(f"Testing model_type: {model_type}")
+    print(f"Testing model_provider: {model_provider}")
     print(f"{'='*60}")
 
     try:
         # Test without tools
-        llm, use_bind_tools = get_configured_llm(model_type)
+        llm, use_bind_tools = get_configured_llm(model_provider)
         print(f"✅ LLM initialized successfully (without tools)")
         print(f"   LLM type: {type(llm).__name__}")
         print(f"   Use bind_tools: {use_bind_tools}")
 
         # Test with tools
         llm_with_tools, use_bind_tools = get_configured_llm(
-            model_type, tools=[test_calculator]
+            model_provider, tools=[test_calculator]
         )
         print(f"✅ LLM initialized successfully (with tools)")
         print(f"   LLM type: {type(llm_with_tools).__name__}")
@@ -59,16 +59,16 @@ def test_model_configuration(model_type: str):
         return False
 
 
-async def test_model_configuration_async(model_type: str):
+async def test_model_configuration_async(model_provider: str):
     """Test async LLM configuration for a specific model type"""
     print(f"\n{'='*60}")
-    print(f"Testing ASYNC model_type: {model_type}")
+    print(f"Testing ASYNC model_provider: {model_provider}")
     print(f"{'='*60}")
 
     try:
         # Test with tools
         llm_with_tools, use_bind_tools = get_configured_llm(
-            model_type, tools=[test_calculator]
+            model_provider, tools=[test_calculator]
         )
         print(f"✅ LLM initialized successfully")
         print(f"   LLM type: {type(llm_with_tools).__name__}")

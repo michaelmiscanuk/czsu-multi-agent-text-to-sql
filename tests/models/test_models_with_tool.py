@@ -41,10 +41,10 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 
-async def test_model_with_tool(model_type: str):
+async def test_model_with_tool(model_provider: str):
     """Test a specific model with the sqlite_query tool."""
     print(f"\n{'='*60}")
-    print(f"Testing model: {model_type.upper()}")
+    print(f"Testing model: {model_provider.upper()}")
     print(f"{'='*60}")
 
     try:
@@ -54,7 +54,7 @@ async def test_model_with_tool(model_type: str):
             (tool for tool in tools if tool.name == "sqlite_query"), None
         )
         if not sqlite_tool:
-            print(f"❌ sqlite_query tool not found for {model_type}")
+            print(f"❌ sqlite_query tool not found for {model_provider}")
             return
 
         # Add finish_gathering tool
@@ -64,7 +64,7 @@ async def test_model_with_tool(model_type: str):
 
         # Get configured LLM with tools (same as generate_query_node)
         llm_with_tools, use_bind_tools = get_configured_llm(
-            model_type=model_type, tools=tools
+            model_provider=model_provider, tools=tools
         )
 
         # Print the exact model being used
@@ -135,7 +135,7 @@ Schemas:
         tool_call_count = 0
         max_tool_iterations = 3  # Simplified for testing
 
-        print(f"🤖 Starting agentic loop for {model_type}...")
+        print(f"🤖 Starting agentic loop for {model_provider}...")
 
         # Simplified agentic loop (similar to generate_query_node but limited)
         while tool_call_count < max_tool_iterations:
@@ -152,12 +152,14 @@ Schemas:
                     )
                 print(f"💬 LLM Response: {llm_response.content}")
             except Exception as e:
-                print(f"❌ LLM error for {model_type}: {str(e)}")
+                print(f"❌ LLM error for {model_provider}: {str(e)}")
                 break
 
             # Check if LLM wants to use tools
             if not llm_response.tool_calls:
-                print(f"✅ {model_type} finished gathering data (no more tool calls)")
+                print(
+                    f"✅ {model_provider} finished gathering data (no more tool calls)"
+                )
                 break
 
             # Process tool calls
@@ -170,7 +172,7 @@ Schemas:
 
                 # if tool_name == "finish_gathering":
                 #     print(
-                #         f"🎯 {model_type} called finish_gathering - data gathering complete"
+                #         f"🎯 {model_provider} called finish_gathering - data gathering complete"
                 #     )
                 #     # Create completion message
                 #     completion_message = AIMessage(
@@ -182,7 +184,7 @@ Schemas:
 
                 if "query" in tool_args:
                     sql_query = tool_args["query"]
-                    print(f"⚡ {model_type} executing SQL: {sql_query}")
+                    print(f"⚡ {model_provider} executing SQL: {sql_query}")
 
                     try:
                         tool_result = await sqlite_tool.ainvoke({"query": sql_query})
@@ -230,7 +232,7 @@ Schemas:
             #     break
 
         # Print results
-        print(f"\n📊 {model_type.upper()} RESULTS:")
+        print(f"\n📊 {model_provider.upper()} RESULTS:")
         print(f"   Queries executed: {len(new_queries_and_results)}")
         for i, (query, result) in enumerate(new_queries_and_results, 1):
             print(f"   Query {i}: {query}")
@@ -238,7 +240,7 @@ Schemas:
             print()
 
     except Exception as e:
-        print(f"❌ Error testing {model_type}: {str(e)}")
+        print(f"❌ Error testing {model_provider}: {str(e)}")
         import traceback
 
         traceback.print_exc()
@@ -259,8 +261,8 @@ async def main():
         "mistral",
     ]
 
-    for model_type in models_to_test:
-        await test_model_with_tool(model_type)
+    for model_provider in models_to_test:
+        await test_model_with_tool(model_provider)
 
     print(f"\n{'='*60}")
     print("✅ Testing complete!")

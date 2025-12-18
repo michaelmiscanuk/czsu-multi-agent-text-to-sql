@@ -100,7 +100,7 @@ from my_agent.utils.models import (
 )
 
 # Add to get_configured_llm() function:
-elif model_type == "mistral":
+elif model_provider == "mistral":
     llm = get_mistral_llm(
         model_name="mistral-small-latest",
         temperature=0.0,
@@ -111,7 +111,7 @@ elif model_type == "mistral":
 **Update error message**:
 ```python
 raise ValueError(
-    f"Unknown model_type: {model_type}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai', 'mistral'"
+    f"Unknown model_provider: {model_provider}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai', 'mistral'"
 )
 ```
 
@@ -166,7 +166,7 @@ MISTRAL_API_KEY=your-mistral-api-key-here
 
 - All model functions should follow the same pattern: `get_<provider>_llm()`
 - Use `use_bind_tools = True` for OpenAI-compatible APIs, `False` for Gemini or other OpenAI-non-compatible APIs that pass tools inside the invoke function
-- Update MODEL_TYPE options in `.env` comments if needed
+- Update MODEL_PROVIDER options in `.env` comments if needed
 
 - Ensure the model supports tool calling if used in agent workflows
 
