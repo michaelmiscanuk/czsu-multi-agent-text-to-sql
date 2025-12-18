@@ -298,6 +298,19 @@ def get_configured_llm(model_type: str = None, tools: list = None):
 
     Raises:
         ValueError: If unknown model_type is provided
+        ValueError: If DEPLOYMENT_NAME is required but not set (for azureopenai)
+
+    Environment Variables:
+        MODEL_TYPE: LLM provider - "azureopenai", "anthropic", "gemini", "ollama", "xai"
+        MODEL_NAME: Model name for the selected provider
+        DEPLOYMENT_NAME: Azure OpenAI deployment name (required only for azureopenai)
+
+        Required API Keys by Provider:
+        - azureopenai: AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT
+        - anthropic: ANTHROPIC_API_KEY
+        - gemini: GOOGLE_API_KEY
+        - ollama: No API key required (runs locally)
+        - xai: XAI_API_KEY
 
     Example:
         # Without tools
@@ -311,51 +324,67 @@ def get_configured_llm(model_type: str = None, tools: list = None):
         llm, use_bind_tools = get_configured_llm("gemini", tools=[my_tool])
         # Must pass tools to ainvoke: llm.ainvoke(messages, tools=tools)
     """
+    load_dotenv()
+
     if model_type is None:
-        model_type = os.environ.get("MODEL_TYPE", "azureopenai")
+        model_type = os.environ.get("MODEL_TYPE")
+        if not model_type:
+            raise ValueError(
+                "MODEL_TYPE environment variable is required. "
+                "Set it in .env file to one of: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai'"
+            )
+
+    # Get model name from environment variable (required for all providers)
+    model_name = os.environ.get("MODEL_NAME")
+    if not model_name:
+        raise ValueError(
+            "MODEL_NAME environment variable is required. "
+            "Set it in .env file to the appropriate model name for your MODEL_TYPE."
+        )
 
     if model_type == "azureopenai":
+        # DEPLOYMENT_NAME is required for Azure OpenAI
+        deployment_name = os.environ.get("DEPLOYMENT_NAME")
+        if not deployment_name:
+            raise ValueError(
+                "DEPLOYMENT_NAME environment variable is required for MODEL_TYPE='azureopenai'. "
+                "Set it in .env file to one of: 'gpt-4.1___test1', 'gpt-5.2-chat-mimi-test', 'gpt-4o-mini-mimi2'"
+            )
+
         llm = get_azure_openai_chat_llm(
-            deployment_name="gpt-4.1___test1",
-            model_name="gpt-4o",
+            deployment_name=deployment_name,
+            model_name=model_name,
             openai_api_version="2024-05-01-preview",
             temperature=0.0,
         )
-        # Alternative Azure OpenAI configurations:
-        # llm = get_azure_openai_chat_llm(
-        #     deployment_name="gpt-5.2-chat-mimi-test",
-        #     model_name="gpt-5.2-chat",
-        #     openai_api_version="2024-12-01-preview",
-        # )
-        # llm = get_azure_openai_chat_llm(
-        #     deployment_name="gpt-4o-mini-mimi2",
-        #     model_name="gpt-4o-mini",
-        #     openai_api_version="2024-05-01-preview",
-        #     temperature=0.0,
-        # )
         use_bind_tools = True  # OpenAI requires bind_tools()
+
     elif model_type == "anthropic":
         llm = get_anthropic_llm(
-            model_name="claude-sonnet-4-5-20250929",
+            model_name=model_name,
             temperature=0.0,
         )
         use_bind_tools = True  # Anthropic requires bind_tools()
+
     elif model_type == "gemini":
-        llm = get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0)
+        llm = get_gemini_llm(model_name=model_name, temperature=0.0)
         use_bind_tools = False  # Gemini accepts tools directly in ainvoke()
+
     elif model_type == "ollama":
         # IMPORTANT: Use models with native tool calling support
         # Recommended models: llama3.2:3b, llama3.1:8b, mistral:7b, qwen2.5:7b
         # Specialized: llama3-groq-tool-use:8b (fine-tuned for tool calling)
         # For tool-enabled qwen2.5-coder, use: hhao/qwen2.5-coder-tools
         # Small models (0.5b, 1b) have very poor tool calling support - avoid them!
-        llm = get_ollama_llm(model_name="granite4:latest", temperature=0.0)
+        llm = get_ollama_llm(model_name=model_name, temperature=0.0)
         use_bind_tools = (
             True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
         )
+
     elif model_type == "xai":
-        llm = get_xai_llm(model_name="grok-4-1-fast-reasoning-latest", temperature=0.0)
+        llm = get_xai_llm(model_name=model_name, temperature=0.0)
         use_bind_tools = True  # xAI uses OpenAI-compatible API, requires bind_tools()
+
     else:
         raise ValueError(
             f"Unknown model_type: {model_type}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai'"

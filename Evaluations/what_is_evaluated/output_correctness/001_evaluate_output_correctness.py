@@ -48,7 +48,11 @@ EXPERIMENT_CONFIG = {
     # "dataset_name": "001b_golden_dataset__output_correctness__simple_QA_from_SQL",  # Name of the LangSmith dataset to use
     "dataset_name": "001d_golden_dataset__output_correctness__simple_QA_from_SQL_manually_chosen",  # Name of the LangSmith dataset to use
     # "dataset_name": "001c_golden_dataset__output_correctness__edge_cases",  # Name of the LangSmith dataset to use
-    "experiment_prefix": "test1_judge_4_0__query_gen_llama3.2:1b",  # Prefix for the experiment run
+    # "experiment_prefix": "test1_judge_4_0__query_gen_llama3.2:1b",  # Prefix for the experiment run
+    # "experiment_prefix": "test1_judge_4_0__query_gen_grok-4-1-fast-reasoning",  # Prefix for the experiment run
+    # "experiment_prefix": "test1_judge_4_0__query_gen_grok-4-1-fast-non-reasoning",  # Prefix for the experiment run
+    # "experiment_prefix": "test1_judge_4_0__query_gen_grok-code-fast-1",  # Prefix for the experiment run
+    "experiment_prefix": "test1_judge_4_0__query_gen_hhao/qwen2.5-coder-tools:14b",  # Prefix for the experiment run
     "max_concurrency": 1,  # Maximum number of concurrent evaluations
     "evaluators": ["correctness"],  # List of evaluator functions to use
 }
