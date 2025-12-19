@@ -24,6 +24,7 @@ from my_agent.utils.models import (
     get_ollama_llm,
     get_xai_llm,
     get_mistral_llm,
+    get_github_llm,
 )
 
 # ==============================================================================
@@ -275,7 +276,16 @@ async def detect_language(text: str) -> str:
 # ==============================================================================
 # LLM CONFIGURATION HELPER
 # ==============================================================================
-def get_configured_llm(model_provider: str = None, tools: list = None):
+def get_configured_llm(
+    model_provider: str = None,
+    model_name: str = None,
+    deployment_name: str = None,
+    tools: list = None,
+    temperature: float = 0.0,
+    streaming: bool = False,
+    openai_api_version: str = "2024-05-01-preview",
+    base_url: str = "http://localhost:11434",
+):
     """Get configured LLM instance with optional tool binding based on model type.
 
     This function centralizes model configuration and handles tool binding according to
@@ -287,8 +297,26 @@ def get_configured_llm(model_provider: str = None, tools: list = None):
         model_provider (str, optional): Model type - "azureopenai", "gemini", "ollama", or "anthropic"
                          If None (default), reads from MODEL_PROVIDER environment variable,
                          falling back to "azureopenai" if not set
+        model_name (str, optional): Model name for the selected provider.
+                         If None (default), reads from MODEL_NAME environment variable.
+                         If provided, overrides the environment variable.
+        deployment_name (str, optional): Azure OpenAI deployment name.
+                         Only used when model_provider is "azureopenai".
+                         If None (default), reads from DEPLOYMENT_NAME environment variable.
+                         If provided, overrides the environment variable.
         tools (list, optional): List of tool objects to bind/configure with the LLM.
                                If None, no tools are bound.
+        temperature (float, optional): Temperature setting for LLM (0.0-2.0).
+                         Controls randomness - lower is more deterministic.
+                         Defaults to 0.0.
+        streaming (bool, optional): Enable streaming responses (if supported by provider).
+                         Defaults to False.
+        openai_api_version (str, optional): Azure OpenAI API version string.
+                         Only used when model_provider is "azureopenai".
+                         Defaults to "2024-05-01-preview".
+        base_url (str, optional): Base URL for OLLAMA server.
+                         Only used when model_provider is "ollama".
+                         Defaults to "http://localhost:11434".
 
     Returns:
         tuple: (llm_configured, use_bind_tools_flag)
@@ -317,12 +345,21 @@ def get_configured_llm(model_provider: str = None, tools: list = None):
         # Without tools
         llm, use_bind_tools = get_configured_llm()
 
+        # With specific model provider and name (overriding .env)
+        llm, use_bind_tools = get_configured_llm(model_provider="anthropic", model_name="claude-3-5-sonnet-20241022")
+
+        # With custom temperature
+        llm, use_bind_tools = get_configured_llm(temperature=0.7)
+
+        # With streaming enabled
+        llm, use_bind_tools = get_configured_llm(streaming=True)
+
         # With tools for OpenAI (auto-binds)
         llm, use_bind_tools = get_configured_llm(tools=[my_tool])
         # llm already has tools bound, just call: llm.ainvoke(messages)
 
         # With tools for Gemini (tools returned separately)
-        llm, use_bind_tools = get_configured_llm("gemini", tools=[my_tool])
+        llm, use_bind_tools = get_configured_llm("gemini", "gemini-1.5-pro", tools=[my_tool])
         # Must pass tools to ainvoke: llm.ainvoke(messages, tools=tools)
     """
     load_dotenv()
@@ -335,40 +372,43 @@ def get_configured_llm(model_provider: str = None, tools: list = None):
                 "Set it in .env file to one of: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai'"
             )
 
-    # Get model name from environment variable (required for all providers)
-    model_name = os.environ.get("MODEL_NAME")
-    if not model_name:
-        raise ValueError(
-            "MODEL_NAME environment variable is required. "
-            "Set it in .env file to the appropriate model name for your MODEL_PROVIDER."
-        )
+    # Get model name from parameter or environment variable (required for all providers)
+    if model_name is None:
+        model_name = os.environ.get("MODEL_NAME")
+        if not model_name:
+            raise ValueError(
+                "MODEL_NAME environment variable or model_name parameter is required. "
+                "Set it in .env file or pass as parameter to the appropriate model name for your MODEL_PROVIDER."
+            )
 
     if model_provider == "azureopenai":
-        # DEPLOYMENT_NAME is required for Azure OpenAI
-        deployment_name = os.environ.get("DEPLOYMENT_NAME")
-        if not deployment_name:
-            raise ValueError(
-                "DEPLOYMENT_NAME environment variable is required for MODEL_PROVIDER='azureopenai'. "
-                "Set it in .env file to one of: 'gpt-4.1___test1', 'gpt-5.2-chat-mimi-test', 'gpt-4o-mini-mimi2'"
-            )
+        # DEPLOYMENT_NAME: Use parameter if provided, otherwise read from environment
+        if deployment_name is None:
+            deployment_name = os.environ.get("DEPLOYMENT_NAME")
+            if not deployment_name:
+                raise ValueError(
+                    "DEPLOYMENT_NAME environment variable or deployment_name parameter is required for MODEL_PROVIDER='azureopenai'. "
+                    "Set it in .env file or pass as parameter to one of: 'gpt-4o__test1', 'gpt-4o-mini-mimi2', 'gpt-5-nano_mimi_test'"
+                )
 
         llm = get_azure_openai_chat_llm(
             deployment_name=deployment_name,
             model_name=model_name,
-            openai_api_version="2024-05-01-preview",
-            temperature=0.0,
+            openai_api_version=openai_api_version,
+            temperature=temperature,
+            streaming=streaming,
         )
         use_bind_tools = True  # OpenAI requires bind_tools()
 
     elif model_provider == "anthropic":
         llm = get_anthropic_llm(
             model_name=model_name,
-            temperature=0.0,
+            temperature=temperature,
         )
         use_bind_tools = True  # Anthropic requires bind_tools()
 
     elif model_provider == "gemini":
-        llm = get_gemini_llm(model_name=model_name, temperature=0.0)
+        llm = get_gemini_llm(model_name=model_name, temperature=temperature)
         use_bind_tools = False  # Gemini accepts tools directly in ainvoke()
 
     elif model_provider == "ollama":
@@ -377,25 +417,38 @@ def get_configured_llm(model_provider: str = None, tools: list = None):
         # Specialized: llama3-groq-tool-use:8b (fine-tuned for tool calling)
         # For tool-enabled qwen2.5-coder, use: hhao/qwen2.5-coder-tools
         # Small models (0.5b, 1b) have very poor tool calling support - avoid them!
-        llm = get_ollama_llm(model_name=model_name, temperature=0.0)
+        llm = get_ollama_llm(
+            model_name=model_name, base_url=base_url, temperature=temperature
+        )
         use_bind_tools = (
             True  # OLLAMA uses OpenAI-compatible API, requires bind_tools()
         )
 
     elif model_provider == "xai":
-        llm = get_xai_llm(model_name=model_name, temperature=0.0)
+        llm = get_xai_llm(model_name=model_name, temperature=temperature)
         use_bind_tools = True  # xAI uses OpenAI-compatible API, requires bind_tools()
     elif model_provider == "mistral":
         llm = get_mistral_llm(
             model_name=model_name,
-            temperature=0.0,
+            temperature=temperature,
         )
         use_bind_tools = (
             True  # Mistral uses OpenAI-compatible API, requires bind_tools()
         )
+    elif model_provider == "github":
+        # GitHub Models: Some models (e.g., openai/o3) only support default temperature
+        # Only pass temperature if explicitly set to non-default value
+        github_kwargs = {"model_name": model_name}
+        if temperature != 0.0:  # Only pass if not default
+            github_kwargs["temperature"] = temperature
+
+        llm = get_github_llm(**github_kwargs)
+        use_bind_tools = (
+            True  # GitHub uses OpenAI-compatible API, requires bind_tools()
+        )
     else:
         raise ValueError(
-            f"Unknown model_provider: {model_provider}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai', 'mistral'"
+            f"Unknown model_provider: {model_provider}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai', 'mistral', 'github'"
         )
 
     # Bind tools if needed and provided

@@ -190,6 +190,45 @@ def get_mistral_llm(
     )
 
 
+# ===============================================================================
+# GitHub Models (OpenAI-compatible API)
+# ===============================================================================
+def get_github_llm(
+    model_name: str = "openai/o3",
+    temperature: Optional[float] = None,
+) -> ChatOpenAI:
+    """Get an instance of GitHub Models Chat LLM with configurable parameters.
+
+    GitHub Models provides access to various AI models through an OpenAI-compatible API.
+    The returned model instance supports both sync (invoke) and async (ainvoke)
+    operations for flexibility in different execution contexts.
+
+    IMPORTANT: Some GitHub models (e.g., openai/o3) only support the default temperature (1)
+    and will error if you try to set it to other values. Leave temperature as None to use
+    the model's default, or set it only if you know the model supports custom values.
+
+    Args:
+        model_name (str): GitHub model name (e.g., "openai/o3", "openai/gpt-4o", "meta-llama/Llama-3.3-70B-Instruct")
+        temperature (Optional[float]): Temperature setting for generation randomness.
+                                       If None (default), uses the model's default temperature.
+                                       Some models only support default values.
+
+    Returns:
+        ChatOpenAI: Configured LLM instance with async support
+    """
+    kwargs = {
+        "model": model_name,
+        "api_key": os.getenv("GITHUB_TOKEN"),
+        "base_url": "https://models.github.ai/inference",
+    }
+
+    # Only set temperature if explicitly provided
+    if temperature is not None:
+        kwargs["temperature"] = temperature
+
+    return ChatOpenAI(**kwargs)
+
+
 if __name__ == "__main__":
     # ######################################################
     # llm = get_azure_openai_chat_llm(
@@ -282,11 +321,20 @@ if __name__ == "__main__":
     # print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model}")
     # print(f"Response: {response.content}")
 
+    # ######################################################
+    # llm = get_mistral_llm(
+    #     model_name="devstral-latest",
+    #     temperature=0.0,
+    # )
+    # response = llm.invoke("Hi")
+    # print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model}")
+    # print(f"Response: {response.content}")
+
     ######################################################
-    llm = get_mistral_llm(
-        model_name="devstral-latest",
-        temperature=0.0,
+    llm = get_github_llm(
+        model_name="openai/gpt-4o-mini",
+        # temperature not set - openai/o3 only supports default temperature (1)
     )
     response = llm.invoke("Hi")
-    print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model}")
+    print(f"Model Type: {type(llm).__name__}, Model Name: {llm.model_name}")
     print(f"Response: {response.content}")
