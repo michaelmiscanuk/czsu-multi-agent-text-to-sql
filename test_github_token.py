@@ -71,18 +71,18 @@ try:
         api_key=github_token,
         base_url="https://models.github.ai/inference",
     )
-    
+
     # Send a very short message
     response = llm.invoke("Hi")
     print(f"✅ API call successful!")
     print(f"   Response: {response.content[:100]}")
-    
+
 except Exception as e:
     print(f"❌ API call failed: {str(e)}")
 
-print("\n" + "="*60)
+print("\n" + "=" * 60)
 print("SUMMARY")
-print("="*60)
+print("=" * 60)
 print("\nIf you see '⚠️ Not a member of any organizations' above,")
 print("you're likely using a personal account without Enterprise access.")
 print("\nTo get Enterprise tier limits (16000 in / 8000 out), you need:")
