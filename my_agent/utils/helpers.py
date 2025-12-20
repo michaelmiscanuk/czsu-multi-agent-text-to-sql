@@ -484,8 +484,19 @@ def get_configured_llm(
         )
 
     # Bind tools if needed and provided
+    # Note: LLM creation functions return RunnableRetry objects
+    # We need to access the underlying bound runnable to bind tools
     if tools and use_bind_tools:
-        llm_configured = llm.bind_tools(tools)
+        # Extract the underlying LLM from RunnableRetry if needed
+        if hasattr(llm, "bound"):
+            # llm is a RunnableRetry wrapper, access the underlying model
+            base_llm = llm.bound
+            llm_configured = base_llm.bind_tools(tools).with_retry(
+                stop_after_attempt=30
+            )
+        else:
+            # Direct LLM object (shouldn't happen with current setup)
+            llm_configured = llm.bind_tools(tools)
     else:
         llm_configured = llm
 

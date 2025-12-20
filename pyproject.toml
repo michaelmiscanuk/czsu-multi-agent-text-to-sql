@@ -46,12 +46,21 @@ dependencies = [
     # ChromaDB for vector search
     "chromadb>=0.4.18",
     
+    # OpenTelemetry dependencies for ChromaDB
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.20.0",
+    
     # Cohere for reranking
     "cohere==5.15.0",
     
     # Google Gemini
     "langchain-google-genai>=4.1.1",
     "langchain-groq>=1.1.1",
+    
+    # Provider-specific rate limit handling
+    "mistralai>=1.0.0",  # Mistral AI rate limit exceptions
+    "google-api-core>=2.0.0",  # Google API rate limit exceptions
     
     # PostgreSQL database
     "psycopg[binary,pool]>=3.1.13",

@@ -33,27 +33,57 @@ SINGLE_EVAL_SCRIPT = Path(__file__).parent / "run_single_evaluation.py"
 PYTHON_EXE = BASE_DIR / ".venv" / "Scripts" / "python.exe"
 
 # Evaluation configuration
-NODE_NAME = "rewrite_prompt_node"
+NODE_NAME = "format_answer_node"
 DATASET_NAME = (
     "001d_golden_dataset__output_correctness__simple_QA_from_SQL_manually_chosen"
 )
-MAX_CONCURRENCY = 2
+MAX_CONCURRENCY = 1
 JUDGE_MODEL_ID = "azureopenai_gpt-4o"
 
 # Models to evaluate
 MODELS_TO_EVALUATE = [
-    # "azureopenai_gpt-4o",
-    # "azureopenai_gpt-4o-mini",
-    # "azureopenai_gpt-4.1",
-    # "azureopenai_gpt-5-nano",
-    # "azureopenai_gpt-5.2-chat",
-    # "xai_grok-4-1-fast-reasoning",
-    # "xai_grok-4-1-fast-non-reasoning",
-    # "gemini_gemini-3-pro-preview",
-    # "mistral_mistral-large-2512",
+    "mistral_mistral-large-2512",
     "mistral_devstral-2512",
     "mistral_codestral-2508",
+    "azureopenai_gpt-4o",
+    "azureopenai_gpt-4o-mini",
+    "azureopenai_gpt-4.1",
+    "azureopenai_gpt-5-nano",
+    "azureopenai_gpt-5.2-chat",
+    "xai_grok-4-1-fast-reasoning",
+    "xai_grok-4-1-fast-non-reasoning",
+    "gemini_gemini-3-pro-preview",
 ]
+
+# # Models to evaluate
+# MODELS_TO_EVALUATE = [
+#     # "mistral_mistral-large-2512",
+#     "mistral_devstral-2512",
+#     "mistral_codestral-2508",
+#     "azureopenai_gpt-4o",
+#     "azureopenai_gpt-4o-mini",
+#     # "azureopenai_gpt-4.1",
+#     # "azureopenai_gpt-5-nano",
+#     # "azureopenai_gpt-5.2-chat",
+#     "xai_grok-4-1-fast-reasoning",
+#     # "xai_grok-4-1-fast-non-reasoning",
+#     "gemini_gemini-3-pro-preview",
+# ]
+
+# Models to evaluate
+# MODELS_TO_EVALUATE = [
+#     "mistral_mistral-large-2512",
+#     # "mistral_devstral-2512",
+#     # "mistral_codestral-2508",
+#     # "azureopenai_gpt-4o",
+#     # "azureopenai_gpt-4o-mini",
+#     "azureopenai_gpt-4.1",
+#     "azureopenai_gpt-5-nano",
+#     "azureopenai_gpt-5.2-chat",
+#     # "xai_grok-4-1-fast-reasoning",
+#     "xai_grok-4-1-fast-non-reasoning",
+#     # "gemini_gemini-3-pro-preview",
+# ]
 
 
 def run_subprocess_evaluation(model_id: str) -> dict:
@@ -73,16 +103,22 @@ def run_subprocess_evaluation(model_id: str) -> dict:
             env=env,
             capture_output=True,
             text=True,
+            encoding="utf-8",
+            errors="replace",  # Replace invalid characters instead of crashing
             cwd=str(BASE_DIR),
             check=False,
         )
 
+        # Safely handle stdout/stderr which might be None
+        stdout = result.stdout or ""
+        stderr = result.stderr or ""
+
         return {
             "model_id": model_id,
             "returncode": result.returncode,
-            "stdout": result.stdout,
-            "stderr": result.stderr,
-            "success": result.returncode == 0 and "SUCCESS" in result.stdout,
+            "stdout": stdout,
+            "stderr": stderr,
+            "success": result.returncode == 0 and "SUCCESS" in stdout,
         }
     except (OSError, subprocess.SubprocessError) as e:
         # Catch subprocess execution errors (file not found, permission denied, etc.)

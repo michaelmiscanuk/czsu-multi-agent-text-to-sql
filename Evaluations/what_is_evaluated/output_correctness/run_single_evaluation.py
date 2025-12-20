@@ -14,8 +14,14 @@ from pathlib import Path
 import importlib.util
 import uuid
 from langsmith import aevaluate
+import logging
 
 os.environ["DEBUG"] = "0"
+
+# Configure logging for retry utilities
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 # Project root
 try:
@@ -24,6 +30,9 @@ except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
 
 sys.path.insert(0, str(BASE_DIR))
+
+# Import retry utilities
+from Evaluations.utils.retry_utils import retry_with_exponential_backoff
 
 # Environment config
 NODE_NAME = os.environ.get("EVAL_NODE_NAME", "generate_query_node")
@@ -102,8 +111,10 @@ judge_llm = get_azure_openai_chat_llm(
     openai_api_version=judge_config.get("openai_api_version", "2024-05-01-preview"),
     temperature=judge_config.get("temperature", 0.0),
 )
+# Note: judge_llm already has .with_retry(stop_after_attempt=30) from get_azure_openai_chat_llm
 
 
+@retry_with_exponential_backoff(max_attempts=30, base_delay=1.0, max_delay=300.0)
 async def correctness(outputs: dict, reference_outputs: dict) -> bool:
     """LLM judge evaluator."""
     if not outputs or "messages" not in outputs or not outputs["messages"]:
@@ -137,8 +148,9 @@ def example_to_state(inputs: dict) -> dict:
     )
 
 
+@retry_with_exponential_backoff(max_attempts=30, base_delay=1.0, max_delay=300.0)
 async def target_with_config(inputs: dict, graph):
-    """Graph invocation wrapper."""
+    """Graph invocation wrapper with retry logic for rate limiting."""
     state = example_to_state(inputs)
     config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     return await graph.ainvoke(state, config=config)

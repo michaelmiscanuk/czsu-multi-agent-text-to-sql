@@ -11,8 +11,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
-from openai import AzureOpenAI
-from langchain_openai import AzureOpenAIEmbeddings
 from typing import Optional
 from langchain_anthropic import ChatAnthropic
 from langchain_xai import ChatXAI
@@ -42,9 +40,9 @@ def get_azure_openai_chat_llm(
         streaming (bool): Enable streaming mode (default: False)
 
     Returns:
-        AzureChatOpenAI: Configured LLM instance with async support
+        AzureChatOpenAI: Configured LLM instance with async support and retry logic
     """
-    return AzureChatOpenAI(
+    model = AzureChatOpenAI(
         deployment_name=deployment_name,
         model_name=model_name,
         openai_api_version=openai_api_version,
@@ -53,6 +51,8 @@ def get_azure_openai_chat_llm(
         azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         api_key=os.getenv("AZURE_OPENAI_API_KEY"),
     )
+    # Add retry logic with exponential backoff (30 attempts)
+    return model.with_retry(stop_after_attempt=30)
 
 
 # ===============================================================================
@@ -69,13 +69,15 @@ def get_anthropic_llm(
         temperature (float): Temperature setting for generation randomness
 
     Returns:
-        ChatAnthropic: Configured LLM instance
+        ChatAnthropic: Configured LLM instance with retry logic
     """
-    return ChatAnthropic(
+    model = ChatAnthropic(
         model=model_name,
         temperature=temperature,
         api_key=os.getenv("ANTHROPIC_API_KEY"),
     )
+    # Add retry logic with exponential backoff (30 attempts)
+    return model.with_retry(stop_after_attempt=30)
 
 
 # ===============================================================================
@@ -92,16 +94,18 @@ def get_gemini_llm(model_name="gemini-3-pro-preview", temperature=0.0):
         temperature (float): Temperature setting for generation randomness
 
     Returns:
-        ChatGoogleGenerativeAI: Configured LLM instance with async support
+        ChatGoogleGenerativeAI: Configured LLM instance with async support and retry logic
     """
     from langchain_google_genai import ChatGoogleGenerativeAI
 
-    return ChatGoogleGenerativeAI(
+    model = ChatGoogleGenerativeAI(
         model=model_name,
         temperature=temperature,
         google_api_key=os.getenv("GOOGLE_API_KEY"),
         include_thoughts=True,  # CRITICAL: Automatically handles thought signatures in multi-turn conversations (requires langchain-google-genai >= 3.1.0)
     )
+    # Add retry logic with exponential backoff (30 attempts)
+    return model.with_retry(stop_after_attempt=30)
 
 
 # ===============================================================================
@@ -130,15 +134,17 @@ def get_ollama_llm(
         temperature (float): Temperature setting for generation randomness
 
     Returns:
-        ChatOllama: Configured OLLAMA LLM instance with proper tool calling support
+        ChatOllama: Configured OLLAMA LLM instance with proper tool calling support and retry logic
     """
     from langchain_ollama import ChatOllama
 
-    return ChatOllama(
+    model = ChatOllama(
         model=model_name,
         base_url=base_url,
         temperature=temperature,
     )
+    # Add retry logic with exponential backoff (30 attempts)
+    return model.with_retry(stop_after_attempt=30)
 
 
 # ===============================================================================
@@ -155,13 +161,15 @@ def get_xai_llm(model_name: str = "", temperature: Optional[float] = 0.0) -> Cha
         temperature (float): Temperature setting for generation randomness
 
     Returns:
-        ChatXAI: Configured LLM instance with async support
+        ChatXAI: Configured LLM instance with async support and retry logic
     """
-    return ChatXAI(
+    model = ChatXAI(
         model=model_name,
         temperature=temperature,
         xai_api_key=os.getenv("XAI_API_KEY"),
     )
+    # Add retry logic with exponential backoff (30 attempts)
+    return model.with_retry(stop_after_attempt=30)
 
 
 # ===============================================================================
@@ -181,13 +189,15 @@ def get_mistral_llm(
         temperature (float): Temperature setting for generation randomness
 
     Returns:
-        ChatMistralAI: Configured LLM instance with async support
+        ChatMistralAI: Configured LLM instance with async support and retry logic
     """
-    return ChatMistralAI(
+    model = ChatMistralAI(
         model=model_name,
         temperature=temperature,
         api_key=os.getenv("MISTRAL_API_KEY"),
     )
+    # Add retry logic with exponential backoff (30 attempts)
+    return model.with_retry(stop_after_attempt=30)
 
 
 # ===============================================================================
@@ -214,7 +224,7 @@ def get_github_llm(
                                        Some models only support default values.
 
     Returns:
-        ChatOpenAI: Configured LLM instance with async support
+        ChatOpenAI: Configured LLM instance with async support and retry logic
     """
     kwargs = {
         "model": model_name,
@@ -226,7 +236,9 @@ def get_github_llm(
     if temperature is not None:
         kwargs["temperature"] = temperature
 
-    return ChatOpenAI(**kwargs)
+    model = ChatOpenAI(**kwargs)
+    # Add retry logic with exponential backoff (30 attempts)
+    return model.with_retry(stop_after_attempt=30)
 
 
 if __name__ == "__main__":
