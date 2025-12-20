@@ -2,6 +2,16 @@
 
 This guide documents the process of adding a new LLM provider to the CZSU Multi-Agent Text-to-SQL system. Use this as a reference when adding new model providers like Mistral, Grok, or others.
 
+## Model Configuration Overview
+
+The application uses a **centralized Python configuration** for all node-specific model settings. Each node in the workflow (e.g., `rewrite_prompt_node`, `generate_query_node`, `reflect_node`) can use a different model configured in `my_agent/utils/node_models_config.py`.
+
+**Key Benefits:**
+- Configure all models in one place
+- Different nodes can use different models (e.g., use GPT-4o for query generation but GPT-4o-mini for formatting)
+- Easy to switch models without changing code
+- Clear visibility of which models are used where
+
 ## Prerequisites
 
 ### 1. API Key Setup
@@ -99,11 +109,11 @@ from my_agent.utils.models import (
     get_mistral_llm,
 )
 
-# Add to get_configured_llm() function:
+# Add to get_configured_llm() function (in the provider selection logic):
 elif model_provider == "mistral":
     llm = get_mistral_llm(
-        model_name="mistral-small-latest",
-        temperature=0.0,
+        model_name=model_name,
+        temperature=temperature,
     )
     use_bind_tools = True  # Mistral uses OpenAI-compatible API, requires bind_tools()
 ```
@@ -111,11 +121,43 @@ elif model_provider == "mistral":
 **Update error message**:
 ```python
 raise ValueError(
-    f"Unknown model_provider: {model_provider}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai', 'mistral'"
+    f"Unknown model_provider: {model_provider}. Options: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai', 'mistral', 'github'"
 )
 ```
 
-### 3. `tests/models/test_models_with_tool.py`
+### 3. `my_agent/utils/model_configs_all.py`
+
+**Location**: `my_agent/utils/model_configs_all.py`
+
+**What to do**:
+- Add the new model configuration to the `MODEL_CONFIGS_ALL` list
+- This is the central catalog of all available models
+
+**Example** (adding Mistral models):
+```python
+# Add to MODEL_CONFIGS_ALL list:
+{
+    "model_provider": "mistral",
+    "model_name": "mistral-large-latest",
+    "temperature": 0.0,
+    "streaming": False,
+    "description": "Mistral Large Latest - Large scale model for complex tasks",
+},
+{
+    "model_provider": "mistral",
+    "model_name": "mistral-small-latest",
+    "temperature": 0.0,
+    "streaming": False,
+    "description": "Mistral Small Latest - Lightweight option for faster responses",
+},
+```
+
+**Note**: 
+- The `deployment_name` field is only required for Azure OpenAI. Leave it empty for other providers.
+- The `base_url` field is only required for Ollama. Leave it empty for other providers.
+- `my_agent/utils/node_models_config.py` should NOT be modified when adding new providers - it's only for selecting which models to use in production.
+
+### 4. `tests/models/test_models_with_tool.py`
 
 **Location**: `tests/models/test_models_with_tool.py`
 
@@ -147,32 +189,109 @@ Add the API key to `.env`:
 MISTRAL_API_KEY=your-mistral-api-key-here
 ```
 
+## Configuration Structure
+py` file has the following structure:
+
+```python
+NODE_MODELS_CONFIG = {
+    "nodes": {
+        "node_name_here": {
+            "model_provider": "provider_name",
+            "model_name": "model_name",
+            "deployment_name": "",
+            "temperature": 0.0,
+            "streaming": False,
+            "openai_api_version": "2024-05-01-preview",
+            "base_url": "http://localhost:11434",
+            "description": "Description of what this node does",
+        },
+        # ... more nodes ...
+    },
+    "defaults": {
+        "model_provider": "azureopenai",
+        "model_name": "gpt-4o-mini",
+        "deployment_name": "gpt-4o-mini-mimi2",
+        "temperature": 0.0,
+        "streaming": False,
+        "openai_api_version": "2024-05-01-preview",
+        "base_url": "http://localhost:11434",
+    },
+}
+```
+
+**Configuration Parameters:**
+- `model_provider`: Provider name (e.g., "azureopenai", "anthropic", "mistral", "ollama")
+- `model_name`: Model name for the selected provider
+- `deployment_name`: Only for Azure OpenAI, leave empty for others
+- `temperature`: 0.0 = deterministic, 1.0 = creative, 2.0 = very random
+- `streaming`: True for streaming responses (only format_answer_node), False otherwise
+- `openai_api_version`: Only used for Azure OpenAI
+- `base_url`: Only used for Ollama
+- `description`: Human-readable description of the node's purpose
+
 ## Testing
 
-1. In models_to_test, uncomment only new provider
-    Run the model test script:
+1. **Test the model provider integration:**
    ```bash
    python tests/models/test_models_with_tool.py
-   BUT - In models_to_test, uncomment only new provider  (comment others)
    ```
+   In `models_to_test`, uncomment only the new provider (comment others).
 
-2. Test the model function directly:
+2. **Test the model function directly:**
    ```bash
    python my_agent/utils/models.py
-    BUT - uncomment only section in main block - for the new provider (comment others)
    ```
+   Uncomment only the section in the main block for the new provider (comment others).
+
+3. **Add to model catalog:**
+   Add the model configuration to `model_configs_all.py` so it's available for future use.
+   **Note**: Do NOT modify `node_models_config.py` when adding new providers.
+
+## Configuration Examples
+
+### Example 1: Use different models for different nodes
+```python
+NODE_MODELS_CONFIG = {
+    "nodes": {
+        "rewrite_prompt_node": {
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4o",
+            "deployment_name": "gpt-4o__test1",
+        },
+        "generate_query_node": {
+            "model_provider": "ollama",
+            "model_name": "qwen3-coder:30b",
+        },
+        "format_answer_node": {
+            "model_provider": "anthropic",
+            "model_name": "claude-sonnet-4-5-20250929",
+        },
+    }
+}
+```
+
+### Example 2: Override config for specific node programmatically
+```python
+# In your code, you can still override settings:
+llm, _ = get_configured_llm(
+    node_name="generate_query_node",
+    temperature=0.5  # Override just temperature
+)
+```
 
 ## Notes
 
 - All model functions should follow the same pattern: `get_<provider>_llm()`
-- Use `use_bind_tools = True` for OpenAI-compatible APIs, `False` for Gemini or other OpenAI-non-compatible APIs that pass tools inside the invoke function
-- Update MODEL_PROVIDER options in `.env` comments if needed
-
-- Ensure the model supports tool calling if used in agent workflows
+- Use `use_bind_tools = True` for OpenAI-compatible APIs, `False` for Gemini or other non-compatible APIs
+- The Python configuration is loaded once and cached for performance
+- Each node gets its config from the Python dict, with fallback to defaults if not specified
+- Use Python syntax (True/False, not true/false; comments with #, etc.)
+- Ensure the model supports tool calling if used in agentic workflows (especially for generate_query_node)
 
 ## Provider-Specific Considerations
 
 - **Azure OpenAI**: Requires `deployment_name` and `model_name`
 - **Anthropic/Gemini/xAI/Mistral**: Only `model_name`
 - **Ollama**: Local models, specify `base_url` if not default
+- **GitHub Models**: Some models only support default temperature
 - **Tool Binding**: Most providers use `bind_tools()`, Gemini uses tools in `ainvoke()`

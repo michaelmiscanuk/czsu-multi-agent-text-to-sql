@@ -276,15 +276,33 @@ async def detect_language(text: str) -> str:
 # ==============================================================================
 # LLM CONFIGURATION HELPER
 # ==============================================================================
+def load_node_models_config():
+    """Load node-specific model configurations from Python config file.
+
+    Returns:
+        dict: Configuration dictionary with node-specific settings and defaults
+    """
+    try:
+        from my_agent.utils.node_models_config import NODE_MODELS_CONFIG
+
+        return NODE_MODELS_CONFIG
+    except ImportError as e:
+        raise ImportError(
+            f"Could not import node models configuration: {e}. "
+            "Please ensure my_agent/utils/node_models_config.py exists with NODE_MODELS_CONFIG defined."
+        )
+
+
 def get_configured_llm(
+    node_name: str = None,
     model_provider: str = None,
     model_name: str = None,
     deployment_name: str = None,
     tools: list = None,
-    temperature: float = 0.0,
-    streaming: bool = False,
-    openai_api_version: str = "2024-05-01-preview",
-    base_url: str = "http://localhost:11434",
+    temperature: float = None,
+    streaming: bool = None,
+    openai_api_version: str = None,
+    base_url: str = None,
 ):
     """Get configured LLM instance with optional tool binding based on model type.
 
@@ -293,30 +311,36 @@ def get_configured_llm(
     - OpenAI/Anthropic/OLLAMA: Tools are bound using llm.bind_tools()
     - Gemini: Tools are passed separately (caller must pass to ainvoke())
 
+    Configuration Priority (highest to lowest):
+    1. Explicit parameters passed to this function
+    2. Node-specific configuration from node_models_config.py (if node_name provided)
+    3. Default configuration from node_models_config.py
+
     Args:
-        model_provider (str, optional): Model type - "azureopenai", "gemini", "ollama", or "anthropic"
-                         If None (default), reads from MODEL_PROVIDER environment variable,
-                         falling back to "azureopenai" if not set
+        node_name (str, optional): Name of the node (e.g., "rewrite_prompt_node").
+                         If provided, loads configuration from node_models_config.py.
+                         If None, uses explicit parameters or defaults.
+        model_provider (str, optional): Model type - "azureopenai", "gemini", "ollama", "anthropic", "xai", "mistral", "github"
+                         If None and node_name provided, reads from config file.
+                         If None and no node_name, uses defaults from config file.
         model_name (str, optional): Model name for the selected provider.
-                         If None (default), reads from MODEL_NAME environment variable.
-                         If provided, overrides the environment variable.
+                         If None and node_name provided, reads from config file.
         deployment_name (str, optional): Azure OpenAI deployment name.
                          Only used when model_provider is "azureopenai".
-                         If None (default), reads from DEPLOYMENT_NAME environment variable.
-                         If provided, overrides the environment variable.
+                         If None and node_name provided, reads from config file.
         tools (list, optional): List of tool objects to bind/configure with the LLM.
                                If None, no tools are bound.
         temperature (float, optional): Temperature setting for LLM (0.0-2.0).
                          Controls randomness - lower is more deterministic.
-                         Defaults to 0.0.
+                         If None, reads from config file or uses 0.0.
         streaming (bool, optional): Enable streaming responses (if supported by provider).
-                         Defaults to False.
+                         If None, reads from config file or uses False.
         openai_api_version (str, optional): Azure OpenAI API version string.
                          Only used when model_provider is "azureopenai".
-                         Defaults to "2024-05-01-preview".
+                         If None, reads from config file or uses "2024-05-01-preview".
         base_url (str, optional): Base URL for OLLAMA server.
                          Only used when model_provider is "ollama".
-                         Defaults to "http://localhost:11434".
+                         If None, reads from config file or uses "http://localhost:11434".
 
     Returns:
         tuple: (llm_configured, use_bind_tools_flag)
@@ -327,69 +351,77 @@ def get_configured_llm(
 
     Raises:
         ValueError: If unknown model_provider is provided
-        ValueError: If DEPLOYMENT_NAME is required but not set (for azureopenai)
-
-    Environment Variables:
-        MODEL_PROVIDER: LLM provider - "azureopenai", "anthropic", "gemini", "ollama", "xai"
-        MODEL_NAME: Model name for the selected provider
-        DEPLOYMENT_NAME: Azure OpenAI deployment name (required only for azureopenai)
-
-        Required API Keys by Provider:
-        - azureopenai: AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT
-        - anthropic: ANTHROPIC_API_KEY
-        - gemini: GOOGLE_API_KEY
-        - ollama: No API key required (runs locally)
-        - xai: XAI_API_KEY
+        ValueError: If required parameters are missing
+        FileNotFoundError: If node_models_config.py is not found
 
     Example:
-        # Without tools
-        llm, use_bind_tools = get_configured_llm()
+        # Using node-specific configuration
+        llm, use_bind_tools = get_configured_llm(node_name="rewrite_prompt_node")
 
-        # With specific model provider and name (overriding .env)
-        llm, use_bind_tools = get_configured_llm(model_provider="anthropic", model_name="claude-3-5-sonnet-20241022")
+        # Override specific parameters from node config
+        llm, use_bind_tools = get_configured_llm(node_name="generate_query_node", temperature=0.5)
 
-        # With custom temperature
-        llm, use_bind_tools = get_configured_llm(temperature=0.7)
-
-        # With streaming enabled
-        llm, use_bind_tools = get_configured_llm(streaming=True)
+        # Legacy usage with explicit parameters (still supported)
+        llm, use_bind_tools = get_configured_llm(
+            model_provider="anthropic",
+            model_name="claude-3-5-sonnet-20241022",
+            temperature=0.7
+        )
 
         # With tools for OpenAI (auto-binds)
-        llm, use_bind_tools = get_configured_llm(tools=[my_tool])
-        # llm already has tools bound, just call: llm.ainvoke(messages)
-
-        # With tools for Gemini (tools returned separately)
-        llm, use_bind_tools = get_configured_llm("gemini", "gemini-1.5-pro", tools=[my_tool])
-        # Must pass tools to ainvoke: llm.ainvoke(messages, tools=tools)
+        llm, use_bind_tools = get_configured_llm(node_name="generate_query_node", tools=[my_tool])
     """
     load_dotenv()
 
-    if model_provider is None:
-        model_provider = os.environ.get("MODEL_PROVIDER")
-        if not model_provider:
-            raise ValueError(
-                "MODEL_PROVIDER environment variable is required. "
-                "Set it in .env file to one of: 'azureopenai', 'anthropic', 'gemini', 'ollama', 'xai'"
-            )
+    # Load configuration from JSON file
+    config = load_node_models_config()
 
-    # Get model name from parameter or environment variable (required for all providers)
-    if model_name is None:
-        model_name = os.environ.get("MODEL_NAME")
-        if not model_name:
-            raise ValueError(
-                "MODEL_NAME environment variable or model_name parameter is required. "
-                "Set it in .env file or pass as parameter to the appropriate model name for your MODEL_PROVIDER."
-            )
+    # Determine configuration source based on node_name
+    node_config = {}
+    if node_name:
+        if node_name in config.get("nodes", {}):
+            node_config = config["nodes"][node_name]
+        else:
+            # Use defaults if node not found
+            node_config = config.get("defaults", {})
+    else:
+        # Use defaults if no node_name provided
+        node_config = config.get("defaults", {})
+
+    # Apply configuration priority: explicit params > node config > defaults
+    model_provider = model_provider or node_config.get("model_provider")
+    model_name = model_name or node_config.get("model_name")
+    deployment_name = deployment_name or node_config.get("deployment_name", "")
+    temperature = (
+        temperature if temperature is not None else node_config.get("temperature", 0.0)
+    )
+    streaming = (
+        streaming if streaming is not None else node_config.get("streaming", False)
+    )
+    openai_api_version = openai_api_version or node_config.get(
+        "openai_api_version", "2024-05-01-preview"
+    )
+    base_url = base_url or node_config.get("base_url", "http://localhost:11434")
+
+    # Validate required parameters
+    if not model_provider:
+        raise ValueError(
+            "model_provider is required. Either provide it as a parameter, "
+            "specify node_name, or ensure defaults are set in node_models_config.py"
+        )
+
+    if not model_name:
+        raise ValueError(
+            "model_name is required. Either provide it as a parameter, "
+            "specify node_name, or ensure defaults are set in node_models_config.py"
+        )
 
     if model_provider == "azureopenai":
-        # DEPLOYMENT_NAME: Use parameter if provided, otherwise read from environment
-        if deployment_name is None:
-            deployment_name = os.environ.get("DEPLOYMENT_NAME")
-            if not deployment_name:
-                raise ValueError(
-                    "DEPLOYMENT_NAME environment variable or deployment_name parameter is required for MODEL_PROVIDER='azureopenai'. "
-                    "Set it in .env file or pass as parameter to one of: 'gpt-4o__test1', 'gpt-4o-mini-mimi2', 'gpt-5-nano_mimi_test'"
-                )
+        if not deployment_name:
+            raise ValueError(
+                "deployment_name is required for model_provider='azureopenai'. "
+                "Set it in node_models_config.py or pass as parameter."
+            )
 
         llm = get_azure_openai_chat_llm(
             deployment_name=deployment_name,

@@ -776,19 +776,8 @@ async def rewrite_prompt_node(state: DataAnalysisState) -> DataAnalysisState:
         else SystemMessage(content="")
     )
 
-    llm, _ = get_configured_llm(
-        model_provider="azureopenai",
-        model_name="gpt-4o",
-        deployment_name="gpt-4o__test1",
-        openai_api_version="2024-05-01-preview",
-    )
-    # Alternative: Use GPT-5-nano by changing model_name parameter
-    # llm, _ = get_configured_llm(
-    #     model_provider="azureopenai",
-    #     model_name="gpt-5-nano",
-    #     deployment_name="gpt-5-nano_mimi_test",
-    #     openai_api_version="2024-12-01-preview",
-    # )
+    # Model configuration loaded from my_agent/utils/node_models_config.py
+    llm, _ = get_configured_llm(node_name="rewrite_prompt_node")
 
     system_prompt = """
 Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language, that can be used to query a vector database.
@@ -979,19 +968,8 @@ async def summarize_messages_node(state: DataAnalysisState) -> DataAnalysisState
     print__nodes_debug(f"📝 SUMMARY: last_message_content: '{last_message_content}'")
 
     # Key Step 2: Skip summarization if both previous summary and last message are empty
-    llm, _ = get_configured_llm(
-        model_provider="azureopenai",
-        model_name="gpt-4o-mini",
-        deployment_name="gpt-4o-mini-mimi2",
-        openai_api_version="2024-05-01-preview",
-    )
-    # Alternative: Use GPT-5-nano by changing model_name parameter
-    # llm, _ = get_configured_llm(
-    #     model_provider="azureopenai",
-    #     model_name="gpt-5-nano",
-    #     deployment_name="gpt-5-nano_mimi_test",
-    #     openai_api_version="2024-12-01-preview",
-    # )
+    # Model configuration loaded from my_agent/utils/node_models_config.py
+    llm, _ = get_configured_llm(node_name="summarize_messages_node")
 
     system_prompt = """
 You are a conversation summarization agent.
@@ -1810,16 +1788,11 @@ async def generate_query_node(state: DataAnalysisState) -> DataAnalysisState:
     # ============================================================================
     # MODEL CONFIGURATION - Change the active model here
     # ============================================================================
-    # Get configured LLM with tools bound (for OpenAI/Anthropic/OLLAMA) or base LLM (for Gemini)
-    # Options: "azureopenai", "anthropic", "gemini", "ollama"
-    # Can be set via MODEL_PROVIDER environment variable or passed directly
-    llm_with_tools, use_bind_tools = get_configured_llm(tools=tools)
-    # llm_with_tools, use_bind_tools = get_configured_llm(
-    #     model_provider="azureopenai",
-    #     model_name="gpt-4o-mini",
-    #     deployment_name="gpt-4o-mini-mimi2",
-    #     tools=tools,
-    # )
+    # Model configuration loaded from my_agent/utils/node_models_config.py
+    # To change the model for this node, edit the "generate_query_node" entry in the JSON file
+    llm_with_tools, use_bind_tools = get_configured_llm(
+        node_name="generate_query_node", tools=tools
+    )
 
     # Key Step 5: Extract conversation context (summary_message, last_message, skip schema details if present)
     summary_message = (
@@ -2192,7 +2165,15 @@ Remember: Always examine the schema to understand:
 
                     # CRITICAL FIX FOR OLLAMA: Add continuation prompt after tool result
                     # Ollama models often stop after first tool call. Explicitly instruct to continue.
-                    model_provider = os.environ.get("MODEL_PROVIDER", "azureopenai")
+                    # Check if we're using ollama from the node config
+                    from my_agent.utils.helpers import load_node_models_config
+
+                    node_config = load_node_models_config()
+                    model_provider = (
+                        node_config.get("nodes", {})
+                        .get("generate_query_node", {})
+                        .get("model_provider", "azureopenai")
+                    )
                     if (
                         model_provider == "ollama"
                         and tool_call_count < MAX_TOOL_ITERATIONS
@@ -2227,7 +2208,15 @@ Decide now: Do you need more data? If yes, call sqlite_query with your next SQL 
                     conversation_messages.append(tool_message)
 
                     # CRITICAL FIX FOR OLLAMA: Add continuation prompt after error too
-                    model_provider = os.environ.get("MODEL_PROVIDER", "azureopenai")
+                    # Check if we're using ollama from the node config
+                    from my_agent.utils.helpers import load_node_models_config
+
+                    node_config = load_node_models_config()
+                    model_provider = (
+                        node_config.get("nodes", {})
+                        .get("generate_query_node", {})
+                        .get("model_provider", "azureopenai")
+                    )
                     if (
                         model_provider == "ollama"
                         and tool_call_count < MAX_TOOL_ITERATIONS
@@ -2351,19 +2340,8 @@ async def reflect_node(state: DataAnalysisState) -> DataAnalysisState:
             "iteration": current_iteration,
         }
 
-    llm, _ = get_configured_llm(
-        model_provider="azureopenai",
-        model_name="gpt-4o-mini",
-        deployment_name="gpt-4o-mini-mimi2",
-        openai_api_version="2024-05-01-preview",
-    )
-    # Alternative: Use GPT-5-nano by changing model_name parameter
-    # llm, _ = get_configured_llm(
-    #     model_provider="azureopenai",
-    #     model_name="gpt-5-nano",
-    #     deployment_name="gpt-5-nano_mimi_test",
-    #     openai_api_version="2024-12-01-preview",
-    # )
+    # Model configuration loaded from my_agent/utils/node_models_config.py
+    llm, _ = get_configured_llm(node_name="reflect_node")
     summary = (
         messages[0]
         if messages and isinstance(messages[0], SystemMessage)
@@ -2703,23 +2681,8 @@ Bad: "The query shows X is 1,234,567"
     async def stream_answer_tokens() -> str:
         """Stream answer tokens from the LLM and emit them via callback."""
 
-        llm_stream, _ = get_configured_llm(
-            model_provider="azureopenai",
-            model_name="gpt-4o-mini",
-            deployment_name="gpt-4o-mini-mimi2",
-            temperature=0.1,
-            streaming=True,
-            openai_api_version="2024-05-01-preview",
-        )
-        # Alternative: Use GPT-5-nano for streaming
-        # llm_stream, _ = get_configured_llm(
-        #     model_provider="azureopenai",
-        #     model_name="gpt-5-nano",
-        #     deployment_name="gpt-5-nano_mimi_test",
-        #     temperature=0.1,
-        #     streaming=True,
-        #     openai_api_version="2024-12-01-preview",
-        # )
+        # Model configuration loaded from my_agent/utils/node_models_config.py
+        llm_stream, _ = get_configured_llm(node_name="format_answer_node")
 
         chunks: List[str] = []
 
@@ -2757,21 +2720,10 @@ Bad: "The query shows X is 1,234,567"
                     content=final_answer_content, id="format_answer_stream"
                 )
             else:
+                # Model configuration loaded from my_agent/utils/node_models_config.py
                 llm_standard, _ = get_configured_llm(
-                    model_provider="azureopenai",
-                    model_name="gpt-4o-mini",
-                    deployment_name="gpt-4o-mini-mimi2",
-                    temperature=0.1,
-                    openai_api_version="2024-05-01-preview",
+                    node_name="format_answer_node_non_streaming"
                 )
-                # Alternative: Use GPT-5-nano
-                # llm_standard, _ = get_configured_llm(
-                #     model_provider="azureopenai",
-                #     model_name="gpt-5-nano",
-                #     deployment_name="gpt-5-nano_mimi_test",
-                #     temperature=0.1,
-                #     openai_api_version="2024-12-01-preview",
-                # )
                 llm_response = await llm_standard.ainvoke(messages_to_send)
                 final_answer_content = (
                     llm_response.content
@@ -2933,20 +2885,9 @@ async def followup_prompts_node(state: DataAnalysisState) -> DataAnalysisState:
 
     print__nodes_debug(f"💡 FOLLOWUP_PROMPTS: Summary content: '{summary_content}'")
 
-    # Key Step 2: Call Azure GPT-4o-mini with creative temperature (1.0)
-    llm, _ = get_configured_llm(
-        model_provider="azureopenai",
-        model_name="gpt-4o-mini",
-        deployment_name="gpt-4o-mini-mimi2",
-        openai_api_version="2024-05-01-preview",
-    )
-    # Alternative: Use GPT-5-nano by changing model_name parameter
-    # llm, _ = get_configured_llm(
-    #     model_provider="azureopenai",
-    #     model_name="gpt-5-nano",
-    #     deployment_name="gpt-5-nano_mimi_test",
-    #     openai_api_version="2024-12-01-preview",
-    # )
+    # Key Step 2: Get LLM for generating follow-up prompts
+    # Model configuration loaded from my_agent/utils/node_models_config.py
+    llm, _ = get_configured_llm(node_name="followup_prompts_node")
 
     system_prompt = """
 You are a prompt generation assistant for a Czech Statistical Office data analysis system.

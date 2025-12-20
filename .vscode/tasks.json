@@ -1,49 +1,72 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "Install python-dotenv",
-			"type": "shell",
-			"command": "cmd",
-			"args": [
-				"/c",
-				"cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && pip install python-dotenv"
-			],
-			"isBackground": false,
-			"group": "build"
-		},
-		{
-			"label": "Run models.py",
-			"type": "shell",
-			"command": "e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\\.venv\\Scripts\\python.exe",
-			"args": [
-				"-u",
-				"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\\my_agent\\utils\\models.py"
-			],
-			"isBackground": false,
-			"group": "test"
-		},
-		{
-			"label": "Install langchain-mistralai",
-			"type": "shell",
-			"command": "cmd",
-			"args": [
-				"/c",
-				"cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && pip install langchain-mistralai"
-			],
-			"isBackground": false,
-			"group": "build"
-		},
-		{
-			"label": "Run models.py",
-			"type": "shell",
-			"command": "cmd",
-			"args": [
-				"/c",
-				"cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && python my_agent\\utils\\models.py"
-			],
-			"isBackground": false,
-			"group": "test"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install python-dotenv",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && pip install python-dotenv"
+      ],
+      "isBackground": false,
+      "group": "build"
+    },
+    {
+      "label": "Run models.py",
+      "type": "shell",
+      "command": "e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\\.venv\\Scripts\\python.exe",
+      "args": [
+        "-u",
+        "e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\\my_agent\\utils\\models.py"
+      ],
+      "isBackground": false,
+      "group": "test"
+    },
+    {
+      "label": "Install langchain-mistralai",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && pip install langchain-mistralai"
+      ],
+      "isBackground": false,
+      "group": "build"
+    },
+    {
+      "label": "Run models.py",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && python my_agent\\utils\\models.py"
+      ],
+      "isBackground": false,
+      "group": "test"
+    },
+    {
+      "label": "Run Parallel Model Evaluation (New Terminal)",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd /d \"e:\\OneDrive\\Knowledge Base\\0207_GenAI\\Code\\czsu_home2\\czsu-multi-agent-text-to-sql\" && call .venv\\Scripts\\activate.bat && python Evaluations\\what_is_evaluated\\output_correctness\\001_evaluate_output_correctness_iterate_models.py"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "isBackground": false,
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    }
+  ]
 }
