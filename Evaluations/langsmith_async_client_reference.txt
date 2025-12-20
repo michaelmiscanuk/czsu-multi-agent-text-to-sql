@@ -1,0 +1,989 @@
+Async Client¶
+ async_client ¶
+The Async LangSmith Client.
+
+ AsyncClient ¶
+Async Client for interacting with the LangSmith API.
+
+METHOD	DESCRIPTION
+__init__	Initialize the async client.
+__aenter__	Enter the async client.
+__aexit__	Exit the async client.
+aclose	Close the async client.
+create_run	Create a run.
+update_run	Update a run.
+read_run	Read a run.
+list_runs	List runs from the LangSmith API.
+share_run	Get a share link for a run asynchronously.
+run_is_shared	Get share state for a run asynchronously.
+read_run_shared_link	Retrieve the shared link for a specific run asynchronously.
+create_project	Create a project.
+read_project	Read a project.
+delete_project	Delete a project from LangSmith.
+create_dataset	Create a dataset.
+read_dataset	Read a dataset.
+delete_dataset	Delete a dataset.
+list_datasets	List datasets.
+create_example	Create an example.
+read_example	Read an example.
+list_examples	List examples.
+create_feedback	Create feedback for a run.
+create_feedback_from_token	Create feedback from a presigned token or URL.
+create_presigned_feedback_token	Create a pre-signed URL to send feedback data to.
+read_feedback	Read feedback.
+list_feedback	List feedback.
+delete_feedback	Delete a feedback by ID.
+list_annotation_queues	List the annotation queues on the LangSmith API.
+create_annotation_queue	Create an annotation queue on the LangSmith API.
+read_annotation_queue	Read an annotation queue with the specified queue_id.
+update_annotation_queue	Update an annotation queue with the specified queue_id.
+delete_annotation_queue	Delete an annotation queue with the specified queue_id.
+add_runs_to_annotation_queue	Add runs to an annotation queue with the specified queue_id.
+delete_run_from_annotation_queue	Delete a run from an annotation queue with the specified queue_id and run_id.
+get_run_from_annotation_queue	Get a run from an annotation queue at the specified index.
+index_dataset	Enable dataset indexing. Examples are indexed by their inputs.
+sync_indexed_dataset	Sync dataset index.
+similar_examples	Retrieve the dataset examples whose inputs best match the current inputs.
+like_prompt	Like a prompt.
+unlike_prompt	Unlike a prompt.
+list_prompts	List prompts with pagination.
+get_prompt	Get a specific prompt by its identifier.
+create_prompt	Create a new prompt.
+create_commit	Create a commit for an existing prompt.
+update_prompt	Update a prompt's metadata.
+delete_prompt	Delete a prompt.
+pull_prompt_commit	Pull a prompt object from the LangSmith API.
+list_prompt_commits	List commits for a given prompt.
+pull_prompt	Pull a prompt and return it as a LangChain PromptTemplate.
+push_prompt	Push a prompt to the LangSmith API.
+ __init__ ¶
+
+__init__(
+    api_url: str | None = None,
+    api_key: str | None = None,
+    timeout_ms: int
+    | tuple[int | None, int | None, int | None, int | None]
+    | None = None,
+    retry_config: Mapping[str, Any] | None = None,
+    web_url: str | None = None,
+)
+Initialize the async client.
+
+ __aenter__ async ¶
+
+__aenter__() -> AsyncClient
+Enter the async client.
+
+ __aexit__ async ¶
+
+__aexit__(exc_type, exc_val, exc_tb)
+Exit the async client.
+
+ aclose async ¶
+
+aclose()
+Close the async client.
+
+ create_run async ¶
+
+create_run(
+    name: str,
+    inputs: dict[str, Any],
+    run_type: str,
+    *,
+    project_name: str | None = None,
+    revision_id: ID_TYPE | None = None,
+    **kwargs: Any,
+) -> None
+Create a run.
+
+ update_run async ¶
+
+update_run(run_id: ID_TYPE, **kwargs: Any) -> None
+Update a run.
+
+ read_run async ¶
+
+read_run(run_id: ID_TYPE) -> Run
+Read a run.
+
+ list_runs async ¶
+
+list_runs(
+    *,
+    project_id: ID_TYPE | Sequence[ID_TYPE] | None = None,
+    project_name: str | Sequence[str] | None = None,
+    run_type: str | None = None,
+    trace_id: ID_TYPE | None = None,
+    reference_example_id: ID_TYPE | None = None,
+    query: str | None = None,
+    filter: str | None = None,
+    trace_filter: str | None = None,
+    tree_filter: str | None = None,
+    is_root: bool | None = None,
+    parent_run_id: ID_TYPE | None = None,
+    start_time: datetime | None = None,
+    error: bool | None = None,
+    run_ids: Sequence[ID_TYPE] | None = None,
+    select: Sequence[str] | None = None,
+    limit: int | None = None,
+    **kwargs: Any,
+) -> AsyncIterator[Run]
+List runs from the LangSmith API.
+
+Parameters¶
+project_id : UUID or None, default=None The ID(s) of the project to filter by. project_name : str or None, default=None The name(s) of the project to filter by. run_type : str or None, default=None The type of the runs to filter by. trace_id : UUID or None, default=None The ID of the trace to filter by. reference_example_id : UUID or None, default=None The ID of the reference example to filter by. query : str or None, default=None The query string to filter by. filter : str or None, default=None The filter string to filter by. trace_filter : str or None, default=None Filter to apply to the ROOT run in the trace tree. This is meant to be used in conjunction with the regular filter parameter to let you filter runs by attributes of the root run within a trace. tree_filter : str or None, default=None Filter to apply to OTHER runs in the trace tree, including sibling and child runs. This is meant to be used in conjunction with the regular filter parameter to let you filter runs by attributes of any run within a trace. is_root : bool or None, default=None Whether to filter by root runs. parent_run_id : UUID or None, default=None The ID of the parent run to filter by. start_time : datetime or None, default=None The start time to filter by. error : bool or None, default=None Whether to filter by error status. run_ids : List[str or UUID] or None, default=None The IDs of the runs to filter by. limit : int or None, default=None The maximum number of runs to return. **kwargs : Any Additional keyword arguments.
+
+Yields:¶
+Run The runs.
+
+Examples:¶
+List all runs in a project:
+
+
+project_runs = client.list_runs(project_name="<your_project>")
+List LLM and Chat runs in the last 24 hours:
+
+
+todays_llm_runs = client.list_runs(
+    project_name="<your_project>",
+    start_time=datetime.now() - timedelta(days=1),
+    run_type="llm",
+)
+List root traces in a project:
+
+
+root_runs = client.list_runs(project_name="<your_project>", is_root=1)
+List runs without errors:
+
+
+correct_runs = client.list_runs(project_name="<your_project>", error=False)
+List runs and only return their inputs/outputs (to speed up the query):
+
+
+input_output_runs = client.list_runs(
+    project_name="<your_project>", select=["inputs", "outputs"]
+)
+List runs by run ID:
+
+
+run_ids = [
+    "a36092d2-4ad5-4fb4-9c0d-0dba9a2ed836",
+    "9398e6be-964f-4aa4-8ae9-ad78cd4b7074",
+]
+selected_runs = client.list_runs(id=run_ids)
+List all "chain" type runs that took more than 10 seconds and had total_tokens greater than 5000:
+
+
+chain_runs = client.list_runs(
+    project_name="<your_project>",
+    filter='and(eq(run_type, "chain"), gt(latency, 10), gt(total_tokens, 5000))',
+)
+List all runs called "extractor" whose root of the trace was assigned feedback "user_score" score of 1:
+
+
+good_extractor_runs = client.list_runs(
+    project_name="<your_project>",
+    filter='eq(name, "extractor")',
+    trace_filter='and(eq(feedback_key, "user_score"), eq(feedback_score, 1))',
+)
+List all runs that started after a specific timestamp and either have "error" not equal to null or a "Correctness" feedback score equal to 0:
+
+
+complex_runs = client.list_runs(
+    project_name="<your_project>",
+    filter='and(gt(start_time, "2023-07-15T12:34:56Z"), or(neq(error, null), and(eq(feedback_key, "Correctness"), eq(feedback_score, 0.0))))',
+)
+List all runs where tags include "experimental" or "beta" and latency is greater than 2 seconds:
+
+
+tagged_runs = client.list_runs(
+    project_name="<your_project>",
+    filter='and(or(has(tags, "experimental"), has(tags, "beta")), gt(latency, 2))',
+)
+ share_run async ¶
+
+share_run(run_id: ID_TYPE, *, share_id: ID_TYPE | None = None) -> str
+Get a share link for a run asynchronously.
+
+PARAMETER	DESCRIPTION
+run_id	The ID of the run to share.
+TYPE: ID_TYPE
+
+share_id	Custom share ID. If not provided, a random UUID will be generated.
+TYPE: ID_TYPE | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+str	The URL of the shared run.
+TYPE: str
+
+RAISES	DESCRIPTION
+HTTPStatusError	If the API request fails.
+ run_is_shared async ¶
+
+run_is_shared(run_id: ID_TYPE) -> bool
+Get share state for a run asynchronously.
+
+ read_run_shared_link async ¶
+
+read_run_shared_link(run_id: ID_TYPE) -> str | None
+Retrieve the shared link for a specific run asynchronously.
+
+PARAMETER	DESCRIPTION
+run_id	The ID of the run.
+TYPE: ID_TYPE
+
+RETURNS	DESCRIPTION
+str | None	Optional[str]: The shared link for the run, or None if the link is not
+str | None	available.
+RAISES	DESCRIPTION
+HTTPStatusError	If the API request fails.
+ create_project async ¶
+
+create_project(project_name: str, **kwargs: Any) -> TracerSession
+Create a project.
+
+ read_project async ¶
+
+read_project(
+    project_name: str | None = None, project_id: ID_TYPE | None = None
+) -> TracerSession
+Read a project.
+
+ delete_project async ¶
+
+delete_project(
+    *, project_name: str | None = None, project_id: str | None = None
+) -> None
+Delete a project from LangSmith.
+
+Parameters¶
+project_name : str or None, default=None The name of the project to delete. project_id : str or None, default=None The ID of the project to delete.
+
+ create_dataset async ¶
+
+create_dataset(dataset_name: str, **kwargs: Any) -> Dataset
+Create a dataset.
+
+ read_dataset async ¶
+
+read_dataset(
+    dataset_name: str | None = None, dataset_id: ID_TYPE | None = None
+) -> Dataset
+Read a dataset.
+
+ delete_dataset async ¶
+
+delete_dataset(dataset_id: ID_TYPE) -> None
+Delete a dataset.
+
+ list_datasets async ¶
+
+list_datasets(**kwargs: Any) -> AsyncIterator[Dataset]
+List datasets.
+
+ create_example async ¶
+
+create_example(
+    inputs: dict[str, Any],
+    outputs: dict[str, Any] | None = None,
+    dataset_id: ID_TYPE | None = None,
+    dataset_name: str | None = None,
+    **kwargs: Any,
+) -> Example
+Create an example.
+
+ read_example async ¶
+
+read_example(example_id: ID_TYPE) -> Example
+Read an example.
+
+ list_examples async ¶
+
+list_examples(
+    *, dataset_id: ID_TYPE | None = None, dataset_name: str | None = None, **kwargs: Any
+) -> AsyncIterator[Example]
+List examples.
+
+ create_feedback async ¶
+
+create_feedback(
+    run_id: ID_TYPE | None,
+    key: str,
+    score: float | None = None,
+    value: Any | None = None,
+    comment: str | None = None,
+    **kwargs: Any,
+) -> Feedback
+Create feedback for a run.
+
+PARAMETER	DESCRIPTION
+run_id	The ID of the run to provide feedback for. Can be None for project-level feedback.
+TYPE: ID_TYPE | None
+
+key	The name of the metric or aspect this feedback is about.
+TYPE: str
+
+score	The score to rate this run on the metric or aspect.
+TYPE: float | NoneDEFAULT: None
+
+value	The display value or non-numeric value for this feedback.
+TYPE: Any | NoneDEFAULT: None
+
+comment	A comment about this feedback.
+TYPE: str | NoneDEFAULT: None
+
+**kwargs	Additional keyword arguments to include in the feedback data.
+TYPE: AnyDEFAULT: {}
+
+RETURNS	DESCRIPTION
+Feedback	ls_schemas.Feedback: The created feedback object.
+RAISES	DESCRIPTION
+HTTPStatusError	If the API request fails.
+ create_feedback_from_token async ¶
+
+create_feedback_from_token(
+    token_or_url: str | UUID,
+    score: float | int | bool | None = None,
+    *,
+    value: float | int | bool | str | dict | None = None,
+    correction: dict | None = None,
+    comment: str | None = None,
+    metadata: dict | None = None,
+) -> None
+Create feedback from a presigned token or URL.
+
+PARAMETER	DESCRIPTION
+token_or_url	The token or URL from which to create feedback.
+TYPE: str | UUID
+
+score	The score of the feedback. Defaults to None.
+TYPE: float | int | bool | NoneDEFAULT: None
+
+value	The value of the feedback. Defaults to None.
+TYPE: float | int | bool | str | dict | NoneDEFAULT: None
+
+correction	The correction of the feedback. Defaults to None.
+TYPE: dict | NoneDEFAULT: None
+
+comment	The comment of the feedback. Defaults to None.
+TYPE: str | NoneDEFAULT: None
+
+metadata	Additional metadata for the feedback. Defaults to None.
+TYPE: dict | NoneDEFAULT: None
+
+RAISES	DESCRIPTION
+ValueError	If the source API URL is invalid.
+RETURNS	DESCRIPTION
+None	This method does not return anything.
+TYPE: None
+
+ create_presigned_feedback_token async ¶
+
+create_presigned_feedback_token(
+    run_id: ID_TYPE,
+    feedback_key: str,
+    *,
+    expiration: datetime | timedelta | None = None,
+    feedback_config: FeedbackConfig | None = None,
+    feedback_id: ID_TYPE | None = None,
+) -> FeedbackIngestToken
+Create a pre-signed URL to send feedback data to.
+
+This is useful for giving browser-based clients a way to upload feedback data directly to LangSmith without accessing the API key.
+
+PARAMETER	DESCRIPTION
+run_id	
+TYPE: ID_TYPE
+
+feedback_key	
+TYPE: str
+
+expiration	The expiration time of the pre-signed URL. Either a datetime or a timedelta offset from now. Default to 3 hours.
+TYPE: datetime | timedelta | NoneDEFAULT: None
+
+feedback_config	FeedbackConfig or None. If creating a feedback_key for the first time, this defines how the metric should be interpreted, such as a continuous score (w/ optional bounds), or distribution over categorical values.
+TYPE: FeedbackConfig | NoneDEFAULT: None
+
+feedback_id	The ID of the feedback to create. If not provided, a new feedback will be created.
+TYPE: ID_TYPE | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+FeedbackIngestToken	The pre-signed URL for uploading feedback data.
+ read_feedback async ¶
+
+read_feedback(feedback_id: ID_TYPE) -> Feedback
+Read feedback.
+
+ list_feedback async ¶
+
+list_feedback(
+    *,
+    run_ids: Sequence[ID_TYPE] | None = None,
+    feedback_key: Sequence[str] | None = None,
+    feedback_source_type: Sequence[FeedbackSourceType] | None = None,
+    limit: int | None = None,
+    **kwargs: Any,
+) -> AsyncIterator[Feedback]
+List feedback.
+
+ delete_feedback async ¶
+
+delete_feedback(feedback_id: ID_TYPE) -> None
+Delete a feedback by ID.
+
+PARAMETER	DESCRIPTION
+feedback_id	The ID of the feedback to delete.
+TYPE: UUID | str
+
+RETURNS	DESCRIPTION
+None	None
+ list_annotation_queues async ¶
+
+list_annotation_queues(
+    *,
+    queue_ids: list[ID_TYPE] | None = None,
+    name: str | None = None,
+    name_contains: str | None = None,
+    limit: int | None = None,
+) -> AsyncIterator[AnnotationQueue]
+List the annotation queues on the LangSmith API.
+
+PARAMETER	DESCRIPTION
+queue_ids	The IDs of the queues to filter by.
+TYPE: List[UUID | str] | NoneDEFAULT: None
+
+name	The name of the queue to filter by.
+TYPE: str | NoneDEFAULT: None
+
+name_contains	The substring that the queue name should contain.
+TYPE: str | NoneDEFAULT: None
+
+limit	The maximum number of queues to return.
+TYPE: int | NoneDEFAULT: None
+
+YIELDS	DESCRIPTION
+AsyncIterator[AnnotationQueue]	The annotation queues.
+ create_annotation_queue async ¶
+
+create_annotation_queue(
+    *, name: str, description: str | None = None, queue_id: ID_TYPE | None = None
+) -> AnnotationQueue
+Create an annotation queue on the LangSmith API.
+
+PARAMETER	DESCRIPTION
+name	The name of the annotation queue.
+TYPE: str
+
+description	The description of the annotation queue.
+TYPE: str | NoneDEFAULT: None
+
+queue_id	The ID of the annotation queue.
+TYPE: UUID | str | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+AnnotationQueue	The created annotation queue object.
+TYPE: AnnotationQueue
+
+ read_annotation_queue async ¶
+
+read_annotation_queue(queue_id: ID_TYPE) -> AnnotationQueue
+Read an annotation queue with the specified queue_id.
+
+PARAMETER	DESCRIPTION
+queue_id	The ID of the annotation queue to read.
+TYPE: UUID | str
+
+RETURNS	DESCRIPTION
+AnnotationQueue	The annotation queue object.
+TYPE: AnnotationQueue
+
+ update_annotation_queue async ¶
+
+update_annotation_queue(
+    queue_id: ID_TYPE, *, name: str, description: str | None = None
+) -> None
+Update an annotation queue with the specified queue_id.
+
+PARAMETER	DESCRIPTION
+queue_id	The ID of the annotation queue to update.
+TYPE: UUID | str
+
+name	The new name for the annotation queue.
+TYPE: str
+
+description	The new description for the annotation queue. Defaults to None.
+TYPE: str | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+None	None
+ delete_annotation_queue async ¶
+
+delete_annotation_queue(queue_id: ID_TYPE) -> None
+Delete an annotation queue with the specified queue_id.
+
+PARAMETER	DESCRIPTION
+queue_id	The ID of the annotation queue to delete.
+TYPE: UUID | str
+
+RETURNS	DESCRIPTION
+None	None
+ add_runs_to_annotation_queue async ¶
+
+add_runs_to_annotation_queue(queue_id: ID_TYPE, *, run_ids: list[ID_TYPE]) -> None
+Add runs to an annotation queue with the specified queue_id.
+
+PARAMETER	DESCRIPTION
+queue_id	The ID of the annotation queue.
+TYPE: UUID | str
+
+run_ids	The IDs of the runs to be added to the annotation queue.
+TYPE: List[UUID | str]
+
+RETURNS	DESCRIPTION
+None	None
+ delete_run_from_annotation_queue async ¶
+
+delete_run_from_annotation_queue(queue_id: ID_TYPE, *, run_id: ID_TYPE) -> None
+Delete a run from an annotation queue with the specified queue_id and run_id.
+
+PARAMETER	DESCRIPTION
+queue_id	The ID of the annotation queue.
+TYPE: UUID | str
+
+run_id	The ID of the run to be added to the annotation queue.
+TYPE: UUID | str
+
+RETURNS	DESCRIPTION
+None	None
+ get_run_from_annotation_queue async ¶
+
+get_run_from_annotation_queue(
+    queue_id: ID_TYPE, *, index: int
+) -> RunWithAnnotationQueueInfo
+Get a run from an annotation queue at the specified index.
+
+PARAMETER	DESCRIPTION
+queue_id	The ID of the annotation queue.
+TYPE: UUID | str
+
+index	The index of the run to retrieve.
+TYPE: int
+
+RETURNS	DESCRIPTION
+RunWithAnnotationQueueInfo	The run at the specified index.
+TYPE: RunWithAnnotationQueueInfo
+
+RAISES	DESCRIPTION
+LangSmithNotFoundError	If the run is not found at the given index.
+LangSmithError	For other API-related errors.
+ index_dataset async ¶
+
+index_dataset(*, dataset_id: ID_TYPE, tag: str = 'latest', **kwargs: Any) -> None
+Enable dataset indexing. Examples are indexed by their inputs.
+
+This enables searching for similar examples by inputs with client.similar_examples().
+
+PARAMETER	DESCRIPTION
+dataset_id	The ID of the dataset to index.
+TYPE: UUID
+
+tag	The version of the dataset to index. If 'latest' then any updates to the dataset (additions, updates, deletions of examples) will be reflected in the index.
+TYPE: strDEFAULT: 'latest'
+
+RETURNS	DESCRIPTION
+None	None
+RAISES	DESCRIPTION
+HTTPError	If the request fails.
+ sync_indexed_dataset async ¶
+
+sync_indexed_dataset(*, dataset_id: ID_TYPE, **kwargs: Any) -> None
+Sync dataset index.
+
+This already happens automatically every 5 minutes, but you can call this to force a sync.
+
+PARAMETER	DESCRIPTION
+dataset_id	The ID of the dataset to sync.
+TYPE: UUID
+
+RETURNS	DESCRIPTION
+None	None
+RAISES	DESCRIPTION
+HTTPError	If the request fails.
+ similar_examples async ¶
+
+similar_examples(
+    inputs: dict,
+    /,
+    *,
+    limit: int,
+    dataset_id: ID_TYPE,
+    filter: str | None = None,
+    **kwargs: Any,
+) -> list[ExampleSearch]
+Retrieve the dataset examples whose inputs best match the current inputs.
+
+Note
+
+Must have few-shot indexing enabled for the dataset. See client.index_dataset().
+
+PARAMETER	DESCRIPTION
+inputs	The inputs to use as a search query. Must match the dataset input schema. Must be JSON serializable.
+TYPE: dict
+
+limit	The maximum number of examples to return.
+TYPE: int
+
+dataset_id	The ID of the dataset to search over.
+TYPE: str or UUID
+
+filter	A filter string to apply to the search results. Uses the same syntax as the filter parameter in list_runs(). Only a subset of operations are supported. Defaults to None.
+TYPE: strDEFAULT: None
+
+kwargs	Additional keyword args to pass as part of request body.
+TYPE: AnyDEFAULT: {}
+
+RETURNS	DESCRIPTION
+list[ExampleSearch]	List of ExampleSearch objects.
+Examples:
+
+
+from langsmith import Client
+
+client = Client()
+await client.similar_examples(
+    {"question": "When would i use the runnable generator"},
+    limit=3,
+    dataset_id="...",
+)
+
+[
+    ExampleSearch(
+        inputs={
+            "question": "How do I cache a Chat model? What caches can I use?"
+        },
+        outputs={
+            "answer": "You can use LangChain's caching layer for Chat Models. This can save you money by reducing the number of API calls you make to the LLM provider, if you're often requesting the same completion multiple times, and speed up your application.\n\n```python\n\nfrom langchain.cache import InMemoryCache\nlangchain.llm_cache = InMemoryCache()\n\n# The first time, it is not yet in cache, so it should take longer\nllm.predict('Tell me a joke')\n\n```\n\nYou can also use SQLite Cache which uses a SQLite database:\n\n```python\n  rm .langchain.db\n\nfrom langchain.cache import SQLiteCache\nlangchain.llm_cache = SQLiteCache(database_path=\".langchain.db\")\n\n# The first time, it is not yet in cache, so it should take longer\nllm.predict('Tell me a joke') \n```\n"
+        },
+        metadata=None,
+        id=UUID("b2ddd1c4-dff6-49ae-8544-f48e39053398"),
+        dataset_id=UUID("01b6ce0f-bfb6-4f48-bbb8-f19272135d40"),
+    ),
+    ExampleSearch(
+        inputs={"question": "What's a runnable lambda?"},
+        outputs={
+            "answer": "A runnable lambda is an object that implements LangChain's `Runnable` interface and runs a callbale (i.e., a function). Note the function must accept a single argument."
+        },
+        metadata=None,
+        id=UUID("f94104a7-2434-4ba7-8293-6a283f4860b4"),
+        dataset_id=UUID("01b6ce0f-bfb6-4f48-bbb8-f19272135d40"),
+    ),
+    ExampleSearch(
+        inputs={"question": "Show me how to use RecursiveURLLoader"},
+        outputs={
+            "answer": 'The RecursiveURLLoader comes from the langchain.document_loaders.recursive_url_loader module. Here\'s an example of how to use it:\n\n```python\nfrom langchain.document_loaders.recursive_url_loader import RecursiveUrlLoader\n\n# Create an instance of RecursiveUrlLoader with the URL you want to load\nloader = RecursiveUrlLoader(url="https://example.com")\n\n# Load all child links from the URL page\nchild_links = loader.load()\n\n# Print the child links\nfor link in child_links:\n    print(link)\n```\n\nMake sure to replace "https://example.com" with the actual URL you want to load. The load() method returns a list of child links found on the URL page. You can iterate over this list to access each child link.'
+        },
+        metadata=None,
+        id=UUID("0308ea70-a803-4181-a37d-39e95f138f8c"),
+        dataset_id=UUID("01b6ce0f-bfb6-4f48-bbb8-f19272135d40"),
+    ),
+]
+ like_prompt async ¶
+
+like_prompt(prompt_identifier: str) -> dict[str, int]
+Like a prompt.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt.
+TYPE: str
+
+RETURNS	DESCRIPTION
+dict[str, int]	Dict[str, int]: A dictionary with the key 'likes' and the count of likes as the value.
+ unlike_prompt async ¶
+
+unlike_prompt(prompt_identifier: str) -> dict[str, int]
+Unlike a prompt.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt.
+TYPE: str
+
+RETURNS	DESCRIPTION
+dict[str, int]	Dict[str, int]: A dictionary with the key 'likes' and the count of likes as the value.
+ list_prompts async ¶
+
+list_prompts(
+    *,
+    limit: int = 100,
+    offset: int = 0,
+    is_public: bool | None = None,
+    is_archived: bool | None = False,
+    sort_field: PromptSortField = updated_at,
+    sort_direction: Literal["desc", "asc"] = "desc",
+    query: str | None = None,
+) -> ListPromptsResponse
+List prompts with pagination.
+
+PARAMETER	DESCRIPTION
+limit	The maximum number of prompts to return. Defaults to 100.
+TYPE: int, default=100DEFAULT: 100
+
+offset	The number of prompts to skip. Defaults to 0.
+TYPE: int, default=0DEFAULT: 0
+
+is_public	Filter prompts by if they are public.
+TYPE: bool | NoneDEFAULT: None
+
+is_archived	Filter prompts by if they are archived.
+TYPE: bool | NoneDEFAULT: False
+
+sort_field	The field to sort by. Defaults to "updated_at".
+TYPE: PromptSortFieldDEFAULT: updated_at
+
+sort_direction	The order to sort by. Defaults to "desc".
+TYPE: Literal["desc", "asc"], default="desc"DEFAULT: 'desc'
+
+query	Filter prompts by a search query.
+TYPE: str | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+ListPromptsResponse	A response object containing
+TYPE: ListPromptsResponse
+
+ListPromptsResponse	the list of prompts.
+ get_prompt async ¶
+
+get_prompt(prompt_identifier: str) -> Prompt | None
+Get a specific prompt by its identifier.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt. The identifier should be in the format "prompt_name" or "owner/prompt_name".
+TYPE: str
+
+RETURNS	DESCRIPTION
+Prompt | None	Optional[Prompt]: The prompt object.
+RAISES	DESCRIPTION
+HTTPError	If the prompt is not found or another error occurs.
+ create_prompt async ¶
+
+create_prompt(
+    prompt_identifier: str,
+    *,
+    description: str | None = None,
+    readme: str | None = None,
+    tags: Sequence[str] | None = None,
+    is_public: bool = False,
+) -> Prompt
+Create a new prompt.
+
+Does not attach prompt object, just creates an empty prompt.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt. The identifier should be in the formatof owner/name:hash, name:hash, owner/name, or name
+TYPE: str
+
+description	A description of the prompt.
+TYPE: str | NoneDEFAULT: None
+
+readme	A readme for the prompt.
+TYPE: str | NoneDEFAULT: None
+
+tags	A list of tags for the prompt.
+TYPE: Sequence[str] | NoneDEFAULT: None
+
+is_public	Whether the prompt should be public. Defaults to False.
+TYPE: boolDEFAULT: False
+
+RETURNS	DESCRIPTION
+Prompt	The created prompt object.
+TYPE: Prompt
+
+RAISES	DESCRIPTION
+ValueError	If the current tenant is not the owner.
+HTTPError	If the server request fails.
+ create_commit async ¶
+
+create_commit(
+    prompt_identifier: str, object: Any, *, parent_commit_hash: str | None = None
+) -> str
+Create a commit for an existing prompt.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt.
+TYPE: str
+
+object	The LangChain object to commit.
+TYPE: Any
+
+parent_commit_hash	The hash of the parent commit. Defaults to latest commit.
+TYPE: str | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+str	The url of the prompt commit.
+TYPE: str
+
+RAISES	DESCRIPTION
+HTTPError	If the server request fails.
+ValueError	If the prompt does not exist.
+ update_prompt async ¶
+
+update_prompt(
+    prompt_identifier: str,
+    *,
+    description: str | None = None,
+    readme: str | None = None,
+    tags: Sequence[str] | None = None,
+    is_public: bool | None = None,
+    is_archived: bool | None = None,
+) -> dict[str, Any]
+Update a prompt's metadata.
+
+To update the content of a prompt, use push_prompt or create_commit instead.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt to update.
+TYPE: str
+
+description	New description for the prompt.
+TYPE: str | NoneDEFAULT: None
+
+readme	New readme for the prompt.
+TYPE: str | NoneDEFAULT: None
+
+tags	New list of tags for the prompt.
+TYPE: Sequence[str] | NoneDEFAULT: None
+
+is_public	New public status for the prompt.
+TYPE: bool | NoneDEFAULT: None
+
+is_archived	New archived status for the prompt.
+TYPE: bool | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+dict[str, Any]	Dict[str, Any]: The updated prompt data as returned by the server.
+RAISES	DESCRIPTION
+ValueError	If the prompt_identifier is empty.
+HTTPError	If the server request fails.
+ delete_prompt async ¶
+
+delete_prompt(prompt_identifier: str) -> None
+Delete a prompt.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt to delete.
+TYPE: str
+
+RETURNS	DESCRIPTION
+bool	True if the prompt was successfully deleted, False otherwise.
+TYPE: None
+
+RAISES	DESCRIPTION
+ValueError	If the current tenant is not the owner of the prompt.
+ pull_prompt_commit async ¶
+
+pull_prompt_commit(
+    prompt_identifier: str, *, include_model: bool | None = False
+) -> PromptCommit
+Pull a prompt object from the LangSmith API.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt.
+TYPE: str
+
+RETURNS	DESCRIPTION
+PromptCommit	The prompt object.
+TYPE: PromptCommit
+
+RAISES	DESCRIPTION
+ValueError	If no commits are found for the prompt.
+ list_prompt_commits async ¶
+
+list_prompt_commits(
+    prompt_identifier: str,
+    *,
+    limit: int | None = None,
+    offset: int = 0,
+    include_model: bool = False,
+) -> AsyncGenerator[ListedPromptCommit, None]
+List commits for a given prompt.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt in the format 'owner/repo_name'.
+TYPE: str
+
+limit	The maximum number of commits to return. If None, returns all commits. Defaults to None.
+TYPE: int | NoneDEFAULT: None
+
+offset	The number of commits to skip before starting to return results. Defaults to 0.
+TYPE: int, default=0DEFAULT: 0
+
+include_model	Whether to include the model information in the commit data. Defaults to False.
+TYPE: bool, default=FalseDEFAULT: False
+
+YIELDS	DESCRIPTION
+AsyncGenerator[ListedPromptCommit, None]	A ListedPromptCommit object for each commit.
+Note
+
+This method uses pagination to retrieve commits. It will make multiple API calls if necessary to retrieve all commits or up to the specified limit.
+
+ pull_prompt async ¶
+
+pull_prompt(prompt_identifier: str, *, include_model: bool | None = False) -> Any
+Pull a prompt and return it as a LangChain PromptTemplate.
+
+This method requires langchain-core.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt.
+TYPE: str
+
+include_model	Whether to include the model information in the prompt data.
+TYPE: bool | NoneDEFAULT: False
+
+RETURNS	DESCRIPTION
+Any	The prompt object in the specified format.
+TYPE: Any
+
+ push_prompt async ¶
+
+push_prompt(
+    prompt_identifier: str,
+    *,
+    object: Any | None = None,
+    parent_commit_hash: str = "latest",
+    is_public: bool | None = None,
+    description: str | None = None,
+    readme: str | None = None,
+    tags: Sequence[str] | None = None,
+) -> str
+Push a prompt to the LangSmith API.
+
+Can be used to update prompt metadata or prompt content.
+
+If the prompt does not exist, it will be created. If the prompt exists, it will be updated.
+
+PARAMETER	DESCRIPTION
+prompt_identifier	The identifier of the prompt.
+TYPE: str
+
+object	The LangChain object to push.
+TYPE: Any | NoneDEFAULT: None
+
+parent_commit_hash	The parent commit hash. Defaults to "latest".
+TYPE: strDEFAULT: 'latest'
+
+is_public	Whether the prompt should be public. If None (default), the current visibility status is maintained for existing prompts. For new prompts, None defaults to private. Set to True to make public, or False to make private.
+TYPE: bool | NoneDEFAULT: None
+
+description	A description of the prompt. Defaults to an empty string.
+TYPE: str | NoneDEFAULT: None
+
+readme	A readme for the prompt. Defaults to an empty string.
+TYPE: str | NoneDEFAULT: None
+
+tags	A list of tags for the prompt. Defaults to an empty list.
+TYPE: Sequence[str] | NoneDEFAULT: None
+
+RETURNS	DESCRIPTION
+str	The URL of the prompt.
+TYPE: str

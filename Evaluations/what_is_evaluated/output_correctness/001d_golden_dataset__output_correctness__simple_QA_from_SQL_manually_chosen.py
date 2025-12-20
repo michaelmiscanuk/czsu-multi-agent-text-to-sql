@@ -6,9 +6,7 @@ from langsmith import Client
 from langsmith.utils import LangSmithNotFoundError
 
 # Config
-DATASET_NAME = (
-    "001d_golden_dataset__output_correctness__simple_QA_from_SQL_manually_chosen"
-)
+DATASET_NAME = Path(__file__).stem
 
 # Load environment variables from .env file at project root
 project_root = Path(__file__).resolve().parents[3]
