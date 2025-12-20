@@ -16,26 +16,26 @@ load_dotenv(project_root / ".env")
 # Define questions and answers for the golden dataset
 # Each question is preceded by a comment showing the filename and exact source line from the CSV data
 question_answers = [
-    {
-        "question": "What was the average consumer price of oranges in Czechia in March 2025?",
-        "answer": "34.27 CZK per kg",
-        "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pomeranče [1 kg];březen 2025;34.27",
-    },
-    {
-        "question": "What was the average consumer price of honey in Czechia in October 2024?",
-        "answer": "178.28 CZK per kg",
-        "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pravý včelí med [1 kg];říjen 2024;178.28",
-    },
     # {
-    #     "question": "What was the average annual inflation rate in Czechia in 2022?",
-    #     "answer": "15.1%",
-    #     "source": "CEN0101HT01.csv; Česko;2022;Průměrná roční míra inflace;15.1",
+    #     "question": "What was the average consumer price of oranges in Czechia in March 2025?",
+    #     "answer": "34.27 CZK per kg",
+    #     "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pomeranče [1 kg];březen 2025;34.27",
     # },
     # {
-    #     "question": "What was the average consumer price of gasoline in Czechia in May 2025?",
-    #     "answer": "33.94 CZK per liter",
-    #     "source": "CEN0101JT01.csv; Průměrná cena pohonných hmot;Česko;květen 2025;Benzin automobilový bezolovnatý Natural 95 [Kč/l];33.94",
+    #     "question": "What was the average consumer price of honey in Czechia in October 2024?",
+    #     "answer": "178.28 CZK per kg",
+    #     "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pravý včelí med [1 kg];říjen 2024;178.28",
     # },
+    {
+        "question": "What was the average annual inflation rate in Czechia in 2022?",
+        "answer": "15.1%",
+        "source": "CEN0101HT01.csv; Česko;2022;Průměrná roční míra inflace;15.1",
+    },
+    {
+        "question": "What was the average consumer price of gasoline in Czechia in May 2025?",
+        "answer": "33.94 CZK per liter",
+        "source": "CEN0101JT01.csv; Průměrná cena pohonných hmot;Česko;květen 2025;Benzin automobilový bezolovnatý Natural 95 [Kč/l];33.94",
+    },
     # {
     #     "question": "What was the index of construction material input prices in Czechia in Q4 2024?",
     #     "answer": "149.9",

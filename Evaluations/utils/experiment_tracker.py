@@ -66,7 +66,11 @@ class ExperimentTracker:
         """Load existing config or create new structure."""
         if self.config_file.exists():
             with open(self.config_file, "r", encoding="utf-8") as f:
-                return json.load(f)
+                content = f.read().strip()
+                if not content:
+                    # File exists but is empty
+                    return {"executions": {}, "latest_execution_id": None}
+                return json.loads(content)
         return {"executions": {}, "latest_execution_id": None}
 
     def save(self):

@@ -51,7 +51,7 @@ PYTHON_EXE = BASE_DIR / ".venv" / "Scripts" / "python.exe"
 
 # Evaluation configuration
 NODE_NAME = "format_answer_node"
-DATASET_NAME = "001d_golden_dataset__output_correctness__simple_QA_from_SQL_reduced"
+DATASET_NAME = "001d_golden_dataset__output_correctness__simple_QA_from_SQL_reduced2"
 MAX_CONCURRENCY = 1
 JUDGE_MODEL_ID = "azureopenai_gpt-4.1"
 
