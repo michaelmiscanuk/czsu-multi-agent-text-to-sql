@@ -121,7 +121,7 @@ async def correctness(outputs: dict, reference_outputs: dict) -> bool:
         return False
 
     actual_answer = outputs["messages"][-1].content
-    expected_answer = reference_outputs.get("answers", "[NO EXPECTED ANSWER PROVIDED]")
+    expected_answer = reference_outputs.get("answer", "[NO EXPECTED ANSWER PROVIDED]")
 
     instructions = (
         "Given an actual answer and an expected answer, determine whether"
@@ -164,9 +164,20 @@ async def run_evaluation():
     # Generate experiment name
     experiment_name = generate_experiment_name(JUDGE_MODEL_ID, NODE_NAME, MODEL_ID)
 
-    # Create target function
+    # Get progress file path from env (if provided by parent)
+    progress_file = os.environ.get("EVAL_PROGRESS_FILE")
+
+    # Create target function with progress tracking
     async def target_fn(inputs: dict):
-        return await target_with_config(inputs, graph)
+        result = await target_with_config(inputs, graph)
+        # Signal completion to parent process via file
+        if progress_file and os.path.exists(progress_file):
+            try:
+                with open(progress_file, "a", encoding="utf-8") as f:
+                    f.write("1\n")
+            except (OSError, IOError):
+                pass  # Silently fail if file write fails
+        return result
 
     # Run evaluation
     experiment_results = await aevaluate(

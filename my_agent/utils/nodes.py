@@ -69,6 +69,9 @@ Key Features:
 6. Memory & Resource Management:
    - Message summarization at key points
    - ChromaDB client cleanup with garbage collection
+   - Robust ChromaDB Cloud access with retry logic (NEW)
+   - Connection verification before operations (NEW)
+   - Exponential backoff for transient failures (NEW)
    - Minimal checkpoint state (5 essential fields only)
    - Explicit memory release after retrieval
    - Token-efficient state management
@@ -112,13 +115,19 @@ Nodes: retrieve_similar_selections_hybrid_search_node, rerank_table_descriptions
 retrieve_similar_selections_hybrid_search_node:
 - Input: rewritten_prompt, n_results (default: 20)
 - Output: hybrid_search_results (List[Document])
-- Purpose: Hybrid search on dataset selection descriptions
+- Purpose: Hybrid search on dataset selection descriptions with robust ChromaDB Cloud support
 - Key Logic:
   * Checks ChromaDB directory existence (local) or uses cloud
-  * Initializes ChromaDB client and collection
+  * ChromaDB Robustness Features (NEW):
+    - Automatic retry with exponential backoff (3 attempts, 1s→2s→4s)
+    - Connection verification before operations
+    - Fresh client per retry to handle stale connections
+    - Handles timeouts, rate limits (429), service errors (503)
+  * get_client_with_retry(): Gets client + verifies connection
+  * perform_search_with_retry(): Executes hybrid_search with retries
   * Calls hybrid_search() (semantic + BM25 weighted combination)
   * Converts dict results to Document objects
-  * Memory cleanup: Explicitly closes client and runs gc.collect()
+  * Memory cleanup: Safe client release (client=None) + gc.collect()
   * Sets chromadb_missing flag if directory not found
 
 rerank_table_descriptions_node:
@@ -148,13 +157,20 @@ Nodes: retrieve_similar_chunks_hybrid_search_node, rerank_chunks_node, relevant_
 retrieve_similar_chunks_hybrid_search_node:
 - Input: rewritten_prompt, n_results (default: 15)
 - Output: hybrid_search_chunks (List[Document])
-- Purpose: Hybrid search on parsed PDF documentation
+- Purpose: Hybrid search on parsed PDF documentation with robust ChromaDB Cloud support
 - Key Logic:
   * Translates query to English using Azure Translator API
   * Checks PDF ChromaDB directory existence or uses cloud
+  * ChromaDB Robustness Features (NEW):
+    - Automatic retry with exponential backoff (3 attempts, 1s→2s→4s)
+    - Connection verification before operations
+    - Fresh client per retry to handle stale connections
+    - Handles timeouts, rate limits (429), service errors (503)
+  * get_pdf_client_with_retry(): Gets PDF client + verifies connection
+  * perform_pdf_search_with_retry(): Executes pdf_hybrid_search with retries
   * Calls pdf_hybrid_search() on PDF collection
   * Converts results to Document objects
-  * Memory cleanup: Closes client and runs gc.collect()
+  * Memory cleanup: Safe client release (client=None) + gc.collect()
   * Returns empty list if PDF_FUNCTIONALITY_AVAILABLE=False
 
 rerank_chunks_node:
@@ -687,6 +703,15 @@ except NameError:
 
 SAVE_TO_FILE_TXT_JSONL = 0
 
+# Cohere Configuration
+from dotenv import load_dotenv
+
+load_dotenv()
+COHERE_RERANK_FAILURE_MODE = os.getenv("COHERE_RERANK_FAILURE_MODE", "fallback").lower()
+COHERE_RERANK_MAX_RETRIES = 5  # Hardcoded retry attempts for Cohere API calls
+print(f"🔧 Cohere rerank failure mode: {COHERE_RERANK_FAILURE_MODE}")
+print(f"🔧 Cohere rerank max retries: {COHERE_RERANK_MAX_RETRIES}")
+
 print(f"🔍 Current working directory: {Path.cwd()}")
 
 # Import debug functions from utils
@@ -698,6 +723,9 @@ from my_agent.utils.helpers import (
     translate_text,
     detect_language,
     get_configured_llm,
+    chromadb_retry,
+    verify_chromadb_connection,
+    cohere_retry,
 )
 
 # Import tools
@@ -780,6 +808,8 @@ PDF_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for PDF chunks
 SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
     20  # Number of selections to retrieve from hybrid search
 )
+N_RESULTS = 20  # Number of results to send to Cohere rerank
+N_RESULTS_NO_RERANK = 6  # Number of fallback results when Cohere rerank fails
 
 
 # ==============================================================================
@@ -1209,19 +1239,66 @@ async def retrieve_similar_selections_hybrid_search_node(
         # Key Step 3: Initialize ChromaDB client and get collection using chromadb_client_factory
         # Use the same method as the test script to get ChromaDB collection directly
 
-        client = get_chromadb_client(
-            local_path=CHROMA_DB_PATH, collection_name=CHROMA_COLLECTION_NAME
-        )
-        collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
+        @chromadb_retry(max_attempts=10, base_delay=1.0, max_delay=10.0)
+        def get_client_with_retry():
+            """Get ChromaDB client with automatic retry and connection verification.
+
+            Creates a ChromaDB client for the selections collection and immediately
+            verifies connectivity by attempting to access the collection. If verification
+            fails, raises ConnectionError to trigger retry logic from decorator.
+
+            Returns:
+                ChromaDB client instance with verified connection
+
+            Raises:
+                ConnectionError: If collection is not accessible after verification
+            """
+            client = get_chromadb_client(
+                local_path=CHROMA_DB_PATH, collection_name=CHROMA_COLLECTION_NAME
+            )
+            # Verify connection immediately
+            if not verify_chromadb_connection(client, CHROMA_COLLECTION_NAME):
+                raise ConnectionError(
+                    f"Failed to verify connection to collection '{CHROMA_COLLECTION_NAME}'"
+                )
+            return client
+
+        @chromadb_retry(max_attempts=10, base_delay=1.0, max_delay=10.0)
+        def perform_search_with_retry():
+            """Perform hybrid search on selections collection with automatic retry.
+
+            Gets a fresh ChromaDB client for each retry attempt to handle stale
+            connections, then executes hybrid_search combining semantic and BM25
+            retrieval methods. Returns raw results as list of dicts.
+
+            Returns:
+                list: Hybrid search results with 'document' and 'metadata' keys
+            """
+            # Get fresh client for each retry attempt
+            client = get_chromadb_client(
+                local_path=CHROMA_DB_PATH, collection_name=CHROMA_COLLECTION_NAME
+            )
+            collection = client.get_collection(name=CHROMA_COLLECTION_NAME)
+            print__nodes_debug(
+                f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized"
+            )
+
+            # Perform hybrid search
+            results = hybrid_search(collection, query, n_results=n_results)
+            print__nodes_debug(
+                f"📊 {HYBRID_SEARCH_NODE_ID}: Retrieved {len(results)} hybrid search results"
+            )
+            return results
+
+        # Execute with retries
         print__nodes_debug(
-            f"📊 {HYBRID_SEARCH_NODE_ID}: ChromaDB collection initialized"
+            f"🔧 {HYBRID_SEARCH_NODE_ID}: Connecting to ChromaDB with retry logic..."
         )
+        client = get_client_with_retry()
+        print__nodes_debug(f"✅ {HYBRID_SEARCH_NODE_ID}: Connection verified")
 
         # Key Step 4: Perform hybrid search (semantic + BM25) using hybrid_search function
-        hybrid_results = hybrid_search(collection, query, n_results=n_results)
-        print__nodes_debug(
-            f"📊 {HYBRID_SEARCH_NODE_ID}: Retrieved {len(hybrid_results)} hybrid search results"
-        )
+        hybrid_results = perform_search_with_retry()
 
         # Key Step 5: Convert dict results to Document objects with page_content and metadata
         # Convert dict results to Document objects for compatibility
@@ -1252,20 +1329,41 @@ async def retrieve_similar_selections_hybrid_search_node(
 
         # Key Step 6: Clean up ChromaDB resources (clear references, explicit delete, gc.collect())
         # MEMORY CLEANUP: Explicitly close ChromaDB resources
+        # Note: Less aggressive cleanup to avoid interfering with concurrent access
         print__nodes_debug(
             f"🧹 {HYBRID_SEARCH_NODE_ID}: Cleaning up ChromaDB client resources"
         )
-        collection = None  # Clear collection reference
-        del client  # Explicitly delete client
-        gc.collect()  # Force garbage collection to release memory
-        print__nodes_debug(f"✅ {HYBRID_SEARCH_NODE_ID}: ChromaDB resources released")
+        try:
+            # Don't delete client immediately - just clear references
+            # This allows connection pooling to work properly for CloudClient
+            client = None
+            # Force garbage collection (less aggressive than before)
+            gc.collect()
+            print__nodes_debug(
+                f"✅ {HYBRID_SEARCH_NODE_ID}: ChromaDB resources released"
+            )
+        except Exception as cleanup_error:
+            # Don't fail the operation if cleanup fails
+            print__nodes_debug(
+                f"⚠️ {HYBRID_SEARCH_NODE_ID}: Cleanup warning: {cleanup_error}"
+            )
 
         # Key Step 7: Return hybrid_search_results list or empty list on error
+        # CRITICAL: Log the actual return value to diagnose race conditions
+        print(
+            f"🚀🚀🚀 {HYBRID_SEARCH_NODE_ID}: RETURNING {len(hybrid_docs)} hybrid_search_results"
+        )
+        if not hybrid_docs:
+            print(
+                f"⚠️⚠️⚠️ {HYBRID_SEARCH_NODE_ID}: WARNING - Returning EMPTY hybrid_search_results!"
+            )
         return {"hybrid_search_results": hybrid_docs}
     except Exception as e:
-        print(f"❌ {HYBRID_SEARCH_NODE_ID}: Error in hybrid search: {e}")
-
+        print(f"❌❌❌ {HYBRID_SEARCH_NODE_ID}: EXCEPTION in hybrid search: {e}")
         print(f"📄 {HYBRID_SEARCH_NODE_ID}: Traceback: {traceback.format_exc()}")
+        print(
+            f"⚠️⚠️⚠️ {HYBRID_SEARCH_NODE_ID}: Returning EMPTY hybrid_search_results due to exception!"
+        )
         return {"hybrid_search_results": []}
 
 
@@ -1305,6 +1403,18 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
     hybrid_results = state.get("hybrid_search_results", [])
     n_results = state.get("n_results", 20)
 
+    # CRITICAL: Log what we received to diagnose empty results
+    print(
+        f"🚀🚀🚀 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: RECEIVED {len(hybrid_results)} hybrid_search_results from state"
+    )
+    if not hybrid_results:
+        print(
+            f"⚠️⚠️⚠️ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: WARNING - Received EMPTY hybrid_search_results!"
+        )
+        print(
+            f"⚠️⚠️⚠️ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: State keys: {list(state.keys())}"
+        )
+
     print__nodes_debug(f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Query: {query}")
     print__nodes_debug(
         f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Number of hybrid results received: {len(hybrid_results)}"
@@ -1337,11 +1447,18 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         )
 
     try:
-        # Key Step 3: Call cohere_rerank with documents and query to reorder by semantic relevance
-        print__nodes_debug(
-            f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
+        # Key Step 3: Call cohere_rerank with retry logic
+        @cohere_retry(
+            max_attempts=COHERE_RERANK_MAX_RETRIES, base_delay=2.0, max_delay=30.0
         )
-        reranked = cohere_rerank(query, hybrid_results, top_n=n_results)
+        def call_cohere_rerank_with_retry():
+            """Call Cohere rerank with automatic retry logic."""
+            print__nodes_debug(
+                f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Calling cohere_rerank with {len(hybrid_results)} documents"
+            )
+            return cohere_rerank(query, hybrid_results, top_n=n_results)
+
+        reranked = call_cohere_rerank_with_retry()
         print__nodes_debug(
             f"📊 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Cohere returned {len(reranked)} reranked results"
         )
@@ -1365,14 +1482,39 @@ async def rerank_table_descriptions_node(state: DataAnalysisState) -> DataAnalys
         # Key Step 5: Return most_similar_selections as list of (selection_code, score) tuples
         return {"most_similar_selections": most_similar}
     except Exception as e:
-        print(f"❌ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Error in reranking: {e}")
-
         print(
-            f"📄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Traceback: {traceback.format_exc()}",
-            RERANK_TABLE_DESCRIPTIONS_NODE_ID,
-            traceback.format_exc(),
+            f"❌❌❌ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Cohere rerank failed after {COHERE_RERANK_MAX_RETRIES} retries: {e}"
         )
-        return {"most_similar_selections": []}
+        print(
+            f"📄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Traceback: {traceback.format_exc()}"
+        )
+
+        # Handle failure based on configuration
+        if COHERE_RERANK_FAILURE_MODE == "fail":
+            print(
+                f"❌❌❌ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: COHERE_RERANK_FAILURE_MODE=fail - Raising exception"
+            )
+            raise
+        else:
+            # Fallback to top N_RESULTS_NO_RERANK hybrid search results without reranking
+            print(
+                f"⚠️⚠️⚠️ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: COHERE_RERANK_FAILURE_MODE=fallback - Using top {N_RESULTS_NO_RERANK} hybrid results"
+            )
+            fallback_results = []
+            for i, doc in enumerate(hybrid_results[:N_RESULTS_NO_RERANK], 1):
+                selection_code = doc.metadata.get("selection") if doc.metadata else None
+                # Assign decreasing scores (1.0, 0.95, 0.90, ...) to maintain order
+                score = 1.0 - (i - 1) * 0.05
+                fallback_results.append((selection_code, score))
+                if i <= 10:
+                    print__nodes_debug(
+                        f"⚠️ {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Fallback #{i}: {selection_code} | Score: {score:.6f}"
+                    )
+
+            print(
+                f"🔄 {RERANK_TABLE_DESCRIPTIONS_NODE_ID}: Returning {len(fallback_results)} fallback results without Cohere reranking"
+            )
+            return {"most_similar_selections": fallback_results}
 
 
 async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisState:
@@ -1403,6 +1545,16 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
     # Key Step 1: Extract most_similar_selections list from state
     most_similar = state.get("most_similar_selections", [])
 
+    # CRITICAL: Log what we received
+    print(
+        f"🚀🚀🚀 {RELEVANT_NODE_ID}: RECEIVED {len(most_similar)} most_similar_selections from state"
+    )
+    if not most_similar:
+        print(
+            f"⚠️⚠️⚠️ {RELEVANT_NODE_ID}: WARNING - Received EMPTY most_similar_selections!"
+        )
+        print(f"⚠️⚠️⚠️ {RELEVANT_NODE_ID}: State keys: {list(state.keys())}")
+
     # Key Step 2: Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
     # Select up to 3 top selections above threshold
     top_selection_codes = [
@@ -1415,10 +1567,11 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
     )
 
     # Key Step 3: Prepare result dict with top_selection_codes and clear intermediate state
+    # Note: We don't clear most_similar_selections here as it may be needed for debugging/tracing
+    # and clearing it would erase the rerank scores from the previous node
     result = {
         "top_selection_codes": top_selection_codes,
         "hybrid_search_results": [],
-        "most_similar_selections": [],
     }
 
     # Key Step 4: Set special final_answer "No Relevant Selections Found" if no selections pass threshold
@@ -1517,18 +1670,64 @@ async def retrieve_similar_chunks_hybrid_search_node(
     try:
         # Use the PDF ChromaDB collection directly with cloud/local support
 
-        client = get_chromadb_client(
-            local_path=PDF_CHROMA_DB_PATH, collection_name=PDF_COLLECTION_NAME
-        )
-        collection = client.get_collection(name=PDF_COLLECTION_NAME)
-        print__nodes_debug(
-            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized"
-        )
+        @chromadb_retry(max_attempts=3, base_delay=1.0, max_delay=10.0)
+        def get_pdf_client_with_retry():
+            """Get ChromaDB client for PDF collection with automatic retry and verification.
 
-        hybrid_results = pdf_hybrid_search(collection, query, n_results=n_results)
+            Creates a ChromaDB client for the PDF chunks collection and immediately
+            verifies connectivity by attempting to access the collection. If verification
+            fails, raises ConnectionError to trigger retry logic from decorator.
+
+            Returns:
+                ChromaDB client instance with verified connection to PDF collection
+
+            Raises:
+                ConnectionError: If PDF collection is not accessible after verification
+            """
+            client = get_chromadb_client(
+                local_path=PDF_CHROMA_DB_PATH, collection_name=PDF_COLLECTION_NAME
+            )
+            # Verify connection immediately
+            if not verify_chromadb_connection(client, PDF_COLLECTION_NAME):
+                raise ConnectionError(
+                    f"Failed to verify connection to PDF collection '{PDF_COLLECTION_NAME}'"
+                )
+            return client
+
+        @chromadb_retry(max_attempts=3, base_delay=1.0, max_delay=10.0)
+        def perform_pdf_search_with_retry():
+            """Perform hybrid search on PDF collection with automatic retry.
+
+            Gets a fresh ChromaDB client for each retry attempt to handle stale
+            connections, then executes pdf_hybrid_search combining semantic and BM25
+            retrieval methods on PDF documentation chunks. Returns raw results as list of dicts.
+
+            Returns:
+                list: PDF hybrid search results with 'document' and 'metadata' keys
+            """
+            # Get fresh client for each retry attempt
+            client = get_chromadb_client(
+                local_path=PDF_CHROMA_DB_PATH, collection_name=PDF_COLLECTION_NAME
+            )
+            collection = client.get_collection(name=PDF_COLLECTION_NAME)
+            print__nodes_debug(
+                f"📊 {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB collection initialized"
+            )
+
+            results = pdf_hybrid_search(collection, query, n_results=n_results)
+            print__nodes_debug(
+                f"📊 {RETRIEVE_CHUNKS_NODE_ID}: Retrieved {len(results)} PDF hybrid search results"
+            )
+            return results
+
+        # Execute with retries
         print__nodes_debug(
-            f"📊 {RETRIEVE_CHUNKS_NODE_ID}: Retrieved {len(hybrid_results)} PDF hybrid search results"
+            f"🔧 {RETRIEVE_CHUNKS_NODE_ID}: Connecting to PDF ChromaDB with retry logic..."
         )
+        client = get_pdf_client_with_retry()
+        print__nodes_debug(f"✅ {RETRIEVE_CHUNKS_NODE_ID}: PDF connection verified")
+
+        hybrid_results = perform_pdf_search_with_retry()
 
         # Convert dict results to Document objects for compatibility
 
@@ -1559,7 +1758,9 @@ async def retrieve_similar_chunks_hybrid_search_node(
             f"🧹 {RETRIEVE_CHUNKS_NODE_ID}: Cleaning up PDF ChromaDB client resources"
         )
         collection = None  # Clear collection reference
-        del client  # Explicitly delete client
+        client = (
+            None  # Release client reference (less aggressive for concurrent access)
+        )
         gc.collect()  # Force garbage collection to release memory
         print__nodes_debug(
             f"✅ {RETRIEVE_CHUNKS_NODE_ID}: PDF ChromaDB resources released"
@@ -1640,10 +1841,18 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
         )
 
     try:
-        print__nodes_debug(
-            f"🔄 {RERANK_CHUNKS_NODE_ID}: Calling PDF cohere_rerank with {len(hybrid_results)} documents"
+        # Call pdf_cohere_rerank with retry logic
+        @cohere_retry(
+            max_attempts=COHERE_RERANK_MAX_RETRIES, base_delay=2.0, max_delay=30.0
         )
-        reranked = pdf_cohere_rerank(query, hybrid_results, top_n=n_results)
+        def call_pdf_cohere_rerank_with_retry():
+            """Call Cohere rerank for PDF chunks with automatic retry logic."""
+            print__nodes_debug(
+                f"🔄 {RERANK_CHUNKS_NODE_ID}: Calling PDF cohere_rerank with {len(hybrid_results)} documents"
+            )
+            return pdf_cohere_rerank(query, hybrid_results, top_n=n_results)
+
+        reranked = call_pdf_cohere_rerank_with_retry()
         print__nodes_debug(
             f"📄 {RERANK_CHUNKS_NODE_ID}: PDF Cohere returned {len(reranked)} reranked results"
         )
@@ -1665,10 +1874,37 @@ async def rerank_chunks_node(state: DataAnalysisState) -> DataAnalysisState:
 
         return {"most_similar_chunks": most_similar}
     except Exception as e:
-        print(f"❌ {RERANK_CHUNKS_NODE_ID}: Error in PDF reranking: {e}")
-
+        print(
+            f"❌❌❌ {RERANK_CHUNKS_NODE_ID}: PDF Cohere rerank failed after {COHERE_RERANK_MAX_RETRIES} retries: {e}"
+        )
         print(f"📄 {RERANK_CHUNKS_NODE_ID}: Traceback: {traceback.format_exc()}")
-        return {"most_similar_chunks": []}
+
+        # Handle failure based on configuration
+        if COHERE_RERANK_FAILURE_MODE == "fail":
+            print(
+                f"❌❌❌ {RERANK_CHUNKS_NODE_ID}: COHERE_RERANK_FAILURE_MODE=fail - Raising exception"
+            )
+            raise
+        else:
+            # Fallback to top N_RESULTS_NO_RERANK hybrid search results without reranking
+            print(
+                f"⚠️⚠️⚠️ {RERANK_CHUNKS_NODE_ID}: COHERE_RERANK_FAILURE_MODE=fallback - Using top {N_RESULTS_NO_RERANK} PDF hybrid results"
+            )
+            fallback_results = []
+            for i, doc in enumerate(hybrid_results[:N_RESULTS_NO_RERANK], 1):
+                # Assign decreasing scores (1.0, 0.95, 0.90, ...) to maintain order
+                score = 1.0 - (i - 1) * 0.05
+                fallback_results.append((doc, score))
+                if i <= PDF_N_TOP_CHUNKS:
+                    source = doc.metadata.get("source") if doc.metadata else "unknown"
+                    print__nodes_debug(
+                        f"⚠️ {RERANK_CHUNKS_NODE_ID}: PDF Fallback #{i}: {source} | Score: {score:.6f}"
+                    )
+
+            print(
+                f"🔄 {RERANK_CHUNKS_NODE_ID}: Returning {len(fallback_results)} PDF fallback results without Cohere reranking"
+            )
+            return {"most_similar_chunks": fallback_results}
 
 
 async def relevant_chunks_node(state: DataAnalysisState) -> DataAnalysisState:

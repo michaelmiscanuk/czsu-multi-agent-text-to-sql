@@ -13,7 +13,9 @@ import sqlite3
 import requests
 import uuid
 import asyncio
+import time
 from pathlib import Path
+from functools import wraps
 from dotenv import load_dotenv
 
 # Import model configuration functions (required for get_configured_llm)
@@ -37,6 +39,164 @@ try:
 except NameError:
     BASE_DIR = Path(os.getcwd()).parents[0]
     print(f"🔍 BASE_DIR calculated from cwd: {BASE_DIR}")
+
+
+# ==============================================================================
+# CHROMADB RETRY HELPERS
+# ==============================================================================
+
+
+def chromadb_retry(max_attempts=3, base_delay=1.0, max_delay=10.0):
+    """Retry decorator for ChromaDB operations with exponential backoff.
+
+    Handles common ChromaDB Cloud errors:
+    - Connection timeouts
+    - Rate limiting (429)
+    - Temporary service unavailability (503)
+    - Network errors
+
+    Args:
+        max_attempts: Maximum number of retry attempts
+        base_delay: Initial delay between retries in seconds
+        max_delay: Maximum delay between retries in seconds
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    error_msg = str(e).lower()
+
+                    # Check if error is retryable
+                    retryable = any(
+                        [
+                            "timeout" in error_msg,
+                            "rate limit" in error_msg,
+                            "429" in error_msg,
+                            "503" in error_msg,
+                            "connection" in error_msg,
+                            "network" in error_msg,
+                            "temporarily unavailable" in error_msg,
+                        ]
+                    )
+
+                    if not retryable or attempt == max_attempts:
+                        print(
+                            f"❌ ChromaDB operation failed (non-retryable or max attempts): {e}"
+                        )
+                        raise
+
+                    # Calculate delay with exponential backoff
+                    delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
+                    print(
+                        f"⚠️ ChromaDB operation failed (attempt {attempt}/{max_attempts}): {e}"
+                    )
+                    print(f"   Retrying in {delay:.1f}s...")
+                    time.sleep(delay)
+
+            # Should not reach here, but just in case
+            raise last_exception
+
+        return wrapper
+
+    return decorator
+
+
+def verify_chromadb_connection(client, collection_name: str) -> bool:
+    """Verify ChromaDB connection and collection availability.
+
+    Args:
+        client: ChromaDB client instance
+        collection_name: Name of the collection to verify
+
+    Returns:
+        bool: True if connection is valid and collection exists
+    """
+    try:
+        # Try to access the collection
+        collection = client.get_collection(name=collection_name)
+        # Try a simple count operation
+        count = collection.count()
+        print(
+            f"✅ ChromaDB connection verified: collection '{collection_name}' has {count} documents"
+        )
+        return True
+    except Exception as e:
+        print(f"❌ ChromaDB connection verification failed: {e}")
+        return False
+
+
+def cohere_retry(max_attempts=5, base_delay=2.0, max_delay=30.0):
+    """Retry decorator for Cohere API operations with exponential backoff.
+
+    Handles common Cohere API errors:
+    - Rate limiting (429)
+    - Temporary service unavailability (503, 502)
+    - Network errors
+    - Timeout errors
+
+    Args:
+        max_attempts: Maximum number of retry attempts (default: 5)
+        base_delay: Initial delay between retries in seconds (default: 2.0)
+        max_delay: Maximum delay between retries in seconds (default: 30.0)
+
+    Returns:
+        Decorated function with retry logic
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exception = None
+
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    error_msg = str(e).lower()
+
+                    # Check if error is retryable
+                    retryable = any(
+                        [
+                            "rate limit" in error_msg,
+                            "429" in error_msg,
+                            "503" in error_msg,
+                            "502" in error_msg,
+                            "timeout" in error_msg,
+                            "connection" in error_msg,
+                            "network" in error_msg,
+                            "temporarily unavailable" in error_msg,
+                            "too many requests" in error_msg,
+                        ]
+                    )
+
+                    if not retryable or attempt == max_attempts:
+                        print(
+                            f"❌ Cohere operation failed (non-retryable or max attempts): {e}"
+                        )
+                        raise
+
+                    # Calculate delay with exponential backoff
+                    delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
+                    print(
+                        f"⚠️ Cohere operation failed (attempt {attempt}/{max_attempts}): {e}"
+                    )
+                    print(f"   Retrying in {delay:.1f}s...")
+                    time.sleep(delay)
+
+            # Should not reach here, but just in case
+            raise last_exception
+
+        return wrapper
+
+    return decorator
 
 
 # ==============================================================================

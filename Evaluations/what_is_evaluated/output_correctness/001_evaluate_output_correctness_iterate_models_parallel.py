@@ -21,6 +21,9 @@ import subprocess
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
+import tempfile
+import threading
+import time
 
 # Project root
 try:
@@ -86,7 +89,7 @@ MODELS_TO_EVALUATE = [
 # ]
 
 
-def run_subprocess_evaluation(model_id: str) -> dict:
+def run_subprocess_evaluation(model_id: str, progress_file: str) -> dict:
     """Run single evaluation in subprocess."""
     # Environment variables for subprocess
     env = os.environ.copy()
@@ -95,7 +98,7 @@ def run_subprocess_evaluation(model_id: str) -> dict:
     env["EVAL_DATASET_NAME"] = DATASET_NAME
     env["EVAL_MAX_CONCURRENCY"] = str(MAX_CONCURRENCY)
     env["EVAL_JUDGE_MODEL_ID"] = JUDGE_MODEL_ID
-    env["DEBUG"] = "0"
+    env["EVAL_PROGRESS_FILE"] = progress_file
 
     try:
         result = subprocess.run(
@@ -131,6 +134,31 @@ def run_subprocess_evaluation(model_id: str) -> dict:
         }
 
 
+def monitor_progress(
+    progress_file: str, total_examples: int, stop_event: threading.Event
+):
+    """Monitor progress file and update tqdm."""
+    with tqdm(
+        total=total_examples * len(MODELS_TO_EVALUATE),
+        desc="Dataset Examples",
+        unit="example",
+        position=0,
+    ) as pbar:
+        last_count = 0
+        while not stop_event.is_set():
+            try:
+                if os.path.exists(progress_file):
+                    with open(progress_file, "r", encoding="utf-8") as f:
+                        lines = f.readlines()
+                        current_count = len(lines)
+                        if current_count > last_count:
+                            pbar.update(current_count - last_count)
+                            last_count = current_count
+            except (OSError, IOError):
+                pass
+            time.sleep(0.5)  # Check every 0.5 seconds
+
+
 def main():
     """Run all evaluations in parallel."""
     print(f"\n{'='*80}")
@@ -146,21 +174,49 @@ def main():
 
     print(f"\n🚀 Starting {len(MODELS_TO_EVALUATE)} parallel evaluations...\n")
 
+    # Create temporary progress file
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".txt") as tf:
+        progress_file = tf.name
+
+    # Get dataset size from LangSmith (assuming 30 for now, you can query this)
+    DATASET_SIZE = 30
+
+    # Start progress monitoring thread
+    stop_event = threading.Event()
+    monitor_thread = threading.Thread(
+        target=monitor_progress,
+        args=(progress_file, DATASET_SIZE, stop_event),
+        daemon=True,
+    )
+    monitor_thread.start()
+
     # Run evaluations in parallel (ThreadPoolExecutor for blocking subprocess calls)
     results = []
-    with ThreadPoolExecutor(max_workers=len(MODELS_TO_EVALUATE)) as executor:
-        futures = [
-            executor.submit(run_subprocess_evaluation, model_id)
-            for model_id in MODELS_TO_EVALUATE
-        ]
+    try:
+        with ThreadPoolExecutor(max_workers=len(MODELS_TO_EVALUATE)) as executor:
+            futures = [
+                executor.submit(run_subprocess_evaluation, model_id, progress_file)
+                for model_id in MODELS_TO_EVALUATE
+            ]
 
-        with tqdm(total=len(futures), desc="Evaluations", unit="eval") as pbar:
-            for future in futures:
-                result = future.result()
-                results.append(result)
-                status = "✓" if result["success"] else "✗"
-                pbar.set_description(f"{status} {result['model_id']}")
-                pbar.update(1)
+            with tqdm(
+                total=len(futures), desc="Models Completed", unit="model", position=1
+            ) as pbar:
+                for future in futures:
+                    result = future.result()
+                    results.append(result)
+                    status = "✓" if result["success"] else "✗"
+                    pbar.set_description(f"{status} {result['model_id'][:30]}")
+                    pbar.update(1)
+    finally:
+        # Stop monitoring thread
+        stop_event.set()
+        monitor_thread.join(timeout=2)
+        # Cleanup progress file
+        try:
+            os.unlink(progress_file)
+        except (OSError, IOError):
+            pass
 
     # Summary
     print(f"\n{'='*80}")
