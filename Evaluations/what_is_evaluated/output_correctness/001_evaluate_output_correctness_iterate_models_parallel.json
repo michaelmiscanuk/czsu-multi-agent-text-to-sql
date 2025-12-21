@@ -285,11 +285,11 @@
           "error": null
         },
         "azureopenai_gpt-5.2-chat": {
-          "status": "in_progress",
+          "status": "completed",
           "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5.2-chat",
           "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5.2-chat-23af0bc5",
           "experiment_id": "c01e8c06-9df8-48ec-a0c7-395278dfecf8",
-          "examples_completed": 0,
+          "examples_completed": 30,
           "error": null
         },
         "xai_grok-4-1-fast-reasoning": {
@@ -313,7 +313,7 @@
           "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview",
           "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview-6873e5c9",
           "experiment_id": "89358bb2-d1fa-4d1c-98c5-597cedb4a97d",
-          "examples_completed": 1,
+          "examples_completed": 13,
           "error": null
         }
       }
