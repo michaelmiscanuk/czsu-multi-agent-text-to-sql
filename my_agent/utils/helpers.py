@@ -18,6 +18,7 @@ import time
 from pathlib import Path
 from functools import wraps
 from dotenv import load_dotenv
+from Evaluations.utils.retry_utils import retry_with_exponential_backoff
 
 # Import model configuration functions (required for get_configured_llm)
 from my_agent.utils.models import (
@@ -276,6 +277,7 @@ async def load_schema(state=None):
 NEWLINE_SPLIT_PATTERN = re.compile(r"(\r?\n+)")
 
 
+@retry_with_exponential_backoff(max_attempts=5, base_delay=1.0, max_delay=30.0)
 async def translate_text(text, target_language="en"):
     """Helper function that translates text to a target language using Azure Translator API.
 
@@ -352,17 +354,44 @@ async def translate_text(text, target_language="en"):
     async def translate_batch(batch):
         body = [{"text": chunk} for chunk in batch]
         response = await loop.run_in_executor(
-            None, lambda: requests.post(constructed_url, headers=headers, json=body)
+            None,
+            lambda: requests.post(
+                constructed_url, headers=headers, json=body, timeout=30
+            ),
         )
         response.raise_for_status()
         data = response.json()
-        return [item["translations"][0]["text"] for item in data]
+
+        # Validate response structure
+        if not isinstance(data, list) or len(data) == 0:
+            print(f"⚠️ Azure Translator API returned unexpected format: {data}")
+            return batch  # Return original text on error
+
+        translations = []
+        for item in data:
+            if "translations" not in item or len(item["translations"]) == 0:
+                print(f"⚠️ Azure Translator API response missing translations: {item}")
+                translations.append("")  # Add empty string as fallback
+            elif "text" not in item["translations"][0]:
+                print(
+                    f"⚠️ Azure Translator API response missing 'text' field: {item['translations'][0]}"
+                )
+                translations.append("")
+            else:
+                translations.append(item["translations"][0]["text"])
+
+        return translations
 
     translated_parts = []
     batch_size = 50
     for start in range(0, len(translate_segments), batch_size):
         batch = translate_segments[start : start + batch_size]
-        translated_parts.extend(await translate_batch(batch))
+        try:
+            translated_parts.extend(await translate_batch(batch))
+        except Exception as e:
+            print(f"⚠️ Translation batch failed: {e}")
+            # Use original text on error
+            translated_parts.extend(batch)
 
     translated_iter = iter(translated_parts)
     for idx in translate_indices:
@@ -371,6 +400,7 @@ async def translate_text(text, target_language="en"):
     return "".join(parts)
 
 
+@retry_with_exponential_backoff(max_attempts=5, base_delay=1.0, max_delay=30.0)
 async def detect_language(text: str) -> str:
     """Helper function that detects the language of text using Azure Translator API.
 
@@ -428,9 +458,28 @@ async def detect_language(text: str) -> str:
     # Run the synchronous request in a thread
     loop = asyncio.get_event_loop()
     response = await loop.run_in_executor(
-        None, lambda: requests.post(constructed_url, headers=headers, json=body)
+        None,
+        lambda: requests.post(constructed_url, headers=headers, json=body, timeout=30),
     )
+
+    # Validate response
+    if response.status_code != 200:
+        print(f"⚠️ Azure Translator API error: Status {response.status_code}")
+        print(f"Response: {response.text[:200]}")
+        # Return default language on error
+        return "en"
+
     result = response.json()
+
+    # Validate result structure
+    if not isinstance(result, list) or len(result) == 0:
+        print(f"⚠️ Azure Translator API returned unexpected format: {result}")
+        return "en"
+
+    if "language" not in result[0]:
+        print(f"⚠️ Azure Translator API response missing 'language' field: {result[0]}")
+        return "en"
+
     return result[0]["language"]
 
 

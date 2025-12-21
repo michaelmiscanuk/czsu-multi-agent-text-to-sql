@@ -79,6 +79,15 @@ RESUME_EXECUTION_ID = "exec_2025-12-21_125714_f1f7b54d"  # or None for latest
 MODELS_TO_EVALUATE = [
     "mistral_mistral-large-2512",
     "mistral_devstral-2512",
+    "mistral_codestral-2508",
+    "azureopenai_gpt-4o",
+    "azureopenai_gpt-4o-mini",
+    "azureopenai_gpt-4.1",
+    "azureopenai_gpt-5-nano",
+    "azureopenai_gpt-5.2-chat",
+    "xai_grok-4-1-fast-reasoning",
+    "xai_grok-4-1-fast-non-reasoning",
+    "gemini_gemini-3-pro-preview",
 ]
 
 # ============================================================================
