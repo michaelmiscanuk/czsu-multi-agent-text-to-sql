@@ -60,7 +60,7 @@ Key Features:
    - Configurable weighting (default: 85% semantic, 15% BM25)
    - Czech text normalization (diacritics handling) for better matching
    - Score normalization and combination algorithms
-   - Cohere multilingual reranking (rerank-multilingual-v3.0)
+   - Cohere multilingual reranking (rerank-v4.0-fast)
    - Configurable result thresholds and filtering
 
 6. Content Type Intelligence & Preservation:
@@ -161,7 +161,7 @@ Search Configuration:
 API Integration:
 - AZURE_EMBEDDING_DEPLOYMENT: "text-embedding-3-large__test1"
 - Azure Document Intelligence: Premium parsing with table optimization
-- Cohere: rerank-multilingual-v3.0 for final ranking
+- Cohere: rerank-v4.0-fast for final ranking
 
 Usage Examples:
 ==============
@@ -1908,11 +1908,13 @@ def cohere_rerank(query, docs, top_n):
 
     try:
         rerank_response = co.rerank(
-            model="rerank-multilingual-v3.0",
+            model="rerank-v4.0-fast",
             query=processed_query,
             documents=docs_for_cohere,
             top_n=top_n,
         )
+
+        print(f"✅ Successfully reranked {len(docs)} documents using Cohere model: rerank-v4.0-fast")
 
         reranked = []
         for res in rerank_response.results:

@@ -53,6 +53,13 @@ try:
 except ImportError:
     pass
 
+try:
+    from langsmith.utils import LangSmithRateLimitError
+
+    RATE_LIMIT_ERRORS += (LangSmithRateLimitError,)
+except ImportError:
+    pass
+
 
 def is_rate_limit_error(error: Exception) -> bool:
     """

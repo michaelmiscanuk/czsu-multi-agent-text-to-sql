@@ -70,10 +70,10 @@ JUDGE_MODEL_ID = "azureopenai_gpt-4.1"
 DATASET_SIZE = 30  # Approximate size for progress display
 
 # Execution mode
-# EXECUTION_MODE = "resume"  # "new" or "resume"
-EXECUTION_MODE = "new"  # "new" or "resume"
-# RESUME_EXECUTION_ID = "exec_2025-12-21_120433_cac30a7b"  # or None for latest
-RESUME_EXECUTION_ID = None  # or None for latest
+EXECUTION_MODE = "resume"  # "new" or "resume"
+# EXECUTION_MODE = "new"  # "new" or "resume"
+RESUME_EXECUTION_ID = "exec_2025-12-21_125714_f1f7b54d"  # or None for latest
+# RESUME_EXECUTION_ID = None  # or None for latest
 
 # Models to evaluate
 MODELS_TO_EVALUATE = [

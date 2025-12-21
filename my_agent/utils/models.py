@@ -36,21 +36,27 @@ def get_azure_openai_chat_llm(
         deployment_name (str): Azure deployment name (e.g., "gpt-4o__test1")
         model_name (str): Model name (e.g., "gpt-4o", "gpt-4o-mini")
         openai_api_version (str): Azure OpenAI API version (e.g., "2024-05-01-preview")
-        temperature (float): Temperature setting for generation randomness (default: 0.0)
+        temperature (Optional[float]): Temperature setting for generation randomness.
+                                       If None, uses model default (some models only support default)
         streaming (bool): Enable streaming mode (default: False)
 
     Returns:
         AzureChatOpenAI: Configured LLM instance with async support and retry logic
     """
-    model = AzureChatOpenAI(
-        deployment_name=deployment_name,
-        model_name=model_name,
-        openai_api_version=openai_api_version,
-        temperature=temperature,
-        streaming=streaming,
-        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-    )
+    kwargs = {
+        "deployment_name": deployment_name,
+        "model_name": model_name,
+        "openai_api_version": openai_api_version,
+        "streaming": streaming,
+        "azure_endpoint": os.getenv("AZURE_OPENAI_ENDPOINT"),
+        "api_key": os.getenv("AZURE_OPENAI_API_KEY"),
+    }
+
+    # Only set temperature if explicitly provided (some models only support default)
+    if temperature is not None:
+        kwargs["temperature"] = temperature
+
+    model = AzureChatOpenAI(**kwargs)
     # Add retry logic with exponential backoff (30 attempts)
     return model.with_retry(stop_after_attempt=30)
 

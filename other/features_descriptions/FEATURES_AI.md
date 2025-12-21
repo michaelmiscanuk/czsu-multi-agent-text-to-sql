@@ -563,7 +563,7 @@ The hybrid search system combines semantic similarity search (using embeddings) 
    - Error handling with fallback to original text
 
 4. **Cohere Reranking**
-   - rerank-multilingual-v3.0 model
+   - rerank-v4.0-fast model
    - Top-N filtering after initial retrieval
    - Relevance score calculation
    - Supports both Czech and English queries
@@ -788,7 +788,7 @@ Cohere's multilingual rerank model enhances retrieval quality by reordering hybr
 
 1. **Cohere Client Initialization**
    - API key configuration: `COHERE_API_KEY` environment variable
-   - Model selection: `rerank-multilingual-v3.0` for Czech/English support
+   - Model selection: `rerank-v4.0-fast` for Czech/English support
    - Client instantiation with error handling for missing credentials
    - Rate limit management for production usage
 
@@ -834,7 +834,7 @@ Cohere's multilingual rerank model enhances retrieval quality by reordering hybr
 - **Problem**: BM25 keyword matching misses semantically similar but differently worded content
 - **Solution**: Cohere rerank understands semantic similarity beyond exact keywords
 - **Impact**: 35% improvement in retrieval precision (measured via golden dataset evaluation)
-- **Implementation**: `rerank-multilingual-v3.0` model with semantic understanding
+- **Implementation**: `rerank-v4.0-fast` model with semantic understanding
 
 **Challenge 2: Cross-Lingual Retrieval Quality**
 - **Problem**: Czech queries struggle to match English documentation even after translation

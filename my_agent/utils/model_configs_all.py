@@ -55,13 +55,13 @@ MODEL_CONFIGS_ALL = [
         "streaming": False,
         "openai_api_version": "2024-12-01-preview",
     },
-    # Azure OpenAI GPT-5.2-chat - Next-gen chat model
+    # Azure OpenAI GPT-5.2-chat - Next-gen chat model (only supports default temperature=1)
     {
         "id": "azureopenai_gpt-5.2-chat",
         "model_provider": "azureopenai",
         "model_name": "gpt-5.2-chat",
         "deployment_name": "gpt-5.2-chat-mimi-test",
-        "temperature": 0.0,
+        "temperature": None,  # This model only supports default temperature (1), pass here as None in config
         "streaming": False,
         "openai_api_version": "2024-12-01-preview",
     },
@@ -276,6 +276,7 @@ MODEL_CONFIGS_ALL = [
 # - model_name: Specific model identifier for that provider
 # - deployment_name: Azure deployment name (ONLY for azureopenai, leave empty for others)
 # - temperature: 0.0 = deterministic, 1.0 = creative, 2.0 = very random
+#                Set to None for models that only support default temperature (e.g., GPT-5.2-chat)
 # - streaming: True for streaming responses, False for batch
 # - openai_api_version: Azure API version (ONLY for azureopenai, leave empty for others)
 # - base_url: Server URL (ONLY for ollama, leave empty for others)

@@ -574,9 +574,18 @@ def get_configured_llm(
     model_provider = model_provider or node_config.get("model_provider")
     model_name = model_name or node_config.get("model_name")
     deployment_name = deployment_name or node_config.get("deployment_name", "")
-    temperature = (
-        temperature if temperature is not None else node_config.get("temperature", 0.0)
-    )
+
+    # Temperature: Use explicit param, or from config (which may be None for models with fixed temperature)
+    # If not explicitly provided, check config; if not in config, default to 0.0
+    if temperature is None:
+        if "temperature" in node_config:
+            # Use config value (may be None for models with fixed temperature)
+            temperature = node_config["temperature"]
+        else:
+            # Not in config, use default for backward compatibility
+            temperature = 0.0
+    # else: temperature was explicitly provided, use it as-is
+
     streaming = (
         streaming if streaming is not None else node_config.get("streaming", False)
     )

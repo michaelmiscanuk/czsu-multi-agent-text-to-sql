@@ -1061,7 +1061,7 @@ def similarity_search_chromadb(
 
 
 def cohere_rerank(query, docs, top_n):
-    """Return reranked list of (Document, CohereResult) tuples using Cohere's rerank-multilingual-v3.0, using .index field for correct mapping."""
+    """Return reranked list of (Document, CohereResult) tuples using Cohere's rerank-v4.0-fast, using .index field for correct mapping."""
     cohere_api_key = os.environ.get("COHERE_API_KEY", "")
     co = cohere.Client(cohere_api_key)
     texts = [doc.page_content for doc in docs]
@@ -1071,10 +1071,14 @@ def cohere_rerank(query, docs, top_n):
     #     t_clean = t[:100].replace('\n', ' ')
     #     print(f"#{idx}: {t_clean}{'...' if len(t) > 100 else ''}")
     rerank_response = co.rerank(
-        model="rerank-multilingual-v3.0",
+        model="rerank-v4.0-fast",
         query=query,
         documents=docs_for_cohere,
         top_n=top_n,
+    )
+
+    print(
+        f"✅ Successfully reranked {len(docs)} documents using Cohere model: rerank-v4.0-fast"
     )
 
     # print("[DEBUG] Raw Cohere rerank response:")
