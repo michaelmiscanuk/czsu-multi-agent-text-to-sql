@@ -52,11 +52,18 @@ def get_model_config_by_id(model_id: str, model_configs: List[dict]) -> dict:
 async def get_unevaluated_examples(
     client: Client, experiment_identifier: str, dataset_name: str
 ) -> List[Example]:
-    """Get examples that haven't been evaluated yet in the experiment.
+    """Get examples that haven't been FULLY evaluated yet in the experiment.
 
     This function queries the experiment for existing runs and filters
-    the dataset to only include examples that haven't been evaluated yet.
-    This enables true resume capability without re-evaluating completed examples.
+    the dataset to only include examples that haven't been fully evaluated yet.
+    An example is considered "fully evaluated" only if:
+    1. It has a run that completed (has end_time)
+    2. AND that run has feedback (was scored by evaluators)
+
+    This enables true resume capability, re-running:
+    - Examples that were never started
+    - Examples that started but didn't finish (no end_time)
+    - Examples that finished but have no feedback (evaluation failed)
 
     Args:
         client: LangSmith client instance
@@ -64,7 +71,7 @@ async def get_unevaluated_examples(
         dataset_name: Name of the dataset
 
     Returns:
-        List of Example objects that haven't been evaluated yet
+        List of Example objects that need to be (re)evaluated
     """
     # Get all examples from the dataset
     all_examples = list(client.list_examples(dataset_name=dataset_name))
@@ -90,24 +97,43 @@ async def get_unevaluated_examples(
         # If we can't fetch runs, assume no examples evaluated yet
         return all_examples
 
-    # Get set of example IDs that have already been evaluated
-    evaluated_example_ids = {
-        run.reference_example_id for run in existing_runs if run.reference_example_id
-    }
+    # Get set of example IDs that have been FULLY evaluated:
+    # - Run completed (has end_time)
+    # - Run has feedback (was scored by evaluators)
+    fully_evaluated_example_ids = set()
+
+    for run in existing_runs:
+        if not run.reference_example_id:
+            continue
+
+        # Check if run completed
+        if run.end_time is None:
+            continue
+
+        # Check if run has feedback (evaluator ran successfully)
+        # feedback_stats is a dict like {"correctness": {"n": 1, "avg": 1.0}}
+        has_feedback = (
+            hasattr(run, "feedback_stats")
+            and run.feedback_stats
+            and len(run.feedback_stats) > 0
+        )
+
+        if has_feedback:
+            fully_evaluated_example_ids.add(run.reference_example_id)
 
     # Filter to only unevaluated examples
     unevaluated_examples = [
-        ex for ex in all_examples if ex.id not in evaluated_example_ids
+        ex for ex in all_examples if ex.id not in fully_evaluated_example_ids
     ]
 
     print(f"Dataset: {len(all_examples)} total examples", file=sys.stderr, flush=True)
     print(
-        f"Already evaluated: {len(evaluated_example_ids)} examples",
+        f"Fully evaluated: {len(fully_evaluated_example_ids)} examples (completed + has feedback)",
         file=sys.stderr,
         flush=True,
     )
     print(
-        f"Remaining to evaluate: {len(unevaluated_examples)} examples",
+        f"Need (re)evaluation: {len(unevaluated_examples)} examples",
         file=sys.stderr,
         flush=True,
     )

@@ -45,7 +45,7 @@
           "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512",
           "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-36b59603",
           "experiment_id": "45423234-0280-40b1-bdfa-666826829daa",
-          "examples_completed": 2,
+          "examples_completed": 7,
           "error": null
         },
         "mistral_devstral-2512": {
@@ -53,7 +53,7 @@
           "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512",
           "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-786f998f",
           "experiment_id": "a69dcea1-6b96-4397-b8d8-ad5abe0929dc",
-          "examples_completed": 3,
+          "examples_completed": 7,
           "error": null
         }
       }
