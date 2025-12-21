@@ -1,20 +1,39 @@
-import os
+"""Golden dataset for output correctness evaluation.
+
+This script creates or updates a LangSmith dataset with question-answer pairs
+for evaluating the Czech Statistical Office agent's ability to answer questions
+correctly based on SQL query results.
+
+The dataset contains curated questions with their expected answers and source
+information from CSV files in the CZSU database.
+"""
+
 from pathlib import Path
 
 from dotenv import load_dotenv
 from langsmith import Client
 from langsmith.utils import LangSmithNotFoundError
 
-# Config
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+# Dataset name matches filename for easy identification
 DATASET_NAME = Path(__file__).stem
 
-# Load environment variables from .env file at project root
+# Load environment variables from project root
 project_root = Path(__file__).resolve().parents[3]
 load_dotenv(project_root / ".env")
 
-# Your questions and answers
+# ============================================================================
+# QUESTION-ANSWER PAIRS
+# ============================================================================
+
 # Define questions and answers for the golden dataset
-# Each question is preceded by a comment showing the filename and exact source line from the CSV data
+# Each entry includes:
+# - question: Natural language query about Czech statistical data
+# - answer: Expected answer from the database
+# - source: CSV file and exact data line for verification
 question_answers = [
     # {
     #     "question": "What was the average consumer price of oranges in Czechia in March 2025?",
@@ -168,43 +187,94 @@ question_answers = [
     # },
 ]
 
-ls_client = Client()
+# ============================================================================
+# DATASET MANAGEMENT
+# ============================================================================
 
 
-# Get or create dataset
-try:
-    dataset = ls_client.read_dataset(dataset_name=DATASET_NAME)
-    print(f"Dataset '{dataset.name}' found with ID: {dataset.id}")
-except LangSmithNotFoundError:
-    dataset = ls_client.create_dataset(
-        dataset_name=DATASET_NAME,
-        description="Dataset of Czech Statistical Office agent questions and answers.",
+def get_or_create_dataset(client: Client, name: str, description: str):
+    """Get existing dataset or create new one.
+
+    Args:
+        client: LangSmith client instance
+        name: Dataset name
+        description: Dataset description
+
+    Returns:
+        Dataset object
+    """
+    try:
+        dataset = client.read_dataset(dataset_name=name)
+        print(f"Dataset '{dataset.name}' found with ID: {dataset.id}")
+    except LangSmithNotFoundError:
+        dataset = client.create_dataset(dataset_name=name, description=description)
+        print(f"Dataset '{dataset.name}' created with ID: {dataset.id}")
+    return dataset
+
+
+def get_existing_questions(client: Client, dataset_id: str) -> set:
+    """Fetch all existing questions from dataset to avoid duplicates.
+
+    Args:
+        client: LangSmith client instance
+        dataset_id: Dataset ID
+
+    Returns:
+        Set of existing questions
+    """
+    existing_examples = client.list_examples(dataset_id=dataset_id)
+    return {
+        ex.inputs.get("question")
+        for ex in existing_examples
+        if ex.inputs.get("question")
+    }
+
+
+def prepare_new_examples(qa_pairs: list, existing_questions: set) -> list:
+    """Prepare new examples by filtering out duplicates.
+
+    Args:
+        qa_pairs: List of QA dictionaries
+        existing_questions: Set of already existing questions
+
+    Returns:
+        List of new example dictionaries ready for LangSmith
+    """
+    return [
+        {
+            "inputs": {"question": qa["question"]},
+            "outputs": {"answer": qa["answer"]},
+            "metadata": {"source": qa["source"]},
+        }
+        for qa in qa_pairs
+        if qa["question"] not in existing_questions
+    ]
+
+
+def main():
+    """Create or update the golden dataset in LangSmith."""
+    ls_client = Client()
+
+    # Get or create dataset
+    dataset = get_or_create_dataset(
+        ls_client,
+        DATASET_NAME,
+        "Dataset of Czech Statistical Office agent questions and answers.",
     )
-    print(f"Dataset '{dataset.name}' created with ID: {dataset.id}")
 
-# Fetch existing examples' questions to avoid duplicates
-existing_examples = ls_client.list_examples(dataset_id=dataset.id)
-existing_questions = set()
-for ex in existing_examples:
-    q = ex.inputs.get("question")
-    if q:
-        existing_questions.add(q)
+    # Get existing questions to avoid duplicates
+    existing_questions = get_existing_questions(ls_client, dataset.id)
 
-# Prepare only new examples (filter out duplicates)
-new_examples = []
-for qa in question_answers:
-    question = qa["question"]
-    if question not in existing_questions:
-        new_examples.append(
-            {
-                "inputs": {"question": question},
-                "outputs": {"answer": qa["answer"]},
-                "metadata": {"source": qa["source"]},
-            }
-        )
+    # Prepare new examples
+    new_examples = prepare_new_examples(question_answers, existing_questions)
 
-if new_examples:
-    ls_client.create_examples(dataset_id=dataset.id, examples=new_examples)
-    print(f"Added {len(new_examples)} new examples to dataset '{dataset.name}'.")
-else:
-    print("No new examples to add; all questions already exist in the dataset.")
+    # Add new examples to dataset
+    if new_examples:
+        ls_client.create_examples(dataset_id=dataset.id, examples=new_examples)
+        print(f"Added {len(new_examples)} new examples to dataset '{dataset.name}'.")
+    else:
+        print("No new examples to add; all questions already exist in the dataset.")
+
+
+if __name__ == "__main__":
+    main()

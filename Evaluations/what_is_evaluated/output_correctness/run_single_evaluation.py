@@ -1,4 +1,25 @@
-"""Subprocess runner for single model evaluation with isolated configuration."""
+"""Subprocess runner for single model evaluation with isolated configuration.
+
+This script runs a single model evaluation in complete isolation. It's designed
+to be spawned as a subprocess by the parallel evaluation orchestrator.
+
+Key responsibilities:
+- Load model configuration from environment variables
+- Configure the agent with the specific model
+- Run evaluation using LangSmith's aevaluate
+- Report progress and metadata back to parent process via stderr
+- Handle both NEW and RESUME evaluation modes
+
+Environment variables expected:
+- EVAL_NODE_NAME: Name of the node to evaluate
+- EVAL_MODEL_ID: ID of the model to use
+- EVAL_DATASET_NAME: Name of the dataset
+- EVAL_MAX_CONCURRENCY: Max concurrent evaluations
+- EVAL_JUDGE_MODEL_ID: Judge model for evaluation
+- EVAL_EXPERIMENT_PREFIX: Prefix for new experiments (NEW mode)
+- EVAL_EXPERIMENT_NAME: Experiment name/ID to resume (RESUME mode)
+- EVAL_PROGRESS_FILE: Optional file path for progress tracking
+"""
 
 import sys
 import os
@@ -27,6 +48,10 @@ logging.basicConfig(
     level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
+# ============================================================================
+# PROJECT SETUP
+# ============================================================================
+
 # Project root
 try:
     BASE_DIR = Path(__file__).resolve().parents[3]
@@ -44,7 +69,10 @@ from Evaluations.utils.helpers import (
 )
 from Evaluations.utils.evaluators_custom import correctness_evaluator
 
-# Environment config
+# ============================================================================
+# ENVIRONMENT CONFIGURATION
+# ============================================================================
+
 NODE_NAME = os.environ.get("EVAL_NODE_NAME", "generate_query_node")
 MODEL_ID = os.environ.get("EVAL_MODEL_ID", "")
 DATASET_NAME = os.environ.get(
@@ -53,16 +81,15 @@ DATASET_NAME = os.environ.get(
 )
 MAX_CONCURRENCY = int(os.environ.get("EVAL_MAX_CONCURRENCY", "2"))
 JUDGE_MODEL_ID = os.environ.get("EVAL_JUDGE_MODEL_ID", "azureopenai_gpt-4o")
-EXPERIMENT_PREFIX = os.environ.get(
-    "EVAL_EXPERIMENT_PREFIX", None
-)  # Prefix for new experiments
-EXPERIMENT_NAME = os.environ.get(
-    "EVAL_EXPERIMENT_NAME", None
-)  # Existing experiment name/ID to resume
+EXPERIMENT_PREFIX = os.environ.get("EVAL_EXPERIMENT_PREFIX", None)  # For NEW mode
+EXPERIMENT_NAME = os.environ.get("EVAL_EXPERIMENT_NAME", None)  # For RESUME mode
 
 if not MODEL_ID:
     sys.exit(1)
 
+# ============================================================================
+# MODEL CONFIGURATION
+# ============================================================================
 
 # Load config modules directly (bypass package __init__.py)
 model_configs_path = BASE_DIR / "my_agent" / "utils" / "model_configs_all.py"
@@ -94,6 +121,10 @@ node_models_config.NODE_MODELS_CONFIG["nodes"][NODE_NAME] = new_config
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
 from my_agent.utils.models import get_azure_openai_chat_llm
+
+# ============================================================================
+# EVALUATOR SETUP
+# ============================================================================
 
 
 def generate_experiment_name(judge_id: str, node_name: str, model_id: str) -> str:
@@ -130,9 +161,23 @@ correctness = functools.partial(correctness_evaluator, judge_llm=judge_llm)
 correctness.__name__ = "Correctness"
 correctness.__doc__ = "LLM judge evaluator for answer correctness"
 
+# ============================================================================
+# MAIN EVALUATION LOGIC
+# ============================================================================
+
 
 async def run_evaluation():
-    """Run evaluation silently (output captured by parent process)."""
+    """Run evaluation silently with output captured by parent process.
+
+    This function:
+    1. Creates the agent graph
+    2. Sets up progress tracking via file system
+    3. Invokes LangSmith evaluation with retry logic
+    4. Reports experiment metadata to parent via stderr
+
+    Returns:
+        None (exits with 0 on success, 1 on failure)
+    """
     # Create graph
     graph = create_graph()
 
@@ -141,6 +186,14 @@ async def run_evaluation():
 
     # Create target function with progress tracking
     async def target_fn(inputs: dict):
+        """Invoke graph and update progress counter.
+
+        Args:
+            inputs: Input dictionary with question
+
+        Returns:
+            Graph execution result
+        """
         result = await invoke_graph_with_retry(
             inputs, graph, DataAnalysisState, "question"
         )
@@ -153,20 +206,24 @@ async def run_evaluation():
                 pass  # Silently fail if file write fails
         return result
 
-    # Create client
+    # Create LangSmith client
     client = Client()
 
-    # Check if resuming existing experiment or creating new one
+    # ========================================================================
+    # Experiment Mode Selection: RESUME vs NEW
+    # ========================================================================
+
     if EXPERIMENT_NAME:
-        # RESUME MODE: Continue existing experiment, filtering already-evaluated examples
+        # ====================================================================
+        # RESUME MODE: Continue existing experiment
+        # ====================================================================
         # EXPERIMENT_NAME can be either:
-        # 1. Experiment UUID (preferred for resume)
-        # 2. Experiment name (fallback - we'll need to query LangSmith)
+        # 1. Experiment UUID (preferred for resume) - format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        # 2. Experiment name (fallback) - we'll query LangSmith to get the UUID
 
         print(f"RESUMING: {EXPERIMENT_NAME}", file=sys.stderr, flush=True)
 
-        # Check if EXPERIMENT_NAME is a UUID (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
-        # If UUID, fetch the TracerSession object; otherwise use name as-is
+        # Determine if EXPERIMENT_NAME is UUID or name
         import re
 
         uuid_pattern = re.compile(
@@ -198,11 +255,12 @@ async def run_evaluation():
             existing_experiment = client.read_project(project_name=EXPERIMENT_NAME)
             experiment_identifier_for_filter = EXPERIMENT_NAME
 
-        # Get only unevaluated examples
+        # Get only unevaluated examples (skip already-evaluated ones)
         unevaluated_examples = await get_unevaluated_examples(
             client, experiment_identifier_for_filter, DATASET_NAME
         )
 
+        # Early exit if all examples already evaluated
         if not unevaluated_examples:
             print("All examples already evaluated!", file=sys.stderr, flush=True)
             print(
@@ -218,16 +276,17 @@ async def run_evaluation():
             print("SUCCESS", flush=True)
             return
 
-        # Pass the TracerSession object (not string) to continue existing experiment
+        # Run evaluation on unevaluated examples only
+        # Pass TracerSession object (not string) to continue existing experiment
         experiment_results = await aevaluate(
             target_fn,
-            data=unevaluated_examples,  # Only pass unevaluated examples
+            data=unevaluated_examples,
             evaluators=[correctness],
             max_concurrency=MAX_CONCURRENCY,
-            experiment=existing_experiment,  # Pass TracerSession object to continue existing experiment
+            experiment=existing_experiment,  # TracerSession object for resume
         )
 
-        # Print metadata IMMEDIATELY for resume mode too
+        # Report experiment metadata to parent process via stderr
         experiment_name = experiment_results.experiment_name
         print(f"EXPERIMENT_NAME: {experiment_name}", file=sys.stderr, flush=True)
 
@@ -235,7 +294,11 @@ async def run_evaluation():
         print(f"EXPERIMENT_ID: {experiment_id}", file=sys.stderr, flush=True)
 
     else:
+        # ====================================================================
         # NEW MODE: Create new experiment with prefix
+        # ====================================================================
+
+        # Generate experiment prefix (parent may provide, or we generate)
         if not EXPERIMENT_PREFIX:
             from Evaluations.utils.experiment_tracker import (
                 generate_experiment_prefix,
@@ -248,27 +311,27 @@ async def run_evaluation():
             experiment_prefix = EXPERIMENT_PREFIX
 
         print(f"CREATING: {experiment_prefix}", file=sys.stderr, flush=True)
-        print(f"DEBUG: Calling aevaluate...", file=sys.stderr, flush=True)
+        print("DEBUG: Calling aevaluate...", file=sys.stderr, flush=True)
+
+        # Run evaluation on full dataset
         experiment_results = await aevaluate(
             target_fn,
-            data=DATASET_NAME,  # Use full dataset for new experiments
+            data=DATASET_NAME,
             evaluators=[correctness],
             max_concurrency=MAX_CONCURRENCY,
             experiment_prefix=experiment_prefix,  # LangSmith appends timestamp/UUID
         )
-        print(f"DEBUG: aevaluate returned successfully", file=sys.stderr, flush=True)
+        print("DEBUG: aevaluate returned successfully", file=sys.stderr, flush=True)
 
-    # For NEW experiments only: Print metadata IMMEDIATELY after aevaluate returns
-    # For RESUME: Parent already has the metadata, don't print anything to avoid confusion
-    if not EXPERIMENT_NAME:  # NEW mode
+        # Report experiment metadata to parent process via stderr (NEW mode only)
         print(
-            f"DEBUG: About to access experiment_results attributes",
+            "DEBUG: About to access experiment_results attributes",
             file=sys.stderr,
             flush=True,
         )
         try:
             print(
-                f"DEBUG: Getting experiment_name property...",
+                "DEBUG: Getting experiment_name property...",
                 file=sys.stderr,
                 flush=True,
             )
@@ -284,7 +347,7 @@ async def run_evaluation():
 
         try:
             print(
-                f"DEBUG: Getting experiment_id property...",
+                "DEBUG: Getting experiment_id property...",
                 file=sys.stderr,
                 flush=True,
             )
@@ -297,13 +360,15 @@ async def run_evaluation():
                 flush=True,
             )
             raise
-    else:  # RESUME mode - don't print, parent already knows
-        experiment_name = experiment_results.experiment_name
-        experiment_id = str(experiment_results._manager._experiment.id)
 
-    # Wrap everything in try/except to capture metadata even on failure
+    # ========================================================================
+    # Consume Results and Signal Completion
+    # ========================================================================
+
+    # Wrap in try/except to capture metadata even on failure
     try:
-        print(f"DEBUG: Starting result consumption...", file=sys.stderr, flush=True)
+        print("DEBUG: Starting result consumption...", file=sys.stderr, flush=True)
+
         # Consume all results to ensure evaluation completes
         result_list = [r async for r in experiment_results]
         print(f"EVALUATED: {len(result_list)} examples", file=sys.stderr, flush=True)
@@ -312,7 +377,7 @@ async def run_evaluation():
         print("SUCCESS", flush=True)
 
     except Exception as e:
-        # Even on failure, try to output what we have
+        # Even on failure, output error to parent
         print(
             f"ERROR: {type(e).__name__}: {str(e)}",
             file=sys.stderr,

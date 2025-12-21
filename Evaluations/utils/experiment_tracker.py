@@ -1,13 +1,14 @@
 """Helper module for tracking experiment executions and resuming evaluations."""
 
 import json
+import re
 import sys
 import threading
 import time
 import uuid
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from langsmith import Client
 
@@ -263,19 +264,12 @@ def get_examples_completed_from_langsmith(experiment_identifier: str) -> int:
         return 0
 
     try:
-        import re
+        # Check if experiment_identifier is a UUID
+        is_experiment_uuid = is_uuid(experiment_identifier)
 
         client = Client()
 
-        # Check if experiment_identifier is a UUID
-        uuid_pattern = re.compile(
-            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
-            re.IGNORECASE,
-        )
-
-        # Use project_id for UUID, project_name for name
-        is_uuid = uuid_pattern.match(experiment_identifier)
-        if is_uuid:
+        if is_experiment_uuid:
             runs = list(client.list_runs(project_id=experiment_identifier))
         else:
             runs = list(client.list_runs(project_name=experiment_identifier))
@@ -416,3 +410,121 @@ def monitor_langsmith_progress(
 
         # Check every 20 seconds (don't hammer LangSmith API)
         time.sleep(20)
+
+
+def is_uuid(text: str) -> bool:
+    """Check if text is a UUID.
+
+    Args:
+        text: Text to check
+
+    Returns:
+        bool: True if text matches UUID format
+    """
+    uuid_pattern = re.compile(
+        r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        re.IGNORECASE,
+    )
+    return bool(uuid_pattern.match(text))
+
+
+def prepare_resume_execution(
+    tracker: "ExperimentTracker",
+    execution_id: Optional[str] = None,
+) -> Optional[Tuple[str, Dict[str, str], dict]]:
+    """Prepare execution for resume mode.
+
+    This function:
+    1. Gets the execution to resume (latest or specific ID)
+    2. Retrieves incomplete models
+    3. Searches LangSmith for existing experiments
+    4. Updates model_experiment_map with UUIDs for resuming
+
+    Args:
+        tracker: ExperimentTracker instance
+        execution_id: Specific execution ID to resume, or None for latest
+
+    Returns:
+        tuple: (execution_id, model_experiment_map, execution_data) or None if no execution to resume
+    """
+    # Get execution ID
+    if not execution_id:
+        execution_id = tracker.get_latest_execution_id()
+
+    if not execution_id:
+        return None
+
+    # Get execution data
+    execution = tracker.get_execution(execution_id)
+    if not execution:
+        return None
+
+    # Get incomplete models
+    model_experiment_map = tracker.get_incomplete_models(execution_id)
+
+    if not model_experiment_map:
+        return execution_id, {}, execution  # All completed
+
+    # Search LangSmith for existing experiments
+    for model_id, experiment_prefix in list(model_experiment_map.items()):
+        # Search LangSmith for experiment matching this prefix
+        experiment_metadata = find_experiment_by_prefix(
+            experiment_prefix, max_wait_seconds=10
+        )
+
+        if experiment_metadata:
+            # Found it! Update the map to use the UUID for resume
+            model_experiment_map[model_id] = experiment_metadata["id"]
+
+            # Update tracker with correct metadata
+            tracker.update_model_experiment_metadata(
+                execution_id,
+                model_id,
+                experiment_metadata["name"],
+                experiment_metadata["id"],
+            )
+        # else: Keep the prefix - will create new experiment
+
+    return execution_id, model_experiment_map, execution
+
+
+def prepare_new_execution(
+    tracker: "ExperimentTracker",
+    node_name: str,
+    dataset_name: str,
+    judge_model_id: str,
+    max_concurrency: int,
+    model_ids: List[str],
+) -> Tuple[str, Dict[str, str], dict]:
+    """Prepare new execution.
+
+    Args:
+        tracker: ExperimentTracker instance
+        node_name: Node being evaluated
+        dataset_name: Dataset name
+        judge_model_id: Judge model ID
+        max_concurrency: Max concurrency setting
+        model_ids: List of model IDs to evaluate
+
+    Returns:
+        tuple: (execution_id, model_experiment_map, execution_data)
+    """
+    # Create new execution
+    execution_id = tracker.create_execution(
+        node_name=node_name,
+        dataset_name=dataset_name,
+        judge_model_id=judge_model_id,
+        max_concurrency=max_concurrency,
+        model_ids=model_ids,
+    )
+
+    # Get execution data
+    execution = tracker.get_execution(execution_id)
+
+    # Build model_experiment_map with prefixes
+    model_experiment_map = {
+        model_id: model_data["experiment_prefix"]
+        for model_id, model_data in execution["models"].items()
+    }
+
+    return execution_id, model_experiment_map, execution

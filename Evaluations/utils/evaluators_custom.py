@@ -1,11 +1,13 @@
 """Custom evaluators for LangSmith experiments."""
 
+from typing import Any
+
 from Evaluations.utils.retry_utils import retry_with_exponential_backoff
 
 
 @retry_with_exponential_backoff(max_attempts=30, base_delay=1.0, max_delay=300.0)
 async def correctness_evaluator(
-    outputs: dict, reference_outputs: dict, judge_llm
+    outputs: dict, reference_outputs: dict, judge_llm: Any
 ) -> bool:
     """LLM judge evaluator for correctness.
 
