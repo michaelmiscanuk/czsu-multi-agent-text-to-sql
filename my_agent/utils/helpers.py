@@ -8,6 +8,7 @@ and other operations needed by the agent.
 # IMPORTS
 # ==============================================================================
 import os
+import json
 import re
 import sqlite3
 import requests
@@ -533,20 +534,41 @@ def get_configured_llm(
     """
     load_dotenv()
 
-    # Load configuration from JSON file
-    config = load_node_models_config()
+    # Check for environment variable override (used in evaluation subprocesses)
 
-    # Determine configuration source based on node_name
-    node_config = {}
-    if node_name:
-        if node_name in config.get("nodes", {}):
-            node_config = config["nodes"][node_name]
-        else:
-            # Use defaults if node not found
-            node_config = config.get("defaults", {})
+    override_config_json = os.environ.get("MODEL_OVERRIDE_CONFIG")
+    if override_config_json and node_name:
+        try:
+            override_configs = json.loads(override_config_json)
+            if node_name in override_configs:
+                # Use override config from environment variable
+                node_config = override_configs[node_name]
+                # Skip loading from file
+                config = None
+            else:
+                # Node not in override, load from file
+                config = load_node_models_config()
+                node_config = {}
+        except (json.JSONDecodeError, KeyError):
+            # If override parsing fails, fall back to file
+            config = load_node_models_config()
+            node_config = {}
     else:
-        # Use defaults if no node_name provided
-        node_config = config.get("defaults", {})
+        # No override, load from file
+        config = load_node_models_config()
+        node_config = {}
+
+    # Determine configuration source based on node_name (if not already set by override)
+    if not node_config:
+        if node_name:
+            if config and node_name in config.get("nodes", {}):
+                node_config = config["nodes"][node_name]
+            else:
+                # Use defaults if node not found
+                node_config = config.get("defaults", {}) if config else {}
+        else:
+            # Use defaults if no node_name provided
+            node_config = config.get("defaults", {}) if config else {}
 
     # Apply configuration priority: explicit params > node config > defaults
     model_provider = model_provider or node_config.get("model_provider")

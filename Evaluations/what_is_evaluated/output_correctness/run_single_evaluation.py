@@ -24,6 +24,7 @@ Environment variables expected:
 import sys
 import os
 import io
+import json
 
 # Windows console encoding fix
 if sys.platform == "win32":
@@ -99,7 +100,7 @@ model_configs_module = load_module_directly(
 MODEL_CONFIGS_ALL = model_configs_module.MODEL_CONFIGS_ALL
 
 node_models_config_path = BASE_DIR / "my_agent" / "utils" / "node_models_config.py"
-node_models_config = load_module_directly(
+node_models_config_module = load_module_directly(
     "my_agent.utils.node_models_config", node_models_config_path
 )
 
@@ -107,6 +108,7 @@ node_models_config = load_module_directly(
 model_config = get_model_config_by_id(MODEL_ID, MODEL_CONFIGS_ALL)
 
 new_config = {
+    "id": MODEL_ID,
     "model_provider": model_config["model_provider"],
     "model_name": model_config["model_name"],
     "deployment_name": model_config.get("deployment_name", ""),
@@ -115,7 +117,25 @@ new_config = {
     "openai_api_version": model_config.get("openai_api_version", "2024-05-01-preview"),
     "base_url": model_config.get("base_url", "http://localhost:11434"),
 }
-node_models_config.NODE_MODELS_CONFIG["nodes"][NODE_NAME] = new_config
+
+# Store the new config with both node names (streaming and non-streaming)
+node_models_config_module.NODE_MODELS_CONFIG["nodes"][NODE_NAME] = new_config.copy()
+node_models_config_module.NODE_MODELS_CONFIG["nodes"][
+    f"{NODE_NAME}_non_streaming"
+] = new_config.copy()
+
+# CRITICAL: Also set environment variable as fallback override mechanism
+# This ensures the config is available even if module caching causes issues
+
+os.environ["MODEL_OVERRIDE_CONFIG"] = json.dumps(
+    {NODE_NAME: new_config, f"{NODE_NAME}_non_streaming": new_config}
+)
+
+print(
+    f"EXPERIMENT_CONFIG: {NODE_NAME} using {MODEL_ID} ({model_config['model_provider']}/{model_config['model_name']})",
+    file=sys.stderr,
+    flush=True,
+)
 
 # Import my_agent modules after config is set
 from my_agent import create_graph

@@ -1,0 +1,121 @@
+{
+  "executions": {
+    "exec_2025-12-21_124622_ee5a3200": {
+      "execution_id": "exec_2025-12-21_124622_ee5a3200",
+      "timestamp": "2025-12-21T12:46:22.773832",
+      "status": "in_progress",
+      "config": {
+        "node_name": "format_answer_node",
+        "dataset_name": "001d_golden_dataset__output_correctness__simple_QA_from_SQL_reduced5",
+        "judge_model_id": "azureopenai_gpt-4.1",
+        "max_concurrency": 1
+      },
+      "models": {
+        "mistral_mistral-large-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-bb5ec78b",
+          "experiment_id": "0daadaa8-1d7a-4ff2-ab7b-3a8aea64e7b1",
+          "examples_completed": 9,
+          "error": null
+        },
+        "mistral_devstral-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-1becba6a",
+          "experiment_id": "94e11c3a-189e-4722-a1f2-988bd069b877",
+          "examples_completed": 9,
+          "error": null
+        }
+      }
+    },
+    "exec_2025-12-21_125038_97c22208": {
+      "execution_id": "exec_2025-12-21_125038_97c22208",
+      "timestamp": "2025-12-21T12:50:38.687089",
+      "status": "in_progress",
+      "config": {
+        "node_name": "format_answer_node",
+        "dataset_name": "001d_golden_dataset__output_correctness__simple_QA_from_SQL_reduced5",
+        "judge_model_id": "azureopenai_gpt-4.1",
+        "max_concurrency": 1
+      },
+      "models": {
+        "mistral_mistral-large-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-6fd4a860",
+          "experiment_id": "371de953-d59d-4dd2-9b79-39c965e073fe",
+          "examples_completed": 1,
+          "error": null
+        },
+        "mistral_devstral-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-88dc8bb0",
+          "experiment_id": "c0d036a3-e097-43a2-8b86-48a6eebf30f2",
+          "examples_completed": 1,
+          "error": null
+        }
+      }
+    },
+    "exec_2025-12-21_125434_c7a50a7c": {
+      "execution_id": "exec_2025-12-21_125434_c7a50a7c",
+      "timestamp": "2025-12-21T12:54:34.769142",
+      "status": "in_progress",
+      "config": {
+        "node_name": "format_answer_node",
+        "dataset_name": "001d_golden_dataset__output_correctness__simple_QA_from_SQL_reduced5",
+        "judge_model_id": "azureopenai_gpt-4.1",
+        "max_concurrency": 1
+      },
+      "models": {
+        "mistral_mistral-large-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-83ecca85",
+          "experiment_id": "03071632-66b2-446d-80fe-feec4e0cadbd",
+          "examples_completed": 1,
+          "error": null
+        },
+        "mistral_devstral-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-999d545b",
+          "experiment_id": "e873bf64-a75e-44e7-a2d3-ac79dfa221ff",
+          "examples_completed": 1,
+          "error": null
+        }
+      }
+    },
+    "exec_2025-12-21_125714_f1f7b54d": {
+      "execution_id": "exec_2025-12-21_125714_f1f7b54d",
+      "timestamp": "2025-12-21T12:57:14.766511",
+      "status": "in_progress",
+      "config": {
+        "node_name": "format_answer_node",
+        "dataset_name": "001d_golden_dataset__output_correctness__simple_QA_from_SQL_reduced5",
+        "judge_model_id": "azureopenai_gpt-4.1",
+        "max_concurrency": 1
+      },
+      "models": {
+        "mistral_mistral-large-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-93efc176",
+          "experiment_id": "bf4bb70f-83c4-4d0e-ac42-9b7f35709a95",
+          "examples_completed": 1,
+          "error": null
+        },
+        "mistral_devstral-2512": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512",
+          "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-fcdc4c9c",
+          "experiment_id": "cb1dab69-cfb7-4abb-9291-1ce644044bb7",
+          "examples_completed": 1,
+          "error": null
+        }
+      }
+    }
+  },
+  "latest_execution_id": "exec_2025-12-21_125714_f1f7b54d"
+}

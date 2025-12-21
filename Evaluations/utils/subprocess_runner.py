@@ -119,7 +119,11 @@ def create_stderr_reader_thread(
 
                 # Debug: Show key lines
                 line_stripped = line.strip()
-                if "EXPERIMENT" in line_stripped or "CREATING" in line_stripped:
+                if (
+                    "EXPERIMENT" in line_stripped
+                    or "CREATING" in line_stripped
+                    or "EXPERIMENT_CONFIG" in line_stripped
+                ):
                     print(f"[DEBUG {model_id[:15]}] {line_stripped[:80]}", flush=True)
 
                 # Parse metadata
