@@ -2,6 +2,8 @@
 
 import json
 import sys
+import threading
+import time
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -317,8 +319,6 @@ def find_experiment_by_prefix(
     Returns:
         dict: Experiment metadata with keys {"name": str, "id": str} or None
     """
-    import time
-
     client = Client()
     start_time = time.time()
     poll_interval = 2
@@ -369,3 +369,50 @@ def find_experiment_by_prefix(
         file=sys.stderr,
     )
     return None  # Not found within timeout
+
+
+def monitor_langsmith_progress(
+    execution_id: str, tracker: "ExperimentTracker", stop_event: threading.Event
+):
+    """Periodically query LangSmith for examples_completed and update tracker.
+
+    This function runs in a background thread to monitor the progress of
+    in-progress evaluations by querying LangSmith for completion counts.
+
+    Args:
+        execution_id: Current execution ID
+        tracker: ExperimentTracker instance
+        stop_event: Event to signal thread shutdown
+    """
+    while not stop_event.is_set():
+        try:
+            execution = tracker.get_execution(execution_id)
+            if not execution:
+                break
+
+            # Check each model's experiment for progress
+            for model_id, model_data in execution["models"].items():
+                # Try experiment_name first, fallback to experiment_id
+                experiment_identifier = model_data.get(
+                    "experiment_name"
+                ) or model_data.get("experiment_id")
+                if experiment_identifier and model_data["status"] == "in_progress":
+                    # Query LangSmith for current count
+                    examples_completed = get_examples_completed_from_langsmith(
+                        experiment_identifier
+                    )
+                    # Only update if count changed
+                    if examples_completed != model_data.get("examples_completed", 0):
+                        tracker.update_model_status(
+                            execution_id,
+                            model_id,
+                            "in_progress",
+                            examples_completed=examples_completed,
+                        )
+
+        except (OSError, IOError, KeyError, ValueError):
+            # Silently continue on any tracker or network error
+            pass
+
+        # Check every 20 seconds (don't hammer LangSmith API)
+        time.sleep(20)

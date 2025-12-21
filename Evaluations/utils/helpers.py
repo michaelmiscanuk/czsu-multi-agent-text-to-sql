@@ -1,6 +1,9 @@
 """Helper utilities for evaluation scripts."""
 
+import os
 import sys
+import threading
+import time
 import uuid
 import importlib.util
 from pathlib import Path
@@ -8,6 +11,7 @@ from typing import Any, List
 from langsmith import Client
 from langsmith.schemas import Example
 from httpx import HTTPError
+from tqdm import tqdm
 from Evaluations.utils.retry_utils import retry_with_exponential_backoff
 
 
@@ -179,3 +183,41 @@ async def invoke_graph_with_retry(
     state = example_to_agent_state(inputs, state_class, input_key)
     config = {"configurable": {"thread_id": str(uuid.uuid4())}}
     return await graph.ainvoke(state, config=config)
+
+
+def monitor_progress(
+    progress_file: str,
+    total_examples: int,
+    stop_event: threading.Event,
+    num_models: int = 1,
+):
+    """Monitor progress file and update tqdm progress bar.
+
+    This function runs in a background thread to monitor a progress file
+    and display real-time progress using tqdm.
+
+    Args:
+        progress_file: Path to the progress tracking file
+        total_examples: Total number of examples in the dataset
+        stop_event: Event to signal thread shutdown
+        num_models: Number of models being evaluated (default: 1)
+    """
+    with tqdm(
+        total=total_examples * num_models,
+        desc="Dataset Examples",
+        unit="example",
+        position=0,
+    ) as pbar:
+        last_count = 0
+        while not stop_event.is_set():
+            try:
+                if os.path.exists(progress_file):
+                    with open(progress_file, "r", encoding="utf-8") as f:
+                        lines = f.readlines()
+                        current_count = len(lines)
+                        if current_count > last_count:
+                            pbar.update(current_count - last_count)
+                            last_count = current_count
+            except (OSError, IOError):
+                pass
+            time.sleep(0.5)  # Check every 0.5 seconds

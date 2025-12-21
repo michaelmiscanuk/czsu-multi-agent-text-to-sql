@@ -26,6 +26,7 @@ import tempfile
 import threading
 import time
 from dotenv import load_dotenv
+from langsmith import Client
 
 # Load environment variables from .env file
 load_dotenv()
@@ -43,7 +44,9 @@ from Evaluations.utils.experiment_tracker import (
     ExperimentTracker,
     get_examples_completed_from_langsmith,
     find_experiment_by_prefix,
+    monitor_langsmith_progress,
 )
+from Evaluations.utils.helpers import monitor_progress
 
 # Subprocess script and Python executable
 SINGLE_EVAL_SCRIPT = Path(__file__).parent / "run_single_evaluation.py"
@@ -197,15 +200,11 @@ def run_subprocess_evaluation(
 
                 # Update tracker as soon as both are available
                 if experiment_name and experiment_id:
-                    print(f"💾 Saving to JSON...", flush=True)
+                    print("💾 Saving to JSON...", flush=True)
                     tracker.update_model_experiment_metadata(
                         execution_id, model_id, experiment_name, experiment_id
                     )
-                    exp_display = (
-                        experiment_name[:50]
-                        if len(experiment_name) > 50
-                        else experiment_name
-                    )
+                    exp_display = experiment_name or ""
                     print(f"✓ {model_id[:25]} -> {exp_display}", flush=True)
                     # Stop parsing once we have metadata (continue reading to EOF)
         except (OSError, IOError, ValueError) as e:
@@ -270,7 +269,7 @@ def run_subprocess_evaluation(
                 )
             else:
                 print(
-                    f"⚠️ API polling failed. Waiting for subprocess to report metadata...",
+                    "⚠️ API polling failed. Waiting for subprocess to report metadata...",
                     flush=True,
                 )
                 # Fallback: metadata will be captured from subprocess stderr prints
@@ -280,16 +279,10 @@ def run_subprocess_evaluation(
             experiment_id = experiment_identifier
             # Query LangSmith to get the actual experiment name from the UUID
             try:
-                from langsmith import Client
-
                 ls_client = Client()
                 project = ls_client.read_project(project_id=experiment_id)
                 experiment_name = project.name
-                exp_display = (
-                    experiment_name[:60]
-                    if len(experiment_name) > 60
-                    else experiment_name
-                )
+                exp_display = experiment_name or ""
                 print(
                     f"🔄 Resuming experiment: {exp_display} (ID: {experiment_id})",
                     flush=True,
@@ -377,75 +370,6 @@ def run_subprocess_evaluation(
             "success": False,
             "examples_completed": examples_completed,
         }
-
-
-def monitor_progress(
-    progress_file: str, total_examples: int, stop_event: threading.Event
-):
-    """Monitor progress file and update tqdm."""
-    with tqdm(
-        total=total_examples * len(MODELS_TO_EVALUATE),
-        desc="Dataset Examples",
-        unit="example",
-        position=0,
-    ) as pbar:
-        last_count = 0
-        while not stop_event.is_set():
-            try:
-                if os.path.exists(progress_file):
-                    with open(progress_file, "r", encoding="utf-8") as f:
-                        lines = f.readlines()
-                        current_count = len(lines)
-                        if current_count > last_count:
-                            pbar.update(current_count - last_count)
-                            last_count = current_count
-            except (OSError, IOError):
-                pass
-            time.sleep(0.5)  # Check every 0.5 seconds
-
-
-def monitor_langsmith_progress(
-    execution_id: str, tracker: ExperimentTracker, stop_event: threading.Event
-):
-    """Periodically query LangSmith for examples_completed and update tracker.
-
-    Args:
-        execution_id: Current execution ID
-        tracker: ExperimentTracker instance
-        stop_event: Event to signal thread shutdown
-    """
-    while not stop_event.is_set():
-        try:
-            execution = tracker.get_execution(execution_id)
-            if not execution:
-                break
-
-            # Check each model's experiment for progress
-            for model_id, model_data in execution["models"].items():
-                # Try experiment_name first, fallback to experiment_id
-                experiment_identifier = model_data.get(
-                    "experiment_name"
-                ) or model_data.get("experiment_id")
-                if experiment_identifier and model_data["status"] == "in_progress":
-                    # Query LangSmith for current count
-                    examples_completed = get_examples_completed_from_langsmith(
-                        experiment_identifier
-                    )
-                    # Only update if count changed
-                    if examples_completed != model_data.get("examples_completed", 0):
-                        tracker.update_model_status(
-                            execution_id,
-                            model_id,
-                            "in_progress",
-                            examples_completed=examples_completed,
-                        )
-
-        except (OSError, IOError, KeyError, ValueError):
-            # Silently continue on any tracker or network error
-            pass
-
-        # Check every 20 seconds (don't hammer LangSmith API)
-        time.sleep(20)
 
 
 def main():
@@ -555,7 +479,7 @@ def main():
     # Thread 1: Monitor progress file for tqdm updates
     monitor_thread = threading.Thread(
         target=monitor_progress,
-        args=(progress_file, DATASET_SIZE, stop_event),
+        args=(progress_file, DATASET_SIZE, stop_event, len(model_experiment_map)),
         daemon=True,
     )
     monitor_thread.start()
