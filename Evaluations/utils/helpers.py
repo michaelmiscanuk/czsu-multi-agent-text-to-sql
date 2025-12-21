@@ -50,7 +50,7 @@ def get_model_config_by_id(model_id: str, model_configs: List[dict]) -> dict:
 
 
 async def get_unevaluated_examples(
-    client: Client, experiment_name: str, dataset_name: str
+    client: Client, experiment_identifier: str, dataset_name: str
 ) -> List[Example]:
     """Get examples that haven't been evaluated yet in the experiment.
 
@@ -60,7 +60,7 @@ async def get_unevaluated_examples(
 
     Args:
         client: LangSmith client instance
-        experiment_name: Name or ID of the experiment
+        experiment_identifier: Name or ID (UUID) of the experiment
         dataset_name: Name of the dataset
 
     Returns:
@@ -70,8 +70,21 @@ async def get_unevaluated_examples(
     all_examples = list(client.list_examples(dataset_name=dataset_name))
 
     # Get all runs from the experiment
+    # Check if experiment_identifier is a UUID
+    import re
+
+    uuid_pattern = re.compile(
+        r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+        re.IGNORECASE,
+    )
+
     try:
-        existing_runs = list(client.list_runs(project_name=experiment_name))
+        if uuid_pattern.match(experiment_identifier):
+            # Use project_id for UUID
+            existing_runs = list(client.list_runs(project_id=experiment_identifier))
+        else:
+            # Use project_name for name
+            existing_runs = list(client.list_runs(project_name=experiment_identifier))
     except (HTTPError, ValueError, RuntimeError) as e:
         print(f"Could not fetch existing runs: {e}", file=sys.stderr, flush=True)
         # If we can't fetch runs, assume no examples evaluated yet

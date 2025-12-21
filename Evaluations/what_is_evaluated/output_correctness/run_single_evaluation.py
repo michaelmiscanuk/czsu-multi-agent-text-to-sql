@@ -159,37 +159,81 @@ async def run_evaluation():
     # Check if resuming existing experiment or creating new one
     if EXPERIMENT_NAME:
         # RESUME MODE: Continue existing experiment, filtering already-evaluated examples
+        # EXPERIMENT_NAME can be either:
+        # 1. Experiment UUID (preferred for resume)
+        # 2. Experiment name (fallback - we'll need to query LangSmith)
+
         print(f"RESUMING: {EXPERIMENT_NAME}", file=sys.stderr, flush=True)
+
+        # Check if EXPERIMENT_NAME is a UUID (format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+        # If UUID, fetch the TracerSession object; otherwise use name as-is
+        import re
+
+        uuid_pattern = re.compile(
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            re.IGNORECASE,
+        )
+
+        if uuid_pattern.match(EXPERIMENT_NAME):
+            # It's a UUID - fetch the TracerSession object
+            print(
+                f"Fetching experiment by UUID: {EXPERIMENT_NAME}",
+                file=sys.stderr,
+                flush=True,
+            )
+            existing_experiment = client.read_project(project_id=EXPERIMENT_NAME)
+            experiment_identifier_for_filter = EXPERIMENT_NAME
+            print(
+                f"Found experiment: {existing_experiment.name}",
+                file=sys.stderr,
+                flush=True,
+            )
+        else:
+            # It's a name - fetch by name
+            print(
+                f"Fetching experiment by name: {EXPERIMENT_NAME}",
+                file=sys.stderr,
+                flush=True,
+            )
+            existing_experiment = client.read_project(project_name=EXPERIMENT_NAME)
+            experiment_identifier_for_filter = EXPERIMENT_NAME
 
         # Get only unevaluated examples
         unevaluated_examples = await get_unevaluated_examples(
-            client, EXPERIMENT_NAME, DATASET_NAME
+            client, experiment_identifier_for_filter, DATASET_NAME
         )
 
         if not unevaluated_examples:
             print("All examples already evaluated!", file=sys.stderr, flush=True)
-            # Still need to return experiment metadata
-            existing_project = client.read_project(project_name=EXPERIMENT_NAME)
             print(
-                f"EXPERIMENT_NAME: {existing_project.name}",
+                f"EXPERIMENT_NAME: {existing_experiment.name}",
                 file=sys.stderr,
                 flush=True,
             )
             print(
-                f"EXPERIMENT_ID: {existing_project.id}",
+                f"EXPERIMENT_ID: {existing_experiment.id}",
                 file=sys.stderr,
                 flush=True,
             )
             print("SUCCESS", flush=True)
             return
 
+        # Pass the TracerSession object (not string) to continue existing experiment
         experiment_results = await aevaluate(
             target_fn,
             data=unevaluated_examples,  # Only pass unevaluated examples
             evaluators=[correctness],
             max_concurrency=MAX_CONCURRENCY,
-            experiment=EXPERIMENT_NAME,  # Use exact name/ID to continue
+            experiment=existing_experiment,  # Pass TracerSession object to continue existing experiment
         )
+
+        # Print metadata IMMEDIATELY for resume mode too
+        experiment_name = experiment_results.experiment_name
+        print(f"EXPERIMENT_NAME: {experiment_name}", file=sys.stderr, flush=True)
+
+        experiment_id = str(experiment_results._manager._experiment.id)
+        print(f"EXPERIMENT_ID: {experiment_id}", file=sys.stderr, flush=True)
+
     else:
         # NEW MODE: Create new experiment with prefix
         if not EXPERIMENT_PREFIX:
@@ -204,6 +248,7 @@ async def run_evaluation():
             experiment_prefix = EXPERIMENT_PREFIX
 
         print(f"CREATING: {experiment_prefix}", file=sys.stderr, flush=True)
+        print(f"DEBUG: Calling aevaluate...", file=sys.stderr, flush=True)
         experiment_results = await aevaluate(
             target_fn,
             data=DATASET_NAME,  # Use full dataset for new experiments
@@ -211,20 +256,54 @@ async def run_evaluation():
             max_concurrency=MAX_CONCURRENCY,
             experiment_prefix=experiment_prefix,  # LangSmith appends timestamp/UUID
         )
+        print(f"DEBUG: aevaluate returned successfully", file=sys.stderr, flush=True)
+
+    # For NEW experiments only: Print metadata IMMEDIATELY after aevaluate returns
+    # For RESUME: Parent already has the metadata, don't print anything to avoid confusion
+    if not EXPERIMENT_NAME:  # NEW mode
+        print(
+            f"DEBUG: About to access experiment_results attributes",
+            file=sys.stderr,
+            flush=True,
+        )
+        try:
+            print(
+                f"DEBUG: Getting experiment_name property...",
+                file=sys.stderr,
+                flush=True,
+            )
+            experiment_name = experiment_results.experiment_name
+            print(f"EXPERIMENT_NAME: {experiment_name}", file=sys.stderr, flush=True)
+        except Exception as e:
+            print(
+                f"DEBUG: Error accessing experiment_name: {e}",
+                file=sys.stderr,
+                flush=True,
+            )
+            raise
+
+        try:
+            print(
+                f"DEBUG: Getting experiment_id property...",
+                file=sys.stderr,
+                flush=True,
+            )
+            experiment_id = str(experiment_results._manager._experiment.id)
+            print(f"EXPERIMENT_ID: {experiment_id}", file=sys.stderr, flush=True)
+        except Exception as e:
+            print(
+                f"DEBUG: Error accessing experiment_id: {e}",
+                file=sys.stderr,
+                flush=True,
+            )
+            raise
+    else:  # RESUME mode - don't print, parent already knows
+        experiment_name = experiment_results.experiment_name
+        experiment_id = str(experiment_results._manager._experiment.id)
 
     # Wrap everything in try/except to capture metadata even on failure
     try:
-        # Get experiment name (available immediately)
-        experiment_name = experiment_results.experiment_name
-        print(f"EXPERIMENT_NAME: {experiment_name}", file=sys.stderr, flush=True)
-
-        # Get experiment_id from the experiment manager's TracerSession
-        # AsyncExperimentResults._manager is the _AsyncExperimentManager instance
-        # _AsyncExperimentManager._experiment is the TracerSession object with .id
-        experiment_id = str(experiment_results._manager._experiment.id)
-
-        print(f"EXPERIMENT_ID: {experiment_id}", file=sys.stderr, flush=True)
-
+        print(f"DEBUG: Starting result consumption...", file=sys.stderr, flush=True)
         # Consume all results to ensure evaluation completes
         result_list = [r async for r in experiment_results]
         print(f"EVALUATED: {len(result_list)} examples", file=sys.stderr, flush=True)

@@ -36,66 +36,66 @@ question_answers = [
         "answer": "33.94 CZK per liter",
         "source": "CEN0101JT01.csv; Průměrná cena pohonných hmot;Česko;květen 2025;Benzin automobilový bezolovnatý Natural 95 [Kč/l];33.94",
     },
-    # {
-    #     "question": "What was the index of construction material input prices in Czechia in Q4 2024?",
-    #     "answer": "149.9",
-    #     "source": "CEN0202CT01.csv; Index cen materiálových vstupů do stavebnictví;Česko;Stavební díla;4. čtvrtletí 2024;149.9",
-    # },
-    # {
-    #     "question": "What was the number of foreigners in Czechia from Ukraine in 2023?",
-    #     "answer": "574447",
-    #     "source": "CIZ01D.csv; Cizinci podle státního občanství a pohlaví;Celkem;Česko;Ukrajina;2023;574447.0",
-    # },
-    # {
-    #     "question": "What was the number of camping and caravan spots in collective accommodation facilities in Zlín Region - Luhačovice in 2024?",
-    #     "answer": "280",
-    #     "source": "CRU01RDMOT1.csv; 2024;HUZ celkem;Zlínsko - Luhačovicko;Počet míst pro stany a karavany v hromadných ubytovacích zařízeních 	;280.0",
-    # },
-    # {
-    #     "question": "What was the number of guests in hotels, motels, and botels in Czechia in August 2025?",
-    #     "answer": "618316",
-    #     "source": "CRU02MHOTT1.csv; Česko;srpen 2025;Hotel, motel, botel ***;Počet hostů;Celkem;618316.0",
-    # },
-    # {
-    #     "question": "What were the costs of longer trips for leisure and recreation to Greece from Czechia in 2023?",
-    #     "answer": "7885.7160123 million CZK",
-    #     "source": "CRU06AT5.csv; Česko;2023;Delší cesty za účelem trávení volného času a rekreace;Řecko;Náklady (mil. Kč);7885.7160123",
-    # },
-    # {
-    #     "question": "What was the number of transported persons (thousands) by air transport in Czechia in 2024?",
-    #     "answer": "5100.4",
-    #     "source": "DOP01BT1.csv; Česko;2024;Přepravené osoby (tis.);Letecká doprava;5100.4",
-    # },
-    # {
-    #     "question": "What was the number of registered vehicles in Czechia in 2024?",
-    #     "answer": "780571",
-    #     "source": "DOP02BT1.csv; Česko;Počet registrovaných dopravních prostředků;2024;Nákladní vozidla;780571.0",
-    # },
-    # {
-    #     "question": "What was the total electricity production in Czechia in 2024?",
-    #     "answer": "73881.775 GWh",
-    #     "source": "ENE01WENET1.csv; Česko;Výroba elektřiny celkem (GWh);2024;73881.775",
-    # },
-    # {
-    #     "question": "What was the number of ATMs and terminals in Czechia in 2023?",
-    #     "answer": "4963",
-    #     "source": "FIN03BANKDUK.csv; Česko;Bankovní peněžní instituce;Počet bankomatů a terminálů, k poslednímu dni sledovaného roku, ks;2023;4963.0",
-    # },
-    # {
-    #     "question": "What was the number of active enterprises in the ICT sector in Czechia in 2023?",
-    #     "answer": "60043",
-    #     "source": "ICT01T01.csv; Počet aktivních podniků;Česko;ICT sektor;2023;60043",
-    # },
-    # {
-    #     "question": "What was the average gross monthly wage per adjusted employee in Prague in Q1-Q2 2025?",
-    #     "answer": "62395.036985578 CZK",
-    #     "source": "MZDKQT5.csv; Q1-Q2 2025;Pracovištní metoda;Praha;Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč);62395.036985578",
-    # },
-    # {
-    #     "question": "What was the average gross monthly wage per individual in Education in Czechia in 2024?",
-    #     "answer": "38999.1122333656 CZK",
-    #     "source": "MZDRT2.csv; Česko;2024;P - Vzdělávání;Průměrná hrubá měsíční mzda na fyzické osoby (Kč);38999.1122333656",
-    # },
+    {
+        "question": "What was the index of construction material input prices in Czechia in Q4 2024?",
+        "answer": "149.9",
+        "source": "CEN0202CT01.csv; Index cen materiálových vstupů do stavebnictví;Česko;Stavební díla;4. čtvrtletí 2024;149.9",
+    },
+    {
+        "question": "What was the number of foreigners in Czechia from Ukraine in 2023?",
+        "answer": "574447",
+        "source": "CIZ01D.csv; Cizinci podle státního občanství a pohlaví;Celkem;Česko;Ukrajina;2023;574447.0",
+    },
+    {
+        "question": "What was the number of camping and caravan spots in collective accommodation facilities in Zlín Region - Luhačovice in 2024?",
+        "answer": "280",
+        "source": "CRU01RDMOT1.csv; 2024;HUZ celkem;Zlínsko - Luhačovicko;Počet míst pro stany a karavany v hromadných ubytovacích zařízeních 	;280.0",
+    },
+    {
+        "question": "What was the number of guests in hotels, motels, and botels in Czechia in August 2025?",
+        "answer": "618316",
+        "source": "CRU02MHOTT1.csv; Česko;srpen 2025;Hotel, motel, botel ***;Počet hostů;Celkem;618316.0",
+    },
+    {
+        "question": "What were the costs of longer trips for leisure and recreation to Greece from Czechia in 2023?",
+        "answer": "7885.7160123 million CZK",
+        "source": "CRU06AT5.csv; Česko;2023;Delší cesty za účelem trávení volného času a rekreace;Řecko;Náklady (mil. Kč);7885.7160123",
+    },
+    {
+        "question": "What was the number of transported persons (thousands) by air transport in Czechia in 2024?",
+        "answer": "5100.4",
+        "source": "DOP01BT1.csv; Česko;2024;Přepravené osoby (tis.);Letecká doprava;5100.4",
+    },
+    {
+        "question": "What was the number of registered vehicles in Czechia in 2024?",
+        "answer": "780571",
+        "source": "DOP02BT1.csv; Česko;Počet registrovaných dopravních prostředků;2024;Nákladní vozidla;780571.0",
+    },
+    {
+        "question": "What was the total electricity production in Czechia in 2024?",
+        "answer": "73881.775 GWh",
+        "source": "ENE01WENET1.csv; Česko;Výroba elektřiny celkem (GWh);2024;73881.775",
+    },
+    {
+        "question": "What was the number of ATMs and terminals in Czechia in 2023?",
+        "answer": "4963",
+        "source": "FIN03BANKDUK.csv; Česko;Bankovní peněžní instituce;Počet bankomatů a terminálů, k poslednímu dni sledovaného roku, ks;2023;4963.0",
+    },
+    {
+        "question": "What was the number of active enterprises in the ICT sector in Czechia in 2023?",
+        "answer": "60043",
+        "source": "ICT01T01.csv; Počet aktivních podniků;Česko;ICT sektor;2023;60043",
+    },
+    {
+        "question": "What was the average gross monthly wage per adjusted employee in Prague in Q1-Q2 2025?",
+        "answer": "62395.036985578 CZK",
+        "source": "MZDKQT5.csv; Q1-Q2 2025;Pracovištní metoda;Praha;Průměrná hrubá měsíční mzda na přepočtené počty zaměstnanců (Kč);62395.036985578",
+    },
+    {
+        "question": "What was the average gross monthly wage per individual in Education in Czechia in 2024?",
+        "answer": "38999.1122333656 CZK",
+        "source": "MZDRT2.csv; Česko;2024;P - Vzdělávání;Průměrná hrubá měsíční mzda na fyzické osoby (Kč);38999.1122333656",
+    },
     # {
     #     "question": "What was the number of job applicants registered at the Labor Office in Prague in 2023?",
     #     "answer": "27425",

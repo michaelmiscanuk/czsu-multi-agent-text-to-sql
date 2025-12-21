@@ -157,9 +157,8 @@ class ExperimentTracker:
             execution_id: Execution ID to check
 
         Returns:
-            dict: Mapping of model_id -> experiment_name (or prefix if name not set)
-                  For resuming: use experiment_name if exists (continues that experiment)
-                  Otherwise use experiment_prefix (creates new experiment)
+            dict: Mapping of model_id -> experiment_prefix
+                  Always returns experiment_prefix so we can search for the actual experiment
         """
         execution = self.get_execution(execution_id)
         if not execution:
@@ -168,11 +167,8 @@ class ExperimentTracker:
         incomplete = {}
         for model_id, model_data in execution["models"].items():
             if model_data["status"] != "completed":
-                # If experiment_name exists, return it to RESUME that experiment
-                # Otherwise return prefix to CREATE new experiment
-                incomplete[model_id] = (
-                    model_data.get("experiment_name") or model_data["experiment_prefix"]
-                )
+                # Always return the prefix - parent will search LangSmith to find the actual experiment
+                incomplete[model_id] = model_data["experiment_prefix"]
 
         return incomplete
 
@@ -248,29 +244,128 @@ class ExperimentTracker:
         return executions
 
 
-def get_examples_completed_from_langsmith(experiment_name: str) -> int:
+def get_examples_completed_from_langsmith(experiment_identifier: str) -> int:
     """Query LangSmith to get actual number of examples completed in experiment.
 
     Args:
-        experiment_name: Name or ID of the experiment
+        experiment_identifier: Name or ID (UUID) of the experiment
 
     Returns:
-        int: Number of examples with completed runs
+        int: Number of examples with completed runs (finished, not pending)
     """
-    if not experiment_name:
-        return 0
-
-    try:
-        client = Client()
-        runs = list(client.list_runs(project_name=experiment_name))
-        # Count unique example IDs (reference_example_id)
-        unique_examples = {
-            run.reference_example_id for run in runs if run.reference_example_id
-        }
-        return len(unique_examples)
-    except Exception as e:
+    if not experiment_identifier:
         print(
-            f"Warning: Could not query LangSmith for examples count: {type(e).__name__}: {e}",
+            "[get_examples_completed] No experiment identifier provided",
             file=sys.stderr,
         )
         return 0
+
+    try:
+        import re
+
+        client = Client()
+
+        # Check if experiment_identifier is a UUID
+        uuid_pattern = re.compile(
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+            re.IGNORECASE,
+        )
+
+        # Use project_id for UUID, project_name for name
+        is_uuid = uuid_pattern.match(experiment_identifier)
+        if is_uuid:
+            runs = list(client.list_runs(project_id=experiment_identifier))
+        else:
+            runs = list(client.list_runs(project_name=experiment_identifier))
+
+        # Count unique example IDs where run has finished (has end_time)
+        # A run is complete when it has an end_time set
+        unique_examples = {
+            run.reference_example_id
+            for run in runs
+            if run.reference_example_id and run.end_time is not None
+        }
+        completed_count = len(unique_examples)
+
+        print(
+            f"[get_examples_completed] {experiment_identifier[:50]}: {completed_count} examples completed",
+            file=sys.stderr,
+        )
+
+        return completed_count
+    except Exception as e:
+        print(
+            f"[get_examples_completed] Error querying {experiment_identifier[:50]}: {type(e).__name__}: {e}",
+            file=sys.stderr,
+        )
+        return 0
+
+
+def find_experiment_by_prefix(
+    experiment_prefix: str, max_wait_seconds: int = 60
+) -> Optional[dict]:
+    """Poll LangSmith API to find newly created experiment by prefix.
+
+    When aevaluate() is called with experiment_prefix, LangSmith creates a new
+    experiment with that prefix plus a timestamp and UUID. This function polls
+    the API to find that experiment shortly after creation.
+
+    Args:
+        experiment_prefix: The prefix used when creating the experiment
+        max_wait_seconds: Maximum time to wait for experiment to appear
+
+    Returns:
+        dict: Experiment metadata with keys {"name": str, "id": str} or None
+    """
+    import time
+
+    client = Client()
+    start_time = time.time()
+    poll_interval = 2
+
+    print(
+        f"[find_experiment] Searching for experiments starting with: {experiment_prefix}",
+        file=sys.stderr,
+    )
+
+    while time.time() - start_time < max_wait_seconds:
+        try:
+            # List all projects (experiments) and find matches
+            # Get more projects to increase chance of finding recent ones
+            projects = list(client.list_projects(limit=200))
+
+            print(
+                f"[find_experiment] Retrieved {len(projects)} projects from LangSmith",
+                file=sys.stderr,
+            )
+
+            for project in projects:
+                # Check if project name starts with our prefix
+                if project.name and project.name.startswith(experiment_prefix):
+                    # Found a match! Return metadata
+                    print(
+                        f"[find_experiment] ✓ FOUND: {project.name} (ID: {project.id})",
+                        file=sys.stderr,
+                    )
+                    return {"name": project.name, "id": str(project.id)}
+
+            # If not found, show a sample of recent project names for debugging
+            if projects:
+                sample_names = [p.name[:80] for p in projects[:5]]
+                print(
+                    f"[find_experiment] Sample of recent projects: {sample_names}",
+                    file=sys.stderr,
+                )
+
+            # Wait before retrying
+            time.sleep(poll_interval)
+
+        except Exception as e:
+            print(f"[find_experiment] Error querying LangSmith: {e}", file=sys.stderr)
+            time.sleep(poll_interval)
+
+    print(
+        f"[find_experiment] ✗ Not found after {max_wait_seconds}s: {experiment_prefix}",
+        file=sys.stderr,
+    )
+    return None  # Not found within timeout
