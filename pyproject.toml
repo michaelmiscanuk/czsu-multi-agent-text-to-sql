@@ -3,7 +3,7 @@ name = "czsu-multi-agent-text-to-sql"
 version = "0.1.0"
 description = "A prototype project for Text to SQL app working in LangGraph and allowing to  query CZSU (Czech Statistical Office) publicly available data using natural language."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [ { name = "Michael Miscanuk Name", email = "michael.miscanuk@gmail.com" } ]
 
 # Core API and FastAPI
@@ -83,6 +83,10 @@ dependencies = [
     "numpy>=1.25.2",
     "openpyxl==3.1.5",
     "pyjstat==2.4.0",
+    "scipy==1.16.3",
+    "choix==0.4.1",
+    "trueskill==0.4.5",
+    "glicko2==2.1.0",
     
     # PDF Processing
     "llama-parse>=0.4.0",  # Premium LLM-based parser (requires API key)
