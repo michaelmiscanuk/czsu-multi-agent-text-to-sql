@@ -220,7 +220,7 @@
     "exec_2025-12-21_153323_ed989867": {
       "execution_id": "exec_2025-12-21_153323_ed989867",
       "timestamp": "2025-12-21T15:33:23.312609",
-      "status": "in_progress",
+      "status": "completed",
       "config": {
         "node_name": "format_answer_node",
         "dataset_name": "001d_golden_dataset__output_correctness__simple_QA_from_SQL_manually_chosen",
@@ -309,11 +309,11 @@
           "error": null
         },
         "gemini_gemini-3-pro-preview": {
-          "status": "in_progress",
+          "status": "completed",
           "experiment_prefix": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview",
           "experiment_name": "judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview-6873e5c9",
           "experiment_id": "89358bb2-d1fa-4d1c-98c5-597cedb4a97d",
-          "examples_completed": 13,
+          "examples_completed": 30,
           "error": null
         }
       }
