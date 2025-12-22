@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="LangSmith Observability and Tracing (High-Level)" id="langsmith-overview-v2">
-        <mxGraphModel dx="532" dy="709" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="531" dy="417" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -146,7 +146,7 @@
                     <mxGeometry x="910" y="360" width="140" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="int_header" value="Integrations" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontFamily=Helvetica;fontColor=#333333;" parent="1" vertex="1">
-                    <mxGeometry x="760" y="480" width="150" height="25" as="geometry"/>
+                    <mxGeometry x="640" y="480" width="150" height="25" as="geometry"/>
                 </mxCell>
                 <mxCell id="int_container" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=1;dashed=1;" parent="1" vertex="1">
                     <mxGeometry x="760" y="510" width="300" height="80" as="geometry"/>

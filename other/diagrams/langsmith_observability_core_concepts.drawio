@@ -1,0 +1,58 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="langsmith-observability-core" name="LangSmith Core Concepts">
+    <mxGraphModel dx="1188" dy="701" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;LangSmith Observability &amp; Tracing&lt;/b&gt;&lt;br&gt;&lt;i&gt;Core Concepts&lt;/i&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=22;fontStyle=1;fontFamily=Helvetica;fontColor=#1565C0;" parent="1" vertex="1">
+          <mxGeometry x="285" y="20" width="600" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="concepts_group" value="&lt;b&gt;Core Concepts&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=15;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=15;spacingTop=3;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="90" width="1090" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="run_concept" value="&lt;b&gt;Run&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=12;fontStyle=1;gradientColor=#66B2FF;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="70" y="130" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="run_desc" value="Single unit of work&lt;br&gt;• LLM call&lt;br&gt;• Chain execution&lt;br&gt;• Tool invocation" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Helvetica;fontColor=default;spacingLeft=10;" parent="1" vertex="1">
+          <mxGeometry x="75" y="153" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="trace_concept" value="&lt;b&gt;Trace&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=12;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="350" y="130" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="trace_desc" value="Collection of runs&lt;br&gt;• Single operation flow&lt;br&gt;• Complete lifecycle&lt;br&gt;• Full pipeline visibility" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Helvetica;fontColor=default;spacingLeft=10;" parent="1" vertex="1">
+          <mxGeometry x="355" y="153" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="thread_concept" value="&lt;b&gt;Thread&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=12;fontStyle=1;gradientColor=#FFF59D;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="630" y="130" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="thread_desc" value="Sequence of traces&lt;br&gt;• Multi-turn conversation&lt;br&gt;• Linked by session_id&lt;br&gt;• Context continuity&lt;br&gt;• Analyze user interactions" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Helvetica;fontColor=default;spacingLeft=10;" parent="1" vertex="1">
+          <mxGeometry x="635" y="153" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="project_concept" value="&lt;b&gt;Project&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;gradientColor=#FF9999;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="70" y="250" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="project_desc" value="Container for traces&lt;br&gt;• Groups related traces&lt;br&gt;• Application level&lt;br&gt;• Default: 'default'" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Helvetica;fontColor=default;spacingLeft=10;" parent="1" vertex="1">
+          <mxGeometry x="75" y="273" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback_concept" value="&lt;b&gt;Feedback&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=12;fontStyle=1;gradientColor=#A5D6A7;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="350" y="250" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback_desc" value="Score individual runs&lt;br&gt;• User ratings (👍/👎)&lt;br&gt;• Auto evaluations&lt;br&gt;• Quality monitoring" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Helvetica;fontColor=default;spacingLeft=10;" parent="1" vertex="1">
+          <mxGeometry x="355" y="273" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tags_metadata_concept" value="&lt;b&gt;Tags &amp; Metadata&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fce4ec;strokeColor=#AD1457;fontSize=12;fontStyle=1;gradientColor=#F8BBD0;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="630" y="250" width="240" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="tags_metadata_desc" value="Run annotations&lt;br&gt;• Tags: categorization&lt;br&gt;• Metadata: key-values&lt;br&gt;• Filter &amp; group runs" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Helvetica;fontColor=default;spacingLeft=10;" parent="1" vertex="1">
+          <mxGeometry x="635" y="273" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="hierarchy" value="&lt;b&gt;Hierarchy&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f2fd;strokeColor=#1976D2;fontSize=12;fontStyle=1;gradientColor=#90CAF9;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="70" y="360" width="800" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="hierarchy_desc" value="&lt;b&gt;Organization:&lt;/b&gt; Project &gt; Thread &gt; Trace &gt; Run&lt;br&gt;• Project contains multiple threads&lt;br&gt;• Thread contains sequence of traces (conversation turns)&lt;br&gt;• Trace contains multiple runs (one execution flow)&lt;br&gt;• Run is atomic unit (LLM call, tool, chain)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=11;fontFamily=Helvetica;fontColor=default;spacingLeft=10;" parent="1" vertex="1">
+          <mxGeometry x="75" y="383" width="790" height="50" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
