@@ -80,7 +80,7 @@ MANUAL_EXPERIMENT_IDS: List[str] = [
 # Used only if MANUAL_EXPERIMENT_IDS is empty
 JSON_CONFIG_PATH = "Evaluations/what_is_evaluated/output_correctness/001_evaluate_output_correctness_iterate_models_parallel.json"
 EXECUTION_ID = (
-    "exec_2025-12-21_204506_0d147d42"  # Extract experiments from this execution
+    "exec_2025-12-21_153323_ed989867"  # Extract experiments from this execution
 )
 
 # ============================================================================
@@ -88,12 +88,12 @@ EXECUTION_ID = (
 # ============================================================================
 
 # Evaluation settings
-MAX_CONCURRENCY = 10  # Concurrency within each pair comparison
+MAX_CONCURRENCY = 1  # Concurrency within each pair comparison
 RANDOMIZE_ORDER = True  # Mitigate positional bias
 
 # Parallel processing settings
 MAX_PARALLEL_PAIRS = (
-    20  # Number of pairs to process in parallel (set to 1 for sequential)
+    1  # Number of pairs to process in parallel (set to 1 for sequential)
 )
 
 # Judge model configuration
