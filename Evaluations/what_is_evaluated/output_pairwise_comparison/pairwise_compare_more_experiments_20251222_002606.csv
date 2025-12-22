@@ -1,0 +1,7 @@
+pair_number,experiment_a_name,experiment_b_name,winner,a_wins,b_wins,total_comparisons
+1,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-233f9756,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-aeccba8b,B,0,1,2
+2,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-aeccba8b,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-233f9756,A,1,0,2
+3,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-233f9756,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-1637352b,A,1,0,2
+4,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-1637352b,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-233f9756,TIE,1,1,2
+5,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-aeccba8b,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-1637352b,B,0,1,2
+6,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-1637352b,judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-aeccba8b,B,0,1,2
