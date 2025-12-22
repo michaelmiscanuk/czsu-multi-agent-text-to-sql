@@ -438,6 +438,13 @@ async def detect_language(text: str) -> str:
         - Content-Type: application/json
         - Headers: Ocp-Apim-Subscription-Key, Ocp-Apim-Subscription-Region, X-ClientTraceId
     """
+    # Validate input - handle empty or whitespace-only text
+    if not text or not text.strip():
+        print(
+            f"⚠️ detect_language: Empty or whitespace-only text provided, returning default 'en'"
+        )
+        return "en"
+
     load_dotenv()
     subscription_key = os.environ["TRANSLATOR_TEXT_SUBSCRIPTION_KEY"]
     region = os.environ["TRANSLATOR_TEXT_REGION"]
@@ -455,32 +462,56 @@ async def detect_language(text: str) -> str:
 
     body = [{"text": text}]
 
-    # Run the synchronous request in a thread
-    loop = asyncio.get_event_loop()
-    response = await loop.run_in_executor(
-        None,
-        lambda: requests.post(constructed_url, headers=headers, json=body, timeout=30),
-    )
+    try:
+        # Run the synchronous request in a thread
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            None,
+            lambda: requests.post(
+                constructed_url, headers=headers, json=body, timeout=30
+            ),
+        )
 
-    # Validate response
-    if response.status_code != 200:
-        print(f"⚠️ Azure Translator API error: Status {response.status_code}")
-        print(f"Response: {response.text[:200]}")
-        # Return default language on error
+        # Validate response
+        if response.status_code != 200:
+            print(f"⚠️ Azure Translator API error: Status {response.status_code}")
+            print(f"Response: {response.text[:200]}")
+            # Return default language on error
+            return "en"
+
+        result = response.json()
+
+        # Validate result structure
+        if not isinstance(result, list) or len(result) == 0:
+            print(f"⚠️ Azure Translator API returned unexpected format: {result}")
+            print(
+                f"   Type: {type(result)}, Length: {len(result) if isinstance(result, (list, dict)) else 'N/A'}"
+            )
+            return "en"
+
+        if "language" not in result[0]:
+            print(
+                f"⚠️ Azure Translator API response missing 'language' field: {result[0]}"
+            )
+            return "en"
+
+        return result[0]["language"]
+
+    except (KeyError, IndexError, TypeError, ValueError) as e:
+        print(f"⚠️ Error parsing Azure Translator API response: {type(e).__name__}: {e}")
+        try:
+            print(f"   Response data: {result}")
+            print(f"   Input text length: {len(text)}, preview: {text[:100]}")
+        except:
+            print(f"   Could not print debug info")
         return "en"
-
-    result = response.json()
-
-    # Validate result structure
-    if not isinstance(result, list) or len(result) == 0:
-        print(f"⚠️ Azure Translator API returned unexpected format: {result}")
+    except Exception as e:
+        print(f"⚠️ Unexpected error in detect_language: {type(e).__name__}: {e}")
+        try:
+            print(f"   Input text length: {len(text) if text else 0}")
+        except:
+            pass
         return "en"
-
-    if "language" not in result[0]:
-        print(f"⚠️ Azure Translator API response missing 'language' field: {result[0]}")
-        return "en"
-
-    return result[0]["language"]
 
 
 # ==============================================================================

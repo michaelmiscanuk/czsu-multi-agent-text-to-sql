@@ -3065,11 +3065,23 @@ Bad: "The query shows X is 1,234,567"
                     node_name="format_answer_node_non_streaming"
                 )
                 llm_response = await llm_standard.ainvoke(messages_to_send)
-                final_answer_content = (
-                    llm_response.content
-                    if hasattr(llm_response, "content")
-                    else str(llm_response)
-                )
+                
+                # Extract content safely - handle various response formats
+                if hasattr(llm_response, "content"):
+                    content = llm_response.content
+                    # Handle list content (some models return list of content blocks)
+                    if isinstance(content, list):
+                        final_answer_content = " ".join(str(item) for item in content if item)
+                    else:
+                        final_answer_content = str(content) if content else ""
+                else:
+                    final_answer_content = str(llm_response) if llm_response else ""
+                
+                # Ensure we have some content
+                if not final_answer_content or not final_answer_content.strip():
+                    print__nodes_debug(f"⚠️ {FORMAT_ANSWER_ID}: LLM returned empty content")
+                    final_answer_content = ""
+                
                 result = (
                     llm_response
                     if isinstance(llm_response, AIMessage)
@@ -3124,6 +3136,11 @@ Bad: "The query shows X is 1,234,567"
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
 
     # Step 9: final_answer_content already populated above
+    
+    # Validate final_answer_content before language detection
+    if not final_answer_content or not final_answer_content.strip():
+        print__nodes_debug(f"⚠️ {FORMAT_ANSWER_ID}: Empty final_answer_content from LLM, using fallback")
+        final_answer_content = "No answer generated"
 
     # Step 10: Detect answer language
     detected_language_llm = await detect_language(final_answer_content)
