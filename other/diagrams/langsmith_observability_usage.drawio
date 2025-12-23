@@ -1,0 +1,67 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="langsmith-trace-usage" name="LangSmith Trace Usage">
+    <mxGraphModel dx="983" dy="580" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="row1_group" value="&lt;b&gt;View &amp; Analyze Traces&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=15;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=15;spacingTop=3;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="90" width="720" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="inspect_box" value="&lt;b&gt;1. INSPECT &amp; DEBUG TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#6a1b9a;fontSize=12;fontStyle=1;gradientColor=#ba68c8;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="51" y="130" width="225" height="171" as="geometry" />
+        </mxCell>
+        <mxCell id="inspect_desc" value="&lt;span&gt;View &amp;amp; Analyze Individual Traces&lt;/span&gt;&lt;br&gt;&lt;br&gt;• View execution tree (runs hierarchy)&lt;br&gt;• Inspect inputs/outputs at each step&lt;br&gt;• Identify errors &amp;amp; failures&lt;br&gt;• Check latency &amp;amp; performance&lt;br&gt;• Examine LLM calls &amp;amp; tool usage&lt;br&gt;• Use built-in&amp;nbsp; AI for insights from trace&lt;br&gt;• Debug non-deterministic behavior" style="text;html=1;strokeColor=none;fillColor=#f3e5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#4a148c;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="59" y="152" width="210" height="139" as="geometry" />
+        </mxCell>
+        <mxCell id="filter_box" value="&lt;b&gt;2. FILTER TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=12;fontStyle=1;gradientColor=#66B2FF;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="289" y="130" width="225" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="filter_desc" value="&lt;span&gt;Navigate Large Trace Datasets&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Filter by errors, latency, feedback&lt;br&gt;• Filter by metadata (user_id, tags)&lt;br&gt;• Filter by run type (LLM, tool, chain)&lt;br&gt;• Filter by trace_id or thread_id&lt;br&gt;• Use query language for complex filters&lt;br&gt;• Narrow down for focused investigation&lt;br&gt;• Find specific patterns or issues" style="text;html=1;strokeColor=none;fillColor=#E3F2FD;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#01579B;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="297" y="152" width="210" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="compare_box" value="&lt;b&gt;3. COMPARE TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=12;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="526" y="130" width="225" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="compare_desc" value="&lt;span&gt;Side-by-Side Analysis&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Compare 2+ traces side-by-side&lt;br&gt;• Identify differences in execution&lt;br&gt;• Compare prompt versions&lt;br&gt;• Compare model outputs&lt;br&gt;• Analyze why outputs differ&lt;br&gt;• Validate improvements&lt;br&gt;• Debug edge cases" style="text;html=1;strokeColor=none;fillColor=#E0F2F1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#004D40;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="534" y="152" width="210" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="row2_group" value="&lt;b&gt;Extract &amp; Transform Traces&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#E65100;fontSize=15;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=15;spacingTop=3;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="340" width="720" height="229" as="geometry" />
+        </mxCell>
+        <mxCell id="export_box" value="&lt;b&gt;4. EXPORT TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=12;fontStyle=1;gradientColor=#FFF59D;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="51" y="380" width="225" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="export_desc" value="&lt;span&gt;Extract Trace Data&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Bulk export via API/SDK&lt;br&gt;• Export to BigQuery, Snowflake, etc.&lt;br&gt;• Export filtered traces&lt;br&gt;• CLI tool (langsmith-fetch)&lt;br&gt;• Share trace links publicly&lt;br&gt;• JSON export for offline analysis&lt;br&gt;• Export entire threads" style="text;html=1;strokeColor=none;fillColor=#FFFDE7;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#F57F17;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="59" y="402" width="210" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="dataset_box" value="&lt;b&gt;5. CONVERT TRACES → DATASETS&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=11;fontStyle=1;gradientColor=#A5D6A7;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="289" y="380" width="225" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="dataset_desc" value="&lt;span&gt;Build Evaluation Datasets from Traces&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Select production traces&lt;br&gt;• Add to dataset as examples&lt;br&gt;• Filter by feedback (poor ratings)&lt;br&gt;• Filter by errors or edge cases&lt;br&gt;• Multi-select runs to add&lt;br&gt;• Use for offline evaluation&lt;br&gt;• Automatic via rules (webhooks)" style="text;html=1;strokeColor=none;fillColor=#E8F5E9;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#1B5E20;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="297" y="402" width="210" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="eval_box" value="&lt;b&gt;6. TRACES IN EVALUATION WORKFLOW&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8eaf6;strokeColor=#3F51B5;fontSize=12;fontStyle=1;gradientColor=#c5cae9;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="526" y="380" width="225" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="eval_desc" value="&lt;span&gt;How Traces Enable Evaluation&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Experiments generate traces&lt;br&gt;• Each dataset example → trace&lt;br&gt;• Compare experiment traces&lt;br&gt;• Filter experiment traces by scores&lt;br&gt;• Export filtered traces back to datasets&lt;br&gt;• View experiment traces in project&lt;br&gt;• Backtesting: production traces → dataset" style="text;html=1;strokeColor=none;fillColor=#E8EAF6;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#283593;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="534" y="402" width="210" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="row3_group" value="&lt;b&gt;Annotate &amp; Monitor Traces&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2E7D32;fontSize=15;fontStyle=1;opacity=20;align=center;verticalAlign=top;spacingLeft=15;spacingTop=3;fontFamily=Helvetica;fontColor=default;gradientColor=none;" parent="1" vertex="1">
+          <mxGeometry x="40" y="590" width="720" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback_box" value="&lt;b&gt;7. COLLECT FEEDBACK ON TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#0277BD;fontSize=12;fontStyle=1;gradientColor=#81d4fa;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="51" y="630" width="325" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback_desc" value="&lt;span&gt;Annotate Traces with Feedback&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Attach feedback to any run in trace&lt;br&gt;• User feedback (👍/👎, ratings)&lt;br&gt;• Automated evaluator feedback&lt;br&gt;• Online evaluation feedback&lt;br&gt;• Offline evaluation feedback&lt;br&gt;• Filter traces by feedback scores&lt;br&gt;• Use feedback to build datasets&lt;br&gt;• Track quality metrics over time" style="text;html=1;strokeColor=none;fillColor=#E1F5FE;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#01579B;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="59" y="652" width="310" height="138" as="geometry" />
+        </mxCell>
+        <mxCell id="monitor_box" value="&lt;b&gt;8. MONITOR TRACES IN PRODUCTION&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#6A1B9A;fontSize=12;fontStyle=1;gradientColor=#ce93d8;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="388" y="630" width="363" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="monitor_desc" value="&lt;span&gt;Aggregate Trace Metrics&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Dashboards from trace data&lt;br&gt;• Track trace count, latency, errors&lt;br&gt;• Monitor costs &amp;amp; token usage&lt;br&gt;• Set alerts on trace patterns&lt;br&gt;• Online evaluators run on traces&lt;br&gt;• Analyze trends over time&lt;br&gt;• Group by metadata or tags" style="text;html=1;strokeColor=none;fillColor=#F3E5F5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#4A148C;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="396" y="652" width="348" height="138" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
