@@ -1,0 +1,135 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="trace-to-dataset-loop" name="Trace-to-Dataset Continuous Improvement Loop">
+    <mxGraphModel dx="1173" dy="664" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" value="&lt;b&gt;LangSmith Continuous Improvement Loop: Production Traces → Datasets → Evaluation&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;fontFamily=Helvetica;fontColor=#1565C0;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="40" y="30" width="1090" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- STEP 1: Production Traces -->
+        <mxCell id="step1_box" value="&lt;b&gt;1. PRODUCTION TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#6a1b9a;fontSize=12;fontStyle=1;gradientColor=#ba68c8;align=center;verticalAlign=top;spacingTop=-1;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="80" y="100" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step1_desc" value="&lt;span&gt;Real-world Application Usage&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Application runs in production&lt;br&gt;• Each request creates a trace&lt;br&gt;• Traces include inputs/outputs&lt;br&gt;• Includes execution tree&lt;br&gt;• Captures errors &amp;amp; latency&lt;br&gt;• Records LLM calls &amp;amp; tool usage&lt;br&gt;• Stored in LangSmith project" style="text;html=1;strokeColor=none;fillColor=#f3e5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#4a148c;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="88" y="122" width="224" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow 1 to 2 -->
+        <mxCell id="arrow1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fillColor=#7B1FA2;strokeColor=#7B1FA2;endArrow=block;endFill=1;" parent="1" source="step1_box" target="step2_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- STEP 2: Inspect & Filter -->
+        <mxCell id="step2_box" value="&lt;b&gt;2. INSPECT &amp;amp; FILTER TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=12;fontStyle=1;gradientColor=#66B2FF;align=center;verticalAlign=top;spacingTop=-1;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="360" y="100" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step2_desc" value="&lt;span&gt;Identify Traces to Improve&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Filter by negative feedback (👎)&lt;br&gt;• Filter by errors (status=error)&lt;br&gt;• Filter by high latency&lt;br&gt;• Filter by user ratings&lt;br&gt;• Manual inspection of traces&lt;br&gt;• Multi-select traces&lt;br&gt;• Use Rules for automation" style="text;html=1;strokeColor=none;fillColor=#E3F2FD;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#01579B;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="368" y="122" width="224" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow 2 to 3 -->
+        <mxCell id="arrow2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;" parent="1" source="step2_box" target="step3_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- STEP 3: Annotation Queue -->
+        <mxCell id="step3_box" value="&lt;b&gt;3. ANNOTATION QUEUE (Optional)&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=12;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=top;spacingTop=-1;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="640" y="100" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step3_desc" value="&lt;span&gt;Human Review &amp;amp; Curation&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Batch review traces&lt;br&gt;• Edit inputs/outputs&lt;br&gt;• Define ideal responses&lt;br&gt;• Leave feedback/comments&lt;br&gt;• Dedicated view for annotators&lt;br&gt;• Quick inspection workflow&lt;br&gt;• Rules send traces here automatically" style="text;html=1;strokeColor=none;fillColor=#E0F2F1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#004D40;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="648" y="122" width="224" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow 3 to 4 -->
+        <mxCell id="arrow3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fillColor=#00796B;strokeColor=#00796B;endArrow=block;endFill=1;" parent="1" source="step3_box" target="step4_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- STEP 4: Add to Dataset -->
+        <mxCell id="step4_box" value="&lt;b&gt;4. ADD TO DATASET&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=12;fontStyle=1;gradientColor=#A5D6A7;align=center;verticalAlign=top;spacingTop=-1;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="920" y="100" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step4_desc" value="&lt;span&gt;Build Evaluation Datasets&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Convert trace to dataset example&lt;br&gt;• Inputs from trace&lt;br&gt;• Outputs = corrected/ideal response&lt;br&gt;• Create or add to existing dataset&lt;br&gt;• Manual or automated (Rules)&lt;br&gt;• Curate representative examples&lt;br&gt;• Include edge cases &amp;amp; errors" style="text;html=1;strokeColor=none;fillColor=#E8F5E9;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#1B5E20;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="928" y="122" width="224" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow 4 to 5 (going down) -->
+        <mxCell id="arrow4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fillColor=#388E3C;strokeColor=#388E3C;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="step4_box" target="step5_box" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1040" y="260" as="sourcePoint" />
+            <mxPoint x="1040" y="400" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1040" y="290" />
+              <mxPoint x="1040" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- STEP 5: Run Experiments -->
+        <mxCell id="step5_box" value="&lt;b&gt;5. RUN EXPERIMENTS / EVALUATIONS&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=12;fontStyle=1;gradientColor=#FFF59D;align=center;verticalAlign=top;spacingTop=-1;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="640" y="310" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step5_desc" value="&lt;span&gt;Offline Testing on Dataset&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Test changes (prompt, model, etc.)&lt;br&gt;• Run on entire dataset&lt;br&gt;• Each example generates trace&lt;br&gt;• Evaluate with automated metrics&lt;br&gt;• Compare experiment results&lt;br&gt;• Measure improvements over time&lt;br&gt;• Track performance on edge cases" style="text;html=1;strokeColor=none;fillColor=#FFFDE7;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#F57F17;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="648" y="332" width="224" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow 5 to 6 -->
+        <mxCell id="arrow5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fillColor=#F57F17;strokeColor=#F57F17;endArrow=block;endFill=1;" parent="1" source="step5_box" target="step6_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- STEP 6: Analyze Results -->
+        <mxCell id="step6_box" value="&lt;b&gt;6. ANALYZE EXPERIMENT TRACES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8eaf6;strokeColor=#3F51B5;fontSize=12;fontStyle=1;gradientColor=#c5cae9;align=center;verticalAlign=top;spacingTop=-1;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="360" y="310" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step6_desc" value="&lt;span&gt;Identify Issues &amp;amp; Improvements&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Compare experiment traces&lt;br&gt;• Filter by low scores&lt;br&gt;• Identify failing examples&lt;br&gt;• Inspect differences in outputs&lt;br&gt;• Export failing traces&lt;br&gt;• Validate improvements worked&lt;br&gt;• Find new edge cases" style="text;html=1;strokeColor=none;fillColor=#E8EAF6;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#283593;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="368" y="332" width="224" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow 6 to 7 -->
+        <mxCell id="arrow6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fillColor=#3F51B5;strokeColor=#3F51B5;endArrow=block;endFill=1;" parent="1" source="step6_box" target="step7_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- STEP 7: Deploy & Iterate -->
+        <mxCell id="step7_box" value="&lt;b&gt;7. DEPLOY &amp;amp; ITERATE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#6A1B9A;fontSize=12;fontStyle=1;gradientColor=#ce93d8;align=center;verticalAlign=top;spacingTop=-1;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+          <mxGeometry x="80" y="310" width="240" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="step7_desc" value="&lt;span&gt;Continuous Improvement&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Deploy improvements to production&lt;br&gt;• Add failing traces to dataset&lt;br&gt;• New production traces generated&lt;br&gt;• Monitor performance metrics&lt;br&gt;• Collect user feedback&lt;br&gt;• Loop back to step 1&lt;br&gt;• Continuous iteration cycle" style="text;html=1;strokeColor=none;fillColor=#F3E5F5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#4A148C;spacingLeft=8;fontStyle=1" parent="1" vertex="1">
+          <mxGeometry x="88" y="332" width="224" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Arrow 7 back to 1 (completing the loop) -->
+        <mxCell id="arrow7" value="Continuous Loop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=3;fillColor=#6A1B9A;strokeColor=#6A1B9A;endArrow=block;endFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=#FFFFFF;fontSize=11;fontStyle=1;fontColor=#6A1B9A;" parent="1" source="step7_box" target="step1_box" edge="1">
+          <mxGeometry x="-0.0769" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="40" y="390" />
+              <mxPoint x="40" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- AUTOMATION BOX -->
+        <mxCell id="automation_box" value="&lt;b&gt;AUTOMATION WITH RULES&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#E65100;fontSize=13;fontStyle=1;align=center;verticalAlign=top;spacingTop=2;fontFamily=Helvetica;fontColor=default;spacing=2;dashed=1;dashPattern=8 8;" parent="1" vertex="1">
+          <mxGeometry x="80" y="520" width="800" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="automation_desc" value="&lt;span style=&quot;font-size: 11px;&quot;&gt;&lt;b&gt;Automate the entire loop with LangSmith Rules:&lt;/b&gt;&lt;/span&gt;&lt;br&gt;&lt;br&gt;• &lt;b&gt;Rule 1:&lt;/b&gt; Send traces with negative feedback → Annotation Queue&lt;br&gt;• &lt;b&gt;Rule 2:&lt;/b&gt; Send traces with errors (status=error) → Annotation Queue&lt;br&gt;• &lt;b&gt;Rule 3:&lt;/b&gt; Send traces with high latency → Annotation Queue&lt;br&gt;• &lt;b&gt;Rule 4:&lt;/b&gt; Auto-add traces with positive feedback → Dataset (sampling rate 10%)&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-style: italic;&quot;&gt;Rules allow you to automatically filter and route production traces, eliminating manual work and ensuring continuous dataset improvement.&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=#FFF8E1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontFamily=Helvetica;fontColor=#E65100;spacingLeft=12;fontStyle=0;spacingTop=5;" parent="1" vertex="1">
+          <mxGeometry x="90" y="550" width="780" height="110" as="geometry" />
+        </mxCell>
+        
+        <!-- Shortcut arrow from step 2 to step 4 (skip annotation queue) -->
+        <mxCell id="shortcut_arrow" value="Direct Add&#xa;(skip review)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;fillColor=#9E9E9E;strokeColor=#9E9E9E;endArrow=block;endFill=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;dashPattern=4 4;labelBackgroundColor=#FFFFFF;fontSize=9;fontStyle=2;fontColor=#757575;" parent="1" source="step2_box" target="step4_box" edge="1">
+          <mxGeometry x="-0.0909" y="-10" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

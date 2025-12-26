@@ -1,0 +1,58 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram id="trace-to-dataset-loop" name="Trace-to-Dataset Loop">
+    <mxGraphModel dx="1573" dy="664" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="step1_box" value="&lt;b&gt;1. PRODUCTION TRACES&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Real app usage&lt;br&gt;• Inputs/outputs captured" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;fontColor=#330000;spacingLeft=10;spacingTop=8;spacingBottom=8;spacingRight=10;" parent="1" vertex="1">
+          <mxGeometry x="50" y="50" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;fontColor=#330000;" parent="1" source="step1_box" target="step2_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step2_box" value="&lt;b&gt;2. FILTER TRACES&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Negative feedback&lt;br&gt;• Errors&lt;br&gt;• High latency" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;fontColor=#330000;spacingLeft=10;spacingTop=8;spacingBottom=8;spacingRight=10;" parent="1" vertex="1">
+          <mxGeometry x="310" y="50" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;fontColor=#330000;" parent="1" source="step2_box" target="step3_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step3_box" value="&lt;b&gt;3. ADD TO DATASET&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Can correct outputs&lt;br&gt;• Representative examples&lt;br&gt;• Optionally Review by Annotation Queue" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;fontColor=#330000;spacingLeft=10;spacingTop=8;spacingBottom=8;spacingRight=10;" parent="1" vertex="1">
+          <mxGeometry x="570" y="50" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#330000;" parent="1" source="step3_box" target="step4_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step4_box" value="&lt;b&gt;4. RUN EXPERIMENTS&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Test changes&lt;br&gt;• Run on dataset&lt;br&gt;• Evaluation metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;fontColor=#330000;spacingLeft=10;spacingTop=8;spacingBottom=8;spacingRight=10;" parent="1" vertex="1">
+          <mxGeometry x="570" y="175" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;fontColor=#330000;" parent="1" source="step4_box" target="step5_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step5_box" value="&lt;b&gt;5. ANALYZE RESULTS&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Compare traces&lt;br&gt;• Identify failures&lt;br&gt;• Find improvements" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;fontColor=#330000;spacingLeft=10;spacingTop=8;spacingBottom=8;spacingRight=10;" parent="1" vertex="1">
+          <mxGeometry x="310" y="175" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;fontColor=#330000;" parent="1" source="step5_box" target="step6_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step6_box" value="&lt;b&gt;6. MAKE IMPROVEMENTS&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Adjust models&lt;br&gt;• Refine prompts&lt;br&gt;• Tune hyperparameters&lt;br&gt;• Modify architecture" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;fontColor=#330000;spacingLeft=10;spacingTop=8;spacingBottom=8;spacingRight=10;" parent="1" vertex="1">
+          <mxGeometry x="50" y="175" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;fontColor=#330000;" parent="1" source="step6_box" target="step7_box" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="step7_box" value="&lt;b&gt;7. DEPLOY &amp;amp; ITERATE&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Deploy changes&lt;br&gt;• Monitor production&lt;br&gt;• Collect feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=11;fontStyle=1;gradientColor=#66B2FF;align=left;verticalAlign=top;fontFamily=Helvetica;fontColor=#330000;spacingLeft=10;spacingTop=8;spacingBottom=8;spacingRight=10;" parent="1" vertex="1">
+          <mxGeometry x="50" y="300" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow7" value="Continuous Loop" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fillColor=#3399FF;strokeColor=#3399FF;endArrow=block;endFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=#FFFFFF;fontSize=11;fontStyle=1;fontColor=#330000;" parent="1" source="step7_box" target="step1_box" edge="1">
+          <mxGeometry x="0.0149" relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="10" y="347" />
+              <mxPoint x="10" y="98" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
