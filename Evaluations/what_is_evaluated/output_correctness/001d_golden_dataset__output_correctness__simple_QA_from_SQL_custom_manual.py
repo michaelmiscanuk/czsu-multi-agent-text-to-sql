@@ -35,16 +35,16 @@ load_dotenv(project_root / ".env")
 # - answer: Expected answer from the database
 # - source: CSV file and exact data line for verification
 question_answers = [
-    # {
-    #     "question": "What was the average consumer price of oranges in Czechia in March 2025?",
-    #     "answer": "34.27 CZK per kg",
-    #     "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pomeranče [1 kg];březen 2025;34.27",
-    # },
-    # {
-    #     "question": "What was the average consumer price of honey in Czechia in October 2024?",
-    #     "answer": "178.28 CZK per kg",
-    #     "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pravý včelí med [1 kg];říjen 2024;178.28",
-    # },
+    {
+        "question": "What was the average consumer price of oranges in Czechia in March 2025?",
+        "answer": "34.27 CZK per kg",
+        "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pomeranče [1 kg];březen 2025;34.27",
+    },
+    {
+        "question": "What was the average consumer price of honey in Czechia in October 2024?",
+        "answer": "178.28 CZK per kg",
+        "source": "CEN0101DT01.csv; Průměrné spotřebitelské ceny zboží a služeb;Česko;Pravý včelí med [1 kg];říjen 2024;178.28",
+    },
     {
         "question": "What was the average annual inflation rate in Czechia in 2022?",
         "answer": "15.1%",
@@ -115,76 +115,76 @@ question_answers = [
         "answer": "38999.1122333656 CZK",
         "source": "MZDRT2.csv; Česko;2024;P - Vzdělávání;Průměrná hrubá měsíční mzda na fyzické osoby (Kč);38999.1122333656",
     },
-    # {
-    #     "question": "What was the number of job applicants registered at the Labor Office in Prague in 2023?",
-    #     "answer": "27425",
-    #     "source": "NEZ01T1.csv; 2023;Hlavní město Praha;Uchazeči o zaměstnání v evidenci ÚP - celkem;27425.0",
-    # },
-    # {
-    #     "question": "What was the gross domestic product in Czechia in 2024?",
-    #     "answer": "8057032.0 million CZK",
-    #     "source": "NUC06RT01.csv; Česko;Hrubý domácí produkt (mil. Kč, běžné ceny);2024;8057032.0",
-    # },
-    # {
-    #     "question": "What was the number of divorces in Czechia in 2024?",
-    #     "answer": "20796",
-    #     "source": "OBY01AT01.csv; Q1-Q4 2024;Česko;Rozvody;20796",
-    # },
-    # {
-    #     "question": "What was the age median for women in Czechia in 2024?",
-    #     "answer": "45.66620224 years",
-    #     "source": "OBY02FGEN.csv; 2024;Česko;Věkový medián (roky);Ženy;45.66620224",
-    # },
-    # {
-    #     "question": "What is the forecast of the number of live births in Czechia in 2044?",
-    #     "answer": "93746",
-    #     "source": "OBY02PT02.csv; Česko;Živě narození;2044;93746.0",
-    # },
-    # {
-    #     "question": "What was the number of private entrepreneurs operating under the Trade Licensing Act in Czechia in Q3 2025?",
-    #     "answer": "1797952",
-    #     "source": "RES01QT1.csv; Česko;Počet ekonomických subjektů v registru;Soukromí podnikatelé podnikající podle živnostenského zákona;3. čtvrtletí 2025;1797952",
-    # },
-    # {
-    #     "question": "What was the total number of economic entities in Prague in Q3 2025?",
-    #     "answer": "687339",
-    #     "source": "RES02QT4.csv; Počet ekonomických subjektů celkem;Celkem;Hlavní město Praha;3. čtvrtletí 2025;687339",
-    # },
-    # {
-    #     "question": "What was the number of uninhabited apartments in Prague in 2021?",
-    #     "answer": "93627",
-    #     "source": "SLD023T02.csv; 2021;Počet bytů;Hlavní město Praha;Neobydlené byty;93627",
-    # },
-    # {
-    #     "question": "What was the number of inhabited houses in Prague in 1980?",
-    #     "answer": "75794",
-    #     "source": "SLD053T02.csv; Obydlené domy celkem;Hlavní město Praha;1980;75794",
-    # },
-    # {
-    #     "question": "What was the number of building permits in Czechia in April 2025?",
-    #     "answer": "18568",
-    #     "source": "STA08A1T1.csv; Česko;duben 2025;Počet stavebních povolení v ČR;18568.0",
-    # },
-    # {
-    #     "question": "What was the average value of the paid monthly pension in Prague in 2023?",
-    #     "answer": "20897 CZK",
-    #     "source": "SZB01A.csv; Průměrná hodnota vyplaceného (měsíčního) důchodu (Kč);Důchody celkem;Celkem;Hlavní město Praha;2023;20897",
-    # },
-    # {
-    #     "question": "What was the value of paid state social support benefits in Czechia in 2024?",
-    #     "answer": "5411668.986 thousand CZK",
-    #     "source": "SZB02.csv; Česko;Hodnota vyplacených dávek státní sociální podpory (tis. Kč);Přídavek na dítě;2024;5411668.986",
-    # },
-    # {
-    #     "question": "What was the number of social service facilities in Czechia in 2023?",
-    #     "answer": "526",
-    #     "source": "SZB07A1.csv; Počet zařízení sociálních služeb;2023;Česko;Domovy pro seniory;526",
-    # },
-    # {
-    #     "question": "What was the voter turnout percentage in Czechia in 2025?",
-    #     "answer": "68.95%",
-    #     "source": "VOLPST2.csv; 2025;Česko;Volební účast (%);68.95",
-    # },
+    {
+        "question": "What was the number of job applicants registered at the Labor Office in Prague in 2023?",
+        "answer": "27425",
+        "source": "NEZ01T1.csv; 2023;Hlavní město Praha;Uchazeči o zaměstnání v evidenci ÚP - celkem;27425.0",
+    },
+    {
+        "question": "What was the gross domestic product in Czechia in 2024?",
+        "answer": "8057032.0 million CZK",
+        "source": "NUC06RT01.csv; Česko;Hrubý domácí produkt (mil. Kč, běžné ceny);2024;8057032.0",
+    },
+    {
+        "question": "What was the number of divorces in Czechia in 2024?",
+        "answer": "20796",
+        "source": "OBY01AT01.csv; Q1-Q4 2024;Česko;Rozvody;20796",
+    },
+    {
+        "question": "What was the age median for women in Czechia in 2024?",
+        "answer": "45.66620224 years",
+        "source": "OBY02FGEN.csv; 2024;Česko;Věkový medián (roky);Ženy;45.66620224",
+    },
+    {
+        "question": "What is the forecast of the number of live births in Czechia in 2044?",
+        "answer": "93746",
+        "source": "OBY02PT02.csv; Česko;Živě narození;2044;93746.0",
+    },
+    {
+        "question": "What was the number of private entrepreneurs operating under the Trade Licensing Act in Czechia in Q3 2025?",
+        "answer": "1797952",
+        "source": "RES01QT1.csv; Česko;Počet ekonomických subjektů v registru;Soukromí podnikatelé podnikající podle živnostenského zákona;3. čtvrtletí 2025;1797952",
+    },
+    {
+        "question": "What was the total number of economic entities in Prague in Q3 2025?",
+        "answer": "687339",
+        "source": "RES02QT4.csv; Počet ekonomických subjektů celkem;Celkem;Hlavní město Praha;3. čtvrtletí 2025;687339",
+    },
+    {
+        "question": "What was the number of uninhabited apartments in Prague in 2021?",
+        "answer": "93627",
+        "source": "SLD023T02.csv; 2021;Počet bytů;Hlavní město Praha;Neobydlené byty;93627",
+    },
+    {
+        "question": "What was the number of inhabited houses in Prague in 1980?",
+        "answer": "75794",
+        "source": "SLD053T02.csv; Obydlené domy celkem;Hlavní město Praha;1980;75794",
+    },
+    {
+        "question": "What was the number of building permits in Czechia in April 2025?",
+        "answer": "18568",
+        "source": "STA08A1T1.csv; Česko;duben 2025;Počet stavebních povolení v ČR;18568.0",
+    },
+    {
+        "question": "What was the average value of the paid monthly pension in Prague in 2023?",
+        "answer": "20897 CZK",
+        "source": "SZB01A.csv; Průměrná hodnota vyplaceného (měsíčního) důchodu (Kč);Důchody celkem;Celkem;Hlavní město Praha;2023;20897",
+    },
+    {
+        "question": "What was the value of paid state social support benefits in Czechia in 2024?",
+        "answer": "5411668.986 thousand CZK",
+        "source": "SZB02.csv; Česko;Hodnota vyplacených dávek státní sociální podpory (tis. Kč);Přídavek na dítě;2024;5411668.986",
+    },
+    {
+        "question": "What was the number of social service facilities in Czechia in 2023?",
+        "answer": "526",
+        "source": "SZB07A1.csv; Počet zařízení sociálních služeb;2023;Česko;Domovy pro seniory;526",
+    },
+    {
+        "question": "What was the voter turnout percentage in Czechia in 2025?",
+        "answer": "68.95%",
+        "source": "VOLPST2.csv; 2025;Česko;Volební účast (%);68.95",
+    },
 ]
 
 # ============================================================================
