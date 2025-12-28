@@ -1,0 +1,40 @@
+<mxfile host="65bd71144e">
+    <diagram id="evaluator-approaches" name="Evaluator Approaches">
+        <mxGraphModel dx="556" dy="751" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="human_box" value="&lt;b&gt;1. HUMAN EVALUATOR&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1bee7;strokeColor=#7B1FA2;fontSize=12;fontStyle=1;gradientColor=#ba68c8;align=center;verticalAlign=top;spacingTop=4;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="40" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="human_desc" value="&lt;span&gt;Expert Feedback&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Field expert provides scores&lt;br&gt;• Subjective assessments&lt;br&gt;• Does not scale well" style="text;html=1;strokeColor=none;fillColor=#f3e5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=11;fontFamily=Helvetica;fontColor=#4a148c;spacingLeft=8;fontStyle=0;spacingTop=4;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="70" width="220" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="rule_box" value="&lt;b&gt;2. RULE-BASED EVALUATOR&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#3399FF;fontSize=12;fontStyle=1;gradientColor=#66B2FF;align=center;verticalAlign=top;spacingTop=4;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="40" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="rule_desc" value="&lt;span&gt;Deterministic Logic&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Exact matches, regex patterns&lt;br&gt;• Fast and cost-effective&lt;br&gt;• Limited for subjective tasks" style="text;html=1;strokeColor=none;fillColor=#E3F2FD;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=11;fontFamily=Helvetica;fontColor=#01579B;spacingLeft=8;fontStyle=0;spacingTop=4;" parent="1" vertex="1">
+                    <mxGeometry x="310" y="70" width="220" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="statistical_box" value="&lt;b&gt;3. STATISTICAL EVALUATOR&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#b2dfdb;strokeColor=#00796B;fontSize=12;fontStyle=1;gradientColor=#80CBC4;align=center;verticalAlign=top;spacingTop=4;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+                    <mxGeometry x="560" y="40" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="statistical_desc" value="&lt;span&gt;Summary Metrics&lt;/span&gt;&lt;br&gt;&lt;br&gt;• Aggregate multiple examples&lt;br&gt;• Accuracy, precision, recall, F1&lt;br&gt;• Statistical Methods and Tests" style="text;html=1;strokeColor=none;fillColor=#E0F2F1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=11;fontFamily=Helvetica;fontColor=#004D40;spacingLeft=8;fontStyle=0;spacingTop=4;" parent="1" vertex="1">
+                    <mxGeometry x="570" y="70" width="220" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="llm_judge_box" value="&lt;b&gt;4. LLM AS A JUDGE&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff9c4;strokeColor=#F57F17;fontSize=12;fontStyle=1;gradientColor=#FFF59D;align=center;verticalAlign=top;spacingTop=4;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+                    <mxGeometry x="170" y="190" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="llm_judge_desc" value="&lt;span&gt;AI-Powered Assessment&lt;/span&gt;&lt;br&gt;&lt;br&gt;• One LLM evaluates another&lt;br&gt;• Subjective quality assessment&lt;br&gt;• Requires careful prompting" style="text;html=1;strokeColor=none;fillColor=#FFFDE7;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=11;fontFamily=Helvetica;fontColor=#F57F17;spacingLeft=8;fontStyle=0;spacingTop=4;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="220" width="220" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="pairwise_box" value="&lt;b&gt;5. PAIRWISE EVALUATOR&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#c8e6c9;strokeColor=#388E3C;fontSize=12;fontStyle=1;gradientColor=#A5D6A7;align=center;verticalAlign=top;spacingTop=4;fontFamily=Helvetica;fontColor=default;spacing=2;" parent="1" vertex="1">
+                    <mxGeometry x="430" y="190" width="240" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="pairwise_desc" value="&lt;span&gt;Comparative Ranking&lt;/span&gt;&lt;br&gt;&lt;br&gt;• LLM compares two outputs&lt;br&gt;• Determines preference&lt;br&gt;• Ranks models by suitability" style="text;html=1;strokeColor=none;fillColor=#E8F5E9;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=11;fontFamily=Helvetica;fontColor=#1B5E20;spacingLeft=8;fontStyle=0;spacingTop=4;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="220" width="220" height="80" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
