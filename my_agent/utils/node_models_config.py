@@ -33,13 +33,11 @@ NODE_MODELS_CONFIG = {
         },
         # Generates SQL queries using MCP tools (agentic SQL generation)
         "generate_query_node": {
-            "id": "azureopenai_gpt-4o",
-            "model_provider": "azureopenai",
-            "model_name": "gpt-4o",
-            "deployment_name": "gpt-4o__test1",
+            "id": "github_openai_gpt-4.1",
+            "model_provider": "github",
+            "model_name": "openai/gpt-4.1",
             "temperature": 0.0,
             "streaming": False,
-            "openai_api_version": "2024-05-01-preview",
         },
         # Reflects on query results and decides whether to improve or answer
         "reflect_node": {
