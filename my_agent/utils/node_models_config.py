@@ -17,19 +17,23 @@ NODE_MODELS_CONFIG = {
     "nodes": {
         # Rewrites user prompts for better retrieval and query understanding
         "rewrite_prompt_node": {
-            "id": "mistral_devstral-2512",
-            "model_provider": "mistral",
-            "model_name": "devstral-2512",
+            "id": "azureopenai_gpt-4o-mini",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4o-mini",
+            "deployment_name": "gpt-4o-mini-mimi2",
             "temperature": 0.0,
             "streaming": False,
+            "openai_api_version": "2024-05-01-preview",
         },
         # Summarizes conversation history to maintain context
         "summarize_messages_node": {
-            "id": "mistral_devstral-2512",
-            "model_provider": "mistral",
-            "model_name": "devstral-2512",
+            "id": "azureopenai_gpt-4o-mini",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4o-mini",
+            "deployment_name": "gpt-4o-mini-mimi2",
             "temperature": 0.0,
             "streaming": False,
+            "openai_api_version": "2024-05-01-preview",
         },
         # Generates SQL queries using MCP tools (agentic SQL generation)
         "generate_query_node": {
@@ -41,11 +45,13 @@ NODE_MODELS_CONFIG = {
         },
         # Reflects on query results and decides whether to improve or answer
         "reflect_node": {
-            "id": "mistral_devstral-2512",
-            "model_provider": "mistral",
-            "model_name": "devstral-2512",
+            "id": "azureopenai_gpt-4o-mini",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4o-mini",
+            "deployment_name": "gpt-4o-mini-mimi2",
             "temperature": 0.0,
             "streaming": False,
+            "openai_api_version": "2024-05-01-preview",
         },
         # Formats the final answer from SQL results and PDF chunks
         "format_answer_node": {
@@ -57,19 +63,23 @@ NODE_MODELS_CONFIG = {
         },
         # Non-streaming fallback for format_answer_node
         "format_answer_node_non_streaming": {
-            "id": "mistral_devstral-2512",
-            "model_provider": "mistral",
-            "model_name": "devstral-2512",
+            "id": "azureopenai_gpt-4o-mini",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4o-mini",
+            "deployment_name": "gpt-4o-mini-mimi2",
             "temperature": 0.0,
             "streaming": False,
+            "openai_api_version": "2024-05-01-preview",
         },
         # Generates follow-up prompt suggestions for the user
         "followup_prompts_node": {
-            "id": "mistral_devstral-2512",
-            "model_provider": "mistral",
-            "model_name": "devstral-2512",
+            "id": "azureopenai_gpt-4o-mini",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4o-mini",
+            "deployment_name": "gpt-4o-mini-mimi2",
             "temperature": 0.0,
             "streaming": False,
+            "openai_api_version": "2024-05-01-preview",
         },
     },
     # Default configuration used when node-specific config is not found
