@@ -33,11 +33,13 @@ NODE_MODELS_CONFIG = {
         },
         # Generates SQL queries using MCP tools (agentic SQL generation)
         "generate_query_node": {
-            "id": "xai_grok-4-1-fast-reasoning",
-            "model_provider": "xai",
-            "model_name": "grok-4-1-fast-reasoning",
+            "id": "azureopenai_gpt-4o",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4o",
+            "deployment_name": "gpt-4o__test1",
             "temperature": 0.0,
             "streaming": False,
+            "openai_api_version": "2024-05-01-preview",
         },
         # Reflects on query results and decides whether to improve or answer
         "reflect_node": {
