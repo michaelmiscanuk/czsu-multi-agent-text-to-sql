@@ -53,6 +53,7 @@ def get_model_config_by_id(model_id: str, model_configs: List[dict]) -> dict:
     raise ValueError(f"Model ID '{model_id}' not found")
 
 
+@retry_with_exponential_backoff(max_attempts=15, base_delay=2.0, max_delay=60.0)
 async def get_unevaluated_examples(
     client: Client, experiment_identifier: str, dataset_name: str
 ) -> List[Example]:

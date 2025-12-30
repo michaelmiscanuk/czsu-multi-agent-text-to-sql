@@ -408,8 +408,8 @@ def monitor_langsmith_progress(
             # Silently continue on any tracker or network error
             pass
 
-        # Check every 20 seconds (don't hammer LangSmith API)
-        time.sleep(20)
+        # Check every 30 seconds (increased from 20 to reduce API calls and avoid rate limiting)
+        time.sleep(30)
 
 
 def is_uuid(text: str) -> bool:

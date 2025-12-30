@@ -41,3 +41,67 @@ async def correctness_evaluator(
         ]
     )
     return response.content.upper() == "CORRECT"
+
+
+@retry_with_exponential_backoff(max_attempts=30, base_delay=1.0, max_delay=300.0)
+async def helpfulness_evaluator(inputs: dict, outputs: dict, judge_llm: Any) -> dict:
+    """LLM judge evaluator for helpfulness (reference-free).
+
+    Evaluates how helpful the LLM output is in addressing the user's input question.
+    This is a reference-free evaluator that only uses the input and output.
+
+    Args:
+        inputs: Input dictionary containing the user's question
+        outputs: Model outputs containing 'messages' with agent responses
+        judge_llm: LLM instance to use for judging
+
+    Returns:
+        dict: Evaluation result with 'score' (1-5) and 'reasoning'
+    """
+    if not outputs or "messages" not in outputs or not outputs["messages"]:
+        return {"score": 1, "reasoning": "No output provided"}
+
+    user_question = inputs.get("question", "")
+    agent_response = outputs["messages"][-1].content
+
+    instructions = (
+        "You are evaluating the helpfulness of an AI assistant's response to a user's question. "
+        "Rate the response on a scale of 1-5 based on the following rubric:\n\n"
+        "**Helpfulness Rubric:**\n"
+        "5 - Exceptionally Helpful: The response directly and comprehensively answers the question, "
+        "provides clear and accurate information, is well-structured, and goes beyond basic expectations "
+        "by offering additional relevant context or insights.\n\n"
+        "4 - Very Helpful: The response directly answers the question with accurate information, "
+        "is clear and well-organized, but may lack some additional context or depth that would make it exceptional.\n\n"
+        "3 - Moderately Helpful: The response addresses the question and provides relevant information, "
+        "but may be incomplete, lack clarity, or miss some important aspects of what was asked.\n\n"
+        "2 - Slightly Helpful: The response partially addresses the question but is vague, incomplete, "
+        "or contains information that is only tangentially related to what was asked.\n\n"
+        "1 - Not Helpful: The response does not address the question, is irrelevant, provides incorrect information, "
+        "or is incomprehensible.\n\n"
+        "Respond with a JSON object containing:\n"
+        "- 'score': An integer from 1 to 5\n"
+        "- 'reasoning': A brief explanation (2-3 sentences) justifying your score\n\n"
+        "Format your response as valid JSON only, with no additional text."
+    )
+
+    user_msg = f"USER QUESTION: {user_question}\n\n" f"AI RESPONSE: {agent_response}"
+
+    response = await judge_llm.ainvoke(
+        [
+            {"role": "system", "content": instructions},
+            {"role": "user", "content": user_msg},
+        ]
+    )
+
+    # Parse the JSON response
+    import json
+
+    try:
+        result = json.loads(response.content)
+        score = result.get("score", 3)
+        reasoning = result.get("reasoning", "Unable to parse evaluation")
+        return {"score": score, "reasoning": reasoning}
+    except (json.JSONDecodeError, AttributeError):
+        # Fallback if JSON parsing fails
+        return {"score": 3, "reasoning": f"JSON parse error: {response.content}"}

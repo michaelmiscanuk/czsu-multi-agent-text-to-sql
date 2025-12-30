@@ -217,7 +217,7 @@ def fetch_experiment_metadata_for_resume(
 def wait_and_poll_for_new_experiment(
     experiment_prefix: str,
     initial_wait_seconds: int = 5,
-    max_wait_seconds: int = 60,
+    max_wait_seconds: int = 240,
 ) -> Optional[dict]:
     """Wait and poll LangSmith API for newly created experiment.
 
@@ -291,7 +291,9 @@ def finalize_evaluation_result(
             model_id,
             status,
             examples_completed=examples_completed,
-            error=None if returncode == 0 else stderr[:500],
+            error=(
+                None if returncode == 0 else stderr[:20000]
+            ),  # Increased from 500 to 2000 chars
         )
 
     return {

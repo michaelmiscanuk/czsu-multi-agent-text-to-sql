@@ -37,9 +37,9 @@ NODE_MODELS_CONFIG = {
         },
         # Generates SQL queries using MCP tools (agentic SQL generation)
         "generate_query_node": {
-            "id": "github_openai_gpt-4.1",
-            "model_provider": "github",
-            "model_name": "openai/gpt-4.1",
+            "id": "mistral_devstral-2512",
+            "model_provider": "mistral",
+            "model_name": "devstral-2512",
             "temperature": 0.0,
             "streaming": False,
         },
