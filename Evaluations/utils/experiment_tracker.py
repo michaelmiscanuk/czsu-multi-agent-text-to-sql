@@ -250,12 +250,17 @@ class ExperimentTracker:
 def get_examples_completed_from_langsmith(experiment_identifier: str) -> int:
     """Query LangSmith to get actual number of examples completed in experiment.
 
+    Implements retry logic with exponential backoff to handle race conditions where
+    experiments are queried immediately after creation but not yet fully indexed.
+
     Args:
         experiment_identifier: Name or ID (UUID) of the experiment
 
     Returns:
         int: Number of examples with completed runs (finished, not pending)
     """
+    import time
+
     if not experiment_identifier:
         print(
             "[get_examples_completed] No experiment identifier provided",
@@ -263,38 +268,68 @@ def get_examples_completed_from_langsmith(experiment_identifier: str) -> int:
         )
         return 0
 
-    try:
-        # Check if experiment_identifier is a UUID
-        is_experiment_uuid = is_uuid(experiment_identifier)
+    # Retry configuration for newly created experiments
+    max_attempts = 5
+    base_delay = 2.0  # Start with 2 seconds
+    max_delay = 30.0
 
-        client = Client()
+    for attempt in range(max_attempts):
+        try:
+            # Check if experiment_identifier is a UUID
+            is_experiment_uuid = is_uuid(experiment_identifier)
 
-        if is_experiment_uuid:
-            runs = list(client.list_runs(project_id=experiment_identifier))
-        else:
-            runs = list(client.list_runs(project_name=experiment_identifier))
+            client = Client()
 
-        # Count unique example IDs where run has finished (has end_time)
-        # A run is complete when it has an end_time set
-        unique_examples = {
-            run.reference_example_id
-            for run in runs
-            if run.reference_example_id and run.end_time is not None
-        }
-        completed_count = len(unique_examples)
+            if is_experiment_uuid:
+                runs = list(client.list_runs(project_id=experiment_identifier))
+            else:
+                runs = list(client.list_runs(project_name=experiment_identifier))
 
-        print(
-            f"[get_examples_completed] {experiment_identifier[:50]}: {completed_count} examples completed",
-            file=sys.stderr,
-        )
+            # Count unique example IDs where run has finished (has end_time)
+            # A run is complete when it has an end_time set
+            unique_examples = {
+                run.reference_example_id
+                for run in runs
+                if run.reference_example_id and run.end_time is not None
+            }
+            completed_count = len(unique_examples)
 
-        return completed_count
-    except Exception as e:
-        print(
-            f"[get_examples_completed] Error querying {experiment_identifier[:50]}: {type(e).__name__}: {e}",
-            file=sys.stderr,
-        )
-        return 0
+            print(
+                f"[get_examples_completed] {experiment_identifier[:50]}: {completed_count} examples completed",
+                file=sys.stderr,
+            )
+
+            return completed_count
+
+        except Exception as e:
+            error_name = type(e).__name__
+            is_not_found_error = (
+                "NotFound" in error_name or "not found" in str(e).lower()
+            )
+
+            if is_not_found_error and attempt < max_attempts - 1:
+                # Exponential backoff with jitter for "not found" errors
+                delay = min(base_delay * (2**attempt), max_delay)
+                jitter = delay * 0.1 * (0.5 - time.time() % 1)  # ±10% jitter
+                wait_time = delay + jitter
+
+                print(
+                    f"[get_examples_completed] Attempt {attempt + 1}/{max_attempts}: "
+                    f"Project not found yet, retrying in {wait_time:.1f}s...",
+                    file=sys.stderr,
+                )
+                time.sleep(wait_time)
+                continue
+
+            # Non-retryable error or max attempts reached
+            print(
+                f"[get_examples_completed] Error querying {experiment_identifier[:50]}: {error_name}: {e}",
+                file=sys.stderr,
+            )
+            return 0
+
+    # Should not reach here, but fallback
+    return 0
 
 
 def find_experiment_by_prefix(
