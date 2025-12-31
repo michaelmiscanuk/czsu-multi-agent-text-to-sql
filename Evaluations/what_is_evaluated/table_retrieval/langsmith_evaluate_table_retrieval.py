@@ -1,18 +1,18 @@
 """
-This script runs an evaluation of the complete selection retrieval functionality using the full pipeline.
-It evaluates the two-node sequence: retrieve_similar_selections_hybrid_search_node -> rerank_table_descriptions_node
-and checks if the correct selection code is retrieved after reranking.
+This script runs an evaluation of the complete table retrieval functionality using the full pipeline.
+It evaluates the two-node sequence: retrieve_similar_tables_hybrid_search_node -> rerank_table_descriptions_node
+and checks if the correct table code is retrieved after reranking.
 
 This tests the complete pipeline:
 1. Hybrid search (semantic + BM25) retrieval
 2. Cohere rerank model reordering
-3. Final selection code extraction
+3. Final table code extraction
 
 Key components:
 - example_to_state: converts dataset inputs to the agent's state format
 - retry_node_sequence: executes the hybrid search -> rerank sequence with retries
-- selection_correct: evaluator function that checks if the top-1 reranked selection matches expected
-- selection_in_top_n: evaluator function that checks if expected selection is in top-N reranked results
+- top_table_correct: evaluator function that checks if the top-1 reranked table matches expected
+- table_in_top_n: evaluator function that checks if expected table is in top-N reranked results
 - aevaluate: runs the evaluation over the dataset with concurrency and experiment tracking
 """
 
@@ -68,12 +68,12 @@ from my_agent.utils.state import DataAnalysisState
 # ==============================================================================
 # Experiment configuration
 EXPERIMENT_CONFIG = {
-    "dataset_name": "czsu agent selection retrieval",  # Name of the LangSmith dataset to use
+    "dataset_name": "czsu agent table retrieval",  # Name of the LangSmith dataset to use
     "experiment_prefix": "full-pipeline-hybrid-rerank",  # Prefix for the experiment run
     "max_concurrency": 4,  # Maximum number of concurrent evaluations
     "evaluators": [
-        "selection_correct",
-        "selection_in_top_n",
+        "top_table_correct",
+        "table_in_top_n",
     ],  # List of evaluator functions to use
 }
 
@@ -84,9 +84,9 @@ app = create_graph()
 # ==============================================================================
 # EVALUATION FUNCTIONS
 # ==============================================================================
-async def selection_correct(outputs: dict, reference_outputs: dict) -> bool:
+async def top_table_correct(outputs: dict, reference_outputs: dict) -> bool:
     """
-    Checks if the top-1 reranked selection matches the expected answer.
+    Checks if the top-1 reranked table matches the expected answer.
     Tests the complete pipeline output after reranking.
     """
     print(f"[Evaluator: correct] outputs: {outputs}")
@@ -96,24 +96,24 @@ async def selection_correct(outputs: dict, reference_outputs: dict) -> bool:
         outputs = outputs["outputs"]
 
     most_similar = outputs.get("most_similar_selections", [])
-    expected_selection = reference_outputs.get("answers")
-    if expected_selection is not None:
-        expected_selection = str(expected_selection).strip().upper()
+    expected_table = reference_outputs.get("answers")
+    if expected_table is not None:
+        expected_table = str(expected_table).strip().upper()
 
-    actual_selection = None
+    actual_table = None
     if most_similar and len(most_similar[0]) > 0:
-        actual_selection = str(most_similar[0][0]).strip().upper()
+        actual_table = str(most_similar[0][0]).strip().upper()
 
-    result = actual_selection == expected_selection
+    result = actual_table == expected_table
     print(
-        f"[Evaluator: correct] return: {result} (actual: {actual_selection}, expected: {expected_selection})"
+        f"[Evaluator: correct] return: {result} (actual: {actual_table}, expected: {expected_table})"
     )
     return result
 
 
-async def selection_in_top_n(outputs: dict, reference_outputs: dict) -> bool:
+async def table_in_top_n(outputs: dict, reference_outputs: dict) -> bool:
     """
-    Evaluator function that checks if the expected selection code is in the top-N reranked selections.
+    Evaluator function that checks if the expected table code is in the top-N reranked tables.
     Tests the complete pipeline output after reranking.
     """
     print(f"[Evaluator: in_top_n] outputs: {outputs}")
@@ -124,22 +124,22 @@ async def selection_in_top_n(outputs: dict, reference_outputs: dict) -> bool:
         outputs = outputs["outputs"]
 
     most_similar = outputs.get("most_similar_selections", [])
-    expected_selection = reference_outputs.get("answers")
+    expected_table = reference_outputs.get("answers")
 
-    # Normalize expected_selection
-    if expected_selection is not None:
-        expected_selection = str(expected_selection).strip().upper()
+    # Normalize expected_table
+    if expected_table is not None:
+        expected_table = str(expected_table).strip().upper()
 
-    # Check if expected_selection is in any of the tuples (as the first element)
+    # Check if expected_table is in any of the tuples (as the first element)
     found = False
     for tup in most_similar:
         if tup and len(tup) > 0:
             candidate = str(tup[0]).strip().upper()
-            if candidate == expected_selection:
+            if candidate == expected_table:
                 found = True
                 break
     print(
-        f"[Evaluator: in_top_n] return: {found} (expected: {expected_selection}, candidates: {[t[0] for t in most_similar]})"
+        f"[Evaluator: in_top_n] return: {found} (expected: {expected_table}, candidates: {[t[0] for t in most_similar]})"
     )
     return found
 
@@ -180,7 +180,7 @@ async def retry_node_sequence(inputs, max_attempts=6, wait_seconds=10):
     """Execute the complete two-node sequence: hybrid_search -> rerank
 
     This function tests the full pipeline:
-    1. retrieve_similar_selections_hybrid_search_node: Gets initial candidates via hybrid search
+    1. retrieve_similar_tables_hybrid_search_node: Gets initial candidates via hybrid search
     2. rerank_table_descriptions_node: Reranks candidates using Cohere model
 
     Args:
@@ -258,8 +258,8 @@ if __name__ == "__main__":
     async def main():
         experiment_results = await aevaluate(
             node_target,
-            data="czsu agent selection retrieval",  # Replace with your dataset name
-            evaluators=[selection_correct, selection_in_top_n],
+            data="czsu agent table retrieval",  # Replace with your dataset name
+            evaluators=[top_table_correct, table_in_top_n],
             max_concurrency=4,
             experiment_prefix="full-pipeline-hybrid-rerank",
         )

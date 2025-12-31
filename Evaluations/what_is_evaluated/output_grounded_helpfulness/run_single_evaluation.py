@@ -68,7 +68,7 @@ from Evaluations.utils.helpers import (
     get_unevaluated_examples,
     invoke_graph_with_retry,
 )
-from Evaluations.utils.evaluators_custom import correctness_evaluator
+from Evaluations.utils.evaluators_custom import grounded_helpfulness_evaluator
 
 # ============================================================================
 # ENVIRONMENT CONFIGURATION
@@ -177,11 +177,15 @@ judge_llm, _ = get_configured_llm(
 )
 # Note: judge_llm already has .with_retry(stop_after_attempt=30) from get_configured_llm
 
-# Create correctness evaluator with judge_llm bound
-correctness = functools.partial(correctness_evaluator, judge_llm=judge_llm)
+# Create grounded_helpfulness evaluator with judge_llm bound
+grounded_helpfulness = functools.partial(
+    grounded_helpfulness_evaluator, judge_llm=judge_llm
+)
 # Preserve function metadata for LangSmith
-correctness.__name__ = "Correctness"
-correctness.__doc__ = "LLM judge evaluator for answer correctness"
+grounded_helpfulness.__name__ = "Grounded_Helpfulness"
+grounded_helpfulness.__doc__ = (
+    "LLM judge evaluator for grounded helpfulness (correctness + helpfulness)"
+)
 
 # ============================================================================
 # MAIN EVALUATION LOGIC
@@ -200,6 +204,12 @@ async def run_evaluation():
     Returns:
         None (exits with 0 on success, 1 on failure)
     """
+    # Add a small random delay (0-3 seconds) to stagger API calls when running in parallel
+    # This helps avoid hitting LangSmith rate limits when many subprocesses start simultaneously
+    import random
+
+    await asyncio.sleep(random.uniform(0, 3))
+
     # Create graph
     graph = create_graph()
 
@@ -303,7 +313,7 @@ async def run_evaluation():
         experiment_results = await aevaluate(
             target_fn,
             data=unevaluated_examples,
-            evaluators=[correctness],
+            evaluators=[grounded_helpfulness],
             max_concurrency=MAX_CONCURRENCY,
             experiment=existing_experiment,  # TracerSession object for resume
         )
@@ -339,7 +349,7 @@ async def run_evaluation():
         experiment_results = await aevaluate(
             target_fn,
             data=DATASET_NAME,
-            evaluators=[correctness],
+            evaluators=[grounded_helpfulness],
             max_concurrency=MAX_CONCURRENCY,
             experiment_prefix=experiment_prefix,  # LangSmith appends timestamp/UUID
         )

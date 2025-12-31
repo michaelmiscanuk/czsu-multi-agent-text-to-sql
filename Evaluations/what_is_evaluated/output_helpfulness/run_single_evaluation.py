@@ -140,7 +140,7 @@ print(
 # Import my_agent modules after config is set
 from my_agent import create_graph
 from my_agent.utils.state import DataAnalysisState
-from my_agent.utils.models import get_azure_openai_chat_llm
+from my_agent.utils.helpers import get_configured_llm
 
 # ============================================================================
 # EVALUATOR SETUP
@@ -165,15 +165,17 @@ def generate_experiment_name(judge_id: str, node_name: str, model_id: str) -> st
     return f"judge_{judge_id}__Node_{node_name}__Model_{model_id}"
 
 
-# Judge model - lookup config from JUDGE_MODEL_ID
+# Judge model - lookup config from JUDGE_MODEL_ID and use get_configured_llm
 judge_config = get_model_config_by_id(JUDGE_MODEL_ID, MODEL_CONFIGS_ALL)
-judge_llm = get_azure_openai_chat_llm(
-    deployment_name=judge_config["deployment_name"],
+judge_llm, _ = get_configured_llm(
+    model_provider=judge_config["model_provider"],
     model_name=judge_config["model_name"],
-    openai_api_version=judge_config.get("openai_api_version", "2024-05-01-preview"),
+    deployment_name=judge_config.get("deployment_name", ""),
     temperature=judge_config.get("temperature", 0.0),
+    openai_api_version=judge_config.get("openai_api_version", "2024-05-01-preview"),
+    base_url=judge_config.get("base_url", "http://localhost:11434"),
 )
-# Note: judge_llm already has .with_retry(stop_after_attempt=30) from get_azure_openai_chat_llm
+# Note: judge_llm already has .with_retry(stop_after_attempt=30) from get_configured_llm
 
 # Create helpfulness evaluator with judge_llm bound
 helpfulness = functools.partial(helpfulness_evaluator, judge_llm=judge_llm)
