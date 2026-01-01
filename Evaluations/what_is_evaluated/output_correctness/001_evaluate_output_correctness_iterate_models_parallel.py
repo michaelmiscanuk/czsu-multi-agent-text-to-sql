@@ -67,8 +67,8 @@ NODE_NAME = "generate_query_node"
 DATASET_NAME = (
     "001d_golden_dataset__output_correctness__simple_QA_from_SQL_custom_manual"
 )
-MAX_CONCURRENCY = 2
-JUDGE_MODEL_ID = "azureopenai_gpt-4.1"
+MAX_CONCURRENCY = 1
+JUDGE_MODEL_ID = "mistral_mistral-large-2512"
 DATASET_SIZE = 30  # Approximate size for progress display
 
 # Execution mode
