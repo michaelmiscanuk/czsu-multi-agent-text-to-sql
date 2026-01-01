@@ -167,8 +167,8 @@ Usage Examples:
 Full Pipeline Execution:
 -------------------------
 # Configure all three operations
-PARSE_WITH_LLAMAPARSE = 1       # Parse PDFs with advanced table handling
-CHUNK_AND_STORE = 1             # Apply intelligent chunking and store
+PARSE_WITH_LLAMAPARSE = 0       # Parse PDFs with advanced table handling
+CHUNK_AND_STORE = 0             # Apply intelligent chunking and store
 DO_TESTING = 1                  # Test search with sample queries
 
 # Define document set
@@ -189,7 +189,7 @@ CHUNK_AND_STORE = 1
 
 # Test with new queries
 DO_TESTING = 1
-TEST_QUERY = "kolik učitelů pracovalo v roce 2023?"
+TEST_QUERY = "How many teachers worked in 2023?"
 
 Required Environment:
 ====================
@@ -399,7 +399,9 @@ PDF_FILENAMES = [
     "96_97.pdf"
 ]
 
-COLLECTION_NAME = "pdf_document_collection"  # ChromaDB collection name
+COLLECTION_NAME = (
+    "czsu_selections_chromadb"  # ChromaDB collection name (matches nodes.py)
+)
 
 # Parsed Text File Settings - Will be auto-generated for each PDF
 # PARSED_TEXT_FILENAME = f"{PDF_FILENAME}_{PDF_PARSING_METHOD}_parsed.txt"  # Auto-generated filename for parsed text
@@ -2372,20 +2374,21 @@ def hybrid_search(
 
 
 def cohere_rerank(query, docs, top_n):
-    """Rerank documents using Cohere's rerank model."""
-    cohere_api_key = os.environ.get("COHERE_API_KEY", "")
-    if not cohere_api_key:
-        print__chromadb_debug("Warning: COHERE_API_KEY not found. Skipping reranking.")
-        return [
-            (doc, type("obj", (object,), {"relevance_score": 0.5, "index": i})())
-            for i, doc in enumerate(docs)
-        ]
+    """Rerank documents using Cohere's rerank model.
 
-    co = cohere.Client(cohere_api_key)
-    texts = [doc.page_content for doc in docs]
-    docs_for_cohere = [{"text": t} for t in texts]
+    Automatically falls back from trial key to production key if rate limit is hit.
+    Uses .index field for correct mapping back to original documents.
+    """
 
-    try:
+    def _attempt_rerank(api_key, key_type="Trial"):
+        """Helper function to attempt reranking with a specific API key."""
+        print(f"  Initializing Cohere client with {key_type} key...")
+        co = cohere.Client(api_key)
+
+        texts = [doc.page_content for doc in docs]
+        docs_for_cohere = [{"text": t} for t in texts]
+
+        print(f"  Sending {len(docs_for_cohere)} documents to Cohere for reranking...")
         rerank_response = co.rerank(
             model="rerank-v4.0-fast",
             query=query,
@@ -2394,22 +2397,82 @@ def cohere_rerank(query, docs, top_n):
         )
 
         print(
-            f"✅ Successfully reranked {len(docs)} documents using Cohere model: rerank-v4.0-fast"
+            f"✅ Successfully reranked {len(docs)} documents using Cohere model: rerank-v4.0-fast ({key_type} key)"
         )
 
+        # Use .index field to map back to the original doc
         reranked = []
         for res in rerank_response.results:
             doc = docs[res.index]
             reranked.append((doc, res))
+
+        print(f"  Returning {len(reranked)} reranked results")
         return reranked
 
+    # Try with primary key first
+    try:
+        cohere_api_key = os.environ.get("COHERE_API_KEY", "")
+        if not cohere_api_key:
+            print__chromadb_debug(
+                "Warning: COHERE_API_KEY not found. Skipping reranking."
+            )
+            return [
+                (doc, type("obj", (object,), {"relevance_score": 0.5, "index": i})())
+                for i, doc in enumerate(docs)
+            ]
+
+        return _attempt_rerank(cohere_api_key, "Trial")
+
     except Exception as e:
-        print__chromadb_debug(f"Cohere reranking failed: {e}")
-        # Return original docs with dummy scores
-        return [
-            (doc, type("obj", (object,), {"relevance_score": 0.5, "index": i})())
-            for i, doc in enumerate(docs)
-        ]
+        error_str = str(e)
+
+        # Check if it's a rate limit error (429)
+        if (
+            "429" in error_str
+            or "Trial key" in error_str
+            or "rate limit" in error_str.lower()
+        ):
+            print(
+                f"⚠️ Trial key rate limit reached. Attempting fallback to Production key..."
+            )
+
+            # Try with production key
+            try:
+                cohere_api_key_prod = os.environ.get("COHERE_API_KEY_PROD", "")
+                if not cohere_api_key_prod:
+                    print__chromadb_debug(
+                        "Warning: COHERE_API_KEY_PROD not found. Returning dummy scores."
+                    )
+                    print(f"❌ Original error: {e}")
+                    return [
+                        (
+                            doc,
+                            type(
+                                "obj", (object,), {"relevance_score": 0.5, "index": i}
+                            )(),
+                        )
+                        for i, doc in enumerate(docs)
+                    ]
+
+                return _attempt_rerank(cohere_api_key_prod, "Production")
+
+            except Exception as prod_error:
+                print__chromadb_debug(f"Production key also failed: {prod_error}")
+                # Return original docs with dummy scores
+                return [
+                    (
+                        doc,
+                        type("obj", (object,), {"relevance_score": 0.5, "index": i})(),
+                    )
+                    for i, doc in enumerate(docs)
+                ]
+        else:
+            # For non-rate-limit errors, return dummy scores
+            print__chromadb_debug(f"Cohere reranking failed: {e}")
+            return [
+                (doc, type("obj", (object,), {"relevance_score": 0.5, "index": i})())
+                for i, doc in enumerate(docs)
+            ]
 
 
 def search_pdf_documents(
@@ -2839,11 +2902,40 @@ def main():
         print(f"\n🔍 OPERATION 3: Testing search functionality")
 
         try:
-            # Load ChromaDB collection using local PersistentClient (not using cloud)
-            import chromadb
+            # Import the ChromaDB client factory to support cloud/local switching
+            from metadata.chromadb_client_factory import (
+                get_chromadb_client,
+                should_use_cloud,
+            )
 
-            client = chromadb.PersistentClient(path=str(CHROMA_DB_PATH))
-            print__chromadb_debug(f"📂 Using local ChromaDB at: {CHROMA_DB_PATH}")
+            # Check if we should use cloud ChromaDB
+            use_cloud = should_use_cloud()
+
+            if use_cloud:
+                print("\n" + "=" * 80)
+                print(
+                    "🌐🌐🌐 USING CHROMADB CLOUD - CONNECTING TO REMOTE DATABASE 🌐🌐🌐"
+                )
+                print("=" * 80)
+                print(
+                    f"   Environment: CHROMA_USE_CLOUD={os.getenv('CHROMA_USE_CLOUD')}"
+                )
+                print(f"   Tenant: {os.getenv('CHROMA_API_TENANT', 'not set')}")
+                print(f"   Database: {os.getenv('CHROMA_API_DATABASE', 'not set')}")
+                print("=" * 80 + "\n")
+            else:
+                print("\n" + "=" * 80)
+                print("📂 Using Local ChromaDB")
+                print("=" * 80)
+                print(f"   Path: {CHROMA_DB_PATH}")
+                print("=" * 80 + "\n")
+
+            # Get ChromaDB client (automatically chooses cloud or local based on env)
+            client = get_chromadb_client(
+                local_path=CHROMA_DB_PATH, collection_name=COLLECTION_NAME
+            )
+
+            # Get the collection
             collection = client.get_collection(name=COLLECTION_NAME)
             print(f"✅ Successfully loaded collection: {COLLECTION_NAME}")
 

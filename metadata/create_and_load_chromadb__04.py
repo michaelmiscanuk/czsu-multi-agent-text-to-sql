@@ -1061,35 +1061,86 @@ def similarity_search_chromadb(
 
 
 def cohere_rerank(query, docs, top_n):
-    """Return reranked list of (Document, CohereResult) tuples using Cohere's rerank-v4.0-fast, using .index field for correct mapping."""
-    cohere_api_key = os.environ.get("COHERE_API_KEY", "")
-    co = cohere.Client(cohere_api_key)
-    texts = [doc.page_content for doc in docs]
-    docs_for_cohere = [{"text": t} for t in texts]
-    # print("\n[DEBUG] Texts sent to Cohere rerank:")
-    # for idx, t in enumerate(texts, 1):
-    #     t_clean = t[:100].replace('\n', ' ')
-    #     print(f"#{idx}: {t_clean}{'...' if len(t) > 100 else ''}")
-    rerank_response = co.rerank(
-        model="rerank-v4.0-fast",
-        query=query,
-        documents=docs_for_cohere,
-        top_n=top_n,
-    )
+    """Return reranked list of (Document, CohereResult) tuples using Cohere's rerank-v4.0-fast.
 
-    print(
-        f"✅ Successfully reranked {len(docs)} documents using Cohere model: rerank-v4.0-fast"
-    )
+    Automatically falls back from trial key to production key if rate limit is hit.
+    Uses .index field for correct mapping back to original documents.
+    """
 
-    # print("[DEBUG] Raw Cohere rerank response:")
-    # print(rerank_response)
+    def _attempt_rerank(api_key, key_type="Trial"):
+        """Helper function to attempt reranking with a specific API key."""
+        print(f"  Initializing Cohere client with {key_type} key...")
+        co = cohere.Client(api_key)
 
-    # Use .index field to map back to the original doc
-    reranked = []
-    for res in rerank_response.results:
-        doc = docs[res.index]
-        reranked.append((doc, res))
-    return reranked
+        texts = [doc.page_content for doc in docs]
+        docs_for_cohere = [{"text": t} for t in texts]
+
+        print(f"  Sending {len(docs_for_cohere)} documents to Cohere for reranking...")
+        rerank_response = co.rerank(
+            model="rerank-v4.0-fast",
+            query=query,
+            documents=docs_for_cohere,
+            top_n=top_n,
+        )
+
+        print(
+            f"✅ Successfully reranked {len(docs)} documents using Cohere model: rerank-v4.0-fast ({key_type} key)"
+        )
+
+        # Use .index field to map back to the original doc
+        reranked = []
+        for res in rerank_response.results:
+            doc = docs[res.index]
+            reranked.append((doc, res))
+
+        print(f"  Returning {len(reranked)} reranked results")
+        return reranked
+
+    # Try with primary key first
+    try:
+        cohere_api_key = os.environ.get("COHERE_API_KEY", "")
+        if not cohere_api_key:
+            print("⚠️ COHERE_API_KEY not found in environment variables!")
+            return []
+
+        return _attempt_rerank(cohere_api_key, "Trial")
+
+    except Exception as e:
+        error_str = str(e)
+
+        # Check if it's a rate limit error (429)
+        if (
+            "429" in error_str
+            or "Trial key" in error_str
+            or "rate limit" in error_str.lower()
+        ):
+            print(
+                f"⚠️ Trial key rate limit reached. Attempting fallback to Production key..."
+            )
+
+            # Try with production key
+            try:
+                cohere_api_key_prod = os.environ.get("COHERE_API_KEY_PROD", "")
+                if not cohere_api_key_prod:
+                    print("❌ COHERE_API_KEY_PROD not found in environment variables!")
+                    print(f"❌ Original error: {e}")
+                    return []
+
+                return _attempt_rerank(cohere_api_key_prod, "Production")
+
+            except Exception as prod_error:
+                print(f"❌ Production key also failed: {prod_error}")
+                import traceback
+
+                traceback.print_exc()
+                return []
+        else:
+            # For non-rate-limit errors, just report and fail
+            print(f"❌ Error in cohere_rerank: {e}")
+            import traceback
+
+            traceback.print_exc()
+            return []
 
 
 def write_search_comparison_excel(
@@ -1237,7 +1288,9 @@ if __name__ == "__main__":
         # QUERY = "Compare married and divorced people in the Czech Republic"
         # QUERY = "Kolik lidi zije na Marzu?"
         # QUERY = "kolik bylo svateb v poslednich letech?"
-        QUERY = "Kolik svateb se konalo v posledních letech?"
+        # QUERY = "Kolik svateb se konalo v posledních letech?"
+        # QUERY = "What was the total electricity production in Czechia in 2024?"
+        QUERY = "What was the number of camping and caravan spots in collective accommodation facilities in Zlín Region - Luhačovice in 2024?"
         k = 60
 
         print(f"\n🔍 Testing Agent Workflow with query: '{QUERY}'")
