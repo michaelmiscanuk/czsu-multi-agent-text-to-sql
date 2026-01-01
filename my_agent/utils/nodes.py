@@ -808,6 +808,9 @@ PDF_RELEVANCE_THRESHOLD = 0.0005  # Minimum relevance score for PDF chunks
 SELECTIONS_HYBRID_SEARCH_DEFAULT_RESULTS = (
     20  # Number of selections to retrieve from hybrid search
 )
+N_TOP_SELECTIONS = (
+    4  # Number of top selection codes to keep after filtering by relevance threshold
+)
 N_RESULTS = 20  # Number of results to send to Cohere rerank
 N_RESULTS_NO_RERANK = 6  # Number of fallback results when Cohere rerank fails
 
@@ -1555,13 +1558,13 @@ async def relevant_selections_node(state: DataAnalysisState) -> DataAnalysisStat
         )
         print(f"⚠️⚠️⚠️ {RELEVANT_NODE_ID}: State keys: {list(state.keys())}")
 
-    # Key Step 2: Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top 3
-    # Select up to 3 top selections above threshold
+    # Key Step 2: Filter selections by SQL_RELEVANCE_THRESHOLD (0.0005) and select top N_TOP_SELECTIONS
+    # Select up to N_TOP_SELECTIONS top selections above threshold
     top_selection_codes = [
         sel
         for sel, score in most_similar
         if sel is not None and score is not None and score >= SQL_RELEVANCE_THRESHOLD
-    ][:3]
+    ][:N_TOP_SELECTIONS]
     print__nodes_debug(
         f"🎯 {RELEVANT_NODE_ID}: top_selection_codes: {top_selection_codes}"
     )
@@ -3065,23 +3068,27 @@ Bad: "The query shows X is 1,234,567"
                     node_name="format_answer_node_non_streaming"
                 )
                 llm_response = await llm_standard.ainvoke(messages_to_send)
-                
+
                 # Extract content safely - handle various response formats
                 if hasattr(llm_response, "content"):
                     content = llm_response.content
                     # Handle list content (some models return list of content blocks)
                     if isinstance(content, list):
-                        final_answer_content = " ".join(str(item) for item in content if item)
+                        final_answer_content = " ".join(
+                            str(item) for item in content if item
+                        )
                     else:
                         final_answer_content = str(content) if content else ""
                 else:
                     final_answer_content = str(llm_response) if llm_response else ""
-                
+
                 # Ensure we have some content
                 if not final_answer_content or not final_answer_content.strip():
-                    print__nodes_debug(f"⚠️ {FORMAT_ANSWER_ID}: LLM returned empty content")
+                    print__nodes_debug(
+                        f"⚠️ {FORMAT_ANSWER_ID}: LLM returned empty content"
+                    )
                     final_answer_content = ""
-                
+
                 result = (
                     llm_response
                     if isinstance(llm_response, AIMessage)
@@ -3136,10 +3143,12 @@ Bad: "The query shows X is 1,234,567"
     print__nodes_debug(f"✅ {FORMAT_ANSWER_ID}: Analysis completed")
 
     # Step 9: final_answer_content already populated above
-    
+
     # Validate final_answer_content before language detection
     if not final_answer_content or not final_answer_content.strip():
-        print__nodes_debug(f"⚠️ {FORMAT_ANSWER_ID}: Empty final_answer_content from LLM, using fallback")
+        print__nodes_debug(
+            f"⚠️ {FORMAT_ANSWER_ID}: Empty final_answer_content from LLM, using fallback"
+        )
         final_answer_content = "No answer generated"
 
     # Step 10: Detect answer language

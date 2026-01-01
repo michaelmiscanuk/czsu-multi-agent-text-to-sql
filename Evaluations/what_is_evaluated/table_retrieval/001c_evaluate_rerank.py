@@ -32,7 +32,7 @@ CHROMA_DB_PATH = BASE_DIR / "metadata" / "czsu_chromadb"
 CHROMA_COLLECTION_NAME = "czsu_selections_chromadb"
 
 # Evaluation configuration
-TOP_N = 10  # Number of top results to check
+TOP_N = 5  # Number of top results to check
 DATASET_NAME = "langsmith_create_golden_dataset_table_retrieval"
 EXPERIMENT_PREFIX = "rerank"
 MAX_CONCURRENCY = 4

@@ -40,7 +40,7 @@ TOP_N = 3  # Number of top results to check
 DATASET_NAME = "langsmith_create_golden_dataset_table_retrieval"
 EXPERIMENT_PREFIX = "semantic-search"
 MAX_CONCURRENCY = 4
-N_RESULTS = 20  # Number of results to retrieve
+N_RESULTS = 60  # Number of results to retrieve
 
 
 # ============================================================================
