@@ -99,31 +99,13 @@ def print_ranking_report(stats: Dict[str, Dict]) -> None:
         reverse=True,
     )
 
-    print("\n" + "=" * 150)
-    print("📊 PAIRWISE COMPARISON RANKING ANALYSIS")
-    print("=" * 150)
-
-    # Summary statistics
-    total_experiments = len(stats)
-    total_comparisons = (
-        sum(s["total_comparisons"] for s in stats.values()) // 2
-    )  # Divide by 2 as each comparison is counted twice
-
-    print(f"\n📈 Summary:")
-    print(f"   Total experiments: {total_experiments}")
-    print(f"   Total pairwise comparisons: {total_comparisons}")
-    print(
-        f"   Comparisons per experiment: {total_comparisons * 2 // total_experiments}"
-    )
-
-    # Detailed ranking table
-    print("\n" + "=" * 150)
+    print("\n" + "=" * 165)
     print("🏆 RANKING (by points)")
-    print("=" * 150)
-    print(
-        f"{'Rank':<6} {'Experiment Name':<110} {'W-L-T':<12} {'Points':<10} {'Rate':<8}"
-    )
-    print("-" * 150)
+    print("=" * 165)
+
+    # Detailed ranking table header
+    print(f"{'Rank':<6} {'Experiment Name':<105} {'W-L-T':<20} {'Points':<15} {'Rate'}")
+    print("-" * 165)
 
     for rank, (exp_name, exp_stats) in enumerate(ranking, 1):
         w = exp_stats["wins"]
@@ -132,23 +114,22 @@ def print_ranking_report(stats: Dict[str, Dict]) -> None:
         points = exp_stats["points"]
         rate = exp_stats["point_rate"]
 
-        print(f"{rank:<6} {exp_name:<110} {w}-{l}-{t:<8} {points:<10.1f} {rate:<8.2%}")
-
-    print("=" * 150)
-
-    # Win matrix summary
-    print("\n📋 Individual Statistics:")
-    print("-" * 150)
-
-    for rank, (exp_name, exp_stats) in enumerate(ranking, 1):
-        print(f"\n{rank}. {exp_name}")
-        print(
-            f"   Points: {exp_stats['points']:.1f} / {exp_stats['total_comparisons']}"
+        # Shorten experiment name for better display
+        display_name = exp_name.replace(
+            "judge-azureopenai-gpt-4.1__node-format_answer_node__model-", ""
         )
-        print(f"   Wins: {exp_stats['wins']} ({exp_stats['win_rate']:.1%})")
-        print(f"   Losses: {exp_stats['losses']}")
-        print(f"   Ties: {exp_stats['ties']}")
-        print(f"   Point rate: {exp_stats['point_rate']:.2%}")
+
+        # Format W-L-T with better spacing
+        wlt_str = f"{w}-{l}-{t}"
+        wlt_display = f"{wlt_str:<15} {points:>6.1f}     {rate:>6.2%}"
+
+        print(f"{rank:<6} {display_name:<105} {wlt_display}")
+
+        # Add spacing after every 3 rows for better readability
+        if rank % 3 == 0 and rank < len(ranking):
+            print()
+
+    print("=" * 165)
 
 
 def main():
@@ -159,7 +140,7 @@ def main():
         print(f"❌ Error: CSV file not found at {CSV_PATH}")
         return
 
-    print(f"\n📂 Reading pairwise comparison results from:")
+    print("\n📂 Reading pairwise comparison results from:")
     print(f"   {CSV_PATH}")
 
     # Calculate rankings
