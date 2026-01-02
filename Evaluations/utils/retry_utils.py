@@ -178,7 +178,7 @@ def retry_with_exponential_backoff(
                             if log_retries:
                                 logger.warning(
                                     f"Rate limit error in {func.__name__} (attempt {attempt + 1}/{max_attempts}). "
-                                    f"Retrying in {delay:.2f}s... Error: {str(e)[:100]}"
+                                    f"Retrying in {delay:.2f}s... Error: {str(e)[:500]}"
                                 )
 
                             await asyncio.sleep(delay)
@@ -187,13 +187,13 @@ def retry_with_exponential_backoff(
                             if log_retries:
                                 logger.error(
                                     f"Rate limit error in {func.__name__} - all {max_attempts} attempts exhausted. "
-                                    f"Error: {str(e)[:100]}"
+                                    f"Error: {str(e)[:500]}"
                                 )
                     else:
                         # Not a rate limit error - re-raise immediately
                         if log_retries:
                             logger.error(
-                                f"Non-rate-limit error in {func.__name__}: {type(e).__name__}: {str(e)[:100]}"
+                                f"Non-rate-limit error in {func.__name__}: {type(e).__name__}: {str(e)[:500]}"
                             )
                         raise
 
@@ -223,7 +223,7 @@ def retry_with_exponential_backoff(
                             if log_retries:
                                 logger.warning(
                                     f"Rate limit error in {func.__name__} (attempt {attempt + 1}/{max_attempts}). "
-                                    f"Retrying in {delay:.2f}s... Error: {str(e)[:100]}"
+                                    f"Retrying in {delay:.2f}s... Error: {str(e)[:500]}"
                                 )
 
                             time.sleep(delay)
@@ -232,13 +232,13 @@ def retry_with_exponential_backoff(
                             if log_retries:
                                 logger.error(
                                     f"Rate limit error in {func.__name__} - all {max_attempts} attempts exhausted. "
-                                    f"Error: {str(e)[:100]}"
+                                    f"Error: {str(e)[:500]}"
                                 )
                     else:
                         # Not a rate limit error - re-raise immediately
                         if log_retries:
                             logger.error(
-                                f"Non-rate-limit error in {func.__name__}: {type(e).__name__}: {str(e)[:100]}"
+                                f"Non-rate-limit error in {func.__name__}: {type(e).__name__}: {str(e)[:500]}"
                             )
                         raise
 
@@ -312,7 +312,7 @@ async def retry_async_call(
                     if log_retries:
                         logger.warning(
                             f"Rate limit error (attempt {attempt + 1}/{max_attempts}). "
-                            f"Retrying in {delay:.2f}s... Error: {str(e)[:100]}"
+                            f"Retrying in {delay:.2f}s... Error: {str(e)[:500]}"
                         )
 
                     await asyncio.sleep(delay)
@@ -321,12 +321,12 @@ async def retry_async_call(
                     if log_retries:
                         logger.error(
                             f"Rate limit error - all {max_attempts} attempts exhausted. "
-                            f"Error: {str(e)[:100]}"
+                            f"Error: {str(e)[:500]}"
                         )
             else:
                 if log_retries:
                     logger.error(
-                        f"Non-rate-limit error: {type(e).__name__}: {str(e)[:100]}"
+                        f"Non-rate-limit error: {type(e).__name__}: {str(e)[:500]}"
                     )
                 raise
 
