@@ -57,9 +57,9 @@ NODE_MODELS_CONFIG = {
         },
         # Non-streaming fallback for format_answer_node
         "format_answer_node_non_streaming": {
-            "id": "mistral_mistral-large-2512",
-            "model_provider": "mistral",
-            "model_name": "mistral-large-2512",
+            "id": "github_openai_gpt-4.1",
+            "model_provider": "github",
+            "model_name": "openai/gpt-4.1",
             "temperature": 0.0,
             "streaming": False,
         },

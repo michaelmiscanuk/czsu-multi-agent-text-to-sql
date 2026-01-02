@@ -201,7 +201,108 @@
           "error": null
         }
       }
+    },
+    "exec_2026-01-01_183413_fdd5327b": {
+      "execution_id": "exec_2026-01-01_183413_fdd5327b",
+      "timestamp": "2026-01-01T18:34:13.054102",
+      "status": "completed",
+      "config": {
+        "node_name": "format_answer_node",
+        "dataset_name": "001d_golden_dataset__output_helpfulness__simple_QA_from_SQL_for_grounded_helpfulness",
+        "judge_model_id": "mistral_mistral-large-2512",
+        "max_concurrency": 1
+      },
+      "models": {
+        "mistral_mistral-large-2512": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-mistral-mistral-large-2512",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-mistral-mistral-large-2512-e0c409c1",
+          "experiment_id": "b7121013-2e72-4e1d-a6fd-237462db32c5",
+          "examples_completed": 30,
+          "error": null
+        },
+        "mistral_devstral-2512": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-mistral-devstral-2512",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-mistral-devstral-2512-48b3b1a3",
+          "experiment_id": "f35fa6ed-fa65-4f1e-aa8e-28a1e0e2b233",
+          "examples_completed": 0,
+          "error": null
+        },
+        "mistral_codestral-2508": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-mistral-codestral-2508",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-mistral-codestral-2508-d274c181",
+          "experiment_id": "4202d5c7-ccab-46d3-be3a-ba1daf48b375",
+          "examples_completed": 30,
+          "error": null
+        },
+        "azureopenai_gpt-4o": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-4o",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-4o-4c1be415",
+          "experiment_id": "1d7c52bc-4658-46c2-8fcd-ddd7c6eb6b27",
+          "examples_completed": 30,
+          "error": null
+        },
+        "azureopenai_gpt-4o-mini": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-4o-mini",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-4o-mini-3d142504",
+          "experiment_id": "94446f0a-cf0a-4345-b0fc-2914400c8dd5",
+          "examples_completed": 30,
+          "error": null
+        },
+        "azureopenai_gpt-4.1": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-4.1",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-4.1-436c2e02",
+          "experiment_id": "bff7b652-0fc2-4b31-8c3f-32b2a81c85ec",
+          "examples_completed": 30,
+          "error": null
+        },
+        "azureopenai_gpt-5-nano": {
+          "status": "in_progress",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-5-nano",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-5-nano-620f670a",
+          "experiment_id": "17a3f13b-87b9-4213-a7b4-795f160ede7d",
+          "examples_completed": 30,
+          "error": null
+        },
+        "azureopenai_gpt-5.2-chat": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-5.2-chat",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-azureopenai-gpt-5.2-chat-364f0151",
+          "experiment_id": "cdd1ad0c-3b41-4647-97b7-a0cf6df96e30",
+          "examples_completed": 30,
+          "error": null
+        },
+        "xai_grok-4-1-fast-reasoning": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-xai-grok-4-1-fast-reasoning",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-xai-grok-4-1-fast-reasoning-b46083d6",
+          "experiment_id": "f88b489c-7100-42ac-b5ed-2c28e3d0caf6",
+          "examples_completed": 29,
+          "error": null
+        },
+        "xai_grok-4-1-fast-non-reasoning": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-xai-grok-4-1-fast-non-reasoning",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-xai-grok-4-1-fast-non-reasoning-197ac633",
+          "experiment_id": "41b43d93-7565-4640-bc07-b3353e7d88e8",
+          "examples_completed": 30,
+          "error": null
+        },
+        "gemini_gemini-3-pro-preview": {
+          "status": "completed",
+          "experiment_prefix": "judge-mistral-mistral-large-2512__node-format_answer_node__model-gemini-gemini-3-pro-preview",
+          "experiment_name": "judge-mistral-mistral-large-2512__node-format_answer_node__model-gemini-gemini-3-pro-preview-72d9c114",
+          "experiment_id": "df1123f1-734f-4082-a3a2-ce9a8b65edcd",
+          "examples_completed": 30,
+          "error": null
+        }
+      }
     }
   },
-  "latest_execution_id": "exec_2026-01-01_132757_47bc6bb2"
+  "latest_execution_id": "exec_2026-01-01_183413_fdd5327b"
 }
