@@ -63,7 +63,7 @@ except ImportError:
 # ============================================================================
 
 CSV_PATH = Path(
-    "Evaluations\what_is_evaluated\output_pairwise_comparison\pairwise_compare_more_experiments_20251222_110500.csv"
+    "Evaluations/what_is_evaluated/output_pairwise_comparison/pairwise_compare_more_experiments_20260102_234014.csv"
 )
 
 # ============================================================================
@@ -1002,6 +1002,204 @@ def print_average_ranking_table(
     print("   Mode % = Percentage of methods that assigned this rank")
 
 
+def save_average_ranking_to_csv(
+    all_ranks: List[Dict[str, int]],
+    model_names: List[str],
+    csv_path: Path,
+    algorithm_name: str,
+) -> None:
+    """Save average ranking to CSV file with semicolon delimiter."""
+
+    # Calculate average rank and mode for each model
+    avg_ranks = {}
+    mode_ranks = {}
+    mode_percentages = {}
+
+    for model in model_names:
+        ranks = [
+            method_ranks[model] for method_ranks in all_ranks if model in method_ranks
+        ]
+        if ranks:
+            avg_ranks[model] = sum(ranks) / len(ranks)
+
+            # Calculate mode (most frequent rank)
+            from collections import Counter
+
+            rank_counts = Counter(ranks)
+            mode_rank, mode_count = rank_counts.most_common(1)[0]
+            mode_ranks[model] = mode_rank
+            mode_percentages[model] = (mode_count / len(ranks)) * 100
+        else:
+            avg_ranks[model] = float("inf")
+            mode_ranks[model] = 0
+            mode_percentages[model] = 0.0
+
+    # Sort by average rank (ascending - lower is better)
+    ranking = sorted(avg_ranks.items(), key=lambda x: x[1])
+
+    # Generate output filename
+    timestamp = csv_path.stem.split("_")[-2] + "_" + csv_path.stem.split("_")[-1]
+    output_filename = f"ranking_{algorithm_name}_{timestamp}.csv"
+    output_path = csv_path.parent / output_filename
+
+    # Write to CSV
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL)
+
+        # Write header
+        writer.writerow(
+            ["Rank", "Model Name", "Avg Rank", "Mode", "Mode %", "Individual Ranks"]
+        )
+
+        # Write data rows
+        for overall_rank, (model, avg_rank) in enumerate(ranking, 1):
+            mode = mode_ranks[model]
+            mode_pct = mode_percentages[model]
+            individual = [
+                str(method_ranks[model])
+                for method_ranks in all_ranks
+                if model in method_ranks
+            ]
+            individual_str = ",".join(individual)
+
+            writer.writerow(
+                [
+                    overall_rank,
+                    model,
+                    f"{avg_rank:.2f}",
+                    mode,
+                    f"{mode_pct:.1f}",
+                    individual_str,
+                ]
+            )
+
+    print(f"\n💾 Average ranking saved to: {output_path}")
+
+
+def save_average_ranking_without_outliers_to_csv(
+    all_ranks: List[Dict[str, int]],
+    model_names: List[str],
+    csv_path: Path,
+    algorithm_name: str,
+) -> None:
+    """Save average ranking with outliers removed to CSV file with semicolon delimiter."""
+
+    # Calculate average rank with outlier removal
+    avg_ranks_clean = {}
+    mode_ranks = {}
+    removed_counts = {}
+    outlier_values = {}
+
+    for model in model_names:
+        ranks = [
+            method_ranks[model] for method_ranks in all_ranks if model in method_ranks
+        ]
+        if ranks:
+            # Calculate mode (most frequent rank)
+            from collections import Counter
+
+            rank_counts = Counter(ranks)
+            mode_rank, _ = rank_counts.most_common(1)[0]
+            mode_ranks[model] = mode_rank
+
+            # Find the rank value furthest from mode
+            if len(set(ranks)) > 1:
+                distances = {rank: abs(rank - mode_rank) for rank in set(ranks)}
+                max_distance = max(distances.values())
+                outlier_value = [
+                    rank for rank, dist in distances.items() if dist == max_distance
+                ][0]
+
+                # Remove all instances of the outlier value
+                cleaned_ranks = [r for r in ranks if r != outlier_value]
+                removed_counts[model] = ranks.count(outlier_value)
+                outlier_values[model] = outlier_value
+            else:
+                cleaned_ranks = ranks
+                removed_counts[model] = 0
+                outlier_values[model] = None
+
+            # Calculate average from cleaned ranks
+            if cleaned_ranks:
+                avg_ranks_clean[model] = sum(cleaned_ranks) / len(cleaned_ranks)
+            else:
+                avg_ranks_clean[model] = sum(ranks) / len(ranks)
+        else:
+            avg_ranks_clean[model] = float("inf")
+            mode_ranks[model] = 0
+            removed_counts[model] = 0
+            outlier_values[model] = None
+
+    # Sort by average rank (ascending - lower is better)
+    ranking = sorted(avg_ranks_clean.items(), key=lambda x: x[1])
+
+    # Generate output filename
+    timestamp = csv_path.stem.split("_")[-2] + "_" + csv_path.stem.split("_")[-1]
+    output_filename = f"ranking_{algorithm_name}_{timestamp}.csv"
+    output_path = csv_path.parent / output_filename
+
+    # Write to CSV
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, delimiter=";", quoting=csv.QUOTE_MINIMAL)
+
+        # Write header
+        writer.writerow(
+            [
+                "Rank",
+                "Model Name",
+                "Avg Rank",
+                "Mode",
+                "Removed",
+                "Outlier",
+                "Remaining Ranks",
+            ]
+        )
+
+        # Write data rows
+        for overall_rank, (model, avg_rank) in enumerate(ranking, 1):
+            mode = mode_ranks[model]
+            removed = removed_counts[model]
+            outlier = outlier_values[model]
+            outlier_str = str(outlier) if outlier is not None else "-"
+
+            # Get individual ranks for this model
+            ranks = [
+                method_ranks[model]
+                for method_ranks in all_ranks
+                if model in method_ranks
+            ]
+
+            # Get cleaned ranks (after outlier removal)
+            if len(set(ranks)) > 1:
+                rank_counts = Counter(ranks)
+                mode_rank, _ = rank_counts.most_common(1)[0]
+                distances = {rank: abs(rank - mode_rank) for rank in set(ranks)}
+                max_distance = max(distances.values())
+                outlier_value = [
+                    rank for rank, dist in distances.items() if dist == max_distance
+                ][0]
+                cleaned_ranks = [r for r in ranks if r != outlier_value]
+            else:
+                cleaned_ranks = ranks
+
+            # Use space separator instead of comma to avoid Excel splitting
+            individual_str = "[" + " ".join(str(r) for r in cleaned_ranks) + "]"
+
+            writer.writerow(
+                [
+                    overall_rank,
+                    model,
+                    f"{avg_rank:.2f}",
+                    mode,
+                    removed,
+                    outlier_str,
+                    individual_str,
+                ]
+            )
+
+    print(f"\n💾 Average ranking (outliers removed) saved to: {output_path}")
+
+
 def print_average_ranking_without_outliers(
     all_ranks: List[Dict[str, int]], model_names: List[str]
 ):
@@ -1296,6 +1494,9 @@ def main():
     # Display average ranking without outliers
     print("\n[SUMMARY] Computing Average Ranking (Outliers Removed)...")
     print_average_ranking_without_outliers(all_ranks, model_names)
+    save_average_ranking_without_outliers_to_csv(
+        all_ranks, model_names, CSV_PATH, "average_ranking_outliers_removed"
+    )
 
     print("\n" + "=" * 170)
     print("✅ All ranking methods computed successfully!")

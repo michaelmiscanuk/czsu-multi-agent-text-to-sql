@@ -1,0 +1,12 @@
+Rank;Model Name;Strength Category;Dominance Score;Confidence Score;Effect Size (d);Separation;Mean Rank;Std Dev;CV %;Rank Range
+1;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-29134ed3;DOMINANT;82.05;100.00;3.156;12.12;1.00;0.000;0.00;0
+2;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4.1-b8979536;DOMINANT;74.03;83.33;1.440;7.58;2.33;0.577;24.74;1
+3;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5.2-chat-23af0bc5;DOMINANT;70.43;83.33;1.197;13.64;2.67;0.577;21.65;1
+4;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-non-reasoning-f21c983a;INCONSISTENT;52.44;66.67;0.318;13.64;5.33;2.309;43.30;4
+5;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-172984e1;MODERATE;46.70;66.67;0.116;3.03;5.67;1.155;20.38;2
+6;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5-nano-0bfd588f;MODERATE;44.13;66.67;-0.010;1.52;6.00;1.732;28.87;3
+7;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-reasoning-7760eeed;MODERATE;43.68;100.00;0.009;7.58;6.00;0.000;0.00;0
+8;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-mini-b79d4cc2;MODERATE;34.20;83.33;-0.340;12.12;8.33;0.577;6.93;1
+9;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-dac0a243;INCONSISTENT;27.34;66.67;-0.733;10.61;7.67;2.309;30.12;4
+10;judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview-6873e5c9;MODERATE;16.26;83.33;-2.469;10.61;10.33;0.577;5.59;1
+11;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-f88d7c10;MODERATE;9.43;83.33;-2.642;3.03;10.67;0.577;5.41;1

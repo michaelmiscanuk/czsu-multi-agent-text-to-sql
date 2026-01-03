@@ -1,0 +1,12 @@
+Rank;Experiment Name;Wins;Losses;Ties;Points;Win Rate;Point Rate
+1;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-29134ed3;487;81;32;503.0;0.8117;0.8383
+2;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4.1-b8979536;437;106;57;465.5;0.7283;0.7758
+3;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5.2-chat-23af0bc5;427;132;41;447.5;0.7117;0.7458
+4;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-non-reasoning-f21c983a;321;226;53;347.5;0.5350;0.5792
+5;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-172984e1;280;237;83;321.5;0.4667;0.5358
+6;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-reasoning-7760eeed;266;263;71;301.5;0.4433;0.5025
+7;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5-nano-0bfd588f;274;277;49;298.5;0.4567;0.4975
+8;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-mini-b79d4cc2;207;323;70;242.0;0.3450;0.4033
+9;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-dac0a243;175;388;37;193.5;0.2917;0.3225
+10;judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview-6873e5c9;105;483;12;111.0;0.1750;0.1850
+11;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-f88d7c10;57;520;23;68.5;0.0950;0.1142

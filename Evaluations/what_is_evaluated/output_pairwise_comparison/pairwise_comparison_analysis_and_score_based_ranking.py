@@ -18,7 +18,7 @@ from collections import defaultdict
 # ============================================================================
 
 CSV_PATH = Path(
-    "Evaluations\what_is_evaluated\output_pairwise_comparison\pairwise_compare_more_experiments_20251222_110500.csv"
+    "Evaluations/what_is_evaluated/output_pairwise_comparison/pairwise_compare_more_experiments_20260102_234014.csv"
 )
 
 # ============================================================================
@@ -89,6 +89,61 @@ def calculate_win_loss_ranking(csv_path: Path) -> Dict[str, Dict]:
     return dict(stats)
 
 
+def save_ranking_to_csv(
+    stats: Dict[str, Dict], csv_path: Path, algorithm_name: str
+) -> None:
+    """Save ranking report to CSV file with semicolon delimiter."""
+
+    # Sort by points (descending), then by wins, then by win_rate
+    ranking = sorted(
+        stats.items(),
+        key=lambda x: (x[1]["points"], x[1]["wins"], x[1]["win_rate"]),
+        reverse=True,
+    )
+
+    # Generate output filename based on algorithm name
+    timestamp = (
+        csv_path.stem.split("_")[-2] + "_" + csv_path.stem.split("_")[-1]
+    )  # Extract timestamp
+    output_filename = f"ranking_{algorithm_name}_{timestamp}.csv"
+    output_path = csv_path.parent / output_filename
+
+    # Write to CSV
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f, delimiter=";")
+
+        # Write header
+        writer.writerow(
+            [
+                "Rank",
+                "Experiment Name",
+                "Wins",
+                "Losses",
+                "Ties",
+                "Points",
+                "Win Rate",
+                "Point Rate",
+            ]
+        )
+
+        # Write data rows
+        for rank, (exp_name, exp_stats) in enumerate(ranking, 1):
+            writer.writerow(
+                [
+                    rank,
+                    exp_name,
+                    exp_stats["wins"],
+                    exp_stats["losses"],
+                    exp_stats["ties"],
+                    f"{exp_stats['points']:.1f}",
+                    f"{exp_stats['win_rate']:.4f}",
+                    f"{exp_stats['point_rate']:.4f}",
+                ]
+            )
+
+    print(f"\n💾 Ranking saved to: {output_path}")
+
+
 def print_ranking_report(stats: Dict[str, Dict]) -> None:
     """Print comprehensive ranking report with statistics."""
 
@@ -145,6 +200,9 @@ def main():
 
     # Calculate rankings
     stats = calculate_win_loss_ranking(CSV_PATH)
+
+    # Save ranking to CSV
+    save_ranking_to_csv(stats, CSV_PATH, "simple_win_counting")
 
     # Print report
     print_ranking_report(stats)

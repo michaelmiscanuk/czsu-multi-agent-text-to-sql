@@ -1,0 +1,12 @@
+Rank;Model Name;Avg Rank;Mode;Removed;Outlier;Remaining Ranks
+1;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-29134ed3;1.00;1;1;2;[1 1 1 1 1 1 1 1 1 1 1 1 1 1]
+2;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4.1-b8979536;2.00;2;3;3;[2 2 2 2 2 2 2 2 2 2 2 2]
+3;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5.2-chat-23af0bc5;2.86;3;1;1;[3 3 3 3 2 3 3 2 3 3 3 3 3 3]
+4;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-non-reasoning-f21c983a;4.08;4;2;8;[4 4 4 4 4 4 4 4 4 4 5 4 4]
+5;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-172984e1;5.25;5;3;7;[5 5 6 6 5 5 6 5 5 4 6 5]
+6;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-reasoning-7760eeed;6.00;6;4;7;[6 6 6 6 6 6 6 6 6 6 6]
+7;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5-nano-0bfd588f;6.14;7;1;4;[7 7 5 5 7 7 5 5 7 7 5 7 5 7]
+8;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-mini-b79d4cc2;8.00;8;2;9;[8 8 8 8 8 8 8 8 8 8 8 8 8]
+9;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-dac0a243;8.71;9;1;4;[9 9 9 9 5 9 9 9 9 9 9 9 9 9]
+10;judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview-6873e5c9;10.00;10;3;11;[10 10 10 10 10 10 10 10 10 10 10 10]
+11;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-f88d7c10;11.00;11;3;10;[11 11 11 11 11 11 11 11 11 11 11 11]

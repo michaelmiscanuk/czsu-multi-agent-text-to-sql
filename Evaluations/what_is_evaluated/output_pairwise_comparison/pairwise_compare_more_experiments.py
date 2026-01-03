@@ -91,7 +91,7 @@ EXECUTION_ID = (
 # ============================================================================
 
 # Evaluation settings
-MAX_CONCURRENCY = 4  # Concurrency within each pair comparison
+MAX_CONCURRENCY = 6  # Concurrency within each pair comparison
 RANDOMIZE_ORDER = True  # Mitigate positional bias
 
 # Parallel processing settings

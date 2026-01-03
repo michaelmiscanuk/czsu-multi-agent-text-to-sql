@@ -1,0 +1,12 @@
+Rank;Model Name;Overall Strength;BT Strength;BT CI Lower;BT CI Upper;Median Rank;Rank CI Lower;Rank CI Upper;Thurstone Scale;Thurstone SE;Bayes Win Rate;P(Above Avg);Cohen's d;d CI Lower;d CI Upper
+1;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-mistral-large-2512-29134ed3;86.30;1.819;0.839;2.799;1.0;1.0;1.0;1.062;0.156;0.837;1.000;3.156;2.356;4.719
+2;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4.1-b8979536;78.31;1.423;0.443;2.403;2.0;2.0;3.0;0.862;0.182;0.775;1.000;1.440;0.805;3.144
+3;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5.2-chat-23af0bc5;76.14;1.251;0.271;2.231;3.0;2.0;3.0;0.884;0.244;0.745;1.000;1.197;0.638;2.533
+4;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-non-reasoning-f21c983a;65.05;0.403;-0.577;1.383;4.0;4.0;5.0;0.289;0.253;0.579;1.000;0.318;-0.079;0.935
+5;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-172984e1;59.23;0.197;-0.783;1.177;5.0;4.0;6.0;0.041;0.309;0.536;0.960;0.116;-0.388;0.619
+6;judge-azureopenai-gpt-4.1__node-format_answer_node__model-xai-grok-4-1-fast-reasoning-7760eeed;49.79;0.039;-0.941;1.019;6.0;5.0;7.0;0.039;0.301;0.502;0.549;0.009;-0.439;0.462
+7;judge-azureopenai-gpt-4.1__node-format_answer_node__model-gemini-gemini-3-pro-preview-6873e5c9;49.29;-1.662;-2.642;-0.682;10.0;10.0;10.0;-1.014;0.151;0.186;0.000;-2.469;-5.161;-1.614
+8;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-5-nano-0bfd588f;48.01;0.015;-0.965;0.995;7.0;5.0;7.0;0.093;0.233;0.498;0.451;-0.010;-0.521;0.437
+9;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-codestral-2508-f88d7c10;46.18;-2.200;-3.180;-1.220;11.0;11.0;11.0;-1.455;0.196;0.115;0.000;-2.642;-11.961;-1.581
+10;judge-azureopenai-gpt-4.1__node-format_answer_node__model-mistral-devstral-2512-dac0a243;43.65;-0.848;-1.828;0.132;9.0;9.0;9.0;-0.556;0.213;0.323;0.000;-0.733;-1.903;-0.218
+11;judge-azureopenai-gpt-4.1__node-format_answer_node__model-azureopenai-gpt-4o-mini-b79d4cc2;42.98;-0.437;-1.417;0.543;8.0;8.0;8.0;-0.244;0.288;0.404;0.000;-0.340;-0.958;0.093
