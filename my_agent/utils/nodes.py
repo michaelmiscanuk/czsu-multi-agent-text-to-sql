@@ -2179,7 +2179,7 @@ Your task is to translate the user's natural-language question into SQLite SQL q
 - Converting concepts between languages
 
 3. Construct appropriate SQLite SQL queries by:
-- You are provided with the schemas of the 3 most relevant datasets; choose and use any of these datasets to construct your queries
+- You are provided with the schemas of the 4 most relevant datasets; choose and use any of these datasets to construct your queries
 - Using exact column names from the schema provided (can be Czech or English), always use backticks around column names, like `Druh vlastnictví` = "Bytové družstvo";
 - Matching user prompt terms to correct dimension values provided as a distinct list of values
 - Ensuring proper string matching for Czech characters

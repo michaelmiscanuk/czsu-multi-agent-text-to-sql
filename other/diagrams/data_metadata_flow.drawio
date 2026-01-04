@@ -1,0 +1,109 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.2.9 Chrome/140.0.7339.249 Electron/38.7.2 Safari/537.36" version="29.2.9">
+  <diagram name="Data Processing Flow" id="data-flow">
+    <mxGraphModel dx="1173" dy="687" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="struct-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E3F2FD;strokeColor=#90CAF9;fontFamily=Verdana;fontStyle=1" value="CZSO REST API" vertex="1">
+          <mxGeometry height="50" width="140" x="40" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-s1" edge="1" parent="1" source="struct-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="struct-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="struct-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E3F2FD;strokeColor=#90CAF9;fontFamily=Verdana;fontStyle=1" value="API Data Extraction" vertex="1">
+          <mxGeometry height="50" width="140" x="210" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-s2" edge="1" parent="1" source="struct-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="struct-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="struct-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FFF3E0;strokeColor=#FFB74D;fontFamily=Verdana;fontStyle=1" value="JSON-stat to CSV&#xa;Conversion" vertex="1">
+          <mxGeometry height="50" width="140" x="380" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-s3" edge="1" parent="1" source="struct-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="struct-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="struct-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FFF3E0;strokeColor=#FFB74D;fontFamily=Verdana;fontStyle=1" value="CSV Files" vertex="1">
+          <mxGeometry height="50" width="140" x="550" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-s4" edge="1" parent="1" source="struct-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="struct-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="struct-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E8F5E9;strokeColor=#81C784;fontFamily=Verdana;fontStyle=1" value="SQLite Database Load" vertex="1">
+          <mxGeometry height="50" width="140" x="720" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-s5" edge="1" parent="1" source="struct-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="struct-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="struct-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E8F5E9;strokeColor=#81C784;fontFamily=Verdana;fontStyle=1" value="Cloud or Local&#xa;SQLite Database" vertex="1">
+          <mxGeometry height="50" width="140" x="890" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="meta-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E3F2FD;strokeColor=#90CAF9;fontFamily=Verdana;fontStyle=1" value="CZSO REST API" vertex="1">
+          <mxGeometry height="50" width="140" x="40" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-m1" edge="1" parent="1" source="meta-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="meta-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="meta-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E3F2FD;strokeColor=#90CAF9;fontFamily=Verdana;fontStyle=1" value="Extract JSON Schemas" vertex="1">
+          <mxGeometry height="50" width="140" x="210" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-m2" edge="1" parent="1" source="meta-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="meta-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="meta-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E3F2FD;strokeColor=#90CAF9;fontFamily=Verdana;fontStyle=1" value="Extract Basic&#xa;Descriptions" vertex="1">
+          <mxGeometry height="50" width="140" x="380" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-m3" edge="1" parent="1" source="meta-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="meta-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="meta-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FCE4EC;strokeColor=#F48FB1;fontFamily=Verdana;fontStyle=1" value="LLM Description&#xa;Enhancement" vertex="1">
+          <mxGeometry height="50" width="140" x="550" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-m4" edge="1" parent="1" source="meta-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="meta-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="meta-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FCE4EC;strokeColor=#F48FB1;fontFamily=Verdana;fontStyle=1" value="Generate Vector&#xa;Embeddings" vertex="1">
+          <mxGeometry height="50" width="140" x="720" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-m5" edge="1" parent="1" source="meta-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="meta-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="meta-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FFF9C4;strokeColor=#FDD835;fontFamily=Verdana;fontStyle=1" value="Vector Database&#xa;(Chroma)" vertex="1">
+          <mxGeometry height="50" width="140" x="890" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="unstruct-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FFF3E0;strokeColor=#FFB74D;fontFamily=Verdana;fontStyle=1" value="PDF" vertex="1">
+          <mxGeometry height="50" width="140" x="40" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-u1" edge="1" parent="1" source="unstruct-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="unstruct-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="unstruct-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E3F2FD;strokeColor=#90CAF9;fontFamily=Verdana;fontStyle=1" value="Parsing" vertex="1">
+          <mxGeometry height="50" width="140" x="210" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-u2" edge="1" parent="1" source="unstruct-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="unstruct-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="unstruct-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FFF3E0;strokeColor=#FFB74D;fontFamily=Verdana;fontStyle=1" value="Chunking" vertex="1">
+          <mxGeometry height="50" width="140" x="380" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-u3" edge="1" parent="1" source="unstruct-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="unstruct-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="unstruct-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FCE4EC;strokeColor=#F48FB1;fontFamily=Verdana;fontStyle=1" value="Embedding" vertex="1">
+          <mxGeometry height="50" width="140" x="550" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-u4" edge="1" parent="1" source="unstruct-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="unstruct-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="unstruct-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#E3F2FD;strokeColor=#90CAF9;fontFamily=Verdana;fontStyle=1" value="Retrieval" vertex="1">
+          <mxGeometry height="50" width="140" x="720" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-u5" edge="1" parent="1" source="unstruct-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontFamily=Verdana;fontStyle=1" target="unstruct-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="unstruct-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fontSize=11;fillColor=#FFF9C4;strokeColor=#FDD835;fontFamily=Verdana;fontStyle=1" value="Vector Database&#xa;(Chroma)" vertex="1">
+          <mxGeometry height="50" width="140" x="890" y="360" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
