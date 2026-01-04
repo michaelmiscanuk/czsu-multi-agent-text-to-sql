@@ -400,7 +400,7 @@ PDF_FILENAMES = [
 ]
 
 COLLECTION_NAME = (
-    "czsu_selections_chromadb"  # ChromaDB collection name (matches nodes.py)
+    "pdf_document_collection"  # ChromaDB collection name for PDF documents
 )
 
 # Parsed Text File Settings - Will be auto-generated for each PDF
