@@ -1,4 +1,4 @@
-# CZSU Multi-Agent Text-to-SQL Application (CZSU Data Explorer and Chatbot)
+# CZSU Multi-Agent Text-to-SQL Application (CZSO Data Explorer and Chatbot)
 
 This is a full-stack application prototype that enables natural language querying of Czech Statistics Office (CZSU) data through an AI-powered chatbot. The system features a Python/FastAPI backend, React frontend, and an agentic flow using LangGraph for intelligent question answering over statistical data. The AI component is evaluated using LangSmith.
 
