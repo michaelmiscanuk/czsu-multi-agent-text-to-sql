@@ -182,7 +182,7 @@ def get_xai_llm(model_name: str = "", temperature: Optional[float] = 0.0) -> Cha
 # Mistral AI Models
 # ===============================================================================
 def get_mistral_llm(
-    model_name: str = "mistral-small-latest",
+    model_name: str = "mistral_mistral-large-2512",
     temperature: Optional[float] = 0.0,
 ) -> ChatMistralAI:
     """Get an instance of Mistral AI Chat LLM with configurable parameters.
@@ -191,7 +191,7 @@ def get_mistral_llm(
     operations for flexibility in different execution contexts.
 
     Args:
-        model_name (str): Mistral model name (e.g., "mistral-small-latest", "mistral-large-latest")
+        model_name (str): Mistral model name (e.g., "mistral_mistral-small-latest", "mistral_mistral-large-2512")
         temperature (float): Temperature setting for generation randomness
 
     Returns:
