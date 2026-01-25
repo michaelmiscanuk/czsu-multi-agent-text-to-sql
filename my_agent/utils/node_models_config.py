@@ -27,13 +27,13 @@ NODE_MODELS_CONFIG = {
         },
         # Summarizes conversation history to maintain context
         "summarize_messages_node": {
-            "id": "azureopenai_gpt-4o-mini",
+            "id": "azureopenai_gpt-5-nano",
             "model_provider": "azureopenai",
-            "model_name": "gpt-4o-mini",
-            "deployment_name": "gpt-4o-mini-mimi2",
+            "model_name": "gpt-5-nano",
+            "deployment_name": "gpt-5-nano_mimi_test",
             "temperature": 0.0,
             "streaming": False,
-            "openai_api_version": "2024-05-01-preview",
+            "openai_api_version": "2024-12-01-preview",
         },
         # Generates SQL queries using MCP tools (agentic SQL generation)
         "generate_query_node": {
