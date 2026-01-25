@@ -37,11 +37,13 @@ NODE_MODELS_CONFIG = {
         },
         # Generates SQL queries using MCP tools (agentic SQL generation)
         "generate_query_node": {
-            "id": "mistral_devstral-2512",
-            "model_provider": "mistral",
-            "model_name": "devstral-2512",
-            "temperature": 0.0,
+            "id": "azureopenai_gpt-5.2-chat",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-5.2-chat",
+            "deployment_name": "gpt-5.2-chat-mimi-test",
+            "temperature": None,  # This model only supports default temperature (1), pass here as None in config
             "streaming": False,
+            "openai_api_version": "2024-12-01-preview",
         },
         # Reflects on query results and decides whether to improve or answer
         "reflect_node": {
@@ -55,11 +57,13 @@ NODE_MODELS_CONFIG = {
         },
         # Formats the final answer from SQL results and PDF chunks
         "format_answer_node": {
-            "id": "mistral_mistral-large-2512",
-            "model_provider": "mistral",
-            "model_name": "mistral-large-2512",
+            "id": "azureopenai_gpt-4.1",
+            "model_provider": "azureopenai",
+            "model_name": "gpt-4.1",
+            "deployment_name": "gpt-4.1___test1",
             "temperature": 0.0,
             "streaming": True,
+            "openai_api_version": "2024-05-01-preview",
         },
         # Non-streaming fallback for format_answer_node
         "format_answer_node_non_streaming": {
